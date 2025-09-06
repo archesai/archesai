@@ -20,7 +20,6 @@ type RedisEventPublisher struct {
 // NewRedisEventPublisher creates a new Redis event publisher.
 func NewRedisEventPublisher(client *redis.Client) EventPublisher {
 	channel := "auth-events"
-	channel = "auth-events"
 
 	return &RedisEventPublisher{
 		client:  client,
@@ -36,183 +35,15 @@ func NewRedisEventPublisherWithChannel(client *redis.Client, channel string) Eve
 	}
 }
 
-// PublishUserCreated publishes a User was created event.
-func (p *RedisEventPublisher) PublishUserCreated(ctx context.Context, entity *UserEntity) error {
+// Publishaccountcreated publishes a Account created event event.
+func (p *RedisEventPublisher) Publishaccountcreated(ctx context.Context, entity *Account) error {
 	if entity == nil {
 		return fmt.Errorf("entity cannot be nil")
 	}
 
 	event := &Event{
 		ID:        uuid.New().String(),
-		Type:      EventUserCreated,
-		Timestamp: time.Now().UTC(),
-		Source:    "auth",
-		Data:      entity,
-		Metadata: map[string]string{
-			"entity_id":   entity.Id.String(),
-			"entity_type": "User",
-		},
-	}
-
-	return p.PublishRaw(ctx, event)
-}
-
-// PublishUserUpdated publishes a User was updated event.
-func (p *RedisEventPublisher) PublishUserUpdated(ctx context.Context, entity *UserEntity) error {
-	if entity == nil {
-		return fmt.Errorf("entity cannot be nil")
-	}
-
-	event := &Event{
-		ID:        uuid.New().String(),
-		Type:      EventUserUpdated,
-		Timestamp: time.Now().UTC(),
-		Source:    "auth",
-		Data:      entity,
-		Metadata: map[string]string{
-			"entity_id":   entity.Id.String(),
-			"entity_type": "User",
-		},
-	}
-
-	return p.PublishRaw(ctx, event)
-}
-
-// PublishUserDeleted publishes a User was deleted event.
-func (p *RedisEventPublisher) PublishUserDeleted(ctx context.Context, entity *UserEntity) error {
-	if entity == nil {
-		return fmt.Errorf("entity cannot be nil")
-	}
-
-	event := &Event{
-		ID:        uuid.New().String(),
-		Type:      EventUserDeleted,
-		Timestamp: time.Now().UTC(),
-		Source:    "auth",
-		Data:      entity,
-		Metadata: map[string]string{
-			"entity_id":   entity.Id.String(),
-			"entity_type": "User",
-		},
-	}
-
-	return p.PublishRaw(ctx, event)
-}
-
-// PublishUserEmailVerified publishes a User email was verified event.
-func (p *RedisEventPublisher) PublishUserEmailVerified(ctx context.Context, entity *UserEntity) error {
-	if entity == nil {
-		return fmt.Errorf("entity cannot be nil")
-	}
-
-	event := &Event{
-		ID:        uuid.New().String(),
-		Type:      EventUserEmailVerified,
-		Timestamp: time.Now().UTC(),
-		Source:    "auth",
-		Data:      entity,
-		Metadata: map[string]string{
-			"entity_id":   entity.Id.String(),
-			"entity_type": "User",
-		},
-	}
-
-	return p.PublishRaw(ctx, event)
-}
-
-// PublishUserPasswordChanged publishes a User password was changed event.
-func (p *RedisEventPublisher) PublishUserPasswordChanged(ctx context.Context, entity *UserEntity) error {
-	if entity == nil {
-		return fmt.Errorf("entity cannot be nil")
-	}
-
-	event := &Event{
-		ID:        uuid.New().String(),
-		Type:      EventUserPasswordChanged,
-		Timestamp: time.Now().UTC(),
-		Source:    "auth",
-		Data:      entity,
-		Metadata: map[string]string{
-			"entity_id":   entity.Id.String(),
-			"entity_type": "User",
-		},
-	}
-
-	return p.PublishRaw(ctx, event)
-}
-
-// PublishSessionCreated publishes a Session was created event.
-func (p *RedisEventPublisher) PublishSessionCreated(ctx context.Context, entity *SessionEntity) error {
-	if entity == nil {
-		return fmt.Errorf("entity cannot be nil")
-	}
-
-	event := &Event{
-		ID:        uuid.New().String(),
-		Type:      EventSessionCreated,
-		Timestamp: time.Now().UTC(),
-		Source:    "auth",
-		Data:      entity,
-		Metadata: map[string]string{
-			"entity_id":   entity.Id.String(),
-			"entity_type": "Session",
-		},
-	}
-
-	return p.PublishRaw(ctx, event)
-}
-
-// PublishSessionDeleted publishes a Session was deleted event.
-func (p *RedisEventPublisher) PublishSessionDeleted(ctx context.Context, entity *SessionEntity) error {
-	if entity == nil {
-		return fmt.Errorf("entity cannot be nil")
-	}
-
-	event := &Event{
-		ID:        uuid.New().String(),
-		Type:      EventSessionDeleted,
-		Timestamp: time.Now().UTC(),
-		Source:    "auth",
-		Data:      entity,
-		Metadata: map[string]string{
-			"entity_id":   entity.Id.String(),
-			"entity_type": "Session",
-		},
-	}
-
-	return p.PublishRaw(ctx, event)
-}
-
-// PublishSessionExpired publishes a Session expired event.
-func (p *RedisEventPublisher) PublishSessionExpired(ctx context.Context, entity *SessionEntity) error {
-	if entity == nil {
-		return fmt.Errorf("entity cannot be nil")
-	}
-
-	event := &Event{
-		ID:        uuid.New().String(),
-		Type:      EventSessionExpired,
-		Timestamp: time.Now().UTC(),
-		Source:    "auth",
-		Data:      entity,
-		Metadata: map[string]string{
-			"entity_id":   entity.Id.String(),
-			"entity_type": "Session",
-		},
-	}
-
-	return p.PublishRaw(ctx, event)
-}
-
-// PublishAccountLinked publishes a Account was linked event.
-func (p *RedisEventPublisher) PublishAccountLinked(ctx context.Context, entity *AccountEntity) error {
-	if entity == nil {
-		return fmt.Errorf("entity cannot be nil")
-	}
-
-	event := &Event{
-		ID:        uuid.New().String(),
-		Type:      EventAccountLinked,
+		Type:      Eventaccountcreated,
 		Timestamp: time.Now().UTC(),
 		Source:    "auth",
 		Data:      entity,
@@ -225,15 +56,15 @@ func (p *RedisEventPublisher) PublishAccountLinked(ctx context.Context, entity *
 	return p.PublishRaw(ctx, event)
 }
 
-// PublishAccountUnlinked publishes a Account was unlinked event.
-func (p *RedisEventPublisher) PublishAccountUnlinked(ctx context.Context, entity *AccountEntity) error {
+// Publishaccountupdated publishes a Account updated event event.
+func (p *RedisEventPublisher) Publishaccountupdated(ctx context.Context, entity *Account) error {
 	if entity == nil {
 		return fmt.Errorf("entity cannot be nil")
 	}
 
 	event := &Event{
 		ID:        uuid.New().String(),
-		Type:      EventAccountUnlinked,
+		Type:      Eventaccountupdated,
 		Timestamp: time.Now().UTC(),
 		Source:    "auth",
 		Data:      entity,
@@ -246,21 +77,231 @@ func (p *RedisEventPublisher) PublishAccountUnlinked(ctx context.Context, entity
 	return p.PublishRaw(ctx, event)
 }
 
-// PublishAccountTokensRefreshed publishes a Account tokens were refreshed event.
-func (p *RedisEventPublisher) PublishAccountTokensRefreshed(ctx context.Context, entity *AccountEntity) error {
+// Publishaccountdeleted publishes a Account deleted event event.
+func (p *RedisEventPublisher) Publishaccountdeleted(ctx context.Context, entity *Account) error {
 	if entity == nil {
 		return fmt.Errorf("entity cannot be nil")
 	}
 
 	event := &Event{
 		ID:        uuid.New().String(),
-		Type:      EventAccountTokensRefreshed,
+		Type:      Eventaccountdeleted,
 		Timestamp: time.Now().UTC(),
 		Source:    "auth",
 		Data:      entity,
 		Metadata: map[string]string{
 			"entity_id":   entity.Id.String(),
 			"entity_type": "Account",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// Publishaccountlinked publishes a Account linked event event.
+func (p *RedisEventPublisher) Publishaccountlinked(ctx context.Context, entity *Account) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      Eventaccountlinked,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "Account",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// Publishaccountunlinked publishes a Account unlinked event event.
+func (p *RedisEventPublisher) Publishaccountunlinked(ctx context.Context, entity *Account) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      Eventaccountunlinked,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "Account",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// Publishsessioncreated publishes a Session created event event.
+func (p *RedisEventPublisher) Publishsessioncreated(ctx context.Context, entity *Session) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      Eventsessioncreated,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "Session",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// Publishsessionrefreshed publishes a Session refreshed event event.
+func (p *RedisEventPublisher) Publishsessionrefreshed(ctx context.Context, entity *Session) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      Eventsessionrefreshed,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "Session",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// Publishsessionexpired publishes a Session expired event event.
+func (p *RedisEventPublisher) Publishsessionexpired(ctx context.Context, entity *Session) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      Eventsessionexpired,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "Session",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// Publishsessiondeleted publishes a Session deleted event event.
+func (p *RedisEventPublisher) Publishsessiondeleted(ctx context.Context, entity *Session) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      Eventsessiondeleted,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "Session",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// Publishusercreated publishes a User created event event.
+func (p *RedisEventPublisher) Publishusercreated(ctx context.Context, entity *User) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      Eventusercreated,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "User",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// Publishuserupdated publishes a User updated event event.
+func (p *RedisEventPublisher) Publishuserupdated(ctx context.Context, entity *User) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      Eventuserupdated,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "User",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// Publishuserdeleted publishes a User deleted event event.
+func (p *RedisEventPublisher) Publishuserdeleted(ctx context.Context, entity *User) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      Eventuserdeleted,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "User",
+		},
+	}
+
+	return p.PublishRaw(ctx, event)
+}
+
+// PublishuseremailVerified publishes a User email_verified event event.
+func (p *RedisEventPublisher) PublishuseremailVerified(ctx context.Context, entity *User) error {
+	if entity == nil {
+		return fmt.Errorf("entity cannot be nil")
+	}
+
+	event := &Event{
+		ID:        uuid.New().String(),
+		Type:      EventuseremailVerified,
+		Timestamp: time.Now().UTC(),
+		Source:    "auth",
+		Data:      entity,
+		Metadata: map[string]string{
+			"entity_id":   entity.Id.String(),
+			"entity_type": "User",
 		},
 	}
 

@@ -6,19 +6,12 @@ package auth
 //go:generate go tool oapi-codegen --config=models.cfg.yaml ../../api/openapi.bundled.yaml
 //go:generate go tool oapi-codegen --config=server.cfg.yaml ../../api/openapi.bundled.yaml
 
-// User represents a user with authentication data
-type User struct {
-	UserEntity
-	PasswordHash string // Not exposed in API
-}
+import (
+	"context"
+	"errors"
 
-// Session represents an authenticated session
-type Session struct {
-	SessionEntity
-	Token     string // Session token (not exposed in API)
-	IpAddress string // Client IP
-	UserAgent string // Client user agent
-}
+	"github.com/google/uuid"
+)
 
 // ContextKey is a type for context keys
 type ContextKey string
@@ -29,3 +22,31 @@ const (
 	// ClaimsContextKey is the context key for JWT claims
 	ClaimsContextKey ContextKey = "claims"
 )
+
+// Domain errors
+var (
+	// ErrUserNotFound is returned when a user is not found
+	ErrUserNotFound = errors.New("user not found")
+	// ErrInvalidCredentials is returned when credentials are invalid
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	// ErrUserExists is returned when a user already exists
+	ErrUserExists = errors.New("user already exists")
+)
+
+// AuthRepository combines the generated Repository with additional methods
+type AuthRepository interface {
+	Repository
+
+	// Additional User methods
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	GetUserByUsername(ctx context.Context, username string) (*User, error)
+
+	// Additional Session methods
+	GetSessionByToken(ctx context.Context, token string) (*Session, error)
+	DeleteExpiredSessions(ctx context.Context) error
+	DeleteUserSessions(ctx context.Context, userID uuid.UUID) error
+
+	// Additional Account methods
+	GetAccountByProviderAndProviderID(ctx context.Context, provider, providerID string) (*Account, error)
+	GetAccountsByUserID(ctx context.Context, userID uuid.UUID) ([]*Account, error)
+}

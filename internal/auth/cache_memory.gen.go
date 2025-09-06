@@ -32,10 +32,7 @@ type MemoryCache struct {
 // NewMemoryCache creates a new in-memory cache.
 func NewMemoryCache() Cache {
 	maxItems := 1000
-	maxItems = 1000
-
 	ttl := 5 * time.Minute
-	ttl = 300 * time.Second
 
 	cache := &MemoryCache{
 		items:    make(map[string]*cacheItem),
@@ -113,28 +110,28 @@ func (c *MemoryCache) evictOldest() {
 	}
 }
 
-// User caching operations
+// Account caching operations
 
-func (c *MemoryCache) GetUser(ctx context.Context, id uuid.UUID) (*UserEntity, error) {
+func (c *MemoryCache) GetAccount(ctx context.Context, id uuid.UUID) (*Account, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	key := fmt.Sprintf("user:%s", id.String())
+	key := fmt.Sprintf("account:%s", id.String())
 	item, exists := c.items[key]
 
 	if !exists || item.isExpired() {
 		return nil, ErrCacheMiss
 	}
 
-	entity, ok := item.data.(*UserEntity)
+	entity, ok := item.data.(*Account)
 	if !ok {
-		return nil, fmt.Errorf("invalid cached type for user")
+		return nil, fmt.Errorf("invalid cached type for account")
 	}
 
 	return entity, nil
 }
 
-func (c *MemoryCache) SetUser(ctx context.Context, entity *UserEntity, ttl time.Duration) error {
+func (c *MemoryCache) SetAccount(ctx context.Context, entity *Account, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
@@ -147,7 +144,7 @@ func (c *MemoryCache) SetUser(ctx context.Context, entity *UserEntity, ttl time.
 		c.evictOldest()
 	}
 
-	key := fmt.Sprintf("user:%s", entity.Id.String())
+	key := fmt.Sprintf("account:%s", entity.Id.String())
 
 	if ttl == 0 {
 		ttl = c.ttl
@@ -161,75 +158,11 @@ func (c *MemoryCache) SetUser(ctx context.Context, entity *UserEntity, ttl time.
 	return nil
 }
 
-func (c *MemoryCache) DeleteUser(ctx context.Context, id uuid.UUID) error {
+func (c *MemoryCache) DeleteAccount(ctx context.Context, id uuid.UUID) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	key := fmt.Sprintf("user:%s", id.String())
-	delete(c.items, key)
-
-	return nil
-}
-
-// Additional User cache operations
-func (c *MemoryCache) GetUserByEmail(ctx context.Context, email string) (*UserEntity, error) {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-
-	key := fmt.Sprintf("user:email:%s", email)
-	item, exists := c.items[key]
-
-	if !exists || item.isExpired() {
-		return nil, ErrCacheMiss
-	}
-
-	entity, ok := item.data.(*UserEntity)
-	if !ok {
-		return nil, fmt.Errorf("invalid cached type for user")
-	}
-
-	return entity, nil
-}
-
-func (c *MemoryCache) SetUserByEmail(ctx context.Context, email string, entity *UserEntity, ttl time.Duration) error {
-	if entity == nil {
-		return nil
-	}
-
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	// Check if we need to evict items
-	if len(c.items) >= c.maxItems {
-		c.evictOldest()
-	}
-
-	key := fmt.Sprintf("user:email:%s", email)
-
-	if ttl == 0 {
-		ttl = c.ttl
-	}
-
-	c.items[key] = &cacheItem{
-		data:      entity,
-		expiresAt: time.Now().Add(ttl),
-	}
-
-	// Also cache by ID
-	idKey := fmt.Sprintf("user:%s", entity.Id.String())
-	c.items[idKey] = &cacheItem{
-		data:      entity,
-		expiresAt: time.Now().Add(ttl),
-	}
-
-	return nil
-}
-
-func (c *MemoryCache) DeleteUserByEmail(ctx context.Context, email string) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	key := fmt.Sprintf("user:email:%s", email)
+	key := fmt.Sprintf("account:%s", id.String())
 	delete(c.items, key)
 
 	return nil
@@ -237,7 +170,7 @@ func (c *MemoryCache) DeleteUserByEmail(ctx context.Context, email string) error
 
 // Session caching operations
 
-func (c *MemoryCache) GetSession(ctx context.Context, id uuid.UUID) (*SessionEntity, error) {
+func (c *MemoryCache) GetSession(ctx context.Context, id uuid.UUID) (*Session, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -248,7 +181,7 @@ func (c *MemoryCache) GetSession(ctx context.Context, id uuid.UUID) (*SessionEnt
 		return nil, ErrCacheMiss
 	}
 
-	entity, ok := item.data.(*SessionEntity)
+	entity, ok := item.data.(*Session)
 	if !ok {
 		return nil, fmt.Errorf("invalid cached type for session")
 	}
@@ -256,7 +189,7 @@ func (c *MemoryCache) GetSession(ctx context.Context, id uuid.UUID) (*SessionEnt
 	return entity, nil
 }
 
-func (c *MemoryCache) SetSession(ctx context.Context, entity *SessionEntity, ttl time.Duration) error {
+func (c *MemoryCache) SetSession(ctx context.Context, entity *Session, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
@@ -294,7 +227,7 @@ func (c *MemoryCache) DeleteSession(ctx context.Context, id uuid.UUID) error {
 }
 
 // Additional Session cache operations
-func (c *MemoryCache) GetSessionByToken(ctx context.Context, token string) (*SessionEntity, error) {
+func (c *MemoryCache) GetSessionByToken(ctx context.Context, token string) (*Session, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -305,7 +238,7 @@ func (c *MemoryCache) GetSessionByToken(ctx context.Context, token string) (*Ses
 		return nil, ErrCacheMiss
 	}
 
-	entity, ok := item.data.(*SessionEntity)
+	entity, ok := item.data.(*Session)
 	if !ok {
 		return nil, fmt.Errorf("invalid cached type for session")
 	}
@@ -313,7 +246,7 @@ func (c *MemoryCache) GetSessionByToken(ctx context.Context, token string) (*Ses
 	return entity, nil
 }
 
-func (c *MemoryCache) SetSessionByToken(ctx context.Context, token string, entity *SessionEntity, ttl time.Duration) error {
+func (c *MemoryCache) SetSessionByToken(ctx context.Context, token string, entity *Session, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
@@ -380,28 +313,28 @@ func (c *MemoryCache) DeleteUserSessions(ctx context.Context, userID uuid.UUID) 
 	return nil
 }
 
-// Account caching operations
+// User caching operations
 
-func (c *MemoryCache) GetAccount(ctx context.Context, id uuid.UUID) (*AccountEntity, error) {
+func (c *MemoryCache) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
-	key := fmt.Sprintf("account:%s", id.String())
+	key := fmt.Sprintf("user:%s", id.String())
 	item, exists := c.items[key]
 
 	if !exists || item.isExpired() {
 		return nil, ErrCacheMiss
 	}
 
-	entity, ok := item.data.(*AccountEntity)
+	entity, ok := item.data.(*User)
 	if !ok {
-		return nil, fmt.Errorf("invalid cached type for account")
+		return nil, fmt.Errorf("invalid cached type for user")
 	}
 
 	return entity, nil
 }
 
-func (c *MemoryCache) SetAccount(ctx context.Context, entity *AccountEntity, ttl time.Duration) error {
+func (c *MemoryCache) SetUser(ctx context.Context, entity *User, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
@@ -414,7 +347,7 @@ func (c *MemoryCache) SetAccount(ctx context.Context, entity *AccountEntity, ttl
 		c.evictOldest()
 	}
 
-	key := fmt.Sprintf("account:%s", entity.Id.String())
+	key := fmt.Sprintf("user:%s", entity.Id.String())
 
 	if ttl == 0 {
 		ttl = c.ttl
@@ -428,11 +361,75 @@ func (c *MemoryCache) SetAccount(ctx context.Context, entity *AccountEntity, ttl
 	return nil
 }
 
-func (c *MemoryCache) DeleteAccount(ctx context.Context, id uuid.UUID) error {
+func (c *MemoryCache) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	key := fmt.Sprintf("account:%s", id.String())
+	key := fmt.Sprintf("user:%s", id.String())
+	delete(c.items, key)
+
+	return nil
+}
+
+// Additional User cache operations
+func (c *MemoryCache) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	key := fmt.Sprintf("user:email:%s", email)
+	item, exists := c.items[key]
+
+	if !exists || item.isExpired() {
+		return nil, ErrCacheMiss
+	}
+
+	entity, ok := item.data.(*User)
+	if !ok {
+		return nil, fmt.Errorf("invalid cached type for user")
+	}
+
+	return entity, nil
+}
+
+func (c *MemoryCache) SetUserByEmail(ctx context.Context, email string, entity *User, ttl time.Duration) error {
+	if entity == nil {
+		return nil
+	}
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	// Check if we need to evict items
+	if len(c.items) >= c.maxItems {
+		c.evictOldest()
+	}
+
+	key := fmt.Sprintf("user:email:%s", email)
+
+	if ttl == 0 {
+		ttl = c.ttl
+	}
+
+	c.items[key] = &cacheItem{
+		data:      entity,
+		expiresAt: time.Now().Add(ttl),
+	}
+
+	// Also cache by ID
+	idKey := fmt.Sprintf("user:%s", entity.Id.String())
+	c.items[idKey] = &cacheItem{
+		data:      entity,
+		expiresAt: time.Now().Add(ttl),
+	}
+
+	return nil
+}
+
+func (c *MemoryCache) DeleteUserByEmail(ctx context.Context, email string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	key := fmt.Sprintf("user:email:%s", email)
 	delete(c.items, key)
 
 	return nil

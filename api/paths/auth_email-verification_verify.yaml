@@ -27,9 +27,9 @@ post:
             type: object
             properties:
               session:
-                $ref: ../components/schemas/SessionEntity.yaml
+                $ref: ../components/schemas/Session.yaml
               user:
-                $ref: ../components/schemas/UserEntity.yaml
+                $ref: ../components/schemas/User.yaml
             required:
               - session
               - user

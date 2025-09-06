@@ -26,7 +26,7 @@ get:
               - data
             properties:
               data:
-                $ref: ../components/schemas/AccountEntity.yaml
+                $ref: ../components/schemas/Account.yaml
     "404":
       $ref: ../components/responses/NotFound.yaml
   description: Find an account
@@ -58,7 +58,7 @@ delete:
               - data
             properties:
               data:
-                $ref: ../components/schemas/AccountEntity.yaml
+                $ref: ../components/schemas/Account.yaml
     "404":
       $ref: ../components/responses/NotFound.yaml
   description: Delete an account

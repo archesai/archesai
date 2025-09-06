@@ -38,16 +38,14 @@ func (s *Service) CreateArtifact(ctx context.Context, req *CreateArtifactRequest
 	}
 
 	artifact := &Artifact{
-		ArtifactEntity: ArtifactEntity{
-			Id:             uuid.UUID{}, // Will be set by repository
-			Name:           name,
-			Text:           req.Text,
-			OrganizationId: orgID,
-			ProducerId:     producerID,
-			Credits:        0.0, // Default credits
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		},
+		Id:             uuid.UUID{}, // Will be set by repository
+		Name:           name,
+		Text:           req.Text,
+		OrganizationId: orgID,
+		ProducerId:     producerID,
+		Credits:        0.0, // Default credits
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	createdArtifact, err := s.repo.CreateArtifact(ctx, artifact)
@@ -64,13 +62,11 @@ func (s *Service) CreateArtifact(ctx context.Context, req *CreateArtifactRequest
 			if err != nil {
 				// Create label if it doesn't exist
 				newLabel := &Label{
-					LabelEntity: LabelEntity{
-						Id:             uuid.UUID{}, // Will be set by repository
-						Name:           labelName,
-						OrganizationId: orgID,
-						CreatedAt:      time.Now(),
-						UpdatedAt:      time.Now(),
-					},
+					Id:             uuid.UUID{}, // Will be set by repository
+					Name:           labelName,
+					OrganizationId: orgID,
+					CreatedAt:      time.Now(),
+					UpdatedAt:      time.Now(),
 				}
 				label, err = s.repo.CreateLabel(ctx, newLabel)
 				if err != nil {
@@ -171,13 +167,11 @@ func (s *Service) CreateLabel(ctx context.Context, req *CreateLabelRequest, orgI
 	}
 
 	label := &Label{
-		LabelEntity: LabelEntity{
-			Id:             uuid.UUID{}, // Will be set by repository
-			Name:           req.Name,
-			OrganizationId: orgID,
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		},
+		Id:             uuid.UUID{}, // Will be set by repository
+		Name:           req.Name,
+		OrganizationId: orgID,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	// Validate color if provided

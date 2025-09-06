@@ -29,7 +29,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/LabelEntity.yaml
+                $ref: ../components/schemas/Label.yaml
             required:
               - data
             additionalProperties: false
@@ -60,7 +60,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/LabelEntity.yaml
+                  $ref: ../components/schemas/Label.yaml
               meta:
                 type: object
                 properties:

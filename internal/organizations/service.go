@@ -29,18 +29,16 @@ func (s *Service) CreateOrganization(ctx context.Context, req *CreateOrganizatio
 	s.logger.Debug("creating organization", "id", req.OrganizationId, "creator", creatorUserID)
 
 	// Set default plan
-	plan := OrganizationEntityPlan(DefaultPlan)
+	plan := OrganizationPlan(DefaultPlan)
 
 	org := &Organization{
-		OrganizationEntity: OrganizationEntity{
-			Id:           req.OrganizationId,
-			Name:         "", // Name should be set from somewhere else
-			BillingEmail: openapi_types.Email(req.BillingEmail),
-			Plan:         plan,
-			Credits:      0.0, // Start with 0 credits
-			CreatedAt:    time.Now(),
-			UpdatedAt:    time.Now(),
-		},
+		Id:           req.OrganizationId,
+		Name:         "", // Name should be set from somewhere else
+		BillingEmail: openapi_types.Email(req.BillingEmail),
+		Plan:         plan,
+		Credits:      0.0, // Start with 0 credits
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 
 	createdOrg, err := s.repo.CreateOrganization(ctx, org)
@@ -51,14 +49,12 @@ func (s *Service) CreateOrganization(ctx context.Context, req *CreateOrganizatio
 
 	// Create initial owner member
 	member := &Member{
-		MemberEntity: MemberEntity{
-			Id: uuid.UUID{}, // Will be set by repository
-			// Note: MemberEntity doesn't have UserId field in API
-			OrganizationId: createdOrg.Id.String(),
-			Role:           MemberEntityRoleOwner,
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		},
+		Id: uuid.UUID{}, // Will be set by repository
+		// Note: Member doesn't have UserId field
+		OrganizationId: createdOrg.Id.String(),
+		Role:           MemberRoleOwner,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	_, err = s.repo.CreateMember(ctx, member)
@@ -77,7 +73,7 @@ func (s *Service) CreateOrganization(ctx context.Context, req *CreateOrganizatio
 
 // GetOrganization retrieves an organization by ID
 func (s *Service) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
-	org, err := s.repo.GetOrganization(ctx, id)
+	org, err := s.repo.GetOrganizationByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get organization: %w", err)
 	}
@@ -86,7 +82,7 @@ func (s *Service) GetOrganization(ctx context.Context, id uuid.UUID) (*Organizat
 
 // UpdateOrganization updates an organization
 func (s *Service) UpdateOrganization(ctx context.Context, id uuid.UUID, req *UpdateOrganizationRequest) (*Organization, error) {
-	org, err := s.repo.GetOrganization(ctx, id)
+	org, err := s.repo.GetOrganizationByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get organization: %w", err)
 	}
@@ -97,7 +93,7 @@ func (s *Service) UpdateOrganization(ctx context.Context, id uuid.UUID, req *Upd
 	}
 	org.UpdatedAt = time.Now()
 
-	updatedOrg, err := s.repo.UpdateOrganization(ctx, org)
+	updatedOrg, err := s.repo.UpdateOrganization(ctx, org.Id, org)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update organization: %w", err)
 	}
@@ -117,7 +113,8 @@ func (s *Service) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
 
 // ListOrganizations retrieves a list of organizations
 func (s *Service) ListOrganizations(ctx context.Context, limit, offset int) ([]*Organization, int, error) {
-	orgs, total, err := s.repo.ListOrganizations(ctx, limit, offset)
+	orgs, totalInt64, err := s.repo.ListOrganizations(ctx, ListOrganizationsParams{Limit: limit, Offset: offset})
+	total := int(totalInt64)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list organizations: %w", err)
 	}
@@ -135,14 +132,12 @@ func (s *Service) CreateMember(ctx context.Context, req *CreateMemberRequest, or
 	}
 
 	member := &Member{
-		MemberEntity: MemberEntity{
-			Id: uuid.UUID{}, // Will be set by repository
-			// Note: MemberEntity doesn't have UserId field in API
-			OrganizationId: orgID,
-			Role:           MemberEntityRole(req.Role),
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		},
+		Id: uuid.UUID{}, // Will be set by repository
+		// Note: Member doesn't have UserId field
+		OrganizationId: orgID,
+		Role:           MemberRole(req.Role),
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	createdMember, err := s.repo.CreateMember(ctx, member)
@@ -151,6 +146,7 @@ func (s *Service) CreateMember(ctx context.Context, req *CreateMemberRequest, or
 	}
 
 	return createdMember, nil
+
 }
 
 // GetMember retrieves a member by ID
@@ -176,7 +172,7 @@ func (s *Service) UpdateMember(ctx context.Context, id uuid.UUID, req *UpdateMem
 	_ = req.Role
 
 	if req.Role != "" {
-		member.Role = MemberEntityRole(req.Role)
+		member.Role = MemberRole(req.Role)
 	}
 	member.UpdatedAt = time.Now()
 
@@ -222,17 +218,15 @@ func (s *Service) CreateInvitation(ctx context.Context, req *CreateInvitationReq
 	expiresAt := time.Now().AddDate(0, 0, 7).Format(time.RFC3339) // 7 days expiry
 
 	invitation := &Invitation{
-		InvitationEntity: InvitationEntity{
-			Id:             uuid.UUID{}, // Will be set by repository
-			OrganizationId: orgID,
-			InviterId:      inviterID,
-			Email:          req.Email,
-			Role:           InvitationEntityRole(req.Role),
-			Status:         "pending", // Use string instead of enum
-			ExpiresAt:      expiresAt, // String field, not pointer
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		},
+		Id:             uuid.UUID{}, // Will be set by repository
+		OrganizationId: orgID,
+		InviterId:      inviterID,
+		Email:          req.Email,
+		Role:           InvitationRole(req.Role),
+		Status:         "pending", // Use string instead of enum
+		ExpiresAt:      expiresAt, // String field, not pointer
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	createdInvitation, err := s.repo.CreateInvitation(ctx, invitation)
@@ -264,14 +258,12 @@ func (s *Service) AcceptInvitation(ctx context.Context, id uuid.UUID, _ string) 
 
 	// Create member
 	member := &Member{
-		MemberEntity: MemberEntity{
-			Id: uuid.UUID{}, // Will be set by repository
-			// Note: MemberEntity doesn't have UserId field
-			OrganizationId: invitation.OrganizationId,
-			Role:           MemberEntityRole(invitation.Role),
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		},
+		Id: uuid.UUID{}, // Will be set by repository
+		// Note: Member doesn't have UserId
+		OrganizationId: invitation.OrganizationId,
+		Role:           MemberRole(invitation.Role),
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	createdMember, err := s.repo.CreateMember(ctx, member)

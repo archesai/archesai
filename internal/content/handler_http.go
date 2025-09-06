@@ -56,9 +56,9 @@ func (h *ContentHandler) FindManyArtifacts(ctx context.Context, req FindManyArti
 	}
 
 	// Convert to API entities
-	data := make([]ArtifactEntity, len(artifacts))
+	data := make([]Artifact, len(artifacts))
 	for i, artifact := range artifacts {
-		data[i] = artifact.ArtifactEntity
+		data[i] = *artifact
 	}
 
 	totalFloat32 := float32(total)
@@ -91,7 +91,7 @@ func (h *ContentHandler) CreateArtifact(ctx context.Context, req CreateArtifactR
 	}
 
 	return CreateArtifact201JSONResponse{
-		Data: artifact.ArtifactEntity,
+		Data: *artifact,
 	}, nil
 }
 
@@ -113,7 +113,7 @@ func (h *ContentHandler) GetOneArtifact(ctx context.Context, req GetOneArtifactR
 	}
 
 	return GetOneArtifact200JSONResponse{
-		Data: artifact.ArtifactEntity,
+		Data: *artifact,
 	}, nil
 }
 
@@ -140,7 +140,7 @@ func (h *ContentHandler) UpdateArtifact(ctx context.Context, req UpdateArtifactR
 	}
 
 	return UpdateArtifact200JSONResponse{
-		Data: artifact.ArtifactEntity,
+		Data: *artifact,
 	}, nil
 }
 
@@ -187,9 +187,9 @@ func (h *ContentHandler) FindManyLabels(ctx context.Context, req FindManyLabelsR
 	}
 
 	// Convert to API entities
-	data := make([]LabelEntity, len(labels))
+	data := make([]Label, len(labels))
 	for i, label := range labels {
-		data[i] = label.LabelEntity
+		data[i] = *label
 	}
 
 	totalFloat32 := float32(total)
@@ -229,7 +229,7 @@ func (h *ContentHandler) CreateLabel(ctx context.Context, req CreateLabelRequest
 	}
 
 	return CreateLabel201JSONResponse{
-		Data: label.LabelEntity,
+		Data: *label,
 	}, nil
 }
 
@@ -251,7 +251,7 @@ func (h *ContentHandler) GetOneLabel(ctx context.Context, req GetOneLabelRequest
 	}
 
 	return GetOneLabel200JSONResponse{
-		Data: label.LabelEntity,
+		Data: *label,
 	}, nil
 }
 
@@ -277,7 +277,7 @@ func (h *ContentHandler) UpdateLabel(ctx context.Context, req UpdateLabelRequest
 	}
 
 	return UpdateLabel200JSONResponse{
-		Data: label.LabelEntity,
+		Data: *label,
 	}, nil
 }
 

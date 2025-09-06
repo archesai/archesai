@@ -17,13 +17,13 @@ const (
 	SessionCookieScopes = "sessionCookie.Scopes"
 )
 
-// Defines values for AccountEntityProviderId.
+// Defines values for AccountProviderId.
 const (
-	Apple     AccountEntityProviderId = "apple"
-	Github    AccountEntityProviderId = "github"
-	Google    AccountEntityProviderId = "google"
-	Local     AccountEntityProviderId = "local"
-	Microsoft AccountEntityProviderId = "microsoft"
+	Apple     AccountProviderId = "apple"
+	Github    AccountProviderId = "github"
+	Google    AccountProviderId = "google"
+	Local     AccountProviderId = "local"
+	Microsoft AccountProviderId = "microsoft"
 )
 
 // Defines values for AccountsFindManyParamsSortField.
@@ -85,8 +85,8 @@ const (
 	Desc FindManyUsersParamsSortOrder = "desc"
 )
 
-// AccountEntity defines model for AccountEntity.
-type AccountEntity struct {
+// Account defines model for Account.
+type Account struct {
 	// AccessToken The OAuth access token
 	AccessToken string `json:"accessToken,omitempty,omitzero" yaml:"accessToken,omitempty"`
 
@@ -109,7 +109,7 @@ type AccountEntity struct {
 	Password string `json:"password,omitempty,omitzero" yaml:"password,omitempty"`
 
 	// ProviderId The authentication provider identifier
-	ProviderId AccountEntityProviderId `json:"providerId" yaml:"providerId"`
+	ProviderId AccountProviderId `json:"providerId" yaml:"providerId"`
 
 	// RefreshToken The OAuth refresh token
 	RefreshToken string `json:"refreshToken,omitempty,omitzero" yaml:"refreshToken,omitempty"`
@@ -127,11 +127,11 @@ type AccountEntity struct {
 	UserId UUID `json:"userId" yaml:"userId"`
 }
 
-// AccountEntityProviderId The authentication provider identifier
-type AccountEntityProviderId string
+// AccountProviderId The authentication provider identifier
+type AccountProviderId string
 
-// BaseEntity defines model for BaseEntity.
-type BaseEntity struct {
+// Base defines model for Base.
+type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
@@ -175,8 +175,8 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// SessionEntity Schema for Session entity
-type SessionEntity struct {
+// Session Schema for Session entity
+type Session struct {
 	// ActiveOrganizationId The active organization ID
 	ActiveOrganizationId string `json:"activeOrganizationId" yaml:"activeOrganizationId"`
 
@@ -208,8 +208,8 @@ type SessionEntity struct {
 // UUID Universally Unique Identifier
 type UUID = uuid.UUID
 
-// UserEntity defines model for UserEntity.
-type UserEntity struct {
+// User defines model for User.
+type User struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 

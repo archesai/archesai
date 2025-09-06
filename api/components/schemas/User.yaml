@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Schema for User entity
+x-codegen:
+  # yaml-language-server: $schema=./XCodegen.yaml
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [email]
+    additional_methods:
+      - name: GetUserByEmail
+        params: [email]
+        returns: single
+  cache:
+    enabled: true
+    ttl: 300 # 5 minutes
+    key_pattern: "user:{id}"
+    invalidate_on: [update, delete]
+  events:
+    - created
+    - updated
+    - deleted
+    - email_verified
+  service:
+    business_methods:
+      - register
+      - login
+      - verify_email
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      email:
+        description: The user's email address
+        x-codegen:
+          unique: true
+          index: true
+          validation: email
+        allOf:
+          - $ref: ./Email.yaml
+      emailVerified:
+        description: Whether the user's email has been verified
+        type: boolean
+        default: false
+        example: true
+      image:
+        description: The user's avatar image URL
+        type: string
+        example: "https://example.com/avatar.jpg"
+      name:
+        description: The user's display name
+        type: string
+        minLength: 1
+        maxLength: 255
+        example: John Doe
+        x-codegen:
+          searchable: true
+    required:
+      - email
+      - emailVerified
+      - name
+    additionalProperties: false

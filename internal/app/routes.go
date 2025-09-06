@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/archesai/archesai/internal/auth"
-	"github.com/archesai/archesai/internal/config"
+	// "github.com/archesai/archesai/internal/config"
 	"github.com/archesai/archesai/internal/content"
 	"github.com/archesai/archesai/internal/health"
 	"github.com/archesai/archesai/internal/organizations"
@@ -36,6 +36,7 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	health.RegisterHandlers(v1, strictHealthHandler)
 
 	// Register config routes using StrictHandler pattern
-	strictConfigHandler := config.NewStrictHandler(a.ConfigHandler, nil)
-	config.RegisterHandlers(v1, strictConfigHandler)
+	// TODO: Implement config handler when needed
+	// strictConfigHandler := config.NewStrictHandler(a.ConfigHandler, nil)
+	// config.RegisterHandlers(v1, strictConfigHandler)
 }

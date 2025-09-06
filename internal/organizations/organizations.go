@@ -5,23 +5,43 @@ package organizations
 //go:generate go tool oapi-codegen --config=models.cfg.yaml ../../api/openapi.bundled.yaml
 //go:generate go tool oapi-codegen --config=server.cfg.yaml ../../api/openapi.bundled.yaml
 
-import "errors"
+import (
+	"context"
+	"errors"
+
+	"github.com/google/uuid"
+)
 
 // Domain types
 type (
-	// Organization represents an organization with its entity
-	Organization struct {
-		OrganizationEntity
-	}
+	// OrganizationAlias is an alias to avoid conflicts with generated type
+	OrganizationAlias = Organization
 
-	// Member represents a member with its entity
-	Member struct {
-		MemberEntity
-	}
+	// MemberAlias is an alias to avoid conflicts with generated type
+	MemberAlias = Member
 
-	// Invitation represents an invitation with its entity
-	Invitation struct {
-		InvitationEntity
+	// InvitationAlias is an alias to avoid conflicts with generated type
+	InvitationAlias = Invitation
+
+	// OrganizationRepository combines the generated Repository with additional methods
+	// Note: This is a temporary interface until we add x-codegen for Member and Invitation
+	OrganizationRepository interface {
+		Repository
+
+		// Member operations
+		CreateMember(ctx context.Context, member *Member) (*Member, error)
+		GetMember(ctx context.Context, id uuid.UUID) (*Member, error)
+		GetMemberByUserAndOrg(ctx context.Context, userID, orgID string) (*Member, error)
+		UpdateMember(ctx context.Context, member *Member) (*Member, error)
+		DeleteMember(ctx context.Context, id uuid.UUID) error
+		ListMembers(ctx context.Context, orgID string, limit, offset int) ([]*Member, int, error)
+
+		// Invitation operations
+		CreateInvitation(ctx context.Context, invitation *Invitation) (*Invitation, error)
+		GetInvitation(ctx context.Context, id uuid.UUID) (*Invitation, error)
+		UpdateInvitation(ctx context.Context, invitation *Invitation) (*Invitation, error)
+		DeleteInvitation(ctx context.Context, id uuid.UUID) error
+		ListInvitations(ctx context.Context, orgID string, limit, offset int) ([]*Invitation, int, error)
 	}
 
 	// CreateOrganizationRequest represents a request to create an organization

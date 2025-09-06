@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Schema for Pipeline entity
+allOf:
+  - $ref: ./Base.yaml
+  - $ref: ./OrganizationReference.yaml
+  - type: object
+    properties:
+      name:
+        description: The pipeline's display name
+        type: string
+        minLength: 1
+        maxLength: 255
+        example: Data Processing Pipeline
+      description:
+        description: Detailed description of the pipeline's purpose
+        type: string
+        maxLength: 1000
+        example: "Processes incoming data through validation, transformation, and storage steps"
+    required:
+      - name
+    additionalProperties: false

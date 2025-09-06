@@ -9,20 +9,6 @@ import "errors"
 
 // Domain types
 type (
-	// Pipeline represents a workflow pipeline with its entity
-	Pipeline struct {
-		PipelineEntity
-	}
-
-	// Run represents a workflow run with its entity
-	Run struct {
-		RunEntity
-	}
-
-	// Tool represents a workflow tool with its entity
-	Tool struct {
-		ToolEntity
-	}
 
 	// CreatePipelineRequest represents a request to create a pipeline
 	CreatePipelineRequest = CreatePipelineJSONBody

@@ -48,7 +48,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/InvitationEntity.yaml
+                $ref: ../components/schemas/Invitation.yaml
             required:
               - data
             additionalProperties: false
@@ -87,7 +87,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/InvitationEntity.yaml
+                  $ref: ../components/schemas/Invitation.yaml
               meta:
                 type: object
                 properties:

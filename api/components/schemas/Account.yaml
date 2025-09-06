@@ -1,0 +1,88 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Schema for Account entity (authentication provider account)
+x-codegen:
+  # yaml-language-server: $schema=./XCodegen.yaml
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [userId, accountId]
+    additional_methods:
+      - name: GetAccountByProviderID
+        params: [provider, providerAccountId]
+        returns: single
+      - name: ListUserAccounts
+        params: [userId]
+        returns: multiple
+  cache:
+    enabled: true
+    ttl: 300 # 5 minutes
+    key_pattern: "account:{id}"
+    invalidate_on: [update, delete]
+  events:
+    - created
+    - updated
+    - deleted
+    - linked
+    - unlinked
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      accountId:
+        description: The unique identifier for the account from the provider
+        type: string
+        example: google_123456789
+        minLength: 1
+      userId:
+        description: The user ID this account belongs to
+        allOf:
+          - $ref: ./UUID.yaml
+      providerId:
+        description: The authentication provider identifier
+        type: string
+        enum:
+          - local
+          - google
+          - github
+          - microsoft
+          - apple
+        example: google
+        minLength: 1
+      accessToken:
+        description: The OAuth access token
+        type: string
+        example: "ya29.a0AfH6SMBa..."
+        x-sensitive: true
+      accessTokenExpiresAt:
+        description: The access token expiration timestamp
+        type: string
+        format: date-time
+        example: "2024-12-31T23:59:59Z"
+      refreshToken:
+        description: The OAuth refresh token
+        type: string
+        example: "1//0fM8N5..."
+        x-sensitive: true
+      refreshTokenExpiresAt:
+        description: The refresh token expiration timestamp
+        type: string
+        format: date-time
+        example: "2025-12-31T23:59:59Z"
+      idToken:
+        description: The OpenID Connect ID token
+        type: string
+        example: "eyJhbGciOiJSUzI1NiIs..."
+        x-sensitive: true
+      password:
+        description: The hashed password (only for local authentication)
+        type: string
+        example: "$2a$10$..."
+        x-sensitive: true
+      scope:
+        description: The OAuth scope granted
+        type: string
+        example: "openid profile email"
+    required:
+      - accountId
+      - userId
+      - providerId
+    additionalProperties: false

@@ -427,7 +427,7 @@ type FindManyPipelinesResponseObject interface {
 }
 
 type FindManyPipelines200JSONResponse struct {
-	Data []PipelineEntity `json:"data"`
+	Data []Pipeline `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -473,7 +473,7 @@ type CreatePipelineResponseObject interface {
 
 type CreatePipeline201JSONResponse struct {
 	// Data Schema for Pipeline entity
-	Data PipelineEntity `json:"data"`
+	Data Pipeline `json:"data"`
 }
 
 func (response CreatePipeline201JSONResponse) VisitCreatePipelineResponse(w http.ResponseWriter) error {
@@ -515,7 +515,7 @@ type DeletePipelineResponseObject interface {
 
 type DeletePipeline200JSONResponse struct {
 	// Data Schema for Pipeline entity
-	Data PipelineEntity `json:"data"`
+	Data Pipeline `json:"data"`
 }
 
 func (response DeletePipeline200JSONResponse) VisitDeletePipelineResponse(w http.ResponseWriter) error {
@@ -546,7 +546,7 @@ type GetOnePipelineResponseObject interface {
 
 type GetOnePipeline200JSONResponse struct {
 	// Data Schema for Pipeline entity
-	Data PipelineEntity `json:"data"`
+	Data Pipeline `json:"data"`
 }
 
 func (response GetOnePipeline200JSONResponse) VisitGetOnePipelineResponse(w http.ResponseWriter) error {
@@ -578,7 +578,7 @@ type UpdatePipelineResponseObject interface {
 
 type UpdatePipeline200JSONResponse struct {
 	// Data Schema for Pipeline entity
-	Data PipelineEntity `json:"data"`
+	Data Pipeline `json:"data"`
 }
 
 func (response UpdatePipeline200JSONResponse) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
@@ -608,7 +608,7 @@ type FindManyRunsResponseObject interface {
 }
 
 type FindManyRuns200JSONResponse struct {
-	Data []RunEntity `json:"data"`
+	Data []Run `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -654,7 +654,7 @@ type CreateRunResponseObject interface {
 
 type CreateRun201JSONResponse struct {
 	// Data Schema for Run entity
-	Data RunEntity `json:"data"`
+	Data Run `json:"data"`
 }
 
 func (response CreateRun201JSONResponse) VisitCreateRunResponse(w http.ResponseWriter) error {
@@ -696,7 +696,7 @@ type DeleteRunResponseObject interface {
 
 type DeleteRun200JSONResponse struct {
 	// Data Schema for Run entity
-	Data RunEntity `json:"data"`
+	Data Run `json:"data"`
 }
 
 func (response DeleteRun200JSONResponse) VisitDeleteRunResponse(w http.ResponseWriter) error {
@@ -727,7 +727,7 @@ type GetOneRunResponseObject interface {
 
 type GetOneRun200JSONResponse struct {
 	// Data Schema for Run entity
-	Data RunEntity `json:"data"`
+	Data Run `json:"data"`
 }
 
 func (response GetOneRun200JSONResponse) VisitGetOneRunResponse(w http.ResponseWriter) error {
@@ -759,7 +759,7 @@ type UpdateRunResponseObject interface {
 
 type UpdateRun200JSONResponse struct {
 	// Data Schema for Run entity
-	Data RunEntity `json:"data"`
+	Data Run `json:"data"`
 }
 
 func (response UpdateRun200JSONResponse) VisitUpdateRunResponse(w http.ResponseWriter) error {
@@ -789,7 +789,7 @@ type FindManyToolsResponseObject interface {
 }
 
 type FindManyTools200JSONResponse struct {
-	Data []ToolEntity `json:"data"`
+	Data []Tool `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -835,7 +835,7 @@ type CreateToolResponseObject interface {
 
 type CreateTool201JSONResponse struct {
 	// Data Schema for Tool entity
-	Data ToolEntity `json:"data"`
+	Data Tool `json:"data"`
 }
 
 func (response CreateTool201JSONResponse) VisitCreateToolResponse(w http.ResponseWriter) error {
@@ -877,7 +877,7 @@ type DeleteToolResponseObject interface {
 
 type DeleteTool200JSONResponse struct {
 	// Data Schema for Tool entity
-	Data ToolEntity `json:"data"`
+	Data Tool `json:"data"`
 }
 
 func (response DeleteTool200JSONResponse) VisitDeleteToolResponse(w http.ResponseWriter) error {
@@ -908,7 +908,7 @@ type GetOneToolResponseObject interface {
 
 type GetOneTool200JSONResponse struct {
 	// Data Schema for Tool entity
-	Data ToolEntity `json:"data"`
+	Data Tool `json:"data"`
 }
 
 func (response GetOneTool200JSONResponse) VisitGetOneToolResponse(w http.ResponseWriter) error {
@@ -940,7 +940,7 @@ type UpdateToolResponseObject interface {
 
 type UpdateTool200JSONResponse struct {
 	// Data Schema for Tool entity
-	Data ToolEntity `json:"data"`
+	Data Tool `json:"data"`
 }
 
 func (response UpdateTool200JSONResponse) VisitUpdateToolResponse(w http.ResponseWriter) error {

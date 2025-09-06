@@ -28,14 +28,12 @@ func (s *WorkflowService) CreatePipeline(ctx context.Context, req *CreatePipelin
 	s.logger.Debug("creating pipeline", "name", req.Name, "org", orgID)
 
 	pipeline := &Pipeline{
-		PipelineEntity: PipelineEntity{
-			Id:             UUID{}, // Will be set by repository
-			Name:           req.Name,
-			Description:    req.Description,
-			OrganizationId: UUID{}, // Convert orgID to UUID
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		},
+		Id:             UUID{}, // Will be set by repository
+		Name:           req.Name,
+		Description:    req.Description,
+		OrganizationId: UUID{}, // Convert orgID to UUID
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	createdPipeline, err := s.repo.CreatePipeline(ctx, pipeline)
@@ -115,16 +113,14 @@ func (s *WorkflowService) CreateRun(ctx context.Context, req *CreateRunRequest, 
 	}
 
 	run := &Run{
-		RunEntity: RunEntity{
-			Id:             uuid.UUID{}, // Will be set by repository
-			PipelineId:     req.PipelineId,
-			OrganizationId: orgID,
-			ToolId:         "",     // No tool ID in request
-			Status:         QUEUED, // Use QUEUED instead of Pending
-			Progress:       0.0,
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		},
+		Id:             uuid.UUID{}, // Will be set by repository
+		PipelineId:     req.PipelineId,
+		OrganizationId: orgID,
+		ToolId:         "",     // No tool ID in request
+		Status:         QUEUED, // Use QUEUED instead of Pending
+		Progress:       0.0,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	createdRun, err := s.repo.CreateRun(ctx, run)
@@ -261,17 +257,15 @@ func (s *WorkflowService) CreateTool(ctx context.Context, req *CreateToolRequest
 	s.logger.Debug("creating tool", "name", req.Name, "org", orgID)
 
 	tool := &Tool{
-		ToolEntity: ToolEntity{
-			Id:             uuid.UUID{}, // Will be set by repository
-			Name:           req.Name,
-			Description:    req.Description,
-			OrganizationId: orgID,
-			// Note: Config field not available in ToolEntity API
-			InputMimeType:  "application/json", // Default mime type
-			OutputMimeType: "application/json", // Default mime type
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
-		},
+		Id:             uuid.UUID{}, // Will be set by repository
+		Name:           req.Name,
+		Description:    req.Description,
+		OrganizationId: orgID,
+		// Note: Config field not available in ToolEntity API
+		InputMimeType:  "application/json", // Default mime type
+		OutputMimeType: "application/json", // Default mime type
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	createdTool, err := s.repo.CreateTool(ctx, tool)

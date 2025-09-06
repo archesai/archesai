@@ -67,6 +67,6 @@ func (q *QueueAdapter) MoveRun(run *Run, fromStatus, toStatus string) error {
 	}
 
 	// Add to new queue with updated status
-	run.Status = RunEntityStatus(toStatus)
+	run.Status = RunStatus(toStatus)
 	return q.EnqueueRun(run)
 }

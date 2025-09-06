@@ -308,7 +308,7 @@ type FindManyArtifactsResponseObject interface {
 }
 
 type FindManyArtifacts200JSONResponse struct {
-	Data []ArtifactEntity `json:"data"`
+	Data []Artifact `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -354,7 +354,7 @@ type CreateArtifactResponseObject interface {
 
 type CreateArtifact201JSONResponse struct {
 	// Data Schema for Artifact entity
-	Data ArtifactEntity `json:"data"`
+	Data Artifact `json:"data"`
 }
 
 func (response CreateArtifact201JSONResponse) VisitCreateArtifactResponse(w http.ResponseWriter) error {
@@ -396,7 +396,7 @@ type DeleteArtifactResponseObject interface {
 
 type DeleteArtifact200JSONResponse struct {
 	// Data Schema for Artifact entity
-	Data ArtifactEntity `json:"data"`
+	Data Artifact `json:"data"`
 }
 
 func (response DeleteArtifact200JSONResponse) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
@@ -427,7 +427,7 @@ type GetOneArtifactResponseObject interface {
 
 type GetOneArtifact200JSONResponse struct {
 	// Data Schema for Artifact entity
-	Data ArtifactEntity `json:"data"`
+	Data Artifact `json:"data"`
 }
 
 func (response GetOneArtifact200JSONResponse) VisitGetOneArtifactResponse(w http.ResponseWriter) error {
@@ -459,7 +459,7 @@ type UpdateArtifactResponseObject interface {
 
 type UpdateArtifact200JSONResponse struct {
 	// Data Schema for Artifact entity
-	Data ArtifactEntity `json:"data"`
+	Data Artifact `json:"data"`
 }
 
 func (response UpdateArtifact200JSONResponse) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
@@ -489,7 +489,7 @@ type FindManyLabelsResponseObject interface {
 }
 
 type FindManyLabels200JSONResponse struct {
-	Data []LabelEntity `json:"data"`
+	Data []Label `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -535,7 +535,7 @@ type CreateLabelResponseObject interface {
 
 type CreateLabel201JSONResponse struct {
 	// Data Schema for Label entity
-	Data LabelEntity `json:"data"`
+	Data Label `json:"data"`
 }
 
 func (response CreateLabel201JSONResponse) VisitCreateLabelResponse(w http.ResponseWriter) error {
@@ -577,7 +577,7 @@ type DeleteLabelResponseObject interface {
 
 type DeleteLabel200JSONResponse struct {
 	// Data Schema for Label entity
-	Data LabelEntity `json:"data"`
+	Data Label `json:"data"`
 }
 
 func (response DeleteLabel200JSONResponse) VisitDeleteLabelResponse(w http.ResponseWriter) error {
@@ -608,7 +608,7 @@ type GetOneLabelResponseObject interface {
 
 type GetOneLabel200JSONResponse struct {
 	// Data Schema for Label entity
-	Data LabelEntity `json:"data"`
+	Data Label `json:"data"`
 }
 
 func (response GetOneLabel200JSONResponse) VisitGetOneLabelResponse(w http.ResponseWriter) error {
@@ -640,7 +640,7 @@ type UpdateLabelResponseObject interface {
 
 type UpdateLabel200JSONResponse struct {
 	// Data Schema for Label entity
-	Data LabelEntity `json:"data"`
+	Data Label `json:"data"`
 }
 
 func (response UpdateLabel200JSONResponse) VisitUpdateLabelResponse(w http.ResponseWriter) error {

@@ -56,9 +56,9 @@ func (h *WorkflowHandler) FindManyPipelines(ctx context.Context, req FindManyPip
 	}
 
 	// Convert to API entities
-	data := make([]PipelineEntity, len(pipelines))
+	data := make([]Pipeline, len(pipelines))
 	for i, pipeline := range pipelines {
-		data[i] = pipeline.PipelineEntity
+		data[i] = *pipeline
 	}
 
 	totalFloat32 := float32(total)
@@ -89,7 +89,7 @@ func (h *WorkflowHandler) CreatePipeline(ctx context.Context, req CreatePipeline
 	}
 
 	return CreatePipeline201JSONResponse{
-		Data: pipeline.PipelineEntity,
+		Data: *pipeline,
 	}, nil
 }
 
@@ -111,7 +111,7 @@ func (h *WorkflowHandler) GetOnePipeline(ctx context.Context, req GetOnePipeline
 	}
 
 	return GetOnePipeline200JSONResponse{
-		Data: pipeline.PipelineEntity,
+		Data: *pipeline,
 	}, nil
 }
 
@@ -138,7 +138,7 @@ func (h *WorkflowHandler) UpdatePipeline(ctx context.Context, req UpdatePipeline
 	}
 
 	return UpdatePipeline200JSONResponse{
-		Data: pipeline.PipelineEntity,
+		Data: *pipeline,
 	}, nil
 }
 
@@ -186,9 +186,9 @@ func (h *WorkflowHandler) FindManyRuns(ctx context.Context, req FindManyRunsRequ
 	}
 
 	// Convert to API entities
-	data := make([]RunEntity, len(runs))
+	data := make([]Run, len(runs))
 	for i, run := range runs {
-		data[i] = run.RunEntity
+		data[i] = *run
 	}
 
 	totalFloat32 := float32(total)
@@ -218,7 +218,7 @@ func (h *WorkflowHandler) CreateRun(ctx context.Context, req CreateRunRequestObj
 	}
 
 	return CreateRun201JSONResponse{
-		Data: run.RunEntity,
+		Data: *run,
 	}, nil
 }
 
@@ -240,7 +240,7 @@ func (h *WorkflowHandler) GetOneRun(ctx context.Context, req GetOneRunRequestObj
 	}
 
 	return GetOneRun200JSONResponse{
-		Data: run.RunEntity,
+		Data: *run,
 	}, nil
 }
 
@@ -300,9 +300,9 @@ func (h *WorkflowHandler) FindManyTools(ctx context.Context, req FindManyToolsRe
 	}
 
 	// Convert to API entities
-	data := make([]ToolEntity, len(tools))
+	data := make([]Tool, len(tools))
 	for i, tool := range tools {
-		data[i] = tool.ToolEntity
+		data[i] = *tool
 	}
 
 	totalFloat32 := float32(total)
@@ -343,7 +343,7 @@ func (h *WorkflowHandler) CreateTool(ctx context.Context, req CreateToolRequestO
 	}
 
 	return CreateTool201JSONResponse{
-		Data: tool.ToolEntity,
+		Data: *tool,
 	}, nil
 }
 
@@ -365,7 +365,7 @@ func (h *WorkflowHandler) GetOneTool(ctx context.Context, req GetOneToolRequestO
 	}
 
 	return GetOneTool200JSONResponse{
-		Data: tool.ToolEntity,
+		Data: *tool,
 	}, nil
 }
 
@@ -392,7 +392,7 @@ func (h *WorkflowHandler) UpdateTool(ctx context.Context, req UpdateToolRequestO
 	}
 
 	return UpdateTool200JSONResponse{
-		Data: tool.ToolEntity,
+		Data: *tool,
 	}, nil
 }
 

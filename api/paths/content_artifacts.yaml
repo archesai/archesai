@@ -34,7 +34,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/ArtifactEntity.yaml
+                $ref: ../components/schemas/Artifact.yaml
             required:
               - data
             additionalProperties: false
@@ -65,7 +65,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/ArtifactEntity.yaml
+                  $ref: ../components/schemas/Artifact.yaml
               meta:
                 type: object
                 properties:

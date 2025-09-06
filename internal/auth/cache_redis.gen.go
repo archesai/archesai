@@ -22,10 +22,7 @@ type RedisCache struct {
 // NewRedisCache creates a new Redis cache.
 func NewRedisCache(client *redis.Client) Cache {
 	prefix := "auth:"
-	prefix = "auth:"
-
 	ttl := 5 * time.Minute
-	ttl = 300 * time.Second
 
 	return &RedisCache{
 		client: client,
@@ -43,10 +40,10 @@ func NewRedisCacheWithOptions(client *redis.Client, prefix string, ttl time.Dura
 	}
 }
 
-// User caching operations
+// Account caching operations
 
-func (c *RedisCache) GetUser(ctx context.Context, id uuid.UUID) (*UserEntity, error) {
-	key := fmt.Sprintf("%suser:%s", c.prefix, id.String())
+func (c *RedisCache) GetAccount(ctx context.Context, id uuid.UUID) (*Account, error) {
+	key := fmt.Sprintf("%saccount:%s", c.prefix, id.String())
 
 	data, err := c.client.Get(ctx, key).Bytes()
 	if err != nil {
@@ -56,24 +53,24 @@ func (c *RedisCache) GetUser(ctx context.Context, id uuid.UUID) (*UserEntity, er
 		return nil, fmt.Errorf("redis get: %w", err)
 	}
 
-	var entity UserEntity
+	var entity Account
 	if err := json.Unmarshal(data, &entity); err != nil {
-		return nil, fmt.Errorf("unmarshal user: %w", err)
+		return nil, fmt.Errorf("unmarshal account: %w", err)
 	}
 
 	return &entity, nil
 }
 
-func (c *RedisCache) SetUser(ctx context.Context, entity *UserEntity, ttl time.Duration) error {
+func (c *RedisCache) SetAccount(ctx context.Context, entity *Account, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
 
-	key := fmt.Sprintf("%suser:%s", c.prefix, entity.Id.String())
+	key := fmt.Sprintf("%saccount:%s", c.prefix, entity.Id.String())
 
 	data, err := json.Marshal(entity)
 	if err != nil {
-		return fmt.Errorf("marshal user: %w", err)
+		return fmt.Errorf("marshal account: %w", err)
 	}
 
 	if ttl == 0 {
@@ -87,62 +84,8 @@ func (c *RedisCache) SetUser(ctx context.Context, entity *UserEntity, ttl time.D
 	return nil
 }
 
-func (c *RedisCache) DeleteUser(ctx context.Context, id uuid.UUID) error {
-	key := fmt.Sprintf("%suser:%s", c.prefix, id.String())
-
-	if err := c.client.Del(ctx, key).Err(); err != nil {
-		return fmt.Errorf("redis del: %w", err)
-	}
-
-	return nil
-}
-
-// Additional User cache operations
-func (c *RedisCache) GetUserByEmail(ctx context.Context, email string) (*UserEntity, error) {
-	key := fmt.Sprintf("%suser:email:%s", c.prefix, email)
-
-	data, err := c.client.Get(ctx, key).Bytes()
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			return nil, ErrCacheMiss
-		}
-		return nil, fmt.Errorf("redis get: %w", err)
-	}
-
-	var entity UserEntity
-	if err := json.Unmarshal(data, &entity); err != nil {
-		return nil, fmt.Errorf("unmarshal user: %w", err)
-	}
-
-	return &entity, nil
-}
-
-func (c *RedisCache) SetUserByEmail(ctx context.Context, email string, entity *UserEntity, ttl time.Duration) error {
-	if entity == nil {
-		return nil
-	}
-
-	key := fmt.Sprintf("%suser:email:%s", c.prefix, email)
-
-	data, err := json.Marshal(entity)
-	if err != nil {
-		return fmt.Errorf("marshal user: %w", err)
-	}
-
-	if ttl == 0 {
-		ttl = c.ttl
-	}
-
-	if err := c.client.Set(ctx, key, data, ttl).Err(); err != nil {
-		return fmt.Errorf("redis set: %w", err)
-	}
-
-	// Also set by ID for consistency
-	return c.SetUser(ctx, entity, ttl)
-}
-
-func (c *RedisCache) DeleteUserByEmail(ctx context.Context, email string) error {
-	key := fmt.Sprintf("%suser:email:%s", c.prefix, email)
+func (c *RedisCache) DeleteAccount(ctx context.Context, id uuid.UUID) error {
+	key := fmt.Sprintf("%saccount:%s", c.prefix, id.String())
 
 	if err := c.client.Del(ctx, key).Err(); err != nil {
 		return fmt.Errorf("redis del: %w", err)
@@ -153,7 +96,7 @@ func (c *RedisCache) DeleteUserByEmail(ctx context.Context, email string) error 
 
 // Session caching operations
 
-func (c *RedisCache) GetSession(ctx context.Context, id uuid.UUID) (*SessionEntity, error) {
+func (c *RedisCache) GetSession(ctx context.Context, id uuid.UUID) (*Session, error) {
 	key := fmt.Sprintf("%ssession:%s", c.prefix, id.String())
 
 	data, err := c.client.Get(ctx, key).Bytes()
@@ -164,7 +107,7 @@ func (c *RedisCache) GetSession(ctx context.Context, id uuid.UUID) (*SessionEnti
 		return nil, fmt.Errorf("redis get: %w", err)
 	}
 
-	var entity SessionEntity
+	var entity Session
 	if err := json.Unmarshal(data, &entity); err != nil {
 		return nil, fmt.Errorf("unmarshal session: %w", err)
 	}
@@ -172,7 +115,7 @@ func (c *RedisCache) GetSession(ctx context.Context, id uuid.UUID) (*SessionEnti
 	return &entity, nil
 }
 
-func (c *RedisCache) SetSession(ctx context.Context, entity *SessionEntity, ttl time.Duration) error {
+func (c *RedisCache) SetSession(ctx context.Context, entity *Session, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
@@ -206,7 +149,7 @@ func (c *RedisCache) DeleteSession(ctx context.Context, id uuid.UUID) error {
 }
 
 // Additional Session cache operations
-func (c *RedisCache) GetSessionByToken(ctx context.Context, token string) (*SessionEntity, error) {
+func (c *RedisCache) GetSessionByToken(ctx context.Context, token string) (*Session, error) {
 	key := fmt.Sprintf("%ssession:token:%s", c.prefix, token)
 
 	data, err := c.client.Get(ctx, key).Bytes()
@@ -217,7 +160,7 @@ func (c *RedisCache) GetSessionByToken(ctx context.Context, token string) (*Sess
 		return nil, fmt.Errorf("redis get: %w", err)
 	}
 
-	var entity SessionEntity
+	var entity Session
 	if err := json.Unmarshal(data, &entity); err != nil {
 		return nil, fmt.Errorf("unmarshal session: %w", err)
 	}
@@ -225,7 +168,7 @@ func (c *RedisCache) GetSessionByToken(ctx context.Context, token string) (*Sess
 	return &entity, nil
 }
 
-func (c *RedisCache) SetSessionByToken(ctx context.Context, token string, entity *SessionEntity, ttl time.Duration) error {
+func (c *RedisCache) SetSessionByToken(ctx context.Context, token string, entity *Session, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
@@ -284,10 +227,10 @@ func (c *RedisCache) DeleteUserSessions(ctx context.Context, userID uuid.UUID) e
 	return nil
 }
 
-// Account caching operations
+// User caching operations
 
-func (c *RedisCache) GetAccount(ctx context.Context, id uuid.UUID) (*AccountEntity, error) {
-	key := fmt.Sprintf("%saccount:%s", c.prefix, id.String())
+func (c *RedisCache) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+	key := fmt.Sprintf("%suser:%s", c.prefix, id.String())
 
 	data, err := c.client.Get(ctx, key).Bytes()
 	if err != nil {
@@ -297,24 +240,24 @@ func (c *RedisCache) GetAccount(ctx context.Context, id uuid.UUID) (*AccountEnti
 		return nil, fmt.Errorf("redis get: %w", err)
 	}
 
-	var entity AccountEntity
+	var entity User
 	if err := json.Unmarshal(data, &entity); err != nil {
-		return nil, fmt.Errorf("unmarshal account: %w", err)
+		return nil, fmt.Errorf("unmarshal user: %w", err)
 	}
 
 	return &entity, nil
 }
 
-func (c *RedisCache) SetAccount(ctx context.Context, entity *AccountEntity, ttl time.Duration) error {
+func (c *RedisCache) SetUser(ctx context.Context, entity *User, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
 
-	key := fmt.Sprintf("%saccount:%s", c.prefix, entity.Id.String())
+	key := fmt.Sprintf("%suser:%s", c.prefix, entity.Id.String())
 
 	data, err := json.Marshal(entity)
 	if err != nil {
-		return fmt.Errorf("marshal account: %w", err)
+		return fmt.Errorf("marshal user: %w", err)
 	}
 
 	if ttl == 0 {
@@ -328,8 +271,62 @@ func (c *RedisCache) SetAccount(ctx context.Context, entity *AccountEntity, ttl 
 	return nil
 }
 
-func (c *RedisCache) DeleteAccount(ctx context.Context, id uuid.UUID) error {
-	key := fmt.Sprintf("%saccount:%s", c.prefix, id.String())
+func (c *RedisCache) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	key := fmt.Sprintf("%suser:%s", c.prefix, id.String())
+
+	if err := c.client.Del(ctx, key).Err(); err != nil {
+		return fmt.Errorf("redis del: %w", err)
+	}
+
+	return nil
+}
+
+// Additional User cache operations
+func (c *RedisCache) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	key := fmt.Sprintf("%suser:email:%s", c.prefix, email)
+
+	data, err := c.client.Get(ctx, key).Bytes()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return nil, ErrCacheMiss
+		}
+		return nil, fmt.Errorf("redis get: %w", err)
+	}
+
+	var entity User
+	if err := json.Unmarshal(data, &entity); err != nil {
+		return nil, fmt.Errorf("unmarshal user: %w", err)
+	}
+
+	return &entity, nil
+}
+
+func (c *RedisCache) SetUserByEmail(ctx context.Context, email string, entity *User, ttl time.Duration) error {
+	if entity == nil {
+		return nil
+	}
+
+	key := fmt.Sprintf("%suser:email:%s", c.prefix, email)
+
+	data, err := json.Marshal(entity)
+	if err != nil {
+		return fmt.Errorf("marshal user: %w", err)
+	}
+
+	if ttl == 0 {
+		ttl = c.ttl
+	}
+
+	if err := c.client.Set(ctx, key, data, ttl).Err(); err != nil {
+		return fmt.Errorf("redis set: %w", err)
+	}
+
+	// Also set by ID for consistency
+	return c.SetUser(ctx, entity, ttl)
+}
+
+func (c *RedisCache) DeleteUserByEmail(ctx context.Context, email string) error {
+	key := fmt.Sprintf("%suser:email:%s", c.prefix, email)
 
 	if err := c.client.Del(ctx, key).Err(); err != nil {
 		return fmt.Errorf("redis del: %w", err)

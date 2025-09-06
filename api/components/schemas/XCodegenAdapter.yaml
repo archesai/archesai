@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Type adapter generation configuration
+type: object
+properties:
+  generate_mappers:
+    description: Generate type mappers between layers
+    type: boolean
+    default: true
+  custom_mappings:
+    description: Custom field mappings
+    type: object
+    additionalProperties:
+      type: string
+  ignore_fields:
+    description: Fields to ignore in mapping
+    type: array
+    items:
+      type: string
+  deep_copy:
+    description: Generate deep copy methods
+    type: boolean
+    default: false
+additionalProperties: false

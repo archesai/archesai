@@ -20,7 +20,6 @@ type RedisEventPublisher struct {
 // NewRedisEventPublisher creates a new Redis event publisher.
 func NewRedisEventPublisher(client *redis.Client) EventPublisher {
 	channel := "organizations-events"
-	channel = "org-events"
 
 	return &RedisEventPublisher{
 		client:  client,
@@ -36,15 +35,15 @@ func NewRedisEventPublisherWithChannel(client *redis.Client, channel string) Eve
 	}
 }
 
-// PublishOrganizationCreated publishes a Organization was created event.
-func (p *RedisEventPublisher) PublishOrganizationCreated(ctx context.Context, entity *OrganizationEntity) error {
+// Publishorganizationcreated publishes a Organization created event event.
+func (p *RedisEventPublisher) Publishorganizationcreated(ctx context.Context, entity *Organization) error {
 	if entity == nil {
 		return fmt.Errorf("entity cannot be nil")
 	}
 
 	event := &Event{
 		ID:        uuid.New().String(),
-		Type:      EventOrganizationCreated,
+		Type:      Eventorganizationcreated,
 		Timestamp: time.Now().UTC(),
 		Source:    "organizations",
 		Data:      entity,
@@ -57,15 +56,15 @@ func (p *RedisEventPublisher) PublishOrganizationCreated(ctx context.Context, en
 	return p.PublishRaw(ctx, event)
 }
 
-// PublishOrganizationUpdated publishes a Organization was updated event.
-func (p *RedisEventPublisher) PublishOrganizationUpdated(ctx context.Context, entity *OrganizationEntity) error {
+// Publishorganizationupdated publishes a Organization updated event event.
+func (p *RedisEventPublisher) Publishorganizationupdated(ctx context.Context, entity *Organization) error {
 	if entity == nil {
 		return fmt.Errorf("entity cannot be nil")
 	}
 
 	event := &Event{
 		ID:        uuid.New().String(),
-		Type:      EventOrganizationUpdated,
+		Type:      Eventorganizationupdated,
 		Timestamp: time.Now().UTC(),
 		Source:    "organizations",
 		Data:      entity,
@@ -78,15 +77,15 @@ func (p *RedisEventPublisher) PublishOrganizationUpdated(ctx context.Context, en
 	return p.PublishRaw(ctx, event)
 }
 
-// PublishOrganizationDeleted publishes a Organization was deleted event.
-func (p *RedisEventPublisher) PublishOrganizationDeleted(ctx context.Context, entity *OrganizationEntity) error {
+// Publishorganizationdeleted publishes a Organization deleted event event.
+func (p *RedisEventPublisher) Publishorganizationdeleted(ctx context.Context, entity *Organization) error {
 	if entity == nil {
 		return fmt.Errorf("entity cannot be nil")
 	}
 
 	event := &Event{
 		ID:        uuid.New().String(),
-		Type:      EventOrganizationDeleted,
+		Type:      Eventorganizationdeleted,
 		Timestamp: time.Now().UTC(),
 		Source:    "organizations",
 		Data:      entity,
@@ -99,15 +98,15 @@ func (p *RedisEventPublisher) PublishOrganizationDeleted(ctx context.Context, en
 	return p.PublishRaw(ctx, event)
 }
 
-// PublishOrganizationMemberAdded publishes a Member was added to organization event.
-func (p *RedisEventPublisher) PublishOrganizationMemberAdded(ctx context.Context, entity *OrganizationEntity) error {
+// PublishorganizationplanChanged publishes a Organization plan_changed event event.
+func (p *RedisEventPublisher) PublishorganizationplanChanged(ctx context.Context, entity *Organization) error {
 	if entity == nil {
 		return fmt.Errorf("entity cannot be nil")
 	}
 
 	event := &Event{
 		ID:        uuid.New().String(),
-		Type:      EventOrganizationMemberAdded,
+		Type:      EventorganizationplanChanged,
 		Timestamp: time.Now().UTC(),
 		Source:    "organizations",
 		Data:      entity,
@@ -120,15 +119,15 @@ func (p *RedisEventPublisher) PublishOrganizationMemberAdded(ctx context.Context
 	return p.PublishRaw(ctx, event)
 }
 
-// PublishOrganizationMemberRemoved publishes a Member was removed from organization event.
-func (p *RedisEventPublisher) PublishOrganizationMemberRemoved(ctx context.Context, entity *OrganizationEntity) error {
+// PublishorganizationcreditsUpdated publishes a Organization credits_updated event event.
+func (p *RedisEventPublisher) PublishorganizationcreditsUpdated(ctx context.Context, entity *Organization) error {
 	if entity == nil {
 		return fmt.Errorf("entity cannot be nil")
 	}
 
 	event := &Event{
 		ID:        uuid.New().String(),
-		Type:      EventOrganizationMemberRemoved,
+		Type:      EventorganizationcreditsUpdated,
 		Timestamp: time.Now().UTC(),
 		Source:    "organizations",
 		Data:      entity,

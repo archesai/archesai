@@ -16,27 +16,27 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
-// Defines values for InvitationEntityRole.
+// Defines values for InvitationRole.
 const (
-	InvitationEntityRoleAdmin  InvitationEntityRole = "admin"
-	InvitationEntityRoleMember InvitationEntityRole = "member"
-	InvitationEntityRoleOwner  InvitationEntityRole = "owner"
+	InvitationRoleAdmin  InvitationRole = "admin"
+	InvitationRoleMember InvitationRole = "member"
+	InvitationRoleOwner  InvitationRole = "owner"
 )
 
-// Defines values for MemberEntityRole.
+// Defines values for MemberRole.
 const (
-	MemberEntityRoleAdmin  MemberEntityRole = "admin"
-	MemberEntityRoleMember MemberEntityRole = "member"
-	MemberEntityRoleOwner  MemberEntityRole = "owner"
+	MemberRoleAdmin  MemberRole = "admin"
+	MemberRoleMember MemberRole = "member"
+	MemberRoleOwner  MemberRole = "owner"
 )
 
-// Defines values for OrganizationEntityPlan.
+// Defines values for OrganizationPlan.
 const (
-	BASIC     OrganizationEntityPlan = "BASIC"
-	FREE      OrganizationEntityPlan = "FREE"
-	PREMIUM   OrganizationEntityPlan = "PREMIUM"
-	STANDARD  OrganizationEntityPlan = "STANDARD"
-	UNLIMITED OrganizationEntityPlan = "UNLIMITED"
+	BASIC     OrganizationPlan = "BASIC"
+	FREE      OrganizationPlan = "FREE"
+	PREMIUM   OrganizationPlan = "PREMIUM"
+	STANDARD  OrganizationPlan = "STANDARD"
+	UNLIMITED OrganizationPlan = "UNLIMITED"
 )
 
 // Defines values for FindManyOrganizationsParamsSortField.
@@ -123,8 +123,8 @@ const (
 	UpdateMemberJSONBodyRoleOwner  UpdateMemberJSONBodyRole = "owner"
 )
 
-// BaseEntity defines model for BaseEntity.
-type BaseEntity struct {
+// Base defines model for Base.
+type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
@@ -138,8 +138,8 @@ type BaseEntity struct {
 // FilterNode A recursive filter node that can be a condition or group
 type FilterNode = interface{}
 
-// InvitationEntity Schema for Invitation entity
-type InvitationEntity struct {
+// Invitation Schema for Invitation entity
+type Invitation struct {
 	// CreatedAt The date this item was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
@@ -159,7 +159,7 @@ type InvitationEntity struct {
 	OrganizationId string `json:"organizationId" yaml:"organizationId"`
 
 	// Role The role of the invitation
-	Role InvitationEntityRole `json:"role" yaml:"role"`
+	Role InvitationRole `json:"role" yaml:"role"`
 
 	// Status The status of the invitation, e.g., pending, accepted, declined
 	Status string `json:"status" yaml:"status"`
@@ -168,11 +168,11 @@ type InvitationEntity struct {
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
-// InvitationEntityRole The role of the invitation
-type InvitationEntityRole string
+// InvitationRole The role of the invitation
+type InvitationRole string
 
-// MemberEntity Schema for Member entity
-type MemberEntity struct {
+// Member Schema for Member entity
+type Member struct {
 	// CreatedAt The date this item was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
@@ -183,7 +183,7 @@ type MemberEntity struct {
 	OrganizationId string `json:"organizationId" yaml:"organizationId"`
 
 	// Role The role of the member
-	Role MemberEntityRole `json:"role" yaml:"role"`
+	Role MemberRole `json:"role" yaml:"role"`
 
 	// UpdatedAt The date this item was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -192,11 +192,11 @@ type MemberEntity struct {
 	UserId string `json:"userId" yaml:"userId"`
 }
 
-// MemberEntityRole The role of the member
-type MemberEntityRole string
+// MemberRole The role of the member
+type MemberRole string
 
-// OrganizationEntity defines model for OrganizationEntity.
-type OrganizationEntity struct {
+// Organization defines model for Organization.
+type Organization struct {
 	// BillingEmail Email address for billing communications
 	BillingEmail openapi_types.Email `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
 
@@ -219,7 +219,7 @@ type OrganizationEntity struct {
 	Name string `json:"name" yaml:"name"`
 
 	// Plan The current subscription plan
-	Plan OrganizationEntityPlan `json:"plan" yaml:"plan"`
+	Plan OrganizationPlan `json:"plan" yaml:"plan"`
 
 	// Slug URL-friendly unique identifier for the organization
 	Slug string `json:"slug" yaml:"slug"`
@@ -231,8 +231,8 @@ type OrganizationEntity struct {
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
-// OrganizationEntityPlan The current subscription plan
-type OrganizationEntityPlan string
+// OrganizationPlan The current subscription plan
+type OrganizationPlan string
 
 // Page Pagination (page number & size)
 type Page struct {

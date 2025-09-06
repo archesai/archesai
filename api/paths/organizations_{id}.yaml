@@ -24,7 +24,7 @@ delete:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/OrganizationEntity.yaml
+                $ref: ../components/schemas/Organization.yaml
             required:
               - data
             additionalProperties: false
@@ -56,7 +56,7 @@ get:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/OrganizationEntity.yaml
+                $ref: ../components/schemas/Organization.yaml
             required:
               - data
             additionalProperties: false
@@ -103,7 +103,7 @@ patch:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/OrganizationEntity.yaml
+                $ref: ../components/schemas/Organization.yaml
             required:
               - data
             additionalProperties: false

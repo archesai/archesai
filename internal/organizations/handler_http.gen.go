@@ -503,7 +503,7 @@ type FindManyOrganizationsResponseObject interface {
 }
 
 type FindManyOrganizations200JSONResponse struct {
-	Data []OrganizationEntity `json:"data"`
+	Data []Organization `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -549,7 +549,7 @@ type CreateOrganizationResponseObject interface {
 
 type CreateOrganization201JSONResponse struct {
 	// Data Schema for Organization entity
-	Data OrganizationEntity `json:"data"`
+	Data Organization `json:"data"`
 }
 
 func (response CreateOrganization201JSONResponse) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
@@ -591,7 +591,7 @@ type DeleteOrganizationResponseObject interface {
 
 type DeleteOrganization200JSONResponse struct {
 	// Data Schema for Organization entity
-	Data OrganizationEntity `json:"data"`
+	Data Organization `json:"data"`
 }
 
 func (response DeleteOrganization200JSONResponse) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
@@ -622,7 +622,7 @@ type GetOneOrganizationResponseObject interface {
 
 type GetOneOrganization200JSONResponse struct {
 	// Data Schema for Organization entity
-	Data OrganizationEntity `json:"data"`
+	Data Organization `json:"data"`
 }
 
 func (response GetOneOrganization200JSONResponse) VisitGetOneOrganizationResponse(w http.ResponseWriter) error {
@@ -654,7 +654,7 @@ type UpdateOrganizationResponseObject interface {
 
 type UpdateOrganization200JSONResponse struct {
 	// Data Schema for Organization entity
-	Data OrganizationEntity `json:"data"`
+	Data Organization `json:"data"`
 }
 
 func (response UpdateOrganization200JSONResponse) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
@@ -685,7 +685,7 @@ type FindManyInvitationsResponseObject interface {
 }
 
 type FindManyInvitations200JSONResponse struct {
-	Data []InvitationEntity `json:"data"`
+	Data []Invitation `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -732,7 +732,7 @@ type CreateInvitationResponseObject interface {
 
 type CreateInvitation201JSONResponse struct {
 	// Data Schema for Invitation entity
-	Data InvitationEntity `json:"data"`
+	Data Invitation `json:"data"`
 }
 
 func (response CreateInvitation201JSONResponse) VisitCreateInvitationResponse(w http.ResponseWriter) error {
@@ -775,7 +775,7 @@ type DeleteInvitationResponseObject interface {
 
 type DeleteInvitation200JSONResponse struct {
 	// Data Schema for Invitation entity
-	Data InvitationEntity `json:"data"`
+	Data Invitation `json:"data"`
 }
 
 func (response DeleteInvitation200JSONResponse) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
@@ -807,7 +807,7 @@ type GetOneInvitationResponseObject interface {
 
 type GetOneInvitation200JSONResponse struct {
 	// Data Schema for Invitation entity
-	Data InvitationEntity `json:"data"`
+	Data Invitation `json:"data"`
 }
 
 func (response GetOneInvitation200JSONResponse) VisitGetOneInvitationResponse(w http.ResponseWriter) error {
@@ -840,7 +840,7 @@ type UpdateInvitationResponseObject interface {
 
 type UpdateInvitation200JSONResponse struct {
 	// Data Schema for Invitation entity
-	Data InvitationEntity `json:"data"`
+	Data Invitation `json:"data"`
 }
 
 func (response UpdateInvitation200JSONResponse) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
@@ -871,7 +871,7 @@ type FindManyMembersResponseObject interface {
 }
 
 type FindManyMembers200JSONResponse struct {
-	Data []MemberEntity `json:"data"`
+	Data []Member `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -918,7 +918,7 @@ type CreateMemberResponseObject interface {
 
 type CreateMember201JSONResponse struct {
 	// Data Schema for Member entity
-	Data MemberEntity `json:"data"`
+	Data Member `json:"data"`
 }
 
 func (response CreateMember201JSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
@@ -961,7 +961,7 @@ type DeleteMemberResponseObject interface {
 
 type DeleteMember200JSONResponse struct {
 	// Data Schema for Member entity
-	Data MemberEntity `json:"data"`
+	Data Member `json:"data"`
 }
 
 func (response DeleteMember200JSONResponse) VisitDeleteMemberResponse(w http.ResponseWriter) error {
@@ -993,7 +993,7 @@ type GetOneMemberResponseObject interface {
 
 type GetOneMember200JSONResponse struct {
 	// Data Schema for Member entity
-	Data MemberEntity `json:"data"`
+	Data Member `json:"data"`
 }
 
 func (response GetOneMember200JSONResponse) VisitGetOneMemberResponse(w http.ResponseWriter) error {
@@ -1026,7 +1026,7 @@ type UpdateMemberResponseObject interface {
 
 type UpdateMember200JSONResponse struct {
 	// Data Schema for Member entity
-	Data MemberEntity `json:"data"`
+	Data Member `json:"data"`
 }
 
 func (response UpdateMember200JSONResponse) VisitUpdateMemberResponse(w http.ResponseWriter) error {

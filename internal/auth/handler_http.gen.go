@@ -516,7 +516,7 @@ type AccountsFindManyResponseObject interface {
 }
 
 type AccountsFindMany200JSONResponse struct {
-	Data []AccountEntity `json:"data"`
+	Data []Account `json:"data"`
 	Meta struct {
 		Total float32 `json:"total"`
 	} `json:"meta"`
@@ -561,7 +561,7 @@ type AccountsDeleteResponseObject interface {
 
 type AccountsDelete200JSONResponse struct {
 	// Data Schema for Account entity (authentication provider account)
-	Data AccountEntity `json:"data"`
+	Data Account `json:"data"`
 }
 
 func (response AccountsDelete200JSONResponse) VisitAccountsDeleteResponse(w http.ResponseWriter) error {
@@ -592,7 +592,7 @@ type AccountsGetOneResponseObject interface {
 
 type AccountsGetOne200JSONResponse struct {
 	// Data Schema for Account entity (authentication provider account)
-	Data AccountEntity `json:"data"`
+	Data Account `json:"data"`
 }
 
 func (response AccountsGetOne200JSONResponse) VisitAccountsGetOneResponse(w http.ResponseWriter) error {
@@ -735,10 +735,10 @@ type ConfirmEmailVerificationResponseObject interface {
 
 type ConfirmEmailVerification200JSONResponse struct {
 	// Session Schema for Session entity
-	Session SessionEntity `json:"session"`
+	Session Session `json:"session"`
 
 	// User Schema for User entity
-	User UserEntity `json:"user"`
+	User User `json:"user"`
 }
 
 func (response ConfirmEmailVerification200JSONResponse) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
@@ -780,7 +780,7 @@ type LoginResponseObject interface {
 
 type Login200JSONResponse struct {
 	// Data Schema for User entity
-	Data UserEntity `json:"data"`
+	Data User `json:"data"`
 }
 
 func (response Login200JSONResponse) VisitLoginResponse(w http.ResponseWriter) error {
@@ -901,7 +901,7 @@ type RegisterResponseObject interface {
 
 type Register201JSONResponse struct {
 	// Data Schema for User entity
-	Data UserEntity `json:"data"`
+	Data User `json:"data"`
 }
 
 func (response Register201JSONResponse) VisitRegisterResponse(w http.ResponseWriter) error {
@@ -931,7 +931,7 @@ type FindManySessionsResponseObject interface {
 }
 
 type FindManySessions200JSONResponse struct {
-	Data []SessionEntity `json:"data"`
+	Data []Session `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -977,7 +977,7 @@ type DeleteSessionResponseObject interface {
 
 type DeleteSession200JSONResponse struct {
 	// Data Schema for Session entity
-	Data SessionEntity `json:"data"`
+	Data Session `json:"data"`
 }
 
 func (response DeleteSession200JSONResponse) VisitDeleteSessionResponse(w http.ResponseWriter) error {
@@ -1008,7 +1008,7 @@ type GetOneSessionResponseObject interface {
 
 type GetOneSession200JSONResponse struct {
 	// Data Schema for Session entity
-	Data SessionEntity `json:"data"`
+	Data Session `json:"data"`
 }
 
 func (response GetOneSession200JSONResponse) VisitGetOneSessionResponse(w http.ResponseWriter) error {
@@ -1040,7 +1040,7 @@ type UpdateSessionResponseObject interface {
 
 type UpdateSession200JSONResponse struct {
 	// Data Schema for Session entity
-	Data SessionEntity `json:"data"`
+	Data Session `json:"data"`
 }
 
 func (response UpdateSession200JSONResponse) VisitUpdateSessionResponse(w http.ResponseWriter) error {
@@ -1070,7 +1070,7 @@ type FindManyUsersResponseObject interface {
 }
 
 type FindManyUsers200JSONResponse struct {
-	Data []UserEntity `json:"data"`
+	Data []User `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
 		Total float32 `json:"total"`
@@ -1116,7 +1116,7 @@ type DeleteUserResponseObject interface {
 
 type DeleteUser200JSONResponse struct {
 	// Data Schema for User entity
-	Data UserEntity `json:"data"`
+	Data User `json:"data"`
 }
 
 func (response DeleteUser200JSONResponse) VisitDeleteUserResponse(w http.ResponseWriter) error {
@@ -1147,7 +1147,7 @@ type GetOneUserResponseObject interface {
 
 type GetOneUser200JSONResponse struct {
 	// Data Schema for User entity
-	Data UserEntity `json:"data"`
+	Data User `json:"data"`
 }
 
 func (response GetOneUser200JSONResponse) VisitGetOneUserResponse(w http.ResponseWriter) error {
@@ -1179,7 +1179,7 @@ type UpdateUserResponseObject interface {
 
 type UpdateUser200JSONResponse struct {
 	// Data Schema for User entity
-	Data UserEntity `json:"data"`
+	Data User `json:"data"`
 }
 
 func (response UpdateUser200JSONResponse) VisitUpdateUserResponse(w http.ResponseWriter) error {

@@ -36,7 +36,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/UserEntity.yaml
+                $ref: ../components/schemas/User.yaml
             required:
               - data
             additionalProperties: false

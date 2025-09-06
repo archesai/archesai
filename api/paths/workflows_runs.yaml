@@ -29,7 +29,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/RunEntity.yaml
+                $ref: ../components/schemas/Run.yaml
             required:
               - data
             additionalProperties: false
@@ -60,7 +60,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/RunEntity.yaml
+                  $ref: ../components/schemas/Run.yaml
               meta:
                 type: object
                 properties:

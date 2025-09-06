@@ -40,7 +40,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/MemberEntity.yaml
+                $ref: ../components/schemas/Member.yaml
             required:
               - data
             additionalProperties: false
@@ -77,7 +77,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/MemberEntity.yaml
+                  $ref: ../components/schemas/Member.yaml
               meta:
                 type: object
                 properties:

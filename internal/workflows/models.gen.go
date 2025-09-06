@@ -16,12 +16,12 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
-// Defines values for RunEntityStatus.
+// Defines values for RunStatus.
 const (
-	COMPLETED  RunEntityStatus = "COMPLETED"
-	FAILED     RunEntityStatus = "FAILED"
-	PROCESSING RunEntityStatus = "PROCESSING"
-	QUEUED     RunEntityStatus = "QUEUED"
+	COMPLETED  RunStatus = "COMPLETED"
+	FAILED     RunStatus = "FAILED"
+	PROCESSING RunStatus = "PROCESSING"
+	QUEUED     RunStatus = "QUEUED"
 )
 
 // Defines values for FindManyPipelinesParamsSortField.
@@ -79,8 +79,8 @@ const (
 	Desc FindManyToolsParamsSortOrder = "desc"
 )
 
-// BaseEntity defines model for BaseEntity.
-type BaseEntity struct {
+// Base defines model for Base.
+type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
@@ -106,8 +106,8 @@ type Page struct {
 	Size   int `json:"size,omitempty,omitzero" yaml:"size,omitempty"`
 }
 
-// PipelineEntity defines model for PipelineEntity.
-type PipelineEntity struct {
+// Pipeline defines model for Pipeline.
+type Pipeline struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
@@ -148,8 +148,8 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// RunEntity Schema for Run entity
-type RunEntity struct {
+// Run Schema for Run entity
+type Run struct {
 	// CompletedAt The timestamp when the run completed
 	CompletedAt time.Time `json:"completedAt,omitempty,omitzero" yaml:"completedAt,omitempty"`
 
@@ -172,8 +172,8 @@ type RunEntity struct {
 	Progress float32 `json:"progress" yaml:"progress"`
 
 	// StartedAt The timestamp when the run started
-	StartedAt time.Time       `json:"startedAt,omitempty,omitzero" yaml:"startedAt,omitempty"`
-	Status    RunEntityStatus `json:"status" yaml:"status"`
+	StartedAt time.Time `json:"startedAt,omitempty,omitzero" yaml:"startedAt,omitempty"`
+	Status    RunStatus `json:"status" yaml:"status"`
 
 	// ToolId The tool ID associated with the run
 	ToolId string `json:"toolId" yaml:"toolId"`
@@ -182,11 +182,11 @@ type RunEntity struct {
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
-// RunEntityStatus defines model for RunEntity.Status.
-type RunEntityStatus string
+// RunStatus defines model for Run.Status.
+type RunStatus string
 
-// ToolEntity Schema for Tool entity
-type ToolEntity struct {
+// Tool Schema for Tool entity
+type Tool struct {
 	// CreatedAt The date this item was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 

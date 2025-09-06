@@ -1,4 +1,4 @@
-// Package http provides HTTP handlers for health checks
+// Package health provides HTTP handlers for health checks
 package health
 
 import (
@@ -7,22 +7,22 @@ import (
 	"time"
 )
 
-// HealthHandler handles health check operations
-type HealthHandler struct {
+// Handler handles health check operations
+type Handler struct {
 	service *Service
 	logger  *slog.Logger
 }
 
-// NewHealthHandler creates a new health handler
-func NewHealthHandler(service *Service, logger *slog.Logger) *HealthHandler {
-	return &HealthHandler{
+// NewHandler creates a new health handler
+func NewHandler(service *Service, logger *slog.Logger) *Handler {
+	return &Handler{
 		service: service,
 		logger:  logger,
 	}
 }
 
 // GetHealth implements the health check endpoint
-func (h *HealthHandler) GetHealth(ctx context.Context, _ GetHealthRequestObject) (GetHealthResponseObject, error) {
+func (h *Handler) GetHealth(ctx context.Context, _ GetHealthRequestObject) (GetHealthResponseObject, error) {
 	h.logger.Debug("health check requested")
 
 	status := h.service.CheckHealth(ctx)

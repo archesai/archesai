@@ -60,7 +60,7 @@ func (h *AuthHandler) Register(ctx context.Context, req RegisterRequestObject) (
 	}
 
 	return Register201JSONResponse{
-		Data: user.UserEntity,
+		Data: *user,
 	}, nil
 }
 
@@ -103,7 +103,7 @@ func (h *AuthHandler) Login(ctx context.Context, req LoginRequestObject) (LoginR
 	}
 
 	return Login200JSONResponse{
-		Data: user.UserEntity,
+		Data: *user,
 	}, nil
 }
 
@@ -198,7 +198,7 @@ func (h *AuthHandler) GetOneUser(ctx context.Context, req GetOneUserRequestObjec
 	}
 
 	return GetOneUser200JSONResponse{
-		Data: user.UserEntity,
+		Data: *user,
 	}, nil
 }
 
@@ -224,7 +224,7 @@ func (h *AuthHandler) UpdateUser(ctx context.Context, req UpdateUserRequestObjec
 	}
 
 	return UpdateUser200JSONResponse{
-		Data: user.UserEntity,
+		Data: *user,
 	}, nil
 }
 
@@ -248,7 +248,7 @@ func (h *AuthHandler) DeleteUser(ctx context.Context, req DeleteUserRequestObjec
 	}
 
 	return DeleteUser200JSONResponse{
-		Data: UserEntity{Id: req.Id}, // Placeholder response
+		Data: User{Id: req.Id}, // Placeholder response
 	}, nil
 }
 
@@ -341,11 +341,11 @@ func (h *AuthHandler) UpdateSession(_ context.Context, _ UpdateSessionRequestObj
 
 // Helper converter functions
 
-// convertToGeneratedUsers converts a slice of domain Users to generated UserEntity
-func convertToGeneratedUsers(domainUsers []*User) []UserEntity {
-	result := make([]UserEntity, len(domainUsers))
+// convertToGeneratedUsers converts a slice of domain Users to generated User
+func convertToGeneratedUsers(domainUsers []*User) []User {
+	result := make([]User, len(domainUsers))
 	for i, u := range domainUsers {
-		result[i] = u.UserEntity
+		result[i] = *u
 	}
 	return result
 }

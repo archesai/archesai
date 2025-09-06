@@ -1,0 +1,91 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Schema for Session entity
+x-codegen:
+  # yaml-language-server: $schema=./XCodegen.yaml
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [userId, token]
+    additional_methods:
+      - name: GetSessionByToken
+        params: [token]
+        returns: single
+      - name: DeleteSessionByToken
+        params: [token]
+        returns: void
+      - name: DeleteUserSessions
+        params: [userId]
+        returns: void
+      - name: DeleteExpiredSessions
+        params: []
+        returns: void
+  cache:
+    enabled: true
+    ttl: 120 # 2 minutes - shorter for sessions
+    key_pattern: "session:{token}"
+    invalidate_on: [update, delete]
+  events:
+    - created
+    - refreshed
+    - expired
+    - deleted
+type: object
+properties:
+  createdAt:
+    description: The date this item was created
+    type: string
+    format: date-time
+    example: "2024-01-15T09:30:00Z"
+    minLength: 1
+  id:
+    description: The ID of the item
+    type: string
+    format: uuid
+    example: 550e8400-e29b-41d4-a716-446655440000
+    minLength: 36
+  updatedAt:
+    description: The date this item was last updated
+    type: string
+    format: date-time
+    example: "2024-01-15T09:30:00Z"
+    minLength: 1
+  activeOrganizationId:
+    description: The active organization ID
+    type: string
+    example: example-id-123
+    minLength: 1
+  expiresAt:
+    description: The expiration date of the session
+    type: string
+    minLength: 1
+    example: example-string
+  ipAddress:
+    description: The IP address of the session
+    type: string
+    example: example-string
+    minLength: 1
+  token:
+    description: The session token
+    type: string
+    minLength: 1
+    example: example-string
+  userAgent:
+    description: The user agent of the session
+    type: string
+    example: example-string
+    minLength: 1
+  userId:
+    description: The ID of the user associated with the session
+    type: string
+    minLength: 1
+    example: example-id-123
+required:
+  - createdAt
+  - id
+  - updatedAt
+  - activeOrganizationId
+  - expiresAt
+  - ipAddress
+  - token
+  - userAgent
+  - userId
+additionalProperties: false

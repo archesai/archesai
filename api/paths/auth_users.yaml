@@ -21,7 +21,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/UserEntity.yaml
+                  $ref: ../components/schemas/User.yaml
               meta:
                 type: object
                 properties:

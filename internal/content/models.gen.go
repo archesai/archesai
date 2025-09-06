@@ -52,8 +52,8 @@ const (
 	FindManyLabelsParamsSortOrderDesc FindManyLabelsParamsSortOrder = "desc"
 )
 
-// ArtifactEntity Schema for Artifact entity
-type ArtifactEntity struct {
+// Artifact Schema for Artifact entity
+type Artifact struct {
 	// CreatedAt The date this item was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
@@ -91,8 +91,8 @@ type ArtifactEntity struct {
 // FilterNode A recursive filter node that can be a condition or group
 type FilterNode = interface{}
 
-// LabelEntity Schema for Label entity
-type LabelEntity struct {
+// Label Schema for Label entity
+type Label struct {
 	// CreatedAt The date this item was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 

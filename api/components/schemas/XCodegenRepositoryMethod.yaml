@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Custom repository method definition
+type: object
+properties:
+  name:
+    description: Method name (e.g., GetUserByEmail)
+    type: string
+    pattern: "^[A-Z][a-zA-Z0-9]*$"
+  params:
+    description: Method parameters
+    type: array
+    items:
+      type: string
+  returns:
+    description: Return type
+    type: string
+    enum: [single, multiple, count, exists, void]
+    default: single
+  query:
+    description: Custom SQL query (optional)
+    type: string
+  cache:
+    description: Cache this method's results
+    type: boolean
+    default: false
+required: [name, params, returns]
+additionalProperties: false

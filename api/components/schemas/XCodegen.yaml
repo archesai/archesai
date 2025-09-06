@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: x-codegen configuration for code generation from OpenAPI schemas
+type: object
+properties:
+  repository:
+    $ref: ./XCodegenRepository.yaml
+  cache:
+    $ref: ./XCodegenCache.yaml
+  events:
+    description: List of domain events to generate
+    type: array
+    items:
+      type: string
+      pattern: "^[a-z_]+$"
+    example: [created, updated, deleted]
+  handler:
+    $ref: ./XCodegenHandler.yaml
+  adapter:
+    $ref: ./XCodegenAdapter.yaml
+  config:
+    $ref: ./XCodegenConfig.yaml
+  service:
+    $ref: ./XCodegenService.yaml
+  unique:
+    description: Field is unique constraint
+    type: boolean
+    default: false
+  index:
+    description: Field should be indexed
+    type: boolean
+    default: false
+  searchable:
+    description: Field is searchable (full-text)
+    type: boolean
+    default: false
+  validation:
+    description: Validation rule for the field
+    type: string
+    enum: [email, url, uuid, phone, credit_card]
+additionalProperties: false

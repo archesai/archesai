@@ -66,7 +66,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/AccountEntity"
+                      $ref: "#/components/schemas/Account"
                   meta:
                     type: object
                     additionalProperties: false
@@ -110,7 +110,7 @@ paths:
                   - data
                 properties:
                   data:
-                    $ref: "#/components/schemas/AccountEntity"
+                    $ref: "#/components/schemas/Account"
         "404":
           $ref: "#/components/responses/NotFound"
       description: Find an account
@@ -142,7 +142,7 @@ paths:
                   - data
                 properties:
                   data:
-                    $ref: "#/components/schemas/AccountEntity"
+                    $ref: "#/components/schemas/Account"
         "404":
           $ref: "#/components/responses/NotFound"
       description: Delete an account
@@ -190,7 +190,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/UserEntity"
+                    $ref: "#/components/schemas/User"
                 required:
                   - data
                 additionalProperties: false
@@ -234,7 +234,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/UserEntity"
+                    $ref: "#/components/schemas/User"
                 required:
                   - data
                 additionalProperties: false
@@ -282,9 +282,9 @@ paths:
                 type: object
                 properties:
                   session:
-                    $ref: "#/components/schemas/SessionEntity"
+                    $ref: "#/components/schemas/Session"
                   user:
-                    $ref: "#/components/schemas/UserEntity"
+                    $ref: "#/components/schemas/User"
                 required:
                   - session
                   - user
@@ -473,7 +473,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/SessionEntity"
+                      $ref: "#/components/schemas/Session"
                   meta:
                     type: object
                     properties:
@@ -519,7 +519,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/SessionEntity"
+                    $ref: "#/components/schemas/Session"
                 required:
                   - data
                 additionalProperties: false
@@ -551,7 +551,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/SessionEntity"
+                    $ref: "#/components/schemas/Session"
                 required:
                   - data
                 additionalProperties: false
@@ -595,7 +595,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/SessionEntity"
+                    $ref: "#/components/schemas/Session"
                 required:
                   - data
                 additionalProperties: false
@@ -625,7 +625,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/UserEntity"
+                      $ref: "#/components/schemas/User"
                   meta:
                     type: object
                     properties:
@@ -671,7 +671,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/UserEntity"
+                    $ref: "#/components/schemas/User"
                 required:
                   - data
                 additionalProperties: false
@@ -703,7 +703,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/UserEntity"
+                    $ref: "#/components/schemas/User"
                 required:
                   - data
                 additionalProperties: false
@@ -750,7 +750,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/UserEntity"
+                    $ref: "#/components/schemas/User"
                 required:
                   - data
                 additionalProperties: false
@@ -795,7 +795,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/OrganizationEntity"
+                    $ref: "#/components/schemas/Organization"
                 required:
                   - data
                 additionalProperties: false
@@ -826,7 +826,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/OrganizationEntity"
+                      $ref: "#/components/schemas/Organization"
                   meta:
                     type: object
                     properties:
@@ -872,7 +872,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/OrganizationEntity"
+                    $ref: "#/components/schemas/Organization"
                 required:
                   - data
                 additionalProperties: false
@@ -904,7 +904,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/OrganizationEntity"
+                    $ref: "#/components/schemas/Organization"
                 required:
                   - data
                 additionalProperties: false
@@ -951,7 +951,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/OrganizationEntity"
+                    $ref: "#/components/schemas/Organization"
                 required:
                   - data
                 additionalProperties: false
@@ -1000,7 +1000,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/MemberEntity"
+                    $ref: "#/components/schemas/Member"
                 required:
                   - data
                 additionalProperties: false
@@ -1037,7 +1037,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/MemberEntity"
+                      $ref: "#/components/schemas/Member"
                   meta:
                     type: object
                     properties:
@@ -1091,7 +1091,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/MemberEntity"
+                    $ref: "#/components/schemas/Member"
                 required:
                   - data
                 additionalProperties: false
@@ -1131,7 +1131,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/MemberEntity"
+                    $ref: "#/components/schemas/Member"
                 required:
                   - data
                 additionalProperties: false
@@ -1185,7 +1185,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/MemberEntity"
+                    $ref: "#/components/schemas/Member"
                 required:
                   - data
                 additionalProperties: false
@@ -1242,7 +1242,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/InvitationEntity"
+                    $ref: "#/components/schemas/Invitation"
                 required:
                   - data
                 additionalProperties: false
@@ -1281,7 +1281,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/InvitationEntity"
+                      $ref: "#/components/schemas/Invitation"
                   meta:
                     type: object
                     properties:
@@ -1335,7 +1335,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/InvitationEntity"
+                    $ref: "#/components/schemas/Invitation"
                 required:
                   - data
                 additionalProperties: false
@@ -1375,7 +1375,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/InvitationEntity"
+                    $ref: "#/components/schemas/Invitation"
                 required:
                   - data
                 additionalProperties: false
@@ -1433,7 +1433,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/InvitationEntity"
+                    $ref: "#/components/schemas/Invitation"
                 required:
                   - data
                 additionalProperties: false
@@ -1474,7 +1474,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/PipelineEntity"
+                    $ref: "#/components/schemas/Pipeline"
                 required:
                   - data
                 additionalProperties: false
@@ -1505,7 +1505,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/PipelineEntity"
+                      $ref: "#/components/schemas/Pipeline"
                   meta:
                     type: object
                     properties:
@@ -1551,7 +1551,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/PipelineEntity"
+                    $ref: "#/components/schemas/Pipeline"
                 required:
                   - data
                 additionalProperties: false
@@ -1583,7 +1583,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/PipelineEntity"
+                    $ref: "#/components/schemas/Pipeline"
                 required:
                   - data
                 additionalProperties: false
@@ -1629,7 +1629,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/PipelineEntity"
+                    $ref: "#/components/schemas/Pipeline"
                 required:
                   - data
                 additionalProperties: false
@@ -1667,7 +1667,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/RunEntity"
+                    $ref: "#/components/schemas/Run"
                 required:
                   - data
                 additionalProperties: false
@@ -1698,7 +1698,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/RunEntity"
+                      $ref: "#/components/schemas/Run"
                   meta:
                     type: object
                     properties:
@@ -1744,7 +1744,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/RunEntity"
+                    $ref: "#/components/schemas/Run"
                 required:
                   - data
                 additionalProperties: false
@@ -1776,7 +1776,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/RunEntity"
+                    $ref: "#/components/schemas/Run"
                 required:
                   - data
                 additionalProperties: false
@@ -1818,7 +1818,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/RunEntity"
+                    $ref: "#/components/schemas/Run"
                 required:
                   - data
                 additionalProperties: false
@@ -1862,7 +1862,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/ToolEntity"
+                    $ref: "#/components/schemas/Tool"
                 required:
                   - data
                 additionalProperties: false
@@ -1893,7 +1893,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/ToolEntity"
+                      $ref: "#/components/schemas/Tool"
                   meta:
                     type: object
                     properties:
@@ -1939,7 +1939,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/ToolEntity"
+                    $ref: "#/components/schemas/Tool"
                 required:
                   - data
                 additionalProperties: false
@@ -1971,7 +1971,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/ToolEntity"
+                    $ref: "#/components/schemas/Tool"
                 required:
                   - data
                 additionalProperties: false
@@ -2019,7 +2019,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/ToolEntity"
+                    $ref: "#/components/schemas/Tool"
                 required:
                   - data
                 additionalProperties: false
@@ -2062,7 +2062,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/ArtifactEntity"
+                    $ref: "#/components/schemas/Artifact"
                 required:
                   - data
                 additionalProperties: false
@@ -2093,7 +2093,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/ArtifactEntity"
+                      $ref: "#/components/schemas/Artifact"
                   meta:
                     type: object
                     properties:
@@ -2139,7 +2139,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/ArtifactEntity"
+                    $ref: "#/components/schemas/Artifact"
                 required:
                   - data
                 additionalProperties: false
@@ -2171,7 +2171,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/ArtifactEntity"
+                    $ref: "#/components/schemas/Artifact"
                 required:
                   - data
                 additionalProperties: false
@@ -2222,7 +2222,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/ArtifactEntity"
+                    $ref: "#/components/schemas/Artifact"
                 required:
                   - data
                 additionalProperties: false
@@ -2260,7 +2260,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/LabelEntity"
+                    $ref: "#/components/schemas/Label"
                 required:
                   - data
                 additionalProperties: false
@@ -2291,7 +2291,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/LabelEntity"
+                      $ref: "#/components/schemas/Label"
                   meta:
                     type: object
                     properties:
@@ -2337,7 +2337,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/LabelEntity"
+                    $ref: "#/components/schemas/Label"
                 required:
                   - data
                 additionalProperties: false
@@ -2369,7 +2369,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/LabelEntity"
+                    $ref: "#/components/schemas/Label"
                 required:
                   - data
                 additionalProperties: false
@@ -2412,7 +2412,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/LabelEntity"
+                    $ref: "#/components/schemas/Label"
                 required:
                   - data
                 additionalProperties: false
@@ -2493,7 +2493,7 @@ components:
       x-go-import:
         path: github.com/google/uuid
       minLength: 36
-    BaseEntity:
+    Base:
       type: object
       properties:
         id:
@@ -2514,10 +2514,44 @@ components:
         - id
         - createdAt
         - updatedAt
-    AccountEntity:
+    Account:
       description: Schema for Account entity (authentication provider account)
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - userId
+            - accountId
+          additional_methods:
+            - name: GetAccountByProviderID
+              params:
+                - provider
+                - providerAccountId
+              returns: single
+            - name: ListUserAccounts
+              params:
+                - userId
+              returns: multiple
+        cache:
+          enabled: true
+          ttl: 300
+          key_pattern: account:{id}
+          invalidate_on:
+            - update
+            - delete
+        events:
+          - created
+          - updated
+          - deleted
+          - linked
+          - unlinked
       allOf:
-        - $ref: "#/components/schemas/BaseEntity"
+        - $ref: "#/components/schemas/Base"
         - type: object
           properties:
             accountId:
@@ -2656,14 +2690,50 @@ components:
       format: email
       pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
       example: user@example.com
-    UserEntity:
+    User:
       description: Schema for User entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - email
+          additional_methods:
+            - name: GetUserByEmail
+              params:
+                - email
+              returns: single
+        cache:
+          enabled: true
+          ttl: 300
+          key_pattern: user:{id}
+          invalidate_on:
+            - update
+            - delete
+        events:
+          - created
+          - updated
+          - deleted
+          - email_verified
+        service:
+          business_methods:
+            - register
+            - login
+            - verify_email
       allOf:
-        - $ref: "#/components/schemas/BaseEntity"
+        - $ref: "#/components/schemas/Base"
         - type: object
           properties:
             email:
               description: The user's email address
+              x-codegen:
+                unique: true
+                index: true
+                validation: email
               allOf:
                 - $ref: "#/components/schemas/Email"
             emailVerified:
@@ -2681,13 +2751,54 @@ components:
               minLength: 1
               maxLength: 255
               example: John Doe
+              x-codegen:
+                searchable: true
           required:
             - email
             - emailVerified
             - name
           additionalProperties: false
-    SessionEntity:
+    Session:
       description: Schema for Session entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - userId
+            - token
+          additional_methods:
+            - name: GetSessionByToken
+              params:
+                - token
+              returns: single
+            - name: DeleteSessionByToken
+              params:
+                - token
+              returns: void
+            - name: DeleteUserSessions
+              params:
+                - userId
+              returns: void
+            - name: DeleteExpiredSessions
+              params: []
+              returns: void
+        cache:
+          enabled: true
+          ttl: 120
+          key_pattern: session:{token}
+          invalidate_on:
+            - update
+            - delete
+        events:
+          - created
+          - refreshed
+          - expired
+          - deleted
       type: object
       properties:
         createdAt:
@@ -2749,10 +2860,43 @@ components:
         - userAgent
         - userId
       additionalProperties: false
-    OrganizationEntity:
+    Organization:
       description: Schema for Organization entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - slug
+            - stripeCustomerId
+          additional_methods:
+            - name: GetOrganizationBySlug
+              params:
+                - slug
+              returns: single
+            - name: GetOrganizationByStripeCustomerId
+              params:
+                - stripeCustomerId
+              returns: single
+        cache:
+          enabled: true
+          ttl: 600
+          key_pattern: org:{id}
+          invalidate_on:
+            - update
+            - delete
+        events:
+          - created
+          - updated
+          - deleted
+          - plan_changed
+          - credits_updated
       allOf:
-        - $ref: "#/components/schemas/BaseEntity"
+        - $ref: "#/components/schemas/Base"
         - type: object
           properties:
             name:
@@ -2811,7 +2955,7 @@ components:
             - credits
             - metadata
           additionalProperties: false
-    MemberEntity:
+    Member:
       description: Schema for Member entity
       type: object
       properties:
@@ -2860,7 +3004,7 @@ components:
         - role
         - userId
       additionalProperties: false
-    InvitationEntity:
+    Invitation:
       description: Schema for Invitation entity
       type: object
       properties:
@@ -2935,10 +3079,10 @@ components:
           $ref: "#/components/schemas/UUID"
       required:
         - organizationId
-    PipelineEntity:
+    Pipeline:
       description: Schema for Pipeline entity
       allOf:
-        - $ref: "#/components/schemas/BaseEntity"
+        - $ref: "#/components/schemas/Base"
         - $ref: "#/components/schemas/OrganizationReference"
         - type: object
           properties:
@@ -2956,7 +3100,7 @@ components:
           required:
             - name
           additionalProperties: false
-    RunEntity:
+    Run:
       description: Schema for Run entity
       type: object
       properties:
@@ -3033,7 +3177,7 @@ components:
         - status
         - toolId
       additionalProperties: false
-    ToolEntity:
+    Tool:
       description: Schema for Tool entity
       type: object
       properties:
@@ -3090,7 +3234,7 @@ components:
         - organizationId
         - outputMimeType
       additionalProperties: false
-    ArtifactEntity:
+    Artifact:
       description: Schema for Artifact entity
       type: object
       properties:
@@ -3160,7 +3304,7 @@ components:
         - organizationId
         - text
       additionalProperties: false
-    LabelEntity:
+    Label:
       description: Schema for Label entity
       type: object
       properties:

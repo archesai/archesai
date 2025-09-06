@@ -36,7 +36,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/OrganizationEntity.yaml
+                $ref: ../components/schemas/Organization.yaml
             required:
               - data
             additionalProperties: false
@@ -67,7 +67,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/OrganizationEntity.yaml
+                  $ref: ../components/schemas/Organization.yaml
               meta:
                 type: object
                 properties:

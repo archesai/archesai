@@ -12,18 +12,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Domain errors
+// Additional domain errors not defined in auth.go
 var (
-	ErrUserNotFound       = errors.New("user not found")
-	ErrUserExists         = errors.New("user already exists")
-	ErrInvalidPassword    = errors.New("invalid password")
-	ErrSessionNotFound    = errors.New("session not found")
-	ErrSessionExpired     = errors.New("session expired")
-	ErrAccountNotFound    = errors.New("account not found")
-	ErrInvalidToken       = errors.New("invalid token")
-	ErrTokenExpired       = errors.New("token expired")
-	ErrUnauthorized       = errors.New("unauthorized")
-	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrInvalidPassword = errors.New("invalid password")
+	ErrSessionNotFound = errors.New("session not found")
+	ErrSessionExpired  = errors.New("session expired")
+	ErrAccountNotFound = errors.New("account not found")
+	ErrInvalidToken    = errors.New("invalid token")
+	ErrTokenExpired    = errors.New("token expired")
+	ErrUnauthorized    = errors.New("unauthorized")
 )
 
 // RegisterRequest represents a registration request
@@ -53,7 +50,7 @@ type TokenResponse struct {
 
 // Service handles authentication operations
 type Service struct {
-	repo      Repository
+	repo      AuthRepository
 	jwtSecret []byte
 	logger    *slog.Logger
 	config    Config
@@ -71,7 +68,7 @@ type Config struct {
 }
 
 // NewService creates a new authentication service
-func NewService(repo Repository, config Config, logger *slog.Logger) *Service {
+func NewService(repo AuthRepository, config Config, logger *slog.Logger) *Service {
 	if config.AccessTokenExpiry == 0 {
 		config.AccessTokenExpiry = 15 * time.Minute
 	}
@@ -108,28 +105,44 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *T
 		return nil, nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	// Create new user with embedded UserEntity
+	// Create new user with embedded User
 	now := time.Now()
 	user := &User{
-		UserEntity: UserEntity{
-			Id:            uuid.New(),
-			Email:         req.Email,
-			Name:          req.Name,
-			EmailVerified: false,
-			CreatedAt:     now,
-			UpdatedAt:     now,
-		},
-		PasswordHash: hashedPassword,
+		Id:            uuid.New(),
+		Email:         req.Email,
+		Name:          req.Name,
+		EmailVerified: false,
+		CreatedAt:     now,
+		UpdatedAt:     now,
 	}
 
-	// Save user to database - repository expects UserEntity
-	createdEntity, err := s.repo.CreateUser(ctx, &user.UserEntity)
+	// Save user to database - repository expects User
+	createdEntity, err := s.repo.CreateUser(ctx, user)
 	if err != nil {
 		s.logger.Error("failed to create user", "error", err)
 		return nil, nil, fmt.Errorf("failed to create user: %w", err)
 	}
 	// Update user with created entity (in case DB added fields)
-	user.UserEntity = *createdEntity
+	user = createdEntity
+
+	// Create local account with password
+	account := &Account{
+		Id:         uuid.New(),
+		UserId:     user.Id,
+		ProviderId: Local,
+		AccountId:  string(user.Email), // Use email as account ID for local auth
+		Password:   hashedPassword,
+		CreatedAt:  now,
+		UpdatedAt:  now,
+	}
+
+	_, err = s.repo.CreateAccount(ctx, account)
+	if err != nil {
+		s.logger.Error("failed to create account", "error", err)
+		// Try to clean up the created user
+		_ = s.repo.DeleteUser(ctx, user.Id)
+		return nil, nil, fmt.Errorf("failed to create account: %w", err)
+	}
 
 	// Generate tokens
 	tokens, err := s.generateTokens(user)
@@ -141,21 +154,19 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *T
 	// Create session
 	sessionNow := time.Now()
 	session := &Session{
-		SessionEntity: SessionEntity{
-			Id:        uuid.New(),
-			UserId:    user.Id.String(),
-			Token:     tokens.RefreshToken,
-			ExpiresAt: sessionNow.Add(s.config.SessionTokenExpiry).Format(time.RFC3339),
-			CreatedAt: sessionNow,
-			UpdatedAt: sessionNow,
-			// Required fields with empty defaults
-			ActiveOrganizationId: "",
-			IpAddress:            "",
-			UserAgent:            "",
-		},
+		Id:        uuid.New(),
+		UserId:    user.Id.String(),
+		Token:     tokens.RefreshToken,
+		ExpiresAt: sessionNow.Add(s.config.SessionTokenExpiry).Format(time.RFC3339),
+		CreatedAt: sessionNow,
+		UpdatedAt: sessionNow,
+		// Required fields with empty defaults
+		ActiveOrganizationId: "",
+		IpAddress:            "",
+		UserAgent:            "",
 	}
 
-	_, err = s.repo.CreateSession(ctx, &session.SessionEntity)
+	_, err = s.repo.CreateSession(ctx, session)
 	if err != nil {
 		s.logger.Error("failed to create session", "error", err)
 		return nil, nil, fmt.Errorf("failed to create session: %w", err)
@@ -174,24 +185,22 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 		return nil, nil, ErrInvalidCredentials
 	}
 
-	// TODO: Get password hash from account table or separate auth store
-	// For now, we can't verify password without the hash
-	// This is a limitation of the current schema
-	passwordHash := "" // TODO: Retrieve from account or auth table
-
-	// Create domain user from entity
-	user := &User{
-		UserEntity:   *userEntity,
-		PasswordHash: passwordHash,
+	// Get the user's local account to verify password
+	account, err := s.repo.GetAccountByProviderAndProviderID(ctx, string(Local), string(req.Email))
+	if err != nil {
+		s.logger.Warn("account not found", "email", req.Email)
+		return nil, nil, ErrInvalidCredentials
 	}
 
-	// Verify password (skip for now if no hash)
-	if passwordHash != "" {
-		if err := s.verifyPassword(req.Password, user.PasswordHash); err != nil {
-			s.logger.Warn("invalid password", "user_id", user.Id.String())
+	// Verify password
+	if account.Password != "" {
+		if err := s.verifyPassword(req.Password, account.Password); err != nil {
+			s.logger.Warn("invalid password", "user_id", userEntity.Id.String())
 			return nil, nil, ErrInvalidCredentials
 		}
 	}
+
+	user := userEntity
 
 	// Generate tokens
 	tokens, err := s.generateTokens(user)
@@ -203,27 +212,25 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 	// Create session
 	sessionNow := time.Now()
 	session := &Session{
-		SessionEntity: SessionEntity{
-			Id:                   uuid.New(),
-			UserId:               user.Id.String(),
-			Token:                tokens.RefreshToken,
-			ExpiresAt:            sessionNow.Add(s.config.SessionTokenExpiry).Format(time.RFC3339),
-			CreatedAt:            sessionNow,
-			UpdatedAt:            sessionNow,
-			ActiveOrganizationId: "",
-			IpAddress:            ipAddress,
-			UserAgent:            userAgent,
-		},
+		Id:                   uuid.New(),
+		UserId:               user.Id.String(),
+		Token:                tokens.RefreshToken,
+		ExpiresAt:            sessionNow.Add(s.config.SessionTokenExpiry).Format(time.RFC3339),
+		CreatedAt:            sessionNow,
+		UpdatedAt:            sessionNow,
+		ActiveOrganizationId: "",
+		IpAddress:            ipAddress,
+		UserAgent:            userAgent,
 	}
 
-	_, err = s.repo.CreateSession(ctx, &session.SessionEntity)
+	_, err = s.repo.CreateSession(ctx, session)
 	if err != nil {
 		s.logger.Error("failed to create session", "error", err)
 		return nil, nil, fmt.Errorf("failed to create session: %w", err)
 	}
 
-	s.logger.Info("user signed in successfully", "user_id", user.Id.String())
-	return user, tokens, nil
+	s.logger.Info("user signed in successfully", "user_id", userEntity.Id.String())
+	return userEntity, tokens, nil
 }
 
 // Logout invalidates a user session
@@ -283,14 +290,8 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Token
 		return nil, ErrUserNotFound
 	}
 
-	// Convert to domain user
-	user := &User{
-		UserEntity:   *entity,
-		PasswordHash: "", // Not needed for token refresh
-	}
-
 	// Generate new tokens
-	tokens, err := s.generateTokens(user)
+	tokens, err := s.generateTokens(entity)
 	if err != nil {
 		s.logger.Error("failed to generate tokens", "error", err)
 		return nil, fmt.Errorf("failed to generate tokens: %w", err)
@@ -372,11 +373,7 @@ func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Convert entity to domain user
-	return &User{
-		UserEntity:   *entity,
-		PasswordHash: "", // TODO: Get from auth/account table
-	}, nil
+	return entity, nil
 }
 
 // UpdateUser updates user information
@@ -402,10 +399,7 @@ func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, req *UpdateUserR
 		return nil, err
 	}
 
-	return &User{
-		UserEntity:   *updatedEntity,
-		PasswordHash: "", // TODO: Get from auth/account table
-	}, nil
+	return updatedEntity, nil
 }
 
 // DeleteUser deletes a user
@@ -427,10 +421,7 @@ func (s *Service) ListUsers(ctx context.Context, limit, offset int32) ([]*User, 
 	// Convert entities to domain users
 	users := make([]*User, len(entities))
 	for i, entity := range entities {
-		users[i] = &User{
-			UserEntity:   *entity,
-			PasswordHash: "", // TODO: Get from auth/account table
-		}
+		users[i] = entity
 	}
 	return users, nil
 }
@@ -474,13 +465,7 @@ func (s *Service) ValidateSession(ctx context.Context, token string) (*Session, 
 		return nil, ErrSessionExpired
 	}
 
-	// Convert to domain session
-	session := &Session{
-		SessionEntity: *entity,
-		Token:         token,
-	}
-
-	return session, nil
+	return entity, nil
 }
 
 // DeleteUserSessions deletes all sessions for a user

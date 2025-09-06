@@ -24,7 +24,7 @@ delete:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/LabelEntity.yaml
+                $ref: ../components/schemas/Label.yaml
             required:
               - data
             additionalProperties: false
@@ -56,7 +56,7 @@ get:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/LabelEntity.yaml
+                $ref: ../components/schemas/Label.yaml
             required:
               - data
             additionalProperties: false
@@ -99,7 +99,7 @@ patch:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/LabelEntity.yaml
+                $ref: ../components/schemas/Label.yaml
             required:
               - data
             additionalProperties: false

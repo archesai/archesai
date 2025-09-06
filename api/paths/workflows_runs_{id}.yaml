@@ -24,7 +24,7 @@ delete:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/RunEntity.yaml
+                $ref: ../components/schemas/Run.yaml
             required:
               - data
             additionalProperties: false
@@ -56,7 +56,7 @@ get:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/RunEntity.yaml
+                $ref: ../components/schemas/Run.yaml
             required:
               - data
             additionalProperties: false
@@ -98,7 +98,7 @@ patch:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/RunEntity.yaml
+                $ref: ../components/schemas/Run.yaml
             required:
               - data
             additionalProperties: false

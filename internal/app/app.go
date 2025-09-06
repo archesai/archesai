@@ -39,7 +39,7 @@ type App struct {
 	AuthHandler    *auth.AuthHandler
 
 	// Organizations domain
-	OrganizationsRepository organizations.OrganizationRepository
+	OrganizationsRepository organizations.Repository
 	OrganizationsService    *organizations.Service
 	OrganizationsHandler    *organizations.OrganizationHandler
 
@@ -55,10 +55,11 @@ type App struct {
 
 	// Health domain
 	HealthService *health.Service
-	HealthHandler *health.HealthHandler
+	HealthHandler *health.Handler
 
 	// Config handler
-	ConfigHandler *config.ConfigHandler
+	// TODO: Implement config handler when needed
+	// ConfigHandler *config.Handler
 }
 
 // NewApp creates and initializes all application dependencies
@@ -119,7 +120,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Create queries based on database type
 	var pgQueries *postgresql.Queries
 	var sqliteQueries *sqlite.Queries
-	var authRepo auth.Repository
+	var authRepo auth.AuthRepository
 	var organizationsRepo organizations.OrganizationRepository
 	var workflowsRepo workflows.WorkflowRepository
 	var contentRepo content.Repository
@@ -148,7 +149,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
 			sqliteQueries = sqlite.New(sqlDB)
 			// Use SQLite repositories
-			authRepo = auth.NewSQLiteRepository(sqlDB)
+			authRepo = auth.NewAuthSQLiteRepository(sqliteQueries)
 			organizationsRepo = organizations.NewOrganizationSQLiteRepository(sqliteQueries)
 			workflowsRepo = workflows.NewWorkflowSQLiteRepository(sqliteQueries)
 			contentRepo = content.NewContentSQLiteRepository(sqliteQueries)
@@ -188,10 +189,11 @@ func NewApp(cfg *config.Config) (*App, error) {
 
 	// Initialize health domain
 	healthService := health.NewService(logger)
-	healthHandler := health.NewHealthHandler(healthService, logger)
+	healthHandler := health.NewHandler(healthService, logger)
 
 	// Initialize config handler
-	configHandler := config.NewConfigHandler(cfg, logger)
+	// TODO: Implement config handler when needed
+	// configHandler := config.NewHandler(cfg, logger)
 
 	// Create the HTTP server
 	serverConfig := &serverhttp.Config{
@@ -236,7 +238,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 		HealthHandler: healthHandler,
 
 		// Config handler
-		ConfigHandler: configHandler,
+		// ConfigHandler: configHandler,
 	}
 
 	// Register all application routes

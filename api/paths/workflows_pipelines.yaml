@@ -32,7 +32,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/PipelineEntity.yaml
+                $ref: ../components/schemas/Pipeline.yaml
             required:
               - data
             additionalProperties: false
@@ -63,7 +63,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/PipelineEntity.yaml
+                  $ref: ../components/schemas/Pipeline.yaml
               meta:
                 type: object
                 properties:

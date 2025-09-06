@@ -53,9 +53,9 @@ func (h *OrganizationHandler) FindManyOrganizations(ctx context.Context, req Fin
 	}
 
 	// Convert to API entities
-	data := make([]OrganizationEntity, len(orgs))
+	data := make([]Organization, len(orgs))
 	for i, org := range orgs {
-		data[i] = org.OrganizationEntity
+		data[i] = *org
 	}
 
 	totalFloat32 := float32(total)
@@ -86,13 +86,13 @@ func (h *OrganizationHandler) CreateOrganization(ctx context.Context, req Create
 	}
 
 	return CreateOrganization201JSONResponse{
-		Data: org.OrganizationEntity,
+		Data: *org,
 	}, nil
 }
 
 // GetOneOrganization retrieves an organization by ID (implements StrictServerInterface)
 func (h *OrganizationHandler) GetOneOrganization(ctx context.Context, req GetOneOrganizationRequestObject) (GetOneOrganizationResponseObject, error) {
-	org, err := h.service.GetOrganization(ctx, req.Id)
+	org, err := h.service.repo.GetOrganizationByID(ctx, req.Id)
 	if err != nil {
 		if err == ErrOrganizationNotFound {
 			return GetOneOrganization404ApplicationProblemPlusJSONResponse{
@@ -108,7 +108,7 @@ func (h *OrganizationHandler) GetOneOrganization(ctx context.Context, req GetOne
 	}
 
 	return GetOneOrganization200JSONResponse{
-		Data: org.OrganizationEntity,
+		Data: *org,
 	}, nil
 }
 
@@ -135,7 +135,7 @@ func (h *OrganizationHandler) UpdateOrganization(ctx context.Context, req Update
 	}
 
 	return UpdateOrganization200JSONResponse{
-		Data: org.OrganizationEntity,
+		Data: *org,
 	}, nil
 }
 
@@ -179,9 +179,9 @@ func (h *OrganizationHandler) FindManyMembers(ctx context.Context, req FindManyM
 	}
 
 	// Convert to API entities
-	data := make([]MemberEntity, len(members))
+	data := make([]Member, len(members))
 	for i, member := range members {
-		data[i] = member.MemberEntity
+		data[i] = *member
 	}
 
 	totalFloat32 := float32(total)
@@ -218,7 +218,7 @@ func (h *OrganizationHandler) CreateMember(ctx context.Context, req CreateMember
 	}
 
 	return CreateMember201JSONResponse{
-		Data: member.MemberEntity,
+		Data: *member,
 	}, nil
 }
 
@@ -240,7 +240,7 @@ func (h *OrganizationHandler) GetOneMember(ctx context.Context, req GetOneMember
 	}
 
 	return GetOneMember200JSONResponse{
-		Data: member.MemberEntity,
+		Data: *member,
 	}, nil
 }
 
@@ -266,7 +266,7 @@ func (h *OrganizationHandler) UpdateMember(ctx context.Context, req UpdateMember
 	}
 
 	return UpdateMember200JSONResponse{
-		Data: member.MemberEntity,
+		Data: *member,
 	}, nil
 }
 
@@ -310,9 +310,9 @@ func (h *OrganizationHandler) FindManyInvitations(ctx context.Context, req FindM
 	}
 
 	// Convert to API entities
-	data := make([]InvitationEntity, len(invitations))
+	data := make([]Invitation, len(invitations))
 	for i, invitation := range invitations {
-		data[i] = invitation.InvitationEntity
+		data[i] = *invitation
 	}
 
 	totalFloat32 := float32(total)
@@ -343,7 +343,7 @@ func (h *OrganizationHandler) CreateInvitation(ctx context.Context, req CreateIn
 	}
 
 	return CreateInvitation201JSONResponse{
-		Data: invitation.InvitationEntity,
+		Data: *invitation,
 	}, nil
 }
 
@@ -365,7 +365,7 @@ func (h *OrganizationHandler) GetOneInvitation(ctx context.Context, req GetOneIn
 	}
 
 	return GetOneInvitation200JSONResponse{
-		Data: invitation.InvitationEntity,
+		Data: *invitation,
 	}, nil
 }
 

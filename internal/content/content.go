@@ -9,15 +9,11 @@ import "errors"
 
 // Domain types
 type (
-	// Artifact represents a content artifact with its entity
-	Artifact struct {
-		ArtifactEntity
-	}
+	// ArtifactAlias is an alias to avoid conflicts with generated type
+	ArtifactAlias = Artifact
 
-	// Label represents a content label with its entity
-	Label struct {
-		LabelEntity
-	}
+	// LabelAlias is an alias to avoid conflicts with generated type
+	LabelAlias = Label
 
 	// CreateArtifactRequest represents a request to create an artifact
 	CreateArtifactRequest = CreateArtifactJSONBody

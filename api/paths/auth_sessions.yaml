@@ -21,7 +21,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/SessionEntity.yaml
+                  $ref: ../components/schemas/Session.yaml
               meta:
                 type: object
                 properties:

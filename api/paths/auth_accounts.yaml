@@ -24,7 +24,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/AccountEntity.yaml
+                  $ref: ../components/schemas/Account.yaml
               meta:
                 type: object
                 additionalProperties: false

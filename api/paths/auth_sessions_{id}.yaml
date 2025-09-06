@@ -24,7 +24,7 @@ delete:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/SessionEntity.yaml
+                $ref: ../components/schemas/Session.yaml
             required:
               - data
             additionalProperties: false
@@ -56,7 +56,7 @@ get:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/SessionEntity.yaml
+                $ref: ../components/schemas/Session.yaml
             required:
               - data
             additionalProperties: false
@@ -100,7 +100,7 @@ patch:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/SessionEntity.yaml
+                $ref: ../components/schemas/Session.yaml
             required:
               - data
             additionalProperties: false
