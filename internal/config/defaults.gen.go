@@ -5,13 +5,21 @@ package config
 func GetDefaultConfig() *ArchesConfig {
 	return &ArchesConfig{
 		Api: APIConfig{
-			Port:        8080,
+			Cors: CORSConfig{
+				Origins: "*",
+			},
+			Host: "0.0.0.0",
+			Email: EmailConfig{
+				Enabled: false,
+			},
+			Validate:    true,
+			Port:        3001,
 			Docs:        true,
 			Environment: Development,
 		},
 		Database: DatabaseConfig{
 			Type: Postgresql,
-			Url:  "postgres://localhost/archesai",
+			Url:  "postgresql://admin:password@127.0.0.1:5432/archesai-db",
 		},
 		Logging: LoggingConfig{
 			Level:  Info,

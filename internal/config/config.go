@@ -23,7 +23,7 @@ const (
 	EnvPrefix = "ARCHESAI"
 
 	// DefaultPort is the default API server port
-	DefaultPort = 8080
+	DefaultPort = 3001
 
 	// DefaultHost is the default API server host
 	DefaultHost = "0.0.0.0"
@@ -33,5 +33,5 @@ const (
 var ConfigPaths = []string{
 	".",
 	"/etc/archesai/",
-	"$HOME/.archesai",
+	"$HOME/.config/archesai",
 }
