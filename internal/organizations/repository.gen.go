@@ -10,12 +10,25 @@ import (
 // Repository provides data access operations for organizations domain.
 type Repository interface {
 
+	// Member operations
+	CreateMember(ctx context.Context, entity *Member) (*Member, error)
+	GetMemberByID(ctx context.Context, id uuid.UUID) (*Member, error)
+	UpdateMember(ctx context.Context, id uuid.UUID, entity *Member) (*Member, error)
+	DeleteMember(ctx context.Context, id uuid.UUID) error
+	ListMembers(ctx context.Context, params ListMembersParams) ([]*Member, int64, error)
+
 	// Organization operations
 	CreateOrganization(ctx context.Context, entity *Organization) (*Organization, error)
 	GetOrganizationByID(ctx context.Context, id uuid.UUID) (*Organization, error)
 	UpdateOrganization(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error)
 	DeleteOrganization(ctx context.Context, id uuid.UUID) error
 	ListOrganizations(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error)
+}
+
+// ListMembersParams represents parameters for listing members.
+type ListMembersParams struct {
+	Limit  int
+	Offset int
 }
 
 // ListOrganizationsParams represents parameters for listing organizations.

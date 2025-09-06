@@ -124,13 +124,13 @@ Each domain follows a flat package structure for simplicity:
 internal/auth/
 ├── auth.go                    # Package documentation, constants, errors
 ├── service.go                 # Business logic and use cases
-├── handler_http.go            # HTTP request handlers
-├── handler_http.gen.go        # Generated HTTP server interface
+├── handler.go                 # HTTP request handlers
+├── http.gen.go                # Generated HTTP server interface
 ├── middleware_http.go         # HTTP middleware (auth domain only)
 ├── repository_postgres.go     # PostgreSQL repository implementation
 ├── repository_sqlite.go       # SQLite repository implementation
 ├── repository.gen.go          # Generated repository interface
-├── models.gen.go              # Generated OpenAPI types
+├── types.gen.go               # Generated OpenAPI types
 ├── cache.gen.go               # Generated cache interface
 ├── cache_memory.gen.go        # In-memory cache implementation
 ├── cache_redis.gen.go         # Redis cache implementation

@@ -7,27 +7,6 @@ package content
 
 import "errors"
 
-// Domain types
-type (
-	// ArtifactAlias is an alias to avoid conflicts with generated type
-	ArtifactAlias = Artifact
-
-	// LabelAlias is an alias to avoid conflicts with generated type
-	LabelAlias = Label
-
-	// CreateArtifactRequest represents a request to create an artifact
-	CreateArtifactRequest = CreateArtifactJSONBody
-
-	// UpdateArtifactRequest represents a request to update an artifact
-	UpdateArtifactRequest = UpdateArtifactJSONBody
-
-	// CreateLabelRequest represents a request to create a label
-	CreateLabelRequest = CreateLabelJSONBody
-
-	// UpdateLabelRequest represents a request to update a label
-	UpdateLabelRequest = UpdateLabelJSONBody
-)
-
 // Domain errors
 var (
 	// ErrArtifactNotFound is returned when an artifact is not found

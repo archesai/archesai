@@ -2957,6 +2957,28 @@ components:
           additionalProperties: false
     Member:
       description: Schema for Member entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - organizationId
+            - userId
+          additional_methods:
+            - name: GetMembersByOrganization
+              params:
+                - organizationId
+            - name: GetMembersByUser
+              params:
+                - userId
+            - name: GetMemberByUserAndOrganization
+              params:
+                - userId
+                - organizationId
       type: object
       properties:
         createdAt:
@@ -3006,6 +3028,29 @@ components:
       additionalProperties: false
     Invitation:
       description: Schema for Invitation entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - organizationId
+            - email
+            - inviterId
+          additional_methods:
+            - name: GetInvitationsByOrganization
+              params:
+                - organizationId
+            - name: GetInvitationByEmail
+              params:
+                - email
+                - organizationId
+            - name: GetInvitationsByInviter
+              params:
+                - inviterId
       type: object
       properties:
         createdAt:
@@ -3081,6 +3126,20 @@ components:
         - organizationId
     Pipeline:
       description: Schema for Pipeline entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - organizationId
+          additional_methods:
+            - name: GetPipelinesByOrganization
+              params:
+                - organizationId
       allOf:
         - $ref: "#/components/schemas/Base"
         - $ref: "#/components/schemas/OrganizationReference"
@@ -3102,6 +3161,28 @@ components:
           additionalProperties: false
     Run:
       description: Schema for Run entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - pipelineId
+            - organizationId
+            - toolId
+          additional_methods:
+            - name: GetRunsByPipeline
+              params:
+                - pipelineId
+            - name: GetRunsByOrganization
+              params:
+                - organizationId
+            - name: GetRunsByTool
+              params:
+                - toolId
       type: object
       properties:
         createdAt:
@@ -3179,6 +3260,20 @@ components:
       additionalProperties: false
     Tool:
       description: Schema for Tool entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - organizationId
+          additional_methods:
+            - name: GetToolsByOrganization
+              params:
+                - organizationId
       type: object
       properties:
         createdAt:
@@ -3236,6 +3331,24 @@ components:
       additionalProperties: false
     Artifact:
       description: Schema for Artifact entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - organizationId
+            - producerId
+          additional_methods:
+            - name: GetArtifactsByOrganization
+              params:
+                - organizationId
+            - name: GetArtifactsByProducer
+              params:
+                - producerId
       type: object
       properties:
         createdAt:
@@ -3306,6 +3419,25 @@ components:
       additionalProperties: false
     Label:
       description: Schema for Label entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - organizationId
+            - name
+          additional_methods:
+            - name: GetLabelsByOrganization
+              params:
+                - organizationId
+            - name: GetLabelByName
+              params:
+                - name
+                - organizationId
       type: object
       properties:
         createdAt:

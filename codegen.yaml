@@ -5,8 +5,8 @@ output: internal
 # Which generators to run (all enabled by default)
 generators:
   repository: true
-  cache: true
-  events: true
+  cache: false
+  events: false
   handlers: false # Not implemented yet
   adapters: true
   defaults: true

@@ -10,7 +10,6 @@ import (
 type Service struct {
 	startTime time.Time
 	logger    *slog.Logger
-	// Add database, redis, etc. dependencies here when needed
 }
 
 // NewService creates a new health service

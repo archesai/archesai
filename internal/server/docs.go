@@ -1,5 +1,5 @@
-// Package http provides HTTP server implementation and middleware
-package http
+// Package server provides HTTP server implementation and middleware
+package server
 
 import (
 	_ "embed"
@@ -11,12 +11,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed docs.html
+//go:embed assets/docs.html
 var docsHTML []byte
 
 // SetupDocs configures API documentation endpoints
 func (s *Server) SetupDocs() error {
-	if !s.config.DocsEnabled {
+	if !s.config.Docs {
 		s.logger.Info("API documentation disabled")
 		return nil
 	}

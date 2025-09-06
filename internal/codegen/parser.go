@@ -576,7 +576,9 @@ func (p *Parser) inferDomain(filePath, schemaName string) string {
 		return "workflows"
 	case strings.Contains(schemaLower, "content") ||
 		strings.Contains(schemaLower, "block") ||
-		strings.Contains(schemaLower, "page"):
+		strings.Contains(schemaLower, "page") ||
+		strings.Contains(schemaLower, "artifact") ||
+		strings.Contains(schemaLower, "label"):
 		return "content"
 	default:
 		return "common"
@@ -597,7 +599,7 @@ func (p *Parser) matchesTags(schemaName string, tags map[string]bool) bool {
 		"Sessions":      {"Session", "SessionToken"},
 		"Organizations": {"Organization", "Member", "Team"},
 		"Workflows":     {"Workflow", "Pipeline", "Run", "Tool"},
-		"Content":       {"Content", "Block", "Page"},
+		"Content":       {"Content", "Block", "Page", "Artifact", "Label"},
 	}
 
 	for tag, schemaPatterns := range patterns {

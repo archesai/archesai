@@ -17,7 +17,7 @@ import (
 	"github.com/archesai/archesai/internal/database/sqlite"
 	"github.com/archesai/archesai/internal/health"
 	"github.com/archesai/archesai/internal/organizations"
-	serverhttp "github.com/archesai/archesai/internal/server/http"
+	"github.com/archesai/archesai/internal/server"
 	"github.com/archesai/archesai/internal/workflows"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -31,7 +31,7 @@ type App struct {
 	SqliteQueries *sqlite.Queries     // SQLite queries (if using SQLite)
 	Logger        *slog.Logger
 	Config        *config.Config
-	Server        *serverhttp.Server // The HTTP server
+	Server        *server.Server // The HTTP server
 
 	// Auth domain
 	AuthRepository auth.Repository
@@ -196,12 +196,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// configHandler := config.NewHandler(cfg, logger)
 
 	// Create the HTTP server
-	serverConfig := &serverhttp.Config{
-		Port:           fmt.Sprintf("%d", int(cfg.Api.Port)),
-		AllowedOrigins: cfg.GetAllowedOrigins(),
-		DocsEnabled:    cfg.Api.Docs,
-	}
-	httpServer := serverhttp.NewServer(serverConfig, logger)
+	httpServer := server.NewServer(&cfg.Api, logger)
 
 	// Create app with all dependencies
 	app := &App{

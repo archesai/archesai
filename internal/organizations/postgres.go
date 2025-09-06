@@ -58,7 +58,13 @@ func (r *PostgresRepository) CreateMember(_ context.Context, _ *Member) (*Member
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
-// GetMember retrieves a member by ID
+// GetMemberByID retrieves a member by ID (generated interface)
+func (r *PostgresRepository) GetMemberByID(_ context.Context, _ uuid.UUID) (*Member, error) {
+	// TODO: Implement after SQL queries are created
+	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
+}
+
+// GetMember retrieves a member by ID (custom interface)
 func (r *PostgresRepository) GetMember(_ context.Context, _ uuid.UUID) (*Member, error) {
 	// TODO: Implement after SQL queries are created
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
@@ -71,7 +77,7 @@ func (r *PostgresRepository) GetMemberByUserAndOrg(_ context.Context, _, _ strin
 }
 
 // UpdateMember updates a member
-func (r *PostgresRepository) UpdateMember(_ context.Context, _ *Member) (*Member, error) {
+func (r *PostgresRepository) UpdateMember(_ context.Context, _ uuid.UUID, _ *Member) (*Member, error) {
 	// TODO: Implement after SQL queries are created
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
@@ -83,7 +89,7 @@ func (r *PostgresRepository) DeleteMember(_ context.Context, _ uuid.UUID) error 
 }
 
 // ListMembers retrieves a list of members
-func (r *PostgresRepository) ListMembers(_ context.Context, _ string, _, _ int) ([]*Member, int, error) {
+func (r *PostgresRepository) ListMembers(_ context.Context, _ ListMembersParams) ([]*Member, int64, error) {
 	// TODO: Implement after SQL queries are created
 	return nil, 0, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }

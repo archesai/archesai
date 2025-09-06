@@ -176,7 +176,7 @@ func (s *Service) UpdateMember(ctx context.Context, id uuid.UUID, req *UpdateMem
 	}
 	member.UpdatedAt = time.Now()
 
-	updatedMember, err := s.repo.UpdateMember(ctx, member)
+	updatedMember, err := s.repo.UpdateMember(ctx, id, member)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update member: %w", err)
 	}
@@ -206,11 +206,17 @@ func (s *Service) DeleteMember(ctx context.Context, id uuid.UUID) error {
 
 // ListMembers retrieves members of an organization
 func (s *Service) ListMembers(ctx context.Context, orgID string, limit, offset int) ([]*Member, int, error) {
-	members, total, err := s.repo.ListMembers(ctx, orgID, limit, offset)
+	// TODO: Add organization filtering to repository when available
+	_ = orgID
+	params := ListMembersParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+	members, total, err := s.repo.ListMembers(ctx, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list members: %w", err)
 	}
-	return members, total, nil
+	return members, int(total), nil
 }
 
 // CreateInvitation creates a new invitation

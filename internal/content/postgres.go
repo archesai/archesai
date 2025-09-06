@@ -26,13 +26,13 @@ func (r *PostgresRepository) CreateArtifact(_ context.Context, _ *Artifact) (*Ar
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
-// GetArtifact retrieves an artifact by ID
-func (r *PostgresRepository) GetArtifact(_ context.Context, _ uuid.UUID) (*Artifact, error) {
+// GetArtifactByID retrieves an artifact by ID
+func (r *PostgresRepository) GetArtifactByID(_ context.Context, _ uuid.UUID) (*Artifact, error) {
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
 // UpdateArtifact updates an artifact
-func (r *PostgresRepository) UpdateArtifact(_ context.Context, _ *Artifact) (*Artifact, error) {
+func (r *PostgresRepository) UpdateArtifact(_ context.Context, _ uuid.UUID, _ *Artifact) (*Artifact, error) {
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
@@ -42,7 +42,7 @@ func (r *PostgresRepository) DeleteArtifact(_ context.Context, _ uuid.UUID) erro
 }
 
 // ListArtifacts retrieves a list of artifacts
-func (r *PostgresRepository) ListArtifacts(_ context.Context, _ string, _, _ int) ([]*Artifact, int, error) {
+func (r *PostgresRepository) ListArtifacts(_ context.Context, _ ListArtifactsParams) ([]*Artifact, int64, error) {
 	return nil, 0, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
@@ -56,8 +56,8 @@ func (r *PostgresRepository) CreateLabel(_ context.Context, _ *Label) (*Label, e
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
-// GetLabel retrieves a label by ID
-func (r *PostgresRepository) GetLabel(_ context.Context, _ uuid.UUID) (*Label, error) {
+// GetLabelByID retrieves a label by ID
+func (r *PostgresRepository) GetLabelByID(_ context.Context, _ uuid.UUID) (*Label, error) {
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
@@ -67,7 +67,7 @@ func (r *PostgresRepository) GetLabelByName(_ context.Context, _, _ string) (*La
 }
 
 // UpdateLabel updates a label
-func (r *PostgresRepository) UpdateLabel(_ context.Context, _ *Label) (*Label, error) {
+func (r *PostgresRepository) UpdateLabel(_ context.Context, _ uuid.UUID, _ *Label) (*Label, error) {
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
@@ -77,7 +77,7 @@ func (r *PostgresRepository) DeleteLabel(_ context.Context, _ uuid.UUID) error {
 }
 
 // ListLabels retrieves a list of labels
-func (r *PostgresRepository) ListLabels(_ context.Context, _ string, _, _ int) ([]*Label, int, error) {
+func (r *PostgresRepository) ListLabels(_ context.Context, _ ListLabelsParams) ([]*Label, int64, error) {
 	return nil, 0, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 

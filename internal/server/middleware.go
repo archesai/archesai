@@ -1,56 +1,16 @@
-package http
+package server
 
 import (
-	"context"
-	"fmt"
-	"log/slog"
 	"net/http"
-	"os"
-	"os/signal"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-// Server represents the API server
-type Server struct {
-	echo   *echo.Echo
-	config *Config
-	logger *slog.Logger
-}
-
-// Config holds server configuration
-type Config struct {
-	Port           string
-	AllowedOrigins []string
-	DocsEnabled    bool
-}
-
-// NewServer creates a new API server
-func NewServer(config *Config, logger *slog.Logger) *Server {
-	e := echo.New()
-	e.HideBanner = true
-	e.HidePort = true
-
-	server := &Server{
-		echo:   e,
-		config: config,
-		logger: logger,
-	}
-
-	server.setupMiddleware()
-	server.setupInfrastructureRoutes()
-
-	return server
-}
-
-// Echo returns the underlying echo instance for route registration
-func (s *Server) Echo() *echo.Echo {
-	return s.echo
-}
-
-func (s *Server) setupMiddleware() {
+// SetupMiddleware configures all middleware for the server
+func (s *Server) SetupMiddleware() {
 	// Request ID middleware
 	s.echo.Use(middleware.RequestID())
 
@@ -97,7 +57,7 @@ func (s *Server) setupMiddleware() {
 
 	// CORS middleware
 	s.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     s.config.AllowedOrigins,
+		AllowOrigins:     strings.Split(s.config.Cors.Origins, ","),
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "X-Request-ID", "X-Requested-With"},
 		AllowCredentials: true,
@@ -168,77 +128,4 @@ func (s *Server) setupMiddleware() {
 		Timeout:      30 * time.Second,
 		ErrorMessage: "Request timeout",
 	}))
-}
-
-// setupInfrastructureRoutes configures infrastructure routes only
-func (s *Server) setupInfrastructureRoutes() {
-	// Health check - simple liveness probe
-	s.echo.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"status":    "healthy",
-			"timestamp": time.Now().Unix(),
-		})
-	})
-
-	// API version endpoint
-	s.echo.GET("/version", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{
-			"version": "1.0.0",
-			"build":   "development",
-		})
-	})
-
-	// 404 handler - must be registered last (will be overridden when container registers routes)
-	s.echo.RouteNotFound("/*", func(_ echo.Context) error {
-		return echo.NewHTTPError(http.StatusNotFound, "route not found")
-	})
-}
-
-// SetReadinessCheck allows the container to provide a readiness check function
-func (s *Server) SetReadinessCheck(checkFunc func(echo.Context) error) {
-	s.echo.GET("/ready", checkFunc)
-}
-
-// ListenAndServe starts the server without signal handling
-// This is useful when the caller wants to manage the server lifecycle
-func (s *Server) ListenAndServe() error {
-	addr := fmt.Sprintf(":%s", s.config.Port)
-	s.logger.Info("starting server", "address", addr)
-	return s.echo.Start(addr)
-}
-
-// Start starts the server with built-in signal handling
-// This is a convenience method for simple use cases
-func (s *Server) Start() error {
-	// Start server in goroutine
-	go func() {
-		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			s.logger.Error("failed to start server", "error", err)
-			os.Exit(1)
-		}
-	}()
-
-	// Wait for interrupt signal
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-	<-quit
-
-	s.logger.Info("shutting down server...")
-
-	// Graceful shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	if err := s.echo.Shutdown(ctx); err != nil {
-		s.logger.Error("server forced to shutdown", "error", err)
-		return err
-	}
-
-	s.logger.Info("server shutdown complete")
-	return nil
-}
-
-// Shutdown shuts down the server gracefully
-func (s *Server) Shutdown(ctx context.Context) error {
-	return s.echo.Shutdown(ctx)
 }

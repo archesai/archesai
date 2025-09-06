@@ -1,5 +1,14 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for Artifact entity
+x-codegen:
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [organizationId, producerId]
+    additional_methods:
+      - name: GetArtifactsByOrganization
+        params: [organizationId]
+      - name: GetArtifactsByProducer
+        params: [producerId]
 type: object
 properties:
   createdAt:

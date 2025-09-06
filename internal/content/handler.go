@@ -79,7 +79,7 @@ func (h *Handler) CreateArtifact(ctx context.Context, req CreateArtifactRequestO
 	// TODO: Get producer ID from context
 	producerID := "producer-placeholder"
 
-	createReq := &CreateArtifactRequest{
+	createReq := &CreateArtifactJSONRequestBody{
 		Name: req.Body.Name,
 		Text: req.Body.Text,
 	}
@@ -119,7 +119,7 @@ func (h *Handler) GetOneArtifact(ctx context.Context, req GetOneArtifactRequestO
 
 // UpdateArtifact updates an artifact (implements StrictServerInterface)
 func (h *Handler) UpdateArtifact(ctx context.Context, req UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error) {
-	updateReq := &UpdateArtifactRequest{
+	updateReq := &UpdateArtifactJSONRequestBody{
 		Name: req.Body.Name,
 		Text: req.Body.Text,
 	}
@@ -208,7 +208,7 @@ func (h *Handler) CreateLabel(ctx context.Context, req CreateLabelRequestObject)
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	createReq := &CreateLabelRequest{
+	createReq := &CreateLabelJSONRequestBody{
 		Name: req.Body.Name,
 	}
 
@@ -257,7 +257,7 @@ func (h *Handler) GetOneLabel(ctx context.Context, req GetOneLabelRequestObject)
 
 // UpdateLabel updates a label (implements StrictServerInterface)
 func (h *Handler) UpdateLabel(ctx context.Context, req UpdateLabelRequestObject) (UpdateLabelResponseObject, error) {
-	updateReq := &UpdateLabelRequest{
+	updateReq := &UpdateLabelJSONRequestBody{
 		Name: req.Body.Name,
 	}
 

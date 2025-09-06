@@ -1,5 +1,16 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for Member entity
+x-codegen:
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [organizationId, userId]
+    additional_methods:
+      - name: GetMembersByOrganization
+        params: [organizationId]
+      - name: GetMembersByUser
+        params: [userId]
+      - name: GetMemberByUserAndOrganization
+        params: [userId, organizationId]
 type: object
 properties:
   createdAt:

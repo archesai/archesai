@@ -55,7 +55,12 @@ func (r *SQLiteRepository) CreateMember(_ context.Context, _ *Member) (*Member, 
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
-// GetMember retrieves a member by ID
+// GetMemberByID retrieves a member by ID (generated interface)
+func (r *SQLiteRepository) GetMemberByID(_ context.Context, _ uuid.UUID) (*Member, error) {
+	return nil, fmt.Errorf("SQLite implementation not yet available")
+}
+
+// GetMember retrieves a member by ID (custom interface)
 func (r *SQLiteRepository) GetMember(_ context.Context, _ uuid.UUID) (*Member, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
@@ -66,7 +71,7 @@ func (r *SQLiteRepository) GetMemberByUserAndOrg(_ context.Context, _, _ string)
 }
 
 // UpdateMember updates a member
-func (r *SQLiteRepository) UpdateMember(_ context.Context, _ *Member) (*Member, error) {
+func (r *SQLiteRepository) UpdateMember(_ context.Context, _ uuid.UUID, _ *Member) (*Member, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -76,7 +81,7 @@ func (r *SQLiteRepository) DeleteMember(_ context.Context, _ uuid.UUID) error {
 }
 
 // ListMembers lists members of an organization
-func (r *SQLiteRepository) ListMembers(_ context.Context, _ string, _, _ int) ([]*Member, int, error) {
+func (r *SQLiteRepository) ListMembers(_ context.Context, _ ListMembersParams) ([]*Member, int64, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }
 

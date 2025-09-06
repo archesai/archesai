@@ -28,13 +28,9 @@ type (
 	OrganizationRepository interface {
 		Repository
 
-		// Member operations
-		CreateMember(ctx context.Context, member *Member) (*Member, error)
+		// Additional Member operations not in generated interface
 		GetMember(ctx context.Context, id uuid.UUID) (*Member, error)
 		GetMemberByUserAndOrg(ctx context.Context, userID, orgID string) (*Member, error)
-		UpdateMember(ctx context.Context, member *Member) (*Member, error)
-		DeleteMember(ctx context.Context, id uuid.UUID) error
-		ListMembers(ctx context.Context, orgID string, limit, offset int) ([]*Member, int, error)
 
 		// Invitation operations
 		CreateInvitation(ctx context.Context, invitation *Invitation) (*Invitation, error)

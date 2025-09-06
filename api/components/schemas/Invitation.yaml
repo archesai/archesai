@@ -1,5 +1,16 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for Invitation entity
+x-codegen:
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [organizationId, email, inviterId]
+    additional_methods:
+      - name: GetInvitationsByOrganization
+        params: [organizationId]
+      - name: GetInvitationByEmail
+        params: [email, organizationId]
+      - name: GetInvitationsByInviter
+        params: [inviterId]
 type: object
 properties:
   createdAt:

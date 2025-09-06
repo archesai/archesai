@@ -1,5 +1,14 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for Label entity
+x-codegen:
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [organizationId, name]
+    additional_methods:
+      - name: GetLabelsByOrganization
+        params: [organizationId]
+      - name: GetLabelByName
+        params: [name, organizationId]
 type: object
 properties:
   createdAt:

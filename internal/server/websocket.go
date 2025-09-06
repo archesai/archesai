@@ -1,4 +1,4 @@
-package http
+package server
 
 import (
 	"fmt"
@@ -10,10 +10,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// websocketHandler handles WebSocket connections (currently unused)
+// WebsocketHandler handles WebSocket connections (currently unused)
 // TODO: Remove if not needed or implement WebSocket functionality
 // nolint:unused // Preserved for future WebSocket implementation
-func (s *Server) websocketHandler(c echo.Context) error {
+func (s *Server) WebsocketHandler(c echo.Context) error {
 	w := c.Response().Writer
 	r := c.Request()
 	socket, err := websocket.Accept(w, r, nil)

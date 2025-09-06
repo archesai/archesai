@@ -31,26 +31,24 @@ Each domain uses a flat package structure with clear naming conventions:
 internal/auth/
 ├── auth.go                    # Package constants and errors
 ├── service.go                 # Business logic (manual)
-├── handler_http.go            # HTTP handler implementation (manual)
-├── handler_http.gen.go        # Generated HTTP interfaces
+├── handler.go                 # HTTP handler implementation (manual)
+├── http.gen.go                # Generated HTTP interface (ServerInterface)
 ├── middleware_http.go         # Authentication middleware
 ├── repository_postgres.go     # PostgreSQL repository (manual)
 ├── repository_sqlite.go       # SQLite repository (manual)
 ├── repository.gen.go          # Generated repository interface
-├── models.gen.go              # Generated OpenAPI types
-├── models.cfg.yaml            # OpenAPI codegen config
-├── server.cfg.yaml            # Server codegen config
-├── cache.gen.go               # Generated cache interface
-├── cache_memory.gen.go        # Memory cache implementation
-├── cache_redis.gen.go         # Redis cache implementation
-├── events.gen.go              # Generated event types
-├── events_redis.gen.go        # Redis event publisher
-└── events_nats.gen.go         # NATS event publisher
+├── types.gen.go               # Generated OpenAPI types
+├── cache.gen.go               # Generated cache interface (future)
+├── cache_memory.gen.go        # Memory cache implementation (future)
+├── cache_redis.gen.go         # Redis cache implementation (future)
+├── events.gen.go              # Generated event types (future)
+├── events_redis.gen.go        # Redis event publisher (future)
+└── events_nats.gen.go         # NATS event publisher (future)
 ```
 
 ## Code Generation Pipeline
 
-### 1. OpenAPI → Go Types
+### 1. OpenAPI → Go Types & Interfaces
 
 Define schemas in `api/components/schemas/`:
 
@@ -61,6 +59,10 @@ User:
   x-codegen:
     repository:
       operations: [create, read, update, delete, list]
+      indices: [email]
+      additional_methods:
+        - name: GetUserByEmail
+          params: [email]
     cache:
       enabled: true
       ttl: 300
@@ -81,6 +83,12 @@ User:
         unique: true
         index: true
 ```
+
+This generates:
+
+- `types.gen.go` - OpenAPI types (User struct)
+- `http.gen.go` - ServerInterface with HTTP handler methods
+- `repository.gen.go` - Repository interface with CRUD operations
 
 ### 2. SQL → Database Code
 
@@ -108,8 +116,32 @@ RETURNING *;
 make generate         # Run all generators
 make generate-sqlc    # Database queries only
 make generate-oapi    # OpenAPI types only
-make generate-codegen # Domain code only
+make generate-codegen # Repository interfaces from x-codegen
 ```
+
+### Current Generation Status
+
+✅ **Working:**
+
+- OpenAPI types generation (`types.gen.go`)
+- HTTP handler interfaces (`http.gen.go`)
+- Repository interfaces for schemas with x-codegen:
+  - Auth: User, Session, Account
+  - Organizations: Organization, Member, Invitation
+  - Workflows: Pipeline, Run
+  - Content: Artifact, Label
+
+⚠️ **In Progress:**
+
+- Tool entity (has x-codegen but not generating)
+- Cache interfaces (x-codegen defined but generator not active)
+- Event publishers (x-codegen defined but generator not active)
+
+📝 **Manual Implementation Required:**
+
+- Repository implementations (PostgreSQL/SQLite)
+- Service business logic
+- HTTP handler implementations
 
 ## Adding a New Feature
 
@@ -188,7 +220,7 @@ func (s *Service) GetUserProfile(ctx context.Context, userID uuid.UUID) (*UserPr
 
 ### Step 5: Implement HTTP Handler
 
-Update `internal/auth/handler_http.go`:
+Update `internal/auth/handler.go`:
 
 ```go
 func (h *Handler) GetUserProfile(ctx echo.Context, id openapi_types.UUID) error {
@@ -281,7 +313,7 @@ func TestPostgresRepository_CreateUser(t *testing.T) {
 Test HTTP endpoints:
 
 ```go
-// internal/auth/handler_http_test.go
+// internal/auth/handler_test.go
 func TestHandler_Login(t *testing.T) {
     e := echo.New()
     req := httptest.NewRequest(http.MethodPost, "/api/auth/login",
@@ -498,6 +530,79 @@ go func() {
 ```
 
 Access profiles at http://localhost:6060/debug/pprof/
+
+## Troubleshooting
+
+### Repository Not Generating
+
+If a domain's repository isn't being generated despite having x-codegen:
+
+1. **Check schema name detection** in `internal/codegen/parser.go`:
+
+```go
+// The inferDomain function must detect your schema
+case strings.Contains(schemaLower, "artifact") ||
+     strings.Contains(schemaLower, "label"):
+    return "content"
+```
+
+2. **Verify x-codegen annotation**:
+
+```yaml
+x-codegen:
+  repository:
+    operations: [create, read, update, delete, list]
+```
+
+3. **Rebundle OpenAPI spec**:
+
+```bash
+make bundle
+make generate-codegen
+```
+
+### Method Signature Mismatches
+
+If you get errors like "GetArtifact undefined":
+
+1. Generated repository uses standardized names:
+   - `GetArtifactByID` (not `GetArtifact`)
+   - `UpdateArtifact(ctx, id, entity)` (not `UpdateArtifact(ctx, entity)`)
+
+2. Update service calls to match:
+
+```go
+// Before
+artifact, err := s.repo.GetArtifact(ctx, id)
+
+// After
+artifact, err := s.repo.GetArtifactByID(ctx, id)
+```
+
+### Package Conflicts
+
+If you get "found packages X and Y in same directory":
+
+1. Ensure all files in a directory use the same package name
+2. Check generated files match manual files:
+   - `internal/server/http/` → `package http`
+   - `internal/auth/` → `package auth`
+
+### Unused Parameter Warnings
+
+For stub implementations, use underscore:
+
+```go
+// Instead of:
+func (r *Repository) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+    panic("unimplemented")
+}
+
+// Use:
+func (r *Repository) GetUser(_ context.Context, _ uuid.UUID) (*User, error) {
+    panic("unimplemented")
+}
+```
 
 ## Best Practices
 
