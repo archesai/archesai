@@ -2,8 +2,8 @@
 // organization CRUD operations, member management, and invitation handling.
 package organizations
 
-//go:generate go tool oapi-codegen --config=models.cfg.yaml ../../api/openapi.bundled.yaml
-//go:generate go tool oapi-codegen --config=server.cfg.yaml ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../types.codegen.yaml --package organizations --include-tags Organizations,Members,Invitations ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../server.codegen.yaml --package organizations --include-tags Organizations,Members,Invitations ../../api/openapi.bundled.yaml
 
 import (
 	"context"

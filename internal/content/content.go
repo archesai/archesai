@@ -2,8 +2,8 @@
 // artifact storage and organization, and label management for content categorization.
 package content
 
-//go:generate go tool oapi-codegen --config=models.cfg.yaml ../../api/openapi.bundled.yaml
-//go:generate go tool oapi-codegen --config=server.cfg.yaml ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../types.codegen.yaml  --package content --include-tags Content ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../server.codegen.yaml  --package content --include-tags Content  ../../api/openapi.bundled.yaml
 
 import "errors"
 

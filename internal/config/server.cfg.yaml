@@ -1,9 +1,0 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
-package: config
-output: handler_http.gen.go
-generate:
-  echo-server: true
-  strict-server: true
-output-options:
-  include-tags:
-    - Config

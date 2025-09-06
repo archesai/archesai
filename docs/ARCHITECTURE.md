@@ -2,318 +2,269 @@
 
 ## Overview
 
-ArchesAI follows a **Hexagonal Architecture** (Ports and Adapters) pattern combined with **Domain-Driven Design (DDD)** principles. This architecture ensures separation of concerns, testability, and maintainability while keeping the business logic independent of external dependencies.
+ArchesAI implements **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design** principles, ensuring separation of concerns, testability, and business logic independence from infrastructure.
 
-## Core Architectural Principles
+## Core Principles
 
-### 1. Hexagonal Architecture
+### Hexagonal Architecture
 
-The hexagonal architecture isolates the core business logic from external concerns:
+- **Core Domain**: Business logic and rules
+- **Ports**: Interfaces defining external interactions
+- **Adapters**: Implementations connecting to external systems
+
+### Dependency Rule
+
+Dependencies flow inward toward the domain core:
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Presentation Layer                    │
-│                  (HTTP Handlers, CLI)                    │
-└────────────────────────┬───────────────────────────────┘
-                         │
-┌────────────────────────▼───────────────────────────────┐
-│                    Application Layer                    │
-│               (Use Cases, Orchestration)                │
-└────────────────────────┬───────────────────────────────┘
-                         │
-┌────────────────────────▼───────────────────────────────┐
-│                     Domain Layer                        │
-│            (Entities, Business Rules, Ports)            │
-└────────────────────────┬───────────────────────────────┘
-                         │
-┌────────────────────────▼───────────────────────────────┐
-│                 Infrastructure Layer                    │
-│        (Database, External APIs, File System)           │
-└─────────────────────────────────────────────────────────┘
+External World → Adapters → Ports → Domain Core
 ```
 
-### 2. Domain-Driven Design
+### Domain Isolation
 
-Each bounded context represents a distinct business domain:
+Each bounded context (auth, organizations, workflows, content) operates independently with:
 
-- **Auth Domain**: User authentication and authorization
-- **Organizations Domain**: Multi-tenant organization management
-- **Workflows Domain**: DAG-based data processing pipelines
-- **Content Domain**: Artifact and content management
-
-### 3. Clean Architecture Principles
-
-- **Dependency Rule**: Dependencies point inward toward the domain
-- **Interface Segregation**: Small, focused interfaces
-- **Dependency Inversion**: Depend on abstractions, not concretions
-- **Single Responsibility**: Each component has one reason to change
+- Own entities and business rules
+- Dedicated database tables
+- Separate API endpoints
+- No cross-domain imports
 
 ## System Architecture
 
-### High-Level Architecture
+### High-Level Components
 
 ```mermaid
 graph TB
     subgraph "Client Layer"
-        WEB[React Web App]
+        WEB[React SPA]
         CLI[CLI Tools]
-        API_CLIENT[API Clients]
+        SDK[TypeScript SDK]
     end
 
-    subgraph "API Gateway"
-        NGINX[Nginx/Load Balancer]
-    end
-
-    subgraph "Application Layer"
+    subgraph "API Layer"
+        GATEWAY[API Gateway/Load Balancer]
         API[REST API Server]
-        WORKER[Background Workers]
-        WEBHOOK[Webhook Service]
+        DOCS[OpenAPI Docs]
+    end
+
+    subgraph "Business Layer"
+        AUTH[Auth Domain]
+        ORG[Organizations Domain]
+        WORK[Workflows Domain]
+        CONT[Content Domain]
     end
 
     subgraph "Data Layer"
-        PG[(PostgreSQL)]
+        PG[(PostgreSQL + pgvector)]
         REDIS[(Redis Cache)]
         S3[Object Storage]
-        VECTOR[(Vector DB)]
     end
 
     subgraph "External Services"
-        AUTH_PROVIDER[OAuth Providers]
-        AI_SERVICE[AI/ML Services]
+        OAUTH[OAuth Providers]
+        AI[AI/ML Services]
         EMAIL[Email Service]
     end
 
-    WEB --> NGINX
-    CLI --> NGINX
-    API_CLIENT --> NGINX
+    WEB --> GATEWAY
+    CLI --> GATEWAY
+    SDK --> GATEWAY
 
-    NGINX --> API
-    API --> PG
-    API --> REDIS
-    API --> S3
-    API --> VECTOR
+    GATEWAY --> API
+    API --> DOCS
 
-    WORKER --> PG
-    WORKER --> S3
-    WORKER --> AI_SERVICE
+    API --> AUTH
+    API --> ORG
+    API --> WORK
+    API --> CONT
 
-    API --> AUTH_PROVIDER
-    API --> EMAIL
-    WEBHOOK --> API
+    AUTH --> PG
+    AUTH --> REDIS
+    ORG --> PG
+    WORK --> PG
+    WORK --> S3
+    CONT --> PG
+    CONT --> S3
+
+    AUTH --> OAUTH
+    AUTH --> EMAIL
+    WORK --> AI
 ```
 
-### Component Architecture
-
-```mermaid
-graph LR
-    subgraph "API Server"
-        HANDLER[HTTP Handlers]
-        MIDDLEWARE[Middleware]
-        ROUTER[Router]
-    end
-
-    subgraph "Domain Layer"
-        USE_CASE[Use Cases]
-        ENTITY[Entities]
-        PORT[Port Interfaces]
-    end
-
-    subgraph "Infrastructure"
-        REPO[Repositories]
-        SERVICE[External Services]
-        ADAPTER[Adapters]
-    end
-
-    ROUTER --> HANDLER
-    HANDLER --> MIDDLEWARE
-    MIDDLEWARE --> USE_CASE
-    USE_CASE --> PORT
-    PORT --> REPO
-    PORT --> SERVICE
-    REPO --> ADAPTER
-```
-
-## Project Structure
-
-### Directory Layout
-
-```
-archesai/
-├── api/                          # API Specifications
-│   ├── openapi.yaml             # Main OpenAPI spec
-│   ├── paths/                   # Path definitions
-│   │   ├── auth.yaml
-│   │   ├── organizations.yaml
-│   │   └── workflows.yaml
-│   └── components/              # Reusable components
-│       ├── schemas/
-│       ├── parameters/
-│       └── responses/
-│
-├── cmd/                         # Application Entry Points
-│   ├── archesai/               # Main server
-│   │   └── main.go
-│   ├── worker/                 # Background worker
-│   │   └── main.go
-│   └── cli/                    # CLI tool
-│       └── main.go
-│
-├── internal/                    # Private Application Code
-│   ├── app/                    # Application Assembly
-│   │   ├── deps.go            # Dependency injection
-│   │   ├── routes.go          # Route registration
-│   │   ├── middleware.go      # Global middleware
-│   │   └── server.go          # Server configuration
-│   │
-│   ├── auth/                   # Auth Domain
-│   │   ├── domain/            # Core business logic
-│   │   │   ├── entities.go   # Domain entities
-│   │   │   ├── ports.go      # Repository interfaces
-│   │   │   ├── usecase.go    # Business use cases
-│   │   │   └── types.gen.go  # Generated types
-│   │   ├── adapters/          # Infrastructure adapters
-│   │   │   ├── postgres/     # PostgreSQL implementation
-│   │   │   └── adapters.gen.go
-│   │   ├── handlers/          # HTTP handlers
-│   │   │   └── http/
-│   │   └── generated/         # Generated code
-│   │
-│   ├── organizations/          # Organizations Domain
-│   ├── workflows/              # Workflows Domain
-│   ├── content/                # Content Domain
-│   │
-│   ├── database/               # Database Layer
-│   │   ├── postgresql/        # Generated SQLC code
-│   │   ├── queries/           # SQL queries
-│   │   └── migrations/        # Database migrations
-│   │
-│   ├── config/                 # Configuration
-│   │   ├── config.go
-│   │   └── defaults.gen.go
-│   │
-│   └── middleware/             # Shared Middleware
-│       ├── auth.go
-│       ├── cors.go
-│       └── ratelimit.go
-│
-├── pkg/                        # Public Packages
-│   ├── errors/                # Error handling
-│   ├── logger/                # Logging utilities
-│   └── validator/             # Validation helpers
-│
-├── web/                        # Frontend Applications
-│   ├── platform/              # Main React app
-│   ├── client/                # TypeScript API client
-│   └── ui/                    # Shared UI components
-│
-└── deployments/                # Deployment Configurations
-    ├── docker/                # Dockerfiles
-    ├── kubernetes/            # K8s manifests
-    └── terraform/             # Infrastructure as Code
-```
-
-## Domain Architecture
-
-### Domain Structure
-
-Each domain follows this structure:
-
-```
-domain/
-├── domain/                     # Core Business Logic
-│   ├── entities.go            # Domain entities
-│   ├── ports.go              # Repository interfaces
-│   ├── usecase.go            # Business use cases
-│   ├── errors.go             # Domain-specific errors
-│   └── types.gen.go          # Generated types from OpenAPI
-│
-├── adapters/                   # Adapters Layer
-│   ├── postgres/              # Database implementation
-│   │   └── repository.go     # Repository implementation
-│   ├── http/                  # HTTP adapters
-│   │   └── dto.go           # Data transfer objects
-│   └── adapters.gen.go       # Generated type converters
-│
-├── handlers/                   # Presentation Layer
-│   └── http/
-│       ├── handler.go        # HTTP request handlers
-│       └── routes.go         # Route definitions
-│
-└── generated/                  # Generated Code
-    └── api/
-        ├── server.gen.go     # Generated server interface
-        └── types.gen.go      # Generated request/response types
-```
-
-### Domain Interactions
+### Request Flow
 
 ```mermaid
 sequenceDiagram
     participant Client
     participant Handler
-    participant UseCase
+    participant Middleware
+    participant Service
     participant Repository
     participant Database
 
     Client->>Handler: HTTP Request
-    Handler->>Handler: Validate Input
-    Handler->>UseCase: Execute Business Logic
-    UseCase->>Repository: Query/Command
+    Handler->>Middleware: Authentication
+    Middleware->>Handler: User Context
+    Handler->>Service: Business Operation
+    Service->>Repository: Data Operation
     Repository->>Database: SQL Query
-    Database-->>Repository: Result
-    Repository-->>UseCase: Domain Entity
-    UseCase-->>Handler: Response
-    Handler-->>Client: HTTP Response
+    Database->>Repository: Result
+    Repository->>Service: Domain Entity
+    Service->>Handler: Response
+    Handler->>Client: HTTP Response
+```
+
+## Domain Architecture
+
+### Flat Package Structure
+
+Each domain follows a flat package structure for simplicity:
+
+```
+internal/auth/
+├── auth.go                    # Package documentation, constants, errors
+├── service.go                 # Business logic and use cases
+├── handler_http.go            # HTTP request handlers
+├── handler_http.gen.go        # Generated HTTP server interface
+├── middleware_http.go         # HTTP middleware (auth domain only)
+├── repository_postgres.go     # PostgreSQL repository implementation
+├── repository_sqlite.go       # SQLite repository implementation
+├── repository.gen.go          # Generated repository interface
+├── models.gen.go              # Generated OpenAPI types
+├── cache.gen.go               # Generated cache interface
+├── cache_memory.gen.go        # In-memory cache implementation
+├── cache_redis.gen.go         # Redis cache implementation
+├── events.gen.go              # Generated event definitions
+├── events_redis.gen.go        # Redis event publisher
+└── events_nats.gen.go         # NATS event publisher
+```
+
+### Service Layer Pattern
+
+The service layer orchestrates business operations:
+
+```go
+type Service struct {
+    repo   Repository      // Data persistence
+    cache  Cache          // Performance optimization
+    events EventPublisher // Event-driven communication
+}
+
+// Business operation example
+func (s *Service) CreateUser(ctx context.Context, req CreateUserRequest) (*User, error) {
+    // 1. Validate business rules
+    if err := s.validateUserCreation(req); err != nil {
+        return nil, err
+    }
+
+    // 2. Execute business logic
+    user := &User{
+        ID:    uuid.New(),
+        Email: req.Email,
+        Name:  req.Name,
+    }
+
+    // 3. Persist to repository
+    if err := s.repo.CreateUser(ctx, user); err != nil {
+        return nil, err
+    }
+
+    // 4. Update cache
+    _ = s.cache.SetUser(ctx, user, 5*time.Minute)
+
+    // 5. Publish domain event
+    _ = s.events.PublishUserCreated(ctx, user)
+
+    return user, nil
+}
+```
+
+### Repository Pattern
+
+Repositories abstract data persistence:
+
+```go
+// Port (interface) defined by domain
+type Repository interface {
+    CreateUser(ctx context.Context, user *User) error
+    GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
+    GetUserByEmail(ctx context.Context, email string) (*User, error)
+    UpdateUser(ctx context.Context, user *User) error
+    DeleteUser(ctx context.Context, id uuid.UUID) error
+}
+
+// Adapter (implementation) in infrastructure
+type PostgresRepository struct {
+    queries *postgresql.Queries
+}
+
+func (r *PostgresRepository) CreateUser(ctx context.Context, user *User) error {
+    _, err := r.queries.CreateUser(ctx, postgresql.CreateUserParams{
+        Id:           user.ID.String(),
+        Email:        user.Email,
+        Name:         user.Name,
+        PasswordHash: user.PasswordHash,
+    })
+    return err
+}
 ```
 
 ## Data Flow Architecture
 
-### Request Processing Pipeline
-
-1. **Client Request** → Load Balancer
-2. **Load Balancer** → API Server
-3. **API Server** → Router
-4. **Router** → Middleware Chain
-5. **Middleware** → Handler
-6. **Handler** → Use Case
-7. **Use Case** → Repository/Service
-8. **Repository** → Database
-9. **Response** flows back through the same layers
-
-### Workflow Execution Architecture
+### Code Generation Pipeline
 
 ```mermaid
-graph TD
-    subgraph "Workflow Engine"
-        SCHEDULER[Scheduler]
-        EXECUTOR[DAG Executor]
-        TASK_QUEUE[Task Queue]
-    end
+graph LR
+    OPENAPI[OpenAPI Spec] --> CODEGEN[Code Generator]
+    SQL[SQL Queries] --> SQLC[SQLC Generator]
 
-    subgraph "Workers"
-        WORKER1[Worker 1]
-        WORKER2[Worker 2]
-        WORKER3[Worker N]
-    end
+    CODEGEN --> TYPES[Go Types]
+    CODEGEN --> HANDLERS[HTTP Handlers]
+    CODEGEN --> CACHE[Cache Interfaces]
+    CODEGEN --> EVENTS[Event Publishers]
 
-    subgraph "Tools"
-        TEXT_TOOL[Text Processing]
-        IMAGE_TOOL[Image Processing]
-        EMBED_TOOL[Embedding Generation]
-        CUSTOM_TOOL[Custom Tools]
-    end
+    SQLC --> QUERIES[Database Queries]
+    SQLC --> MODELS[Database Models]
 
-    API --> SCHEDULER
-    SCHEDULER --> TASK_QUEUE
-    TASK_QUEUE --> EXECUTOR
-    EXECUTOR --> WORKER1
-    EXECUTOR --> WORKER2
-    EXECUTOR --> WORKER3
+    TYPES --> SERVICE[Service Layer]
+    HANDLERS --> SERVICE
+    QUERIES --> REPO[Repository]
 
-    WORKER1 --> TEXT_TOOL
-    WORKER2 --> IMAGE_TOOL
-    WORKER3 --> EMBED_TOOL
-    WORKER3 --> CUSTOM_TOOL
+    SERVICE --> REPO
+    SERVICE --> CACHE
+    SERVICE --> EVENTS
+```
+
+### Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant API
+    participant AuthMiddleware
+    participant AuthService
+    participant Database
+    participant JWT
+
+    User->>API: POST /auth/login
+    API->>AuthService: Authenticate(email, password)
+    AuthService->>Database: GetUserByEmail
+    Database->>AuthService: User
+    AuthService->>AuthService: VerifyPassword
+    AuthService->>JWT: GenerateTokens
+    JWT->>AuthService: AccessToken, RefreshToken
+    AuthService->>Database: CreateSession
+    AuthService->>API: Tokens
+    API->>User: 200 OK + Tokens
+
+    User->>API: GET /api/resource + Bearer Token
+    API->>AuthMiddleware: ValidateToken
+    AuthMiddleware->>JWT: VerifyToken
+    JWT->>AuthMiddleware: Claims
+    AuthMiddleware->>Database: GetSession
+    Database->>AuthMiddleware: Session
+    AuthMiddleware->>API: User Context
+    API->>User: 200 OK + Resource
 ```
 
 ## Database Architecture
@@ -321,484 +272,374 @@ graph TD
 ### Schema Design
 
 ```sql
--- Core Tables
-users
-organizations
-organization_members
+-- Multi-tenant foundation
+CREATE TABLE organizations (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    plan VARCHAR(50) DEFAULT 'free',
+    credits INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
--- Auth Tables
-sessions
-accounts
-verification_tokens
+-- User management
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
--- Workflow Tables
-workflows
-workflow_runs
-workflow_nodes
-workflow_edges
+-- Organization membership
+CREATE TABLE members (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    organization_id UUID REFERENCES organizations(id),
+    role VARCHAR(50) NOT NULL,
+    UNIQUE(user_id, organization_id)
+);
 
--- Content Tables
-artifacts
-artifact_embeddings
-labels
-artifact_labels
+-- Session management
+CREATE TABLE sessions (
+    token VARCHAR(255) PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    expires_at TIMESTAMP NOT NULL,
+    active_organization_id UUID REFERENCES organizations(id)
+);
 
--- Audit Tables
-audit_logs
-activity_logs
+-- Content storage with vectors
+CREATE TABLE artifacts (
+    id UUID PRIMARY KEY,
+    organization_id UUID REFERENCES organizations(id),
+    name VARCHAR(255) NOT NULL,
+    content TEXT,
+    embedding vector(1536),  -- pgvector for similarity search
+    metadata JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Workflow definitions
+CREATE TABLE pipelines (
+    id UUID PRIMARY KEY,
+    organization_id UUID REFERENCES organizations(id),
+    name VARCHAR(255) NOT NULL,
+    definition JSONB NOT NULL,  -- DAG structure
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Workflow executions
+CREATE TABLE runs (
+    id UUID PRIMARY KEY,
+    pipeline_id UUID REFERENCES pipelines(id),
+    status VARCHAR(50) NOT NULL,
+    progress DECIMAL(5,2) DEFAULT 0,
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP
+);
 ```
 
-### Database Patterns
+### Indexing Strategy
 
-1. **UUID Primary Keys**: All tables use UUIDs for global uniqueness
-2. **Soft Deletes**: Critical data uses soft deletes with `deleted_at`
-3. **Audit Trails**: All changes logged to audit tables
-4. **Multi-tenancy**: Row-level security with `organization_id`
-5. **Vector Storage**: pgvector for embedding storage and similarity search
+```sql
+-- Performance indexes
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_sessions_token ON sessions(token);
+CREATE INDEX idx_sessions_user_id ON sessions(user_id);
+CREATE INDEX idx_members_user_org ON members(user_id, organization_id);
+CREATE INDEX idx_artifacts_org ON artifacts(organization_id);
+CREATE INDEX idx_pipelines_org ON pipelines(organization_id);
+CREATE INDEX idx_runs_pipeline ON runs(pipeline_id);
+CREATE INDEX idx_runs_status ON runs(status);
 
-### Query Patterns
-
-- **SQLC**: Type-safe SQL queries
-- **Transactions**: ACID compliance for critical operations
-- **Prepared Statements**: Protection against SQL injection
-- **Connection Pooling**: Efficient resource usage
-
-## Security Architecture
-
-### Authentication & Authorization
-
-```mermaid
-graph TD
-    subgraph "Authentication Flow"
-        LOGIN[Login Request]
-        VALIDATE[Validate Credentials]
-        JWT[Generate JWT]
-        REFRESH[Refresh Token]
-    end
-
-    subgraph "Authorization Flow"
-        TOKEN[Validate Token]
-        CLAIMS[Extract Claims]
-        PERMS[Check Permissions]
-        ACCESS[Grant/Deny Access]
-    end
-
-    LOGIN --> VALIDATE
-    VALIDATE --> JWT
-    JWT --> REFRESH
-
-    TOKEN --> CLAIMS
-    CLAIMS --> PERMS
-    PERMS --> ACCESS
+-- Vector similarity search
+CREATE INDEX idx_artifacts_embedding ON artifacts
+USING ivfflat (embedding vector_cosine_ops)
+WITH (lists = 100);
 ```
 
-### Security Layers
+## Caching Architecture
 
-1. **Network Security**
-   - TLS/SSL encryption
-   - Rate limiting
-   - DDoS protection
-   - WAF rules
-
-2. **Application Security**
-   - JWT authentication
-   - RBAC authorization
-   - Input validation
-   - Output encoding
-   - CSRF protection
-
-3. **Data Security**
-   - Encryption at rest
-   - Encryption in transit
-   - Key management
-   - Data masking
-   - Audit logging
-
-## Scalability Architecture
-
-### Horizontal Scaling
-
-```mermaid
-graph LR
-    subgraph "Load Balancer"
-        LB[HAProxy/Nginx]
-    end
-
-    subgraph "API Servers"
-        API1[Server 1]
-        API2[Server 2]
-        API3[Server N]
-    end
-
-    subgraph "Workers"
-        W1[Worker 1]
-        W2[Worker 2]
-        W3[Worker N]
-    end
-
-    subgraph "Data Layer"
-        PG_PRIMARY[(PG Primary)]
-        PG_REPLICA1[(PG Replica 1)]
-        PG_REPLICA2[(PG Replica 2)]
-        REDIS_CLUSTER[(Redis Cluster)]
-    end
-
-    LB --> API1
-    LB --> API2
-    LB --> API3
-
-    API1 --> PG_PRIMARY
-    API2 --> PG_REPLICA1
-    API3 --> PG_REPLICA2
-
-    W1 --> PG_PRIMARY
-    W2 --> PG_PRIMARY
-    W3 --> PG_PRIMARY
-```
-
-### Caching Strategy
+### Cache Layers
 
 1. **Application Cache** (Redis)
    - Session data
-   - Frequently accessed data
-   - Rate limiting counters
+   - User profiles
+   - Organization metadata
+   - Temporary computation results
 
-2. **Database Cache**
+2. **Database Cache** (PostgreSQL)
    - Query result caching
    - Prepared statement caching
+   - Connection pooling
 
-3. **CDN** (Static Assets)
-   - Frontend assets
-   - Public artifacts
-   - API documentation
+3. **CDN Cache** (CloudFlare/CloudFront)
+   - Static assets
+   - API responses for public data
 
-### Queue Architecture
+### Cache Patterns
 
-```mermaid
-graph LR
-    subgraph "Producers"
-        API[API Server]
-        WEBHOOK[Webhooks]
-        SCHEDULER[Scheduler]
-    end
+```go
+// Cache-Aside Pattern
+func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+    // Try cache first
+    user, err := s.cache.GetUser(ctx, id)
+    if err == nil {
+        return user, nil
+    }
 
-    subgraph "Message Queue"
-        QUEUE[(Redis/RabbitMQ)]
-    end
+    // Cache miss - get from database
+    user, err = s.repo.GetUserByID(ctx, id)
+    if err != nil {
+        return nil, err
+    }
 
-    subgraph "Consumers"
-        WORKER1[Worker Pool 1]
-        WORKER2[Worker Pool 2]
-        WORKER3[Worker Pool 3]
-    end
+    // Update cache for next time
+    _ = s.cache.SetUser(ctx, user, 5*time.Minute)
 
-    API --> QUEUE
-    WEBHOOK --> QUEUE
-    SCHEDULER --> QUEUE
+    return user, nil
+}
 
-    QUEUE --> WORKER1
-    QUEUE --> WORKER2
-    QUEUE --> WORKER3
+// Write-Through Pattern
+func (s *Service) UpdateUser(ctx context.Context, user *User) error {
+    // Update database
+    if err := s.repo.UpdateUser(ctx, user); err != nil {
+        return err
+    }
+
+    // Update cache
+    _ = s.cache.SetUser(ctx, user, 5*time.Minute)
+
+    // Publish update event
+    _ = s.events.PublishUserUpdated(ctx, user)
+
+    return nil
+}
 ```
 
-## Development Architecture
+## Security Architecture
 
-### Code Generation Pipeline
+### Defense in Depth
 
-```mermaid
-graph TD
-    OPENAPI[OpenAPI Spec]
-    SQL[SQL Queries]
-    CONFIG[Config Schema]
+1. **Network Layer**
+   - TLS/HTTPS encryption
+   - Rate limiting
+   - DDoS protection
 
-    OPENAPI --> OAPI_GEN[oapi-codegen]
-    SQL --> SQLC[sqlc]
-    CONFIG --> DEFAULTS_GEN[defaults-gen]
+2. **Application Layer**
+   - JWT authentication
+   - CORS configuration
+   - Input validation
+   - SQL injection prevention (via SQLC)
 
-    OAPI_GEN --> TYPES[Go Types]
-    OAPI_GEN --> SERVER[Server Interfaces]
-    OAPI_GEN --> CLIENT[TS Client]
+3. **Data Layer**
+   - Encryption at rest
+   - Row-level security
+   - Audit logging
 
-    SQLC --> QUERIES[Query Functions]
-    SQLC --> MODELS[DB Models]
+### Authentication & Authorization
 
-    DEFAULTS_GEN --> CONFIG_GO[Config Structs]
+```go
+// JWT Claims Structure
+type Claims struct {
+    UserID         uuid.UUID `json:"user_id"`
+    Email          string    `json:"email"`
+    OrganizationID uuid.UUID `json:"organization_id"`
+    Role           string    `json:"role"`
+    jwt.StandardClaims
+}
+
+// Middleware for protected routes
+func AuthMiddleware(jwtSecret string) echo.MiddlewareFunc {
+    return func(next echo.HandlerFunc) echo.HandlerFunc {
+        return func(c echo.Context) error {
+            // Extract token
+            token := extractToken(c.Request())
+
+            // Validate token
+            claims, err := validateToken(token, jwtSecret)
+            if err != nil {
+                return echo.NewHTTPError(http.StatusUnauthorized)
+            }
+
+            // Set user context
+            c.Set("user", claims)
+
+            return next(c)
+        }
+    }
+}
+
+// Role-based access control
+func RequireRole(roles ...string) echo.MiddlewareFunc {
+    return func(next echo.HandlerFunc) echo.HandlerFunc {
+        return func(c echo.Context) error {
+            claims := c.Get("user").(*Claims)
+
+            for _, role := range roles {
+                if claims.Role == role {
+                    return next(c)
+                }
+            }
+
+            return echo.NewHTTPError(http.StatusForbidden)
+        }
+    }
+}
 ```
 
-### Testing Architecture
+## Scalability Considerations
 
-1. **Unit Tests**
-   - Domain logic testing
-   - Pure functions
-   - Mocked dependencies
+### Horizontal Scaling
 
-2. **Integration Tests**
-   - API endpoint testing
-   - Database operations
-   - External service integration
+- **Stateless API servers** - Can scale horizontally behind load balancer
+- **Database read replicas** - Distribute read load
+- **Redis clustering** - Distributed caching
+- **Queue-based processing** - Async job processing
 
-3. **E2E Tests**
-   - Complete user flows
-   - Multi-service interactions
-   - Performance testing
+### Performance Optimizations
 
-## Deployment Architecture
+1. **Connection Pooling**
 
-### Container Architecture
+   ```go
+   db.SetMaxOpenConns(25)
+   db.SetMaxIdleConns(5)
+   db.SetConnMaxLifetime(5 * time.Minute)
+   ```
 
-```yaml
-services:
-  api:
-    image: archesai/api
-    replicas: 3
-    resources:
-      limits:
-        cpu: 1000m
-        memory: 1Gi
+2. **Batch Processing**
 
-  worker:
-    image: archesai/worker
-    replicas: 5
-    resources:
-      limits:
-        cpu: 2000m
-        memory: 2Gi
+   ```go
+   // Process in batches to avoid memory issues
+   const batchSize = 100
+   for i := 0; i < len(items); i += batchSize {
+       end := i + batchSize
+       if end > len(items) {
+           end = len(items)
+       }
+       processBatch(items[i:end])
+   }
+   ```
 
-  postgres:
-    image: postgres:15-pgvector
-    replicas: 1
-    storage: 100Gi
+3. **Concurrent Processing**
 
-  redis:
-    image: redis:7-alpine
-    replicas: 3
-    mode: cluster
-```
+   ```go
+   // Use worker pool pattern
+   jobs := make(chan Job, 100)
+   results := make(chan Result, 100)
 
-### Kubernetes Architecture
+   // Start workers
+   for w := 1; w <= numWorkers; w++ {
+       go worker(jobs, results)
+   }
 
-```mermaid
-graph TD
-    subgraph "Ingress"
-        INGRESS[Nginx Ingress]
-    end
-
-    subgraph "Services"
-        API_SVC[API Service]
-        WORKER_SVC[Worker Service]
-    end
-
-    subgraph "Deployments"
-        API_DEPLOY[API Deployment]
-        WORKER_DEPLOY[Worker Deployment]
-    end
-
-    subgraph "StatefulSets"
-        PG_STS[PostgreSQL]
-        REDIS_STS[Redis]
-    end
-
-    subgraph "Jobs"
-        MIGRATE_JOB[Migration Job]
-        BACKUP_JOB[Backup CronJob]
-    end
-
-    INGRESS --> API_SVC
-    API_SVC --> API_DEPLOY
-    WORKER_SVC --> WORKER_DEPLOY
-
-    API_DEPLOY --> PG_STS
-    API_DEPLOY --> REDIS_STS
-    WORKER_DEPLOY --> PG_STS
-```
+   // Send jobs
+   for _, job := range allJobs {
+       jobs <- job
+   }
+   close(jobs)
+   ```
 
 ## Monitoring & Observability
 
 ### Metrics Collection
 
-```mermaid
-graph LR
-    subgraph "Application"
-        API[API Metrics]
-        WORKER[Worker Metrics]
-        DB[Database Metrics]
-    end
+- **Application Metrics** (Prometheus)
+  - Request latency
+  - Error rates
+  - Business metrics
 
-    subgraph "Collection"
-        PROM[Prometheus]
-        LOKI[Loki]
-        TEMPO[Tempo]
-    end
+- **Infrastructure Metrics** (Grafana)
+  - CPU/Memory usage
+  - Database connections
+  - Cache hit rates
 
-    subgraph "Visualization"
-        GRAFANA[Grafana]
-        ALERTS[Alert Manager]
-    end
+### Logging Strategy
 
-    API --> PROM
-    WORKER --> PROM
-    DB --> PROM
-
-    API --> LOKI
-    WORKER --> LOKI
-
-    API --> TEMPO
-
-    PROM --> GRAFANA
-    LOKI --> GRAFANA
-    TEMPO --> GRAFANA
-    PROM --> ALERTS
+```go
+// Structured logging with context
+logger.Info("Processing request",
+    zap.String("request_id", requestID),
+    zap.String("user_id", userID),
+    zap.String("action", "create_artifact"),
+    zap.Duration("duration", duration),
+)
 ```
 
-### Key Metrics
+### Distributed Tracing
 
-1. **Application Metrics**
-   - Request rate
-   - Response time
-   - Error rate
-   - Throughput
+- OpenTelemetry integration
+- Request correlation IDs
+- Cross-service tracing
 
-2. **Infrastructure Metrics**
-   - CPU usage
-   - Memory usage
-   - Disk I/O
-   - Network traffic
+## Deployment Architecture
 
-3. **Business Metrics**
-   - User registrations
-   - Workflow executions
-   - Artifact processing
-   - API usage
+### Container Strategy
 
-## Performance Considerations
+```dockerfile
+# Multi-stage build
+FROM golang:1.21-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN go build -o archesai cmd/archesai/main.go
 
-### Optimization Strategies
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+COPY --from=builder /app/archesai /archesai
+EXPOSE 8080
+CMD ["/archesai"]
+```
 
-1. **Database Optimization**
-   - Proper indexing
-   - Query optimization
-   - Connection pooling
-   - Read replicas
+### Kubernetes Deployment
 
-2. **Caching**
-   - Redis for hot data
-   - HTTP caching headers
-   - Query result caching
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: archesai-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: archesai-api
+  template:
+    metadata:
+      labels:
+        app: archesai-api
+    spec:
+      containers:
+        - name: api
+          image: archesai/api:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ARCHESAI_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: archesai-secrets
+                  key: database-url
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+```
 
-3. **Async Processing**
-   - Background jobs
-   - Message queues
-   - Event-driven architecture
-
-4. **Resource Management**
-   - Connection pooling
-   - Goroutine management
-   - Memory profiling
-   - CPU profiling
-
-## Technology Stack
-
-### Backend
-
-- **Language**: Go 1.21+
-- **Framework**: Echo v4
-- **Database**: PostgreSQL 15+ with pgvector
-- **Cache**: Redis 7+
-- **Queue**: Redis/RabbitMQ
-- **Authentication**: JWT
-
-### Frontend
-
-- **Framework**: React 18+
-- **Language**: TypeScript 5+
-- **Routing**: TanStack Router
-- **State**: Zustand/TanStack Query
-- **Build**: Vite
-- **UI**: Tailwind CSS
-
-### Infrastructure
-
-- **Container**: Docker
-- **Orchestration**: Kubernetes
-- **CI/CD**: GitHub Actions
-- **Monitoring**: Prometheus/Grafana
-- **Logging**: Loki
-- **Tracing**: Tempo/Jaeger
-
-### Code Generation
-
-- **API**: OpenAPI 3.0 + oapi-codegen
-- **Database**: SQLC
-- **Configuration**: Custom generators
-
-## Best Practices
-
-### Architectural Principles
-
-1. **SOLID Principles**
-   - Single Responsibility
-   - Open/Closed
-   - Liskov Substitution
-   - Interface Segregation
-   - Dependency Inversion
-
-2. **DRY** (Don't Repeat Yourself)
-   - Code generation for repetitive tasks
-   - Shared libraries for common functionality
-
-3. **KISS** (Keep It Simple, Stupid)
-   - Simple solutions over complex ones
-   - Clear and readable code
-
-4. **YAGNI** (You Aren't Gonna Need It)
-   - Build only what's needed
-   - Avoid premature optimization
-
-### Code Organization
-
-1. **Domain Isolation**
-   - Each domain is self-contained
-   - Clear boundaries between domains
-   - Minimal cross-domain dependencies
-
-2. **Layered Architecture**
-   - Clear separation of concerns
-   - Dependencies flow inward
-   - Business logic in the core
-
-3. **Interface-Based Design**
-   - Program to interfaces
-   - Dependency injection
-   - Easy testing and mocking
-
-## Future Architecture Considerations
+## Future Considerations
 
 ### Planned Enhancements
 
-1. **Microservices Migration**
-   - Service mesh (Istio)
-   - gRPC communication
-   - Independent deployments
+1. **GraphQL API** - Alternative query interface
+2. **gRPC Services** - Internal service communication
+3. **Event Sourcing** - Audit trail and replay capability
+4. **CQRS Pattern** - Separate read/write models
+5. **Service Mesh** - Istio/Linkerd for microservices
+6. **Multi-region** - Geographic distribution
 
-2. **Event Sourcing**
-   - Event store
-   - CQRS pattern
-   - Event replay capability
+### Technology Evaluations
 
-3. **GraphQL API**
-   - Federation
-   - Subscriptions
-   - Schema stitching
-
-4. **Multi-Region Deployment**
-   - Global load balancing
-   - Data replication
-   - Edge computing
-
-## References
-
-- [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)
-- [Domain-Driven Design](https://martinfowler.com/books/ddd.html)
-- [Twelve-Factor App](https://12factor.net/)
-- [Go Project Layout](https://github.com/golang-standards/project-layout)
+- **Message Queue**: Kafka vs NATS vs RabbitMQ
+- **Search Engine**: Elasticsearch vs Meilisearch
+- **Time Series DB**: InfluxDB vs TimescaleDB
+- **Graph Database**: Neo4j vs DGraph

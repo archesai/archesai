@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
-package: config
+package: ""
 output: models.gen.go
 generate:
   models: true
@@ -8,5 +8,3 @@ output-options:
   prefer-skip-optional-pointer: true
   prefer-skip-optional-pointer-with-omitzero: true
   prefer-skip-optional-pointer-on-container-types: true
-  include-tags:
-    - Config

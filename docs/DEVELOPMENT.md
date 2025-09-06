@@ -1,217 +1,128 @@
-# Development Guide: Hexagonal Architecture with Domain-Driven Design
+# Development Guide
 
-## Project Overview
+## Architecture Overview
 
-ArchesAI is a Go-based API platform that follows hexagonal architecture (ports and adapters) with Domain-Driven Design principles. This guide explains the architectural patterns, development workflows, and best practices.
-
-## Architecture Principles
-
-### 1. Hexagonal Architecture (Ports & Adapters)
-
-The hexagonal architecture isolates the core business logic from external concerns:
-
-- **Core (Domain)**: Contains business logic, entities, and port interfaces
-- **Ports**: Interfaces that define how the core interacts with the outside world
-- **Adapters**: Implementations of ports (database, HTTP handlers, external services)
+ArchesAI follows **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design** principles. The core business logic is isolated from external concerns through well-defined interfaces.
 
 ```
-         ┌──────────────────────────────┐
-         │      HTTP Handlers           │
-         │        (Adapters)            │
-         └─────────────┬────────────────┘
-                       │
-         ┌─────────────▼────────────────┐
-         │         Core Domain          │
-         │   ┌───────────────────┐      │
-         │   │   Use Cases       │      │
-         │   ├───────────────────┤      │
-         │   │   Entities        │      │
-         │   ├───────────────────┤      │
-         │   │   Ports           │      │
-         │   └───────────────────┘      │
-         └─────────────┬────────────────┘
-                       │
-         ┌─────────────▼────────────────┐
-         │     Infrastructure           │
-         │   (Database Adapters)        │
-         └──────────────────────────────┘
+┌─────────────────────────────────┐
+│     HTTP Handlers (Adapters)     │
+└────────────┬─────────────────────┘
+             │
+┌────────────▼─────────────────────┐
+│       Domain Service (Core)      │
+│   ┌───────────────────────┐      │
+│   │   Business Logic      │      │
+│   ├───────────────────────┤      │
+│   │   Repository Interface│      │
+│   └───────────────────────┘      │
+└────────────┬─────────────────────┘
+             │
+┌────────────▼─────────────────────┐
+│   PostgreSQL/SQLite (Adapters)   │
+└──────────────────────────────────┘
 ```
 
-### 2. Domain-Driven Design
+## Domain Structure
 
-- **Domains** represent bounded contexts (auth, organizations, workflows, content)
-- Each domain is self-contained with its own entities, use cases, and adapters
-- Business logic stays within domain boundaries
-- Domains communicate through well-defined interfaces
-
-### 3. Dependency Inversion
-
-- Dependencies point inward (toward business logic)
-- Core domain doesn't depend on infrastructure or presentation layers
-- Infrastructure and handlers depend on core domain interfaces
-
-## Domain Structure (Hexagonal Pattern)
-
-Each domain follows a consistent hexagonal structure:
+Each domain uses a flat package structure with clear naming conventions:
 
 ```
-domains/auth/
-├── auth.go                    # Package documentation and constants
-├── core/                      # Core business logic (hexagon center)
-│   ├── entities.go           # Domain models and value objects
-│   ├── ports.go              # Interface definitions (Repository, Services)
-│   └── usecase.go            # Business use cases and orchestration
-├── infrastructure/            # Infrastructure adapters
-│   └── postgres.go           # PostgreSQL repository implementation
-├── handlers/                  # Presentation layer adapters
-│   └── http/
-│       ├── handler.go        # HTTP handlers implementing OpenAPI
-│       └── middleware.go     # HTTP middleware (auth only)
-├── adapters/                  # Type converters (generated)
-│   └── adapters.gen.go       # Auto-generated DB<->API converters
-└── generated/                 # Domain-specific generated code
-    └── api/
-        ├── types.gen.go      # OpenAPI types for this domain
-        └── server.gen.go     # OpenAPI server interfaces
+internal/auth/
+├── auth.go                    # Package constants and errors
+├── service.go                 # Business logic (manual)
+├── handler_http.go            # HTTP handler implementation (manual)
+├── handler_http.gen.go        # Generated HTTP interfaces
+├── middleware_http.go         # Authentication middleware
+├── repository_postgres.go     # PostgreSQL repository (manual)
+├── repository_sqlite.go       # SQLite repository (manual)
+├── repository.gen.go          # Generated repository interface
+├── models.gen.go              # Generated OpenAPI types
+├── models.cfg.yaml            # OpenAPI codegen config
+├── server.cfg.yaml            # Server codegen config
+├── cache.gen.go               # Generated cache interface
+├── cache_memory.gen.go        # Memory cache implementation
+├── cache_redis.gen.go         # Redis cache implementation
+├── events.gen.go              # Generated event types
+├── events_redis.gen.go        # Redis event publisher
+└── events_nats.gen.go         # NATS event publisher
 ```
 
-### File Responsibilities
+## Code Generation Pipeline
 
-**auth.go** - Package entry point:
+### 1. OpenAPI → Go Types
 
-```go
-// Package auth provides authentication and authorization functionality.
-package auth
+Define schemas in `api/components/schemas/`:
 
-// Shared constants and configuration
-type ContextKey string
-
-const (
-    UserContextKey   ContextKey = "user"
-    ClaimsContextKey ContextKey = "claims"
-)
+```yaml
+# api/components/schemas/User.yaml
+User:
+  type: object
+  x-codegen:
+    repository:
+      operations: [create, read, update, delete, list]
+    cache:
+      enabled: true
+      ttl: 300
+    events:
+      - created
+      - updated
+      - deleted
+  properties:
+    id:
+      type: string
+      format: uuid
+      x-codegen:
+        primary-key: true
+    email:
+      type: string
+      format: email
+      x-codegen:
+        unique: true
+        index: true
 ```
 
-**core/entities.go** - Domain models:
+### 2. SQL → Database Code
 
-```go
-// Domain entities - pure business objects
-type User struct {
-    ID           uuid.UUID
-    Email        string
-    Name         string
-    PasswordHash string // Not exposed in API
-    CreatedAt    time.Time
-}
+Define queries in `internal/database/queries/`:
 
-// Domain-specific errors
-var (
-    ErrInvalidCredentials = errors.New("invalid credentials")
-    ErrUserNotFound      = errors.New("user not found")
-)
+```sql
+-- name: GetUser :one
+SELECT * FROM users WHERE id = $1;
+
+-- name: CreateUser :one
+INSERT INTO users (id, email, name, password_hash)
+VALUES ($1, $2, $3, $4)
+RETURNING *;
+
+-- name: UpdateUser :one
+UPDATE users
+SET email = $2, name = $3, updated_at = CURRENT_TIMESTAMP
+WHERE id = $1
+RETURNING *;
 ```
 
-**core/ports.go** - Interface definitions (Dependency Inversion):
+### 3. Run Generators
 
-```go
-// Repository interface - defined by the domain, implemented by infrastructure
-type UserRepository interface {
-    GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
-    GetUserByEmail(ctx context.Context, email string) (*User, error)
-    CreateUser(ctx context.Context, user *User) error
-    UpdateUser(ctx context.Context, user *User) error
-}
-
-// External service interfaces
-type EmailService interface {
-    SendVerificationEmail(ctx context.Context, email string, token string) error
-}
+```bash
+make generate         # Run all generators
+make generate-sqlc    # Database queries only
+make generate-oapi    # OpenAPI types only
+make generate-codegen # Domain code only
 ```
 
-**core/usecase.go** - Business logic:
+## Adding a New Feature
 
-```go
-// Service contains business logic - the hexagon core
-type Service struct {
-    repo         Repository
-    emailService EmailService
-    jwtConfig    *config.JWTConfig
-}
+### Step 1: Define API Contract
 
-// NewService creates a new auth service
-func NewService(repo Repository, email EmailService, jwt *config.JWTConfig) *Service {
-    return &Service{
-        repo:         repo,
-        emailService: email,
-        jwtConfig:    jwt,
-    }
-}
-
-// Business use cases
-func (s *Service) SignIn(ctx context.Context, email, password string) (*User, string, error) {
-    // Core business logic here
-}
-```
-
-**infrastructure/postgres.go** - Database adapter:
-
-```go
-// PostgresRepository implements the Repository port
-type PostgresRepository struct {
-    queries *postgresql.Queries
-}
-
-// Compile-time interface check
-var _ authcore.Repository = (*PostgresRepository)(nil)
-
-func NewPostgresRepository(queries *postgresql.Queries) *PostgresRepository {
-    return &PostgresRepository{queries: queries}
-}
-
-func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (*authcore.User, error) {
-    // Implementation using generated SQLC queries
-}
-```
-
-**handlers/http/handler.go** - HTTP adapter:
-
-```go
-// Handler adapts HTTP requests to domain use cases
-type Handler struct {
-    service *authcore.Service
-}
-
-// NewHandler creates a new HTTP handler
-func NewHandler(service *authcore.Service) *Handler {
-    return &Handler{service: service}
-}
-
-// Implements generated OpenAPI interface
-func (h *Handler) PostAuthSignIn(ctx echo.Context) error {
-    // Adapt HTTP request to domain use case
-}
-```
-
-## Development Workflow
-
-### 1. API-First Development
-
-1. **Define API contract** in `api/openapi.yaml` or component files
-2. **Generate code** with `make generate`
-3. **Implement core domain logic** in `core/usecase.go`
-4. **Create infrastructure adapters** in `infrastructure/`
-5. **Implement HTTP handlers** in `handlers/http/`
-6. **Wire dependencies** in `internal/app/deps.go`
-
-### 2. Adding New Features
-
-**Step 1: Define OpenAPI Contract**
+Add endpoint to `api/paths/`:
 
 ```yaml
 # api/paths/users.yaml
-/api/v1/users/{id}:
+/users/{id}/profile:
   get:
-    summary: Get user by ID
+    operationId: getUserProfile
+    tags: [Users]
     parameters:
       - name: id
         in: path
@@ -219,295 +130,393 @@ func (h *Handler) PostAuthSignIn(ctx echo.Context) error {
         schema:
           type: string
           format: uuid
+    responses:
+      "200":
+        description: User profile
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
 ```
 
-**Step 2: Generate Code**
+### Step 2: Add Database Queries
+
+Create `internal/database/queries/user_profile.sql`:
+
+```sql
+-- name: GetUserProfile :one
+SELECT u.*, COUNT(o.id) as organization_count
+FROM users u
+LEFT JOIN members m ON m.user_id = u.id
+LEFT JOIN organizations o ON o.id = m.organization_id
+WHERE u.id = $1
+GROUP BY u.id;
+```
+
+### Step 3: Generate Code
 
 ```bash
 make generate
 ```
 
-**Step 3: Define Domain Entity**
+### Step 4: Implement Business Logic
+
+Update `internal/auth/service.go`:
 
 ```go
-// internal/domains/auth/core/entities.go
-type User struct {
-    ID        uuid.UUID
-    Email     string
-    Name      string
-    Role      UserRole
-    CreatedAt time.Time
-}
-```
-
-**Step 4: Define Port Interface**
-
-```go
-// internal/domains/auth/core/ports.go
-type Repository interface {
-    GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
-}
-```
-
-**Step 5: Implement Use Case**
-
-```go
-// internal/domains/auth/core/usecase.go
-func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
-    return s.repo.GetUserByID(ctx, id)
-}
-```
-
-**Step 6: Implement Infrastructure Adapter**
-
-```go
-// internal/domains/auth/infrastructure/postgres.go
-func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*authcore.User, error) {
-    dbUser, err := r.queries.GetUser(ctx, id.String())
-    if err != nil {
-        return nil, err
-    }
-    return r.toDomainUser(dbUser), nil
-}
-```
-
-**Step 7: Implement HTTP Handler**
-
-```go
-// internal/domains/auth/handlers/http/handler.go
-func (h *Handler) GetUsersId(ctx echo.Context, id openapi_types.UUID) error {
-    user, err := h.service.GetUser(ctx.Request().Context(), uuid.UUID(id))
-    if err != nil {
-        return echo.NewHTTPError(http.StatusNotFound)
+func (s *Service) GetUserProfile(ctx context.Context, userID uuid.UUID) (*UserProfile, error) {
+    // Check cache first
+    if cached, err := s.cache.GetUserProfile(ctx, userID); err == nil {
+        return cached, nil
     }
 
-    apiUser := h.toAPIUser(user)
-    return ctx.JSON(http.StatusOK, apiUser)
+    // Get from database
+    profile, err := s.repo.GetUserProfile(ctx, userID)
+    if err != nil {
+        return nil, fmt.Errorf("get user profile: %w", err)
+    }
+
+    // Update cache
+    _ = s.cache.SetUserProfile(ctx, profile, 5*time.Minute)
+
+    // Publish event
+    _ = s.events.PublishProfileViewed(ctx, userID)
+
+    return profile, nil
 }
 ```
 
-## Database Integration
+### Step 5: Implement HTTP Handler
 
-### Type-Safe Queries with SQLC
-
-```sql
--- internal/infrastructure/database/queries/users.sql
--- name: GetUser :one
-SELECT * FROM users WHERE id = $1;
-
--- name: CreateUser :one
-INSERT INTO users (email, name, password_hash)
-VALUES ($1, $2, $3)
-RETURNING *;
-```
-
-### Generated Type Converters
-
-The `adapters.yaml` file configures automatic type conversion between layers:
-
-```yaml
-# internal/domains/adapters.yaml
-converters:
-  - name: AuthUserDBToAPI
-    from: postgresql.User
-    to: api.UserEntity
-    automap: true
-    overrides:
-      Id: "uuid.MustParse(from.Id)"
-      Email: "openapi_types.Email(from.Email)"
-```
-
-Generated converters handle:
-
-- Nullable field conversions
-- Type transformations (string ↔ UUID)
-- Timestamp formatting
-- Custom type mappings
-
-## Testing Strategy
-
-### 1. Unit Tests - Core Domain Logic
-
-Test business logic in isolation using mocks:
+Update `internal/auth/handler_http.go`:
 
 ```go
-// internal/domains/auth/core/usecase_test.go
-func TestService_SignIn(t *testing.T) {
-    // Create mock repository
-    mockRepo := &mocks.Repository{}
-    mockRepo.On("GetUserByEmail", mock.Anything, "test@example.com").
-        Return(&User{Email: "test@example.com"}, nil)
+func (h *Handler) GetUserProfile(ctx echo.Context, id openapi_types.UUID) error {
+    profile, err := h.service.GetUserProfile(ctx.Request().Context(), uuid.UUID(id))
+    if err != nil {
+        if errors.Is(err, ErrUserNotFound) {
+            return echo.NewHTTPError(http.StatusNotFound, "User not found")
+        }
+        return fmt.Errorf("get user profile: %w", err)
+    }
 
-    // Test service with mock
-    service := NewService(mockRepo, nil, testJWTConfig)
-    user, token, err := service.SignIn(ctx, "test@example.com", "password")
+    return ctx.JSON(http.StatusOK, profile)
+}
+```
+
+### Step 6: Wire Dependencies
+
+Update `internal/app/app.go`:
+
+```go
+func New(cfg *config.Config) (*App, error) {
+    // ... existing code ...
+
+    // Wire auth domain
+    authRepo := auth.NewPostgresRepository(queries)
+    authCache := auth.NewRedisCache(redisClient)
+    authEvents := auth.NewRedisEventPublisher(redisClient)
+    authService := auth.NewService(authRepo, authCache, authEvents, cfg.JWT)
+    authHandler := auth.NewHandler(authService)
+
+    // ... register routes ...
+}
+```
+
+## Testing
+
+### Unit Tests
+
+Test business logic in isolation:
+
+```go
+// internal/auth/service_test.go
+func TestService_CreateUser(t *testing.T) {
+    mockRepo := &MockRepository{}
+    mockCache := &MockCache{}
+    mockEvents := &MockEventPublisher{}
+
+    service := auth.NewService(mockRepo, mockCache, mockEvents, testConfig)
+
+    user, err := service.CreateUser(ctx, CreateUserRequest{
+        Email: "test@example.com",
+        Name:  "Test User",
+    })
 
     assert.NoError(t, err)
     assert.NotNil(t, user)
-    assert.NotEmpty(t, token)
-}
-```
-
-### 2. Integration Tests - Infrastructure Layer
-
-Test database interactions with real database:
-
-```go
-// internal/domains/auth/infrastructure/postgres_test.go
-func TestPostgresRepository_GetUserByEmail(t *testing.T) {
-    // Use test database
-    db := setupTestDB(t)
-    repo := NewPostgresRepository(db)
-
-    // Test real database operations
-    user, err := repo.GetUserByEmail(ctx, "test@example.com")
-
-    assert.NoError(t, err)
     assert.Equal(t, "test@example.com", user.Email)
 }
 ```
 
-### 3. End-to-End Tests - Full Request Flow
+### Integration Tests
 
-Test complete HTTP request handling:
+Test with real database:
 
 ```go
-// test/e2e/auth_test.go
-func TestAuthAPI_SignIn(t *testing.T) {
-    // Setup test server with real dependencies
-    app := setupTestApp(t)
+// internal/auth/repository_postgres_test.go
+func TestPostgresRepository_CreateUser(t *testing.T) {
+    db := testutil.SetupTestDB(t)
+    defer db.Close()
 
-    // Make HTTP request
-    req := httptest.NewRequest("POST", "/api/v1/auth/signin", body)
-    rec := httptest.NewRecorder()
+    repo := auth.NewPostgresRepository(postgresql.New(db))
 
-    app.ServeHTTP(rec, req)
+    user := &auth.User{
+        ID:    uuid.New(),
+        Email: "test@example.com",
+        Name:  "Test User",
+    }
 
-    assert.Equal(t, http.StatusOK, rec.Code)
+    err := repo.CreateUser(context.Background(), user)
+    assert.NoError(t, err)
+
+    retrieved, err := repo.GetUserByID(context.Background(), user.ID)
+    assert.NoError(t, err)
+    assert.Equal(t, user.Email, retrieved.Email)
 }
+```
+
+### API Tests
+
+Test HTTP endpoints:
+
+```go
+// internal/auth/handler_http_test.go
+func TestHandler_Login(t *testing.T) {
+    e := echo.New()
+    req := httptest.NewRequest(http.MethodPost, "/api/auth/login",
+        strings.NewReader(`{"email":"test@example.com","password":"secret"}`))
+    req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+    rec := httptest.NewRecorder()
+    c := e.NewContext(req, rec)
+
+    handler := setupTestHandler(t)
+    err := handler.PostAuthLogin(c)
+
+    assert.NoError(t, err)
+    assert.Equal(t, http.StatusOK, rec.Code)
+
+    var response LoginResponse
+    json.Unmarshal(rec.Body.Bytes(), &response)
+    assert.NotEmpty(t, response.AccessToken)
+}
+```
+
+## Database Migrations
+
+### Create Migration
+
+```bash
+make migrate-create name=add_user_profile
+```
+
+### Migration File Structure
+
+```sql
+-- migrations/TIMESTAMP_add_user_profile.up.sql
+ALTER TABLE users ADD COLUMN bio TEXT;
+ALTER TABLE users ADD COLUMN avatar_url VARCHAR(255);
+CREATE INDEX idx_users_avatar_url ON users(avatar_url);
+
+-- migrations/TIMESTAMP_add_user_profile.down.sql
+DROP INDEX IF EXISTS idx_users_avatar_url;
+ALTER TABLE users DROP COLUMN IF EXISTS avatar_url;
+ALTER TABLE users DROP COLUMN IF EXISTS bio;
+```
+
+### Apply Migrations
+
+```bash
+make migrate-up        # Apply all pending
+make migrate-down      # Rollback last
+make migrate-status    # Check status
 ```
 
 ## Configuration Management
 
-### Environment-Based Configuration
+### Environment Variables
+
+All config uses `ARCHESAI_` prefix and maps to structs:
 
 ```go
-// internal/infrastructure/config/config.go
+// internal/config/config.go
 type Config struct {
-    Server   ServerConfig
-    Database DatabaseConfig
-    JWT      JWTConfig
+    Database DatabaseConfig `envconfig:"DATABASE"`
+    Server   ServerConfig   `envconfig:"SERVER"`
+    JWT      JWTConfig      `envconfig:"JWT"`
+    Redis    RedisConfig    `envconfig:"REDIS"`
+    Logging  LoggingConfig  `envconfig:"LOGGING"`
 }
 
-// Load from environment with defaults
-func Load() (*Config, error) {
-    viper.SetEnvPrefix("ARCHESAI")
-    viper.AutomaticEnv()
-
-    // Set defaults
-    viper.SetDefault("server.port", 8080)
-    viper.SetDefault("database.pool_size", 10)
-
-    var config Config
-    return &config, viper.Unmarshal(&config)
+type DatabaseConfig struct {
+    URL         string        `envconfig:"URL" required:"true"`
+    PoolSize    int           `envconfig:"POOL_SIZE" default:"10"`
+    MaxIdleTime time.Duration `envconfig:"MAX_IDLE_TIME" default:"30m"`
 }
 ```
+
+### Loading Configuration
+
+```go
+cfg, err := config.Load()
+if err != nil {
+    log.Fatal("Failed to load config:", err)
+}
+```
+
+## Error Handling
+
+### Domain Errors
+
+Define in domain package:
+
+```go
+// internal/auth/auth.go
+var (
+    ErrUserNotFound       = errors.New("user not found")
+    ErrInvalidCredentials = errors.New("invalid credentials")
+    ErrUserAlreadyExists  = errors.New("user already exists")
+    ErrSessionExpired     = errors.New("session expired")
+)
+```
+
+### Error Wrapping
+
+Always wrap errors with context:
+
+```go
+user, err := repo.GetUserByEmail(ctx, email)
+if err != nil {
+    if errors.Is(err, sql.ErrNoRows) {
+        return nil, ErrUserNotFound
+    }
+    return nil, fmt.Errorf("get user by email: %w", err)
+}
+```
+
+### HTTP Error Responses
+
+Convert to appropriate HTTP status:
+
+```go
+if err != nil {
+    switch {
+    case errors.Is(err, auth.ErrUserNotFound):
+        return echo.NewHTTPError(http.StatusNotFound, "User not found")
+    case errors.Is(err, auth.ErrInvalidCredentials):
+        return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
+    default:
+        log.Error("Unexpected error:", err)
+        return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+    }
+}
+```
+
+## Logging
+
+### Structured Logging
+
+Use structured logging with context:
+
+```go
+log := logger.FromContext(ctx)
+log.Info("Creating user",
+    zap.String("email", email),
+    zap.String("organization_id", orgID.String()),
+)
+```
+
+### Log Levels
+
+- **Debug**: Detailed debugging information
+- **Info**: General informational messages
+- **Warn**: Warning messages for recoverable issues
+- **Error**: Error messages for failures
+- **Fatal**: Fatal errors that cause shutdown
+
+## Performance Optimization
+
+### Database Queries
+
+1. **Use indexes** for frequently queried columns
+2. **Batch operations** when possible
+3. **Use prepared statements** (SQLC does this automatically)
+4. **Limit result sets** with pagination
+
+### Caching Strategy
+
+1. **Cache frequently accessed data** (users, sessions)
+2. **Use appropriate TTLs** based on data volatility
+3. **Invalidate on updates** to maintain consistency
+4. **Use cache-aside pattern** for simplicity
+
+### Concurrent Processing
+
+```go
+// Process items concurrently with bounded parallelism
+sem := make(chan struct{}, 10) // Max 10 concurrent
+var wg sync.WaitGroup
+
+for _, item := range items {
+    wg.Add(1)
+    sem <- struct{}{}
+
+    go func(item Item) {
+        defer wg.Done()
+        defer func() { <-sem }()
+
+        processItem(item)
+    }(item)
+}
+
+wg.Wait()
+```
+
+## Debugging
+
+### Enable Debug Logging
+
+```bash
+ARCHESAI_LOGGING_LEVEL=debug make dev
+```
+
+### Database Query Logging
+
+```bash
+ARCHESAI_DATABASE_LOG_QUERIES=true make dev
+```
+
+### Performance Profiling
+
+```go
+import _ "net/http/pprof"
+
+// In main.go
+go func() {
+    log.Println(http.ListenAndServe("localhost:6060", nil))
+}()
+```
+
+Access profiles at http://localhost:6060/debug/pprof/
 
 ## Best Practices
 
-### 1. Domain Isolation
+### 1. **Keep domains isolated** - No cross-domain imports
 
-- Keep business logic in `core/` package
-- Don't import infrastructure or handlers in core
-- Use interfaces to define external dependencies
+### 2. **Use dependency injection** - Pass interfaces, not implementations
 
-### 2. Error Handling
+### 3. **Generate what you can** - Reduce manual boilerplate
 
-```go
-// Domain errors (in core/entities.go)
-var (
-    ErrUserNotFound = errors.New("user not found")
-    ErrInvalidInput = errors.New("invalid input")
-)
+### 4. **Test business logic** - Focus tests on service layer
 
-// Infrastructure error wrapping
-if err != nil {
-    return nil, fmt.Errorf("failed to get user: %w", err)
-}
+### 5. **Handle errors explicitly** - No silent failures
 
-// HTTP error mapping (in handlers)
-switch {
-case errors.Is(err, authcore.ErrUserNotFound):
-    return echo.NewHTTPError(http.StatusNotFound)
-case errors.Is(err, authcore.ErrInvalidInput):
-    return echo.NewHTTPError(http.StatusBadRequest)
-default:
-    return echo.NewHTTPError(http.StatusInternalServerError)
-}
-```
+### 6. **Use context everywhere** - For cancellation and tracing
 
-### 3. Dependency Injection
+### 7. **Validate at boundaries** - Input validation in handlers
 
-All dependencies are wired in `internal/app/deps.go`:
+### 8. **Log actions, not state** - Log what happened, not data dumps
 
-```go
-// Create repositories
-authRepo := authinfra.NewPostgresRepository(queries)
+### 9. **Cache judiciously** - Only cache what's expensive to compute
 
-// Create services with dependencies
-authService := authcore.NewService(authRepo, emailService, cfg.JWT)
-
-// Create handlers
-authHandler := authhandlers.NewHandler(authService)
-```
-
-### 4. Code Generation
-
-The project uses multiple code generators:
-
-1. **SQLC** - Type-safe database queries
-2. **oapi-codegen** - OpenAPI server interfaces
-3. **generate-adapters** - Type converters between layers
-4. **generate-domain** - Scaffold new domains
-
-Always run `make generate` after:
-
-- Modifying OpenAPI specifications
-- Adding SQL queries
-- Updating adapters.yaml
-- Creating new domains
-
-## Creating a New Domain
-
-Use the domain generator to scaffold a new bounded context:
-
-```bash
-make generate-domain name=billing tables=subscription,invoice
-```
-
-This creates:
-
-- Domain structure with core/infrastructure/handlers
-- Database migrations
-- Basic CRUD operations
-- OpenAPI specifications
-- Type converters configuration
-
-Then:
-
-1. Define your business logic in `core/usecase.go`
-2. Add domain-specific methods to the repository
-3. Implement custom handlers as needed
-4. Wire the domain in `internal/app/deps.go`
-
-## Command Reference
-
-For a complete list of development commands, see [.claude/CLAUDE.md](../.claude/CLAUDE.md).
-
-## Resources
-
-- [Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)
-- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
-- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [OpenAPI Specification](https://swagger.io/specification/)
-- [SQLC Documentation](https://docs.sqlc.dev/)
+### 10. **Document decisions** - Use ADRs for architectural choices
