@@ -5,7 +5,7 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/archesai/archesai/internal/content/domain"
+	"github.com/archesai/archesai/internal/content"
 )
 
 const (
@@ -15,7 +15,7 @@ const (
 
 // ContentHandler handles HTTP requests for content operations
 type ContentHandler struct {
-	service *domain.ContentService
+	service *content.Service
 	logger  *slog.Logger
 }
 
@@ -23,7 +23,7 @@ type ContentHandler struct {
 var _ StrictServerInterface = (*ContentHandler)(nil)
 
 // NewContentHandler creates a new content handler
-func NewContentHandler(service *domain.ContentService, logger *slog.Logger) *ContentHandler {
+func NewContentHandler(service *content.Service, logger *slog.Logger) *ContentHandler {
 	return &ContentHandler{
 		service: service,
 		logger:  logger,
@@ -58,7 +58,7 @@ func (h *ContentHandler) FindManyArtifacts(ctx context.Context, req FindManyArti
 	}
 
 	// Convert to API entities
-	data := make([]domain.ArtifactEntity, len(artifacts))
+	data := make([]content.ArtifactEntity, len(artifacts))
 	for i, artifact := range artifacts {
 		data[i] = artifact.ArtifactEntity
 	}
@@ -81,9 +81,8 @@ func (h *ContentHandler) CreateArtifact(ctx context.Context, req CreateArtifactR
 	// TODO: Get producer ID from context
 	producerID := "producer-placeholder"
 
-	name := &req.Body.Name
-	createReq := &domain.CreateArtifactRequest{
-		Name: name,
+	createReq := &content.CreateArtifactRequest{
+		Name: req.Body.Name,
 		Text: req.Body.Text,
 	}
 
@@ -102,7 +101,7 @@ func (h *ContentHandler) CreateArtifact(ctx context.Context, req CreateArtifactR
 func (h *ContentHandler) GetOneArtifact(ctx context.Context, req GetOneArtifactRequestObject) (GetOneArtifactResponseObject, error) {
 	artifact, err := h.service.GetArtifact(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrArtifactNotFound {
+		if err == content.ErrArtifactNotFound {
 			return GetOneArtifact404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Artifact not found",
@@ -122,16 +121,14 @@ func (h *ContentHandler) GetOneArtifact(ctx context.Context, req GetOneArtifactR
 
 // UpdateArtifact updates an artifact (implements StrictServerInterface)
 func (h *ContentHandler) UpdateArtifact(ctx context.Context, req UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error) {
-	name := &req.Body.Name
-	text := &req.Body.Text
-	updateReq := &domain.UpdateArtifactRequest{
-		Name: name,
-		Text: text,
+	updateReq := &content.UpdateArtifactRequest{
+		Name: req.Body.Name,
+		Text: req.Body.Text,
 	}
 
 	artifact, err := h.service.UpdateArtifact(ctx, req.Id, updateReq)
 	if err != nil {
-		if err == domain.ErrArtifactNotFound {
+		if err == content.ErrArtifactNotFound {
 			return UpdateArtifact404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Artifact not found",
@@ -153,7 +150,7 @@ func (h *ContentHandler) UpdateArtifact(ctx context.Context, req UpdateArtifactR
 func (h *ContentHandler) DeleteArtifact(ctx context.Context, req DeleteArtifactRequestObject) (DeleteArtifactResponseObject, error) {
 	err := h.service.DeleteArtifact(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrArtifactNotFound {
+		if err == content.ErrArtifactNotFound {
 			return DeleteArtifact404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Artifact not found",
@@ -192,7 +189,7 @@ func (h *ContentHandler) FindManyLabels(ctx context.Context, req FindManyLabelsR
 	}
 
 	// Convert to API entities
-	data := make([]domain.LabelEntity, len(labels))
+	data := make([]content.LabelEntity, len(labels))
 	for i, label := range labels {
 		data[i] = label.LabelEntity
 	}
@@ -213,13 +210,13 @@ func (h *ContentHandler) CreateLabel(ctx context.Context, req CreateLabelRequest
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	createReq := &domain.CreateLabelRequest{
+	createReq := &content.CreateLabelRequest{
 		Name: req.Body.Name,
 	}
 
 	label, err := h.service.CreateLabel(ctx, createReq, orgID)
 	if err != nil {
-		if err == domain.ErrLabelExists {
+		if err == content.ErrLabelExists {
 			// Return 400 bad request since there's no 409 response defined
 			return CreateLabel400ApplicationProblemPlusJSONResponse{
 				BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -242,7 +239,7 @@ func (h *ContentHandler) CreateLabel(ctx context.Context, req CreateLabelRequest
 func (h *ContentHandler) GetOneLabel(ctx context.Context, req GetOneLabelRequestObject) (GetOneLabelResponseObject, error) {
 	label, err := h.service.GetLabel(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrLabelNotFound {
+		if err == content.ErrLabelNotFound {
 			return GetOneLabel404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Label not found",
@@ -262,14 +259,13 @@ func (h *ContentHandler) GetOneLabel(ctx context.Context, req GetOneLabelRequest
 
 // UpdateLabel updates a label (implements StrictServerInterface)
 func (h *ContentHandler) UpdateLabel(ctx context.Context, req UpdateLabelRequestObject) (UpdateLabelResponseObject, error) {
-	name := &req.Body.Name
-	updateReq := &domain.UpdateLabelRequest{
-		Name: name,
+	updateReq := &content.UpdateLabelRequest{
+		Name: req.Body.Name,
 	}
 
 	label, err := h.service.UpdateLabel(ctx, req.Id, updateReq)
 	if err != nil {
-		if err == domain.ErrLabelNotFound {
+		if err == content.ErrLabelNotFound {
 			return UpdateLabel404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Label not found",
@@ -291,7 +287,7 @@ func (h *ContentHandler) UpdateLabel(ctx context.Context, req UpdateLabelRequest
 func (h *ContentHandler) DeleteLabel(ctx context.Context, req DeleteLabelRequestObject) (DeleteLabelResponseObject, error) {
 	err := h.service.DeleteLabel(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrLabelNotFound {
+		if err == content.ErrLabelNotFound {
 			return DeleteLabel404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Label not found",

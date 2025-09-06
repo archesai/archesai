@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/auth/domain"
+	"github.com/archesai/archesai/internal/auth"
 	"github.com/archesai/archesai/internal/database/sqlite"
 	"github.com/google/uuid"
 )
@@ -15,8 +15,8 @@ type AuthSQLiteRepository struct {
 	q *sqlite.Queries
 }
 
-// Ensure AuthSQLiteRepository implements domain.AuthRepository
-var _ domain.AuthRepository = (*AuthSQLiteRepository)(nil)
+// Ensure AuthSQLiteRepository implements =auth.Repository
+var _ auth.Repository = (*AuthSQLiteRepository)(nil)
 
 // NewAuthSQLiteRepository creates a new SQLite repository for auth
 func NewAuthSQLiteRepository(q *sqlite.Queries) *AuthSQLiteRepository {
@@ -26,22 +26,22 @@ func NewAuthSQLiteRepository(q *sqlite.Queries) *AuthSQLiteRepository {
 }
 
 // GetUserByEmail retrieves a user by email
-func (r *AuthSQLiteRepository) GetUserByEmail(_ context.Context, _ string) (*domain.User, error) {
+func (r *AuthSQLiteRepository) GetUserByEmail(_ context.Context, _ string) (*auth.User, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetUserByID retrieves a user by ID
-func (r *AuthSQLiteRepository) GetUserByID(_ context.Context, _ uuid.UUID) (*domain.User, error) {
+func (r *AuthSQLiteRepository) GetUserByID(_ context.Context, _ uuid.UUID) (*auth.User, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // CreateUser creates a new user
-func (r *AuthSQLiteRepository) CreateUser(_ context.Context, _ *domain.User) error {
+func (r *AuthSQLiteRepository) CreateUser(_ context.Context, _ *auth.User) error {
 	return fmt.Errorf("SQLite implementation not yet available")
 }
 
 // UpdateUser updates an existing user
-func (r *AuthSQLiteRepository) UpdateUser(_ context.Context, _ *domain.User) error {
+func (r *AuthSQLiteRepository) UpdateUser(_ context.Context, _ *auth.User) error {
 	return fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -51,27 +51,27 @@ func (r *AuthSQLiteRepository) DeleteUser(_ context.Context, _ uuid.UUID) error 
 }
 
 // ListUsers lists users with pagination
-func (r *AuthSQLiteRepository) ListUsers(_ context.Context, _, _ int32) ([]*domain.User, error) {
+func (r *AuthSQLiteRepository) ListUsers(_ context.Context, _, _ int32) ([]*auth.User, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // CreateSession creates a new session
-func (r *AuthSQLiteRepository) CreateSession(_ context.Context, _ *domain.Session) error {
+func (r *AuthSQLiteRepository) CreateSession(_ context.Context, _ *auth.Session) error {
 	return fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetSessionByToken retrieves a session by token
-func (r *AuthSQLiteRepository) GetSessionByToken(_ context.Context, _ string) (*domain.Session, error) {
+func (r *AuthSQLiteRepository) GetSessionByToken(_ context.Context, _ string) (*auth.Session, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetSessionByID retrieves a session by ID
-func (r *AuthSQLiteRepository) GetSessionByID(_ context.Context, _ uuid.UUID) (*domain.Session, error) {
+func (r *AuthSQLiteRepository) GetSessionByID(_ context.Context, _ uuid.UUID) (*auth.Session, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // UpdateSession updates a session
-func (r *AuthSQLiteRepository) UpdateSession(_ context.Context, _ *domain.Session) error {
+func (r *AuthSQLiteRepository) UpdateSession(_ context.Context, _ *auth.Session) error {
 	return fmt.Errorf("SQLite implementation not yet available")
 }
 

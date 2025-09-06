@@ -13,8 +13,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/archesai/archesai/internal/app"
 	"github.com/archesai/archesai/internal/config"
-	"github.com/archesai/archesai/internal/container"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -74,7 +74,7 @@ func runAll(_ *cobra.Command, _ []string) error {
 	}
 
 	// Create application container
-	appContainer, err := container.NewContainer(cfg)
+	appContainer, err := app.NewApp(cfg)
 	if err != nil {
 		return fmt.Errorf("failed to create application: %w", err)
 	}

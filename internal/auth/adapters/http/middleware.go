@@ -7,21 +7,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/archesai/archesai/internal/auth/domain"
+	"github.com/archesai/archesai/internal/auth"
 	"github.com/labstack/echo/v4"
 )
 
 type contextKey string
 
 const (
-	// ClaimsContextKey is the context key for storing JWT claims
-	ClaimsContextKey contextKey = "auth.claims"
-	// UserContextKey is the context key for storing user ID
-	UserContextKey contextKey = "auth.user_id"
+	// AuthClaimsContextKey is the context key for storing JWT claims
+	AuthClaimsContextKey contextKey = "auth.claims"
+	// AuthUserContextKey is the context key for storing user ID
+	AuthUserContextKey contextKey = "auth.user_id"
 )
 
 // Middleware creates an authentication middleware
-func Middleware(authService *domain.AuthService, logger *slog.Logger) echo.MiddlewareFunc {
+func Middleware(authService *auth.Service, logger *slog.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Extract token from Authorization header
@@ -42,19 +42,19 @@ func Middleware(authService *domain.AuthService, logger *slog.Logger) echo.Middl
 			claims, err := authService.ValidateToken(token)
 			if err != nil {
 				logger.Warn("invalid token", "error", err)
-				if err == domain.ErrTokenExpired {
+				if err == auth.ErrTokenExpired {
 					return echo.NewHTTPError(http.StatusUnauthorized, "token expired")
 				}
 				return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
 			}
 
 			// Set claims in context
-			c.Set(string(ClaimsContextKey), claims)
-			c.Set(string(UserContextKey), claims.UserID)
+			c.Set(string(AuthClaimsContextKey), claims)
+			c.Set(string(AuthUserContextKey), claims.UserID)
 
 			// Add user info to request context for downstream use
-			ctx := context.WithValue(c.Request().Context(), ClaimsContextKey, claims)
-			ctx = context.WithValue(ctx, UserContextKey, claims.UserID)
+			ctx := context.WithValue(c.Request().Context(), AuthClaimsContextKey, claims)
+			ctx = context.WithValue(ctx, AuthUserContextKey, claims.UserID)
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)
@@ -64,7 +64,7 @@ func Middleware(authService *domain.AuthService, logger *slog.Logger) echo.Middl
 
 // OptionalAuthMiddleware creates an optional authentication middleware
 // It validates the token if present but doesn't require it
-func OptionalAuthMiddleware(authService *domain.AuthService, logger *slog.Logger) echo.MiddlewareFunc {
+func OptionalAuthMiddleware(authService *auth.Service, logger *slog.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Extract token from Authorization header
@@ -82,12 +82,12 @@ func OptionalAuthMiddleware(authService *domain.AuthService, logger *slog.Logger
 				claims, err := authService.ValidateToken(token)
 				if err == nil {
 					// Set claims in context if valid
-					c.Set(string(ClaimsContextKey), claims)
-					c.Set(string(UserContextKey), claims.UserID)
+					c.Set(string(AuthClaimsContextKey), claims)
+					c.Set(string(AuthUserContextKey), claims.UserID)
 
 					// Add user info to request context
-					ctx := context.WithValue(c.Request().Context(), ClaimsContextKey, claims)
-					ctx = context.WithValue(ctx, UserContextKey, claims.UserID)
+					ctx := context.WithValue(c.Request().Context(), AuthClaimsContextKey, claims)
+					ctx = context.WithValue(ctx, AuthUserContextKey, claims.UserID)
 					c.SetRequest(c.Request().WithContext(ctx))
 				} else {
 					logger.Debug("invalid optional token", "error", err)
@@ -103,7 +103,7 @@ func OptionalAuthMiddleware(authService *domain.AuthService, logger *slog.Logger
 func RequireRole(roles ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			claims, ok := c.Get(string(ClaimsContextKey)).(*domain.Claims)
+			claims, ok := c.Get(string(AuthClaimsContextKey)).(*auth.Claims)
 			if !ok {
 				return echo.NewHTTPError(http.StatusUnauthorized, "missing authentication")
 			}
@@ -131,7 +131,7 @@ func RequireRole(roles ...string) echo.MiddlewareFunc {
 func RequireOrganization() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			claims, ok := c.Get(string(ClaimsContextKey)).(*domain.Claims)
+			claims, ok := c.Get(string(AuthClaimsContextKey)).(*auth.Claims)
 			if !ok {
 				return echo.NewHTTPError(http.StatusUnauthorized, "missing authentication")
 			}
@@ -168,13 +168,13 @@ func extractToken(c echo.Context) string {
 
 // GetUserFromContext retrieves the user ID from the context
 func GetUserFromContext(c echo.Context) (string, bool) {
-	userID, ok := c.Get(string(UserContextKey)).(string)
+	userID, ok := c.Get(string(AuthUserContextKey)).(string)
 	return userID, ok
 }
 
 // GetClaimsFromContext retrieves the claims from the context
-func GetClaimsFromContext(c echo.Context) (*domain.Claims, bool) {
-	claims, ok := c.Get(string(ClaimsContextKey)).(*domain.Claims)
+func GetClaimsFromContext(c echo.Context) (*auth.Claims, bool) {
+	claims, ok := c.Get(string(AuthClaimsContextKey)).(*auth.Claims)
 	return claims, ok
 }
 

@@ -3,7 +3,7 @@ package adapters
 
 import (
 	"github.com/archesai/archesai/internal/database/postgresql"
-	"github.com/archesai/archesai/internal/workflows/domain"
+	"github.com/archesai/archesai/internal/workflows"
 	"github.com/google/uuid"
 )
 
@@ -16,29 +16,29 @@ func handleNullableString(s *string) string {
 	return *s
 }
 
-// PipelineDBToAPI converts postgresql.Pipeline to domain.PipelineEntity
-func PipelineDBToAPI(from *postgresql.Pipeline) domain.PipelineEntity {
-	return domain.PipelineEntity{
+// PipelineDBToAPI converts postgresql.Pipeline to workflows.PipelineEntity
+func PipelineDBToAPI(from *postgresql.Pipeline) workflows.PipelineEntity {
+	return workflows.PipelineEntity{
 		Id:             uuid.MustParse(from.Id),
 		OrganizationId: uuid.MustParse(from.OrganizationId),
 	}
 }
 
-// RunDBToAPI converts postgresql.Run to domain.RunEntity
-func RunDBToAPI(from *postgresql.Run) domain.RunEntity {
-	return domain.RunEntity{
+// RunDBToAPI converts postgresql.Run to workflows.RunEntity
+func RunDBToAPI(from *postgresql.Run) workflows.RunEntity {
+	return workflows.RunEntity{
 		Id:             uuid.MustParse(from.Id),
 		OrganizationId: from.OrganizationId,
 		PipelineId:     handleNullableString(from.PipelineId),
 		Progress:       float32(from.Progress),
-		Status:         domain.RunEntityStatus(from.Status),
+		Status:         workflows.RunEntityStatus(from.Status),
 		ToolId:         from.ToolId,
 	}
 }
 
-// ToolDBToAPI converts postgresql.Tool to domain.ToolEntity
-func ToolDBToAPI(from *postgresql.Tool) domain.ToolEntity {
-	return domain.ToolEntity{
+// ToolDBToAPI converts postgresql.Tool to workflows.ToolEntity
+func ToolDBToAPI(from *postgresql.Tool) workflows.ToolEntity {
+	return workflows.ToolEntity{
 		Description:    from.Description,
 		Id:             uuid.MustParse(from.Id),
 		Name:           from.Name,

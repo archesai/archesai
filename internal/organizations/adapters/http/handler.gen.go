@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"net/http"
 
-	. "github.com/archesai/archesai/internal/organizations/domain"
+	. "github.com/archesai/archesai/internal/organizations"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"

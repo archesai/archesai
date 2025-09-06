@@ -3,7 +3,7 @@ adapters:
   # Auth domain adapters
   - name: AuthUserDBToAPI
     from: postgresql.User
-    to: domain.UserEntity
+    to: auth.UserEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -12,7 +12,7 @@ adapters:
 
   - name: AuthSessionDBToAPI
     from: postgresql.Session
-    to: domain.SessionEntity
+    to: auth.SessionEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -22,13 +22,13 @@ adapters:
 
   - name: AuthAccountDBToAPI
     from: postgresql.Account
-    to: domain.AccountEntity
+    to: auth.AccountEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       AccountId: "from.AccountId" # API expects string
       UserId: "uuid.MustParse(from.UserId)" # API expects UUID
-      ProviderId: "domain.AccountEntityProviderId(from.ProviderId)"
+      ProviderId: "auth.AccountEntityProviderId(from.ProviderId)"
       IdToken: "handleNullableString(from.IdToken)"
       Password: "handleNullableString(from.Password)"
       AccessTokenExpiresAt: "handleNullableTimestamp(from.AccessTokenExpiresAt)"
@@ -37,11 +37,11 @@ adapters:
   # Organizations domain adapters
   - name: OrganizationDBToAPI
     from: postgresql.Organization
-    to: domain.OrganizationEntity
+    to: organizations.OrganizationEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
-      Plan: "domain.OrganizationEntityPlan(from.Plan)"
+      Plan: "organizations.OrganizationEntityPlan(from.Plan)"
       BillingEmail: "openapi_types.Email(handleNullableString(from.BillingEmail))"
       Credits: "float32(from.Credits)"
       Metadata: "handleNullableMetadata(from.Metadata)"
@@ -51,7 +51,7 @@ adapters:
   # Workflows domain adapters
   - name: PipelineDBToAPI
     from: postgresql.Pipeline
-    to: domain.PipelineEntity
+    to: workflows.PipelineEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -59,19 +59,19 @@ adapters:
 
   - name: RunDBToAPI
     from: postgresql.Run
-    to: domain.RunEntity
+    to: workflows.RunEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       PipelineId: "handleNullableString(from.PipelineId)"
       OrganizationId: "from.OrganizationId"
       ToolId: "from.ToolId"
-      Status: "domain.RunEntityStatus(from.Status)"
+      Status: "workflows.RunEntityStatus(from.Status)"
       Progress: "float32(from.Progress)"
 
   - name: ToolDBToAPI
     from: postgresql.Tool
-    to: domain.ToolEntity
+    to: workflows.ToolEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -81,30 +81,30 @@ adapters:
 
   - name: MemberDBToAPI
     from: postgresql.Member
-    to: domain.MemberEntity
+    to: organizations.MemberEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       UserId: "from.UserId" # API expects string, not UUID
       OrganizationId: "from.OrganizationId" # API expects string, not UUID
-      Role: "domain.MemberEntityRole(from.Role)" # Use correct type
+      Role: "organizations.MemberEntityRole(from.Role)" # Use correct type
 
   - name: InvitationDBToAPI
     from: postgresql.Invitation
-    to: domain.InvitationEntity
+    to: organizations.InvitationEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       OrganizationId: "from.OrganizationId" # API expects string, not UUID
       InviterId: "from.InviterId" # API expects string, not UUID
       Email: "from.Email" # API expects string, not Email type
-      Role: "domain.InvitationEntityRole(from.Role)" # Use correct type
+      Role: "organizations.InvitationEntityRole(from.Role)" # Use correct type
       ExpiresAt: "from.ExpiresAt.Format(time.RFC3339)" # Format as string
 
   # Content domain adapters
   - name: ArtifactDBToAPI
     from: postgresql.Artifact
-    to: domain.ArtifactEntity
+    to: content.ArtifactEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -114,7 +114,7 @@ adapters:
 
   - name: LabelDBToAPI
     from: postgresql.Label
-    to: domain.LabelEntity
+    to: content.LabelEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"

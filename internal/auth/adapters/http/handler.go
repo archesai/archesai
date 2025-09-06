@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/archesai/archesai/internal/auth/domain"
+	"github.com/archesai/archesai/internal/auth"
 	"github.com/labstack/echo/v4"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
@@ -20,7 +20,7 @@ const (
 
 // AuthHandler handles HTTP requests for auth operations
 type AuthHandler struct {
-	service *domain.AuthService
+	service *auth.Service
 	logger  *slog.Logger
 }
 
@@ -28,7 +28,7 @@ type AuthHandler struct {
 var _ StrictServerInterface = (*AuthHandler)(nil)
 
 // NewAuthHandler creates a new auth HTTP handler
-func NewAuthHandler(service *domain.AuthService, logger *slog.Logger) *AuthHandler {
+func NewAuthHandler(service *auth.Service, logger *slog.Logger) *AuthHandler {
 	return &AuthHandler{
 		service: service,
 		logger:  logger,
@@ -37,14 +37,14 @@ func NewAuthHandler(service *domain.AuthService, logger *slog.Logger) *AuthHandl
 
 // Register handles user registration (implements StrictServerInterface)
 func (h *AuthHandler) Register(ctx context.Context, req RegisterRequestObject) (RegisterResponseObject, error) {
-	user, _, err := h.service.Register(ctx, &domain.RegisterRequest{
-		Email:    string(req.Body.Email),
+	user, _, err := h.service.Register(ctx, &auth.RegisterRequest{
+		Email:    req.Body.Email,
 		Password: req.Body.Password,
 		Name:     req.Body.Name,
 	})
 	if err != nil {
 		switch err {
-		case domain.ErrUserExists:
+		case auth.ErrUserExists:
 			// Return 401 Unauthorized (there's no 409 response defined)
 			return Register401ApplicationProblemPlusJSONResponse{
 				UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
@@ -83,13 +83,13 @@ func (h *AuthHandler) Login(ctx context.Context, req LoginRequestObject) (LoginR
 		}
 	}
 
-	user, _, err := h.service.Login(ctx, &domain.LoginRequest{
-		Email:    string(req.Body.Email),
+	user, _, err := h.service.Login(ctx, &auth.LoginRequest{
+		Email:    req.Body.Email,
 		Password: req.Body.Password,
 	}, ipAddress, userAgent)
 	if err != nil {
 		switch err {
-		case domain.ErrInvalidCredentials:
+		case auth.ErrInvalidCredentials:
 			return Login401ApplicationProblemPlusJSONResponse{
 				UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
 					Detail: "Invalid credentials",
@@ -131,7 +131,7 @@ func (h *AuthHandler) Logout(ctx context.Context, _ LogoutRequestObject) (Logout
 	err := h.service.Logout(ctx, token)
 	if err != nil {
 		switch err {
-		case domain.ErrInvalidToken:
+		case auth.ErrInvalidToken:
 			return Logout401ApplicationProblemPlusJSONResponse{
 				UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
 					Detail: "Invalid token",
@@ -184,7 +184,7 @@ func (h *AuthHandler) GetOneUser(ctx context.Context, req GetOneUserRequestObjec
 	user, err := h.service.GetUser(ctx, req.Id)
 	if err != nil {
 		switch err {
-		case domain.ErrUserNotFound:
+		case auth.ErrUserNotFound:
 			return GetOneUser404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Title:  "User not found",
@@ -210,7 +210,7 @@ func (h *AuthHandler) UpdateUser(ctx context.Context, req UpdateUserRequestObjec
 	user, err := h.service.GetUser(ctx, req.Id)
 	if err != nil {
 		switch err {
-		case domain.ErrUserNotFound:
+		case auth.ErrUserNotFound:
 			return UpdateUser404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Title:  "User not found",
@@ -234,7 +234,7 @@ func (h *AuthHandler) DeleteUser(ctx context.Context, req DeleteUserRequestObjec
 	err := h.service.DeleteUser(ctx, req.Id)
 	if err != nil {
 		switch err {
-		case domain.ErrUserNotFound:
+		case auth.ErrUserNotFound:
 			return DeleteUser404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Title:  "User not found",
@@ -249,7 +249,7 @@ func (h *AuthHandler) DeleteUser(ctx context.Context, req DeleteUserRequestObjec
 	}
 
 	return DeleteUser200JSONResponse{
-		Data: domain.UserEntity{Id: req.Id}, // Placeholder response
+		Data: auth.UserEntity{Id: req.Id}, // Placeholder response
 	}, nil
 }
 
@@ -343,8 +343,8 @@ func (h *AuthHandler) UpdateSession(_ context.Context, _ UpdateSessionRequestObj
 // Helper converter functions
 
 // convertToGeneratedUsers converts a slice of domain Users to generated UserEntity
-func convertToGeneratedUsers(domainUsers []*domain.User) []domain.UserEntity {
-	result := make([]domain.UserEntity, len(domainUsers))
+func convertToGeneratedUsers(domainUsers []*auth.User) []auth.UserEntity {
+	result := make([]auth.UserEntity, len(domainUsers))
 	for i, u := range domainUsers {
 		result[i] = u.UserEntity
 	}
@@ -352,7 +352,7 @@ func convertToGeneratedUsers(domainUsers []*domain.User) []domain.UserEntity {
 }
 
 // convertPagination converts generated pagination params to domain options
-func convertPagination(page domain.Page) (limit, offset int32) {
+func convertPagination(page auth.Page) (limit, offset int32) {
 	limit = 50 // default
 	offset = 0 // default
 

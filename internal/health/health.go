@@ -9,6 +9,9 @@
 // - Custom health check registration
 package health
 
+//go:generate go tool oapi-codegen --config=models.cfg.yaml ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=server.cfg.yaml ../../api/openapi.bundled.yaml
+
 import "time"
 
 // Health check status constants

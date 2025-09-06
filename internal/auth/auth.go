@@ -3,8 +3,8 @@
 // and middleware for protecting routes.
 package auth
 
-//go:generate go tool oapi-codegen --config=domain/models.cfg.yaml ../../api/openapi.bundled.yaml
-//go:generate go tool oapi-codegen --config=adapters/http/server.cfg.yaml ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=models.cfg.yaml ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=server.cfg.yaml ../../api/openapi.bundled.yaml
 
 // ContextKey is a type for context keys
 type ContextKey string

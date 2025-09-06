@@ -2,7 +2,7 @@
 package adapters
 
 import (
-	"github.com/archesai/archesai/internal/content/domain"
+	"github.com/archesai/archesai/internal/content"
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
 )
@@ -16,9 +16,9 @@ func handleNullableString(s *string) string {
 	return *s
 }
 
-// ArtifactDBToAPI converts postgresql.Artifact to domain.ArtifactEntity
-func ArtifactDBToAPI(from *postgresql.Artifact) domain.ArtifactEntity {
-	return domain.ArtifactEntity{
+// ArtifactDBToAPI converts postgresql.Artifact to content.ArtifactEntity
+func ArtifactDBToAPI(from *postgresql.Artifact) content.ArtifactEntity {
+	return content.ArtifactEntity{
 		Credits:        float32(from.Credits),
 		Id:             uuid.MustParse(from.Id),
 		OrganizationId: from.OrganizationId,
@@ -26,9 +26,9 @@ func ArtifactDBToAPI(from *postgresql.Artifact) domain.ArtifactEntity {
 	}
 }
 
-// LabelDBToAPI converts postgresql.Label to domain.LabelEntity
-func LabelDBToAPI(from *postgresql.Label) domain.LabelEntity {
-	return domain.LabelEntity{
+// LabelDBToAPI converts postgresql.Label to content.LabelEntity
+func LabelDBToAPI(from *postgresql.Label) content.LabelEntity {
+	return content.LabelEntity{
 		Id:             uuid.MustParse(from.Id),
 		Name:           from.Name,
 		OrganizationId: from.OrganizationId,

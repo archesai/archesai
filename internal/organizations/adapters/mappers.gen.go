@@ -4,7 +4,7 @@ package adapters
 import (
 	"encoding/json"
 	"github.com/archesai/archesai/internal/database/postgresql"
-	"github.com/archesai/archesai/internal/organizations/domain"
+	"github.com/archesai/archesai/internal/organizations"
 	"github.com/google/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"time"
@@ -30,37 +30,37 @@ func handleNullableMetadata(j *string) map[string]interface{} {
 	return metadata
 }
 
-// OrganizationDBToAPI converts postgresql.Organization to domain.OrganizationEntity
-func OrganizationDBToAPI(from *postgresql.Organization) domain.OrganizationEntity {
-	return domain.OrganizationEntity{
+// OrganizationDBToAPI converts postgresql.Organization to organizations.OrganizationEntity
+func OrganizationDBToAPI(from *postgresql.Organization) organizations.OrganizationEntity {
+	return organizations.OrganizationEntity{
 		BillingEmail:     openapi_types.Email(handleNullableString(from.BillingEmail)),
 		Credits:          float32(from.Credits),
 		Id:               uuid.MustParse(from.Id),
 		Metadata:         handleNullableMetadata(from.Metadata),
 		Name:             from.Name,
-		Plan:             domain.OrganizationEntityPlan(from.Plan),
+		Plan:             organizations.OrganizationEntityPlan(from.Plan),
 		StripeCustomerId: handleNullableString(from.StripeCustomerId),
 	}
 }
 
-// MemberDBToAPI converts postgresql.Member to domain.MemberEntity
-func MemberDBToAPI(from *postgresql.Member) domain.MemberEntity {
-	return domain.MemberEntity{
+// MemberDBToAPI converts postgresql.Member to organizations.MemberEntity
+func MemberDBToAPI(from *postgresql.Member) organizations.MemberEntity {
+	return organizations.MemberEntity{
 		Id:             uuid.MustParse(from.Id),
 		OrganizationId: from.OrganizationId,
-		Role:           domain.MemberEntityRole(from.Role),
+		Role:           organizations.MemberEntityRole(from.Role),
 		UserId:         from.UserId,
 	}
 }
 
-// InvitationDBToAPI converts postgresql.Invitation to domain.InvitationEntity
-func InvitationDBToAPI(from *postgresql.Invitation) domain.InvitationEntity {
-	return domain.InvitationEntity{
+// InvitationDBToAPI converts postgresql.Invitation to organizations.InvitationEntity
+func InvitationDBToAPI(from *postgresql.Invitation) organizations.InvitationEntity {
+	return organizations.InvitationEntity{
 		Email:          from.Email,
 		ExpiresAt:      from.ExpiresAt.Format(time.RFC3339),
 		Id:             uuid.MustParse(from.Id),
 		InviterId:      from.InviterId,
 		OrganizationId: from.OrganizationId,
-		Role:           domain.InvitationEntityRole(from.Role),
+		Role:           organizations.InvitationEntityRole(from.Role),
 	}
 }

@@ -40,7 +40,7 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * @summary Register
  */
 export const getRegisterUrl = () => {
-  return `/auth/sign-up`;
+  return `/auth/register`;
 };
 
 export const register = async (
@@ -128,7 +128,7 @@ export const useRegister = <TError = UnauthorizedResponse, TContext = unknown>(
  * @summary Login
  */
 export const getLoginUrl = () => {
-  return `/auth/sign-in`;
+  return `/auth/login`;
 };
 
 export const login = async (
@@ -216,13 +216,13 @@ export const useLogin = <TError = UnauthorizedResponse, TContext = unknown>(
  * @summary Logout
  */
 export const getLogoutUrl = () => {
-  return `/auth/sign-out`;
+  return `/auth/logout`;
 };
 
 export const logout = async (
   options?: RequestInit,
-): Promise<NotFoundResponse> => {
-  return customFetch<NotFoundResponse>(getLogoutUrl(), {
+): Promise<NoContentResponse> => {
+  return customFetch<NoContentResponse>(getLogoutUrl(), {
     ...options,
     method: "POST",
   });

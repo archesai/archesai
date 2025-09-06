@@ -102,21 +102,17 @@ generate-sqlc: ## Generate database code with sqlc
 generate-oapi: openapi-bundle ## Generate OpenAPI server code
 	@echo -e "$(YELLOW)▶ Generating OpenAPI server code...$(NC)"
 	@echo "  Generating domain types..."
-	@for domain in auth organizations workflows content; do \
-		cd internal/$$domain/domain && \
+	@for domain in auth organizations workflows content health config; do \
+		cd internal/$$domain && \
 		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
 		cd - > /dev/null; \
 	done
 	@echo "  Generating HTTP handlers..."
-	@for domain in auth organizations workflows content; do \
+	@for domain in auth organizations workflows content health config; do \
 		cd internal/$$domain/adapters/http && \
 		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
 		cd - > /dev/null; \
 	done
-	@echo "  Generating config types..."
-	@cd internal/config && \
-		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
-		cd - > /dev/null
 	@echo -e "$(GREEN)✓ OpenAPI generation complete!$(NC)"
 
 .PHONY: generate-defaults
@@ -205,7 +201,7 @@ lint-node: typecheck-node ## Run Node.js linter (includes typecheck)
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
 	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@pnpm --package=@redocly/cli dlx redocly --config api/redocly.yaml lint api/openapi.yaml
+	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml lint api/openapi.yaml
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
 .PHONY: typecheck-node
@@ -239,20 +235,20 @@ format-node: ## Format Node.js/TypeScript code
 .PHONY: openapi-bundle
 openapi-bundle: lint-openapi ## Bundle OpenAPI into single file
 	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
-	@pnpm --package=@redocly/cli dlx redocly --config api/redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml
+	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml
 	@pnpm prettier --write api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
 
 .PHONY: openapi-split
 openapi-split: lint-openapi ## Split OpenAPI into multiple files
 	@echo -e "$(YELLOW)▶ Splitting OpenAPI spec...$(NC)"
-	@pnpm --package=@redocly/cli dlx redocly --config api/redocly.yaml split api/openapi.bundled.yaml --outDir api/split
+	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml split api/openapi.bundled.yaml --outDir api/split
 	@echo -e "$(GREEN)✓ OpenAPI split: api/split/$(NC)"
 
 .PHONY: openapi-stats
 openapi-stats: ## Show OpenAPI specification statistics
 	@echo -e "$(YELLOW)▶ Analyzing OpenAPI spec...$(NC)"
-	@pnpm --package=@redocly/cli dlx redocly --config api/redocly.yaml stats api/openapi.yaml
+	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml stats api/openapi.yaml
 
 # ------------------------------------------
 # Dependencies

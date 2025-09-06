@@ -379,8 +379,44 @@ func (g *Generator) analyzeAdapters(domain string, adapters []AdapterSpec) Templ
 
 	// Determine required imports
 	imports := []string{
-		fmt.Sprintf(`"github.com/archesai/archesai/internal/%s/domain"`, domain),
 		`"github.com/archesai/archesai/internal/database/postgresql"`,
+	}
+
+	// Add domain package imports based on what's used in the adapters
+	usedDomains := make(map[string]bool)
+	for _, adapter := range adapters {
+		if strings.Contains(adapter.ToType, "auth.") {
+			usedDomains["auth"] = true
+		}
+		if strings.Contains(adapter.ToType, "content.") {
+			usedDomains["content"] = true
+		}
+		if strings.Contains(adapter.ToType, "organizations.") {
+			usedDomains["organizations"] = true
+		}
+		if strings.Contains(adapter.ToType, "workflows.") {
+			usedDomains["workflows"] = true
+		}
+		// Also check conversion strings for domain references
+		for _, field := range adapter.Fields {
+			if strings.Contains(field.Conversion, "auth.") {
+				usedDomains["auth"] = true
+			}
+			if strings.Contains(field.Conversion, "content.") {
+				usedDomains["content"] = true
+			}
+			if strings.Contains(field.Conversion, "organizations.") {
+				usedDomains["organizations"] = true
+			}
+			if strings.Contains(field.Conversion, "workflows.") {
+				usedDomains["workflows"] = true
+			}
+		}
+	}
+
+	// Add imports for used domains
+	for domainPkg := range usedDomains {
+		imports = append(imports, fmt.Sprintf(`"github.com/archesai/archesai/internal/%s"`, domainPkg))
 	}
 
 	// Add conditional imports

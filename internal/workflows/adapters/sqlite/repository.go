@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/internal/database/sqlite"
-	"github.com/archesai/archesai/internal/workflows/domain"
+	"github.com/archesai/archesai/internal/workflows"
 	"github.com/google/uuid"
 )
 
@@ -22,21 +22,21 @@ func NewWorkflowSQLiteRepository(q *sqlite.Queries) *WorkflowSQLiteRepository {
 	}
 }
 
-// Ensure WorkflowSQLiteRepository implements domain.WorkflowRepository
-var _ domain.WorkflowRepository = (*WorkflowSQLiteRepository)(nil)
+// Ensure WorkflowSQLiteRepository implements workflows.WorkflowRepository
+var _ workflows.WorkflowRepository = (*WorkflowSQLiteRepository)(nil)
 
 // CreatePipeline creates a new pipeline
-func (r *WorkflowSQLiteRepository) CreatePipeline(_ context.Context, _ *domain.Pipeline) (*domain.Pipeline, error) {
+func (r *WorkflowSQLiteRepository) CreatePipeline(_ context.Context, _ *workflows.Pipeline) (*workflows.Pipeline, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetPipeline retrieves a pipeline by ID
-func (r *WorkflowSQLiteRepository) GetPipeline(_ context.Context, _ uuid.UUID) (*domain.Pipeline, error) {
+func (r *WorkflowSQLiteRepository) GetPipeline(_ context.Context, _ uuid.UUID) (*workflows.Pipeline, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // UpdatePipeline updates a pipeline
-func (r *WorkflowSQLiteRepository) UpdatePipeline(_ context.Context, _ *domain.Pipeline) (*domain.Pipeline, error) {
+func (r *WorkflowSQLiteRepository) UpdatePipeline(_ context.Context, _ *workflows.Pipeline) (*workflows.Pipeline, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -46,22 +46,22 @@ func (r *WorkflowSQLiteRepository) DeletePipeline(_ context.Context, _ uuid.UUID
 }
 
 // ListPipelines lists pipelines with pagination
-func (r *WorkflowSQLiteRepository) ListPipelines(_ context.Context, _ string, _, _ int) ([]*domain.Pipeline, int, error) {
+func (r *WorkflowSQLiteRepository) ListPipelines(_ context.Context, _ string, _, _ int) ([]*workflows.Pipeline, int, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // CreateRun creates a new run
-func (r *WorkflowSQLiteRepository) CreateRun(_ context.Context, _ *domain.Run) (*domain.Run, error) {
+func (r *WorkflowSQLiteRepository) CreateRun(_ context.Context, _ *workflows.Run) (*workflows.Run, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetRun retrieves a run by ID
-func (r *WorkflowSQLiteRepository) GetRun(_ context.Context, _ uuid.UUID) (*domain.Run, error) {
+func (r *WorkflowSQLiteRepository) GetRun(_ context.Context, _ uuid.UUID) (*workflows.Run, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // UpdateRun updates a run
-func (r *WorkflowSQLiteRepository) UpdateRun(_ context.Context, _ *domain.Run) (*domain.Run, error) {
+func (r *WorkflowSQLiteRepository) UpdateRun(_ context.Context, _ *workflows.Run) (*workflows.Run, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -71,27 +71,27 @@ func (r *WorkflowSQLiteRepository) DeleteRun(_ context.Context, _ uuid.UUID) err
 }
 
 // ListRuns lists runs with pagination
-func (r *WorkflowSQLiteRepository) ListRuns(_ context.Context, _ string, _, _ int) ([]*domain.Run, int, error) {
+func (r *WorkflowSQLiteRepository) ListRuns(_ context.Context, _ string, _, _ int) ([]*workflows.Run, int, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // ListRunsByPipeline lists runs by pipeline
-func (r *WorkflowSQLiteRepository) ListRunsByPipeline(_ context.Context, _ string, _, _ int) ([]*domain.Run, int, error) {
+func (r *WorkflowSQLiteRepository) ListRunsByPipeline(_ context.Context, _ string, _, _ int) ([]*workflows.Run, int, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // CreateTool creates a new tool
-func (r *WorkflowSQLiteRepository) CreateTool(_ context.Context, _ *domain.Tool) (*domain.Tool, error) {
+func (r *WorkflowSQLiteRepository) CreateTool(_ context.Context, _ *workflows.Tool) (*workflows.Tool, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetTool retrieves a tool by ID
-func (r *WorkflowSQLiteRepository) GetTool(_ context.Context, _ uuid.UUID) (*domain.Tool, error) {
+func (r *WorkflowSQLiteRepository) GetTool(_ context.Context, _ uuid.UUID) (*workflows.Tool, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // UpdateTool updates a tool
-func (r *WorkflowSQLiteRepository) UpdateTool(_ context.Context, _ *domain.Tool) (*domain.Tool, error) {
+func (r *WorkflowSQLiteRepository) UpdateTool(_ context.Context, _ *workflows.Tool) (*workflows.Tool, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -101,6 +101,6 @@ func (r *WorkflowSQLiteRepository) DeleteTool(_ context.Context, _ uuid.UUID) er
 }
 
 // ListTools lists tools with pagination
-func (r *WorkflowSQLiteRepository) ListTools(_ context.Context, _ string, _, _ int) ([]*domain.Tool, int, error) {
+func (r *WorkflowSQLiteRepository) ListTools(_ context.Context, _ string, _, _ int) ([]*workflows.Tool, int, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }

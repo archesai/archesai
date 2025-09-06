@@ -5,8 +5,7 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/archesai/archesai/internal/organizations/domain"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/archesai/archesai/internal/organizations"
 )
 
 const (
@@ -16,7 +15,7 @@ const (
 
 // OrganizationHandler handles HTTP requests for organization operations
 type OrganizationHandler struct {
-	service *domain.OrganizationService
+	service *organizations.OrganizationService
 	logger  *slog.Logger
 }
 
@@ -24,7 +23,7 @@ type OrganizationHandler struct {
 var _ StrictServerInterface = (*OrganizationHandler)(nil)
 
 // NewOrganizationHandler creates a new organization handler
-func NewOrganizationHandler(service *domain.OrganizationService, logger *slog.Logger) *OrganizationHandler {
+func NewOrganizationHandler(service *organizations.OrganizationService, logger *slog.Logger) *OrganizationHandler {
 	return &OrganizationHandler{
 		service: service,
 		logger:  logger,
@@ -56,7 +55,7 @@ func (h *OrganizationHandler) FindManyOrganizations(ctx context.Context, req Fin
 	}
 
 	// Convert to API entities
-	data := make([]domain.OrganizationEntity, len(orgs))
+	data := make([]organizations.OrganizationEntity, len(orgs))
 	for i, org := range orgs {
 		data[i] = org.OrganizationEntity
 	}
@@ -77,10 +76,9 @@ func (h *OrganizationHandler) CreateOrganization(ctx context.Context, req Create
 	// TODO: Get user ID from auth context
 	userID := userPlaceholder // This should come from JWT claims
 
-	billingEmail := openapi_types.Email(req.Body.BillingEmail)
-	createReq := &domain.CreateOrganizationRequest{
-		Name:         "New Organization", // TODO: Get from request when available
-		BillingEmail: billingEmail,
+	createReq := &organizations.CreateOrganizationRequest{
+		BillingEmail:   req.Body.BillingEmail,
+		OrganizationId: req.Body.OrganizationId,
 	}
 
 	org, err := h.service.CreateOrganization(ctx, createReq, userID)
@@ -98,7 +96,7 @@ func (h *OrganizationHandler) CreateOrganization(ctx context.Context, req Create
 func (h *OrganizationHandler) GetOneOrganization(ctx context.Context, req GetOneOrganizationRequestObject) (GetOneOrganizationResponseObject, error) {
 	org, err := h.service.GetOrganization(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrOrganizationNotFound {
+		if err == organizations.ErrOrganizationNotFound {
 			return GetOneOrganization404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Organization not found",
@@ -118,15 +116,14 @@ func (h *OrganizationHandler) GetOneOrganization(ctx context.Context, req GetOne
 
 // UpdateOrganization updates an organization (implements StrictServerInterface)
 func (h *OrganizationHandler) UpdateOrganization(ctx context.Context, req UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error) {
-	billingEmailVal := openapi_types.Email(req.Body.BillingEmail)
-	billingEmail := &billingEmailVal
-	updateReq := &domain.UpdateOrganizationRequest{
-		BillingEmail: billingEmail,
+	updateReq := &organizations.UpdateOrganizationRequest{
+		BillingEmail:   req.Body.BillingEmail,
+		OrganizationId: req.Body.OrganizationId,
 	}
 
 	org, err := h.service.UpdateOrganization(ctx, req.Id, updateReq)
 	if err != nil {
-		if err == domain.ErrOrganizationNotFound {
+		if err == organizations.ErrOrganizationNotFound {
 			return UpdateOrganization404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Organization not found",
@@ -148,7 +145,7 @@ func (h *OrganizationHandler) UpdateOrganization(ctx context.Context, req Update
 func (h *OrganizationHandler) DeleteOrganization(ctx context.Context, req DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error) {
 	err := h.service.DeleteOrganization(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrOrganizationNotFound {
+		if err == organizations.ErrOrganizationNotFound {
 			return DeleteOrganization404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Organization not found",
@@ -184,7 +181,7 @@ func (h *OrganizationHandler) FindManyMembers(ctx context.Context, req FindManyM
 	}
 
 	// Convert to API entities
-	data := make([]domain.MemberEntity, len(members))
+	data := make([]organizations.MemberEntity, len(members))
 	for i, member := range members {
 		data[i] = member.MemberEntity
 	}
@@ -202,16 +199,13 @@ func (h *OrganizationHandler) FindManyMembers(ctx context.Context, req FindManyM
 
 // CreateMember adds a member to an organization (implements StrictServerInterface)
 func (h *OrganizationHandler) CreateMember(ctx context.Context, req CreateMemberRequestObject) (CreateMemberResponseObject, error) {
-	// TODO: Get user ID from context or request
-	userID := openapi_types.UUID{} // Placeholder UUID
-	createReq := &domain.CreateMemberRequest{
-		UserID: userID,
-		Role:   domain.MemberEntityRole(req.Body.Role),
+	createReq := &organizations.CreateMemberRequest{
+		Role: req.Body.Role,
 	}
 
 	member, err := h.service.CreateMember(ctx, createReq, req.Id)
 	if err != nil {
-		if err == domain.ErrMemberExists {
+		if err == organizations.ErrMemberExists {
 			// Return 400 bad request since there's no 409 response defined
 			return CreateMember400ApplicationProblemPlusJSONResponse{
 				BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -234,7 +228,7 @@ func (h *OrganizationHandler) CreateMember(ctx context.Context, req CreateMember
 func (h *OrganizationHandler) GetOneMember(ctx context.Context, req GetOneMemberRequestObject) (GetOneMemberResponseObject, error) {
 	member, err := h.service.GetMember(ctx, req.MemberId)
 	if err != nil {
-		if err == domain.ErrMemberNotFound {
+		if err == organizations.ErrMemberNotFound {
 			return GetOneMember404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Member not found",
@@ -254,14 +248,13 @@ func (h *OrganizationHandler) GetOneMember(ctx context.Context, req GetOneMember
 
 // UpdateMember updates a member's role (implements StrictServerInterface)
 func (h *OrganizationHandler) UpdateMember(ctx context.Context, req UpdateMemberRequestObject) (UpdateMemberResponseObject, error) {
-	role := domain.MemberEntityRole(req.Body.Role)
-	updateReq := &domain.UpdateMemberRequest{
-		Role: &role,
+	updateReq := &organizations.UpdateMemberRequest{
+		Role: req.Body.Role,
 	}
 
 	member, err := h.service.UpdateMember(ctx, req.MemberId, updateReq)
 	if err != nil {
-		if err == domain.ErrMemberNotFound {
+		if err == organizations.ErrMemberNotFound {
 			return UpdateMember404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Member not found",
@@ -283,7 +276,7 @@ func (h *OrganizationHandler) UpdateMember(ctx context.Context, req UpdateMember
 func (h *OrganizationHandler) DeleteMember(ctx context.Context, req DeleteMemberRequestObject) (DeleteMemberResponseObject, error) {
 	err := h.service.DeleteMember(ctx, req.MemberId)
 	if err != nil {
-		if err == domain.ErrMemberNotFound {
+		if err == organizations.ErrMemberNotFound {
 			return DeleteMember404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Member not found",
@@ -319,7 +312,7 @@ func (h *OrganizationHandler) FindManyInvitations(ctx context.Context, req FindM
 	}
 
 	// Convert to API entities
-	data := make([]domain.InvitationEntity, len(invitations))
+	data := make([]organizations.InvitationEntity, len(invitations))
 	for i, invitation := range invitations {
 		data[i] = invitation.InvitationEntity
 	}
@@ -340,9 +333,9 @@ func (h *OrganizationHandler) CreateInvitation(ctx context.Context, req CreateIn
 	// TODO: Get inviter ID from auth context
 	inviterID := userPlaceholder
 
-	createReq := &domain.CreateInvitationRequest{
+	createReq := &organizations.CreateInvitationRequest{
 		Email: req.Body.Email,
-		Role:  domain.InvitationEntityRole(req.Body.Role),
+		Role:  req.Body.Role,
 	}
 
 	invitation, err := h.service.CreateInvitation(ctx, createReq, req.Id.String(), inviterID)
@@ -360,7 +353,7 @@ func (h *OrganizationHandler) CreateInvitation(ctx context.Context, req CreateIn
 func (h *OrganizationHandler) GetOneInvitation(ctx context.Context, req GetOneInvitationRequestObject) (GetOneInvitationResponseObject, error) {
 	invitation, err := h.service.GetInvitation(ctx, req.InvitationId)
 	if err != nil {
-		if err == domain.ErrInvitationNotFound {
+		if err == organizations.ErrInvitationNotFound {
 			return GetOneInvitation404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Invitation not found",
@@ -395,7 +388,7 @@ func (h *OrganizationHandler) UpdateInvitation(_ context.Context, _ UpdateInvita
 func (h *OrganizationHandler) DeleteInvitation(ctx context.Context, req DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error) {
 	err := h.service.DeleteInvitation(ctx, req.InvitationId)
 	if err != nil {
-		if err == domain.ErrInvitationNotFound {
+		if err == organizations.ErrInvitationNotFound {
 			return DeleteInvitation404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Invitation not found",

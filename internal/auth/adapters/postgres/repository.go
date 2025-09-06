@@ -6,8 +6,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/archesai/archesai/internal/auth"
 	"github.com/archesai/archesai/internal/auth/adapters"
-	"github.com/archesai/archesai/internal/auth/domain"
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -21,8 +21,8 @@ type AuthPostgresRepository struct {
 	q postgresql.Querier
 }
 
-// Compile-time check that AuthPostgresRepository implements the domain.AuthRepository interface
-var _ domain.AuthRepository = (*AuthPostgresRepository)(nil)
+// Compile-time check that AuthPostgresRepository implements the auth.Repository interface
+var _ auth.Repository = (*AuthPostgresRepository)(nil)
 
 // NewAuthPostgresRepository creates a new auth repository
 func NewAuthPostgresRepository(q postgresql.Querier) *AuthPostgresRepository {
@@ -32,11 +32,11 @@ func NewAuthPostgresRepository(q postgresql.Querier) *AuthPostgresRepository {
 // User operations
 
 // GetUserByEmail retrieves a user by their email address.
-func (r *AuthPostgresRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
+func (r *AuthPostgresRepository) GetUserByEmail(ctx context.Context, email string) (*auth.User, error) {
 	row, err := r.q.GetUserByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, domain.ErrUserNotFound
+			return nil, auth.ErrUserNotFound
 		}
 		return nil, err
 	}
@@ -44,12 +44,12 @@ func (r *AuthPostgresRepository) GetUserByEmail(ctx context.Context, email strin
 }
 
 // GetUserByID retrieves a user by their unique identifier.
-func (r *AuthPostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*domain.User, error) {
+func (r *AuthPostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*auth.User, error) {
 	// Note: Generated queries expect string IDs, need to convert
 	row, err := r.q.GetUser(ctx, id.String())
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, domain.ErrUserNotFound
+			return nil, auth.ErrUserNotFound
 		}
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (r *AuthPostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) 
 }
 
 // CreateUser creates a new user in the database.
-func (r *AuthPostgresRepository) CreateUser(ctx context.Context, user *domain.User) error {
+func (r *AuthPostgresRepository) CreateUser(ctx context.Context, user *auth.User) error {
 	// Create user params with required fields
 	params := postgresql.CreateUserParams{
 		Email: string(user.Email),
@@ -77,7 +77,7 @@ func (r *AuthPostgresRepository) CreateUser(ctx context.Context, user *domain.Us
 }
 
 // UpdateUser updates an existing user's information.
-func (r *AuthPostgresRepository) UpdateUser(ctx context.Context, user *domain.User) error {
+func (r *AuthPostgresRepository) UpdateUser(ctx context.Context, user *auth.User) error {
 	// Create update params
 	var name *string
 	if user.Name != "" {
@@ -93,7 +93,7 @@ func (r *AuthPostgresRepository) UpdateUser(ctx context.Context, user *domain.Us
 	_, err := r.q.UpdateUser(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.ErrUserNotFound
+			return auth.ErrUserNotFound
 		}
 	}
 	return err
@@ -104,14 +104,14 @@ func (r *AuthPostgresRepository) DeleteUser(ctx context.Context, id uuid.UUID) e
 	err := r.q.DeleteUser(ctx, id.String())
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.ErrUserNotFound
+			return auth.ErrUserNotFound
 		}
 	}
 	return err
 }
 
 // ListUsers retrieves a paginated list of users.
-func (r *AuthPostgresRepository) ListUsers(ctx context.Context, limit, offset int32) ([]*domain.User, error) {
+func (r *AuthPostgresRepository) ListUsers(ctx context.Context, limit, offset int32) ([]*auth.User, error) {
 	if limit == 0 {
 		limit = 50
 	}
@@ -126,7 +126,7 @@ func (r *AuthPostgresRepository) ListUsers(ctx context.Context, limit, offset in
 		return nil, err
 	}
 
-	users := make([]*domain.User, len(rows))
+	users := make([]*auth.User, len(rows))
 	for i, row := range rows {
 		users[i] = r.dbUserToDomain(&row)
 	}
@@ -137,7 +137,7 @@ func (r *AuthPostgresRepository) ListUsers(ctx context.Context, limit, offset in
 // Session operations
 
 // CreateSession creates a new user session.
-func (r *AuthPostgresRepository) CreateSession(ctx context.Context, session *domain.Session) error {
+func (r *AuthPostgresRepository) CreateSession(ctx context.Context, session *auth.Session) error {
 	// Parse ExpiresAt string to time
 	expiresAt, _ := time.Parse(time.RFC3339, session.ExpiresAt)
 
@@ -166,13 +166,13 @@ func (r *AuthPostgresRepository) CreateSession(ctx context.Context, session *dom
 }
 
 // GetSessionByToken retrieves a session by its token.
-func (r *AuthPostgresRepository) GetSessionByToken(ctx context.Context, token string) (*domain.Session, error) {
+func (r *AuthPostgresRepository) GetSessionByToken(ctx context.Context, token string) (*auth.Session, error) {
 	// For now, token is the session ID
 	// TODO: Implement proper token mechanism
 	row, err := r.q.GetSession(ctx, token)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, domain.ErrSessionNotFound
+			return nil, auth.ErrSessionNotFound
 		}
 		return nil, err
 	}
@@ -180,11 +180,11 @@ func (r *AuthPostgresRepository) GetSessionByToken(ctx context.Context, token st
 }
 
 // GetSessionByID retrieves a session by its ID.
-func (r *AuthPostgresRepository) GetSessionByID(ctx context.Context, id uuid.UUID) (*domain.Session, error) {
+func (r *AuthPostgresRepository) GetSessionByID(ctx context.Context, id uuid.UUID) (*auth.Session, error) {
 	row, err := r.q.GetSession(ctx, id.String())
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, domain.ErrSessionNotFound
+			return nil, auth.ErrSessionNotFound
 		}
 		return nil, err
 	}
@@ -192,7 +192,7 @@ func (r *AuthPostgresRepository) GetSessionByID(ctx context.Context, id uuid.UUI
 }
 
 // UpdateSession updates a session's information.
-func (r *AuthPostgresRepository) UpdateSession(ctx context.Context, session *domain.Session) error {
+func (r *AuthPostgresRepository) UpdateSession(ctx context.Context, session *auth.Session) error {
 	// Parse ExpiresAt string to time
 	expiresAt, _ := time.Parse(time.RFC3339, session.ExpiresAt)
 
@@ -204,7 +204,7 @@ func (r *AuthPostgresRepository) UpdateSession(ctx context.Context, session *dom
 	_, err := r.q.UpdateSession(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.ErrSessionNotFound
+			return auth.ErrSessionNotFound
 		}
 	}
 	return err
@@ -215,7 +215,7 @@ func (r *AuthPostgresRepository) DeleteSession(ctx context.Context, id uuid.UUID
 	err := r.q.DeleteSession(ctx, id.String())
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return domain.ErrSessionNotFound
+			return auth.ErrSessionNotFound
 		}
 	}
 	return err
@@ -233,20 +233,20 @@ func (r *AuthPostgresRepository) DeleteExpiredSessions(_ context.Context) error 
 	return nil
 }
 
-// Helper methods to convert between database and domain models
+// Helper methods to convert between database and auth models
 
-func (r *AuthPostgresRepository) dbUserToDomain(dbUser *postgresql.User) *domain.User {
+func (r *AuthPostgresRepository) dbUserToDomain(dbUser *postgresql.User) *auth.User {
 	apiUser := adapters.AuthUserDBToAPI(dbUser)
-	user := &domain.User{
+	user := &auth.User{
 		UserEntity: apiUser,
 	}
 	// TODO: Add password hash from account table when available
 	return user
 }
 
-func (r *AuthPostgresRepository) dbSessionToDomain(dbSession *postgresql.Session) *domain.Session {
+func (r *AuthPostgresRepository) dbSessionToDomain(dbSession *postgresql.Session) *auth.Session {
 	apiSession := adapters.AuthSessionDBToAPI(dbSession)
-	session := &domain.Session{
+	session := &auth.Session{
 		SessionEntity: apiSession,
 	}
 	return session

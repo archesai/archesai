@@ -5,7 +5,7 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/archesai/archesai/internal/workflows/domain"
+	"github.com/archesai/archesai/internal/workflows"
 )
 
 const (
@@ -15,7 +15,7 @@ const (
 
 // WorkflowHandler handles HTTP requests for workflow operations
 type WorkflowHandler struct {
-	service *domain.WorkflowService
+	service *workflows.WorkflowService
 	logger  *slog.Logger
 }
 
@@ -23,7 +23,7 @@ type WorkflowHandler struct {
 var _ StrictServerInterface = (*WorkflowHandler)(nil)
 
 // NewWorkflowHandler creates a new workflow handler
-func NewWorkflowHandler(service *domain.WorkflowService, logger *slog.Logger) *WorkflowHandler {
+func NewWorkflowHandler(service *workflows.WorkflowService, logger *slog.Logger) *WorkflowHandler {
 	return &WorkflowHandler{
 		service: service,
 		logger:  logger,
@@ -58,7 +58,7 @@ func (h *WorkflowHandler) FindManyPipelines(ctx context.Context, req FindManyPip
 	}
 
 	// Convert to API entities
-	data := make([]domain.PipelineEntity, len(pipelines))
+	data := make([]workflows.PipelineEntity, len(pipelines))
 	for i, pipeline := range pipelines {
 		data[i] = pipeline.PipelineEntity
 	}
@@ -79,7 +79,7 @@ func (h *WorkflowHandler) CreatePipeline(ctx context.Context, req CreatePipeline
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	createReq := &domain.CreatePipelineRequest{
+	createReq := &workflows.CreatePipelineRequest{
 		Name:        req.Body.Name,
 		Description: req.Body.Description,
 	}
@@ -99,7 +99,7 @@ func (h *WorkflowHandler) CreatePipeline(ctx context.Context, req CreatePipeline
 func (h *WorkflowHandler) GetOnePipeline(ctx context.Context, req GetOnePipelineRequestObject) (GetOnePipelineResponseObject, error) {
 	pipeline, err := h.service.GetPipeline(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrPipelineNotFound {
+		if err == workflows.ErrPipelineNotFound {
 			return GetOnePipeline404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Pipeline not found",
@@ -119,16 +119,14 @@ func (h *WorkflowHandler) GetOnePipeline(ctx context.Context, req GetOnePipeline
 
 // UpdatePipeline updates a pipeline (implements StrictServerInterface)
 func (h *WorkflowHandler) UpdatePipeline(ctx context.Context, req UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error) {
-	name := &req.Body.Name
-	description := &req.Body.Description
-	updateReq := &domain.UpdatePipelineRequest{
-		Name:        name,
-		Description: description,
+	updateReq := &workflows.UpdatePipelineRequest{
+		Name:        req.Body.Name,
+		Description: req.Body.Description,
 	}
 
 	pipeline, err := h.service.UpdatePipeline(ctx, req.Id, updateReq)
 	if err != nil {
-		if err == domain.ErrPipelineNotFound {
+		if err == workflows.ErrPipelineNotFound {
 			return UpdatePipeline404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Pipeline not found",
@@ -150,7 +148,7 @@ func (h *WorkflowHandler) UpdatePipeline(ctx context.Context, req UpdatePipeline
 func (h *WorkflowHandler) DeletePipeline(ctx context.Context, req DeletePipelineRequestObject) (DeletePipelineResponseObject, error) {
 	err := h.service.DeletePipeline(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrPipelineNotFound {
+		if err == workflows.ErrPipelineNotFound {
 			return DeletePipeline404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Pipeline not found",
@@ -190,7 +188,7 @@ func (h *WorkflowHandler) FindManyRuns(ctx context.Context, req FindManyRunsRequ
 	}
 
 	// Convert to API entities
-	data := make([]domain.RunEntity, len(runs))
+	data := make([]workflows.RunEntity, len(runs))
 	for i, run := range runs {
 		data[i] = run.RunEntity
 	}
@@ -211,10 +209,8 @@ func (h *WorkflowHandler) CreateRun(ctx context.Context, req CreateRunRequestObj
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	pipelineID := &req.Body.PipelineId
-	createReq := &domain.CreateRunRequest{
-		PipelineID: pipelineID,
-		ToolID:     "tool-placeholder", // TODO: Get from request or pipeline
+	createReq := &workflows.CreateRunRequest{
+		PipelineId: req.Body.PipelineId,
 	}
 
 	run, err := h.service.CreateRun(ctx, createReq, orgID)
@@ -232,7 +228,7 @@ func (h *WorkflowHandler) CreateRun(ctx context.Context, req CreateRunRequestObj
 func (h *WorkflowHandler) GetOneRun(ctx context.Context, req GetOneRunRequestObject) (GetOneRunResponseObject, error) {
 	run, err := h.service.GetRun(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrRunNotFound {
+		if err == workflows.ErrRunNotFound {
 			return GetOneRun404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Run not found",
@@ -267,7 +263,7 @@ func (h *WorkflowHandler) UpdateRun(_ context.Context, _ UpdateRunRequestObject)
 func (h *WorkflowHandler) DeleteRun(ctx context.Context, req DeleteRunRequestObject) (DeleteRunResponseObject, error) {
 	err := h.service.DeleteRun(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrRunNotFound {
+		if err == workflows.ErrRunNotFound {
 			return DeleteRun404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Run not found",
@@ -306,7 +302,7 @@ func (h *WorkflowHandler) FindManyTools(ctx context.Context, req FindManyToolsRe
 	}
 
 	// Convert to API entities
-	data := make([]domain.ToolEntity, len(tools))
+	data := make([]workflows.ToolEntity, len(tools))
 	for i, tool := range tools {
 		data[i] = tool.ToolEntity
 	}
@@ -327,14 +323,14 @@ func (h *WorkflowHandler) CreateTool(ctx context.Context, req CreateToolRequestO
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	createReq := &domain.CreateToolRequest{
+	createReq := &workflows.CreateToolRequest{
 		Name:        req.Body.Name,
 		Description: req.Body.Description,
 	}
 
 	tool, err := h.service.CreateTool(ctx, createReq, orgID)
 	if err != nil {
-		if err == domain.ErrToolExists {
+		if err == workflows.ErrToolExists {
 			// Return 400 bad request since there's no 409 response defined
 			return CreateTool400ApplicationProblemPlusJSONResponse{
 				BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -357,7 +353,7 @@ func (h *WorkflowHandler) CreateTool(ctx context.Context, req CreateToolRequestO
 func (h *WorkflowHandler) GetOneTool(ctx context.Context, req GetOneToolRequestObject) (GetOneToolResponseObject, error) {
 	tool, err := h.service.GetTool(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrToolNotFound {
+		if err == workflows.ErrToolNotFound {
 			return GetOneTool404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Tool not found",
@@ -377,16 +373,14 @@ func (h *WorkflowHandler) GetOneTool(ctx context.Context, req GetOneToolRequestO
 
 // UpdateTool updates a tool (implements StrictServerInterface)
 func (h *WorkflowHandler) UpdateTool(ctx context.Context, req UpdateToolRequestObject) (UpdateToolResponseObject, error) {
-	name := &req.Body.Name
-	description := &req.Body.Description
-	updateReq := &domain.UpdateToolRequest{
-		Name:        name,
-		Description: description,
+	updateReq := &workflows.UpdateToolRequest{
+		Name:        req.Body.Name,
+		Description: req.Body.Description,
 	}
 
 	tool, err := h.service.UpdateTool(ctx, req.Id, updateReq)
 	if err != nil {
-		if err == domain.ErrToolNotFound {
+		if err == workflows.ErrToolNotFound {
 			return UpdateTool404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Tool not found",
@@ -408,7 +402,7 @@ func (h *WorkflowHandler) UpdateTool(ctx context.Context, req UpdateToolRequestO
 func (h *WorkflowHandler) DeleteTool(ctx context.Context, req DeleteToolRequestObject) (DeleteToolResponseObject, error) {
 	err := h.service.DeleteTool(ctx, req.Id)
 	if err != nil {
-		if err == domain.ErrToolNotFound {
+		if err == workflows.ErrToolNotFound {
 			return DeleteTool404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Tool not found",

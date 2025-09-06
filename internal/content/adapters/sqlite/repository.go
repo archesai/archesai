@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/content/domain"
+	"github.com/archesai/archesai/internal/content"
 	"github.com/archesai/archesai/internal/database/sqlite"
 	"github.com/google/uuid"
 )
@@ -22,21 +22,21 @@ func NewContentSQLiteRepository(q *sqlite.Queries) *ContentSQLiteRepository {
 	}
 }
 
-// Ensure ContentSQLiteRepository implements domain.ContentRepository
-var _ domain.ContentRepository = (*ContentSQLiteRepository)(nil)
+// Ensure ContentSQLiteRepository implements content.Repository
+var _ content.Repository = (*ContentSQLiteRepository)(nil)
 
 // CreateArtifact creates a new artifact
-func (r *ContentSQLiteRepository) CreateArtifact(_ context.Context, _ *domain.Artifact) (*domain.Artifact, error) {
+func (r *ContentSQLiteRepository) CreateArtifact(_ context.Context, _ *content.Artifact) (*content.Artifact, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetArtifact retrieves an artifact by ID
-func (r *ContentSQLiteRepository) GetArtifact(_ context.Context, _ uuid.UUID) (*domain.Artifact, error) {
+func (r *ContentSQLiteRepository) GetArtifact(_ context.Context, _ uuid.UUID) (*content.Artifact, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // UpdateArtifact updates an artifact
-func (r *ContentSQLiteRepository) UpdateArtifact(_ context.Context, _ *domain.Artifact) (*domain.Artifact, error) {
+func (r *ContentSQLiteRepository) UpdateArtifact(_ context.Context, _ *content.Artifact) (*content.Artifact, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -46,32 +46,32 @@ func (r *ContentSQLiteRepository) DeleteArtifact(_ context.Context, _ uuid.UUID)
 }
 
 // ListArtifacts lists artifacts with pagination
-func (r *ContentSQLiteRepository) ListArtifacts(_ context.Context, _ string, _, _ int) ([]*domain.Artifact, int, error) {
+func (r *ContentSQLiteRepository) ListArtifacts(_ context.Context, _ string, _, _ int) ([]*content.Artifact, int, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // SearchArtifacts searches artifacts with pagination
-func (r *ContentSQLiteRepository) SearchArtifacts(_ context.Context, _, _ string, _, _ int) ([]*domain.Artifact, int, error) {
+func (r *ContentSQLiteRepository) SearchArtifacts(_ context.Context, _, _ string, _, _ int) ([]*content.Artifact, int, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // CreateLabel creates a new label
-func (r *ContentSQLiteRepository) CreateLabel(_ context.Context, _ *domain.Label) (*domain.Label, error) {
+func (r *ContentSQLiteRepository) CreateLabel(_ context.Context, _ *content.Label) (*content.Label, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetLabel retrieves a label by ID
-func (r *ContentSQLiteRepository) GetLabel(_ context.Context, _ uuid.UUID) (*domain.Label, error) {
+func (r *ContentSQLiteRepository) GetLabel(_ context.Context, _ uuid.UUID) (*content.Label, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetLabelByName retrieves a label by name within an organization
-func (r *ContentSQLiteRepository) GetLabelByName(_ context.Context, _, _ string) (*domain.Label, error) {
+func (r *ContentSQLiteRepository) GetLabelByName(_ context.Context, _, _ string) (*content.Label, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // UpdateLabel updates a label
-func (r *ContentSQLiteRepository) UpdateLabel(_ context.Context, _ *domain.Label) (*domain.Label, error) {
+func (r *ContentSQLiteRepository) UpdateLabel(_ context.Context, _ *content.Label) (*content.Label, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -81,7 +81,7 @@ func (r *ContentSQLiteRepository) DeleteLabel(_ context.Context, _ uuid.UUID) er
 }
 
 // ListLabels lists labels with pagination
-func (r *ContentSQLiteRepository) ListLabels(_ context.Context, _ string, _, _ int) ([]*domain.Label, int, error) {
+func (r *ContentSQLiteRepository) ListLabels(_ context.Context, _ string, _, _ int) ([]*content.Label, int, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -96,11 +96,11 @@ func (r *ContentSQLiteRepository) RemoveLabelFromArtifact(_ context.Context, _, 
 }
 
 // GetArtifactsByLabel retrieves all artifacts with a specific label
-func (r *ContentSQLiteRepository) GetArtifactsByLabel(_ context.Context, _ uuid.UUID, _, _ int) ([]*domain.Artifact, int, error) {
+func (r *ContentSQLiteRepository) GetArtifactsByLabel(_ context.Context, _ uuid.UUID, _, _ int) ([]*content.Artifact, int, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }
 
 // GetLabelsByArtifact retrieves all labels for an artifact
-func (r *ContentSQLiteRepository) GetLabelsByArtifact(_ context.Context, _ uuid.UUID) ([]*domain.Label, error) {
+func (r *ContentSQLiteRepository) GetLabelsByArtifact(_ context.Context, _ uuid.UUID) ([]*content.Label, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
