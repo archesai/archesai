@@ -152,15 +152,59 @@ migrate-create: ## Create new migration (usage: make migrate-create name=add_use
 .PHONY: test
 test: ## Run all tests
 	@echo -e "$(YELLOW)▶ Running tests...$(NC)"
-	@go test -v -cover ./...
+	@go test -v -race -cover ./...
 	@echo -e "$(GREEN)✓ Tests complete!$(NC)"
+
+.PHONY: test-short
+test-short: ## Run short tests only (skip integration tests)
+	@echo -e "$(YELLOW)▶ Running short tests...$(NC)"
+	@go test -short -v -cover ./...
+	@echo -e "$(GREEN)✓ Short tests complete!$(NC)"
+
+.PHONY: test-verbose
+test-verbose: ## Run tests with detailed output
+	@echo -e "$(YELLOW)▶ Running tests with verbose output...$(NC)"
+	@go test -v -race -covermode=atomic ./...
+	@echo -e "$(GREEN)✓ Verbose tests complete!$(NC)"
 
 .PHONY: test-coverage
 test-coverage: ## Generate test coverage report
 	@echo -e "$(YELLOW)▶ Generating coverage report...$(NC)"
-	@go test -v -coverprofile=coverage.out ./...
+	@go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+	@go tool cover -func=coverage.out
+	@echo -e "$(GREEN)✓ Coverage report generated!$(NC)"
+
+.PHONY: test-coverage-html
+test-coverage-html: test-coverage ## Generate HTML coverage report
+	@echo -e "$(YELLOW)▶ Generating HTML coverage report...$(NC)"
 	@go tool cover -html=coverage.out -o coverage.html
 	@echo -e "$(GREEN)✓ Coverage report: coverage.html$(NC)"
+	@echo -e "$(BLUE)Open coverage.html in your browser to view the report$(NC)"
+
+.PHONY: test-domain
+test-domain: ## Test specific domain (usage: make test-domain DOMAIN=auth)
+	@echo -e "$(YELLOW)▶ Testing $(DOMAIN) domain...$(NC)"
+	@go test -v -race -cover ./internal/$(DOMAIN)/...
+	@echo -e "$(GREEN)✓ $(DOMAIN) tests complete!$(NC)"
+
+.PHONY: test-bench
+test-bench: ## Run benchmark tests
+	@echo -e "$(YELLOW)▶ Running benchmark tests...$(NC)"
+	@go test -bench=. -benchmem ./...
+	@echo -e "$(GREEN)✓ Benchmark tests complete!$(NC)"
+
+.PHONY: test-clean
+test-clean: ## Clean test cache and coverage files
+	@echo -e "$(YELLOW)▶ Cleaning test cache...$(NC)"
+	@go clean -testcache
+	@rm -f coverage.out coverage.html
+	@echo -e "$(GREEN)✓ Test cache cleaned!$(NC)"
+
+.PHONY: test-watch
+test-watch: ## Run tests in watch mode (requires fswatch)
+	@echo -e "$(YELLOW)▶ Running tests in watch mode...$(NC)"
+	@which fswatch > /dev/null || (echo "Please install fswatch first" && exit 1)
+	@fswatch -o . -e ".*" -i "\\.go$$" | xargs -n1 -I{} sh -c 'clear && make test'
 
 # ------------------------------------------
 # Code Quality
