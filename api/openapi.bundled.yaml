@@ -3831,7 +3831,7 @@ components:
         url:
           description: Database connection URL/string
           type: string
-          default: postgresql://admin:password@localhost:5432/archesai-db?schema=public
+          default: postgresql://admin:password@127.0.0.1:5432/archesai-db
           minLength: 1
           example: example-string
         type:

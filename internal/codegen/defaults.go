@@ -258,3 +258,131 @@ func getEnumConstant(key, value string) string {
 	}
 	return ""
 }
+
+// GetCompleteConfigDefaults safely extracts ALL configuration defaults from the ArchesConfig structure.
+// This includes all nested config schemas (APIConfig, DatabaseConfig, etc.) and their sub-configs.
+// Returns a complete hierarchical map of all defaults that can be used for code generation.
+func (p *Parser) GetCompleteConfigDefaults() (map[string]interface{}, error) {
+	if p.doc == nil || p.doc.Components == nil || p.doc.Components.Schemas == nil {
+		return nil, fmt.Errorf("no OpenAPI document loaded - call ParseOpenAPISpec first")
+	}
+
+	// Build complete config structure matching ArchesConfig
+	// Each top-level key corresponds to a field in ArchesConfig
+	completeDefaults := make(map[string]interface{})
+
+	// Helper function to safely get defaults for a schema
+	safeGetDefaults := func(schemaName string) map[string]interface{} {
+		defaults, err := p.GetDefaultValues(schemaName)
+		if err != nil {
+			// Schema might not exist or have no defaults
+			return make(map[string]interface{})
+		}
+		return defaults
+	}
+
+	// Top-level configs in ArchesConfig
+	configs := map[string]string{
+		"api":            "APIConfig",
+		"auth":           "AuthConfig",
+		"billing":        "BillingConfig",
+		"database":       "DatabaseConfig",
+		"infrastructure": "InfrastructureConfig",
+		"ingress":        "IngressConfig",
+		"intelligence":   "IntelligenceConfig",
+		"logging":        "LoggingConfig",
+		"monitoring":     "MonitoringConfig",
+		"platform":       "PlatformConfig",
+		"redis":          "RedisConfig",
+		"storage":        "StorageConfig",
+	}
+
+	// Get defaults for each top-level config
+	for key, schemaName := range configs {
+		completeDefaults[key] = safeGetDefaults(schemaName)
+	}
+
+	// Handle nested configs within each top-level config
+	// APIConfig has nested: cors, email, image, resources
+	if apiDefaults, ok := completeDefaults["api"].(map[string]interface{}); ok {
+		apiDefaults["cors"] = safeGetDefaults("CORSConfig")
+		apiDefaults["email"] = safeGetDefaults("EmailConfig")
+		apiDefaults["image"] = safeGetDefaults("ImageConfig")
+		apiDefaults["resources"] = safeGetDefaults("ResourceConfig")
+	}
+
+	// AuthConfig has nested: local, oauth
+	if authDefaults, ok := completeDefaults["auth"].(map[string]interface{}); ok {
+		authDefaults["local"] = safeGetDefaults("LocalAuthConfig")
+		authDefaults["oauth"] = safeGetDefaults("OAuthConfig")
+	}
+
+	// IntelligenceConfig has nested: llm, embedding
+	if intellDefaults, ok := completeDefaults["intelligence"].(map[string]interface{}); ok {
+		intellDefaults["llm"] = safeGetDefaults("LLMConfig")
+		intellDefaults["embedding"] = safeGetDefaults("EmbeddingConfig")
+	}
+
+	// MonitoringConfig has nested: grafana, loki
+	if monDefaults, ok := completeDefaults["monitoring"].(map[string]interface{}); ok {
+		monDefaults["grafana"] = safeGetDefaults("GrafanaConfig")
+		monDefaults["loki"] = safeGetDefaults("LokiConfig")
+	}
+
+	// BillingConfig has nested: stripe
+	if billDefaults, ok := completeDefaults["billing"].(map[string]interface{}); ok {
+		billDefaults["stripe"] = safeGetDefaults("StripeConfig")
+	}
+
+	// InfrastructureConfig has nested: development
+	if infraDefaults, ok := completeDefaults["infrastructure"].(map[string]interface{}); ok {
+		infraDefaults["development"] = safeGetDefaults("DevServiceConfig")
+	}
+
+	return completeDefaults, nil
+}
+
+// FlattenConfigDefaults converts nested config defaults to a flat map with dot notation keys.
+// For example: {"api": {"host": "0.0.0.0"}} becomes {"api.host": "0.0.0.0"}
+// This is useful for environment variable generation or flat config files.
+func (p *Parser) FlattenConfigDefaults(defaults map[string]interface{}) map[string]interface{} {
+	result := make(map[string]interface{})
+	p.flattenRecursive("", defaults, result)
+	return result
+}
+
+// flattenRecursive is a helper to recursively flatten nested maps
+func (p *Parser) flattenRecursive(prefix string, nested map[string]interface{}, result map[string]interface{}) {
+	for key, value := range nested {
+		fullKey := key
+		if prefix != "" {
+			fullKey = prefix + "." + key
+		}
+
+		switch v := value.(type) {
+		case map[string]interface{}:
+			// Recursively flatten nested maps
+			p.flattenRecursive(fullKey, v, result)
+		default:
+			// Store the value with its full path
+			result[fullKey] = value
+		}
+	}
+}
+
+// CountConfigDefaults counts the total number of default values in a nested config map.
+// This includes all nested defaults at any depth.
+func (p *Parser) CountConfigDefaults(defaults map[string]interface{}) int {
+	count := 0
+	for _, value := range defaults {
+		switch v := value.(type) {
+		case map[string]interface{}:
+			// Recursively count nested defaults
+			count += p.CountConfigDefaults(v)
+		default:
+			// This is a leaf value (actual default)
+			count++
+		}
+	}
+	return count
+}

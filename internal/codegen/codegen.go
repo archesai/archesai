@@ -298,14 +298,14 @@ func loadConfig(path string) (*Config, error) {
 	return &config, nil
 }
 
-// generateRepository generates repository interfaces and implementations.
-func generateRepository(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter) error {
-	log.Printf("▶️  Running repository generator...")
+// runGenerator is a generic function to run any generator type
+func runGenerator(generatorType string, config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, filterFunc func(*ParsedSchema) bool) error {
+	log.Printf("▶️  Running %s generator...", generatorType)
 
 	// Group schemas by domain
 	domainSchemas := make(map[string][]*ParsedSchema)
 	for _, s := range schemas {
-		if NeedsRepository(s) {
+		if filterFunc(s) {
 			domainSchemas[s.Domain] = append(domainSchemas[s.Domain], s)
 		}
 	}
@@ -320,299 +320,159 @@ func generateRepository(config *Config, schemas map[string]*ParsedSchema, templa
 	// Generate for each domain
 	for _, domain := range domains {
 		schemas := domainSchemas[domain]
-		log.Printf("  Generating repository for domain '%s' with %d entities", domain, len(schemas))
 
 		// Sort schemas by name for consistent output
 		sort.Slice(schemas, func(i, j int) bool {
 			return schemas[i].Name < schemas[j].Name
 		})
 
-		// Convert schemas to entities for template
-		var entities []struct {
+		log.Printf("  Generating %s for domain '%s' with %d entities", generatorType, domain, len(schemas))
+
+		// Prepare template data based on generator type
+		var templateData interface{}
+		var outputFiles []struct{ path, template string }
+
+		switch generatorType {
+		case "repository":
+			templateData = prepareRepositoryData(domain, schemas)
+			outputFiles = []struct{ path, template string }{
+				{filepath.Join(config.OutputDir, domain, "repository.gen.go"), "repository.go.tmpl"},
+			}
+		case "cache":
+			templateData = prepareCacheData(domain, schemas)
+			outputFiles = []struct{ path, template string }{
+				{filepath.Join(config.OutputDir, domain, "cache.gen.go"), "cache.go.tmpl"},
+				{filepath.Join(config.OutputDir, domain, "cache_memory.gen.go"), "cache_memory.go.tmpl"},
+				{filepath.Join(config.OutputDir, domain, "cache_redis.gen.go"), "cache_redis.go.tmpl"},
+			}
+		case "events":
+			templateData = prepareEventsData(domain, schemas)
+			outputFiles = []struct{ path, template string }{
+				{filepath.Join(config.OutputDir, domain, "events.gen.go"), "events.go.tmpl"},
+				{filepath.Join(config.OutputDir, domain, "events_redis.gen.go"), "events_redis.go.tmpl"},
+				{filepath.Join(config.OutputDir, domain, "events_nats.gen.go"), "events_nats.go.tmpl"},
+			}
+		case "adapters":
+			templateData = prepareAdaptersData(domain, schemas)
+			outputFiles = []struct{ path, template string }{
+				{filepath.Join(config.OutputDir, domain, "mappers.gen.go"), "adapters.go.tmpl"},
+			}
+		}
+
+		// Write all template files
+		for _, file := range outputFiles {
+			if err := fileWriter.WriteTemplate(file.path, templates[file.template], templateData); err != nil {
+				return fmt.Errorf("failed to write %s for %s: %w", generatorType, domain, err)
+			}
+		}
+	}
+
+	return nil
+}
+
+// Helper functions to prepare data for each generator type
+func prepareRepositoryData(domain string, schemas []*ParsedSchema) interface{} {
+	var entities []struct {
+		Name              string
+		Type              string
+		Operations        []string
+		AdditionalMethods []interface{}
+	}
+	for _, schema := range schemas {
+		ops := []string{}
+		if schema.XCodegen.Repository.Operations != nil {
+			for _, op := range schema.XCodegen.Repository.Operations {
+				ops = append(ops, string(op))
+			}
+		}
+		entities = append(entities, struct {
+			Name              string
+			Type              string
+			Operations        []string
+			AdditionalMethods []interface{}
+		}{
+			Name:              schema.Name,
+			Type:              schema.Name,
+			Operations:        ops,
+			AdditionalMethods: []interface{}{},
+		})
+	}
+
+	return struct {
+		Domain   string
+		Package  string
+		Entities []struct {
 			Name              string
 			Type              string
 			Operations        []string
 			AdditionalMethods []interface{}
 		}
-		for _, schema := range schemas {
-			ops := []string{}
-			if schema.XCodegen.Repository.Operations != nil {
-				for _, op := range schema.XCodegen.Repository.Operations {
-					ops = append(ops, string(op))
-				}
-			}
-			entities = append(entities, struct {
-				Name              string
-				Type              string
-				Operations        []string
-				AdditionalMethods []interface{}
-			}{
-				Name:              schema.Name,
-				Type:              schema.Name,
-				Operations:        ops,
-				AdditionalMethods: []interface{}{},
-			})
-		}
-
-		// Generate repository interface
-		repoData := struct {
-			Domain   string
-			Package  string
-			Entities []struct {
-				Name              string
-				Type              string
-				Operations        []string
-				AdditionalMethods []interface{}
-			}
-			Imports []string
-		}{
-			Domain:   domain,
-			Package:  domain,
-			Entities: entities,
-			Imports:  []string{"github.com/google/uuid"},
-		}
-
-		outputPath := filepath.Join(config.OutputDir, domain, "repository.gen.go")
-		if err := fileWriter.WriteTemplate(outputPath, templates["repository.go.tmpl"], repoData); err != nil {
-			return fmt.Errorf("failed to write repository for %s: %w", domain, err)
-		}
-
-		// Generate database implementations
-		// TODO: Fix postgres and sqlite repository templates to handle new schema structure
-		// The templates have hard-coded field mappings that break with schema changes
-		// Commenting out for now until templates can be made more dynamic
-		/*
-			for _, schema := range schemas {
-				ops := []string{}
-				if schema.XCodegen.Repository.Operations != nil {
-					for _, op := range schema.XCodegen.Repository.Operations {
-						ops = append(ops, string(op))
-					}
-				}
-				entity := struct {
-					Name              string
-					Type              string
-					Operations        []string
-					AdditionalMethods []interface{}
-				}{
-					Name:              schema.Name,
-					Type:              schema.Name,
-					Operations:        ops,
-					AdditionalMethods: []interface{}{},
-				}
-
-				postgresData := struct {
-					Domain   string
-					Package  string
-					Schema   *ParsedSchema
-					Entities []struct {
-						Name              string
-						Type              string
-						Operations        []string
-						AdditionalMethods []interface{}
-					}
-					Imports []string
-				}{
-					Domain:  domain,
-					Package: domain,
-					Schema:  schema,
-					Entities: []struct {
-						Name              string
-						Type              string
-						Operations        []string
-						AdditionalMethods []interface{}
-					}{entity},
-					Imports: []string{
-						"github.com/google/uuid",
-						fmt.Sprintf("github.com/archesai/archesai/internal/%s", domain),
-					},
-				}
-				outputPath := filepath.Join(config.OutputDir, domain, "repository_postgres.gen.go")
-				if err := fileWriter.WriteTemplate(outputPath, templates["repository_postgres.go.tmpl"], postgresData); err != nil {
-					return fmt.Errorf("failed to write postgres repository for %s: %w", schema.Name, err)
-				}
-
-				ops = []string{}
-				if schema.XCodegen.Repository.Operations != nil {
-					for _, op := range schema.XCodegen.Repository.Operations {
-						ops = append(ops, string(op))
-					}
-				}
-				entity = struct {
-					Name              string
-					Type              string
-					Operations        []string
-					AdditionalMethods []interface{}
-				}{
-					Name:              schema.Name,
-					Type:              schema.Name,
-					Operations:        ops,
-					AdditionalMethods: []interface{}{},
-				}
-
-				sqliteData := struct {
-					Domain   string
-					Package  string
-					Schema   *ParsedSchema
-					Entities []struct {
-						Name              string
-						Type              string
-						Operations        []string
-						AdditionalMethods []interface{}
-					}
-					Imports []string
-				}{
-					Domain:  domain,
-					Package: domain,
-					Schema:  schema,
-					Entities: []struct {
-						Name              string
-						Type              string
-						Operations        []string
-						AdditionalMethods []interface{}
-					}{entity},
-					Imports: []string{
-						"github.com/google/uuid",
-						fmt.Sprintf("github.com/archesai/archesai/internal/%s", domain),
-					},
-				}
-				outputPath = filepath.Join(config.OutputDir, domain, "repository_sqlite.gen.go")
-				if err := fileWriter.WriteTemplate(outputPath, templates["repository_sqlite.go.tmpl"], sqliteData); err != nil {
-					return fmt.Errorf("failed to write sqlite repository for %s: %w", schema.Name, err)
-				}
-				}
-		*/
+		Imports []string
+	}{
+		Domain:   domain,
+		Package:  domain,
+		Entities: entities,
+		Imports:  []string{"github.com/google/uuid"},
 	}
+}
 
-	return nil
+func prepareCacheData(domain string, schemas []*ParsedSchema) interface{} {
+	return struct {
+		Domain  string
+		Package string
+		Schemas []*ParsedSchema
+		Imports []string
+	}{
+		Domain:  domain,
+		Package: domain,
+		Schemas: schemas,
+		Imports: []string{"github.com/google/uuid"},
+	}
+}
+
+func prepareEventsData(domain string, schemas []*ParsedSchema) interface{} {
+	return struct {
+		Domain   string
+		Package  string
+		Schemas  []*ParsedSchema
+		Entities []*ParsedSchema // Alias for compatibility with templates
+		Imports  []string
+	}{
+		Domain:   domain,
+		Package:  domain,
+		Schemas:  schemas,
+		Entities: schemas, // Same data, different field name for template compatibility
+		Imports:  []string{"github.com/google/uuid"},
+	}
+}
+
+func prepareAdaptersData(domain string, schemas []*ParsedSchema) interface{} {
+	return struct {
+		Domain  string
+		Package string
+		Schemas []*ParsedSchema
+		Imports []string
+	}{
+		Domain:  domain,
+		Package: domain,
+		Schemas: schemas,
+		Imports: []string{"github.com/google/uuid"},
+	}
+}
+
+// generateRepository generates repository interfaces and implementations.
+func generateRepository(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter) error {
+	return runGenerator("repository", config, schemas, templates, fileWriter, NeedsRepository)
 }
 
 // generateCache generates cache interfaces and implementations.
 func generateCache(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter) error {
-	log.Printf("▶️  Running cache generator...")
-
-	// Group schemas by domain
-	domainSchemas := make(map[string][]*ParsedSchema)
-	for _, s := range schemas {
-		if NeedsCache(s) {
-			domainSchemas[s.Domain] = append(domainSchemas[s.Domain], s)
-		}
-	}
-
-	// Sort domains for consistent output
-	domains := make([]string, 0, len(domainSchemas))
-	for domain := range domainSchemas {
-		domains = append(domains, domain)
-	}
-	sort.Strings(domains)
-
-	// Generate for each domain
-	for _, domain := range domains {
-		schemas := domainSchemas[domain]
-
-		// Sort schemas by name for consistent output
-		sort.Slice(schemas, func(i, j int) bool {
-			return schemas[i].Name < schemas[j].Name
-		})
-
-		log.Printf("  Generating cache for domain '%s' with %d entities", domain, len(schemas))
-
-		cacheData := struct {
-			Domain  string
-			Package string
-			Schemas []*ParsedSchema
-			Imports []string
-		}{
-			Domain:  domain,
-			Package: domain,
-			Schemas: schemas,
-			Imports: []string{"github.com/google/uuid"},
-		}
-
-		// Generate cache interface
-		outputPath := filepath.Join(config.OutputDir, domain, "cache.gen.go")
-		if err := fileWriter.WriteTemplate(outputPath, templates["cache.go.tmpl"], cacheData); err != nil {
-			return fmt.Errorf("failed to write cache for %s: %w", domain, err)
-		}
-
-		// Generate cache implementations
-		memoryPath := filepath.Join(config.OutputDir, domain, "cache_memory.gen.go")
-		if err := fileWriter.WriteTemplate(memoryPath, templates["cache_memory.go.tmpl"], cacheData); err != nil {
-			return fmt.Errorf("failed to write memory cache for %s: %w", domain, err)
-		}
-
-		redisPath := filepath.Join(config.OutputDir, domain, "cache_redis.gen.go")
-		if err := fileWriter.WriteTemplate(redisPath, templates["cache_redis.go.tmpl"], cacheData); err != nil {
-			return fmt.Errorf("failed to write redis cache for %s: %w", domain, err)
-		}
-	}
-
-	return nil
+	return runGenerator("cache", config, schemas, templates, fileWriter, NeedsCache)
 }
 
 // generateEvents generates event interfaces and implementations.
 func generateEvents(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter) error {
-	log.Printf("▶️  Running events generator...")
-
-	// Group schemas by domain
-	domainSchemas := make(map[string][]*ParsedSchema)
-	for _, s := range schemas {
-		if NeedsEvents(s) {
-			domainSchemas[s.Domain] = append(domainSchemas[s.Domain], s)
-		}
-	}
-
-	// Sort domains for consistent output
-	domains := make([]string, 0, len(domainSchemas))
-	for domain := range domainSchemas {
-		domains = append(domains, domain)
-	}
-	sort.Strings(domains)
-
-	// Generate for each domain
-	for _, domain := range domains {
-		schemas := domainSchemas[domain]
-
-		// Sort schemas by name for consistent output
-		sort.Slice(schemas, func(i, j int) bool {
-			return schemas[i].Name < schemas[j].Name
-		})
-
-		log.Printf("  Generating events for domain '%s' with %d entities", domain, len(schemas))
-
-		eventsData := struct {
-			Domain   string
-			Package  string
-			Schemas  []*ParsedSchema
-			Entities []*ParsedSchema // Alias for compatibility with templates
-			Imports  []string
-		}{
-			Domain:   domain,
-			Package:  domain,
-			Schemas:  schemas,
-			Entities: schemas, // Same data, different field name for template compatibility
-			Imports:  []string{"github.com/google/uuid"},
-		}
-
-		// Generate events interface
-		outputPath := filepath.Join(config.OutputDir, domain, "events.gen.go")
-		if err := fileWriter.WriteTemplate(outputPath, templates["events.go.tmpl"], eventsData); err != nil {
-			return fmt.Errorf("failed to write events for %s: %w", domain, err)
-		}
-
-		// Generate event implementations
-		redisPath := filepath.Join(config.OutputDir, domain, "events_redis.gen.go")
-		if err := fileWriter.WriteTemplate(redisPath, templates["events_redis.go.tmpl"], eventsData); err != nil {
-			return fmt.Errorf("failed to write redis events for %s: %w", domain, err)
-		}
-
-		natsPath := filepath.Join(config.OutputDir, domain, "events_nats.gen.go")
-		if err := fileWriter.WriteTemplate(natsPath, templates["events_nats.go.tmpl"], eventsData); err != nil {
-			return fmt.Errorf("failed to write nats events for %s: %w", domain, err)
-		}
-	}
-
-	return nil
+	return runGenerator("events", config, schemas, templates, fileWriter, NeedsEvents)
 }
 
 // generateHandlers generates HTTP handler stubs.
@@ -624,58 +484,22 @@ func generateHandlers(_ *Config, _ map[string]*ParsedSchema, _ map[string]*templ
 
 // generateAdapters generates type adapters/mappers.
 func generateAdapters(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter) error {
-	log.Printf("▶️  Running adapters generator...")
-
-	// Group schemas by domain
-	domainSchemas := make(map[string][]*ParsedSchema)
+	// Check if there are any schemas that need adapters first
+	hasAdapters := false
 	for _, s := range schemas {
 		if NeedsAdapter(s) {
-			domainSchemas[s.Domain] = append(domainSchemas[s.Domain], s)
+			hasAdapters = true
+			break
 		}
 	}
 
-	// Generate for each domain
-	if len(domainSchemas) == 0 {
+	if !hasAdapters {
+		log.Printf("▶️  Running adapters generator...")
 		log.Printf("  No schemas configured for adapter generation")
 		return nil
 	}
 
-	// Sort domains for consistent output
-	domains := make([]string, 0, len(domainSchemas))
-	for domain := range domainSchemas {
-		domains = append(domains, domain)
-	}
-	sort.Strings(domains)
-
-	for _, domain := range domains {
-		schemas := domainSchemas[domain]
-
-		// Sort schemas by name for consistent output
-		sort.Slice(schemas, func(i, j int) bool {
-			return schemas[i].Name < schemas[j].Name
-		})
-
-		log.Printf("  Generating adapters for domain '%s' with %d entities", domain, len(schemas))
-
-		adaptersData := struct {
-			Domain  string
-			Package string
-			Schemas []*ParsedSchema
-			Imports []string
-		}{
-			Domain:  domain,
-			Package: domain,
-			Schemas: schemas,
-			Imports: []string{"github.com/google/uuid"},
-		}
-
-		outputPath := filepath.Join(config.OutputDir, domain, "mappers.gen.go")
-		if err := fileWriter.WriteTemplate(outputPath, templates["adapters.go.tmpl"], adaptersData); err != nil {
-			return fmt.Errorf("failed to write adapters for %s: %w", domain, err)
-		}
-	}
-
-	return nil
+	return runGenerator("adapters", config, schemas, templates, fileWriter, NeedsAdapter)
 }
 
 // generateDefaults generates configuration defaults.
