@@ -66,6 +66,7 @@ type AdapterConfig struct {
 
 // TemplateData represents data passed to the template.
 type TemplateData struct {
+	Package                string
 	Domain                 string
 	Adapters               []AdapterSpec
 	Imports                []string
@@ -137,7 +138,7 @@ func (g *Generator) generateDomainAdapters(domain string, config Config) error {
 	}
 
 	// Write to file
-	outputPath := fmt.Sprintf("internal/%s/adapters/mappers.gen.go", domain)
+	outputPath := fmt.Sprintf("internal/%s/mappers.gen.go", domain)
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
@@ -414,9 +415,11 @@ func (g *Generator) analyzeAdapters(domain string, adapters []AdapterSpec) Templ
 		}
 	}
 
-	// Add imports for used domains
+	// Add imports for used domains (except the current domain to avoid self-import)
 	for domainPkg := range usedDomains {
-		imports = append(imports, fmt.Sprintf(`"github.com/archesai/archesai/internal/%s"`, domainPkg))
+		if domainPkg != domain {
+			imports = append(imports, fmt.Sprintf(`"github.com/archesai/archesai/internal/%s"`, domainPkg))
+		}
 	}
 
 	// Add conditional imports
@@ -452,6 +455,7 @@ func (g *Generator) analyzeAdapters(domain string, adapters []AdapterSpec) Templ
 	needsNullableMetadata := containsPattern(conversionsStr, `handleNullableMetadata`)
 
 	return TemplateData{
+		Package:                domain,
 		Domain:                 domain,
 		Adapters:               adapters,
 		Imports:                imports,

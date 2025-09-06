@@ -89,7 +89,7 @@ run-worker: ## Run the background worker
 # ------------------------------------------
 
 .PHONY: generate
-generate: generate-sqlc generate-oapi generate-defaults generate-adapters ## Generate all code
+generate: generate-sqlc generate-oapi generate-defaults generate-adapters generate-repositories generate-cache generate-events ## Generate all code
 	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
 .PHONY: generate-sqlc
@@ -107,12 +107,7 @@ generate-oapi: openapi-bundle ## Generate OpenAPI server code
 		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
 		cd - > /dev/null; \
 	done
-	@echo "  Generating HTTP handlers..."
-	@for domain in auth organizations workflows content health config; do \
-		cd internal/$$domain/adapters/http && \
-		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
-		cd - > /dev/null; \
-	done
+	@echo "  HTTP handlers generation is now part of domain types generation"
 	@echo -e "$(GREEN)✓ OpenAPI generation complete!$(NC)"
 
 .PHONY: generate-defaults
@@ -126,6 +121,30 @@ generate-adapters: ## Generate type adapters between layers
 	@echo -e "$(YELLOW)▶ Generating adapters...$(NC)"
 	@go run cmd/codegen/main.go adapters
 	@echo -e "$(GREEN)✓ Adapters generated!$(NC)"
+
+.PHONY: generate-repositories
+generate-repositories: ## Generate repository interfaces and implementations
+	@echo -e "$(YELLOW)▶ Generating repository code...$(NC)"
+	@go run cmd/codegen/main.go generate repository
+	@echo -e "$(GREEN)✓ Repository generation complete!$(NC)"
+
+.PHONY: generate-cache
+generate-cache: ## Generate cache interfaces and implementations
+	@echo -e "$(YELLOW)▶ Generating cache code...$(NC)"
+	@go run cmd/codegen/main.go generate cache
+	@echo -e "$(GREEN)✓ Cache generation complete!$(NC)"
+
+.PHONY: generate-events
+generate-events: ## Generate event publisher interfaces and implementations
+	@echo -e "$(YELLOW)▶ Generating events code...$(NC)"
+	@go run cmd/codegen/main.go generate events
+	@echo -e "$(GREEN)✓ Events generation complete!$(NC)"
+
+.PHONY: generate-all-adapters
+generate-all-adapters: ## Generate all adapters (repository, cache, events)
+	@echo -e "$(YELLOW)▶ Generating all adapters...$(NC)"
+	@go run cmd/codegen/main.go generate --all
+	@echo -e "$(GREEN)✓ All adapters generated!$(NC)"
 
 .PHONY: generate-domain
 generate-domain: ## Generate new domain scaffold (usage: make generate-domain name=billing tables=subscription,invoice)

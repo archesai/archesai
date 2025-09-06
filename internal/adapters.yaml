@@ -3,7 +3,7 @@ adapters:
   # Auth domain adapters
   - name: AuthUserDBToAPI
     from: postgresql.User
-    to: auth.UserEntity
+    to: UserEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -12,7 +12,7 @@ adapters:
 
   - name: AuthSessionDBToAPI
     from: postgresql.Session
-    to: auth.SessionEntity
+    to: SessionEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -22,13 +22,13 @@ adapters:
 
   - name: AuthAccountDBToAPI
     from: postgresql.Account
-    to: auth.AccountEntity
+    to: AccountEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       AccountId: "from.AccountId" # API expects string
       UserId: "uuid.MustParse(from.UserId)" # API expects UUID
-      ProviderId: "auth.AccountEntityProviderId(from.ProviderId)"
+      ProviderId: "AccountEntityProviderId(from.ProviderId)"
       IdToken: "handleNullableString(from.IdToken)"
       Password: "handleNullableString(from.Password)"
       AccessTokenExpiresAt: "handleNullableTimestamp(from.AccessTokenExpiresAt)"
@@ -37,11 +37,11 @@ adapters:
   # Organizations domain adapters
   - name: OrganizationDBToAPI
     from: postgresql.Organization
-    to: organizations.OrganizationEntity
+    to: OrganizationEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
-      Plan: "organizations.OrganizationEntityPlan(from.Plan)"
+      Plan: "OrganizationEntityPlan(from.Plan)"
       BillingEmail: "openapi_types.Email(handleNullableString(from.BillingEmail))"
       Credits: "float32(from.Credits)"
       Metadata: "handleNullableMetadata(from.Metadata)"
@@ -51,7 +51,7 @@ adapters:
   # Workflows domain adapters
   - name: PipelineDBToAPI
     from: postgresql.Pipeline
-    to: workflows.PipelineEntity
+    to: PipelineEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -59,19 +59,19 @@ adapters:
 
   - name: RunDBToAPI
     from: postgresql.Run
-    to: workflows.RunEntity
+    to: RunEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       PipelineId: "handleNullableString(from.PipelineId)"
       OrganizationId: "from.OrganizationId"
       ToolId: "from.ToolId"
-      Status: "workflows.RunEntityStatus(from.Status)"
+      Status: "RunEntityStatus(from.Status)"
       Progress: "float32(from.Progress)"
 
   - name: ToolDBToAPI
     from: postgresql.Tool
-    to: workflows.ToolEntity
+    to: ToolEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -81,30 +81,30 @@ adapters:
 
   - name: MemberDBToAPI
     from: postgresql.Member
-    to: organizations.MemberEntity
+    to: MemberEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       UserId: "from.UserId" # API expects string, not UUID
       OrganizationId: "from.OrganizationId" # API expects string, not UUID
-      Role: "organizations.MemberEntityRole(from.Role)" # Use correct type
+      Role: "MemberEntityRole(from.Role)" # Use correct type
 
   - name: InvitationDBToAPI
     from: postgresql.Invitation
-    to: organizations.InvitationEntity
+    to: InvitationEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       OrganizationId: "from.OrganizationId" # API expects string, not UUID
       InviterId: "from.InviterId" # API expects string, not UUID
       Email: "from.Email" # API expects string, not Email type
-      Role: "organizations.InvitationEntityRole(from.Role)" # Use correct type
+      Role: "InvitationEntityRole(from.Role)" # Use correct type
       ExpiresAt: "from.ExpiresAt.Format(time.RFC3339)" # Format as string
 
   # Content domain adapters
   - name: ArtifactDBToAPI
     from: postgresql.Artifact
-    to: content.ArtifactEntity
+    to: ArtifactEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -114,7 +114,7 @@ adapters:
 
   - name: LabelDBToAPI
     from: postgresql.Label
-    to: content.LabelEntity
+    to: LabelEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"

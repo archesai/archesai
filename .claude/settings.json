@@ -1,5 +1,4 @@
 {
-  "outputStyle": "default",
   "permissions": {
     "allow": [
       "Bash(make generate:*)",
@@ -8,7 +7,21 @@
       "Bash(sed:*)",
       "Bash(make lint:*)"
     ],
-    "ask": [],
-    "deny": []
+    "deny": [],
+    "ask": []
+  },
+  "outputStyle": "default",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "make lint"
+          }
+        ]
+      }
+    ]
   }
 }

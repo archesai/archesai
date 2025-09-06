@@ -10,22 +10,22 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// OrganizationService provides organization business logic
-type OrganizationService struct {
+// Service provides organization business logic
+type Service struct {
 	repo   OrganizationRepository
 	logger *slog.Logger
 }
 
-// NewOrganizationService creates a new organization service
-func NewOrganizationService(repo OrganizationRepository, logger *slog.Logger) *OrganizationService {
-	return &OrganizationService{
+// NewService creates a new organization service
+func NewService(repo OrganizationRepository, logger *slog.Logger) *Service {
+	return &Service{
 		repo:   repo,
 		logger: logger,
 	}
 }
 
 // CreateOrganization creates a new organization
-func (s *OrganizationService) CreateOrganization(ctx context.Context, req *CreateOrganizationRequest, creatorUserID string) (*Organization, error) {
+func (s *Service) CreateOrganization(ctx context.Context, req *CreateOrganizationRequest, creatorUserID string) (*Organization, error) {
 	s.logger.Debug("creating organization", "id", req.OrganizationId, "creator", creatorUserID)
 
 	// Set default plan
@@ -76,7 +76,7 @@ func (s *OrganizationService) CreateOrganization(ctx context.Context, req *Creat
 }
 
 // GetOrganization retrieves an organization by ID
-func (s *OrganizationService) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
+func (s *Service) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
 	org, err := s.repo.GetOrganization(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get organization: %w", err)
@@ -85,7 +85,7 @@ func (s *OrganizationService) GetOrganization(ctx context.Context, id uuid.UUID)
 }
 
 // UpdateOrganization updates an organization
-func (s *OrganizationService) UpdateOrganization(ctx context.Context, id uuid.UUID, req *UpdateOrganizationRequest) (*Organization, error) {
+func (s *Service) UpdateOrganization(ctx context.Context, id uuid.UUID, req *UpdateOrganizationRequest) (*Organization, error) {
 	org, err := s.repo.GetOrganization(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get organization: %w", err)
@@ -106,7 +106,7 @@ func (s *OrganizationService) UpdateOrganization(ctx context.Context, id uuid.UU
 }
 
 // DeleteOrganization deletes an organization
-func (s *OrganizationService) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
+func (s *Service) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
 	// TODO: Add additional checks (e.g., organization has no active resources)
 	err := s.repo.DeleteOrganization(ctx, id)
 	if err != nil {
@@ -116,7 +116,7 @@ func (s *OrganizationService) DeleteOrganization(ctx context.Context, id uuid.UU
 }
 
 // ListOrganizations retrieves a list of organizations
-func (s *OrganizationService) ListOrganizations(ctx context.Context, limit, offset int) ([]*Organization, int, error) {
+func (s *Service) ListOrganizations(ctx context.Context, limit, offset int) ([]*Organization, int, error) {
 	orgs, total, err := s.repo.ListOrganizations(ctx, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list organizations: %w", err)
@@ -125,7 +125,7 @@ func (s *OrganizationService) ListOrganizations(ctx context.Context, limit, offs
 }
 
 // CreateMember adds a member to an organization
-func (s *OrganizationService) CreateMember(ctx context.Context, req *CreateMemberRequest, orgID string) (*Member, error) {
+func (s *Service) CreateMember(ctx context.Context, req *CreateMemberRequest, orgID string) (*Member, error) {
 	// Check if member already exists
 	// CreateMemberRequest doesn't have UserID field in the generated types
 	// We need to use a different approach
@@ -154,7 +154,7 @@ func (s *OrganizationService) CreateMember(ctx context.Context, req *CreateMembe
 }
 
 // GetMember retrieves a member by ID
-func (s *OrganizationService) GetMember(ctx context.Context, id uuid.UUID) (*Member, error) {
+func (s *Service) GetMember(ctx context.Context, id uuid.UUID) (*Member, error) {
 	member, err := s.repo.GetMember(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get member: %w", err)
@@ -163,7 +163,7 @@ func (s *OrganizationService) GetMember(ctx context.Context, id uuid.UUID) (*Mem
 }
 
 // UpdateMember updates a member's role
-func (s *OrganizationService) UpdateMember(ctx context.Context, id uuid.UUID, req *UpdateMemberRequest) (*Member, error) {
+func (s *Service) UpdateMember(ctx context.Context, id uuid.UUID, req *UpdateMemberRequest) (*Member, error) {
 	member, err := s.repo.GetMember(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get member: %w", err)
@@ -189,7 +189,7 @@ func (s *OrganizationService) UpdateMember(ctx context.Context, id uuid.UUID, re
 }
 
 // DeleteMember removes a member from an organization
-func (s *OrganizationService) DeleteMember(ctx context.Context, id uuid.UUID) error {
+func (s *Service) DeleteMember(ctx context.Context, id uuid.UUID) error {
 	member, err := s.repo.GetMember(ctx, id)
 	if err != nil {
 		return fmt.Errorf("failed to get member: %w", err)
@@ -209,7 +209,7 @@ func (s *OrganizationService) DeleteMember(ctx context.Context, id uuid.UUID) er
 }
 
 // ListMembers retrieves members of an organization
-func (s *OrganizationService) ListMembers(ctx context.Context, orgID string, limit, offset int) ([]*Member, int, error) {
+func (s *Service) ListMembers(ctx context.Context, orgID string, limit, offset int) ([]*Member, int, error) {
 	members, total, err := s.repo.ListMembers(ctx, orgID, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list members: %w", err)
@@ -218,7 +218,7 @@ func (s *OrganizationService) ListMembers(ctx context.Context, orgID string, lim
 }
 
 // CreateInvitation creates a new invitation
-func (s *OrganizationService) CreateInvitation(ctx context.Context, req *CreateInvitationRequest, orgID, inviterID string) (*Invitation, error) {
+func (s *Service) CreateInvitation(ctx context.Context, req *CreateInvitationRequest, orgID, inviterID string) (*Invitation, error) {
 	expiresAt := time.Now().AddDate(0, 0, 7).Format(time.RFC3339) // 7 days expiry
 
 	invitation := &Invitation{
@@ -246,7 +246,7 @@ func (s *OrganizationService) CreateInvitation(ctx context.Context, req *CreateI
 }
 
 // AcceptInvitation accepts an invitation and creates a member
-func (s *OrganizationService) AcceptInvitation(ctx context.Context, id uuid.UUID, _ string) (*Member, error) {
+func (s *Service) AcceptInvitation(ctx context.Context, id uuid.UUID, _ string) (*Member, error) {
 	invitation, err := s.repo.GetInvitation(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get invitation: %w", err)
@@ -292,7 +292,7 @@ func (s *OrganizationService) AcceptInvitation(ctx context.Context, id uuid.UUID
 }
 
 // GetInvitation retrieves a single invitation by ID
-func (s *OrganizationService) GetInvitation(ctx context.Context, id uuid.UUID) (*Invitation, error) {
+func (s *Service) GetInvitation(ctx context.Context, id uuid.UUID) (*Invitation, error) {
 	invitation, err := s.repo.GetInvitation(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get invitation: %w", err)
@@ -301,7 +301,7 @@ func (s *OrganizationService) GetInvitation(ctx context.Context, id uuid.UUID) (
 }
 
 // DeleteInvitation removes an invitation
-func (s *OrganizationService) DeleteInvitation(ctx context.Context, id uuid.UUID) error {
+func (s *Service) DeleteInvitation(ctx context.Context, id uuid.UUID) error {
 	err := s.repo.DeleteInvitation(ctx, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete invitation: %w", err)
@@ -310,7 +310,7 @@ func (s *OrganizationService) DeleteInvitation(ctx context.Context, id uuid.UUID
 }
 
 // ListInvitations retrieves invitations for an organization
-func (s *OrganizationService) ListInvitations(ctx context.Context, orgID string, limit, offset int) ([]*Invitation, int, error) {
+func (s *Service) ListInvitations(ctx context.Context, orgID string, limit, offset int) ([]*Invitation, int, error) {
 	invitations, total, err := s.repo.ListInvitations(ctx, orgID, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list invitations: %w", err)

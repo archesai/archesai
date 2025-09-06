@@ -9,30 +9,16 @@ import (
 	"os"
 	"time"
 
-	authcore "github.com/archesai/archesai/internal/auth"
-	authhandlers "github.com/archesai/archesai/internal/auth/adapters/http"
-	authinfra "github.com/archesai/archesai/internal/auth/adapters/postgres"
-	authsqlite "github.com/archesai/archesai/internal/auth/adapters/sqlite"
+	"github.com/archesai/archesai/internal/auth"
 	"github.com/archesai/archesai/internal/config"
-	confighandlers "github.com/archesai/archesai/internal/config/adapters/http"
-	contentcore "github.com/archesai/archesai/internal/content"
-	contenthandlers "github.com/archesai/archesai/internal/content/adapters/http"
-	contentinfra "github.com/archesai/archesai/internal/content/adapters/postgres"
-	contentsqlite "github.com/archesai/archesai/internal/content/adapters/sqlite"
+	"github.com/archesai/archesai/internal/content"
 	"github.com/archesai/archesai/internal/database"
-	postgresqlgen "github.com/archesai/archesai/internal/database/postgresql"
-	sqlitegen "github.com/archesai/archesai/internal/database/sqlite"
+	"github.com/archesai/archesai/internal/database/postgresql"
+	"github.com/archesai/archesai/internal/database/sqlite"
 	"github.com/archesai/archesai/internal/health"
-	healthhandlers "github.com/archesai/archesai/internal/health/adapters/http"
-	orgcore "github.com/archesai/archesai/internal/organizations"
-	orghandlers "github.com/archesai/archesai/internal/organizations/adapters/http"
-	orginfra "github.com/archesai/archesai/internal/organizations/adapters/postgres"
-	orgsqlite "github.com/archesai/archesai/internal/organizations/adapters/sqlite"
+	"github.com/archesai/archesai/internal/organizations"
 	serverhttp "github.com/archesai/archesai/internal/server/http"
-	workflowcore "github.com/archesai/archesai/internal/workflows"
-	workflowhandlers "github.com/archesai/archesai/internal/workflows/adapters/http"
-	workflowinfra "github.com/archesai/archesai/internal/workflows/adapters/postgres"
-	workflowsqlite "github.com/archesai/archesai/internal/workflows/adapters/sqlite"
+	"github.com/archesai/archesai/internal/workflows"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 )
@@ -41,38 +27,38 @@ import (
 type App struct {
 	// Infrastructure
 	DB            database.Database
-	PgQueries     *postgresqlgen.Queries // PostgreSQL queries (if using PostgreSQL)
-	SqliteQueries *sqlitegen.Queries     // SQLite queries (if using SQLite)
+	PgQueries     *postgresql.Queries // PostgreSQL queries (if using PostgreSQL)
+	SqliteQueries *sqlite.Queries     // SQLite queries (if using SQLite)
 	Logger        *slog.Logger
 	Config        *config.Config
 	Server        *serverhttp.Server // The HTTP server
 
 	// Auth domain
-	AuthRepository authcore.Repository
-	AuthService    *authcore.Service
-	AuthHandler    *authhandlers.AuthHandler
+	AuthRepository auth.Repository
+	AuthService    *auth.Service
+	AuthHandler    *auth.AuthHandler
 
 	// Organizations domain
-	OrganizationsRepository orgcore.OrganizationRepository
-	OrganizationsService    *orgcore.OrganizationService
-	OrganizationsHandler    *orghandlers.OrganizationHandler
+	OrganizationsRepository organizations.OrganizationRepository
+	OrganizationsService    *organizations.Service
+	OrganizationsHandler    *organizations.OrganizationHandler
 
 	// Workflows domain
-	WorkflowsRepository workflowcore.WorkflowRepository
-	WorkflowsService    *workflowcore.WorkflowService
-	WorkflowsHandler    *workflowhandlers.WorkflowHandler
+	WorkflowsRepository workflows.WorkflowRepository
+	WorkflowsService    *workflows.WorkflowService
+	WorkflowsHandler    *workflows.WorkflowHandler
 
 	// Content domain
-	ContentRepository contentcore.Repository
-	ContentService    *contentcore.Service
-	ContentHandler    *contenthandlers.ContentHandler
+	ContentRepository content.Repository
+	ContentService    *content.Service
+	ContentHandler    *content.ContentHandler
 
 	// Health domain
 	HealthService *health.Service
-	HealthHandler *healthhandlers.HealthHandler
+	HealthHandler *health.HealthHandler
 
 	// Config handler
-	ConfigHandler *confighandlers.ConfigHandler
+	ConfigHandler *config.ConfigHandler
 }
 
 // NewApp creates and initializes all application dependencies
@@ -131,12 +117,12 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 
 	// Create queries based on database type
-	var pgQueries *postgresqlgen.Queries
-	var sqliteQueries *sqlitegen.Queries
-	var authRepo authcore.Repository
-	var organizationsRepo orgcore.OrganizationRepository
-	var workflowsRepo workflowcore.WorkflowRepository
-	var contentRepo contentcore.Repository
+	var pgQueries *postgresql.Queries
+	var sqliteQueries *sqlite.Queries
+	var authRepo auth.Repository
+	var organizationsRepo organizations.OrganizationRepository
+	var workflowsRepo workflows.WorkflowRepository
+	var contentRepo content.Repository
 
 	// Determine actual database type
 	var dbType database.Type
@@ -150,22 +136,22 @@ func NewApp(cfg *config.Config) (*App, error) {
 	case database.TypePostgreSQL:
 		// Get the underlying pgxpool for PostgreSQL
 		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
-			pgQueries = postgresqlgen.New(pool)
-			authRepo = authinfra.NewAuthPostgresRepository(pgQueries)
-			organizationsRepo = orginfra.NewOrganizationPostgresRepository(pgQueries)
-			workflowsRepo = workflowinfra.NewWorkflowPostgresRepository(pgQueries)
-			contentRepo = contentinfra.NewContentPostgresRepository(pgQueries)
+			pgQueries = postgresql.New(pool)
+			authRepo = auth.NewAuthPostgresRepository(pgQueries)
+			organizationsRepo = organizations.NewOrganizationPostgresRepository(pgQueries)
+			workflowsRepo = workflows.NewWorkflowPostgresRepository(pgQueries)
+			contentRepo = content.NewContentPostgresRepository(pgQueries)
 		} else {
 			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
 		}
 	case database.TypeSQLite:
 		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
-			sqliteQueries = sqlitegen.New(sqlDB)
+			sqliteQueries = sqlite.New(sqlDB)
 			// Use SQLite repositories
-			authRepo = authsqlite.NewAuthSQLiteRepository(sqliteQueries)
-			organizationsRepo = orgsqlite.NewOrganizationSQLiteRepository(sqliteQueries)
-			workflowsRepo = workflowsqlite.NewWorkflowSQLiteRepository(sqliteQueries)
-			contentRepo = contentsqlite.NewContentSQLiteRepository(sqliteQueries)
+			authRepo = auth.NewSQLiteRepository(sqlDB)
+			organizationsRepo = organizations.NewOrganizationSQLiteRepository(sqliteQueries)
+			workflowsRepo = workflows.NewWorkflowSQLiteRepository(sqliteQueries)
+			contentRepo = content.NewContentSQLiteRepository(sqliteQueries)
 			logger.Info("Using SQLite repositories")
 		}
 	}
@@ -180,32 +166,32 @@ func NewApp(cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("failed to parse refresh token TTL: %w", err)
 	}
 
-	authConfig := authcore.Config{
+	authConfig := auth.Config{
 		JWTSecret:          cfg.GetJWTSecret(),
 		AccessTokenExpiry:  accessTokenTTL,
 		RefreshTokenExpiry: refreshTokenTTL,
 	}
-	authService := authcore.NewService(authRepo, authConfig, logger)
-	authHandler := authhandlers.NewAuthHandler(authService, logger)
+	authService := auth.NewService(authRepo, authConfig, logger)
+	authHandler := auth.NewAuthHandler(authService, logger)
 
 	// Initialize organizations domain
-	organizationsService := orgcore.NewOrganizationService(organizationsRepo, logger)
-	organizationsHandler := orghandlers.NewOrganizationHandler(organizationsService, logger)
+	organizationsService := organizations.NewService(organizationsRepo, logger)
+	organizationsHandler := organizations.NewOrganizationHandler(organizationsService, logger)
 
 	// Initialize workflows domain
-	workflowsService := workflowcore.NewWorkflowService(workflowsRepo, logger)
-	workflowsHandler := workflowhandlers.NewWorkflowHandler(workflowsService, logger)
+	workflowsService := workflows.NewWorkflowService(workflowsRepo, logger)
+	workflowsHandler := workflows.NewWorkflowHandler(workflowsService, logger)
 
 	// Initialize content domain
-	contentService := contentcore.NewService(contentRepo, logger)
-	contentHandler := contenthandlers.NewContentHandler(contentService, logger)
+	contentService := content.NewService(contentRepo, logger)
+	contentHandler := content.NewContentHandler(contentService, logger)
 
 	// Initialize health domain
 	healthService := health.NewService(logger)
-	healthHandler := healthhandlers.NewHealthHandler(healthService, logger)
+	healthHandler := health.NewHealthHandler(healthService, logger)
 
 	// Initialize config handler
-	configHandler := confighandlers.NewConfigHandler(cfg, logger)
+	configHandler := config.NewConfigHandler(cfg, logger)
 
 	// Create the HTTP server
 	serverConfig := &serverhttp.Config{
