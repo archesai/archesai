@@ -1,4 +1,4 @@
-// Package http provides HTTP handlers for content operations
+// Package content provides HTTP handlers for content operations
 package content
 
 import (
@@ -11,18 +11,18 @@ const (
 	orgPlaceholder = "org-placeholder"
 )
 
-// ContentHandler handles HTTP requests for content operations
-type ContentHandler struct {
+// Handler handles HTTP requests for content operations
+type Handler struct {
 	service *Service
 	logger  *slog.Logger
 }
 
-// Ensure ContentHandler implements StrictServerInterface
-var _ StrictServerInterface = (*ContentHandler)(nil)
+// Ensure Handler implements StrictServerInterface
+var _ StrictServerInterface = (*Handler)(nil)
 
-// NewContentHandler creates a new content handler
-func NewContentHandler(service *Service, logger *slog.Logger) *ContentHandler {
-	return &ContentHandler{
+// NewHandler creates a new content handler
+func NewHandler(service *Service, logger *slog.Logger) *Handler {
+	return &Handler{
 		service: service,
 		logger:  logger,
 	}
@@ -36,7 +36,7 @@ func NewContentStrictHandler(handler StrictServerInterface) ServerInterface {
 // Artifact handlers
 
 // FindManyArtifacts retrieves artifacts (implements StrictServerInterface)
-func (h *ContentHandler) FindManyArtifacts(ctx context.Context, req FindManyArtifactsRequestObject) (FindManyArtifactsResponseObject, error) {
+func (h *Handler) FindManyArtifacts(ctx context.Context, req FindManyArtifactsRequestObject) (FindManyArtifactsResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -73,7 +73,7 @@ func (h *ContentHandler) FindManyArtifacts(ctx context.Context, req FindManyArti
 }
 
 // CreateArtifact creates a new artifact (implements StrictServerInterface)
-func (h *ContentHandler) CreateArtifact(ctx context.Context, req CreateArtifactRequestObject) (CreateArtifactResponseObject, error) {
+func (h *Handler) CreateArtifact(ctx context.Context, req CreateArtifactRequestObject) (CreateArtifactResponseObject, error) {
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 	// TODO: Get producer ID from context
@@ -96,7 +96,7 @@ func (h *ContentHandler) CreateArtifact(ctx context.Context, req CreateArtifactR
 }
 
 // GetOneArtifact retrieves an artifact by ID (implements StrictServerInterface)
-func (h *ContentHandler) GetOneArtifact(ctx context.Context, req GetOneArtifactRequestObject) (GetOneArtifactResponseObject, error) {
+func (h *Handler) GetOneArtifact(ctx context.Context, req GetOneArtifactRequestObject) (GetOneArtifactResponseObject, error) {
 	artifact, err := h.service.GetArtifact(ctx, req.Id)
 	if err != nil {
 		if err == ErrArtifactNotFound {
@@ -118,7 +118,7 @@ func (h *ContentHandler) GetOneArtifact(ctx context.Context, req GetOneArtifactR
 }
 
 // UpdateArtifact updates an artifact (implements StrictServerInterface)
-func (h *ContentHandler) UpdateArtifact(ctx context.Context, req UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error) {
+func (h *Handler) UpdateArtifact(ctx context.Context, req UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error) {
 	updateReq := &UpdateArtifactRequest{
 		Name: req.Body.Name,
 		Text: req.Body.Text,
@@ -145,7 +145,7 @@ func (h *ContentHandler) UpdateArtifact(ctx context.Context, req UpdateArtifactR
 }
 
 // DeleteArtifact deletes an artifact (implements StrictServerInterface)
-func (h *ContentHandler) DeleteArtifact(ctx context.Context, req DeleteArtifactRequestObject) (DeleteArtifactResponseObject, error) {
+func (h *Handler) DeleteArtifact(ctx context.Context, req DeleteArtifactRequestObject) (DeleteArtifactResponseObject, error) {
 	err := h.service.DeleteArtifact(ctx, req.Id)
 	if err != nil {
 		if err == ErrArtifactNotFound {
@@ -167,7 +167,7 @@ func (h *ContentHandler) DeleteArtifact(ctx context.Context, req DeleteArtifactR
 // Label handlers
 
 // FindManyLabels retrieves labels (implements StrictServerInterface)
-func (h *ContentHandler) FindManyLabels(ctx context.Context, req FindManyLabelsRequestObject) (FindManyLabelsResponseObject, error) {
+func (h *Handler) FindManyLabels(ctx context.Context, req FindManyLabelsRequestObject) (FindManyLabelsResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -204,7 +204,7 @@ func (h *ContentHandler) FindManyLabels(ctx context.Context, req FindManyLabelsR
 }
 
 // CreateLabel creates a new label (implements StrictServerInterface)
-func (h *ContentHandler) CreateLabel(ctx context.Context, req CreateLabelRequestObject) (CreateLabelResponseObject, error) {
+func (h *Handler) CreateLabel(ctx context.Context, req CreateLabelRequestObject) (CreateLabelResponseObject, error) {
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
@@ -234,7 +234,7 @@ func (h *ContentHandler) CreateLabel(ctx context.Context, req CreateLabelRequest
 }
 
 // GetOneLabel retrieves a label by ID (implements StrictServerInterface)
-func (h *ContentHandler) GetOneLabel(ctx context.Context, req GetOneLabelRequestObject) (GetOneLabelResponseObject, error) {
+func (h *Handler) GetOneLabel(ctx context.Context, req GetOneLabelRequestObject) (GetOneLabelResponseObject, error) {
 	label, err := h.service.GetLabel(ctx, req.Id)
 	if err != nil {
 		if err == ErrLabelNotFound {
@@ -256,7 +256,7 @@ func (h *ContentHandler) GetOneLabel(ctx context.Context, req GetOneLabelRequest
 }
 
 // UpdateLabel updates a label (implements StrictServerInterface)
-func (h *ContentHandler) UpdateLabel(ctx context.Context, req UpdateLabelRequestObject) (UpdateLabelResponseObject, error) {
+func (h *Handler) UpdateLabel(ctx context.Context, req UpdateLabelRequestObject) (UpdateLabelResponseObject, error) {
 	updateReq := &UpdateLabelRequest{
 		Name: req.Body.Name,
 	}
@@ -282,7 +282,7 @@ func (h *ContentHandler) UpdateLabel(ctx context.Context, req UpdateLabelRequest
 }
 
 // DeleteLabel deletes a label (implements StrictServerInterface)
-func (h *ContentHandler) DeleteLabel(ctx context.Context, req DeleteLabelRequestObject) (DeleteLabelResponseObject, error) {
+func (h *Handler) DeleteLabel(ctx context.Context, req DeleteLabelRequestObject) (DeleteLabelResponseObject, error) {
 	err := h.service.DeleteLabel(ctx, req.Id)
 	if err != nil {
 		if err == ErrLabelNotFound {

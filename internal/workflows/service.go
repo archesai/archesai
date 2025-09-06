@@ -9,22 +9,22 @@ import (
 	"github.com/google/uuid"
 )
 
-// WorkflowService provides workflow business logic
-type WorkflowService struct {
-	repo   WorkflowRepository
+// Service provides workflow business logic
+type Service struct {
+	repo   Repository
 	logger *slog.Logger
 }
 
-// NewWorkflowService creates a new workflow service
-func NewWorkflowService(repo WorkflowRepository, logger *slog.Logger) *WorkflowService {
-	return &WorkflowService{
+// NewService creates a new workflow service
+func NewService(repo Repository, logger *slog.Logger) *Service {
+	return &Service{
 		repo:   repo,
 		logger: logger,
 	}
 }
 
 // CreatePipeline creates a new pipeline
-func (s *WorkflowService) CreatePipeline(ctx context.Context, req *CreatePipelineRequest, orgID string) (*Pipeline, error) {
+func (s *Service) CreatePipeline(ctx context.Context, req *CreatePipelineRequest, orgID string) (*Pipeline, error) {
 	s.logger.Debug("creating pipeline", "name", req.Name, "org", orgID)
 
 	pipeline := &Pipeline{
@@ -47,7 +47,7 @@ func (s *WorkflowService) CreatePipeline(ctx context.Context, req *CreatePipelin
 }
 
 // GetPipeline retrieves a pipeline by ID
-func (s *WorkflowService) GetPipeline(ctx context.Context, id uuid.UUID) (*Pipeline, error) {
+func (s *Service) GetPipeline(ctx context.Context, id uuid.UUID) (*Pipeline, error) {
 	pipeline, err := s.repo.GetPipeline(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pipeline: %w", err)
@@ -56,7 +56,7 @@ func (s *WorkflowService) GetPipeline(ctx context.Context, id uuid.UUID) (*Pipel
 }
 
 // UpdatePipeline updates a pipeline
-func (s *WorkflowService) UpdatePipeline(ctx context.Context, id uuid.UUID, req *UpdatePipelineRequest) (*Pipeline, error) {
+func (s *Service) UpdatePipeline(ctx context.Context, id uuid.UUID, req *UpdatePipelineRequest) (*Pipeline, error) {
 	pipeline, err := s.repo.GetPipeline(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pipeline: %w", err)
@@ -79,7 +79,7 @@ func (s *WorkflowService) UpdatePipeline(ctx context.Context, id uuid.UUID, req 
 }
 
 // DeletePipeline deletes a pipeline
-func (s *WorkflowService) DeletePipeline(ctx context.Context, id uuid.UUID) error {
+func (s *Service) DeletePipeline(ctx context.Context, id uuid.UUID) error {
 	// TODO: Add checks for active runs
 	err := s.repo.DeletePipeline(ctx, id)
 	if err != nil {
@@ -89,7 +89,7 @@ func (s *WorkflowService) DeletePipeline(ctx context.Context, id uuid.UUID) erro
 }
 
 // ListPipelines retrieves pipelines for an organization
-func (s *WorkflowService) ListPipelines(ctx context.Context, orgID string, limit, offset int) ([]*Pipeline, int, error) {
+func (s *Service) ListPipelines(ctx context.Context, orgID string, limit, offset int) ([]*Pipeline, int, error) {
 	pipelines, total, err := s.repo.ListPipelines(ctx, orgID, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list pipelines: %w", err)
@@ -98,7 +98,7 @@ func (s *WorkflowService) ListPipelines(ctx context.Context, orgID string, limit
 }
 
 // CreateRun creates a new run
-func (s *WorkflowService) CreateRun(ctx context.Context, req *CreateRunRequest, orgID string) (*Run, error) {
+func (s *Service) CreateRun(ctx context.Context, req *CreateRunRequest, orgID string) (*Run, error) {
 	s.logger.Debug("creating run", "pipeline_id", req.PipelineId, "org", orgID)
 
 	// Validate pipeline exists
@@ -134,7 +134,7 @@ func (s *WorkflowService) CreateRun(ctx context.Context, req *CreateRunRequest, 
 }
 
 // GetRun retrieves a run by ID
-func (s *WorkflowService) GetRun(ctx context.Context, id uuid.UUID) (*Run, error) {
+func (s *Service) GetRun(ctx context.Context, id uuid.UUID) (*Run, error) {
 	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
@@ -143,7 +143,7 @@ func (s *WorkflowService) GetRun(ctx context.Context, id uuid.UUID) (*Run, error
 }
 
 // StartRun starts a pending run
-func (s *WorkflowService) StartRun(ctx context.Context, id uuid.UUID) (*Run, error) {
+func (s *Service) StartRun(ctx context.Context, id uuid.UUID) (*Run, error) {
 	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
@@ -168,7 +168,7 @@ func (s *WorkflowService) StartRun(ctx context.Context, id uuid.UUID) (*Run, err
 }
 
 // UpdateRunProgress updates a run's progress
-func (s *WorkflowService) UpdateRunProgress(ctx context.Context, id uuid.UUID, progress float32) (*Run, error) {
+func (s *Service) UpdateRunProgress(ctx context.Context, id uuid.UUID, progress float32) (*Run, error) {
 	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
@@ -185,7 +185,7 @@ func (s *WorkflowService) UpdateRunProgress(ctx context.Context, id uuid.UUID, p
 }
 
 // CompleteRun marks a run as completed
-func (s *WorkflowService) CompleteRun(ctx context.Context, id uuid.UUID, _ map[string]interface{}) (*Run, error) {
+func (s *Service) CompleteRun(ctx context.Context, id uuid.UUID, _ map[string]interface{}) (*Run, error) {
 	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
@@ -211,7 +211,7 @@ func (s *WorkflowService) CompleteRun(ctx context.Context, id uuid.UUID, _ map[s
 }
 
 // CancelRun cancels a run
-func (s *WorkflowService) CancelRun(ctx context.Context, id uuid.UUID) (*Run, error) {
+func (s *Service) CancelRun(ctx context.Context, id uuid.UUID) (*Run, error) {
 	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
@@ -235,7 +235,7 @@ func (s *WorkflowService) CancelRun(ctx context.Context, id uuid.UUID) (*Run, er
 }
 
 // ListRuns retrieves runs for an organization
-func (s *WorkflowService) ListRuns(ctx context.Context, orgID string, limit, offset int) ([]*Run, int, error) {
+func (s *Service) ListRuns(ctx context.Context, orgID string, limit, offset int) ([]*Run, int, error) {
 	runs, total, err := s.repo.ListRuns(ctx, orgID, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list runs: %w", err)
@@ -244,7 +244,7 @@ func (s *WorkflowService) ListRuns(ctx context.Context, orgID string, limit, off
 }
 
 // ListRunsByPipeline retrieves runs for a specific pipeline
-func (s *WorkflowService) ListRunsByPipeline(ctx context.Context, pipelineID string, limit, offset int) ([]*Run, int, error) {
+func (s *Service) ListRunsByPipeline(ctx context.Context, pipelineID string, limit, offset int) ([]*Run, int, error) {
 	runs, total, err := s.repo.ListRunsByPipeline(ctx, pipelineID, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list runs by pipeline: %w", err)
@@ -253,7 +253,7 @@ func (s *WorkflowService) ListRunsByPipeline(ctx context.Context, pipelineID str
 }
 
 // CreateTool creates a new tool
-func (s *WorkflowService) CreateTool(ctx context.Context, req *CreateToolRequest, orgID string) (*Tool, error) {
+func (s *Service) CreateTool(ctx context.Context, req *CreateToolRequest, orgID string) (*Tool, error) {
 	s.logger.Debug("creating tool", "name", req.Name, "org", orgID)
 
 	tool := &Tool{
@@ -279,7 +279,7 @@ func (s *WorkflowService) CreateTool(ctx context.Context, req *CreateToolRequest
 }
 
 // GetTool retrieves a tool by ID
-func (s *WorkflowService) GetTool(ctx context.Context, id uuid.UUID) (*Tool, error) {
+func (s *Service) GetTool(ctx context.Context, id uuid.UUID) (*Tool, error) {
 	tool, err := s.repo.GetTool(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get tool: %w", err)
@@ -288,7 +288,7 @@ func (s *WorkflowService) GetTool(ctx context.Context, id uuid.UUID) (*Tool, err
 }
 
 // UpdateTool updates a tool
-func (s *WorkflowService) UpdateTool(ctx context.Context, id uuid.UUID, req *UpdateToolRequest) (*Tool, error) {
+func (s *Service) UpdateTool(ctx context.Context, id uuid.UUID, req *UpdateToolRequest) (*Tool, error) {
 	tool, err := s.repo.GetTool(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get tool: %w", err)
@@ -312,7 +312,7 @@ func (s *WorkflowService) UpdateTool(ctx context.Context, id uuid.UUID, req *Upd
 }
 
 // DeleteRun deletes a run
-func (s *WorkflowService) DeleteRun(ctx context.Context, id uuid.UUID) error {
+func (s *Service) DeleteRun(ctx context.Context, id uuid.UUID) error {
 	err := s.repo.DeleteRun(ctx, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete run: %w", err)
@@ -321,7 +321,7 @@ func (s *WorkflowService) DeleteRun(ctx context.Context, id uuid.UUID) error {
 }
 
 // DeleteTool deletes a tool
-func (s *WorkflowService) DeleteTool(ctx context.Context, id uuid.UUID) error {
+func (s *Service) DeleteTool(ctx context.Context, id uuid.UUID) error {
 	// TODO: Add checks for active runs using this tool
 	err := s.repo.DeleteTool(ctx, id)
 	if err != nil {
@@ -331,7 +331,7 @@ func (s *WorkflowService) DeleteTool(ctx context.Context, id uuid.UUID) error {
 }
 
 // ListTools retrieves tools for an organization
-func (s *WorkflowService) ListTools(ctx context.Context, orgID string, limit, offset int) ([]*Tool, int, error) {
+func (s *Service) ListTools(ctx context.Context, orgID string, limit, offset int) ([]*Tool, int, error) {
 	tools, total, err := s.repo.ListTools(ctx, orgID, limit, offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list tools: %w", err)

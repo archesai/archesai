@@ -1,4 +1,4 @@
-// Package redis provides Redis-based adapters for workflows workflows
+// Package workflows provides Redis-based adapters for workflows
 package workflows
 
 import (

@@ -20,7 +20,7 @@ func Execute() {
 		Long: `A unified code generation tool for ArchesAI that generates
 repository interfaces, cache implementations, event publishers,
 and other boilerplate code from OpenAPI specifications.`,
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, _ []string) {
 			if err := codegen.Run(configPath); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)

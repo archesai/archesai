@@ -50,7 +50,7 @@ type TokenResponse struct {
 
 // Service handles authentication operations
 type Service struct {
-	repo      AuthRepository
+	repo      ExtendedRepository
 	jwtSecret []byte
 	logger    *slog.Logger
 	config    Config
@@ -68,7 +68,7 @@ type Config struct {
 }
 
 // NewService creates a new authentication service
-func NewService(repo AuthRepository, config Config, logger *slog.Logger) *Service {
+func NewService(repo ExtendedRepository, config Config, logger *slog.Logger) *Service {
 	if config.AccessTokenExpiry == 0 {
 		config.AccessTokenExpiry = 15 * time.Minute
 	}
@@ -420,9 +420,7 @@ func (s *Service) ListUsers(ctx context.Context, limit, offset int32) ([]*User, 
 
 	// Convert entities to domain users
 	users := make([]*User, len(entities))
-	for i, entity := range entities {
-		users[i] = entity
-	}
+	copy(users, entities)
 	return users, nil
 }
 

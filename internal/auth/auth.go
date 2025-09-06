@@ -33,8 +33,8 @@ var (
 	ErrUserExists = errors.New("user already exists")
 )
 
-// AuthRepository combines the generated Repository with additional methods
-type AuthRepository interface {
+// ExtendedRepository combines the generated Repository with additional methods
+type ExtendedRepository interface {
 	Repository
 
 	// Additional User methods

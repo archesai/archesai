@@ -11,18 +11,18 @@ const (
 	orgPlaceholder = "org-placeholder"
 )
 
-// WorkflowHandler handles HTTP requests for workflow operations
-type WorkflowHandler struct {
-	service *WorkflowService
+// Handler handles HTTP requests for workflow operations
+type Handler struct {
+	service *Service
 	logger  *slog.Logger
 }
 
-// Ensure WorkflowHandler implements StrictServerInterface
-var _ StrictServerInterface = (*WorkflowHandler)(nil)
+// Ensure Handler implements StrictServerInterface
+var _ StrictServerInterface = (*Handler)(nil)
 
-// NewWorkflowHandler creates a new workflow handler
-func NewWorkflowHandler(service *WorkflowService, logger *slog.Logger) *WorkflowHandler {
-	return &WorkflowHandler{
+// NewHandler creates a new workflow handler
+func NewHandler(service *Service, logger *slog.Logger) *Handler {
+	return &Handler{
 		service: service,
 		logger:  logger,
 	}
@@ -36,7 +36,7 @@ func NewWorkflowStrictHandler(handler StrictServerInterface) ServerInterface {
 // Pipeline handlers
 
 // FindManyPipelines retrieves pipelines (implements StrictServerInterface)
-func (h *WorkflowHandler) FindManyPipelines(ctx context.Context, req FindManyPipelinesRequestObject) (FindManyPipelinesResponseObject, error) {
+func (h *Handler) FindManyPipelines(ctx context.Context, req FindManyPipelinesRequestObject) (FindManyPipelinesResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -73,7 +73,7 @@ func (h *WorkflowHandler) FindManyPipelines(ctx context.Context, req FindManyPip
 }
 
 // CreatePipeline creates a new pipeline (implements StrictServerInterface)
-func (h *WorkflowHandler) CreatePipeline(ctx context.Context, req CreatePipelineRequestObject) (CreatePipelineResponseObject, error) {
+func (h *Handler) CreatePipeline(ctx context.Context, req CreatePipelineRequestObject) (CreatePipelineResponseObject, error) {
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
@@ -94,7 +94,7 @@ func (h *WorkflowHandler) CreatePipeline(ctx context.Context, req CreatePipeline
 }
 
 // GetOnePipeline retrieves a pipeline by ID (implements StrictServerInterface)
-func (h *WorkflowHandler) GetOnePipeline(ctx context.Context, req GetOnePipelineRequestObject) (GetOnePipelineResponseObject, error) {
+func (h *Handler) GetOnePipeline(ctx context.Context, req GetOnePipelineRequestObject) (GetOnePipelineResponseObject, error) {
 	pipeline, err := h.service.GetPipeline(ctx, req.Id)
 	if err != nil {
 		if err == ErrPipelineNotFound {
@@ -116,7 +116,7 @@ func (h *WorkflowHandler) GetOnePipeline(ctx context.Context, req GetOnePipeline
 }
 
 // UpdatePipeline updates a pipeline (implements StrictServerInterface)
-func (h *WorkflowHandler) UpdatePipeline(ctx context.Context, req UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error) {
+func (h *Handler) UpdatePipeline(ctx context.Context, req UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error) {
 	updateReq := &UpdatePipelineRequest{
 		Name:        req.Body.Name,
 		Description: req.Body.Description,
@@ -143,7 +143,7 @@ func (h *WorkflowHandler) UpdatePipeline(ctx context.Context, req UpdatePipeline
 }
 
 // DeletePipeline deletes a pipeline (implements StrictServerInterface)
-func (h *WorkflowHandler) DeletePipeline(ctx context.Context, req DeletePipelineRequestObject) (DeletePipelineResponseObject, error) {
+func (h *Handler) DeletePipeline(ctx context.Context, req DeletePipelineRequestObject) (DeletePipelineResponseObject, error) {
 	err := h.service.DeletePipeline(ctx, req.Id)
 	if err != nil {
 		if err == ErrPipelineNotFound {
@@ -165,7 +165,7 @@ func (h *WorkflowHandler) DeletePipeline(ctx context.Context, req DeletePipeline
 // Run handlers
 
 // FindManyRuns retrieves runs (implements StrictServerInterface)
-func (h *WorkflowHandler) FindManyRuns(ctx context.Context, req FindManyRunsRequestObject) (FindManyRunsResponseObject, error) {
+func (h *Handler) FindManyRuns(ctx context.Context, req FindManyRunsRequestObject) (FindManyRunsResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -203,7 +203,7 @@ func (h *WorkflowHandler) FindManyRuns(ctx context.Context, req FindManyRunsRequ
 }
 
 // CreateRun creates a new run (implements StrictServerInterface)
-func (h *WorkflowHandler) CreateRun(ctx context.Context, req CreateRunRequestObject) (CreateRunResponseObject, error) {
+func (h *Handler) CreateRun(ctx context.Context, req CreateRunRequestObject) (CreateRunResponseObject, error) {
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
@@ -223,7 +223,7 @@ func (h *WorkflowHandler) CreateRun(ctx context.Context, req CreateRunRequestObj
 }
 
 // GetOneRun retrieves a run by ID (implements StrictServerInterface)
-func (h *WorkflowHandler) GetOneRun(ctx context.Context, req GetOneRunRequestObject) (GetOneRunResponseObject, error) {
+func (h *Handler) GetOneRun(ctx context.Context, req GetOneRunRequestObject) (GetOneRunResponseObject, error) {
 	run, err := h.service.GetRun(ctx, req.Id)
 	if err != nil {
 		if err == ErrRunNotFound {
@@ -245,7 +245,7 @@ func (h *WorkflowHandler) GetOneRun(ctx context.Context, req GetOneRunRequestObj
 }
 
 // UpdateRun updates a run (implements StrictServerInterface)
-func (h *WorkflowHandler) UpdateRun(_ context.Context, _ UpdateRunRequestObject) (UpdateRunResponseObject, error) {
+func (h *Handler) UpdateRun(_ context.Context, _ UpdateRunRequestObject) (UpdateRunResponseObject, error) {
 	// Runs are typically not directly updated - their status changes through state transitions
 	// Return 404 since we don't support direct updates
 	return UpdateRun404ApplicationProblemPlusJSONResponse{
@@ -258,7 +258,7 @@ func (h *WorkflowHandler) UpdateRun(_ context.Context, _ UpdateRunRequestObject)
 }
 
 // DeleteRun deletes a run (implements StrictServerInterface)
-func (h *WorkflowHandler) DeleteRun(ctx context.Context, req DeleteRunRequestObject) (DeleteRunResponseObject, error) {
+func (h *Handler) DeleteRun(ctx context.Context, req DeleteRunRequestObject) (DeleteRunResponseObject, error) {
 	err := h.service.DeleteRun(ctx, req.Id)
 	if err != nil {
 		if err == ErrRunNotFound {
@@ -280,7 +280,7 @@ func (h *WorkflowHandler) DeleteRun(ctx context.Context, req DeleteRunRequestObj
 // Tool handlers
 
 // FindManyTools retrieves tools (implements StrictServerInterface)
-func (h *WorkflowHandler) FindManyTools(ctx context.Context, req FindManyToolsRequestObject) (FindManyToolsResponseObject, error) {
+func (h *Handler) FindManyTools(ctx context.Context, req FindManyToolsRequestObject) (FindManyToolsResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -317,7 +317,7 @@ func (h *WorkflowHandler) FindManyTools(ctx context.Context, req FindManyToolsRe
 }
 
 // CreateTool creates a new tool (implements StrictServerInterface)
-func (h *WorkflowHandler) CreateTool(ctx context.Context, req CreateToolRequestObject) (CreateToolResponseObject, error) {
+func (h *Handler) CreateTool(ctx context.Context, req CreateToolRequestObject) (CreateToolResponseObject, error) {
 	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
@@ -348,7 +348,7 @@ func (h *WorkflowHandler) CreateTool(ctx context.Context, req CreateToolRequestO
 }
 
 // GetOneTool retrieves a tool by ID (implements StrictServerInterface)
-func (h *WorkflowHandler) GetOneTool(ctx context.Context, req GetOneToolRequestObject) (GetOneToolResponseObject, error) {
+func (h *Handler) GetOneTool(ctx context.Context, req GetOneToolRequestObject) (GetOneToolResponseObject, error) {
 	tool, err := h.service.GetTool(ctx, req.Id)
 	if err != nil {
 		if err == ErrToolNotFound {
@@ -370,7 +370,7 @@ func (h *WorkflowHandler) GetOneTool(ctx context.Context, req GetOneToolRequestO
 }
 
 // UpdateTool updates a tool (implements StrictServerInterface)
-func (h *WorkflowHandler) UpdateTool(ctx context.Context, req UpdateToolRequestObject) (UpdateToolResponseObject, error) {
+func (h *Handler) UpdateTool(ctx context.Context, req UpdateToolRequestObject) (UpdateToolResponseObject, error) {
 	updateReq := &UpdateToolRequest{
 		Name:        req.Body.Name,
 		Description: req.Body.Description,
@@ -397,7 +397,7 @@ func (h *WorkflowHandler) UpdateTool(ctx context.Context, req UpdateToolRequestO
 }
 
 // DeleteTool deletes a tool (implements StrictServerInterface)
-func (h *WorkflowHandler) DeleteTool(ctx context.Context, req DeleteToolRequestObject) (DeleteToolResponseObject, error) {
+func (h *Handler) DeleteTool(ctx context.Context, req DeleteToolRequestObject) (DeleteToolResponseObject, error) {
 	err := h.service.DeleteTool(ctx, req.Id)
 	if err != nil {
 		if err == ErrToolNotFound {

@@ -36,22 +36,22 @@ type App struct {
 	// Auth domain
 	AuthRepository auth.Repository
 	AuthService    *auth.Service
-	AuthHandler    *auth.AuthHandler
+	AuthHandler    *auth.Handler
 
 	// Organizations domain
 	OrganizationsRepository organizations.Repository
 	OrganizationsService    *organizations.Service
-	OrganizationsHandler    *organizations.OrganizationHandler
+	OrganizationsHandler    *organizations.Handler
 
 	// Workflows domain
-	WorkflowsRepository workflows.WorkflowRepository
-	WorkflowsService    *workflows.WorkflowService
-	WorkflowsHandler    *workflows.WorkflowHandler
+	WorkflowsRepository workflows.Repository
+	WorkflowsService    *workflows.Service
+	WorkflowsHandler    *workflows.Handler
 
 	// Content domain
 	ContentRepository content.Repository
 	ContentService    *content.Service
-	ContentHandler    *content.ContentHandler
+	ContentHandler    *content.Handler
 
 	// Health domain
 	HealthService *health.Service
@@ -120,9 +120,9 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Create queries based on database type
 	var pgQueries *postgresql.Queries
 	var sqliteQueries *sqlite.Queries
-	var authRepo auth.AuthRepository
+	var authRepo auth.ExtendedRepository
 	var organizationsRepo organizations.OrganizationRepository
-	var workflowsRepo workflows.WorkflowRepository
+	var workflowsRepo workflows.Repository
 	var contentRepo content.Repository
 
 	// Determine actual database type
@@ -138,10 +138,10 @@ func NewApp(cfg *config.Config) (*App, error) {
 		// Get the underlying pgxpool for PostgreSQL
 		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
 			pgQueries = postgresql.New(pool)
-			authRepo = auth.NewAuthPostgresRepository(pgQueries)
-			organizationsRepo = organizations.NewOrganizationPostgresRepository(pgQueries)
-			workflowsRepo = workflows.NewWorkflowPostgresRepository(pgQueries)
-			contentRepo = content.NewContentPostgresRepository(pgQueries)
+			authRepo = auth.NewPostgresRepository(pgQueries)
+			organizationsRepo = organizations.NewPostgresRepository(pgQueries)
+			workflowsRepo = workflows.NewPostgresRepository(pgQueries)
+			contentRepo = content.NewPostgresRepository(pgQueries)
 		} else {
 			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
 		}
@@ -149,10 +149,10 @@ func NewApp(cfg *config.Config) (*App, error) {
 		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
 			sqliteQueries = sqlite.New(sqlDB)
 			// Use SQLite repositories
-			authRepo = auth.NewAuthSQLiteRepository(sqliteQueries)
-			organizationsRepo = organizations.NewOrganizationSQLiteRepository(sqliteQueries)
-			workflowsRepo = workflows.NewWorkflowSQLiteRepository(sqliteQueries)
-			contentRepo = content.NewContentSQLiteRepository(sqliteQueries)
+			authRepo = auth.NewSQLiteRepository(sqliteQueries)
+			organizationsRepo = organizations.NewSQLiteRepository(sqliteQueries)
+			workflowsRepo = workflows.NewSQLiteRepository(sqliteQueries)
+			contentRepo = content.NewSQLiteRepository(sqliteQueries)
 			logger.Info("Using SQLite repositories")
 		}
 	}
@@ -173,19 +173,19 @@ func NewApp(cfg *config.Config) (*App, error) {
 		RefreshTokenExpiry: refreshTokenTTL,
 	}
 	authService := auth.NewService(authRepo, authConfig, logger)
-	authHandler := auth.NewAuthHandler(authService, logger)
+	authHandler := auth.NewHandler(authService, logger)
 
 	// Initialize organizations domain
 	organizationsService := organizations.NewService(organizationsRepo, logger)
-	organizationsHandler := organizations.NewOrganizationHandler(organizationsService, logger)
+	organizationsHandler := organizations.NewHandler(organizationsService, logger)
 
 	// Initialize workflows domain
-	workflowsService := workflows.NewWorkflowService(workflowsRepo, logger)
-	workflowsHandler := workflows.NewWorkflowHandler(workflowsService, logger)
+	workflowsService := workflows.NewService(workflowsRepo, logger)
+	workflowsHandler := workflows.NewHandler(workflowsService, logger)
 
 	// Initialize content domain
 	contentService := content.NewService(contentRepo, logger)
-	contentHandler := content.NewContentHandler(contentService, logger)
+	contentHandler := content.NewHandler(contentService, logger)
 
 	// Initialize health domain
 	healthService := health.NewService(logger)

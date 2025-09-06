@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// WorkflowRepository defines the interface for workflow data persistence
-type WorkflowRepository interface {
+// Repository defines the interface for workflow data persistence
+type Repository interface {
 	// Pipeline operations
 	CreatePipeline(ctx context.Context, pipeline *Pipeline) (*Pipeline, error)
 	GetPipeline(ctx context.Context, id uuid.UUID) (*Pipeline, error)

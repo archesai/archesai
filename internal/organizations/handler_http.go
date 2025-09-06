@@ -1,4 +1,4 @@
-// Package http provides HTTP handlers for organization operations
+// Package organizations provides HTTP handlers for organization operations
 package organizations
 
 import (
@@ -11,18 +11,18 @@ const (
 	userPlaceholder = "user-placeholder"
 )
 
-// OrganizationHandler handles HTTP requests for organization operations
-type OrganizationHandler struct {
+// Handler handles HTTP requests for organization operations
+type Handler struct {
 	service *Service
 	logger  *slog.Logger
 }
 
-// Ensure OrganizationHandler implements StrictServerInterface
-var _ StrictServerInterface = (*OrganizationHandler)(nil)
+// Ensure Handler implements StrictServerInterface
+var _ StrictServerInterface = (*Handler)(nil)
 
-// NewOrganizationHandler creates a new organization handler
-func NewOrganizationHandler(service *Service, logger *slog.Logger) *OrganizationHandler {
-	return &OrganizationHandler{
+// NewHandler creates a new organization handler
+func NewHandler(service *Service, logger *slog.Logger) *Handler {
+	return &Handler{
 		service: service,
 		logger:  logger,
 	}
@@ -36,7 +36,7 @@ func NewOrganizationStrictHandler(handler StrictServerInterface) ServerInterface
 // Organization handlers
 
 // FindManyOrganizations retrieves organizations (implements StrictServerInterface)
-func (h *OrganizationHandler) FindManyOrganizations(ctx context.Context, req FindManyOrganizationsRequestObject) (FindManyOrganizationsResponseObject, error) {
+func (h *Handler) FindManyOrganizations(ctx context.Context, req FindManyOrganizationsRequestObject) (FindManyOrganizationsResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -70,7 +70,7 @@ func (h *OrganizationHandler) FindManyOrganizations(ctx context.Context, req Fin
 }
 
 // CreateOrganization creates a new organization (implements StrictServerInterface)
-func (h *OrganizationHandler) CreateOrganization(ctx context.Context, req CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error) {
+func (h *Handler) CreateOrganization(ctx context.Context, req CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error) {
 	// TODO: Get user ID from auth context
 	userID := userPlaceholder // This should come from JWT claims
 
@@ -91,7 +91,7 @@ func (h *OrganizationHandler) CreateOrganization(ctx context.Context, req Create
 }
 
 // GetOneOrganization retrieves an organization by ID (implements StrictServerInterface)
-func (h *OrganizationHandler) GetOneOrganization(ctx context.Context, req GetOneOrganizationRequestObject) (GetOneOrganizationResponseObject, error) {
+func (h *Handler) GetOneOrganization(ctx context.Context, req GetOneOrganizationRequestObject) (GetOneOrganizationResponseObject, error) {
 	org, err := h.service.repo.GetOrganizationByID(ctx, req.Id)
 	if err != nil {
 		if err == ErrOrganizationNotFound {
@@ -113,7 +113,7 @@ func (h *OrganizationHandler) GetOneOrganization(ctx context.Context, req GetOne
 }
 
 // UpdateOrganization updates an organization (implements StrictServerInterface)
-func (h *OrganizationHandler) UpdateOrganization(ctx context.Context, req UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error) {
+func (h *Handler) UpdateOrganization(ctx context.Context, req UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error) {
 	updateReq := &UpdateOrganizationRequest{
 		BillingEmail:   req.Body.BillingEmail,
 		OrganizationId: req.Body.OrganizationId,
@@ -140,7 +140,7 @@ func (h *OrganizationHandler) UpdateOrganization(ctx context.Context, req Update
 }
 
 // DeleteOrganization deletes an organization (implements StrictServerInterface)
-func (h *OrganizationHandler) DeleteOrganization(ctx context.Context, req DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error) {
+func (h *Handler) DeleteOrganization(ctx context.Context, req DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error) {
 	err := h.service.DeleteOrganization(ctx, req.Id)
 	if err != nil {
 		if err == ErrOrganizationNotFound {
@@ -162,7 +162,7 @@ func (h *OrganizationHandler) DeleteOrganization(ctx context.Context, req Delete
 // Member handlers
 
 // FindManyMembers retrieves members of an organization (implements StrictServerInterface)
-func (h *OrganizationHandler) FindManyMembers(ctx context.Context, req FindManyMembersRequestObject) (FindManyMembersResponseObject, error) {
+func (h *Handler) FindManyMembers(ctx context.Context, req FindManyMembersRequestObject) (FindManyMembersResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -196,7 +196,7 @@ func (h *OrganizationHandler) FindManyMembers(ctx context.Context, req FindManyM
 }
 
 // CreateMember adds a member to an organization (implements StrictServerInterface)
-func (h *OrganizationHandler) CreateMember(ctx context.Context, req CreateMemberRequestObject) (CreateMemberResponseObject, error) {
+func (h *Handler) CreateMember(ctx context.Context, req CreateMemberRequestObject) (CreateMemberResponseObject, error) {
 	createReq := &CreateMemberRequest{
 		Role: req.Body.Role,
 	}
@@ -223,7 +223,7 @@ func (h *OrganizationHandler) CreateMember(ctx context.Context, req CreateMember
 }
 
 // GetOneMember retrieves a member by ID (implements StrictServerInterface)
-func (h *OrganizationHandler) GetOneMember(ctx context.Context, req GetOneMemberRequestObject) (GetOneMemberResponseObject, error) {
+func (h *Handler) GetOneMember(ctx context.Context, req GetOneMemberRequestObject) (GetOneMemberResponseObject, error) {
 	member, err := h.service.GetMember(ctx, req.MemberId)
 	if err != nil {
 		if err == ErrMemberNotFound {
@@ -245,7 +245,7 @@ func (h *OrganizationHandler) GetOneMember(ctx context.Context, req GetOneMember
 }
 
 // UpdateMember updates a member's role (implements StrictServerInterface)
-func (h *OrganizationHandler) UpdateMember(ctx context.Context, req UpdateMemberRequestObject) (UpdateMemberResponseObject, error) {
+func (h *Handler) UpdateMember(ctx context.Context, req UpdateMemberRequestObject) (UpdateMemberResponseObject, error) {
 	updateReq := &UpdateMemberRequest{
 		Role: req.Body.Role,
 	}
@@ -271,7 +271,7 @@ func (h *OrganizationHandler) UpdateMember(ctx context.Context, req UpdateMember
 }
 
 // DeleteMember removes a member from an organization (implements StrictServerInterface)
-func (h *OrganizationHandler) DeleteMember(ctx context.Context, req DeleteMemberRequestObject) (DeleteMemberResponseObject, error) {
+func (h *Handler) DeleteMember(ctx context.Context, req DeleteMemberRequestObject) (DeleteMemberResponseObject, error) {
 	err := h.service.DeleteMember(ctx, req.MemberId)
 	if err != nil {
 		if err == ErrMemberNotFound {
@@ -293,7 +293,7 @@ func (h *OrganizationHandler) DeleteMember(ctx context.Context, req DeleteMember
 // Invitation handlers
 
 // FindManyInvitations retrieves invitations for an organization (implements StrictServerInterface)
-func (h *OrganizationHandler) FindManyInvitations(ctx context.Context, req FindManyInvitationsRequestObject) (FindManyInvitationsResponseObject, error) {
+func (h *Handler) FindManyInvitations(ctx context.Context, req FindManyInvitationsRequestObject) (FindManyInvitationsResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -327,7 +327,7 @@ func (h *OrganizationHandler) FindManyInvitations(ctx context.Context, req FindM
 }
 
 // CreateInvitation creates a new invitation (implements StrictServerInterface)
-func (h *OrganizationHandler) CreateInvitation(ctx context.Context, req CreateInvitationRequestObject) (CreateInvitationResponseObject, error) {
+func (h *Handler) CreateInvitation(ctx context.Context, req CreateInvitationRequestObject) (CreateInvitationResponseObject, error) {
 	// TODO: Get inviter ID from auth context
 	inviterID := userPlaceholder
 
@@ -348,7 +348,7 @@ func (h *OrganizationHandler) CreateInvitation(ctx context.Context, req CreateIn
 }
 
 // GetOneInvitation retrieves an invitation by ID (implements StrictServerInterface)
-func (h *OrganizationHandler) GetOneInvitation(ctx context.Context, req GetOneInvitationRequestObject) (GetOneInvitationResponseObject, error) {
+func (h *Handler) GetOneInvitation(ctx context.Context, req GetOneInvitationRequestObject) (GetOneInvitationResponseObject, error) {
 	invitation, err := h.service.GetInvitation(ctx, req.InvitationId)
 	if err != nil {
 		if err == ErrInvitationNotFound {
@@ -370,7 +370,7 @@ func (h *OrganizationHandler) GetOneInvitation(ctx context.Context, req GetOneIn
 }
 
 // UpdateInvitation updates an invitation (implements StrictServerInterface)
-func (h *OrganizationHandler) UpdateInvitation(_ context.Context, _ UpdateInvitationRequestObject) (UpdateInvitationResponseObject, error) {
+func (h *Handler) UpdateInvitation(_ context.Context, _ UpdateInvitationRequestObject) (UpdateInvitationResponseObject, error) {
 	// TODO: Implement invitation updates when needed
 	// Return 404 since we don't support updates yet
 	return UpdateInvitation404ApplicationProblemPlusJSONResponse{
@@ -383,7 +383,7 @@ func (h *OrganizationHandler) UpdateInvitation(_ context.Context, _ UpdateInvita
 }
 
 // DeleteInvitation deletes an invitation (implements StrictServerInterface)
-func (h *OrganizationHandler) DeleteInvitation(ctx context.Context, req DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error) {
+func (h *Handler) DeleteInvitation(ctx context.Context, req DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error) {
 	err := h.service.DeleteInvitation(ctx, req.InvitationId)
 	if err != nil {
 		if err == ErrInvitationNotFound {

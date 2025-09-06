@@ -174,8 +174,8 @@ type GeneratorConfig struct {
 	Config map[string]interface{}
 }
 
-// CodegenConfig represents the overall codegen configuration.
-type CodegenConfig struct {
+// ParseConfig represents the overall codegen configuration.
+type ParseConfig struct {
 	// OpenAPI spec file path
 	OpenAPIFile string `yaml:"openapi" json:"openapi"`
 
@@ -502,7 +502,7 @@ func (p *Parser) validateXCodegen(schema *ParsedSchema) {
 }
 
 // resolveAllOf resolves allOf references and merges properties into the schema.
-func (p *Parser) resolveAllOf(schema *Schema, allSchemas map[string]Schema) {
+func (p *Parser) resolveAllOf(schema *Schema, _ map[string]Schema) {
 	if len(schema.AllOf) == 0 {
 		return
 	}
