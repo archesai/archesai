@@ -114,8 +114,8 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          if [[ -n $(git status --porcelain docs/TEST_COVERAGE_REPORT.md) ]]; then
-            git add docs/TEST_COVERAGE_REPORT.md
+          if [[ -n $(git status --porcelain docs/src/guides/test-coverage-report.md) ]]; then
+            git add docs/src/guides/test-coverage-report.md
             git commit -m "docs: update test coverage report [skip ci]"
             git push
           fi
@@ -127,4 +127,4 @@ jobs:
           path: |
             coverage.out
             coverage.txt
-            docs/TEST_COVERAGE_REPORT.md
+            docs/src/guides/test-coverage-report.md
