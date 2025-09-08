@@ -18,6 +18,8 @@ const (
 	UserContextKey ContextKey = "user"
 	// ClaimsContextKey is the context key for JWT claims
 	ClaimsContextKey ContextKey = "claims"
+	// SessionTokenContextKey is the context key for session token
+	SessionTokenContextKey ContextKey = "session_token"
 )
 
 // Domain errors

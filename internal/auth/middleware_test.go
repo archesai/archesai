@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestAuthMiddleware(t *testing.T) {
@@ -30,21 +29,12 @@ func TestAuthMiddleware(t *testing.T) {
 		}
 		mockUsersRepo.users[userID] = testUser
 
-		// Create test session
-		session := &Session{
-			Id:                   uuid.New(),
-			UserId:               userID,
-			Token:                "test-refresh-token",
-			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
-			ActiveOrganizationId: uuid.New(),
-		}
-
-		// Setup mock expectations
-		mockRepo.EXPECT().GetSessionByToken(mock.Anything, "test-refresh-token").Return(session, nil)
+		// No need to setup session expectations - middleware doesn't check sessions
 
 		service := &Service{
 			repo:      mockRepo,
 			usersRepo: mockUsersRepo,
+			jwtSecret: []byte("test-secret"),
 			logger:    logger.NewTest(),
 			config: Config{
 				JWTSecret:          "test-secret",
@@ -55,13 +45,17 @@ func TestAuthMiddleware(t *testing.T) {
 
 		middleware := Middleware(service, logger.NewTest())
 
-		// Create a valid JWT token
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"user_id": userID.String(),
-			"email":   "test@example.com",
-			"exp":     time.Now().Add(time.Hour).Unix(),
-			"session": "test-refresh-token",
-		})
+		// Create a valid JWT token with proper Claims structure
+		claims := &Claims{
+			UserID: userID,
+			Email:  "test@example.com",
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+				IssuedAt:  jwt.NewNumericDate(time.Now()),
+				NotBefore: jwt.NewNumericDate(time.Now()),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, _ := token.SignedString([]byte("test-secret"))
 
 		// Create Echo context
@@ -97,6 +91,7 @@ func TestAuthMiddleware(t *testing.T) {
 		service := &Service{
 			repo:      mockRepo,
 			usersRepo: mockUsersRepo,
+			jwtSecret: []byte("test-secret"),
 			logger:    logger.NewTest(),
 			config: Config{
 				JWTSecret: "test-secret",
@@ -134,6 +129,7 @@ func TestAuthMiddleware(t *testing.T) {
 		service := &Service{
 			repo:      mockRepo,
 			usersRepo: mockUsersRepo,
+			jwtSecret: []byte("test-secret"),
 			logger:    logger.NewTest(),
 			config: Config{
 				JWTSecret: "test-secret",
@@ -172,6 +168,7 @@ func TestAuthMiddleware(t *testing.T) {
 		service := &Service{
 			repo:      mockRepo,
 			usersRepo: mockUsersRepo,
+			jwtSecret: []byte("test-secret"),
 			logger:    logger.NewTest(),
 			config: Config{
 				JWTSecret: "test-secret",
@@ -182,12 +179,16 @@ func TestAuthMiddleware(t *testing.T) {
 
 		// Create an expired JWT token
 		userID := uuid.New()
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"user_id": userID.String(),
-			"email":   "test@example.com",
-			"exp":     time.Now().Add(-time.Hour).Unix(), // Expired
-			"session": "test-refresh-token",
-		})
+		claims := &Claims{
+			UserID: userID,
+			Email:  "test@example.com",
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(-time.Hour)), // Expired
+				IssuedAt:  jwt.NewNumericDate(time.Now().Add(-2 * time.Hour)),
+				NotBefore: jwt.NewNumericDate(time.Now().Add(-2 * time.Hour)),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, _ := token.SignedString([]byte("test-secret"))
 
 		// Create Echo context
@@ -217,12 +218,12 @@ func TestAuthMiddleware(t *testing.T) {
 		mockRepo := NewMockRepository(t)
 		mockUsersRepo := NewMockUsersRepository()
 
-		// Setup mock to return session not found
-		mockRepo.EXPECT().GetSessionByToken(mock.Anything, "test-refresh-token").Return(nil, ErrSessionNotFound)
+		// No session expectations needed - middleware doesn't check sessions
 
 		service := &Service{
 			repo:      mockRepo,
 			usersRepo: mockUsersRepo,
+			jwtSecret: []byte("test-secret"),
 			logger:    logger.NewTest(),
 			config: Config{
 				JWTSecret: "test-secret",
@@ -233,12 +234,16 @@ func TestAuthMiddleware(t *testing.T) {
 
 		// Create a valid JWT token but session doesn't exist
 		userID := uuid.New()
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"user_id": userID.String(),
-			"email":   "test@example.com",
-			"exp":     time.Now().Add(time.Hour).Unix(),
-			"session": "test-refresh-token",
-		})
+		claims := &Claims{
+			UserID: userID,
+			Email:  "test@example.com",
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+				IssuedAt:  jwt.NewNumericDate(time.Now()),
+				NotBefore: jwt.NewNumericDate(time.Now()),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, _ := token.SignedString([]byte("test-secret"))
 
 		// Create Echo context
@@ -282,6 +287,7 @@ func TestRequireAuthMiddleware(t *testing.T) {
 		service := &Service{
 			repo:      mockRepo,
 			usersRepo: mockUsersRepo,
+			jwtSecret: []byte("test-secret"),
 			logger:    logger.NewTest(),
 			config: Config{
 				JWTSecret: "test-secret",
@@ -290,14 +296,25 @@ func TestRequireAuthMiddleware(t *testing.T) {
 
 		middleware := Middleware(service, logger.NewTest())
 
-		// Create Echo context with user already set
+		// Create a valid JWT token
+		claims := &Claims{
+			UserID: userID,
+			Email:  "test@example.com",
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+				IssuedAt:  jwt.NewNumericDate(time.Now()),
+				NotBefore: jwt.NewNumericDate(time.Now()),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		tokenString, _ := token.SignedString([]byte("test-secret"))
+
+		// Create Echo context with token
 		e := echo.New()
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer "+tokenString)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		// Set user in context
-		c.Set(string(AuthUserContextKey), testUser)
 
 		// Create a handler that should be called
 		handler := func(c echo.Context) error {
@@ -324,6 +341,7 @@ func TestRequireAuthMiddleware(t *testing.T) {
 		service := &Service{
 			repo:      mockRepo,
 			usersRepo: mockUsersRepo,
+			jwtSecret: []byte("test-secret"),
 			logger:    logger.NewTest(),
 			config: Config{
 				JWTSecret: "test-secret",

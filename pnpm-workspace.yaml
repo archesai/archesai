@@ -92,6 +92,7 @@ onlyBuiltDependencies:
   - "@tailwindcss/oxide"
   - esbuild
   - unrs-resolver
+  - protobufjs
 
 packageManagerStrictVersion: true
 
@@ -101,7 +102,7 @@ publicHoistPattern:
   - typescript
   - tailwindcss
 
-reporter: silent
+# reporter: silent
 
 strictDepBuilds: true
 

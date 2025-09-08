@@ -32,7 +32,7 @@ func StartPostgresContainer(ctx context.Context, t *testing.T) *PostgresContaine
 	t.Helper()
 
 	container, err := tcpostgres.Run(ctx,
-		"postgres:16-alpine",
+		"pgvector/pgvector:pg16",
 		tcpostgres.WithDatabase("testdb"),
 		tcpostgres.WithUsername("testuser"),
 		tcpostgres.WithPassword("testpass"),

@@ -42,6 +42,17 @@ func TestService_CreateOrganization(t *testing.T) {
 			return o.Name == "" && o.BillingEmail == "billing@test.com"
 		})).Return(expectedOrg, nil)
 
+		// Also expect CreateMember for the initial owner
+		mockRepo.EXPECT().CreateMember(mock.Anything, mock.MatchedBy(func(m *Member) bool {
+			return m.OrganizationId == expectedOrg.Id.String() && m.Role == MemberRoleOwner
+		})).Return(&Member{
+			Id:             uuid.New(),
+			OrganizationId: expectedOrg.Id.String(),
+			Role:           MemberRoleOwner,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+		}, nil)
+
 		req := &CreateOrganizationRequest{
 			OrganizationId: uuid.New(),
 			BillingEmail:   "billing@test.com",
@@ -116,13 +127,13 @@ func TestService_CreateMember(t *testing.T) {
 		expectedMember := &Member{
 			Id:             uuid.New(),
 			OrganizationId: orgID.String(),
-			Role:           "member",
+			Role:           MemberRole("member"),
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		}
 
 		mockRepo.EXPECT().CreateMember(mock.Anything, mock.MatchedBy(func(m *Member) bool {
-			return m.OrganizationId == orgID.String() && m.Role == "member"
+			return m.OrganizationId == orgID.String() && m.Role == MemberRole("member")
 		})).Return(expectedMember, nil)
 
 		req := &CreateMemberRequest{
@@ -134,6 +145,6 @@ func TestService_CreateMember(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, orgID.String(), result.OrganizationId)
-		assert.Equal(t, "member", result.Role)
+		assert.Equal(t, MemberRole("member"), result.Role)
 	})
 }

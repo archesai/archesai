@@ -310,7 +310,7 @@
             "description": "Test cache interfaces and Redis/memory implementations are generated properly",
             "dependencies": ["26.1"],
             "details": "Execute cache generation from OpenAPI specs, verify Redis and memory cache implementations are created with proper interfaces, test that cache operations compile and follow expected patterns.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -359,6 +359,28 @@
             "testStrategy": ""
           }
         ]
+      },
+      {
+        "id": 27,
+        "title": "Fix failing tests and ensure all tests pass",
+        "description": "Resolve failing tests in auth and organizations domains, fix mock generation issues, and ensure complete test suite passes",
+        "details": "Fix failing tests across the codebase with focus on auth and organizations domains:\n\n1. **Auth Domain Test Fixes**:\n   - Fix generated mock usage in auth tests that incorrectly reference mock methods\n   - Update test assertions to match actual service method signatures\n   - Ensure mock expectations align with repository interface implementations\n   - Fix any type mismatches in auth service tests\n\n2. **Organizations Domain Fixes**:\n   - Resolve type assertion issues in organization tests\n   - Fix mock repository setup and expectations\n   - Update test data structures to match generated types\n   - Ensure proper error handling test cases\n\n3. **Mock Generation Issues**:\n   - Review and fix generated mock implementations\n   - Ensure mock methods match actual interface signatures\n   - Fix any circular dependencies in mock generation\n   - Update mockery configuration if needed\n\n4. **Test Execution**:\n   - Run `make test-short` first to identify quick failures\n   - Run full `make test` suite to ensure comprehensive coverage\n   - Fix any race conditions or flaky tests\n   - Ensure all test dependencies are properly mocked",
+        "testStrategy": "Execute test suite incrementally: run `make test-short` to verify quick tests pass, then run `make test` for full suite. Verify auth domain tests pass with correct mock usage, ensure organizations domain type assertions work properly, and confirm all mock expectations match actual service calls. Check test coverage reports and ensure no tests are skipped or ignored.",
+        "status": "pending",
+        "dependencies": [26, 22],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Create GitHub Action for automated test coverage reporting",
+        "description": "Implement CI/CD automation to generate comprehensive test coverage reports and provide PR feedback with coverage metrics and recommendations.",
+        "details": "Create GitHub Action workflow that runs after test execution to generate detailed coverage reports. Build script to analyze Go test coverage output and create formatted markdown report similar to TEST_COVERAGE_REPORT.md with package-by-package breakdown, coverage percentages, and status indicators. Implement PR comment bot that posts coverage summary with key metrics, coverage changes from base branch, and actionable recommendations for improvement. Include coverage threshold checks with configurable pass/fail criteria. Generate HTML coverage reports as artifacts. Add support for coverage badges and trend tracking. Integrate with existing make test-coverage command and ensure compatibility with testcontainers and integration tests.",
+        "testStrategy": "Test GitHub Action locally using act or similar tools. Verify coverage report generation with various test scenarios including passing/failing tests. Test PR comment creation and updates with different coverage scenarios. Validate coverage threshold enforcement. Test artifact upload and HTML report generation. Verify integration with existing test infrastructure and make commands.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
       }
     ],
     "metadata": {
@@ -368,7 +390,7 @@
       "tag": "main",
       "created": "2025-09-08T12:34:56.551Z",
       "description": "Tasks for main context",
-      "updated": "2025-09-08T15:47:28.820Z"
+      "updated": "2025-09-08T19:25:48.232Z"
     }
   }
 }

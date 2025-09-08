@@ -7,6 +7,7 @@ import (
 
 	"github.com/archesai/archesai/internal/logger"
 	"github.com/archesai/archesai/internal/users"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stretchr/testify/assert"
@@ -207,17 +208,9 @@ func TestService_Login(t *testing.T) {
 // TestService_RefreshToken tests token refresh
 func TestService_RefreshToken(t *testing.T) {
 	t.Run("successful refresh", func(t *testing.T) {
-		service, mockRepo, mockUsersRepo := createTestService(t)
+		service, _, mockUsersRepo := createTestService(t)
 
 		userID := uuid.New()
-		oldSession := &Session{
-			Id:                   uuid.New(),
-			Token:                "old-token",
-			UserId:               userID,
-			ActiveOrganizationId: uuid.New(),
-			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
-		}
-
 		testUser := &users.User{
 			Id:    userID,
 			Email: "test@example.com",
@@ -227,22 +220,20 @@ func TestService_RefreshToken(t *testing.T) {
 		// Add user to mock repository
 		mockUsersRepo.users[userID] = testUser
 
-		// Setup expectations
-		mockRepo.EXPECT().GetSessionByToken(mock.Anything, mock.AnythingOfType("string")).Return(oldSession, nil)
-		mockRepo.EXPECT().DeleteSessionByToken(mock.Anything, mock.AnythingOfType("string")).Return(nil)
-		mockRepo.EXPECT().CreateSession(mock.Anything, mock.AnythingOfType("*auth.Session")).Return(&Session{
-			Id:                   uuid.New(),
-			Token:                "new-token",
-			UserId:               userID,
-			ActiveOrganizationId: oldSession.ActiveOrganizationId,
-			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
-			CreatedAt:            time.Now(),
-			UpdatedAt:            time.Now(),
-		}, nil)
+		// Create a valid refresh token
+		claims := &Claims{
+			UserID: userID,
+			Email:  "test@example.com",
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
+				IssuedAt:  jwt.NewNumericDate(time.Now()),
+				NotBefore: jwt.NewNumericDate(time.Now()),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+		refreshToken, _ := token.SignedString([]byte("test-secret"))
 
-		// Execute - generate a valid refresh token
-		refreshToken := generateRefreshToken()
-
+		// Execute
 		result, err := service.RefreshToken(context.Background(), refreshToken)
 
 		// Assert
@@ -259,7 +250,16 @@ func TestService_Logout(t *testing.T) {
 		service, mockRepo, _ := createTestService(t)
 
 		token := "logout-token"
-		mockRepo.EXPECT().DeleteSessionByToken(mock.Anything, token).Return(nil)
+		sessionID := uuid.New()
+		session := &Session{
+			Id:        sessionID,
+			UserId:    uuid.New(),
+			Token:     token,
+			ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+		}
+
+		mockRepo.EXPECT().GetSessionByToken(mock.Anything, token).Return(session, nil)
+		mockRepo.EXPECT().DeleteSession(mock.Anything, sessionID).Return(nil)
 
 		err := service.Logout(context.Background(), token)
 
@@ -308,9 +308,4 @@ func TestService_ValidateSession(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, result)
 	})
-}
-
-// generateRefreshToken creates a simple test refresh token
-func generateRefreshToken() string {
-	return "test-refresh-token"
 }

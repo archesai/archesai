@@ -138,6 +138,7 @@ generate-codegen: generate-codegen-types ## Generate codegen
 .PHONY: generate-mocks
 generate-mocks: ## Generate test mocks using mockery
 	@echo -e "$(YELLOW)▶ Generating test mocks...$(NC)"
+	@command -v mockery >/dev/null 2>&1 || go install github.com/vektra/mockery/v3@v3.5.4
 	@mockery
 	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"
 

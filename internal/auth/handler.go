@@ -122,7 +122,7 @@ func (h *Handler) Login(ctx context.Context, req LoginRequestObject) (LoginRespo
 // Logout handles user logout (implements StrictServerInterface)
 func (h *Handler) Logout(ctx context.Context, _ LogoutRequestObject) (LogoutResponseObject, error) {
 	// Get the session token from context (set by middleware)
-	token, ok := ctx.Value("session_token").(string)
+	token, ok := ctx.Value(SessionTokenContextKey).(string)
 	if !ok {
 		return Logout401ApplicationProblemPlusJSONResponse{
 			UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
@@ -135,6 +135,15 @@ func (h *Handler) Logout(ctx context.Context, _ LogoutRequestObject) (LogoutResp
 
 	err := h.service.Logout(ctx, token)
 	if err != nil {
+		if err == ErrInvalidToken {
+			return Logout401ApplicationProblemPlusJSONResponse{
+				UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
+					Title:  "Invalid session",
+					Status: 401,
+					Type:   "invalid-session",
+				},
+			}, nil
+		}
 		h.logger.Error("failed to logout user", "error", err)
 		return nil, err
 	}

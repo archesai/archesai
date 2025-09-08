@@ -310,8 +310,8 @@ func TestHandler_Login(t *testing.T) {
 				mockRepo := NewMockRepository(t)
 				mockUsersRepo := NewMockUsersRepository()
 
-				// Setup account not found
-				mockRepo.EXPECT().GetAccountByProviderAndProviderID(mock.Anything, string(Local), "nonexistent@example.com").Return(nil, ErrAccountNotFound)
+				// The user doesn't exist in the users repository, so GetAccountByProviderAndProviderID should never be called
+				// No expectation needed for GetAccountByProviderAndProviderID since the service returns early
 
 				service := &Service{
 					repo:      mockRepo,
@@ -377,8 +377,15 @@ func TestHandler_Logout(t *testing.T) {
 				mockRepo := NewMockRepository(t)
 				mockUsersRepo := NewMockUsersRepository()
 
-				// Setup delete session
-				mockRepo.EXPECT().DeleteSessionByToken(mock.Anything, "test-token").Return(nil)
+				// Setup get session and delete session
+				testSession := &Session{
+					Id:        uuid.New(),
+					UserId:    uuid.New(),
+					Token:     "test-token",
+					ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+				}
+				mockRepo.EXPECT().GetSessionByToken(mock.Anything, "test-token").Return(testSession, nil)
+				mockRepo.EXPECT().DeleteSession(mock.Anything, testSession.Id).Return(nil)
 
 				service := &Service{
 					repo:      mockRepo,
@@ -401,8 +408,8 @@ func TestHandler_Logout(t *testing.T) {
 				mockRepo := NewMockRepository(t)
 				mockUsersRepo := NewMockUsersRepository()
 
-				// Setup delete session fails
-				mockRepo.EXPECT().DeleteSessionByToken(mock.Anything, "non-existent-token").Return(ErrSessionNotFound)
+				// Setup get session returns not found
+				mockRepo.EXPECT().GetSessionByToken(mock.Anything, "non-existent-token").Return(nil, ErrSessionNotFound)
 
 				service := &Service{
 					repo:      mockRepo,
@@ -427,9 +434,7 @@ func TestHandler_Logout(t *testing.T) {
 			handler := NewHandler(service, logger.NewTest())
 
 			// Execute with token in context
-			type contextKey string
-			const sessionTokenKey contextKey = "session_token"
-			ctx := context.WithValue(context.Background(), sessionTokenKey, tt.contextToken)
+			ctx := context.WithValue(context.Background(), SessionTokenContextKey, tt.contextToken)
 
 			response, err := handler.Logout(ctx, tt.request)
 
