@@ -34,7 +34,7 @@ jobs:
           service_account: github-actions-artifact-regist@archesai.iam.gserviceaccount.com
 
       - name: Set Up GCP CLI
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Login to Artifact Registry
         uses: docker/login-action@v3
