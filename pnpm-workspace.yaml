@@ -107,3 +107,5 @@ strictDepBuilds: true
 strictPeerDependencies: true
 
 useNodeVersion: 24.7.0
+
+loglevel: warn

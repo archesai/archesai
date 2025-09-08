@@ -10,7 +10,7 @@
     "generate": "pnpm -r generate",
     "dev": "pnpm -r dev",
     "format": "pnpm prettier . --write --check --log-level warn --cache --cache-location .cache/.prettiercache",
-    "postinstall": "pnpm dlx sherif --fix",
+    "postinstall": "sh -c 'if [ -z \"$CI\" ]; then pnpm dlx sherif --fix; else pnpm dlx sherif; fi'",
     "lint": "pnpm -r lint --cache --cache-location .cache/.eslintcache",
     "test": "pnpm -r test",
     "typecheck": "pnpm tsc --build --emitDeclarationOnly"
