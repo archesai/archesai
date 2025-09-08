@@ -6,15 +6,14 @@ import (
 	"strings"
 
 	"github.com/archesai/archesai/internal/llm"
-	"github.com/archesai/archesai/internal/swarm"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 // Model represents the TUI application state
 type Model struct {
-	swarmClient   *swarm.Swarm
-	agent         *swarm.Agent
+	chatClient    llm.ChatClient
+	session       *llm.ChatSession
 	messages      []Message
 	input         string
 	width         int
@@ -22,7 +21,7 @@ type Model struct {
 	isProcessing  bool
 	err           error
 	selectedAgent int
-	agents        []*swarm.Agent
+	personas      []*llm.ChatPersona
 	showAgentList bool
 	style         *Styles
 }
@@ -105,18 +104,18 @@ func NewStyles() *Styles {
 }
 
 // New creates a new TUI model
-func New(swarmClient *swarm.Swarm, agents []*swarm.Agent) Model {
-	var agent *swarm.Agent
-	if len(agents) > 0 {
-		agent = agents[0]
+func New(chatClient llm.ChatClient, personas []*llm.ChatPersona) Model {
+	var session *llm.ChatSession
+	if len(personas) > 0 {
+		session = chatClient.NewSession(personas[0])
 	}
 
 	return Model{
-		swarmClient: swarmClient,
-		agent:       agent,
-		agents:      agents,
-		messages:    []Message{},
-		style:       NewStyles(),
+		chatClient: chatClient,
+		session:    session,
+		personas:   personas,
+		messages:   []Message{},
+		style:      NewStyles(),
 	}
 }
 
@@ -145,10 +144,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.err = msg.err
 			return m, nil
 		}
+		agentName := ""
+		if m.session != nil && m.session.Persona != nil {
+			agentName = m.session.Persona.Name
+		}
 		m.messages = append(m.messages, Message{
 			Role:    "assistant",
 			Content: msg.content,
-			Agent:   m.agent.Name,
+			Agent:   agentName,
 		})
 		return m, nil
 
@@ -175,9 +178,9 @@ func (m Model) View() string {
 	title := m.style.Title.Render("🤖 ArchesAI Agent TUI")
 	sections = append(sections, lipgloss.PlaceHorizontal(m.width, lipgloss.Center, title))
 
-	// Current agent indicator
-	if m.agent != nil {
-		agentInfo := m.style.Agent.Render(fmt.Sprintf("Current Agent: %s", m.agent.Name))
+	// Current persona indicator
+	if m.session != nil && m.session.Persona != nil {
+		agentInfo := m.style.Agent.Render(fmt.Sprintf("Current Agent: %s", m.session.Persona.Name))
 		sections = append(sections, agentInfo)
 	}
 
@@ -232,18 +235,18 @@ func (m Model) handleKeyPress(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case tea.KeyDown:
-		if m.showAgentList && m.selectedAgent < len(m.agents)-1 {
+		if m.showAgentList && m.selectedAgent < len(m.personas)-1 {
 			m.selectedAgent++
 		}
 		return m, nil
 
 	case tea.KeyEnter:
 		if m.showAgentList {
-			// Select agent
-			if m.selectedAgent < len(m.agents) {
-				m.agent = m.agents[m.selectedAgent]
+			// Select persona
+			if m.selectedAgent < len(m.personas) {
+				m.session = m.chatClient.NewSession(m.personas[m.selectedAgent])
 				m.showAgentList = false
-				return m, m.addSystemMessage(fmt.Sprintf("Switched to agent: %s", m.agent.Name))
+				return m, m.addSystemMessage(fmt.Sprintf("Switched to agent: %s", m.personas[m.selectedAgent].Name))
 			}
 		} else if m.input != "" && !m.isProcessing {
 			// Send message
@@ -311,11 +314,11 @@ func (m Model) renderMessages() string {
 	return messageBox
 }
 
-// renderAgentList renders the list of available agents
+// renderAgentList renders the list of available personas
 func (m Model) renderAgentList() string {
 	var items []string
-	for i, agent := range m.agents {
-		item := fmt.Sprintf("%d. %s", i+1, agent.Name)
+	for i, persona := range m.personas {
+		item := fmt.Sprintf("%d. %s", i+1, persona.Name)
 		if i == m.selectedAgent {
 			item = m.style.Selected.Render(item)
 		}
@@ -326,44 +329,22 @@ func (m Model) renderAgentList() string {
 	return m.style.AgentList.Render("Select Agent:\n" + list)
 }
 
-// sendMessage sends a message to the current agent
+// sendMessage sends a message to the current chat session
 func (m Model) sendMessage(content string) tea.Cmd {
 	return func() tea.Msg {
-		if m.agent == nil || m.swarmClient == nil {
+		if m.session == nil || m.chatClient == nil {
 			return responseMsg{
-				err: fmt.Errorf("no agent selected or swarm client not initialized"),
+				err: fmt.Errorf("no chat session or client initialized"),
 			}
 		}
 
-		// Create message history for the agent
-		messages := []llm.Message{
-			{Role: llm.RoleUser, Content: content},
-		}
-
-		// Run the agent
-		response, err := m.swarmClient.Run(
-			context.Background(),
-			m.agent,
-			messages,
-			nil,   // context variables
-			"",    // model override
-			false, // stream
-			false, // debug
-			-1,    // max turns
-			false, // execute tools
-		)
-
+		// Send message to chat client
+		response, err := m.chatClient.SendMessage(context.Background(), m.session, content)
 		if err != nil {
 			return responseMsg{err: err}
 		}
 
-		// Extract the response content
-		if len(response.Messages) > 0 {
-			lastMsg := response.Messages[len(response.Messages)-1]
-			return responseMsg{content: lastMsg.Content}
-		}
-
-		return responseMsg{content: "No response from agent"}
+		return responseMsg{content: response.Content}
 	}
 }
 

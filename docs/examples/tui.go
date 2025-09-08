@@ -1,13 +1,11 @@
-// Package main demonstrates how to use the ArchesAI TUI with SwarmGo agents
+// Package main demonstrates how to use the ArchesAI TUI with chat interfaces
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/archesai/archesai/internal/llm"
-	"github.com/archesai/archesai/internal/swarm"
 	"github.com/archesai/archesai/internal/tui"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -16,11 +14,11 @@ func main() {
 	// Example 1: Basic TUI with OpenAI
 	RunOpenAIExample()
 
-	// Example 2: TUI with Claude
-	// runClaudeExample()
+	// Example 2: TUI with Ollama (local)
+	// runOllamaExample()
 
-	// Example 3: TUI with custom agents
-	// runCustomAgentsExample()
+	// Example 3: TUI with custom personas
+	// runCustomPersonasExample()
 }
 
 // runOpenAIExample shows how to run the TUI with OpenAI
@@ -30,20 +28,28 @@ func RunOpenAIExample() {
 		log.Fatal("Please set OPENAI_API_KEY environment variable")
 	}
 
-	// Initialize Swarm with OpenAI
-	swarmClient := swarm.NewSwarm(apiKey, llm.OpenAI)
+	// Initialize OpenAI LLM client
+	llmClient := llm.NewOpenAILLM(apiKey)
+	chatClient := llm.NewChatClient(llmClient)
 
-	// Create agents
-	agents := []*swarm.Agent{
-		swarm.NewAgent("Assistant", "gpt-4", llm.OpenAI).
-			WithInstructions("You are a helpful AI assistant."),
-
-		swarm.NewAgent("Coder", "gpt-4", llm.OpenAI).
-			WithInstructions("You are a coding expert. Help with programming questions."),
+	// Create personas using the default ones
+	personas := []*llm.ChatPersona{
+		{
+			Name:         llm.DefaultPersonas.Assistant.Name,
+			SystemPrompt: llm.DefaultPersonas.Assistant.SystemPrompt,
+			Model:        "gpt-4",
+			Temperature:  llm.DefaultPersonas.Assistant.Temperature,
+		},
+		{
+			Name:         llm.DefaultPersonas.CodeHelper.Name,
+			SystemPrompt: llm.DefaultPersonas.CodeHelper.SystemPrompt,
+			Model:        "gpt-4",
+			Temperature:  llm.DefaultPersonas.CodeHelper.Temperature,
+		},
 	}
 
 	// Create and run TUI
-	model := tui.New(swarmClient, agents)
+	model := tui.New(chatClient, personas)
 	program := tea.NewProgram(model, tea.WithAltScreen())
 
 	if _, err := program.Run(); err != nil {
@@ -51,24 +57,33 @@ func RunOpenAIExample() {
 	}
 }
 
-// runClaudeExample shows how to run the TUI with Claude
-func RunClaudeExample() {
-	apiKey := os.Getenv("ANTHROPIC_API_KEY")
-	if apiKey == "" {
-		log.Fatal("Please set ANTHROPIC_API_KEY environment variable")
+// runOllamaExample shows how to run the TUI with local Ollama
+func RunOllamaExample() {
+	// Initialize Ollama LLM client (no API key needed)
+	llmClient, err := llm.NewOllamaLLM()
+	if err != nil {
+		log.Fatalf("Failed to create Ollama client: %v", err)
 	}
+	chatClient := llm.NewChatClient(llmClient)
 
-	// Initialize Swarm with Claude
-	swarmClient := swarm.NewSwarm(apiKey, llm.Claude)
-
-	// Create agents
-	agents := []*swarm.Agent{
-		swarm.NewAgent("Claude", "claude-3-opus-20240229", llm.Claude).
-			WithInstructions("You are Claude, an AI assistant created by Anthropic."),
+	// Create personas for Ollama
+	personas := []*llm.ChatPersona{
+		{
+			Name:         "Local Assistant",
+			SystemPrompt: "You are a helpful AI assistant running locally.",
+			Model:        "llama2",
+			Temperature:  0.7,
+		},
+		{
+			Name:         "Local Coder",
+			SystemPrompt: "You are a coding expert running locally. Help with programming questions.",
+			Model:        "llama2",
+			Temperature:  0.3,
+		},
 	}
 
 	// Create and run TUI
-	model := tui.New(swarmClient, agents)
+	model := tui.New(chatClient, personas)
 	program := tea.NewProgram(model, tea.WithAltScreen())
 
 	if _, err := program.Run(); err != nil {
@@ -76,75 +91,47 @@ func RunClaudeExample() {
 	}
 }
 
-// runCustomAgentsExample shows how to create custom agents with functions
-func RunCustomAgentsExample() {
+// runCustomPersonasExample shows how to create custom personas
+func RunCustomPersonasExample() {
 	apiKey := os.Getenv("OPENAI_API_KEY")
 	if apiKey == "" {
 		log.Fatal("Please set OPENAI_API_KEY environment variable")
 	}
 
-	// Initialize Swarm
-	swarmClient := swarm.NewSwarm(apiKey, llm.OpenAI)
+	// Initialize OpenAI LLM client
+	llmClient := llm.NewOpenAILLM(apiKey)
+	chatClient := llm.NewChatClient(llmClient)
 
-	// Create a weather agent with a function
-	weatherAgent := swarm.NewAgent("WeatherBot", "gpt-4", llm.OpenAI).
-		WithInstructions("You are a weather assistant. Use the get_weather function to provide weather information.").
-		WithFunctions([]swarm.AgentFunction{
-			{
-				Name:        "get_weather",
-				Description: "Get the weather for a location",
-				Parameters: map[string]interface{}{
-					"type": "object",
-					"properties": map[string]interface{}{
-						"location": map[string]interface{}{
-							"type":        "string",
-							"description": "The city and state, e.g., San Francisco, CA",
-						},
-					},
-					"required": []string{"location"},
-				},
-				Function: func(args map[string]interface{}, _ map[string]interface{}) swarm.Result {
-					location := args["location"].(string)
-					// Mock weather data
-					weather := fmt.Sprintf("The weather in %s is sunny and 72°F", location)
-					return swarm.Result{
-						Data: weather,
-					}
-				},
-			},
-		})
-
-	// Create a calculator agent
-	calcAgent := swarm.NewAgent("Calculator", "gpt-4", llm.OpenAI).
-		WithInstructions("You are a calculator assistant. Help with math problems.").
-		WithFunctions([]swarm.AgentFunction{
-			{
-				Name:        "calculate",
-				Description: "Perform a calculation",
-				Parameters: map[string]interface{}{
-					"type": "object",
-					"properties": map[string]interface{}{
-						"expression": map[string]interface{}{
-							"type":        "string",
-							"description": "The mathematical expression to evaluate",
-						},
-					},
-					"required": []string{"expression"},
-				},
-				Function: func(args map[string]interface{}, _ map[string]interface{}) swarm.Result {
-					expr := args["expression"].(string)
-					// In a real implementation, you'd evaluate the expression
-					return swarm.Result{
-						Data: fmt.Sprintf("Result of %s = 42", expr),
-					}
-				},
-			},
-		})
-
-	agents := []*swarm.Agent{weatherAgent, calcAgent}
+	// Create custom personas
+	personas := []*llm.ChatPersona{
+		{
+			Name: "Shakespeare",
+			SystemPrompt: `You are William Shakespeare, the famous English playwright and poet. 
+			Respond in the style of Shakespearean English, with flowery language and poetic flair. 
+			Use 'thee', 'thou', 'thy' and other archaic terms appropriately.`,
+			Model:       "gpt-4",
+			Temperature: 0.9, // Higher temperature for more creative responses
+		},
+		{
+			Name: "Pirate Captain",
+			SystemPrompt: `You are a swashbuckling pirate captain from the golden age of piracy. 
+			Speak like a stereotypical pirate with 'arr', 'matey', 'ye' and nautical terminology. 
+			Tell tales of treasure hunts and adventures on the high seas.`,
+			Model:       "gpt-4",
+			Temperature: 0.8,
+		},
+		{
+			Name: "Zen Master",
+			SystemPrompt: `You are a wise Zen master who speaks in philosophical riddles and koans. 
+			Give thoughtful, meditative responses that encourage deep reflection. 
+			Use nature metaphors and speak about the path to enlightenment.`,
+			Model:       "gpt-4",
+			Temperature: 0.6,
+		},
+	}
 
 	// Create and run TUI
-	model := tui.New(swarmClient, agents)
+	model := tui.New(chatClient, personas)
 	program := tea.NewProgram(model, tea.WithAltScreen())
 
 	if _, err := program.Run(); err != nil {

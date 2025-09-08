@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/archesai/archesai/internal/llm"
-	"github.com/archesai/archesai/internal/swarm"
 	"github.com/archesai/archesai/internal/tui"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
@@ -98,17 +97,34 @@ func runTUI(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("unsupported provider: %s", tuiProvider)
 	}
 
-	// Initialize Swarm client
-	swarmClient := swarm.NewSwarm(tuiAPIKey, provider)
-	if swarmClient == nil {
-		return fmt.Errorf("failed to initialize Swarm client")
+	// Initialize LLM client
+	var llmClient llm.LLM
+	switch provider {
+	case llm.OpenAI:
+		llmClient = llm.NewOpenAILLM(tuiAPIKey)
+	case llm.Ollama:
+		var err error
+		llmClient, err = llm.NewOllamaLLM()
+		if err != nil {
+			return fmt.Errorf("failed to create Ollama client: %w", err)
+		}
+	default:
+		return fmt.Errorf("provider %s not yet implemented in new chat interface", tuiProvider)
 	}
 
-	// Create sample agents
-	agents := createSampleAgents(provider)
+	if llmClient == nil {
+		return fmt.Errorf("failed to initialize LLM client")
+	}
+
+	// Create chat client
+	chatClient := llm.NewChatClient(llmClient)
+
+	// Create sample personas with the specified model
+	modelName := getModelForProvider(provider)
+	personas := createSamplePersonas(modelName)
 
 	// Create and run the TUI
-	model := tui.New(swarmClient, agents)
+	model := tui.New(chatClient, personas)
 	program := tea.NewProgram(model, tea.WithAltScreen())
 
 	if _, err := program.Run(); err != nil {
@@ -118,36 +134,42 @@ func runTUI(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-func createSampleAgents(provider llm.Provider) []*swarm.Agent {
-	agents := []*swarm.Agent{
-		// General Assistant
-		swarm.NewAgent("Assistant", "gpt-4", provider).
-			WithInstructions("You are a helpful AI assistant. Be concise and informative."),
-
-		// Code Helper
-		swarm.NewAgent("CodeHelper", "gpt-4", provider).
-			WithInstructions("You are a coding assistant. Help with programming questions, debugging, and best practices."),
-
-		// Creative Writer
-		swarm.NewAgent("CreativeWriter", "gpt-4", provider).
-			WithInstructions("You are a creative writing assistant. Help with stories, poems, and creative content."),
-
-		// Data Analyst
-		swarm.NewAgent("DataAnalyst", "gpt-4", provider).
-			WithInstructions("You are a data analysis expert. Help with data interpretation, statistics, and insights."),
-
-		// Research Assistant
-		swarm.NewAgent("Researcher", "gpt-4", provider).
-			WithInstructions("You are a research assistant. Help find information, summarize topics, and provide citations when possible."),
+func createSamplePersonas(model string) []*llm.ChatPersona {
+	// Use the default personas but update the model
+	personas := []*llm.ChatPersona{
+		{
+			Name:         llm.DefaultPersonas.Assistant.Name,
+			SystemPrompt: llm.DefaultPersonas.Assistant.SystemPrompt,
+			Model:        model,
+			Temperature:  llm.DefaultPersonas.Assistant.Temperature,
+		},
+		{
+			Name:         llm.DefaultPersonas.CodeHelper.Name,
+			SystemPrompt: llm.DefaultPersonas.CodeHelper.SystemPrompt,
+			Model:        model,
+			Temperature:  llm.DefaultPersonas.CodeHelper.Temperature,
+		},
+		{
+			Name:         llm.DefaultPersonas.CreativeWriter.Name,
+			SystemPrompt: llm.DefaultPersonas.CreativeWriter.SystemPrompt,
+			Model:        model,
+			Temperature:  llm.DefaultPersonas.CreativeWriter.Temperature,
+		},
+		{
+			Name:         llm.DefaultPersonas.DataAnalyst.Name,
+			SystemPrompt: llm.DefaultPersonas.DataAnalyst.SystemPrompt,
+			Model:        model,
+			Temperature:  llm.DefaultPersonas.DataAnalyst.Temperature,
+		},
+		{
+			Name:         llm.DefaultPersonas.Researcher.Name,
+			SystemPrompt: llm.DefaultPersonas.Researcher.SystemPrompt,
+			Model:        model,
+			Temperature:  llm.DefaultPersonas.Researcher.Temperature,
+		},
 	}
 
-	// Adjust model based on provider
-	modelName := getModelForProvider(provider)
-	for _, agent := range agents {
-		agent.Model = modelName
-	}
-
-	return agents
+	return personas
 }
 
 func getModelForProvider(provider llm.Provider) string {
