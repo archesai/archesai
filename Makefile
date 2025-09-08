@@ -10,7 +10,7 @@
 MAKEFLAGS += -j4 --no-print-directory
 SERVER_OUTPUT := bin/archesai
 
-# Database Configuration.
+# Database Configuration
 MIGRATION_PATH := internal/migrations/postgresql
 DATABASE_URL ?= postgresql://admin:password@localhost:5432/archesai
 
@@ -22,7 +22,7 @@ RED := \033[0;31m
 NC := \033[0m # No Color
 
 # ------------------------------------------
-# Primary Targets
+# Primary Commands
 # ------------------------------------------
 
 .PHONY: all
@@ -36,31 +36,21 @@ help: ## Show this help message
 	@echo 'Available targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  $(GREEN)%-25s$(NC) %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
-# ------------------------------------------
-# Development
-# ------------------------------------------
-
 .PHONY: dev
 dev: ## Run all services in development mode
 	@echo -e "$(YELLOW)▶ Running in development mode...$(NC)"
 	@go run cmd/archesai/main.go all
 
-.PHONY: watch
-watch: ## Run with hot reload (requires air)
-	@echo -e "$(YELLOW)▶ Running with hot reload...$(NC)"
-	@go tool air
-
-.PHONY: tui
-tui: build ## Launch the TUI interface
-	@echo -e "$(YELLOW)▶ Launching TUI...$(NC)"
-	@./bin/archesai tui
+# ------------------------------------------
+# Build Commands
+# ------------------------------------------
 
 .PHONY: build
-build: build-archesai build-web ## Build all binaries
+build: build-server build-web ## Build all binaries
 	@echo -e "$(GREEN)✓ All builds complete!$(NC)"
 
-.PHONY: build-archesai
-build-archesai: ## Build archesai server binary
+.PHONY: build-server
+build-server: ## Build archesai server binary
 	@echo -e "$(YELLOW)▶ Building archesai server...$(NC)"
 	@go build -o $(SERVER_OUTPUT) cmd/archesai/main.go
 	@echo -e "$(GREEN)✓ archesai built: $(SERVER_OUTPUT)$(NC)"
@@ -71,11 +61,22 @@ build-web: ## Build web assets
 	@pnpm build
 	@echo -e "$(GREEN)✓ Web assets built!$(NC)"
 
-.PHONY: run
-run: run-api ## Alias for run-api
+.PHONY: build-docs
+build-docs: ## Build documentation static site with Docker
+	@echo -e "$(YELLOW)▶ Building documentation...$(NC)"
+	@cd docs && docker build -t archesai-docs .
+	@cd docs && docker run --rm -v "$(PWD):/docs" -u $(shell id -u):$(shell id -g) archesai-docs mkdocs build
+	@echo -e "$(GREEN)✓ Documentation built in docs/site/$(NC)"
 
-.PHONY: run-api
-run-api: ## Run the API server
+# ------------------------------------------
+# Run Commands
+# ------------------------------------------
+
+.PHONY: run
+run: run-server ## Alias for run-server
+
+.PHONY: run-server
+run-server: ## Run the API server
 	@echo -e "$(YELLOW)▶ Starting API server...$(NC)"
 	@go run cmd/archesai/main.go api
 
@@ -89,8 +90,25 @@ run-worker: ## Run the background worker
 	@echo -e "$(YELLOW)▶ Starting worker...$(NC)"
 	@go run cmd/archesai/main.go worker
 
+.PHONY: run-watch
+run-watch: ## Run with hot reload (requires air)
+	@echo -e "$(YELLOW)▶ Running with hot reload...$(NC)"
+	@go tool air
+
+.PHONY: run-tui
+run-tui: build ## Launch the TUI interface
+	@echo -e "$(YELLOW)▶ Launching TUI...$(NC)"
+	@./bin/archesai tui
+
+.PHONY: run-docs
+run-docs: ## Serve documentation locally with Docker
+	@echo -e "$(YELLOW)▶ Starting documentation server...$(NC)"
+	@cd docs && docker build -t archesai-docs .
+	@echo -e "$(GREEN)✓ Documentation server running at http://localhost:8000$(NC)"
+	@cd docs && docker run --rm -it -p 8000:8000 -v "$(PWD):/docs" -u $(shell id -u):$(shell id -g) archesai-docs mkdocs serve --dev-addr=0.0.0.0:8000
+
 # ------------------------------------------
-# Code Generation
+# Generate Commands
 # ------------------------------------------
 
 .PHONY: generate
@@ -98,19 +116,19 @@ generate: generate-sqlc generate-oapi generate-codegen generate-mocks ## Generat
 	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
 .PHONY: generate-sqlc
-generate-sqlc: convert-schema ## Generate database code with sqlc
+generate-sqlc: generate-schema-sqlite ## Generate database code with sqlc
 	@echo -e "$(YELLOW)▶ Generating sqlc code...$(NC)"
 	@cd internal/database && go generate
 	@echo -e "$(GREEN)✓ sqlc generation complete!$(NC)"
 
-.PHONY: convert-schema
-convert-schema: ## Convert PostgreSQL schema to SQLite
+.PHONY: generate-schema-sqlite
+generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 	@echo -e "$(YELLOW)▶ Converting PostgreSQL schema to SQLite...$(NC)"
 	@go run tools/pg-to-sqlite/main.go
 	@echo -e "$(GREEN)✓ Schema conversion complete!$(NC)"
 
 .PHONY: generate-oapi
-generate-oapi: openapi-bundle ## Generate OpenAPI server code
+generate-oapi: api-bundle ## Generate OpenAPI server code
 	@echo -e "$(YELLOW)▶ Generating OpenAPI server code...$(NC)"
 	@echo "  Generating domain types..."
 	@for domain in auth organizations workflows content health config; do \
@@ -120,8 +138,6 @@ generate-oapi: openapi-bundle ## Generate OpenAPI server code
 	done
 	@echo "  HTTP handlers generation is now part of domain types generation"
 	@echo -e "$(GREEN)✓ OpenAPI generation complete!$(NC)"
-
-# Simplified, unified code generation targets
 
 .PHONY: generate-codegen-types
 generate-codegen-types: ## Generate types for codegen configuration
@@ -142,47 +158,8 @@ generate-mocks: ## Generate test mocks using mockery
 	@mockery
 	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"
 
-
 # ------------------------------------------
-# Database
-# ------------------------------------------
-
-.PHONY: migrate
-migrate: migrate-up ## Alias for migrate-up
-
-.PHONY: migrate-up
-migrate-up: ## Apply database migrations
-	@echo -e "$(YELLOW)▶ Applying migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" up
-	@echo -e "$(GREEN)✓ Migrations applied!$(NC)"
-
-.PHONY: migrate-down
-migrate-down: ## Rollback database migrations
-	@echo -e "$(YELLOW)▶ Rolling back migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" down
-	@echo -e "$(GREEN)✓ Migrations rolled back!$(NC)"
-
-.PHONY: migrate-create
-migrate-create: ## Create new migration (usage: make migrate-create name=add_users)
-	@echo -e "$(YELLOW)▶ Creating migration: $(name)...$(NC)"
-	@which goose > /dev/null || (echo "Please install goose: go install github.com/pressly/goose/v3/cmd/goose@latest" && exit 1)
-	@cd $(MIGRATION_PATH) && goose create $(name) sql
-	@echo -e "$(GREEN)✓ Migration created!$(NC)"
-
-.PHONY: migrate-status
-migrate-status: ## Show migration status
-	@echo -e "$(YELLOW)▶ Checking migration status...$(NC)"
-	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" status
-	@echo -e "$(GREEN)✓ Migration status checked!$(NC)"
-
-.PHONY: migrate-reset
-migrate-reset: ## Reset database to initial state
-	@echo -e "$(YELLOW)▶ Resetting database...$(NC)"
-	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" reset
-	@echo -e "$(GREEN)✓ Database reset complete!$(NC)"
-
-# ------------------------------------------
-# Testing
+# Test Commands
 # ------------------------------------------
 
 .PHONY: test
@@ -217,24 +194,11 @@ test-coverage-html: test-coverage ## Generate HTML coverage report
 	@echo -e "$(GREEN)✓ Coverage report: coverage.html$(NC)"
 	@echo -e "$(BLUE)Open coverage.html in your browser to view the report$(NC)"
 
-.PHONY: test-domain
-test-domain: ## Test specific domain (usage: make test-domain DOMAIN=auth)
-	@echo -e "$(YELLOW)▶ Testing $(DOMAIN) domain...$(NC)"
-	@go test -v -race -cover ./internal/$(DOMAIN)/...
-	@echo -e "$(GREEN)✓ $(DOMAIN) tests complete!$(NC)"
-
 .PHONY: test-bench
 test-bench: ## Run benchmark tests
 	@echo -e "$(YELLOW)▶ Running benchmark tests...$(NC)"
 	@go test -bench=. -benchmem ./...
 	@echo -e "$(GREEN)✓ Benchmark tests complete!$(NC)"
-
-.PHONY: test-clean
-test-clean: ## Clean test cache and coverage files
-	@echo -e "$(YELLOW)▶ Cleaning test cache...$(NC)"
-	@go clean -testcache
-	@rm -f coverage.out coverage.html
-	@echo -e "$(GREEN)✓ Test cache cleaned!$(NC)"
 
 .PHONY: test-watch
 test-watch: ## Run tests in watch mode (requires fswatch)
@@ -243,11 +207,11 @@ test-watch: ## Run tests in watch mode (requires fswatch)
 	@fswatch -o . -e ".*" -i "\\.go$$" | xargs -n1 -I{} sh -c 'clear && make test'
 
 # ------------------------------------------
-# Code Quality
+# Lint Commands
 # ------------------------------------------
 
 .PHONY: lint
-lint: lint-go lint-openapi lint-node ## Run all linters
+lint: lint-go lint-openapi lint-node lint-docs ## Run all linters
 	@echo -e "$(GREEN)✓ All linting complete!$(NC)"
 
 .PHONY: lint-go
@@ -258,7 +222,7 @@ lint-go: ## Run Go linter
 	@echo -e "$(GREEN)✓ Go linting complete!$(NC)"
 
 .PHONY: lint-node
-lint-node: typecheck-node ## Run Node.js linter (includes typecheck)
+lint-node: lint-typecheck ## Run Node.js linter (includes typecheck)
 	@echo -e "$(YELLOW)▶ Running Node.js linter...$(NC)"
 	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
 	@pnpm lint
@@ -270,12 +234,22 @@ lint-openapi: ## Lint OpenAPI specification
 	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml lint api/openapi.yaml
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
-.PHONY: typecheck-node
-typecheck-node: ## Run TypeScript type checking
+.PHONY: lint-typecheck
+lint-typecheck: ## Run TypeScript type checking
 	@echo -e "$(YELLOW)▶ Type checking TypeScript...$(NC)"
 	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
 	@pnpm typecheck
 	@echo -e "$(GREEN)✓ TypeScript type checking complete!$(NC)"
+
+.PHONY: lint-docs
+lint-docs: ## Lint documentation with markdownlint
+	@echo -e "$(YELLOW)▶ Linting documentation...$(NC)"
+	@pnpm dlx markdownlint-cli --fix 'docs/**/*.md' --config .markdownlint.json
+	@echo -e "$(GREEN)✓ Documentation linting complete!$(NC)"
+
+# ------------------------------------------
+# Format Commands
+# ------------------------------------------
 
 .PHONY: format
 format: format-go format-node ## Format all code
@@ -295,53 +269,97 @@ format-node: ## Format Node.js/TypeScript code
 	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------
-# Documentation
+# Clean Commands
 # ------------------------------------------
 
-.PHONY: docs-lint
-docs-lint: ## Lint documentation with markdownlint
-	@echo -e "$(YELLOW)▶ Linting documentation...$(NC)"
-	@pnpm dlx markdownlint-cli --fix 'docs/**/*.md' --config .markdownlint.json
-	@echo -e "$(GREEN)✓ Documentation linting complete!$(NC)"
+.PHONY: clean
+clean: ## Clean build artifacts
+	@echo -e "$(YELLOW)▶ Cleaning build artifacts...$(NC)"
+	@rm -rf bin/
+	@rm -f coverage.out coverage.html
+	@echo -e "$(GREEN)✓ Clean complete!$(NC)"
 
-.PHONY: docs-build
-docs-build: ## Build documentation static site with Docker
-	@echo -e "$(YELLOW)▶ Building documentation...$(NC)"
-	@cd docs && docker build -t archesai-docs .
-	@cd docs && docker run --rm -v "$(PWD):/docs" -u $(shell id -u):$(shell id -g) archesai-docs mkdocs build
-	@echo -e "$(GREEN)✓ Documentation built in docs/site/$(NC)"
+.PHONY: clean-generated
+clean-generated: ## Clean all generated code
+	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
+	@find . -type f -name "*.gen.go" -exec rm -f {} +
+	@echo -e "$(GREEN)✓ Generated code cleaned!$(NC)"
 
-.PHONY: docs-run
-docs-run: ## Serve documentation locally with Docker
-	@echo -e "$(YELLOW)▶ Starting documentation server...$(NC)"
-	@cd docs && docker build -t archesai-docs .
-	@echo -e "$(GREEN)✓ Documentation server running at http://localhost:8000$(NC)"
-	@cd docs && docker run --rm -it -p 8000:8000 -v "$(PWD):/docs" -u $(shell id -u):$(shell id -g) archesai-docs mkdocs serve --dev-addr=0.0.0.0:8000
+.PHONY: clean-test
+clean-test: ## Clean test cache and coverage files
+	@echo -e "$(YELLOW)▶ Cleaning test cache...$(NC)"
+	@go clean -testcache
+	@rm -f coverage.out coverage.html
+	@echo -e "$(GREEN)✓ Test cache cleaned!$(NC)"
+
+.PHONY: clean-docs
+clean-docs: ## Clean documentation build
+	@echo -e "$(YELLOW)▶ Cleaning documentation build...$(NC)"
+	@rm -rf docs/site/
+	@echo -e "$(GREEN)✓ Documentation build cleaned!$(NC)"
 
 # ------------------------------------------
-# OpenAPI Tools
+# Database Commands
 # ------------------------------------------
 
-.PHONY: openapi-bundle
-openapi-bundle: lint-openapi ## Bundle OpenAPI into single file
+.PHONY: db-migrate
+db-migrate: db-migrate-up ## Alias for db-migrate-up
+
+.PHONY: db-migrate-up
+db-migrate-up: ## Apply database migrations
+	@echo -e "$(YELLOW)▶ Applying migrations...$(NC)"
+	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" up
+	@echo -e "$(GREEN)✓ Migrations applied!$(NC)"
+
+.PHONY: db-migrate-down
+db-migrate-down: ## Rollback database migrations
+	@echo -e "$(YELLOW)▶ Rolling back migrations...$(NC)"
+	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" down
+	@echo -e "$(GREEN)✓ Migrations rolled back!$(NC)"
+
+.PHONY: db-migrate-create
+db-migrate-create: ## Create new migration (usage: make db-migrate-create name=add_users)
+	@echo -e "$(YELLOW)▶ Creating migration: $(name)...$(NC)"
+	@which goose > /dev/null || (echo "Please install goose: go install github.com/pressly/goose/v3/cmd/goose@latest" && exit 1)
+	@cd $(MIGRATION_PATH) && goose create $(name) sql
+	@echo -e "$(GREEN)✓ Migration created!$(NC)"
+
+.PHONY: db-migrate-status
+db-migrate-status: ## Show migration status
+	@echo -e "$(YELLOW)▶ Checking migration status...$(NC)"
+	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" status
+	@echo -e "$(GREEN)✓ Migration status checked!$(NC)"
+
+.PHONY: db-migrate-reset
+db-migrate-reset: ## Reset database to initial state
+	@echo -e "$(YELLOW)▶ Resetting database...$(NC)"
+	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" reset
+	@echo -e "$(GREEN)✓ Database reset complete!$(NC)"
+
+# ------------------------------------------
+# API/OpenAPI Commands
+# ------------------------------------------
+
+.PHONY: api-bundle
+api-bundle: lint-openapi ## Bundle OpenAPI into single file
 	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
 	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml
 	@pnpm prettier --write api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
 
-.PHONY: openapi-split
-openapi-split: lint-openapi ## Split OpenAPI into multiple files
+.PHONY: api-split
+api-split: lint-openapi ## Split OpenAPI into multiple files
 	@echo -e "$(YELLOW)▶ Splitting OpenAPI spec...$(NC)"
 	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml split api/openapi.bundled.yaml --outDir api/split
 	@echo -e "$(GREEN)✓ OpenAPI split: api/split/$(NC)"
 
-.PHONY: openapi-stats
-openapi-stats: ## Show OpenAPI specification statistics
+.PHONY: api-stats
+api-stats: ## Show OpenAPI specification statistics
 	@echo -e "$(YELLOW)▶ Analyzing OpenAPI spec...$(NC)"
 	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml stats api/openapi.yaml
 
 # ------------------------------------------
-# Dependencies
+# Dependency Commands
 # ------------------------------------------
 
 .PHONY: deps
@@ -381,21 +399,8 @@ deps-update-node: ## Update Node.js dependencies
 	@echo -e "$(GREEN)✓ Node.js dependencies updated!$(NC)"
 
 # ------------------------------------------
-# Utilities
+# Install Commands
 # ------------------------------------------
-
-.PHONY: clean
-clean: ## Clean build artifacts
-	@echo -e "$(YELLOW)▶ Cleaning build artifacts...$(NC)"
-	@rm -rf bin/
-	@rm -f coverage.out coverage.html
-	@echo -e "$(GREEN)✓ Clean complete!$(NC)"
-
-.PHONY: clean-generated
-clean-generated: ## Clean all generated code
-	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
-	@find . -type f -name "*.gen.go" -exec rm -f {} +
-	@echo -e "$(GREEN)✓ Generated code cleaned!$(NC)"
 
 .PHONY: install-tools
 install-tools: ## Install development tools
@@ -420,7 +425,7 @@ install-completions: ## Install shell completions guide
 	@echo -e "$(YELLOW)Add these to your shell profile to persist$(NC)"
 
 # ------------------------------------------
-# Infrastructure (Optional)
+# Docker Commands
 # ------------------------------------------
 
 .PHONY: docker-run
@@ -432,6 +437,10 @@ docker-run: ## Build and run with Docker Compose
 docker-stop: ## Stop Docker Compose services
 	@echo -e "$(YELLOW)▶ Stopping Docker Compose...$(NC)"
 	@docker-compose down
+
+# ------------------------------------------
+# Kubernetes Commands
+# ------------------------------------------
 
 .PHONY: k8s-cluster-start
 k8s-cluster-start: ## Start k3d cluster
@@ -448,6 +457,10 @@ k8s-deploy: ## Deploy with Helm
 .PHONY: k8s-upgrade
 k8s-upgrade: ## Upgrade Helm deployment
 	@helm upgrade dev deployments/helm/arches -f deployments/helm/dev-overrides.yaml
+
+# ------------------------------------------
+# Skaffold Commands
+# ------------------------------------------
 
 .PHONY: skaffold-dev
 skaffold-dev: ## Run with Skaffold in dev mode

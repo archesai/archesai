@@ -544,7 +544,7 @@ func RequireRole(roles ...string) echo.MiddlewareFunc {
 
 ### Metrics Collection
 
-- **Application Metrics** (Prometheus)
+<!-- - **Application Metrics** (Prometheus)
   - Request latency
   - Error rates
   - Business metrics
@@ -552,7 +552,7 @@ func RequireRole(roles ...string) echo.MiddlewareFunc {
 - **Infrastructure Metrics** (Grafana)
   - CPU/Memory usage
   - Database connections
-  - Cache hit rates
+  - Cache hit rates -->
 
 ### Logging Strategy
 

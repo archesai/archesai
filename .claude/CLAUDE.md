@@ -34,8 +34,8 @@ go test ./internal/auth/...  # Test specific domain
 ## Database
 
 ```bash
-make migrate-up        # Apply migrations
-make migrate-create name=feature  # New migration
+make db-migrate-up        # Apply migrations
+make db-migrate-create name=feature  # New migration
 ```
 
 ## Quick Fixes
@@ -46,10 +46,10 @@ make migrate-create name=feature  # New migration
 
 ## Docs - MAKE SURE TO ALWAYS UPDATE THESE FILES AFTER MAKING A CHANGE
 
-@../docs/TESTING.md
-@../docs/ARCHITECTURE.md
-@../docs/PROJECT_LAYOUT.md
-@../docs/MAKEFILE_COMMANDS.md
+@../docs/architecture/project-layout.md
+@../docs/architecture/overview.md
+@../docs/guides/makefile-commands.md
+@../docs/guides/testing.md
 @../README.md
 
 ## Task Master AI Instructions

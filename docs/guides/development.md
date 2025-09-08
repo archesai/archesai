@@ -35,7 +35,7 @@ development environment and contribute to the project.
 4. **Set up the database**:
 
    ```bash
-   make migrate-up
+   make db-migrate-up
    ```
 
 5. **Start development servers**:
