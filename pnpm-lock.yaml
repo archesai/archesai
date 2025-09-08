@@ -99,8 +99,8 @@ catalogs:
       specifier: 1.131.35
       version: 1.131.35
     '@tanstack/react-router-ssr-query':
-      specifier: 1.131.35
-      version: 1.131.35
+      specifier: 1.131.36
+      version: 1.131.36
     '@tanstack/react-start':
       specifier: 1.131.35
       version: 1.131.35
@@ -304,7 +304,7 @@ importers:
         version: 1.131.35(@tanstack/react-router@1.131.35(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@tanstack/router-core@1.131.35)(csstype@3.1.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(solid-js@1.9.9)(tiny-invariant@1.3.3)
       '@tanstack/react-router-ssr-query':
         specifier: catalog:tanstack
-        version: 1.131.35(@tanstack/query-core@5.87.0)(@tanstack/react-query@5.87.0(react@19.1.1))(@tanstack/react-router@1.131.35(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@tanstack/router-core@1.131.35)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 1.131.36(@tanstack/query-core@5.87.0)(@tanstack/react-query@5.87.0(react@19.1.1))(@tanstack/react-router@1.131.35(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@tanstack/router-core@1.131.35)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@tanstack/react-start':
         specifier: catalog:tanstack
         version: 1.131.35(@tanstack/react-router@1.131.35(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@vitejs/plugin-react@5.0.2(vite@7.1.4(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)))(aws4fetch@1.0.20)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(vite@7.1.4(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))
@@ -3180,8 +3180,8 @@ packages:
       react: '>=18.0.0 || >=19.0.0'
       react-dom: '>=18.0.0 || >=19.0.0'
 
-  '@tanstack/react-router-ssr-query@1.131.35':
-    resolution: {integrity: sha512-Nxq0cAs43EOOfEHmMuiHs4EEqOVa85y/ZjyFwMiuwFU6gNKp5UTOmDUbabeNiqPZsaA9A16dDVVMmJyo1fBoxQ==}
+  '@tanstack/react-router-ssr-query@1.131.36':
+    resolution: {integrity: sha512-sG9lMI4sD5oduNPI4ThY+3I121IniPTzcyAwcEhavAq9ZbzD2euec5AF2grsuKFRKfv81Ihg+9ZE63wgmniczQ==}
     engines: {node: '>=12'}
     peerDependencies:
       '@tanstack/query-core': '>=5.66.0'
@@ -3281,8 +3281,8 @@ packages:
       webpack:
         optional: true
 
-  '@tanstack/router-ssr-query-core@1.131.35':
-    resolution: {integrity: sha512-VsDkiFiMQ1v2xA1m1Warj4rY+mJz31hJCVpvAvAhYqNOfKS8xxvyVKjb2lmh9X9Ep4r+aP/fPoWTc+uWkdRLPQ==}
+  '@tanstack/router-ssr-query-core@1.131.36':
+    resolution: {integrity: sha512-PJ48g7BQl85d5CJZuUS4rt3DS7WTSvGnlt+QaQhisti+vzkWatPXa/72STdyYoxgjjxaFlMd5CllyzKEX8vwCw==}
     engines: {node: '>=12'}
     peerDependencies:
       '@tanstack/query-core': '>=5.66.0'
@@ -11016,12 +11016,12 @@ snapshots:
       - solid-js
       - tiny-invariant
 
-  '@tanstack/react-router-ssr-query@1.131.35(@tanstack/query-core@5.87.0)(@tanstack/react-query@5.87.0(react@19.1.1))(@tanstack/react-router@1.131.35(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@tanstack/router-core@1.131.35)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@tanstack/react-router-ssr-query@1.131.36(@tanstack/query-core@5.87.0)(@tanstack/react-query@5.87.0(react@19.1.1))(@tanstack/react-router@1.131.35(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@tanstack/router-core@1.131.35)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@tanstack/query-core': 5.87.0
       '@tanstack/react-query': 5.87.0(react@19.1.1)
       '@tanstack/react-router': 1.131.35(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@tanstack/router-ssr-query-core': 1.131.35(@tanstack/query-core@5.87.0)(@tanstack/router-core@1.131.35)
+      '@tanstack/router-ssr-query-core': 1.131.36(@tanstack/query-core@5.87.0)(@tanstack/router-core@1.131.35)
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
     transitivePeerDependencies:
@@ -11213,7 +11213,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-ssr-query-core@1.131.35(@tanstack/query-core@5.87.0)(@tanstack/router-core@1.131.35)':
+  '@tanstack/router-ssr-query-core@1.131.36(@tanstack/query-core@5.87.0)(@tanstack/router-core@1.131.35)':
     dependencies:
       '@tanstack/query-core': 5.87.0
       '@tanstack/router-core': 1.131.35
