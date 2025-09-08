@@ -49,17 +49,17 @@ var (
 
 // CanStart checks if the run can be started
 func (r *Run) CanStart() bool {
-	return r.Status == "pending"
+	return r.Status == QUEUED
 }
 
 // IsRunning checks if the run is currently running
 func (r *Run) IsRunning() bool {
-	return r.Status == "running"
+	return r.Status == PROCESSING
 }
 
 // CanCancel checks if the run can be cancelled
 func (r *Run) CanCancel() bool {
-	return r.Status == "running" || r.Status == "pending"
+	return r.Status == PROCESSING || r.Status == QUEUED
 }
 
 // UpdateProgress updates the run's progress

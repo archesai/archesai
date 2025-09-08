@@ -145,7 +145,7 @@ type Run struct {
 	Progress       float64
 	StartedAt      *time.Time
 	Status         string
-	ToolId         string
+	ToolId         *uuid.UUID
 }
 
 type RunToArtifact struct {

@@ -3,11 +3,11 @@ package auth
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -369,7 +369,7 @@ func createTestService(t *testing.T) (*Service, *MockRepository) {
 		SessionTokenExpiry: 30 * 24 * time.Hour,
 		BCryptCost:         4, // Lower cost for faster tests
 	}
-	logger := slog.Default()
+	logger := logger.NewTest()
 
 	service := NewService(mockRepo, config, logger)
 	return service, mockRepo
@@ -1572,7 +1572,7 @@ func BenchmarkHashPassword(b *testing.B) {
 		SessionTokenExpiry: 30 * 24 * time.Hour,
 		BCryptCost:         4,
 	}
-	logger := slog.Default()
+	logger := logger.NewTest()
 	service := NewService(mockRepo, config, logger)
 	password := testPassword
 
@@ -1593,7 +1593,7 @@ func BenchmarkVerifyPassword(b *testing.B) {
 		SessionTokenExpiry: 30 * 24 * time.Hour,
 		BCryptCost:         4,
 	}
-	logger := slog.Default()
+	logger := logger.NewTest()
 	service := NewService(mockRepo, config, logger)
 	password := testPassword
 	hash, _ := service.hashPassword(password)
@@ -1615,7 +1615,7 @@ func BenchmarkGenerateTokens(b *testing.B) {
 		SessionTokenExpiry: 30 * 24 * time.Hour,
 		BCryptCost:         4,
 	}
-	logger := slog.Default()
+	logger := logger.NewTest()
 	service := NewService(mockRepo, config, logger)
 	user := &User{
 		Id:    uuid.New(),
@@ -1640,7 +1640,7 @@ func BenchmarkValidateToken(b *testing.B) {
 		SessionTokenExpiry: 30 * 24 * time.Hour,
 		BCryptCost:         4,
 	}
-	logger := slog.Default()
+	logger := logger.NewTest()
 	service := NewService(mockRepo, config, logger)
 	user := &User{
 		Id:    uuid.New(),

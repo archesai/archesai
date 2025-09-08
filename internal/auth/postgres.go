@@ -57,10 +57,18 @@ func (r *PostgresRepository) GetUser(ctx context.Context, id uuid.UUID) (*User, 
 
 // CreateUser creates a new user in the database.
 func (r *PostgresRepository) CreateUser(ctx context.Context, entity *User) (*User, error) {
+	// Generate ID if not provided
+	if entity.Id == uuid.Nil {
+		entity.Id = uuid.New()
+	}
+
 	// Create user params with required fields
 	params := postgresql.CreateUserParams{
-		Email: string(entity.Email),
-		Name:  entity.Name,
+		Id:            entity.Id,
+		Email:         string(entity.Email),
+		Name:          entity.Name,
+		EmailVerified: entity.EmailVerified,
+		Image:         &entity.Image,
 	}
 
 	// Create the user
@@ -83,9 +91,18 @@ func (r *PostgresRepository) UpdateUser(ctx context.Context, id uuid.UUID, entit
 		name = &entity.Name
 	}
 
+	var email *string
+	if entity.Email != "" {
+		emailStr := string(entity.Email)
+		email = &emailStr
+	}
+
 	params := postgresql.UpdateUserParams{
-		Id:   id,
-		Name: name,
+		Id:            id,
+		Name:          name,
+		Email:         email,
+		EmailVerified: &entity.EmailVerified,
+		Image:         &entity.Image,
 	}
 
 	// Update the user
@@ -136,26 +153,53 @@ func (r *PostgresRepository) ListUsers(ctx context.Context, params ListUsersPara
 		users[i] = r.dbUserToEntity(&row)
 	}
 
-	// TODO: Get actual total count
-	return users, int64(len(users)), nil
+	// Get total count
+	total, err := r.q.CountUsers(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
 }
 
 // Session operations
 
 // CreateSession creates a new user session.
 func (r *PostgresRepository) CreateSession(ctx context.Context, entity *Session) (*Session, error) {
+	// Generate ID if not provided
+	if entity.Id == uuid.Nil {
+		entity.Id = uuid.New()
+	}
+
 	// Parse ExpiresAt string to time
 	expiresAt, _ := time.Parse(time.RFC3339, entity.ExpiresAt)
 
-	// TODO: Add token generation and storage
-	token := uuid.New().String()
+	// Use provided token or generate a new one
+	token := entity.Token
+	if token == "" {
+		token = uuid.New().String()
+	}
+
+	var activeOrgID *uuid.UUID
+	if entity.ActiveOrganizationId != uuid.Nil {
+		activeOrgID = &entity.ActiveOrganizationId
+	}
+
+	var ipAddress, userAgent *string
+	if entity.IpAddress != "" {
+		ipAddress = &entity.IpAddress
+	}
+	if entity.UserAgent != "" {
+		userAgent = &entity.UserAgent
+	}
 
 	params := postgresql.CreateSessionParams{
+		Id:                   entity.Id,
 		UserId:               entity.UserId,
 		Token:                token,
-		ActiveOrganizationId: &entity.ActiveOrganizationId,
-		IpAddress:            nil, // TODO: Get from context
-		UserAgent:            nil, // TODO: Get from context
+		ActiveOrganizationId: activeOrgID,
+		IpAddress:            ipAddress,
+		UserAgent:            userAgent,
 		ExpiresAt:            expiresAt,
 	}
 
@@ -168,14 +212,7 @@ func (r *PostgresRepository) CreateSession(ctx context.Context, entity *Session)
 
 // GetSessionByToken retrieves a session by its token.
 func (r *PostgresRepository) GetSessionByToken(ctx context.Context, token string) (*Session, error) {
-	// Parse token as UUID for now since we're using UUID as token
-	tokenUUID, err := uuid.Parse(token)
-	if err != nil {
-		return nil, fmt.Errorf("invalid token format: %w", err)
-	}
-	// For now, token is the session ID
-	// TODO: Implement proper token mechanism
-	row, err := r.q.GetSession(ctx, tokenUUID)
+	row, err := r.q.GetSessionByToken(ctx, token)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrSessionNotFound
@@ -243,9 +280,30 @@ func (r *PostgresRepository) DeleteExpiredSessions(_ context.Context) error {
 // Account operations
 
 // CreateAccount creates a new account for a user
-func (r *PostgresRepository) CreateAccount(_ context.Context, _ *Account) (*Account, error) {
-	// TODO: Implement when account table is added to schema
-	return nil, fmt.Errorf("account operations not yet implemented")
+func (r *PostgresRepository) CreateAccount(ctx context.Context, entity *Account) (*Account, error) {
+	// Generate ID if not provided
+	if entity.Id == uuid.Nil {
+		entity.Id = uuid.New()
+	}
+
+	var password *string
+	if entity.Password != "" {
+		password = &entity.Password
+	}
+
+	params := postgresql.CreateAccountParams{
+		Id:         entity.Id,
+		UserId:     entity.UserId,
+		ProviderId: string(entity.ProviderId),
+		AccountId:  entity.AccountId,
+		Password:   password,
+	}
+
+	dbAccount, err := r.q.CreateAccount(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+	return r.dbAccountToEntity(&dbAccount), nil
 }
 
 // GetAccount retrieves an account by its ID
@@ -310,24 +368,54 @@ func (r *PostgresRepository) DeleteSessionByToken(ctx context.Context, token str
 // Helper methods to convert between database and entities
 
 func (r *PostgresRepository) dbUserToEntity(dbUser *postgresql.User) *User {
-	return &User{
-		Id:    dbUser.Id,
-		Email: openapi_types.Email(dbUser.Email),
-		Name:  dbUser.Name,
-		// TODO: Add other fields as needed
+	user := &User{
+		Id:            dbUser.Id,
+		Email:         openapi_types.Email(dbUser.Email),
+		Name:          dbUser.Name,
+		EmailVerified: dbUser.EmailVerified,
+		CreatedAt:     dbUser.CreatedAt,
+		UpdatedAt:     dbUser.UpdatedAt,
 	}
+	if dbUser.Image != nil {
+		user.Image = *dbUser.Image
+	}
+	return user
 }
 
 func (r *PostgresRepository) dbSessionToEntity(dbSession *postgresql.Session) *Session {
 	session := &Session{
 		Id:        dbSession.Id,
 		UserId:    dbSession.UserId,
+		Token:     dbSession.Token,
 		ExpiresAt: dbSession.ExpiresAt.Format(time.RFC3339),
+		CreatedAt: dbSession.CreatedAt,
+		UpdatedAt: dbSession.UpdatedAt,
 	}
 	if dbSession.ActiveOrganizationId != nil {
 		session.ActiveOrganizationId = *dbSession.ActiveOrganizationId
 	}
+	if dbSession.IpAddress != nil {
+		session.IpAddress = *dbSession.IpAddress
+	}
+	if dbSession.UserAgent != nil {
+		session.UserAgent = *dbSession.UserAgent
+	}
 	return session
+}
+
+func (r *PostgresRepository) dbAccountToEntity(dbAccount *postgresql.Account) *Account {
+	account := &Account{
+		Id:         dbAccount.Id,
+		UserId:     dbAccount.UserId,
+		ProviderId: AccountProviderId(dbAccount.ProviderId),
+		AccountId:  dbAccount.AccountId,
+		CreatedAt:  dbAccount.CreatedAt,
+		UpdatedAt:  dbAccount.UpdatedAt,
+	}
+	if dbAccount.Password != nil {
+		account.Password = *dbAccount.Password
+	}
+	return account
 }
 
 // GetUserByUsername retrieves a user by username
@@ -337,13 +425,37 @@ func (r *PostgresRepository) GetUserByUsername(_ context.Context, _ string) (*Us
 }
 
 // GetAccountByProviderAndProviderID retrieves an account by provider and provider ID
-func (r *PostgresRepository) GetAccountByProviderAndProviderID(_ context.Context, _, _ string) (*Account, error) {
-	// TODO: Implement when Account queries are added to postgresql
-	return nil, fmt.Errorf("not implemented yet - waiting for Account SQL queries")
+func (r *PostgresRepository) GetAccountByProviderAndProviderID(ctx context.Context, provider string, providerAccountID string) (*Account, error) {
+	// First need to get the user by the provider account ID
+	// This is a bit complex, we need to find account by provider and account_id
+	rows, err := r.q.ListAccounts(ctx, postgresql.ListAccountsParams{
+		Limit:  1000,
+		Offset: 0,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, row := range rows {
+		if row.ProviderId == provider && row.AccountId == providerAccountID {
+			return r.dbAccountToEntity(&row), nil
+		}
+	}
+
+	return nil, ErrAccountNotFound
 }
 
 // GetAccountsByUserID retrieves accounts by user ID
-func (r *PostgresRepository) GetAccountsByUserID(_ context.Context, _ uuid.UUID) ([]*Account, error) {
-	// TODO: Implement when Account queries are added to postgresql
-	return nil, fmt.Errorf("not implemented yet - waiting for Account SQL queries")
+func (r *PostgresRepository) GetAccountsByUserID(ctx context.Context, userID uuid.UUID) ([]*Account, error) {
+	rows, err := r.q.ListAccountsByUser(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	accounts := make([]*Account, len(rows))
+	for i, row := range rows {
+		accounts[i] = r.dbAccountToEntity(&row)
+	}
+
+	return accounts, nil
 }

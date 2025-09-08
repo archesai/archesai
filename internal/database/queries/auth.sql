@@ -8,7 +8,7 @@ INSERT INTO session (
     ip_address,
     user_agent
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
+    $1, $2, $3, $4, sqlc.narg('active_organization_id'), sqlc.narg('ip_address'), sqlc.narg('user_agent')
 )
 RETURNING *;
 

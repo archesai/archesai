@@ -20,7 +20,7 @@ func TestPostgresRepository_UserOperations(t *testing.T) {
 	pgContainer := testutil.StartPostgresContainer(ctx, t)
 
 	// Run migrations
-	err := pgContainer.RunMigrations("../../migrations")
+	err := pgContainer.RunMigrations("../migrations/postgresql")
 	if err != nil {
 		t.Fatalf("Failed to run migrations: %v", err)
 	}
@@ -30,12 +30,9 @@ func TestPostgresRepository_UserOperations(t *testing.T) {
 
 	t.Run("CreateUser", func(t *testing.T) {
 		user := &User{
-			Id:            uuid.New(),
 			Email:         "test@example.com",
 			Name:          "Test User",
 			EmailVerified: false,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
 		}
 
 		created, err := repo.CreateUser(ctx, user)
@@ -43,20 +40,23 @@ func TestPostgresRepository_UserOperations(t *testing.T) {
 			t.Fatalf("Failed to create user: %v", err)
 		}
 
-		if created.Id != user.Id {
-			t.Errorf("Expected user ID %v, got %v", user.Id, created.Id)
+		if created.Id == uuid.Nil {
+			t.Errorf("Expected valid user ID, got %v", created.Id)
+		}
+		if created.Email != user.Email {
+			t.Errorf("Expected email %v, got %v", user.Email, created.Email)
+		}
+		if created.Name != user.Name {
+			t.Errorf("Expected name %v, got %v", user.Name, created.Name)
 		}
 	})
 
 	t.Run("GetUserByID", func(t *testing.T) {
 		// Create a user first
 		user := &User{
-			Id:            uuid.New(),
 			Email:         "getbyid@example.com",
 			Name:          "GetByID User",
 			EmailVerified: false,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
 		}
 
 		created, err := repo.CreateUser(ctx, user)
@@ -82,12 +82,9 @@ func TestPostgresRepository_UserOperations(t *testing.T) {
 		// Create a user first
 		email := "getbyemail@example.com"
 		user := &User{
-			Id:            uuid.New(),
 			Email:         Email(email),
 			Name:          "GetByEmail User",
 			EmailVerified: false,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
 		}
 
 		created, err := repo.CreateUser(ctx, user)
@@ -109,12 +106,9 @@ func TestPostgresRepository_UserOperations(t *testing.T) {
 	t.Run("UpdateUser", func(t *testing.T) {
 		// Create a user first
 		user := &User{
-			Id:            uuid.New(),
 			Email:         "update@example.com",
 			Name:          "Update User",
 			EmailVerified: false,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
 		}
 
 		created, err := repo.CreateUser(ctx, user)
@@ -141,12 +135,9 @@ func TestPostgresRepository_UserOperations(t *testing.T) {
 	t.Run("DeleteUser", func(t *testing.T) {
 		// Create a user first
 		user := &User{
-			Id:            uuid.New(),
 			Email:         "delete@example.com",
 			Name:          "Delete User",
 			EmailVerified: false,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
 		}
 
 		created, err := repo.CreateUser(ctx, user)
@@ -171,7 +162,6 @@ func TestPostgresRepository_UserOperations(t *testing.T) {
 		// Create multiple users
 		for i := 0; i < 5; i++ {
 			user := &User{
-				Id:            uuid.New(),
 				Email:         Email(fmt.Sprintf("list%d@example.com", i)),
 				Name:          fmt.Sprintf("List User %d", i),
 				EmailVerified: i%2 == 0,
@@ -212,7 +202,7 @@ func TestPostgresRepository_SessionOperations(t *testing.T) {
 	pgContainer := testutil.StartPostgresContainer(ctx, t)
 
 	// Run migrations
-	err := pgContainer.RunMigrations("../../migrations")
+	err := pgContainer.RunMigrations("../migrations/postgresql")
 	if err != nil {
 		t.Fatalf("Failed to run migrations: %v", err)
 	}
@@ -222,26 +212,21 @@ func TestPostgresRepository_SessionOperations(t *testing.T) {
 
 	// Create a user for sessions
 	user := &User{
-		Id:            uuid.New(),
 		Email:         "session@example.com",
 		Name:          "Session User",
 		EmailVerified: false,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
 	}
-	_, err = repo.CreateUser(ctx, user)
+	createdUser, err := repo.CreateUser(ctx, user)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
 	}
+	user = createdUser
 
 	t.Run("CreateSession", func(t *testing.T) {
 		session := &Session{
-			Id:                   uuid.New(),
 			UserId:               user.Id,
 			Token:                "test-token",
 			ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
-			CreatedAt:            time.Now(),
-			UpdatedAt:            time.Now(),
 			ActiveOrganizationId: uuid.Nil,
 			IpAddress:            "192.168.1.1",
 			UserAgent:            "TestAgent/1.0",
@@ -252,20 +237,20 @@ func TestPostgresRepository_SessionOperations(t *testing.T) {
 			t.Fatalf("Failed to create session: %v", err)
 		}
 
-		if created.Id != session.Id {
-			t.Errorf("Expected session ID %v, got %v", session.Id, created.Id)
+		if created.Id == uuid.Nil {
+			t.Error("Expected valid session ID, got nil")
+		}
+		if created.Token != session.Token {
+			t.Errorf("Expected token %v, got %v", session.Token, created.Token)
 		}
 	})
 
 	t.Run("GetSessionByToken", func(t *testing.T) {
 		token := "unique-token"
 		session := &Session{
-			Id:                   uuid.New(),
 			UserId:               user.Id,
 			Token:                token,
 			ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
-			CreatedAt:            time.Now(),
-			UpdatedAt:            time.Now(),
 			ActiveOrganizationId: uuid.Nil,
 			IpAddress:            "192.168.1.1",
 			UserAgent:            "TestAgent/1.0",
@@ -289,12 +274,9 @@ func TestPostgresRepository_SessionOperations(t *testing.T) {
 	t.Run("DeleteExpiredSessions", func(t *testing.T) {
 		// Create an expired session
 		expiredSession := &Session{
-			Id:                   uuid.New(),
 			UserId:               user.Id,
 			Token:                "expired-token",
 			ExpiresAt:            time.Now().Add(-time.Hour).Format(time.RFC3339), // Expired
-			CreatedAt:            time.Now(),
-			UpdatedAt:            time.Now(),
 			ActiveOrganizationId: uuid.Nil,
 			IpAddress:            "192.168.1.1",
 			UserAgent:            "TestAgent/1.0",
@@ -321,22 +303,19 @@ func TestPostgresRepository_SessionOperations(t *testing.T) {
 	t.Run("DeleteUserSessions", func(t *testing.T) {
 		// Create a new user for this test
 		testUser := &User{
-			Id:            uuid.New(),
 			Email:         "sessiondelete@example.com",
 			Name:          "Session Delete User",
 			EmailVerified: false,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
 		}
-		_, err := repo.CreateUser(ctx, testUser)
+		createdTestUser, err := repo.CreateUser(ctx, testUser)
 		if err != nil {
 			t.Fatalf("Failed to create test user: %v", err)
 		}
+		testUser = createdTestUser
 
 		// Create multiple sessions for the user
 		for i := 0; i < 3; i++ {
 			session := &Session{
-				Id:                   uuid.New(),
 				UserId:               testUser.Id,
 				Token:                fmt.Sprintf("user-token-%d", i),
 				ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
@@ -377,7 +356,7 @@ func TestPostgresRepository_AccountOperations(t *testing.T) {
 	pgContainer := testutil.StartPostgresContainer(ctx, t)
 
 	// Run migrations
-	err := pgContainer.RunMigrations("../../migrations")
+	err := pgContainer.RunMigrations("../migrations/postgresql")
 	if err != nil {
 		t.Fatalf("Failed to run migrations: %v", err)
 	}
@@ -387,27 +366,22 @@ func TestPostgresRepository_AccountOperations(t *testing.T) {
 
 	// Create a user for accounts
 	user := &User{
-		Id:            uuid.New(),
 		Email:         "account@example.com",
 		Name:          "Account User",
 		EmailVerified: false,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
 	}
-	_, err = repo.CreateUser(ctx, user)
+	createdUser, err := repo.CreateUser(ctx, user)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
 	}
+	user = createdUser
 
 	t.Run("CreateAccount", func(t *testing.T) {
 		account := &Account{
-			Id:         uuid.New(),
 			UserId:     user.Id,
 			ProviderId: Local,
 			AccountId:  "account@example.com",
 			Password:   "hashed-password",
-			CreatedAt:  time.Now(),
-			UpdatedAt:  time.Now(),
 		}
 
 		created, err := repo.CreateAccount(ctx, account)
@@ -415,21 +389,21 @@ func TestPostgresRepository_AccountOperations(t *testing.T) {
 			t.Fatalf("Failed to create account: %v", err)
 		}
 
-		if created.Id != account.Id {
-			t.Errorf("Expected account ID %v, got %v", account.Id, created.Id)
+		if created.Id == uuid.Nil {
+			t.Error("Expected valid account ID, got nil")
+		}
+		if created.AccountId != account.AccountId {
+			t.Errorf("Expected account ID %v, got %v", account.AccountId, created.AccountId)
 		}
 	})
 
 	t.Run("GetAccountByProviderAndProviderID", func(t *testing.T) {
 		providerID := "provider@example.com"
 		account := &Account{
-			Id:         uuid.New(),
 			UserId:     user.Id,
 			ProviderId: Local,
 			AccountId:  providerID,
 			Password:   "hashed-password",
-			CreatedAt:  time.Now(),
-			UpdatedAt:  time.Now(),
 		}
 
 		_, err := repo.CreateAccount(ctx, account)
@@ -450,23 +424,20 @@ func TestPostgresRepository_AccountOperations(t *testing.T) {
 	t.Run("GetAccountsByUserID", func(t *testing.T) {
 		// Create a new user for this test
 		testUser := &User{
-			Id:            uuid.New(),
 			Email:         "multiaccounts@example.com",
 			Name:          "Multi Account User",
 			EmailVerified: false,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
 		}
-		_, err := repo.CreateUser(ctx, testUser)
+		createdTestUser, err := repo.CreateUser(ctx, testUser)
 		if err != nil {
 			t.Fatalf("Failed to create test user: %v", err)
 		}
+		testUser = createdTestUser
 
 		// Create multiple accounts for the user
 		providers := []AccountProviderId{Local, Google, Github}
 		for i, provider := range providers {
 			account := &Account{
-				Id:         uuid.New(),
 				UserId:     testUser.Id,
 				ProviderId: provider,
 				AccountId:  fmt.Sprintf("account-%d@example.com", i),

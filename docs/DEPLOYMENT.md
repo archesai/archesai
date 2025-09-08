@@ -599,7 +599,7 @@ helm install archesai ./deployments/helm/arches \
 ```bash
 # Create RDS PostgreSQL instance with pgvector
 aws rds create-db-instance \
-  --db-instance-identifier archesai-db \
+  --db-instance-identifier archesai \
   --db-instance-class db.t3.medium \
   --engine postgres \
   --engine-version 15.4 \

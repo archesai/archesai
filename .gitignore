@@ -79,6 +79,4 @@ test-output
 
 **/tmp
 
-#api/openapi.bundled.yaml
-#api/split/
 bin

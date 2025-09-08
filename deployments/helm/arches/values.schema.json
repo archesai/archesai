@@ -379,7 +379,7 @@
               "type": "string"
             },
             "url": {
-              "default": "postgresql://admin:password@localhost:5432/archesai-db?schema=public",
+              "default": "postgresql://admin:password@localhost:5432/archesai?schema=public",
               "description": "Database connection URL/string",
               "type": "string"
             }
@@ -391,12 +391,12 @@
           "properties": {
             "auth": {
               "default": {
-                "database": "archesai-db",
+                "database": "archesai",
                 "password": "password"
               },
               "properties": {
                 "database": {
-                  "default": "archesai-db",
+                  "default": "archesai",
                   "description": "Database name to create and use",
                   "type": "string"
                 },
@@ -490,7 +490,7 @@
               "type": "object"
             },
             "url": {
-              "default": "postgresql://admin:password@localhost:5432/archesai-db?schema=public",
+              "default": "postgresql://admin:password@localhost:5432/archesai?schema=public",
               "description": "Database connection URL/string",
               "type": "string"
             }
@@ -501,7 +501,7 @@
       ],
       "default": {
         "auth": {
-          "database": "archesai-db",
+          "database": "archesai",
           "password": "password"
         },
         "image": {
@@ -524,7 +524,7 @@
             "memory": "512Mi"
           }
         },
-        "url": "postgresql://admin:password@localhost:5432/archesai-db?schema=public"
+        "url": "postgresql://admin:password@localhost:5432/archesai?schema=public"
       },
       "description": "Database configuration for PostgreSQL with optional pgvector support. Includes managed mode with persistence and resource limits."
     },

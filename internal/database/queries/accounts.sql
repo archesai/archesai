@@ -12,7 +12,9 @@ INSERT INTO account (
     id_token,
     password
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+    $1, $2, $3, $4, sqlc.narg('access_token'), sqlc.narg('refresh_token'), 
+    sqlc.narg('access_token_expires_at'), sqlc.narg('refresh_token_expires_at'), 
+    sqlc.narg('scope'), sqlc.narg('id_token'), sqlc.narg('password')
 )
 RETURNING *;
 

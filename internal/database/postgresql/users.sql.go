@@ -11,6 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
+const countUsers = `-- name: CountUsers :one
+SELECT COUNT(*) FROM "user"
+`
+
+func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countUsers)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO "user" (
     id,
@@ -19,7 +30,7 @@ INSERT INTO "user" (
     email_verified,
     image
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, COALESCE($4, false), $5
 )
 RETURNING id, created_at, updated_at, email, email_verified, image, name
 `
@@ -28,7 +39,7 @@ type CreateUserParams struct {
 	Id            uuid.UUID
 	Email         string
 	Name          string
-	EmailVerified bool
+	EmailVerified interface{}
 	Image         *string
 }
 

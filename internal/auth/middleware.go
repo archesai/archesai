@@ -47,9 +47,16 @@ func Middleware(authService *Service, logger *slog.Logger) echo.MiddlewareFunc {
 				return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
 			}
 
-			// Set claims in context
+			// Verify user exists
+			user, err := authService.repo.GetUser(c.Request().Context(), claims.UserID)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, "user not found")
+			}
+
+			// Set claims and user in context
 			c.Set(string(AuthClaimsContextKey), claims)
 			c.Set(string(AuthUserContextKey), claims.UserID)
+			c.Set(string(UserContextKey), user)
 
 			// Add user info to request context for downstream use
 			ctx := context.WithValue(c.Request().Context(), AuthClaimsContextKey, claims)
@@ -80,14 +87,22 @@ func OptionalAuthMiddleware(authService *Service, logger *slog.Logger) echo.Midd
 				// Validate token if present
 				claims, err := authService.ValidateToken(token)
 				if err == nil {
-					// Set claims in context if valid
-					c.Set(string(AuthClaimsContextKey), claims)
-					c.Set(string(AuthUserContextKey), claims.UserID)
+					// Get user if token is valid
+					user, userErr := authService.repo.GetUser(c.Request().Context(), claims.UserID)
+					if userErr == nil {
+						// Set claims and user in context if valid
+						c.Set(string(AuthClaimsContextKey), claims)
+						c.Set(string(AuthUserContextKey), claims.UserID)
+						c.Set(string(UserContextKey), user)
 
-					// Add user info to request context
-					ctx := context.WithValue(c.Request().Context(), AuthClaimsContextKey, claims)
-					ctx = context.WithValue(ctx, AuthUserContextKey, claims.UserID)
-					c.SetRequest(c.Request().WithContext(ctx))
+						// Add user info to request context
+						ctx := context.WithValue(c.Request().Context(), AuthClaimsContextKey, claims)
+						ctx = context.WithValue(ctx, AuthUserContextKey, claims.UserID)
+						ctx = context.WithValue(ctx, UserContextKey, user)
+						c.SetRequest(c.Request().WithContext(ctx))
+					} else {
+						logger.Debug("user not found for valid token", "error", userErr)
+					}
 				} else {
 					logger.Debug("invalid optional token", "error", err)
 				}

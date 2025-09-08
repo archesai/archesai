@@ -17,7 +17,8 @@
   },
   "prettier": "@archesai/prettier",
   "devDependencies": {
-    "@archesai/prettier": "workspace:*"
+    "@archesai/prettier": "workspace:*",
+    "task-master-ai": "catalog:"
   },
   "packageManager": "pnpm@10.15.1",
   "engines": {

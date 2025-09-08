@@ -30,7 +30,7 @@ type CreateRunParams struct {
 	Id             uuid.UUID
 	OrganizationId uuid.UUID
 	PipelineId     *uuid.UUID
-	ToolId         string
+	ToolId         *uuid.UUID
 	Status         string
 	Progress       float64
 }
@@ -246,7 +246,7 @@ LIMIT $2 OFFSET $3
 `
 
 type ListRunsByToolParams struct {
-	ToolId string
+	ToolId *uuid.UUID
 	Limit  int32
 	Offset int32
 }
@@ -301,7 +301,7 @@ RETURNING id, created_at, updated_at, completed_at, error, organization_id, pipe
 type UpdateRunParams struct {
 	Id          uuid.UUID
 	PipelineId  *uuid.UUID
-	ToolId      *string
+	ToolId      *uuid.UUID
 	Status      *string
 	Progress    *float64
 	Error       *string

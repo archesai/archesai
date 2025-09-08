@@ -39,7 +39,7 @@ func GetDefaultConfig() *ArchesConfig {
 			MinConns:      5,
 			RunMigrations: false,
 			Type:          Postgresql,
-			Url:           "postgresql://admin:password@127.0.0.1:5432/archesai-db",
+			Url:           "postgresql://admin:password@127.0.0.1:5432/archesai",
 		},
 		Infrastructure: InfrastructureConfig{
 			Namespace: "arches-system",

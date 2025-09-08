@@ -12,7 +12,7 @@ SERVER_OUTPUT := bin/archesai
 
 # Database Configuration.
 MIGRATION_PATH := internal/migrations/postgresql
-DATABASE_URL ?= postgresql://admin:password@localhost:5432/archesai-db
+DATABASE_URL ?= postgresql://admin:password@localhost:5432/archesai
 
 # Terminal Colors
 GREEN := \033[0;32m
@@ -175,20 +175,20 @@ migrate-reset: ## Reset database to initial state
 .PHONY: test
 test: ## Run all tests
 	@echo -e "$(YELLOW)▶ Running tests...$(NC)"
+	@go test -race -cover ./...
+	@echo -e "$(GREEN)✓ Tests complete!$(NC)"
+
+.PHONY: test-verbose
+test-verbose: ## Run all tests with verbose output
+	@echo -e "$(YELLOW)▶ Running tests (verbose)...$(NC)"
 	@go test -v -race -cover ./...
 	@echo -e "$(GREEN)✓ Tests complete!$(NC)"
 
 .PHONY: test-short
 test-short: ## Run short tests only (skip integration tests)
 	@echo -e "$(YELLOW)▶ Running short tests...$(NC)"
-	@go test -short -v -cover ./...
+	@go test -short -cover ./...
 	@echo -e "$(GREEN)✓ Short tests complete!$(NC)"
-
-.PHONY: test-verbose
-test-verbose: ## Run tests with detailed output
-	@echo -e "$(YELLOW)▶ Running tests with verbose output...$(NC)"
-	@go test -v -race -covermode=atomic ./...
-	@echo -e "$(GREEN)✓ Verbose tests complete!$(NC)"
 
 .PHONY: test-coverage
 test-coverage: ## Generate test coverage report

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/archesai/archesai/internal/auth"
@@ -16,6 +15,7 @@ import (
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/database/sqlite"
 	"github.com/archesai/archesai/internal/health"
+	"github.com/archesai/archesai/internal/logger"
 	"github.com/archesai/archesai/internal/migrations"
 	"github.com/archesai/archesai/internal/organizations"
 	"github.com/archesai/archesai/internal/server"
@@ -65,43 +65,18 @@ type App struct {
 
 // NewApp creates and initializes all application dependencies
 func NewApp(cfg *config.Config) (*App, error) {
-	// Initialize slog logger
-	var logger *slog.Logger
-	var logLevel slog.Level
-
-	// Parse log level
-	switch cfg.Logging.Level {
-	case "debug":
-		logLevel = slog.LevelDebug
-	case "info":
-		logLevel = slog.LevelInfo
-	case "warn":
-		logLevel = slog.LevelWarn
-	case "error":
-		logLevel = slog.LevelError
-	default:
-		logLevel = slog.LevelInfo
+	// Initialize logger using the logger package
+	loggerCfg := logger.Config{
+		Level:  string(cfg.Logging.Level),
+		Pretty: cfg.Logging.Pretty,
 	}
-
-	// Configure handler based on format preference
-	if cfg.Logging.Pretty {
-		// Use text handler for pretty output
-		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			Level:     logLevel,
-			AddSource: logLevel == slog.LevelDebug,
-		}))
-	} else {
-		// Use JSON handler for production
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: logLevel,
-		}))
-	}
+	log := logger.New(loggerCfg)
 
 	// Set as default logger
-	slog.SetDefault(logger)
+	slog.SetDefault(log)
 
 	// Initialize database
-	dbFactory := database.NewFactory(logger)
+	dbFactory := database.NewFactory(log)
 	db, err := dbFactory.Create(&cfg.Database)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
@@ -109,8 +84,8 @@ func NewApp(cfg *config.Config) (*App, error) {
 
 	// Run migrations if enabled
 	if cfg.Database.RunMigrations {
-		if err := migrations.RunMigrations(db, logger); err != nil {
-			logger.Error("failed to run migrations", "error", err)
+		if err := migrations.RunMigrations(db, log); err != nil {
+			log.Error("failed to run migrations", "error", err)
 			isProduction := cfg.Api.Environment == "production"
 			if isProduction {
 				return nil, fmt.Errorf("failed to run migrations: %w", err)
@@ -154,7 +129,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 			organizationsRepo = organizations.NewSQLiteRepository(sqliteQueries)
 			workflowsRepo = workflows.NewSQLiteRepository(sqliteQueries)
 			contentRepo = content.NewSQLiteRepository(sqliteQueries)
-			logger.Info("Using SQLite repositories")
+			log.Info("Using SQLite repositories")
 		}
 	}
 
@@ -173,31 +148,31 @@ func NewApp(cfg *config.Config) (*App, error) {
 		AccessTokenExpiry:  accessTokenTTL,
 		RefreshTokenExpiry: refreshTokenTTL,
 	}
-	authService := auth.NewService(authRepo, authConfig, logger)
-	authHandler := auth.NewHandler(authService, logger)
+	authService := auth.NewService(authRepo, authConfig, log)
+	authHandler := auth.NewHandler(authService, log)
 
 	// Initialize organizations domain
-	organizationsService := organizations.NewService(organizationsRepo, logger)
-	organizationsHandler := organizations.NewHandler(organizationsService, logger)
+	organizationsService := organizations.NewService(organizationsRepo, log)
+	organizationsHandler := organizations.NewHandler(organizationsService, log)
 
 	// Initialize workflows domain
-	workflowsService := workflows.NewService(workflowsRepo, logger)
-	workflowsHandler := workflows.NewHandler(workflowsService, logger)
+	workflowsService := workflows.NewService(workflowsRepo, log)
+	workflowsHandler := workflows.NewHandler(workflowsService, log)
 
 	// Initialize content domain
-	contentService := content.NewService(contentRepo, logger)
-	contentHandler := content.NewHandler(contentService, logger)
+	contentService := content.NewService(contentRepo, log)
+	contentHandler := content.NewHandler(contentService, log)
 
 	// Initialize health domain
-	healthService := health.NewService(logger)
-	healthHandler := health.NewHandler(healthService, logger)
+	healthService := health.NewService(log)
+	healthHandler := health.NewHandler(healthService, log)
 
 	// Initialize config handler
 	// TODO: Implement config handler when needed
-	// configHandler := config.NewHandler(cfg, logger)
+	// configHandler := config.NewHandler(cfg, log)
 
 	// Create the HTTP server
-	httpServer := server.NewServer(&cfg.Api, logger)
+	httpServer := server.NewServer(&cfg.Api, log)
 
 	// Create app with all dependencies
 	app := &App{
@@ -205,7 +180,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 		DB:            db,
 		PgQueries:     pgQueries,
 		SqliteQueries: sqliteQueries,
-		Logger:        logger,
+		Logger:        log,
 		Config:        cfg,
 		Server:        httpServer,
 

@@ -3,10 +3,10 @@ package organizations
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"testing"
 	"time"
 
+	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 )
 
@@ -253,7 +253,7 @@ func TestService_CreateOrganization(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			repo.err = tt.repoErr
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			org, err := service.CreateOrganization(context.Background(), tt.req, tt.creatorID)
 
@@ -301,7 +301,7 @@ func TestService_GetOrganization(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			// Get the correct ID from the setup
 			var testID uuid.UUID
@@ -369,7 +369,7 @@ func TestService_UpdateOrganization(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			org, err := service.UpdateOrganization(context.Background(), tt.orgID, tt.req)
 
@@ -421,7 +421,7 @@ func TestService_DeleteOrganization(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			err := service.DeleteOrganization(context.Background(), tt.orgID)
 
@@ -466,7 +466,7 @@ func TestService_CreateMember(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			member, err := service.CreateMember(context.Background(), tt.req, tt.orgID)
 
@@ -522,7 +522,7 @@ func TestService_UpdateMember(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			member, err := service.UpdateMember(context.Background(), tt.memberID, tt.req)
 
@@ -570,7 +570,7 @@ func TestService_CreateInvitation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			invitation, err := service.CreateInvitation(context.Background(), tt.req, tt.orgID, tt.inviterID)
 
@@ -652,7 +652,7 @@ func TestService_AcceptInvitation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			member, err := service.AcceptInvitation(context.Background(), tt.invID, tt.userID)
 
@@ -705,7 +705,7 @@ func TestService_ListOrganizations(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			orgs, total, err := service.ListOrganizations(context.Background(), tt.limit, tt.offset)
 
@@ -761,7 +761,7 @@ func TestService_GetMember(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			member, err := service.GetMember(context.Background(), tt.memberID)
 
@@ -820,7 +820,7 @@ func TestService_DeleteMember(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			err := service.DeleteMember(context.Background(), tt.memberID)
 
@@ -897,7 +897,7 @@ func TestService_ListMembers(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			members, total, err := service.ListMembers(context.Background(), tt.orgID.String(), tt.limit, tt.offset)
 
@@ -955,7 +955,7 @@ func TestService_GetInvitation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			inv, err := service.GetInvitation(context.Background(), tt.invID)
 
@@ -1007,7 +1007,7 @@ func TestService_DeleteInvitation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			err := service.DeleteInvitation(context.Background(), tt.invID)
 
@@ -1063,7 +1063,7 @@ func TestService_ListInvitations(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			invs, total, err := service.ListInvitations(context.Background(), tt.orgID, tt.limit, tt.offset)
 
@@ -1086,7 +1086,7 @@ func TestService_ListInvitations(t *testing.T) {
 // TestNewService tests the service constructor
 func TestNewService(t *testing.T) {
 	repo := NewMockRepository()
-	logger := slog.Default()
+	logger := logger.NewTest()
 
 	service := NewService(repo, logger)
 

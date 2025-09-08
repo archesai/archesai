@@ -34,7 +34,7 @@ billing:
 
 database:
   auth:
-    database: archesai-db
+    database: archesai
     password: password
   image:
     pullPolicy: IfNotPresent

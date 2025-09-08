@@ -6,7 +6,7 @@ INSERT INTO "user" (
     email_verified,
     image
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, COALESCE(sqlc.narg('email_verified'), false), sqlc.narg('image')
 )
 RETURNING *;
 
@@ -22,6 +22,9 @@ WHERE email = $1 LIMIT 1;
 SELECT * FROM "user"
 ORDER BY created_at DESC
 LIMIT $1 OFFSET $2;
+
+-- name: CountUsers :one
+SELECT COUNT(*) FROM "user";
 
 -- name: UpdateUser :one
 UPDATE "user"

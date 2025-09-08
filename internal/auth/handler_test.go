@@ -3,10 +3,10 @@ package auth
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"testing"
 	"time"
 
+	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 )
 
@@ -67,7 +67,7 @@ func TestHandler_Register(t *testing.T) {
 			// Setup mock service
 			mockService := &Service{
 				repo:   &MockRepository{},
-				logger: slog.Default(),
+				logger: logger.NewTest(),
 				config: Config{
 					JWTSecret:          "test-secret",
 					AccessTokenExpiry:  15 * time.Minute,
@@ -91,7 +91,7 @@ func TestHandler_Register(t *testing.T) {
 				mockRepo.users[existingUser.Id] = existingUser
 			}
 
-			handler := NewHandler(mockService, slog.Default())
+			handler := NewHandler(mockService, logger.NewTest())
 
 			// Execute
 			ctx := context.Background()
@@ -195,7 +195,7 @@ func TestHandler_Login(t *testing.T) {
 
 			mockService := &Service{
 				repo:   mockRepo,
-				logger: slog.Default(),
+				logger: logger.NewTest(),
 				config: Config{
 					JWTSecret:          "test-secret",
 					AccessTokenExpiry:  15 * time.Minute,
@@ -203,7 +203,7 @@ func TestHandler_Login(t *testing.T) {
 				},
 			}
 
-			handler := NewHandler(mockService, slog.Default())
+			handler := NewHandler(mockService, logger.NewTest())
 
 			// Execute with context containing IP and user agent
 			ctx := context.WithValue(context.Background(), ipAddressKey, "192.168.1.1")
@@ -278,13 +278,13 @@ func TestHandler_Logout(t *testing.T) {
 
 			mockService := &Service{
 				repo:   mockRepo,
-				logger: slog.Default(),
+				logger: logger.NewTest(),
 				config: Config{
 					JWTSecret: "test-secret",
 				},
 			}
 
-			handler := NewHandler(mockService, slog.Default())
+			handler := NewHandler(mockService, logger.NewTest())
 
 			// Execute with token in context
 			ctx := context.WithValue(context.Background(), authTokenKey, tt.contextToken)
@@ -370,13 +370,13 @@ func TestHandler_GetOneUser(t *testing.T) {
 
 			mockService := &Service{
 				repo:   mockRepo,
-				logger: slog.Default(),
+				logger: logger.NewTest(),
 				config: Config{
 					JWTSecret: "test-secret",
 				},
 			}
 
-			handler := NewHandler(mockService, slog.Default())
+			handler := NewHandler(mockService, logger.NewTest())
 
 			// Execute with user in context
 			ctx := context.Background()
@@ -475,13 +475,13 @@ func TestHandler_UpdateUser(t *testing.T) {
 
 			mockService := &Service{
 				repo:   mockRepo,
-				logger: slog.Default(),
+				logger: logger.NewTest(),
 				config: Config{
 					JWTSecret: "test-secret",
 				},
 			}
 
-			handler := NewHandler(mockService, slog.Default())
+			handler := NewHandler(mockService, logger.NewTest())
 
 			// Execute with user in context
 			ctx := context.Background()
@@ -571,13 +571,13 @@ func TestHandler_FindManyUsers(t *testing.T) {
 
 			mockService := &Service{
 				repo:   mockRepo,
-				logger: slog.Default(),
+				logger: logger.NewTest(),
 				config: Config{
 					JWTSecret: "test-secret",
 				},
 			}
 
-			handler := NewHandler(mockService, slog.Default())
+			handler := NewHandler(mockService, logger.NewTest())
 
 			// Execute
 			ctx := context.Background()

@@ -26,7 +26,9 @@ INSERT INTO account (
     id_token,
     password
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+    $1, $2, $3, $4, $5, $6, 
+    $7, $8, 
+    $9, $10, $11
 )
 RETURNING id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
 `

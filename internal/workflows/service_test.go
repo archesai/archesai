@@ -3,10 +3,10 @@ package workflows
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"testing"
 	"time"
 
+	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 )
 
@@ -179,7 +179,7 @@ func TestService_CreatePipeline(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			repo.err = tt.repoErr
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			pipeline, err := service.CreatePipeline(context.Background(), tt.req, tt.orgID)
 
@@ -226,7 +226,7 @@ func TestService_GetPipeline(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			// Get the correct ID from the setup
 			var testID uuid.UUID
@@ -294,7 +294,7 @@ func TestService_UpdatePipeline(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			pipeline, err := service.UpdatePipeline(context.Background(), tt.pipelineID, tt.req)
 
@@ -351,7 +351,7 @@ func TestService_DeletePipeline(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			err := service.DeletePipeline(context.Background(), tt.pipelineID)
 
@@ -420,7 +420,7 @@ func TestService_CreateRun(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
 			repo.err = tt.repoErr
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			run, err := service.CreateRun(context.Background(), tt.req, tt.orgID)
 
@@ -468,7 +468,7 @@ func TestService_GetRun(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			// Get the correct ID from the setup
 			var testID uuid.UUID
@@ -534,7 +534,7 @@ func TestService_ListPipelines(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			pipelines, total, err := service.ListPipelines(context.Background(), tt.orgID, tt.limit, tt.offset)
 
@@ -598,7 +598,7 @@ func TestService_StartRun(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			run, err := service.StartRun(context.Background(), tt.runID)
 
@@ -657,7 +657,7 @@ func TestService_DeleteRun(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			err := service.DeleteRun(context.Background(), tt.runID)
 
@@ -734,7 +734,7 @@ func TestService_ListRuns(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			runs, total, err := service.ListRuns(context.Background(), tt.pipelineID, tt.limit, tt.offset)
 
@@ -757,7 +757,7 @@ func TestService_ListRuns(t *testing.T) {
 // TestNewService tests the service constructor
 func TestNewService(t *testing.T) {
 	repo := NewMockRepository()
-	logger := slog.Default()
+	logger := logger.NewTest()
 
 	service := NewService(repo, logger)
 
@@ -905,7 +905,7 @@ func TestRunStatusTransitions(t *testing.T) {
 // BenchmarkCreatePipeline benchmarks pipeline creation
 func BenchmarkCreatePipeline(b *testing.B) {
 	repo := NewMockRepository()
-	service := NewService(repo, slog.Default())
+	service := NewService(repo, logger.NewTest())
 
 	req := &CreatePipelineRequest{
 		Name:        "Benchmark Pipeline",
@@ -921,7 +921,7 @@ func BenchmarkCreatePipeline(b *testing.B) {
 // BenchmarkListRuns benchmarks listing runs
 func BenchmarkListRuns(b *testing.B) {
 	repo := NewMockRepository()
-	service := NewService(repo, slog.Default())
+	service := NewService(repo, logger.NewTest())
 
 	// Setup some runs
 	pipelineID := uuid.New().String()

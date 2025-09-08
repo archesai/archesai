@@ -1,12 +1,12 @@
 package auth
 
 import (
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 
+	"github.com/archesai/archesai/internal/logger"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -30,7 +30,7 @@ func TestAuthMiddleware(t *testing.T) {
 		},
 	}
 
-	middleware := Middleware(service, slog.Default())
+	middleware := Middleware(service, logger.NewTest())
 
 	t.Run("valid token", func(t *testing.T) {
 		// Create a test user
@@ -244,7 +244,7 @@ func TestOptionalAuthMiddleware(t *testing.T) {
 		},
 	}
 
-	middleware := OptionalAuthMiddleware(service, slog.Default())
+	middleware := OptionalAuthMiddleware(service, logger.NewTest())
 
 	t.Run("with valid token", func(t *testing.T) {
 		// Create a test user

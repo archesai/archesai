@@ -3789,9 +3789,9 @@ components:
         database:
           description: Database name
           type: string
-          default: archesai-db
+          default: archesai
           minLength: 1
-          example: example-string
+          example: archesai
         password:
           description: Database user password
           type: string
@@ -3833,7 +3833,7 @@ components:
         url:
           description: Database connection URL/string
           type: string
-          default: postgresql://admin:password@127.0.0.1:5432/archesai-db
+          default: postgresql://admin:password@127.0.0.1:5432/archesai
           minLength: 1
           example: example-string
         type:

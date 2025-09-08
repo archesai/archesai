@@ -10,7 +10,7 @@ properties:
   url:
     description: Database connection URL/string
     type: string
-    default: postgresql://admin:password@127.0.0.1:5432/archesai-db
+    default: postgresql://admin:password@127.0.0.1:5432/archesai
     minLength: 1
     example: example-string
   type:

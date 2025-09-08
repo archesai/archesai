@@ -3,11 +3,11 @@ package content
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 )
 
@@ -193,7 +193,7 @@ func TestService_CreateArtifact(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			repo.err = tt.repoErr
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			artifact, err := service.CreateArtifact(context.Background(), tt.req, tt.orgID, tt.producerID)
 
@@ -240,7 +240,7 @@ func TestService_GetArtifact(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			// Get the correct ID from the setup
 			var testID uuid.UUID
@@ -324,7 +324,7 @@ func TestService_UpdateArtifact(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			artifact, err := service.UpdateArtifact(context.Background(), tt.artifactID, tt.req)
 
@@ -381,7 +381,7 @@ func TestService_DeleteArtifact(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			err := service.DeleteArtifact(context.Background(), tt.artifactID)
 
@@ -438,7 +438,7 @@ func TestService_ListArtifacts(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			artifacts, total, err := service.ListArtifacts(context.Background(), tt.orgID, tt.limit, tt.offset)
 
@@ -489,7 +489,7 @@ func TestService_CreateLabel(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			repo.err = tt.repoErr
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			label, err := service.CreateLabel(context.Background(), tt.req, tt.orgID)
 
@@ -535,7 +535,7 @@ func TestService_GetLabel(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			// Get the correct ID from the setup
 			var testID uuid.UUID
@@ -583,7 +583,7 @@ func TestService_SearchArtifacts(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			artifacts, total, err := service.SearchArtifacts(context.Background(), tt.orgID, tt.query, tt.limit, tt.offset)
 
@@ -644,7 +644,7 @@ func TestService_UpdateLabel(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			label, err := service.UpdateLabel(context.Background(), tt.labelID, tt.req)
 
@@ -693,7 +693,7 @@ func TestService_DeleteLabel(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			err := service.DeleteLabel(context.Background(), tt.labelID)
 
@@ -750,7 +750,7 @@ func TestService_ListLabels(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			labels, total, err := service.ListLabels(context.Background(), tt.orgID, tt.limit, tt.offset)
 
@@ -796,7 +796,7 @@ func TestService_GetArtifactsByLabel(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			artifacts, total, err := service.GetArtifactsByLabel(context.Background(), tt.labelID, tt.limit, tt.offset)
 
@@ -838,7 +838,7 @@ func TestService_GetLabelsByArtifact(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			labels, err := service.GetLabelsByArtifact(context.Background(), tt.artifactID)
 
@@ -896,7 +896,7 @@ func TestService_AddLabelToArtifact(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			err := service.AddLabelToArtifact(context.Background(), tt.artifactID, tt.labelID)
 
@@ -943,7 +943,7 @@ func TestService_RemoveLabelFromArtifact(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := NewMockRepository()
 			tt.setup(repo)
-			service := NewService(repo, slog.Default())
+			service := NewService(repo, logger.NewTest())
 
 			err := service.RemoveLabelFromArtifact(context.Background(), tt.artifactID, tt.labelID)
 
@@ -957,7 +957,7 @@ func TestService_RemoveLabelFromArtifact(t *testing.T) {
 // TestNewService tests the service constructor
 func TestNewService(t *testing.T) {
 	repo := NewMockRepository()
-	logger := slog.Default()
+	logger := logger.NewTest()
 
 	service := NewService(repo, logger)
 
@@ -1012,7 +1012,7 @@ func TestMockRepository_EdgeCases(t *testing.T) {
 // BenchmarkCreateArtifact benchmarks artifact creation
 func BenchmarkCreateArtifact(b *testing.B) {
 	repo := NewMockRepository()
-	service := NewService(repo, slog.Default())
+	service := NewService(repo, logger.NewTest())
 
 	req := &CreateArtifactJSONRequestBody{
 		Text: "Benchmark text content",
@@ -1027,7 +1027,7 @@ func BenchmarkCreateArtifact(b *testing.B) {
 // BenchmarkListArtifacts benchmarks listing artifacts
 func BenchmarkListArtifacts(b *testing.B) {
 	repo := NewMockRepository()
-	service := NewService(repo, slog.Default())
+	service := NewService(repo, logger.NewTest())
 
 	// Setup some artifacts
 	for i := 0; i < 100; i++ {
