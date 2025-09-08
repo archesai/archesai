@@ -1,6 +1,11 @@
 name: Test Coverage
 on: [push, pull_request]
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
