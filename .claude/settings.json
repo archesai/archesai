@@ -5,7 +5,15 @@
       "Bash(make format:*)",
       "Bash(grep:*)",
       "Bash(sed:*)",
-      "Bash(make lint:*)"
+      "Bash(make lint:*)",
+      "Bash(make lint-go:*)",
+      "Bash(go run:*)",
+      "Bash(go build:*)",
+      "Bash(find:*)",
+      "Bash(go test:*)",
+      "Bash(gofmt:*)",
+      "Bash(golangci-lint run:*)",
+      "Bash(go doc:*)"
     ],
     "deny": [],
     "ask": []

@@ -10,14 +10,13 @@
 
 ### Examples
 
-- [TUI Demo](examples/tui_demo.go) - Complete TUI usage examples with AI agents
+- [TUI Demo](examples/tui.go) - Complete TUI usage examples with AI agents
 
 ### Packages
 
-#### AI & Agents
+#### AI & Chat
 
-- [LLM Package](../internal/llm/) - Multi-provider LLM interface
-- [Swarm Package](../internal/swarm/) - Multi-agent orchestration system
+- [LLM Package](../internal/llm/) - Multi-provider LLM interface with chat clients
 
 #### Core Domains
 
@@ -52,6 +51,9 @@ archesai api
 ```bash
 export OPENAI_API_KEY=your-key
 archesai tui --chat
+
+# Or with Ollama (local)
+archesai tui --chat --provider=ollama
 ```
 
 ## Architecture
@@ -62,6 +64,7 @@ ArchesAI follows a domain-driven design with:
 - Generated code from OpenAPI specs
 - Repository pattern for data access
 - Clean separation of concerns
+- Direct LLM client interfaces for simplicity
 
 ## Development
 
@@ -90,10 +93,18 @@ make dev           # Run in development mode
 ## Features
 
 - **Multi-Provider AI**: Support for OpenAI, Claude, Gemini, Ollama
-- **Multi-Agent System**: SwarmGo integration for agent orchestration
+- **Chat Interface**: Simple persona-based chat system with session management
 - **Beautiful TUI**: Terminal interface for configuration and chat
 - **Code Generation**: OpenAPI and SQL-driven development
 - **Modern Stack**: Go, PostgreSQL/SQLite, Redis
+- **Clean Architecture**: Direct LLM usage without complex abstractions
+
+## Chat Interface Features
+
+- **Multiple Personas**: Switch between different AI personalities
+- **Session Management**: Automatic conversation history tracking
+- **Provider Support**: OpenAI (full), Ollama (local), others ready
+- **Simple API**: Easy-to-use chat client interfaces
 
 ## License
 

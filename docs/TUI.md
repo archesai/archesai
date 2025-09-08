@@ -54,6 +54,9 @@ archesai tui --chat --provider=claude --model=claude-3-opus
 
 # With API key flag
 archesai tui --chat --api-key=your-key --provider=openai
+
+# With Ollama (local)
+archesai tui --chat --provider=ollama --model=llama2
 ```
 
 ## Keyboard Controls
@@ -86,38 +89,72 @@ archesai tui --chat --api-key=your-key --provider=openai
 
 ### Basic Usage
 
-See [examples/tui_demo.go](examples/tui.go) for complete working examples.
+See [examples/tui.go](../docs/examples/tui.go) for complete working examples.
 
-### Creating Custom Agents
+### Basic Usage Example
 
 ```go
-// Create an agent with custom instructions
-agent := swarm.NewAgent("Assistant", "gpt-4", llm.OpenAI).
-    WithInstructions("You are a helpful AI assistant.")
+package main
 
-// Create agent with functions
-weatherAgent := swarm.NewAgent("WeatherBot", "gpt-4", llm.OpenAI).
-    WithInstructions("You provide weather information.").
-    WithFunctions([]swarm.AgentFunction{
+import (
+    "log"
+    "os"
+
+    "github.com/archesai/archesai/internal/llm"
+    "github.com/archesai/archesai/internal/tui"
+    tea "github.com/charmbracelet/bubbletea"
+)
+
+func main() {
+    // Initialize OpenAI client
+    apiKey := os.Getenv("OPENAI_API_KEY")
+    llmClient := llm.NewOpenAILLM(apiKey)
+    chatClient := llm.NewChatClient(llmClient)
+
+    // Use built-in default personas
+    personas := []*llm.ChatPersona{
         {
-            Name:        "get_weather",
-            Description: "Get weather for a location",
-            Parameters: map[string]interface{}{
-                "type": "object",
-                "properties": map[string]interface{}{
-                    "location": map[string]interface{}{
-                        "type": "string",
-                    },
-                },
-            },
-            Function: func(args, ctx map[string]interface{}) swarm.Result {
-                location := args["location"].(string)
-                return swarm.Result{
-                    Data: fmt.Sprintf("Weather in %s: Sunny, 72°F", location),
-                }
-            },
+            Name:         llm.DefaultPersonas.Assistant.Name,
+            SystemPrompt: llm.DefaultPersonas.Assistant.SystemPrompt,
+            Model:        "gpt-4",
+            Temperature:  llm.DefaultPersonas.Assistant.Temperature,
         },
-    })
+        {
+            Name:         llm.DefaultPersonas.CodeHelper.Name,
+            SystemPrompt: llm.DefaultPersonas.CodeHelper.SystemPrompt,
+            Model:        "gpt-4",
+            Temperature:  llm.DefaultPersonas.CodeHelper.Temperature,
+        },
+    }
+
+    // Create and run TUI
+    model := tui.New(chatClient, personas)
+    program := tea.NewProgram(model, tea.WithAltScreen())
+
+    if _, err := program.Run(); err != nil {
+        log.Fatalf("Error running TUI: %v", err)
+    }
+}
+```
+
+### Using Default Personas
+
+```go
+// Use built-in default personas
+personas := []*llm.ChatPersona{
+    {
+        Name:         llm.DefaultPersonas.Assistant.Name,
+        SystemPrompt: llm.DefaultPersonas.Assistant.SystemPrompt,
+        Model:        "gpt-4",
+        Temperature:  llm.DefaultPersonas.Assistant.Temperature,
+    },
+    {
+        Name:         llm.DefaultPersonas.CodeHelper.Name,
+        SystemPrompt: llm.DefaultPersonas.CodeHelper.SystemPrompt,
+        Model:        "gpt-4",
+        Temperature:  llm.DefaultPersonas.CodeHelper.Temperature,
+    },
+}
 ```
 
 ## Architecture
@@ -126,7 +163,7 @@ The TUI is built with:
 
 - [Bubble Tea](https://github.com/charmbracelet/bubbletea) - Terminal UI framework
 - [Lipgloss](https://github.com/charmbracelet/lipgloss) - Terminal styling
-- [SwarmGo](../internal/swarm/) - Multi-agent orchestration
+- [ArchesAI LLM Package](../internal/llm/) - Direct LLM client interfaces
 
 ## Design Principles
 
@@ -135,6 +172,27 @@ The TUI is built with:
 3. **Visual Feedback** - Color-coded status indicators
 4. **Responsive** - Adapts to terminal size
 5. **Consistent** - Same formatting across all sections
+6. **Simple Architecture** - Direct LLM usage without complex abstractions
+
+## Chat Interface Features
+
+### Multi-Agent Support
+
+- Switch between different AI personas using `Tab`
+- Each persona has its own conversation history
+- Configurable system prompts and temperature settings
+
+### Session Management
+
+- Automatic conversation history management
+- Context preservation across messages
+- Clean session state for each persona
+
+### Provider Support
+
+- **OpenAI**: Full support with all models (gpt-4, gpt-3.5-turbo, etc.)
+- **Ollama**: Local model support (llama2, mistral, etc.)
+- **Claude/Gemini/DeepSeek**: Ready for implementation
 
 ## Troubleshooting
 
@@ -152,9 +210,9 @@ The TUI is built with:
 
 ### Provider Notes
 
-- **OpenAI**: Fully functional
-- **Claude/Gemini**: Currently using stub implementations
-- **Ollama**: Requires local Ollama server running
+- **OpenAI**: Fully functional with streaming support
+- **Ollama**: Requires local Ollama server running (http://localhost:11434)
+- **Claude/Gemini**: Implementation ready, just need client setup
 
 ## Development
 
@@ -163,11 +221,13 @@ To modify the TUI:
 1. Edit `internal/tui/config_tui.go` for config viewer
 2. Edit `internal/tui/tui.go` for chat interface
 3. Edit `internal/cli/tui.go` for CLI integration
+4. Edit `internal/llm/chat.go` for chat client functionality
 
 Run tests:
 
 ```bash
 go test ./internal/tui/...
+go test ./internal/llm/...
 ```
 
 ## Future Enhancements
@@ -177,3 +237,6 @@ go test ./internal/tui/...
 - [ ] Export/import configuration
 - [ ] Connection testing for services
 - [ ] Theme customization
+- [ ] Streaming response support in TUI
+- [ ] File upload support for chat
+- [ ] Tool/function calling integration
