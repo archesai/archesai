@@ -428,9 +428,9 @@ When adding a new feature:
 
 ### Resources
 
-- [Development Guide](docs/DEVELOPMENT.md)
-- [Architecture Documentation](docs/ARCHITECTURE.md)
-- [API Documentation](docs/API.md)
+- [Development Guide](DEVELOPMENT.md)
+- [Architecture Documentation](ARCHITECTURE.md)
+- [API Documentation](API.md)
 - [Project Issues](https://github.com/archesai/archesai/issues)
 
 ### Communication

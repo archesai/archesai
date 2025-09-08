@@ -40,7 +40,7 @@ For detailed installation and setup instructions, see [Development Guide](docs/D
 - [API Reference](api/openapi.yaml) - OpenAPI specification
 - [Development Guide](docs/DEVELOPMENT.md) - Setup, build, and contribution guide
 - [Architecture](docs/ARCHITECTURE.md) - System design and patterns
-- [Contributing](CONTRIBUTING.md) - How to contribute
+- [Contributing](docs/CONTRIBUTING.md) - How to contribute
 
 ### Packages
 
