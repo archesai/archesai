@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=api/components/schemas/CodegenConfig.yaml
+openapi: api/openapi.bundled.yaml
+output: internal
+
+# Clean Architecture: Generated code goes in adapters/ subdirectory
+# Following hexagonal architecture - these are infrastructure adapters
+# Paths are relative to the domain directory (e.g., internal/auth/adapters/)
+generators:
+  # Repository pattern - ports and adapters
+  repository:
+    interface: "repository.gen.go" # Domain interfaces (ports)
+    postgres: "adapters/repository/postgres.gen.go" # PostgreSQL implementation
+    sqlite: "adapters/repository/sqlite.gen.go" # SQLite implementation
+
+  # Cache adapters (for now in domain root until subpackage imports are fixed)
+  cache:
+    interface: "cache.gen.go"
+    memory: "adapters/cache/memory.gen.go"
+    redis: "adapters/cache/redis.gen.go"
+
+  # Event publishing adapters (for now in domain root until subpackage imports are fixed)
+  events:
+    interface: "events.gen.go"
+    redis: "adapters/events/redis.gen.go"
+    # nats: "events_nats.gen.go" # Requires NATS dependency
+
+  # HTTP handlers (infrastructure/delivery)
+  handlers: "adapters/http/handlers.gen.go"
+
+  # Type mappers between layers
+  adapters: "adapters/mappers/mappers.gen.go"
+
+  # Test files generation
+  tests:
+    unit: "adapters/tests/service_test.gen.go"
+    integration: "adapters/tests/integration_test.gen.go"
+    mocks: "adapters/tests/mocks.gen.go"
+
+  # Global configuration defaults (path relative to project root)
+  defaults: "./internal/config/defaults.gen.go"

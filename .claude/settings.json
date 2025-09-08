@@ -13,7 +13,9 @@
       "Bash(go test:*)",
       "Bash(gofmt:*)",
       "Bash(golangci-lint run:*)",
-      "Bash(go doc:*)"
+      "Bash(go doc:*)",
+      "Bash(make migrate:*)",
+      "Bash(make clean-generated:*)"
     ],
     "deny": [],
     "ask": []

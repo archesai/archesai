@@ -29,16 +29,10 @@ post:
     required: true
   responses:
     "200":
-      description: Default Response
+      description: Successful login
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              data:
-                $ref: ../components/schemas/User.yaml
-            required:
-              - data
-            additionalProperties: false
+            $ref: ../components/schemas/TokenResponse.yaml
     "401":
       $ref: ../components/responses/Unauthorized.yaml

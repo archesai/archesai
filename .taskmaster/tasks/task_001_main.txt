@@ -1,0 +1,11 @@
+# Task ID: 1
+# Title: Set up database infrastructure
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Configure PostgreSQL with pgvector extension and Redis for caching
+# Details:
+Set up PostgreSQL database with pgvector extension for AI embeddings. Configure Redis for distributed caching and pub/sub functionality. Create database schemas and migration system using goose.
+
+# Test Strategy:
+Test database connections, verify pgvector functionality, test Redis pub/sub

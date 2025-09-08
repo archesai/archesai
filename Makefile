@@ -94,7 +94,7 @@ run-worker: ## Run the background worker
 # ------------------------------------------
 
 .PHONY: generate
-generate: generate-sqlc generate-oapi generate-codegen ## Generate all code
+generate: generate-sqlc generate-oapi generate-codegen generate-mocks ## Generate all code
 	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
 .PHONY: generate-sqlc
@@ -123,11 +123,23 @@ generate-oapi: openapi-bundle ## Generate OpenAPI server code
 
 # Simplified, unified code generation targets
 
+.PHONY: generate-codegen-types
+generate-codegen-types: ## Generate types for codegen configuration
+	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
+	@cd internal/codegen && go generate codegen.go
+	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
+
 .PHONY: generate-codegen
-generate-codegen: ## Generate codegen
+generate-codegen: generate-codegen-types ## Generate codegen
 	@echo -e "$(YELLOW)▶ Generating code from OpenAPI schemas...$(NC)"
 	@go run tools/codegen/main.go
 	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
+
+.PHONY: generate-mocks
+generate-mocks: ## Generate test mocks using mockery
+	@echo -e "$(YELLOW)▶ Generating test mocks...$(NC)"
+	@mockery
+	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"
 
 
 # ------------------------------------------
@@ -357,13 +369,7 @@ clean: ## Clean build artifacts
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
 	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
-	@rm -rf internal/generated/api/auth/
-	@rm -rf internal/generated/api/intelligence/
-	@rm -rf internal/generated/api/config/
-	@rm -rf internal/generated/api/health/
-	@rm -rf internal/generated/api/common/
-	@rm -f internal/generated/api/api.gen.go
-	@rm -rf internal/generated/database/postgresql/
+	@find . -type f -name "*.gen.go" -exec rm -f {} +
 	@echo -e "$(GREEN)✓ Generated code cleaned!$(NC)"
 
 .PHONY: install-tools

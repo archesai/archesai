@@ -12,12 +12,12 @@ import (
 
 // Service provides organization business logic
 type Service struct {
-	repo   ExtendedRepository
+	repo   Repository
 	logger *slog.Logger
 }
 
 // NewService creates a new organization service
-func NewService(repo ExtendedRepository, logger *slog.Logger) *Service {
+func NewService(repo Repository, logger *slog.Logger) *Service {
 	return &Service{
 		repo:   repo,
 		logger: logger,
@@ -124,12 +124,11 @@ func (s *Service) ListOrganizations(ctx context.Context, limit, offset int) ([]*
 // CreateMember adds a member to an organization
 func (s *Service) CreateMember(ctx context.Context, req *CreateMemberRequest, orgID string) (*Member, error) {
 	// Check if member already exists
-	// CreateMemberRequest doesn't have UserID field in the generated types
-	// We need to use a different approach
-	existing, err := s.repo.GetMemberByUserAndOrg(ctx, "", orgID)
-	if err == nil && existing != nil {
-		return nil, ErrMemberExists
-	}
+	// TODO: Implement proper duplicate checking once GetMemberByUserAndOrganization is generated
+	// existing, err := s.repo.GetMemberByUserAndOrganization(ctx, userID, orgID)
+	// if err == nil && existing != nil {
+	//     return nil, ErrMemberExists
+	// }
 
 	member := &Member{
 		Id: uuid.UUID{}, // Will be set by repository

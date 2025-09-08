@@ -10,17 +10,18 @@ services:
     environment:
       APP_ENV: ${APP_ENV}
       PORT: ${PORT}
-      BLUEPRINT_DB_HOST: ${BLUEPRINT_DB_HOST}
-      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
-      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
-      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
-      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
-      BLUEPRINT_DB_SCHEMA: ${BLUEPRINT_DB_SCHEMA}
+      ARCHESAI_DATABASE_HOST: postgres
+      ARCHESAI_DATABASE_PORT: 5432
+      ARCHESAI_DATABASE_NAME: ${ARCHESAI_DATABASE_NAME:-archesai}
+      ARCHESAI_DATABASE_USERNAME: ${ARCHESAI_DATABASE_USERNAME:-archesai}
+      ARCHESAI_DATABASE_PASSWORD: ${ARCHESAI_DATABASE_PASSWORD:-password}
+      ARCHESAI_REDIS_HOST: redis
+      ARCHESAI_REDIS_PORT: 6379
     depends_on:
-      psql_bp:
+      postgres:
         condition: service_healthy
-    networks:
-      - blueprint
+      redis:
+        condition: service_started
   frontend:
     build:
       context: .
@@ -31,33 +32,36 @@ services:
       - app
     ports:
       - 5173:5173
-    networks:
-      - blueprint
-  psql_bp:
-    image: postgres:latest
+  postgres:
+    image: pgvector/pgvector:pg16
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${BLUEPRINT_DB_DATABASE}
-      POSTGRES_USER: ${BLUEPRINT_DB_USERNAME}
-      POSTGRES_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      POSTGRES_DB: ${ARCHESAI_DATABASE_NAME:-archesai}
+      POSTGRES_USER: ${ARCHESAI_DATABASE_USERNAME:-archesai}
+      POSTGRES_PASSWORD: ${ARCHESAI_DATABASE_PASSWORD:-password}
     ports:
-      - "${BLUEPRINT_DB_PORT}:5432"
+      - "5432:5432"
     volumes:
-      - psql_volume_bp:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "sh -c 'pg_isready -U ${BLUEPRINT_DB_USERNAME} -d ${BLUEPRINT_DB_DATABASE}'",
+          "sh -c 'pg_isready -U ${ARCHESAI_DATABASE_USERNAME:-archesai} -d ${ARCHESAI_DATABASE_NAME:-archesai}'",
         ]
       interval: 5s
       timeout: 5s
       retries: 3
       start_period: 15s
-    networks:
-      - blueprint
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
 
 volumes:
-  psql_volume_bp:
-networks:
-  blueprint:
+  postgres_data:
+  redis_data:

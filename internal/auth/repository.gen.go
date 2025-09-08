@@ -17,6 +17,10 @@ type Repository interface {
 	DeleteAccount(ctx context.Context, id uuid.UUID) error
 	ListAccounts(ctx context.Context, params ListAccountsParams) ([]*Account, int64, error)
 
+	// Additional Account operations
+	GetAccountByProviderAndProviderID(ctx context.Context, provider, providerID string) (*Account, error)
+	ListUserAccounts(ctx context.Context, userID uuid.UUID) ([]*Account, error)
+
 	// Session operations
 	CreateSession(ctx context.Context, entity *Session) (*Session, error)
 	GetSession(ctx context.Context, id uuid.UUID) (*Session, error)
@@ -24,12 +28,11 @@ type Repository interface {
 	DeleteSession(ctx context.Context, id uuid.UUID) error
 	ListSessions(ctx context.Context, params ListSessionsParams) ([]*Session, int64, error)
 
-	// User operations
-	CreateUser(ctx context.Context, entity *User) (*User, error)
-	GetUser(ctx context.Context, id uuid.UUID) (*User, error)
-	UpdateUser(ctx context.Context, id uuid.UUID, entity *User) (*User, error)
-	DeleteUser(ctx context.Context, id uuid.UUID) error
-	ListUsers(ctx context.Context, params ListUsersParams) ([]*User, int64, error)
+	// Additional Session operations
+	GetSessionByToken(ctx context.Context, token string) (*Session, error)
+	DeleteSessionByToken(ctx context.Context, token string) error
+	DeleteUserSessions(ctx context.Context, userID uuid.UUID) error
+	DeleteExpiredSessions(ctx context.Context) error
 }
 
 // ListAccountsParams represents parameters for listing accounts.
@@ -47,14 +50,6 @@ type ListSessionsParams struct {
 	Offset int
 
 	UserID *string
-}
-
-// ListUsersParams represents parameters for listing users.
-type ListUsersParams struct {
-	Limit  int
-	Offset int
-	Email  *string
-	Name   *string
 }
 
 // RepositoryError represents a repository error.

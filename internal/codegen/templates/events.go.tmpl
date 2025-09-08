@@ -13,7 +13,7 @@ type EventType string
 
 // Event types for {{.Domain}} domain.
 const (
-{{range .Entities}}{{range .Events}}	Event{{.Type}} EventType = "{{kebabCase .Type}}"
+{{range $entity := .Entities}}{{range .Events}}	Event{{$entity.Name}}{{title .Type}} EventType = "{{lower $entity.Name}}.{{kebabCase .Type}}"
 {{end}}{{end}})
 
 // Event represents a domain event.
@@ -28,8 +28,8 @@ type Event struct {
 
 // EventPublisher publishes domain events.
 type EventPublisher interface {
-{{range $entity := .Entities}}{{range .Events}}	// Publish{{.Type}} publishes a {{.Description}} event.
-	Publish{{.Type}}(ctx context.Context, entity *{{$entity.Type}}) error
+{{range $entity := .Entities}}{{range .Events}}	// Publish{{$entity.Name}}{{title .Type}} publishes a {{.Description}} event for {{$entity.Name}}.
+	Publish{{$entity.Name}}{{title .Type}}(ctx context.Context, entity *{{$entity.Type}}) error
 {{end}}{{end}}
 	// PublishRaw publishes a raw event.
 	PublishRaw(ctx context.Context, event *Event) error
@@ -44,8 +44,8 @@ func NewNoOpEventPublisher() EventPublisher {
 }
 
 {{range $entity := .Entities}}{{range .Events}}
-// Publish{{.Type}} does nothing in no-op implementation.
-func (p *NoOpEventPublisher) Publish{{.Type}}(ctx context.Context, entity *{{$entity.Type}}) error {
+// Publish{{$entity.Name}}{{title .Type}} does nothing in no-op implementation.
+func (p *NoOpEventPublisher) Publish{{$entity.Name}}{{title .Type}}(ctx context.Context, entity *{{$entity.Type}}) error {
 	return nil
 }
 {{end}}{{end}}
@@ -56,18 +56,18 @@ func (p *NoOpEventPublisher) PublishRaw(ctx context.Context, event *Event) error
 }
 
 {{range $entity := .Entities}}{{range $event := .Events}}
-// {{$event.Type}}Event represents a {{$event.Description}} event.
-type {{$event.Type}}Event struct {
+// {{$entity.Name}}{{title $event.Type}}Event represents a {{$event.Description}} event for {{$entity.Name}}.
+type {{$entity.Name}}{{title $event.Type}}Event struct {
 	Event
 	Entity *{{$entity.Type}} `json:"entity"`
 }
 
-// New{{$event.Type}}Event creates a new {{$event.Type}} event.
-func New{{$event.Type}}Event(entity *{{$entity.Type}}) *{{$event.Type}}Event {
-	return &{{$event.Type}}Event{
+// New{{$entity.Name}}{{title $event.Type}}Event creates a new {{$entity.Name}} {{$event.Type}} event.
+func New{{$entity.Name}}{{title $event.Type}}Event(entity *{{$entity.Type}}) *{{$entity.Name}}{{title $event.Type}}Event {
+	return &{{$entity.Name}}{{title $event.Type}}Event{
 		Event: Event{
 			ID:        uuid.New().String(),
-			Type:      Event{{$event.Type}},
+			Type:      Event{{$entity.Name}}{{title $event.Type}},
 			Timestamp: time.Now().UTC(),
 			Source:    "{{lower $.Domain}}",
 			Data:      entity,

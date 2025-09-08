@@ -6,6 +6,7 @@ import (
 	"github.com/archesai/archesai/internal/content"
 	"github.com/archesai/archesai/internal/health"
 	"github.com/archesai/archesai/internal/organizations"
+	"github.com/archesai/archesai/internal/users"
 	"github.com/archesai/archesai/internal/workflows"
 	"github.com/labstack/echo/v4"
 )
@@ -16,8 +17,12 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	v1 := e.Group("/api/v1")
 
 	// Register auth routes using StrictHandler pattern
-	strictAuthHandler := auth.NewAuthStrictHandlerWithMiddleware(a.AuthHandler)
+	strictAuthHandler := auth.NewAuthStrictHandler(a.AuthHandler)
 	auth.RegisterHandlers(v1, strictAuthHandler)
+
+	// Register users routes using StrictHandler pattern
+	strictUsersHandler := users.NewUserStrictHandler(a.UsersHandler)
+	users.RegisterHandlers(v1, strictUsersHandler)
 
 	// Register organizations routes using StrictHandler pattern
 	strictOrganizationsHandler := organizations.NewOrganizationStrictHandler(a.OrganizationsHandler)

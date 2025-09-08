@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/archesai/archesai/internal/users"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -29,9 +30,6 @@ type RegisterRequest = RegisterJSONBody
 // LoginRequest represents a login request
 type LoginRequest = LoginJSONBody
 
-// UpdateUserRequest represents a user update request
-type UpdateUserRequest = UpdateUserJSONBody
-
 // Claims represents JWT token claims
 type Claims struct {
 	UserID uuid.UUID `json:"user_id"`
@@ -39,18 +37,16 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// TokenResponse represents authentication token response
-type TokenResponse struct {
-	AccessToken  string    `json:"access_token"`
-	RefreshToken string    `json:"refresh_token"`
-	TokenType    string    `json:"token_type"`
-	ExpiresIn    int64     `json:"expires_in"`
-	ExpiresAt    time.Time `json:"expires_at"`
+// TokenResponseWithExpiry extends the generated TokenResponse with ExpiresAt
+type TokenResponseWithExpiry struct {
+	TokenResponse
+	ExpiresAt time.Time `json:"expires_at"`
 }
 
 // Service handles authentication operations
 type Service struct {
-	repo      ExtendedRepository
+	repo      Repository
+	usersRepo users.Repository
 	jwtSecret []byte
 	logger    *slog.Logger
 	config    Config
@@ -68,7 +64,7 @@ type Config struct {
 }
 
 // NewService creates a new authentication service
-func NewService(repo ExtendedRepository, config Config, logger *slog.Logger) *Service {
+func NewService(repo Repository, usersRepo users.Repository, config Config, logger *slog.Logger) *Service {
 	if config.AccessTokenExpiry == 0 {
 		config.AccessTokenExpiry = 15 * time.Minute
 	}
@@ -84,6 +80,7 @@ func NewService(repo ExtendedRepository, config Config, logger *slog.Logger) *Se
 
 	return &Service{
 		repo:      repo,
+		usersRepo: usersRepo,
 		jwtSecret: []byte(config.JWTSecret),
 		logger:    logger,
 		config:    config,
@@ -91,9 +88,9 @@ func NewService(repo ExtendedRepository, config Config, logger *slog.Logger) *Se
 }
 
 // Register creates a new user account
-func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *TokenResponse, error) {
+func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*users.User, *TokenResponse, error) {
 	// Check if user already exists
-	existingUser, err := s.repo.GetUserByEmail(ctx, string(req.Email))
+	existingUser, err := s.usersRepo.GetUserByEmail(ctx, string(req.Email))
 	if err == nil && existingUser != nil {
 		return nil, nil, ErrUserExists
 	}
@@ -107,7 +104,7 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *T
 
 	// Create new user with embedded User
 	now := time.Now()
-	user := &User{
+	user := &users.User{
 		Id:            uuid.New(),
 		Email:         req.Email,
 		Name:          req.Name,
@@ -117,7 +114,7 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *T
 	}
 
 	// Save user to database - repository expects User
-	createdEntity, err := s.repo.CreateUser(ctx, user)
+	createdEntity, err := s.usersRepo.CreateUser(ctx, user)
 	if err != nil {
 		s.logger.Error("failed to create user", "error", err)
 		return nil, nil, fmt.Errorf("failed to create user: %w", err)
@@ -140,7 +137,7 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *T
 	if err != nil {
 		s.logger.Error("failed to create account", "error", err)
 		// Try to clean up the created user
-		_ = s.repo.DeleteUser(ctx, user.Id)
+		_ = s.usersRepo.DeleteUser(ctx, user.Id)
 		return nil, nil, fmt.Errorf("failed to create account: %w", err)
 	}
 
@@ -177,9 +174,9 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *T
 }
 
 // Login authenticates a user
-func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userAgent string) (*User, *TokenResponse, error) {
+func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userAgent string) (*users.User, *TokenResponse, error) {
 	// Get user by email
-	userEntity, err := s.repo.GetUserByEmail(ctx, string(req.Email))
+	userEntity, err := s.usersRepo.GetUserByEmail(ctx, string(req.Email))
 	if err != nil {
 		s.logger.Warn("user not found", "email", req.Email)
 		return nil, nil, ErrInvalidCredentials
@@ -285,7 +282,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Token
 
 	// Get user (convert uuid.UUID to uuid.UUID)
 	userUUID, _ := uuid.Parse(claims.UserID.String())
-	entity, err := s.repo.GetUser(ctx, userUUID)
+	entity, err := s.usersRepo.GetUser(ctx, userUUID)
 	if err != nil {
 		return nil, ErrUserNotFound
 	}
@@ -301,7 +298,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Token
 }
 
 // generateTokens generates access and refresh tokens
-func (s *Service) generateTokens(user *User) (*TokenResponse, error) {
+func (s *Service) generateTokens(user *users.User) (*TokenResponse, error) {
 	now := time.Now()
 	expiresAt := now.Add(s.config.AccessTokenExpiry)
 
@@ -352,7 +349,6 @@ func (s *Service) generateTokens(user *User) (*TokenResponse, error) {
 		RefreshToken: refreshTokenString,
 		TokenType:    "Bearer",
 		ExpiresIn:    int64(s.config.AccessTokenExpiry.Seconds()),
-		ExpiresAt:    expiresAt,
 	}, nil
 }
 
@@ -365,63 +361,6 @@ func (s *Service) hashPassword(password string) (string, error) {
 // verifyPassword verifies a password against a hash
 func (s *Service) verifyPassword(password, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-}
-
-// GetUser retrieves a user by ID
-func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
-	entity, err := s.repo.GetUser(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	return entity, nil
-}
-
-// UpdateUser updates user information
-func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, req *UpdateUserRequest) (*User, error) {
-	// Get existing user
-	entity, err := s.repo.GetUser(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	// Update fields if provided
-	if req.Email != "" {
-		entity.Email = Email(req.Email)
-	}
-	if req.Image != "" {
-		entity.Image = req.Image
-	}
-	entity.UpdatedAt = time.Now()
-
-	// Save updated user
-	updatedEntity, err := s.repo.UpdateUser(ctx, id, entity)
-	if err != nil {
-		return nil, err
-	}
-
-	return updatedEntity, nil
-}
-
-// DeleteUser deletes a user
-func (s *Service) DeleteUser(ctx context.Context, id uuid.UUID) error {
-	return s.repo.DeleteUser(ctx, id)
-}
-
-// ListUsers lists users with pagination
-func (s *Service) ListUsers(ctx context.Context, limit, offset int32) ([]*User, error) {
-	params := ListUsersParams{
-		Limit:  int(limit),
-		Offset: int(offset),
-	}
-	entities, _, err := s.repo.ListUsers(ctx, params)
-	if err != nil {
-		return nil, err
-	}
-
-	// Convert entities to domain users
-	users := make([]*User, len(entities))
-	copy(users, entities)
-	return users, nil
 }
 
 // GetUserSessions retrieves all sessions for a user
@@ -469,4 +408,9 @@ func (s *Service) ValidateSession(ctx context.Context, token string) (*Session, 
 // DeleteUserSessions deletes all sessions for a user
 func (s *Service) DeleteUserSessions(ctx context.Context, userID uuid.UUID) error {
 	return s.repo.DeleteUserSessions(ctx, userID)
+}
+
+// GetUserByID gets a user by ID (used by middleware)
+func (s *Service) GetUserByID(ctx context.Context, userID uuid.UUID) (*users.User, error) {
+	return s.usersRepo.GetUser(ctx, userID)
 }

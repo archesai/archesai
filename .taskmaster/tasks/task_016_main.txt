@@ -1,0 +1,11 @@
+# Task ID: 16
+# Title: Build workflow template library
+# Status: pending
+# Dependencies: 4, 6
+# Priority: low
+# Description: Pre-built workflow templates and patterns
+# Details:
+Create template storage and categorization. Build template import/export functionality. Add template customization interface. Implement template sharing system.
+
+# Test Strategy:
+Test template CRUD, verify template instantiation, test sharing functionality

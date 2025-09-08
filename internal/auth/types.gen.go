@@ -68,23 +68,6 @@ const (
 	FindManySessionsParamsSortOrderDesc FindManySessionsParamsSortOrder = "desc"
 )
 
-// Defines values for FindManyUsersParamsSortField.
-const (
-	FindManyUsersParamsSortFieldCreatedAt     FindManyUsersParamsSortField = "createdAt"
-	FindManyUsersParamsSortFieldEmail         FindManyUsersParamsSortField = "email"
-	FindManyUsersParamsSortFieldEmailVerified FindManyUsersParamsSortField = "emailVerified"
-	FindManyUsersParamsSortFieldId            FindManyUsersParamsSortField = "id"
-	FindManyUsersParamsSortFieldImage         FindManyUsersParamsSortField = "image"
-	FindManyUsersParamsSortFieldName          FindManyUsersParamsSortField = "name"
-	FindManyUsersParamsSortFieldUpdatedAt     FindManyUsersParamsSortField = "updatedAt"
-)
-
-// Defines values for FindManyUsersParamsSortOrder.
-const (
-	Asc  FindManyUsersParamsSortOrder = "asc"
-	Desc FindManyUsersParamsSortOrder = "desc"
-)
-
 // Account defines model for Account.
 type Account struct {
 	// AccessToken The OAuth access token
@@ -205,6 +188,21 @@ type Session struct {
 	UserId openapi_types.UUID `json:"userId" yaml:"userId"`
 }
 
+// TokenResponse defines model for TokenResponse.
+type TokenResponse struct {
+	// AccessToken JWT access token for API authentication
+	AccessToken string `json:"access_token" yaml:"access_token"`
+
+	// ExpiresIn Access token expiration time in seconds
+	ExpiresIn int64 `json:"expires_in" yaml:"expires_in"`
+
+	// RefreshToken Refresh token for obtaining new access tokens
+	RefreshToken string `json:"refresh_token" yaml:"refresh_token"`
+
+	// TokenType Type of token (always "Bearer")
+	TokenType string `json:"token_type" yaml:"token_type"`
+}
+
 // UUID Universally Unique Identifier
 type UUID = uuid.UUID
 
@@ -275,15 +273,6 @@ type SessionsFilter = FilterNode
 
 // SessionsSort defines model for SessionsSort.
 type SessionsSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// UsersFilter A recursive filter node that can be a condition or group
-type UsersFilter = FilterNode
-
-// UsersSort defines model for UsersSort.
-type UsersSort = []struct {
 	Field string `json:"field" yaml:"field"`
 	Order string `json:"order" yaml:"order"`
 }
@@ -407,34 +396,6 @@ type UpdateSessionJSONBody struct {
 	ActiveOrganizationId string `json:"activeOrganizationId" yaml:"activeOrganizationId"`
 }
 
-// FindManyUsersParams defines parameters for FindManyUsers.
-type FindManyUsersParams struct {
-	// Filter Filter users by field values. Supported fields:
-	// - createdAt, id, updatedAt, email, emailVerified, image, name
-	Filter UsersFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
-
-	// Page The page parameter
-	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
-
-	// Sort The sort parameter
-	Sort UsersSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
-}
-
-// FindManyUsersParamsSortField defines parameters for FindManyUsers.
-type FindManyUsersParamsSortField string
-
-// FindManyUsersParamsSortOrder defines parameters for FindManyUsers.
-type FindManyUsersParamsSortOrder string
-
-// UpdateUserJSONBody defines parameters for UpdateUser.
-type UpdateUserJSONBody struct {
-	// Email The user's e-mail
-	Email string `json:"email,omitempty,omitzero" yaml:"email,omitempty"`
-
-	// Image The user's avatar image URL
-	Image string `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
-}
-
 // RequestEmailChangeJSONRequestBody defines body for RequestEmailChange for application/json ContentType.
 type RequestEmailChangeJSONRequestBody RequestEmailChangeJSONBody
 
@@ -458,9 +419,6 @@ type RegisterJSONRequestBody RegisterJSONBody
 
 // UpdateSessionJSONRequestBody defines body for UpdateSession for application/json ContentType.
 type UpdateSessionJSONRequestBody UpdateSessionJSONBody
-
-// UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
-type UpdateUserJSONRequestBody UpdateUserJSONBody
 
 // AsValidationErrorValue0 returns the union data inside the ValidationError_Value as a ValidationErrorValue0
 func (t ValidationError_Value) AsValidationErrorValue0() (ValidationErrorValue0, error) {

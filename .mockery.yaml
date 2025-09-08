@@ -1,0 +1,24 @@
+template: "testify"
+dir: "{{.InterfaceDir}}"
+packages:
+  github.com/archesai/archesai/internal/users:
+    interfaces:
+      Repository:
+      Cache:
+      EventPublisher:
+  github.com/archesai/archesai/internal/auth:
+    interfaces:
+      Repository:
+      Cache:
+      EventPublisher:
+  github.com/archesai/archesai/internal/organizations:
+    interfaces:
+      Repository:
+      Cache:
+      EventPublisher:
+  github.com/archesai/archesai/internal/workflows:
+    interfaces:
+      Repository:
+  github.com/archesai/archesai/internal/content:
+    interfaces:
+      Repository:

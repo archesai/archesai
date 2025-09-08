@@ -13,6 +13,9 @@ type Handler struct {
 	logger  *slog.Logger
 }
 
+// Ensure Handler implements StrictServerInterface
+var _ StrictServerInterface = (*Handler)(nil)
+
 // NewHandler creates a new health handler
 func NewHandler(service *Service, logger *slog.Logger) *Handler {
 	return &Handler{

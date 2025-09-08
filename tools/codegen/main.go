@@ -14,8 +14,8 @@ func main() {
 	var configPath string
 	var verbose bool
 
-	flag.StringVar(&configPath, "config", "codegen.yaml", "Config file path")
-	flag.StringVar(&configPath, "c", "codegen.yaml", "Config file path (shorthand)")
+	flag.StringVar(&configPath, "config", "archesai.codegen.yaml", "Config file path")
+	flag.StringVar(&configPath, "c", "archesai.codegen.yaml", "Config file path (shorthand)")
 	flag.BoolVar(&verbose, "verbose", false, "Verbose output")
 	flag.BoolVar(&verbose, "v", false, "Verbose output (shorthand)")
 	flag.Parse()
@@ -26,6 +26,7 @@ func main() {
 		log.SetFlags(0)
 	}
 
+	// Always use config file
 	if err := codegen.Run(configPath); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)

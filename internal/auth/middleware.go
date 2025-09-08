@@ -48,7 +48,7 @@ func Middleware(authService *Service, logger *slog.Logger) echo.MiddlewareFunc {
 			}
 
 			// Verify user exists
-			user, err := authService.repo.GetUser(c.Request().Context(), claims.UserID)
+			user, err := authService.GetUserByID(c.Request().Context(), claims.UserID)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusUnauthorized, "user not found")
 			}
@@ -88,7 +88,7 @@ func OptionalAuthMiddleware(authService *Service, logger *slog.Logger) echo.Midd
 				claims, err := authService.ValidateToken(token)
 				if err == nil {
 					// Get user if token is valid
-					user, userErr := authService.repo.GetUser(c.Request().Context(), claims.UserID)
+					user, userErr := authService.GetUserByID(c.Request().Context(), claims.UserID)
 					if userErr == nil {
 						// Set claims and user in context if valid
 						c.Set(string(AuthClaimsContextKey), claims)

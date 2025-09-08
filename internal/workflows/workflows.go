@@ -7,6 +7,11 @@ package workflows
 
 import "errors"
 
+// Common errors
+var (
+	ErrNotFound = errors.New("not found")
+)
+
 // Domain types
 type (
 

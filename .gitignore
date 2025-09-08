@@ -80,3 +80,8 @@ test-output
 **/tmp
 
 bin
+
+logs
+*.log
+
+.mcp.json

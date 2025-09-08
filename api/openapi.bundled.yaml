@@ -183,17 +183,11 @@ paths:
         required: true
       responses:
         "201":
-          description: Default Response
+          description: Successful registration
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/User"
-                required:
-                  - data
-                additionalProperties: false
+                $ref: "#/components/schemas/TokenResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
   /auth/login:
@@ -227,17 +221,11 @@ paths:
         required: true
       responses:
         "200":
-          description: Default Response
+          description: Successful login
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/User"
-                required:
-                  - data
-                additionalProperties: false
+                $ref: "#/components/schemas/TokenResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
   /auth/logout:
@@ -2685,79 +2673,38 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ValidationError"
-    Email:
-      type: string
-      format: email
-      pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-      example: user@example.com
-    User:
-      description: Schema for User entity
-      x-codegen:
-        repository:
-          operations:
-            - create
-            - read
-            - update
-            - delete
-            - list
-          indices:
-            - email
-          additional_methods:
-            - name: GetUserByEmail
-              params:
-                - email
-              returns: single
-        cache:
-          enabled: true
-          ttl: 300
-          key_pattern: user:{id}
-          invalidate_on:
-            - update
-            - delete
-        events:
-          - created
-          - updated
-          - deleted
-          - email_verified
-        service:
-          business_methods:
-            - register
-            - login
-            - verify_email
-      allOf:
-        - $ref: "#/components/schemas/Base"
-        - type: object
-          properties:
-            email:
-              description: The user's email address
-              x-codegen:
-                unique: true
-                index: true
-                validation: email
-              allOf:
-                - $ref: "#/components/schemas/Email"
-            emailVerified:
-              description: Whether the user's email has been verified
-              type: boolean
-              default: false
-              example: true
-            image:
-              description: The user's avatar image URL
-              type: string
-              example: https://example.com/avatar.jpg
-            name:
-              description: The user's display name
-              type: string
-              minLength: 1
-              maxLength: 255
-              example: John Doe
-              x-codegen:
-                searchable: true
-          required:
-            - email
-            - emailVerified
-            - name
-          additionalProperties: false
+    TokenResponse:
+      type: object
+      x-tags:
+        - Auth
+      properties:
+        access_token:
+          type: string
+          minLength: 1
+          description: JWT access token for API authentication
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refresh_token:
+          type: string
+          minLength: 1
+          description: Refresh token for obtaining new access tokens
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        token_type:
+          type: string
+          minLength: 1
+          description: Type of token (always "Bearer")
+          example: Bearer
+          default: Bearer
+        expires_in:
+          type: integer
+          format: int64
+          description: Access token expiration time in seconds
+          example: 900
+      required:
+        - access_token
+        - refresh_token
+        - token_type
+        - expires_in
+      additionalProperties: false
     Session:
       description: Schema for Session entity
       x-codegen:
@@ -2862,6 +2809,79 @@ components:
         - userAgent
         - userId
       additionalProperties: false
+    Email:
+      type: string
+      format: email
+      pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+      example: user@example.com
+    User:
+      description: Schema for User entity
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - read
+            - update
+            - delete
+            - list
+          indices:
+            - email
+          additional_methods:
+            - name: GetUserByEmail
+              params:
+                - email
+              returns: single
+        cache:
+          enabled: true
+          ttl: 300
+          key_pattern: user:{id}
+          invalidate_on:
+            - update
+            - delete
+        events:
+          - created
+          - updated
+          - deleted
+          - email_verified
+        service:
+          business_methods:
+            - register
+            - login
+            - verify_email
+      allOf:
+        - $ref: "#/components/schemas/Base"
+        - type: object
+          properties:
+            email:
+              description: The user's email address
+              x-codegen:
+                unique: true
+                index: true
+                validation: email
+              allOf:
+                - $ref: "#/components/schemas/Email"
+            emailVerified:
+              description: Whether the user's email has been verified
+              type: boolean
+              default: false
+              example: true
+            image:
+              description: The user's avatar image URL
+              type: string
+              example: https://example.com/avatar.jpg
+            name:
+              description: The user's display name
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: John Doe
+              x-codegen:
+                searchable: true
+          required:
+            - email
+            - emailVerified
+            - name
+          additionalProperties: false
     Organization:
       description: Schema for Organization entity
       x-codegen:

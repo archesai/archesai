@@ -1,0 +1,374 @@
+{
+  "main": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Set up database infrastructure",
+        "description": "Configure PostgreSQL with pgvector extension and Redis for caching",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Set up PostgreSQL database with pgvector extension for AI embeddings. Configure Redis for distributed caching and pub/sub functionality. Create database schemas and migration system using goose.",
+        "testStrategy": "Test database connections, verify pgvector functionality, test Redis pub/sub",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement authentication system",
+        "description": "JWT-based authentication with refresh tokens and OAuth2 integration",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": ["1"],
+        "details": "Implement JWT authentication with access and refresh tokens. Add OAuth2 support for Google, Microsoft, and GitHub. Create user registration and login flows. Implement password reset functionality.",
+        "testStrategy": "Unit tests for auth middleware, integration tests for login/logout flows, test OAuth2 providers",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Create organization management service",
+        "description": "Multi-tenant organization structure with resource isolation",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": ["2"],
+        "details": "Build organization creation and management. Implement tenant isolation at database level. Create organization settings and limits. Add user-organization relationships and invitations.",
+        "testStrategy": "Test organization CRUD operations, verify tenant isolation, test invitation flows",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Build core workflow engine",
+        "description": "DAG-based workflow execution engine with state management",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": ["3"],
+        "details": "Create DAG structure for workflow definitions. Implement workflow parser and validator. Build execution engine with state tracking. Add node types and edge connections.",
+        "testStrategy": "Test DAG parsing and validation, test execution flow, verify state transitions",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement execution runtime",
+        "description": "Workflow execution with monitoring and error handling",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": ["4"],
+        "details": "Build execution runtime for workflows. Add execution state tracking and persistence. Implement error handling and retry logic. Create execution history and logs.",
+        "testStrategy": "Test execution lifecycle, verify error recovery, test parallel execution",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Create tool registry system",
+        "description": "Registry for reusable workflow components and integrations",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["4"],
+        "details": "Build tool definition and registration system. Create tool versioning and dependency management. Implement tool marketplace structure. Add tool validation and testing framework.",
+        "testStrategy": "Test tool registration, verify tool execution, test dependency resolution",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Build AI gateway service",
+        "description": "Unified interface for AI/ML providers with routing",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": ["4"],
+        "details": "Create unified AI provider interface. Implement OpenAI and Anthropic Claude integrations. Build intelligent routing based on cost/performance. Add request/response caching.",
+        "testStrategy": "Test provider integrations, verify routing logic, test fallback mechanisms",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement prompt template engine",
+        "description": "Reusable parameterized prompt management system",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["7"],
+        "details": "Create prompt template storage and versioning. Build template parameter system. Implement prompt composition and chaining. Add prompt optimization suggestions.",
+        "testStrategy": "Test template rendering, verify parameter substitution, test prompt chaining",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Create content processing pipeline",
+        "description": "Multi-modal content processing with streaming support",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["7"],
+        "details": "Build content ingestion and processing pipeline. Add support for text, images, and documents. Implement streaming for large content. Create content extraction and transformation.",
+        "testStrategy": "Test content types processing, verify streaming functionality, test transformations",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Build React SPA foundation",
+        "description": "React application with routing and state management",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": ["2"],
+        "details": "Set up React with TypeScript and Vite. Configure routing with React Router. Implement state management with Zustand or Redux. Create base layout and navigation.",
+        "testStrategy": "Test routing, verify state management, test component rendering",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Create visual workflow editor",
+        "description": "React Flow-based DAG editor with drag-and-drop",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": ["10", "4"],
+        "details": "Integrate React Flow for DAG visualization. Implement drag-and-drop node creation. Build node and edge configuration panels. Add workflow validation visualization.",
+        "testStrategy": "Test node/edge manipulation, verify workflow serialization, test validation display",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement execution monitoring UI",
+        "description": "Real-time execution status and logs visualization",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["10", "5"],
+        "details": "Create execution monitoring dashboard. Implement real-time status updates via WebSocket. Build log viewer with filtering. Add execution metrics display.",
+        "testStrategy": "Test real-time updates, verify log streaming, test metrics accuracy",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Build AI chat interface",
+        "description": "Conversational UI for natural language workflow creation",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["10", "7"],
+        "details": "Create chat interface component. Implement message streaming from AI. Build workflow generation from natural language. Add conversation history and context.",
+        "testStrategy": "Test message flow, verify workflow generation, test context handling",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Create WebSocket API",
+        "description": "Real-time communication for updates and collaboration",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["2"],
+        "details": "Implement WebSocket server with authentication. Create event subscription system. Build real-time notification delivery. Add presence and collaboration features.",
+        "testStrategy": "Test WebSocket connections, verify event delivery, test reconnection logic",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement storage service",
+        "description": "S3-compatible storage for artifacts and content",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["3"],
+        "details": "Configure S3-compatible storage (MinIO or AWS S3). Implement artifact upload and retrieval. Add storage quotas and limits. Create content versioning system.",
+        "testStrategy": "Test file upload/download, verify storage limits, test versioning",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Build workflow template library",
+        "description": "Pre-built workflow templates and patterns",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": ["4", "6"],
+        "details": "Create template storage and categorization. Build template import/export functionality. Add template customization interface. Implement template sharing system.",
+        "testStrategy": "Test template CRUD, verify template instantiation, test sharing functionality",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Implement role-based access control",
+        "description": "RBAC with permissions and resource access",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["3"],
+        "details": "Create role and permission system. Implement resource-level access control. Build permission checking middleware. Add role assignment interface.",
+        "testStrategy": "Test permission checks, verify resource access, test role inheritance",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Create monitoring and logging system",
+        "description": "Comprehensive logging with search and analytics",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["5"],
+        "details": "Implement structured logging system. Add log aggregation and search. Create audit trail for compliance. Build monitoring dashboards.",
+        "testStrategy": "Test log capture, verify search functionality, test audit trail completeness",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Build cost tracking and optimization",
+        "description": "AI usage cost monitoring and optimization",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["7"],
+        "details": "Implement cost tracking for AI API calls. Create cost estimation for workflows. Build cost optimization recommendations. Add billing and usage reports.",
+        "testStrategy": "Test cost calculation accuracy, verify billing reports, test optimization suggestions",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Implement scheduling and triggers",
+        "description": "Cron-based scheduling and event triggers",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["5"],
+        "details": "Create cron-based scheduler for workflows. Implement webhook triggers. Build event-based triggers. Add schedule management interface.",
+        "testStrategy": "Test schedule execution, verify trigger firing, test timezone handling",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Create API documentation and SDK",
+        "description": "OpenAPI documentation and TypeScript SDK",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": ["2", "4"],
+        "details": "Generate OpenAPI 3.1 specification. Create interactive API documentation. Build TypeScript SDK. Add code examples and tutorials.",
+        "testStrategy": "Validate OpenAPI spec, test SDK methods, verify documentation accuracy",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Build testing infrastructure",
+        "description": "Comprehensive testing framework and CI/CD",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": ["1"],
+        "details": "Set up unit testing framework. Create integration test suite. Implement E2E testing with Playwright. Configure CI/CD pipelines.",
+        "testStrategy": "Verify test coverage, validate CI/CD pipeline, test deployment process",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Implement deployment infrastructure",
+        "description": "Kubernetes deployment with Helm charts",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": ["22"],
+        "details": "Create Kubernetes manifests and Helm charts. Configure auto-scaling policies. Set up monitoring and alerting. Implement blue-green deployments.",
+        "testStrategy": "Test deployment process, verify scaling behavior, test rollback procedures",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Create onboarding and documentation",
+        "description": "User onboarding flow and comprehensive documentation",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": ["10", "11"],
+        "details": "Build interactive onboarding tutorial. Create user documentation and guides. Add in-app help system. Develop video tutorials.",
+        "testStrategy": "Test onboarding flow completion, verify documentation links, test help system",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Implement performance optimization",
+        "description": "System-wide performance optimization and caching",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": ["5", "7", "12"],
+        "details": "Optimize database queries and indexes. Implement caching strategies. Add query optimization. Profile and optimize critical paths.",
+        "testStrategy": "Benchmark performance improvements, test cache invalidation, verify optimization impact",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Complete OpenAPI codegen system",
+        "description": "Finish comprehensive codegen functionality to generate all boilerplate from OpenAPI specs",
+        "details": "Build a complete OpenAPI-driven code generation system that automatically generates all necessary boilerplate code from the api/openapi.yaml specification.\n\nKey Components:\n- Repository interfaces and implementations (PostgreSQL/SQLite)\n- HTTP handlers with proper request/response handling\n- Type definitions with validation\n- Cache interfaces and Redis/memory implementations\n- Event publishers and subscribers\n- Database adapters with type conversion\n- Comprehensive test boilerplate\n\nTechnical Requirements:\n- Source: api/openapi.yaml (single source of truth)\n- Auto-detect domains from OpenAPI tags\n- Generate \"DO NOT EDIT\" headers on all files\n- All generators enabled (repo, cache, events, handlers, adapters, tests)\n- Type-safe adapters between layers\n- Integration with existing make generate command\n- Remove dependency on codegen.yaml config\n\nDomain Architecture Considerations:\n- Consider separating Users from Auth domain\n- Intelligent tag-based domain inference\n- Consistent file naming and structure\n- Proper import path management",
+        "testStrategy": "Generate comprehensive test boilerplate including mock repositories, handler tests, service tests, and integration tests. Test generation should include setup/teardown, common test cases, and proper mocking patterns.",
+        "status": "in-progress",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Validate existing codegen framework",
+            "description": "Verify the core codegen framework in internal/codegen/ is complete and all components are working correctly",
+            "dependencies": [],
+            "details": "Review the existing codegen framework structure, verify all files are present (codegen.go, parser.go, templates/), test basic code generation functionality, and ensure the make generate command integration is working properly.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Test repository interface generation",
+            "description": "Validate that repository interfaces and PostgreSQL/SQLite implementations are generated correctly from OpenAPI specs",
+            "dependencies": ["26.1"],
+            "details": "Run codegen to generate repository interfaces, verify PostgreSQL and SQLite implementations are created, test that generated code compiles and follows the expected patterns for database operations.\n<info added on 2025-09-08T15:17:08.372Z>\nRepository interface generation is working correctly, generating all three expected files (interface, PostgreSQL, and SQLite implementations). However, critical issues identified in PostgreSQL and SQLite templates: 1) Templates are hardcoded for specific entities (User, Session, Account) instead of being generic for all entity types, 2) Method naming inconsistencies (using GetByID instead of Get), 3) Missing proper error handling patterns. Templates require refactoring to use dynamic entity types and standardized method signatures before this subtask can be marked complete.\n</info added on 2025-09-08T15:17:08.372Z>\n<info added on 2025-09-08T15:29:40.497Z>\nRepository generation confirmed working - all three files (interface, PostgreSQL, SQLite) are generated as expected. However, template implementation is fundamentally flawed with hardcoded entity logic (User/Session/Account), missing conversion functions, and incorrect method names. Generated code is invalid and non-functional. Template refactoring required as separate task to make repository generation truly functional.\n</info added on 2025-09-08T15:29:40.497Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Verify cache interface generation",
+            "description": "Test cache interfaces and Redis/memory implementations are generated properly",
+            "dependencies": ["26.1"],
+            "details": "Execute cache generation from OpenAPI specs, verify Redis and memory cache implementations are created with proper interfaces, test that cache operations compile and follow expected patterns.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Fix repository template implementation",
+            "description": "Refactor repository templates to generate valid, working code for all entity types",
+            "details": "The repository templates (repository_postgres.go.tmpl and repository_sqlite.go.tmpl) need complete refactoring. Current issues: 1) Templates are hardcoded for User/Session/Account entities only, 2) Missing conversion functions like AccountDBToAPI, 3) Incorrect method signatures (GetByID vs Get), 4) Type mismatches between sql.DB and postgresql.DBTX, 5) Incomplete error handling. Need to create generic templates that work with any entity type defined in OpenAPI specs.\n<info added on 2025-09-08T15:37:44.367Z>\nRoot cause identified: Generated repository code calls undefined conversion functions (AccountDBToAPI, UserDBToAPI, SessionDBToAPI). These functions are referenced in the generated files but never created. Solution options: 1) Add conversion function generation to the repository templates, 2) Create separate mapper file generation, or 3) Redesign templates to eliminate need for these functions. Current template modifications produce TODO placeholders, but actual generation creates broken code with undefined function calls.\n</info added on 2025-09-08T15:37:44.367Z>\n<info added on 2025-09-08T15:47:21.535Z>\nTask completed with partial solution. Created mapper files for all domains (auth, organizations, workflows, content) with conversion functions. The repository_postgres.go.tmpl and repository_sqlite.go.tmpl templates are hardcoded for specific entities (User, Session, Account) and generate incomplete code for other entities. The templates need complete rewrite to be generic and work with any entity type defined in OpenAPI specs. Current workaround: manual mapper files provide the conversion functions to make the generated code compile, but the generated repository implementations are still incomplete and non-functional for most operations.\n</info added on 2025-09-08T15:47:21.535Z>",
+            "status": "done",
+            "dependencies": ["26.2"],
+            "parentTaskId": 26
+          },
+          {
+            "id": 4,
+            "title": "Validate event system generation",
+            "description": "Ensure event publishers and subscribers are generated correctly with proper type safety",
+            "dependencies": ["26.1"],
+            "details": "Test event generation functionality, verify publishers and subscribers are created with correct types, ensure event handling follows the established patterns and integrates properly with the existing system.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Test HTTP handler generation",
+            "description": "Verify HTTP handlers with request/response handling are generated correctly",
+            "dependencies": ["26.1"],
+            "details": "Generate HTTP handlers from OpenAPI specs, verify proper request/response types are used, test that handlers follow Echo framework patterns and include proper error handling and validation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Validate domain auto-detection",
+            "description": "Test that domains are automatically detected from OpenAPI tags without requiring codegen.yaml config",
+            "dependencies": ["26.2", "26.3", "26.4", "26.5"],
+            "details": "Run codegen on the current OpenAPI spec, verify domains are correctly inferred from tags, ensure generated files are placed in appropriate domain directories, and confirm config-free operation works as expected.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Create codegen documentation and examples",
+            "description": "Document the complete codegen system usage and provide examples for developers",
+            "dependencies": ["26.6"],
+            "details": "Create comprehensive documentation covering codegen usage, OpenAPI annotation requirements, generated file structure, and integration with make commands. Include examples of how to extend the system and troubleshoot common issues.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "createdAt": "2025-01-08T00:00:00Z",
+      "lastModified": "2025-01-08T00:00:00Z",
+      "tag": "main",
+      "created": "2025-09-08T12:34:56.551Z",
+      "description": "Tasks for main context",
+      "updated": "2025-09-08T15:47:28.820Z"
+    }
+  }
+}

@@ -2,13 +2,100 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
 	"github.com/archesai/archesai/internal/logger"
+	"github.com/archesai/archesai/internal/users"
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
+	"golang.org/x/crypto/bcrypt"
 )
+
+// MockUsersRepository implements users.Repository for testing
+type MockUsersRepository struct {
+	users map[uuid.UUID]*users.User
+	err   error
+}
+
+func NewMockUsersRepository() *MockUsersRepository {
+	return &MockUsersRepository{
+		users: make(map[uuid.UUID]*users.User),
+	}
+}
+
+func (m *MockUsersRepository) CreateUser(_ context.Context, user *users.User) (*users.User, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	user.Id = uuid.New()
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
+	m.users[user.Id] = user
+	return user, nil
+}
+
+func (m *MockUsersRepository) GetUser(_ context.Context, id uuid.UUID) (*users.User, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	user, exists := m.users[id]
+	if !exists {
+		return nil, users.ErrUserNotFound
+	}
+	return user, nil
+}
+
+func (m *MockUsersRepository) GetUserByID(_ context.Context, id uuid.UUID) (*users.User, error) {
+	return m.GetUser(context.Background(), id)
+}
+
+func (m *MockUsersRepository) GetUserByEmail(_ context.Context, email string) (*users.User, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	for _, user := range m.users {
+		if string(user.Email) == email {
+			return user, nil
+		}
+	}
+	return nil, users.ErrUserNotFound
+}
+
+func (m *MockUsersRepository) UpdateUser(_ context.Context, id uuid.UUID, user *users.User) (*users.User, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	if _, exists := m.users[id]; !exists {
+		return nil, users.ErrUserNotFound
+	}
+	user.Id = id
+	user.UpdatedAt = time.Now()
+	m.users[id] = user
+	return user, nil
+}
+
+func (m *MockUsersRepository) DeleteUser(_ context.Context, id uuid.UUID) error {
+	if m.err != nil {
+		return m.err
+	}
+	if _, exists := m.users[id]; !exists {
+		return users.ErrUserNotFound
+	}
+	delete(m.users, id)
+	return nil
+}
+
+func (m *MockUsersRepository) ListUsers(_ context.Context, _ users.ListUsersParams) ([]*users.User, int64, error) {
+	if m.err != nil {
+		return nil, 0, m.err
+	}
+	userList := make([]*users.User, 0, len(m.users))
+	for _, user := range m.users {
+		userList = append(userList, user)
+	}
+	return userList, int64(len(userList)), nil
+}
 
 func TestHandler_Register(t *testing.T) {
 	tests := []struct {
@@ -41,7 +128,6 @@ func TestHandler_Register(t *testing.T) {
 				RefreshToken: "refresh-token",
 				TokenType:    "Bearer",
 				ExpiresIn:    3600,
-				ExpiresAt:    time.Now().Add(time.Hour),
 			},
 			mockError:      nil,
 			expectedStatus: 201,
@@ -64,10 +150,15 @@ func TestHandler_Register(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Setup mock repositories
+			mockRepo := NewMockRepository(t)
+			mockUsersRepo := NewMockUsersRepository()
+
 			// Setup mock service
 			mockService := &Service{
-				repo:   &MockRepository{},
-				logger: logger.NewTest(),
+				repo:      mockRepo,
+				usersRepo: mockUsersRepo,
+				logger:    logger.NewTest(),
 				config: Config{
 					JWTSecret:          "test-secret",
 					AccessTokenExpiry:  15 * time.Minute,
@@ -75,20 +166,35 @@ func TestHandler_Register(t *testing.T) {
 				},
 			}
 
-			// Override the Register method behavior
-			mockRepo := mockService.repo.(*MockRepository)
-			mockRepo.users = make(map[uuid.UUID]*User)
-			mockRepo.accounts = make(map[uuid.UUID]*Account)
-			mockRepo.sessions = make(map[uuid.UUID]*Session)
-
-			if tt.mockError == ErrUserExists {
-				// For user exists case, add a user with same email
-				existingUser := &User{
+			// Setup users repository mock and expectations
+			switch tt.name {
+			case "user already exists":
+				// Pre-populate with existing user
+				existingUser := &users.User{
 					Id:    uuid.New(),
-					Email: tt.request.Body.Email,
+					Email: "existing@example.com",
 					Name:  "Existing User",
 				}
-				mockRepo.users[existingUser.Id] = existingUser
+				mockUsersRepo.users[existingUser.Id] = existingUser
+			case "successful registration":
+				// Setup expectations for successful registration
+				mockRepo.EXPECT().CreateAccount(mock.Anything, mock.AnythingOfType("*auth.Account")).Return(&Account{
+					Id:         uuid.New(),
+					UserId:     uuid.New(),
+					ProviderId: Local,
+					AccountId:  "test@example.com",
+					CreatedAt:  time.Now(),
+					UpdatedAt:  time.Now(),
+				}, nil)
+
+				mockRepo.EXPECT().CreateSession(mock.Anything, mock.AnythingOfType("*auth.Session")).Return(&Session{
+					Id:        uuid.New(),
+					Token:     "test-token",
+					UserId:    uuid.New(),
+					ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+					CreatedAt: time.Now(),
+					UpdatedAt: time.Now(),
+				}, nil)
 			}
 
 			handler := NewHandler(mockService, logger.NewTest())
@@ -128,7 +234,7 @@ func TestHandler_Login(t *testing.T) {
 	tests := []struct {
 		name           string
 		request        LoginRequestObject
-		setupMock      func(*MockRepository)
+		setupMocks     func(*testing.T) (*Service, *MockUsersRepository)
 		expectedError  bool
 		expectedStatus int
 	}{
@@ -140,31 +246,54 @@ func TestHandler_Login(t *testing.T) {
 					Password: "password123",
 				},
 			},
-			setupMock: func(m *MockRepository) {
+			setupMocks: func(t *testing.T) (*Service, *MockUsersRepository) {
+				mockRepo := NewMockRepository(t)
+				mockUsersRepo := NewMockUsersRepository()
+
 				userID := uuid.New()
-				m.users = map[uuid.UUID]*User{
-					userID: {
-						Id:            userID,
-						Email:         "test@example.com",
-						Name:          "Test User",
-						EmailVerified: true,
-						CreatedAt:     time.Now(),
-						UpdatedAt:     time.Now(),
+				hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
+
+				// Setup account retrieval by provider and provider ID
+				mockRepo.EXPECT().GetAccountByProviderAndProviderID(mock.Anything, string(Local), "test@example.com").Return(&Account{
+					Id:         uuid.New(),
+					UserId:     userID,
+					ProviderId: Local,
+					AccountId:  "test@example.com",
+					Password:   string(hashedPassword),
+					CreatedAt:  time.Now(),
+					UpdatedAt:  time.Now(),
+				}, nil)
+
+				// Setup session creation
+				mockRepo.EXPECT().CreateSession(mock.Anything, mock.Anything).Return(&Session{
+					Id:        uuid.New(),
+					UserId:    userID,
+					Token:     "test-token",
+					ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+					CreatedAt: time.Now(),
+					UpdatedAt: time.Now(),
+				}, nil)
+
+				// Setup user in users repo
+				user := &users.User{
+					Id:    userID,
+					Email: "test@example.com",
+					Name:  "Test User",
+				}
+				mockUsersRepo.users[userID] = user
+
+				service := &Service{
+					repo:      mockRepo,
+					usersRepo: mockUsersRepo,
+					logger:    logger.NewTest(),
+					config: Config{
+						JWTSecret:          "test-secret",
+						AccessTokenExpiry:  15 * time.Minute,
+						RefreshTokenExpiry: 7 * 24 * time.Hour,
 					},
 				}
-				// Use empty password to skip verification in mock
-				m.accounts = map[uuid.UUID]*Account{
-					uuid.New(): {
-						Id:         uuid.New(),
-						UserId:     userID,
-						ProviderId: Local,
-						AccountId:  "test@example.com",
-						Password:   "", // Empty password skips verification
-						CreatedAt:  time.Now(),
-						UpdatedAt:  time.Now(),
-					},
-				}
-				m.sessions = make(map[uuid.UUID]*Session)
+
+				return service, mockUsersRepo
 			},
 			expectedError:  false,
 			expectedStatus: 200,
@@ -177,10 +306,25 @@ func TestHandler_Login(t *testing.T) {
 					Password: "password123",
 				},
 			},
-			setupMock: func(m *MockRepository) {
-				m.users = make(map[uuid.UUID]*User)
-				m.accounts = make(map[uuid.UUID]*Account)
-				m.sessions = make(map[uuid.UUID]*Session)
+			setupMocks: func(t *testing.T) (*Service, *MockUsersRepository) {
+				mockRepo := NewMockRepository(t)
+				mockUsersRepo := NewMockUsersRepository()
+
+				// Setup account not found
+				mockRepo.EXPECT().GetAccountByProviderAndProviderID(mock.Anything, string(Local), "nonexistent@example.com").Return(nil, ErrAccountNotFound)
+
+				service := &Service{
+					repo:      mockRepo,
+					usersRepo: mockUsersRepo,
+					logger:    logger.NewTest(),
+					config: Config{
+						JWTSecret:          "test-secret",
+						AccessTokenExpiry:  15 * time.Minute,
+						RefreshTokenExpiry: 7 * 24 * time.Hour,
+					},
+				}
+
+				return service, mockUsersRepo
 			},
 			expectedError:  false, // Returns 401 response, not error
 			expectedStatus: 401,
@@ -189,26 +333,12 @@ func TestHandler_Login(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Setup mock service
-			mockRepo := &MockRepository{}
-			tt.setupMock(mockRepo)
+			// Setup mocks
+			service, _ := tt.setupMocks(t)
+			handler := NewHandler(service, logger.NewTest())
 
-			mockService := &Service{
-				repo:   mockRepo,
-				logger: logger.NewTest(),
-				config: Config{
-					JWTSecret:          "test-secret",
-					AccessTokenExpiry:  15 * time.Minute,
-					RefreshTokenExpiry: 7 * 24 * time.Hour,
-				},
-			}
-
-			handler := NewHandler(mockService, logger.NewTest())
-
-			// Execute with context containing IP and user agent
-			ctx := context.WithValue(context.Background(), ipAddressKey, "192.168.1.1")
-			ctx = context.WithValue(ctx, userAgentKey, "TestAgent/1.0")
-
+			// Execute
+			ctx := context.Background()
 			response, err := handler.Login(ctx, tt.request)
 
 			// Assert
@@ -236,25 +366,30 @@ func TestHandler_Logout(t *testing.T) {
 	tests := []struct {
 		name          string
 		request       LogoutRequestObject
-		setupMock     func(*MockRepository)
+		setupMocks    func(*testing.T) *Service
 		contextToken  string
 		expectedError bool
 	}{
 		{
 			name:    "successful logout",
 			request: LogoutRequestObject{},
-			setupMock: func(m *MockRepository) {
-				sessionID := uuid.New()
-				m.sessions = map[uuid.UUID]*Session{
-					sessionID: {
-						Id:        sessionID,
-						UserId:    uuid.New(),
-						Token:     "test-token",
-						ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
-						CreatedAt: time.Now(),
-						UpdatedAt: time.Now(),
+			setupMocks: func(t *testing.T) *Service {
+				mockRepo := NewMockRepository(t)
+				mockUsersRepo := NewMockUsersRepository()
+
+				// Setup delete session
+				mockRepo.EXPECT().DeleteSessionByToken(mock.Anything, "test-token").Return(nil)
+
+				service := &Service{
+					repo:      mockRepo,
+					usersRepo: mockUsersRepo,
+					logger:    logger.NewTest(),
+					config: Config{
+						JWTSecret: "test-secret",
 					},
 				}
+
+				return service
 			},
 			contextToken:  "test-token",
 			expectedError: false,
@@ -262,8 +397,23 @@ func TestHandler_Logout(t *testing.T) {
 		{
 			name:    "session not found",
 			request: LogoutRequestObject{},
-			setupMock: func(m *MockRepository) {
-				m.sessions = make(map[uuid.UUID]*Session)
+			setupMocks: func(t *testing.T) *Service {
+				mockRepo := NewMockRepository(t)
+				mockUsersRepo := NewMockUsersRepository()
+
+				// Setup delete session fails
+				mockRepo.EXPECT().DeleteSessionByToken(mock.Anything, "non-existent-token").Return(ErrSessionNotFound)
+
+				service := &Service{
+					repo:      mockRepo,
+					usersRepo: mockUsersRepo,
+					logger:    logger.NewTest(),
+					config: Config{
+						JWTSecret: "test-secret",
+					},
+				}
+
+				return service
 			},
 			contextToken:  "non-existent-token",
 			expectedError: false, // Returns 401 response
@@ -272,22 +422,14 @@ func TestHandler_Logout(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Setup mock repository
-			mockRepo := &MockRepository{}
-			tt.setupMock(mockRepo)
-
-			mockService := &Service{
-				repo:   mockRepo,
-				logger: logger.NewTest(),
-				config: Config{
-					JWTSecret: "test-secret",
-				},
-			}
-
-			handler := NewHandler(mockService, logger.NewTest())
+			// Setup mocks
+			service := tt.setupMocks(t)
+			handler := NewHandler(service, logger.NewTest())
 
 			// Execute with token in context
-			ctx := context.WithValue(context.Background(), authTokenKey, tt.contextToken)
+			type contextKey string
+			const sessionTokenKey contextKey = "session_token"
+			ctx := context.WithValue(context.Background(), sessionTokenKey, tt.contextToken)
 
 			response, err := handler.Logout(ctx, tt.request)
 
@@ -308,295 +450,6 @@ func TestHandler_Logout(t *testing.T) {
 				default:
 					t.Errorf("Unexpected response type: %T", response)
 				}
-			}
-		})
-	}
-}
-
-func TestHandler_GetOneUser(t *testing.T) {
-	userID := uuid.New()
-
-	tests := []struct {
-		name          string
-		request       GetOneUserRequestObject
-		setupMock     func(*MockRepository)
-		contextUser   *User
-		expectedError bool
-	}{
-		{
-			name: "get existing user",
-			request: GetOneUserRequestObject{
-				Id: userID,
-			},
-			setupMock: func(m *MockRepository) {
-				m.users = map[uuid.UUID]*User{
-					userID: {
-						Id:            userID,
-						Email:         "test@example.com",
-						Name:          "Test User",
-						EmailVerified: true,
-						CreatedAt:     time.Now(),
-						UpdatedAt:     time.Now(),
-					},
-				}
-			},
-			contextUser: &User{
-				Id:    userID,
-				Email: "test@example.com",
-			},
-			expectedError: false,
-		},
-		{
-			name: "user not found",
-			request: GetOneUserRequestObject{
-				Id: uuid.New(),
-			},
-			setupMock: func(m *MockRepository) {
-				m.users = make(map[uuid.UUID]*User)
-			},
-			contextUser: &User{
-				Id:    userID,
-				Email: "test@example.com",
-			},
-			expectedError: false, // Returns 404 response
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Setup mock repository
-			mockRepo := &MockRepository{}
-			tt.setupMock(mockRepo)
-
-			mockService := &Service{
-				repo:   mockRepo,
-				logger: logger.NewTest(),
-				config: Config{
-					JWTSecret: "test-secret",
-				},
-			}
-
-			handler := NewHandler(mockService, logger.NewTest())
-
-			// Execute with user in context
-			ctx := context.Background()
-			if tt.contextUser != nil {
-				ctx = context.WithValue(ctx, UserContextKey, tt.contextUser)
-			}
-
-			response, err := handler.GetOneUser(ctx, tt.request)
-
-			// Assert
-			if tt.expectedError && err == nil {
-				t.Errorf("Expected error, got nil")
-			} else if !tt.expectedError && err != nil {
-				t.Errorf("Unexpected error: %v", err)
-			}
-
-			// Check response type
-			if err == nil && response != nil {
-				switch resp := response.(type) {
-				case GetOneUser200JSONResponse:
-					// Success case
-					if resp.Data.Id != userID {
-						t.Errorf("Expected user ID %v, got %v", userID, resp.Data.Id)
-					}
-				case GetOneUser404ApplicationProblemPlusJSONResponse:
-					// Not found case - expected
-				default:
-					t.Errorf("Unexpected response type: %T", response)
-				}
-			}
-		})
-	}
-}
-
-func TestHandler_UpdateUser(t *testing.T) {
-	userID := uuid.New()
-
-	tests := []struct {
-		name          string
-		request       UpdateUserRequestObject
-		setupMock     func(*MockRepository)
-		contextUser   *User
-		expectedError bool
-	}{
-		{
-			name: "successful update",
-			request: UpdateUserRequestObject{
-				Id: userID,
-				Body: &UpdateUserJSONRequestBody{
-					Email: "newemail@example.com",
-					Image: "https://example.com/avatar.jpg",
-				},
-			},
-			setupMock: func(m *MockRepository) {
-				m.users = map[uuid.UUID]*User{
-					userID: {
-						Id:            userID,
-						Email:         "test@example.com",
-						Name:          "Test User",
-						EmailVerified: true,
-						CreatedAt:     time.Now(),
-						UpdatedAt:     time.Now(),
-					},
-				}
-			},
-			contextUser: &User{
-				Id:    userID,
-				Email: "test@example.com",
-			},
-			expectedError: false,
-		},
-		{
-			name: "user not found",
-			request: UpdateUserRequestObject{
-				Id: uuid.New(),
-				Body: &UpdateUserJSONRequestBody{
-					Email: "newemail@example.com",
-				},
-			},
-			setupMock: func(m *MockRepository) {
-				m.users = make(map[uuid.UUID]*User)
-			},
-			contextUser: &User{
-				Id:    userID,
-				Email: "test@example.com",
-			},
-			expectedError: false, // Returns 404 response
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Setup mock repository
-			mockRepo := &MockRepository{}
-			tt.setupMock(mockRepo)
-
-			mockService := &Service{
-				repo:   mockRepo,
-				logger: logger.NewTest(),
-				config: Config{
-					JWTSecret: "test-secret",
-				},
-			}
-
-			handler := NewHandler(mockService, logger.NewTest())
-
-			// Execute with user in context
-			ctx := context.Background()
-			if tt.contextUser != nil {
-				ctx = context.WithValue(ctx, UserContextKey, tt.contextUser)
-			}
-
-			response, err := handler.UpdateUser(ctx, tt.request)
-
-			// Assert
-			if tt.expectedError && err == nil {
-				t.Errorf("Expected error, got nil")
-			} else if !tt.expectedError && err != nil {
-				t.Errorf("Unexpected error: %v", err)
-			}
-
-			// Check response type
-			if err == nil && response != nil {
-				switch resp := response.(type) {
-				case UpdateUser200JSONResponse:
-					// Success case
-					if resp.Data.Id != userID {
-						t.Errorf("Expected user ID %v, got %v", userID, resp.Data.Id)
-					}
-				case UpdateUser404ApplicationProblemPlusJSONResponse:
-					// Not found case - expected
-				default:
-					t.Errorf("Unexpected response type: %T", response)
-				}
-			}
-		})
-	}
-}
-
-func TestHandler_FindManyUsers(t *testing.T) {
-	tests := []struct {
-		name          string
-		request       FindManyUsersRequestObject
-		setupMock     func(*MockRepository)
-		expectedCount int
-		expectedError bool
-	}{
-		{
-			name: "list users with pagination",
-			request: FindManyUsersRequestObject{
-				Params: FindManyUsersParams{},
-			},
-			setupMock: func(m *MockRepository) {
-				// Add some test users
-				for i := 0; i < 5; i++ {
-					userID := uuid.New()
-					m.users[userID] = &User{
-						Id:            userID,
-						Email:         Email(fmt.Sprintf("user%d@example.com", i)),
-						Name:          fmt.Sprintf("User %d", i),
-						EmailVerified: i%2 == 0,
-						CreatedAt:     time.Now(),
-						UpdatedAt:     time.Now(),
-					}
-				}
-			},
-			expectedCount: 5,
-			expectedError: false,
-		},
-		{
-			name: "empty list",
-			request: FindManyUsersRequestObject{
-				Params: FindManyUsersParams{},
-			},
-			setupMock: func(m *MockRepository) {
-				m.users = make(map[uuid.UUID]*User)
-			},
-			expectedCount: 0,
-			expectedError: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Setup mock repository
-			mockRepo := &MockRepository{
-				users:    make(map[uuid.UUID]*User),
-				accounts: make(map[uuid.UUID]*Account),
-				sessions: make(map[uuid.UUID]*Session),
-			}
-			tt.setupMock(mockRepo)
-
-			mockService := &Service{
-				repo:   mockRepo,
-				logger: logger.NewTest(),
-				config: Config{
-					JWTSecret: "test-secret",
-				},
-			}
-
-			handler := NewHandler(mockService, logger.NewTest())
-
-			// Execute
-			ctx := context.Background()
-			response, err := handler.FindManyUsers(ctx, tt.request)
-
-			// Assert
-			if tt.expectedError && err == nil {
-				t.Errorf("Expected error, got nil")
-			} else if !tt.expectedError && err != nil {
-				t.Errorf("Unexpected error: %v", err)
-			}
-
-			// Check response
-			if resp, ok := response.(FindManyUsers200JSONResponse); ok {
-				if len(resp.Data) != tt.expectedCount {
-					t.Errorf("Expected %d users, got %d", tt.expectedCount, len(resp.Data))
-				}
-			} else if err == nil {
-				t.Errorf("Expected FindManyUsers200JSONResponse, got %T", response)
 			}
 		})
 	}

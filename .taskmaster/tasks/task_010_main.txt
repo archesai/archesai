@@ -1,0 +1,11 @@
+# Task ID: 10
+# Title: Build React SPA foundation
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: React application with routing and state management
+# Details:
+Set up React with TypeScript and Vite. Configure routing with React Router. Implement state management with Zustand or Redux. Create base layout and navigation.
+
+# Test Strategy:
+Test routing, verify state management, test component rendering

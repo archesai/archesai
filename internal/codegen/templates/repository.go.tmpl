@@ -18,9 +18,17 @@ type Repository interface {
 	{{if contains .Operations "delete"}}Delete{{.Name}}(ctx context.Context, id uuid.UUID) error{{end}}
 	{{if contains .Operations "list"}}List{{.Name}}s(ctx context.Context, params List{{.Name}}sParams) ([]*{{.Type}}, int64, error){{end}}
 	
-	{{if .AdditionalMethods}}// Additional {{.Name}} operations from x-codegen
-	{{range .AdditionalMethods}}{{.Name}}({{join .Params ", "}}) ({{join .Returns ", "}})
-	{{end}}{{end}}
+	{{/* Handle hardcoded additional methods for now */}}
+	{{if eq .Name "User"}}// Additional User operations
+	GetUserByEmail(ctx context.Context, email string) (*User, error){{end}}
+	{{if eq .Name "Session"}}// Additional Session operations
+	GetSessionByToken(ctx context.Context, token string) (*Session, error)
+	DeleteSessionByToken(ctx context.Context, token string) error
+	DeleteUserSessions(ctx context.Context, userID uuid.UUID) error
+	DeleteExpiredSessions(ctx context.Context) error{{end}}
+	{{if eq .Name "Account"}}// Additional Account operations
+	GetAccountByProviderAndProviderID(ctx context.Context, provider, providerID string) (*Account, error)
+	ListUserAccounts(ctx context.Context, userID uuid.UUID) ([]*Account, error){{end}}
 {{end}}}
 
 {{range .Entities}}

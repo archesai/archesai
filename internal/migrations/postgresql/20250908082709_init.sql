@@ -232,17 +232,24 @@ CREATE UNIQUE INDEX idx_label_name_organization ON label(name, organization_id);
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS artifact_label CASCADE;
+-- Drop junction tables first (they have foreign keys)
+DROP TABLE IF EXISTS label_to_artifact CASCADE;
+DROP TABLE IF EXISTS run_to_artifact CASCADE;
+DROP TABLE IF EXISTS pipeline_step_to_dependency CASCADE;
+
+-- Drop main tables in reverse dependency order
 DROP TABLE IF EXISTS label CASCADE;
 DROP TABLE IF EXISTS artifact CASCADE;
 DROP TABLE IF EXISTS run CASCADE;
 DROP TABLE IF EXISTS pipeline_step CASCADE;
 DROP TABLE IF EXISTS tool CASCADE;
 DROP TABLE IF EXISTS pipeline CASCADE;
+DROP TABLE IF EXISTS api_token CASCADE;
+DROP TABLE IF EXISTS verification_token CASCADE;
 DROP TABLE IF EXISTS invitation CASCADE;
 DROP TABLE IF EXISTS member CASCADE;
-DROP TABLE IF EXISTS organization CASCADE;
 DROP TABLE IF EXISTS session CASCADE;
 DROP TABLE IF EXISTS account CASCADE;
+DROP TABLE IF EXISTS organization CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 -- +goose StatementEnd

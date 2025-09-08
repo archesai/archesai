@@ -3,14 +3,11 @@
 // and middleware for protecting routes.
 package auth
 
-//go:generate go tool oapi-codegen --config=../../types.codegen.yaml --package auth --include-tags Auth,Users,Sessions,Accounts ../../api/openapi.bundled.yaml
-//go:generate go tool oapi-codegen --config=../../server.codegen.yaml --package auth --include-tags Auth,Users,Sessions,Accounts ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../types.codegen.yaml --package auth --include-tags Auth,Sessions,Accounts ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../server.codegen.yaml --package auth --include-tags Auth,Sessions,Accounts ../../api/openapi.bundled.yaml
 
 import (
-	"context"
 	"errors"
-
-	"github.com/google/uuid"
 )
 
 // ContextKey is a type for context keys
@@ -32,21 +29,3 @@ var (
 	// ErrUserExists is returned when a user already exists
 	ErrUserExists = errors.New("user already exists")
 )
-
-// ExtendedRepository combines the generated Repository with additional methods
-type ExtendedRepository interface {
-	Repository
-
-	// Additional User methods
-	GetUserByEmail(ctx context.Context, email string) (*User, error)
-	GetUserByUsername(ctx context.Context, username string) (*User, error)
-
-	// Additional Session methods
-	GetSessionByToken(ctx context.Context, token string) (*Session, error)
-	DeleteExpiredSessions(ctx context.Context) error
-	DeleteUserSessions(ctx context.Context, userID uuid.UUID) error
-
-	// Additional Account methods
-	GetAccountByProviderAndProviderID(ctx context.Context, provider, providerID string) (*Account, error)
-	GetAccountsByUserID(ctx context.Context, userID uuid.UUID) ([]*Account, error)
-}

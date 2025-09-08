@@ -17,12 +17,13 @@ package codegen
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"sort"
 	"text/template"
 
+	"github.com/archesai/archesai/internal/logger"
 	"gopkg.in/yaml.v3"
 )
 
@@ -37,8 +38,8 @@ type Config struct {
 	// Domains to generate
 	Domains map[string]DomainConfig `yaml:"domains"`
 
-	// Generators to enable
-	Generators GeneratorFlags `yaml:"generators"`
+	// Generators configuration
+	Generators *GeneratorConfig `yaml:"generators,omitempty"`
 
 	// Global settings
 	Settings GlobalSettings `yaml:"settings"`
@@ -50,14 +51,45 @@ type DomainConfig struct {
 	Schemas []string `yaml:"schemas"`
 }
 
-// GeneratorFlags controls which generators are enabled.
-type GeneratorFlags struct {
-	Repository bool `yaml:"repository"`
-	Cache      bool `yaml:"cache"`
-	Events     bool `yaml:"events"`
-	Handlers   bool `yaml:"handlers"`
-	Adapters   bool `yaml:"adapters"`
-	Defaults   bool `yaml:"defaults"`
+// GeneratorConfig controls generator output paths.
+// If a path is specified, the generator is enabled for that output.
+// Paths are relative to the domain directory.
+type GeneratorConfig struct {
+	Repository *RepositoryGeneratorConfig `yaml:"repository,omitempty"`
+	Cache      *CacheGeneratorConfig      `yaml:"cache,omitempty"`
+	Events     *EventsGeneratorConfig     `yaml:"events,omitempty"`
+	Handlers   string                     `yaml:"handlers,omitempty"` // e.g., "handlers.gen.go"
+	Adapters   string                     `yaml:"adapters,omitempty"` // e.g., "adapters.gen.go"
+	Tests      *TestsGeneratorConfig      `yaml:"tests,omitempty"`
+	Defaults   string                     `yaml:"defaults,omitempty"` // Global path for defaults
+}
+
+// RepositoryGeneratorConfig specifies repository generator outputs.
+type RepositoryGeneratorConfig struct {
+	Interface string `yaml:"interface,omitempty"` // e.g., "ports.gen.go"
+	Postgres  string `yaml:"postgres,omitempty"`  // e.g., "postgres_repository.gen.go"
+	SQLite    string `yaml:"sqlite,omitempty"`    // e.g., "sqlite_repository.gen.go"
+}
+
+// CacheGeneratorConfig specifies cache generator outputs.
+type CacheGeneratorConfig struct {
+	Interface string `yaml:"interface,omitempty"` // e.g., "cache.gen.go"
+	Memory    string `yaml:"memory,omitempty"`    // e.g., "cache_memory.gen.go"
+	Redis     string `yaml:"redis,omitempty"`     // e.g., "cache_redis.gen.go"
+}
+
+// EventsGeneratorConfig specifies event generator outputs.
+type EventsGeneratorConfig struct {
+	Interface string `yaml:"interface,omitempty"` // e.g., "events.gen.go"
+	Redis     string `yaml:"redis,omitempty"`     // e.g., "events_redis.gen.go"
+	NATS      string `yaml:"nats,omitempty"`      // e.g., "events_nats.gen.go"
+}
+
+// TestsGeneratorConfig specifies test generator outputs.
+type TestsGeneratorConfig struct {
+	Service    string `yaml:"service,omitempty"`    // e.g., "service_test.gen.go"
+	Repository string `yaml:"repository,omitempty"` // e.g., "repository_test.gen.go"
+	Handler    string `yaml:"handler,omitempty"`    // e.g., "handler_test.gen.go"
 }
 
 // GlobalSettings contains global generation settings.
@@ -67,31 +99,27 @@ type GlobalSettings struct {
 	FileHeader        string `yaml:"header"`
 }
 
-// Run executes the unified code generator with the given configuration.
-func Run(configPath string) error {
-	// Load configuration
-	config, err := loadConfig(configPath)
-	if err != nil {
-		return fmt.Errorf("failed to load config: %w", err)
+// RunWithConfig executes the unified code generator with the given configuration.
+func RunWithConfig(config *Config) error {
+	// Create logger with error level by default (only show errors)
+	// Set ARCHESAI_LOG_LEVEL=debug to see debug logs
+	logLevel := os.Getenv("ARCHESAI_LOG_LEVEL")
+	if logLevel == "" {
+		logLevel = "error"
 	}
-
-	// Determine base directory from config path
-	baseDir := filepath.Dir(configPath)
-	if baseDir == "." {
-		baseDir = ""
-	}
+	log := logger.New(logger.Config{Level: logLevel, Pretty: true})
 
 	// Create parser and file writer
-	parser := NewParser(baseDir)
+	parser := NewParser("")
 	fileWriter := NewFileWriter()
 
 	// Configure file writer
+	fileWriter.WithOverwrite(true) // Always overwrite generated files
 	if config.Settings.FileHeader != "" {
 		fileWriter.WithHeader(config.Settings.FileHeader)
 	} else {
 		fileWriter.WithHeader(DefaultHeader())
 	}
-	fileWriter.WithOverwrite(config.Settings.OverwriteExisting)
 
 	// Load templates
 	templates, err := loadTemplates()
@@ -99,7 +127,7 @@ func Run(configPath string) error {
 		return fmt.Errorf("failed to load templates: %w", err)
 	}
 
-	log.Println("🚀 Starting unified code generation...")
+	log.Debug("Starting unified code generation...")
 
 	// Parse OpenAPI spec
 	schemas, err := parser.ParseOpenAPISpec(config.OpenAPI)
@@ -107,67 +135,94 @@ func Run(configPath string) error {
 		return fmt.Errorf("failed to parse OpenAPI spec: %w", err)
 	}
 
-	log.Printf("📋 Parsed %d schemas from %s", len(schemas), config.OpenAPI)
+	log.Debug("Parsed schemas", slog.Int("count", len(schemas)), slog.String("spec", config.OpenAPI))
+
+	// Auto-detect domains if not configured
+	if len(config.Domains) == 0 {
+		config.Domains = autoDetectDomains(schemas)
+		log.Debug("Auto-detected domains", slog.Int("count", len(config.Domains)))
+	}
 
 	// Filter schemas based on domain configuration
 	filteredSchemas := filterSchemas(config, schemas)
 
-	log.Printf("🎯 Filtered to %d schemas with x-codegen annotations", len(filteredSchemas))
+	log.Debug("Filtered schemas with x-codegen", slog.Int("count", len(filteredSchemas)))
 
-	// Run each enabled generator
-	flags := config.Generators
-	if flags.Repository {
-		if err := generateRepository(config, filteredSchemas, templates, fileWriter); err != nil {
+	// Run each enabled generator based on path configuration
+	if config.Generators != nil && config.Generators.Repository != nil {
+		if err := generateRepository(config, filteredSchemas, templates, fileWriter, log); err != nil {
 			return fmt.Errorf("repository generator failed: %w", err)
 		}
-		log.Printf("✅ repository generator completed")
+		log.Debug("repository generator completed")
 	}
 
-	if flags.Cache {
-		if err := generateCache(config, filteredSchemas, templates, fileWriter); err != nil {
+	if config.Generators != nil && config.Generators.Cache != nil {
+		if err := generateCache(config, filteredSchemas, templates, fileWriter, log); err != nil {
 			return fmt.Errorf("cache generator failed: %w", err)
 		}
-		log.Printf("✅ cache generator completed")
+		log.Debug("cache generator completed")
 	}
 
-	if flags.Events {
-		if err := generateEvents(config, filteredSchemas, templates, fileWriter); err != nil {
+	if config.Generators != nil && config.Generators.Events != nil {
+		if err := generateEvents(config, filteredSchemas, templates, fileWriter, log); err != nil {
 			return fmt.Errorf("events generator failed: %w", err)
 		}
-		log.Printf("✅ events generator completed")
+		log.Debug("events generator completed")
 	}
 
-	if flags.Handlers {
-		if err := generateHandlers(config, filteredSchemas, templates, fileWriter); err != nil {
+	if config.Generators != nil && config.Generators.Handlers != "" {
+		if err := generateHandlers(config, filteredSchemas, templates, fileWriter, log); err != nil {
 			return fmt.Errorf("handlers generator failed: %w", err)
 		}
-		log.Printf("✅ handlers generator completed")
+		log.Debug("handlers generator completed")
 	}
 
-	if flags.Adapters {
-		if err := generateAdapters(config, filteredSchemas, templates, fileWriter); err != nil {
+	if config.Generators != nil && config.Generators.Adapters != "" {
+		if err := generateAdapters(config, filteredSchemas, templates, fileWriter, log); err != nil {
 			return fmt.Errorf("adapters generator failed: %w", err)
 		}
-		log.Printf("✅ adapters generator completed")
+		log.Debug("adapters generator completed")
 	}
 
-	if flags.Defaults {
-		if err := generateDefaults(config, filteredSchemas, templates, fileWriter); err != nil {
+	if config.Generators != nil && config.Generators.Defaults != "" {
+		if err := generateDefaults(config, filteredSchemas, templates, fileWriter, log); err != nil {
 			return fmt.Errorf("defaults generator failed: %w", err)
 		}
-		log.Printf("✅ defaults generator completed")
+		log.Debug("defaults generator completed")
+	}
+
+	// Generate tests if enabled
+	if config.Settings.GenerateTests {
+		generateTests(config, filteredSchemas, templates, fileWriter, log)
+		log.Debug("test generator completed")
 	}
 
 	// Report warnings
 	if warnings := parser.GetWarnings(); len(warnings) > 0 {
-		log.Println("⚠️  Warnings:")
+		log.Warn("Parsing warnings found")
 		for _, w := range warnings {
-			log.Printf("  - %s", w)
+			log.Debug("Warning", slog.String("message", w))
 		}
 	}
 
-	log.Println("✨ Code generation completed successfully!")
+	log.Debug("Code generation completed successfully")
 	return nil
+}
+
+// Run executes the unified code generator with the given configuration file.
+func Run(configPath string) error {
+	// Config path is required
+	if configPath == "" {
+		return fmt.Errorf("config file path is required")
+	}
+
+	// Load configuration
+	config, err := loadConfig(configPath)
+	if err != nil {
+		return fmt.Errorf("failed to load config: %w", err)
+	}
+
+	return RunWithConfig(config)
 }
 
 // loadTemplates loads all template files.
@@ -256,6 +311,7 @@ func loadConfig(path string) (*Config, error) {
 	if err != nil {
 		// Try default locations
 		defaultPaths := []string{
+			"archesai.codegen.yaml",
 			"codegen.yaml",
 			"codegen.yml",
 			".codegen.yaml",
@@ -283,24 +339,35 @@ func loadConfig(path string) (*Config, error) {
 		config.OutputDir = "internal"
 	}
 
-	// Enable all generators by default if none specified
-	if !config.Generators.Repository && !config.Generators.Cache &&
-		!config.Generators.Events && !config.Generators.Handlers &&
-		!config.Generators.Adapters && !config.Generators.Defaults {
-		config.Generators.Repository = true
-		config.Generators.Cache = true
-		config.Generators.Events = true
-		config.Generators.Handlers = true
-		config.Generators.Adapters = true
-		config.Generators.Defaults = true
+	// If no generators configured, use defaults
+	if config.Generators == nil {
+		config.Generators = &GeneratorConfig{
+			Repository: &RepositoryGeneratorConfig{
+				Interface: "ports.gen.go",
+				Postgres:  "postgres_repository.gen.go",
+				SQLite:    "sqlite_repository.gen.go",
+			},
+			Cache: &CacheGeneratorConfig{
+				Interface: "cache.gen.go",
+				Memory:    "cache_memory.gen.go",
+				Redis:     "cache_redis.gen.go",
+			},
+			Events: &EventsGeneratorConfig{
+				Interface: "events.gen.go",
+				Redis:     "events_redis.gen.go",
+			},
+			Handlers: "handlers.gen.go",
+			Adapters: "adapters.gen.go",
+			Defaults: "./internal/config/defaults.gen.go",
+		}
 	}
 
 	return &config, nil
 }
 
-// runGenerator is a generic function to run any generator type
-func runGenerator(generatorType string, config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, filterFunc func(*ParsedSchema) bool) error {
-	log.Printf("▶️  Running %s generator...", generatorType)
+// runGeneratorWithPaths runs generators using path-based configuration
+func runGeneratorWithPaths(generatorType string, config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, filterFunc func(*ParsedSchema) bool, log *slog.Logger) error {
+	log.Debug("Running generator", slog.String("type", generatorType))
 
 	// Group schemas by domain
 	domainSchemas := make(map[string][]*ParsedSchema)
@@ -326,36 +393,94 @@ func runGenerator(generatorType string, config *Config, schemas map[string]*Pars
 			return schemas[i].Name < schemas[j].Name
 		})
 
-		log.Printf("  Generating %s for domain '%s' with %d entities", generatorType, domain, len(schemas))
+		log.Debug("Generating for domain",
+			slog.String("generator", generatorType),
+			slog.String("domain", domain),
+			slog.Int("entities", len(schemas)))
 
-		// Prepare template data based on generator type
+		// Prepare template data and output files based on generator type and config
 		var templateData interface{}
 		var outputFiles []struct{ path, template string }
 
 		switch generatorType {
 		case "repository":
+			if config.Generators.Repository == nil {
+				continue
+			}
 			templateData = prepareRepositoryData(domain, schemas)
-			outputFiles = []struct{ path, template string }{
-				{filepath.Join(config.OutputDir, domain, "repository.gen.go"), "repository.go.tmpl"},
+			outputFiles = []struct{ path, template string }{}
+			if config.Generators.Repository.Interface != "" {
+				outputFiles = append(outputFiles, struct{ path, template string }{
+					filepath.Join(config.OutputDir, domain, config.Generators.Repository.Interface), "repository.go.tmpl",
+				})
+			}
+			if config.Generators.Repository.Postgres != "" {
+				outputFiles = append(outputFiles, struct{ path, template string }{
+					filepath.Join(config.OutputDir, domain, config.Generators.Repository.Postgres), "repository_postgres.go.tmpl",
+				})
+			}
+			if config.Generators.Repository.SQLite != "" {
+				outputFiles = append(outputFiles, struct{ path, template string }{
+					filepath.Join(config.OutputDir, domain, config.Generators.Repository.SQLite), "repository_sqlite.go.tmpl",
+				})
 			}
 		case "cache":
+			if config.Generators.Cache == nil {
+				continue
+			}
 			templateData = prepareCacheData(domain, schemas)
-			outputFiles = []struct{ path, template string }{
-				{filepath.Join(config.OutputDir, domain, "cache.gen.go"), "cache.go.tmpl"},
-				{filepath.Join(config.OutputDir, domain, "cache_memory.gen.go"), "cache_memory.go.tmpl"},
-				{filepath.Join(config.OutputDir, domain, "cache_redis.gen.go"), "cache_redis.go.tmpl"},
+			outputFiles = []struct{ path, template string }{}
+			if config.Generators.Cache.Interface != "" {
+				outputFiles = append(outputFiles, struct{ path, template string }{
+					filepath.Join(config.OutputDir, domain, config.Generators.Cache.Interface), "cache.go.tmpl",
+				})
+			}
+			if config.Generators.Cache.Memory != "" {
+				outputFiles = append(outputFiles, struct{ path, template string }{
+					filepath.Join(config.OutputDir, domain, config.Generators.Cache.Memory), "cache_memory.go.tmpl",
+				})
+			}
+			if config.Generators.Cache.Redis != "" {
+				outputFiles = append(outputFiles, struct{ path, template string }{
+					filepath.Join(config.OutputDir, domain, config.Generators.Cache.Redis), "cache_redis.go.tmpl",
+				})
 			}
 		case "events":
+			if config.Generators.Events == nil {
+				continue
+			}
 			templateData = prepareEventsData(domain, schemas)
-			outputFiles = []struct{ path, template string }{
-				{filepath.Join(config.OutputDir, domain, "events.gen.go"), "events.go.tmpl"},
-				{filepath.Join(config.OutputDir, domain, "events_redis.gen.go"), "events_redis.go.tmpl"},
-				{filepath.Join(config.OutputDir, domain, "events_nats.gen.go"), "events_nats.go.tmpl"},
+			outputFiles = []struct{ path, template string }{}
+			if config.Generators.Events.Interface != "" {
+				outputFiles = append(outputFiles, struct{ path, template string }{
+					filepath.Join(config.OutputDir, domain, config.Generators.Events.Interface), "events.go.tmpl",
+				})
+			}
+			if config.Generators.Events.Redis != "" {
+				outputFiles = append(outputFiles, struct{ path, template string }{
+					filepath.Join(config.OutputDir, domain, config.Generators.Events.Redis), "events_redis.go.tmpl",
+				})
+			}
+			if config.Generators.Events.NATS != "" {
+				outputFiles = append(outputFiles, struct{ path, template string }{
+					filepath.Join(config.OutputDir, domain, config.Generators.Events.NATS), "events_nats.go.tmpl",
+				})
 			}
 		case "adapters":
+			if config.Generators.Adapters == "" {
+				continue
+			}
 			templateData = prepareAdaptersData(domain, schemas)
 			outputFiles = []struct{ path, template string }{
-				{filepath.Join(config.OutputDir, domain, "mappers.gen.go"), "adapters.go.tmpl"},
+				{filepath.Join(config.OutputDir, domain, config.Generators.Adapters), "adapters.go.tmpl"},
+			}
+		case "handlers":
+			if config.Generators.Handlers == "" {
+				continue
+			}
+			templateData = prepareHandlersData(domain, schemas)
+			outputFiles = []struct{ path, template string }{
+				{filepath.Join(config.OutputDir, domain, config.Generators.Handlers), "handlers.go.tmpl"},
 			}
 		}
 
@@ -385,6 +510,19 @@ func prepareRepositoryData(domain string, schemas []*ParsedSchema) interface{} {
 				ops = append(ops, string(op))
 			}
 		}
+
+		// Extract additional methods from x-codegen
+		var additionalMethods []interface{}
+		if schema.XCodegen != nil && schema.XCodegen.Repository.AdditionalMethods != nil {
+			for _, method := range schema.XCodegen.Repository.AdditionalMethods {
+				additionalMethods = append(additionalMethods, struct {
+					Name string
+				}{
+					Name: method.Name,
+				})
+			}
+		}
+
 		entities = append(entities, struct {
 			Name              string
 			Type              string
@@ -394,7 +532,7 @@ func prepareRepositoryData(domain string, schemas []*ParsedSchema) interface{} {
 			Name:              schema.Name,
 			Type:              schema.Name,
 			Operations:        ops,
-			AdditionalMethods: []interface{}{},
+			AdditionalMethods: additionalMethods,
 		})
 	}
 
@@ -460,30 +598,46 @@ func prepareAdaptersData(domain string, schemas []*ParsedSchema) interface{} {
 	}
 }
 
+func prepareHandlersData(domain string, schemas []*ParsedSchema) interface{} {
+	return struct {
+		Domain   string
+		Package  string
+		Entities []*ParsedSchema
+		Imports  []string
+	}{
+		Domain:   domain,
+		Package:  domain,
+		Entities: schemas,
+		Imports:  []string{"github.com/google/uuid", "github.com/labstack/echo/v4"},
+	}
+}
+
 // generateRepository generates repository interfaces and implementations.
-func generateRepository(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter) error {
-	return runGenerator("repository", config, schemas, templates, fileWriter, NeedsRepository)
+func generateRepository(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+	return runGeneratorWithPaths("repository", config, schemas, templates, fileWriter, NeedsRepository, log)
 }
 
 // generateCache generates cache interfaces and implementations.
-func generateCache(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter) error {
-	return runGenerator("cache", config, schemas, templates, fileWriter, NeedsCache)
+func generateCache(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+	return runGeneratorWithPaths("cache", config, schemas, templates, fileWriter, NeedsCache, log)
 }
 
 // generateEvents generates event interfaces and implementations.
-func generateEvents(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter) error {
-	return runGenerator("events", config, schemas, templates, fileWriter, NeedsEvents)
+func generateEvents(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+	return runGeneratorWithPaths("events", config, schemas, templates, fileWriter, NeedsEvents, log)
 }
 
 // generateHandlers generates HTTP handler stubs.
-func generateHandlers(_ *Config, _ map[string]*ParsedSchema, _ map[string]*template.Template, _ *FileWriter) error {
-	log.Printf("▶️  Running handlers generator...")
-	// Stub implementation - handlers generation is complex and may not be needed initially
+func generateHandlers(_ *Config, _ map[string]*ParsedSchema, _ map[string]*template.Template, _ *FileWriter, log *slog.Logger) error {
+	// For now, return without generating since handlers are complex
+	// and typically generated by oapi-codegen
+	log.Debug("Running handlers generator")
+	log.Debug("Handler generation delegated to oapi-codegen")
 	return nil
 }
 
 // generateAdapters generates type adapters/mappers.
-func generateAdapters(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter) error {
+func generateAdapters(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
 	// Check if there are any schemas that need adapters first
 	hasAdapters := false
 	for _, s := range schemas {
@@ -494,17 +648,17 @@ func generateAdapters(config *Config, schemas map[string]*ParsedSchema, template
 	}
 
 	if !hasAdapters {
-		log.Printf("▶️  Running adapters generator...")
-		log.Printf("  No schemas configured for adapter generation")
+		log.Debug("Running adapters generator")
+		log.Debug("No schemas configured for adapter generation")
 		return nil
 	}
 
-	return runGenerator("adapters", config, schemas, templates, fileWriter, NeedsAdapter)
+	return runGeneratorWithPaths("adapters", config, schemas, templates, fileWriter, NeedsAdapter, log)
 }
 
 // generateDefaults generates configuration defaults.
-func generateDefaults(config *Config, _ map[string]*ParsedSchema, _ map[string]*template.Template, fileWriter *FileWriter) error {
-	log.Printf("▶️  Running defaults generator...")
+func generateDefaults(config *Config, _ map[string]*ParsedSchema, _ map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+	log.Debug("Running defaults generator")
 
 	// Create parser
 	parser := NewParser(filepath.Dir(config.OpenAPI))
@@ -530,8 +684,81 @@ func generateDefaults(config *Config, _ map[string]*ParsedSchema, _ map[string]*
 		return fmt.Errorf("failed to write defaults file: %w", err)
 	}
 
-	log.Printf("  ✅ Generated %s", outputPath)
-	log.Printf("  Total defaults generated: %d", len(parser.FlattenConfigDefaults(defaults)))
+	log.Debug("Generated defaults",
+		slog.String("path", outputPath),
+		slog.Int("count", len(parser.FlattenConfigDefaults(defaults))))
 
 	return nil
+}
+
+// generateTests generates test boilerplate for all domains
+func generateTests(_ *Config, schemas map[string]*ParsedSchema, _ map[string]*template.Template, _ *FileWriter, log *slog.Logger) {
+	log.Debug("Running test generator")
+
+	// Group schemas by domain
+	domainSchemas := make(map[string][]*ParsedSchema)
+	for _, s := range schemas {
+		domainSchemas[s.Domain] = append(domainSchemas[s.Domain], s)
+	}
+
+	// Sort domains for consistent output
+	domains := make([]string, 0, len(domainSchemas))
+	for domain := range domainSchemas {
+		domains = append(domains, domain)
+	}
+	sort.Strings(domains)
+
+	// Generate tests for each domain
+	for _, domain := range domains {
+		schemas := domainSchemas[domain]
+
+		// Sort schemas by name for consistent output
+		sort.Slice(schemas, func(i, j int) bool {
+			return schemas[i].Name < schemas[j].Name
+		})
+
+		log.Debug("Generating tests for domain",
+			slog.String("domain", domain),
+			slog.Int("entities", len(schemas)))
+
+		// TODO: Implement test generation with templates
+		// For now, we'll skip the actual generation
+		log.Debug("Test generation not yet implemented", slog.String("domain", domain))
+	}
+}
+
+// autoDetectDomains analyzes schemas and auto-detects domain configuration
+func autoDetectDomains(schemas map[string]*ParsedSchema) map[string]DomainConfig {
+	domains := make(map[string]DomainConfig)
+
+	// Collect unique domains from schemas
+	domainSchemas := make(map[string][]string)
+	for name, schema := range schemas {
+		if schema.Domain == "" {
+			continue
+		}
+
+		domainSchemas[schema.Domain] = append(domainSchemas[schema.Domain], name)
+	}
+
+	// Convert to DomainConfig
+	for domain, schemaNames := range domainSchemas {
+		// For now, we don't have tags in ParsedSchema, so we'll use domain names
+		// In the future, this could be enhanced to extract tags from the OpenAPI spec
+		domains[domain] = DomainConfig{
+			Schemas: schemaNames,
+		}
+	}
+
+	// If no domains detected, use default mapping
+	if len(domains) == 0 {
+		domains = map[string]DomainConfig{
+			"auth":          {Tags: []string{"Auth", "Users", "Sessions", "Accounts"}},
+			"organizations": {Tags: []string{"Organizations", "Members", "Invitations"}},
+			"workflows":     {Tags: []string{"Workflows", "Pipelines", "Runs", "Tools"}},
+			"content":       {Tags: []string{"Content", "Artifacts", "Labels"}},
+		}
+	}
+
+	return domains
 }

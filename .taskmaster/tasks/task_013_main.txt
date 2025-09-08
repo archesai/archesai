@@ -1,0 +1,11 @@
+# Task ID: 13
+# Title: Build AI chat interface
+# Status: pending
+# Dependencies: 10, 7
+# Priority: medium
+# Description: Conversational UI for natural language workflow creation
+# Details:
+Create chat interface component. Implement message streaming from AI. Build workflow generation from natural language. Add conversation history and context.
+
+# Test Strategy:
+Test message flow, verify workflow generation, test context handling

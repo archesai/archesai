@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pgvector/pgvector-go"
 )
 
 type Account struct {
@@ -63,6 +64,7 @@ type Artifact struct {
 	ProducerId     *uuid.UUID
 	Text           *string
 	Url            *string
+	Embedding      *pgvector.Vector
 }
 
 type Invitation struct {

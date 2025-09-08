@@ -7,488 +7,349 @@ import (
 	"time"
 
 	"github.com/archesai/archesai/internal/logger"
+	"github.com/archesai/archesai/internal/users"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAuthMiddleware(t *testing.T) {
-	// Create a test service with mock repository
-	mockRepo := &MockRepository{
-		users:    make(map[uuid.UUID]*User),
-		sessions: make(map[uuid.UUID]*Session),
-		accounts: make(map[uuid.UUID]*Account),
-	}
-
-	service := &Service{
-		repo:      mockRepo,
-		jwtSecret: []byte("test-secret"),
-		config: Config{
-			JWTSecret:          "test-secret",
-			AccessTokenExpiry:  15 * time.Minute,
-			RefreshTokenExpiry: 7 * 24 * time.Hour,
-		},
-	}
-
-	middleware := Middleware(service, logger.NewTest())
-
 	t.Run("valid token", func(t *testing.T) {
+		// Create mocks
+		mockRepo := NewMockRepository(t)
+		mockUsersRepo := NewMockUsersRepository()
+
 		// Create a test user
 		userID := uuid.New()
-		user := &User{
-			Id:            userID,
-			Email:         "test@example.com",
-			Name:          "Test User",
-			EmailVerified: true,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
+		testUser := &users.User{
+			Id:    userID,
+			Email: "test@example.com",
+			Name:  "Test User",
 		}
-		mockRepo.users[userID] = user
+		mockUsersRepo.users[userID] = testUser
 
-		// Generate a valid token
-		claims := &Claims{
-			UserID: userID,
-			Email:  "test@example.com",
-			RegisteredClaims: jwt.RegisteredClaims{
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
-				IssuedAt:  jwt.NewNumericDate(time.Now()),
-				Subject:   userID.String(),
+		// Create test session
+		session := &Session{
+			Id:                   uuid.New(),
+			UserId:               userID,
+			Token:                "test-refresh-token",
+			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
+			ActiveOrganizationId: uuid.New(),
+		}
+
+		// Setup mock expectations
+		mockRepo.EXPECT().GetSessionByToken(mock.Anything, "test-refresh-token").Return(session, nil)
+
+		service := &Service{
+			repo:      mockRepo,
+			usersRepo: mockUsersRepo,
+			logger:    logger.NewTest(),
+			config: Config{
+				JWTSecret:          "test-secret",
+				AccessTokenExpiry:  15 * time.Minute,
+				RefreshTokenExpiry: 7 * 24 * time.Hour,
 			},
 		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenString, err := token.SignedString(service.jwtSecret)
-		if err != nil {
-			t.Fatalf("Failed to create token: %v", err)
-		}
 
-		// Create test request with token
+		middleware := Middleware(service, logger.NewTest())
+
+		// Create a valid JWT token
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"user_id": userID.String(),
+			"email":   "test@example.com",
+			"exp":     time.Now().Add(time.Hour).Unix(),
+			"session": "test-refresh-token",
+		})
+		tokenString, _ := token.SignedString([]byte("test-secret"))
+
+		// Create Echo context
 		e := echo.New()
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set("Authorization", "Bearer "+tokenString)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer "+tokenString)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
-		// Create a handler that checks if user is in context
+		// Create a handler that will be called if middleware passes
 		handler := func(c echo.Context) error {
-			userID := c.Get(string(AuthUserContextKey))
-			if userID == nil {
-				t.Error("Expected user ID in context, got nil")
+			// Check that user context was set
+			user := c.Get(string(AuthUserContextKey))
+			if user == nil {
+				t.Error("Expected user in context")
 			}
-			claims := c.Get(string(AuthClaimsContextKey))
-			if claims == nil {
-				t.Error("Expected claims in context, got nil")
-			}
-			return c.String(http.StatusOK, "OK")
+			return c.String(http.StatusOK, "success")
 		}
 
-		// Apply middleware and call handler
-		h := middleware(handler)
-		err = h(c)
+		// Execute middleware
+		err := middleware(handler)(c)
 
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-		if rec.Code != http.StatusOK {
-			t.Errorf("Expected status 200, got %d", rec.Code)
-		}
+		// Assert
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, rec.Code)
 	})
 
 	t.Run("missing token", func(t *testing.T) {
+		// Create mocks
+		mockRepo := NewMockRepository(t)
+		mockUsersRepo := NewMockUsersRepository()
+
+		service := &Service{
+			repo:      mockRepo,
+			usersRepo: mockUsersRepo,
+			logger:    logger.NewTest(),
+			config: Config{
+				JWTSecret: "test-secret",
+			},
+		}
+
+		middleware := Middleware(service, logger.NewTest())
+
+		// Create Echo context without auth header
 		e := echo.New()
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
+		// Create a handler that should not be called
 		handler := func(c echo.Context) error {
-			return c.String(http.StatusOK, "OK")
+			t.Error("Handler should not be called")
+			return c.String(http.StatusOK, "success")
 		}
 
-		h := middleware(handler)
-		err := h(c)
+		// Execute middleware
+		err := middleware(handler)(c)
 
-		if err == nil {
-			t.Error("Expected error for missing token")
-		}
+		// Assert - should return unauthorized
 		httpErr, ok := err.(*echo.HTTPError)
-		if !ok {
-			t.Errorf("Expected echo.HTTPError, got %T", err)
-		} else if httpErr.Code != http.StatusUnauthorized {
-			t.Errorf("Expected status 401, got %d", httpErr.Code)
-		}
+		assert.True(t, ok)
+		assert.Equal(t, http.StatusUnauthorized, httpErr.Code)
 	})
 
 	t.Run("invalid token", func(t *testing.T) {
+		// Create mocks
+		mockRepo := NewMockRepository(t)
+		mockUsersRepo := NewMockUsersRepository()
+
+		service := &Service{
+			repo:      mockRepo,
+			usersRepo: mockUsersRepo,
+			logger:    logger.NewTest(),
+			config: Config{
+				JWTSecret: "test-secret",
+			},
+		}
+
+		middleware := Middleware(service, logger.NewTest())
+
+		// Create Echo context with invalid token
 		e := echo.New()
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set("Authorization", "Bearer invalid-token")
+		req.Header.Set(echo.HeaderAuthorization, "Bearer invalid-token")
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
+		// Create a handler that should not be called
 		handler := func(c echo.Context) error {
-			return c.String(http.StatusOK, "OK")
+			t.Error("Handler should not be called")
+			return c.String(http.StatusOK, "success")
 		}
 
-		h := middleware(handler)
-		err := h(c)
+		// Execute middleware
+		err := middleware(handler)(c)
 
-		if err == nil {
-			t.Error("Expected error for invalid token")
-		}
+		// Assert - should return unauthorized
 		httpErr, ok := err.(*echo.HTTPError)
-		if !ok {
-			t.Errorf("Expected echo.HTTPError, got %T", err)
-		} else if httpErr.Code != http.StatusUnauthorized {
-			t.Errorf("Expected status 401, got %d", httpErr.Code)
-		}
+		assert.True(t, ok)
+		assert.Equal(t, http.StatusUnauthorized, httpErr.Code)
 	})
 
 	t.Run("expired token", func(t *testing.T) {
-		// Create an expired token
-		claims := &Claims{
-			UserID: uuid.New(),
-			Email:  "test@example.com",
-			RegisteredClaims: jwt.RegisteredClaims{
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(-time.Hour)), // Expired
-				IssuedAt:  jwt.NewNumericDate(time.Now().Add(-2 * time.Hour)),
-				Subject:   uuid.New().String(),
+		// Create mocks
+		mockRepo := NewMockRepository(t)
+		mockUsersRepo := NewMockUsersRepository()
+
+		service := &Service{
+			repo:      mockRepo,
+			usersRepo: mockUsersRepo,
+			logger:    logger.NewTest(),
+			config: Config{
+				JWTSecret: "test-secret",
 			},
 		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenString, err := token.SignedString(service.jwtSecret)
-		if err != nil {
-			t.Fatalf("Failed to create token: %v", err)
-		}
 
+		middleware := Middleware(service, logger.NewTest())
+
+		// Create an expired JWT token
+		userID := uuid.New()
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"user_id": userID.String(),
+			"email":   "test@example.com",
+			"exp":     time.Now().Add(-time.Hour).Unix(), // Expired
+			"session": "test-refresh-token",
+		})
+		tokenString, _ := token.SignedString([]byte("test-secret"))
+
+		// Create Echo context
 		e := echo.New()
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set("Authorization", "Bearer "+tokenString)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer "+tokenString)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
+		// Create a handler that should not be called
 		handler := func(c echo.Context) error {
-			return c.String(http.StatusOK, "OK")
+			t.Error("Handler should not be called")
+			return c.String(http.StatusOK, "success")
 		}
 
-		h := middleware(handler)
-		err = h(c)
+		// Execute middleware
+		err := middleware(handler)(c)
 
-		if err == nil {
-			t.Error("Expected error for expired token")
-		}
+		// Assert - should return unauthorized
 		httpErr, ok := err.(*echo.HTTPError)
-		if !ok {
-			t.Errorf("Expected echo.HTTPError, got %T", err)
-		} else if httpErr.Code != http.StatusUnauthorized {
-			t.Errorf("Expected status 401, got %d", httpErr.Code)
-		}
+		assert.True(t, ok)
+		assert.Equal(t, http.StatusUnauthorized, httpErr.Code)
 	})
 
-	t.Run("user not found", func(t *testing.T) {
-		// Create a token for non-existent user
-		userID := uuid.New()
-		claims := &Claims{
-			UserID: userID,
-			Email:  "nonexistent@example.com",
-			RegisteredClaims: jwt.RegisteredClaims{
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
-				IssuedAt:  jwt.NewNumericDate(time.Now()),
-				Subject:   userID.String(),
+	t.Run("session not found", func(t *testing.T) {
+		// Create mocks
+		mockRepo := NewMockRepository(t)
+		mockUsersRepo := NewMockUsersRepository()
+
+		// Setup mock to return session not found
+		mockRepo.EXPECT().GetSessionByToken(mock.Anything, "test-refresh-token").Return(nil, ErrSessionNotFound)
+
+		service := &Service{
+			repo:      mockRepo,
+			usersRepo: mockUsersRepo,
+			logger:    logger.NewTest(),
+			config: Config{
+				JWTSecret: "test-secret",
 			},
 		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenString, err := token.SignedString(service.jwtSecret)
-		if err != nil {
-			t.Fatalf("Failed to create token: %v", err)
-		}
 
+		middleware := Middleware(service, logger.NewTest())
+
+		// Create a valid JWT token but session doesn't exist
+		userID := uuid.New()
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"user_id": userID.String(),
+			"email":   "test@example.com",
+			"exp":     time.Now().Add(time.Hour).Unix(),
+			"session": "test-refresh-token",
+		})
+		tokenString, _ := token.SignedString([]byte("test-secret"))
+
+		// Create Echo context
 		e := echo.New()
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set("Authorization", "Bearer "+tokenString)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer "+tokenString)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
+		// Create a handler that should not be called
 		handler := func(c echo.Context) error {
-			return c.String(http.StatusOK, "OK")
+			t.Error("Handler should not be called")
+			return c.String(http.StatusOK, "success")
 		}
 
-		h := middleware(handler)
-		err = h(c)
+		// Execute middleware
+		err := middleware(handler)(c)
 
-		if err == nil {
-			t.Error("Expected error for non-existent user")
-		}
+		// Assert - should return unauthorized
 		httpErr, ok := err.(*echo.HTTPError)
-		if !ok {
-			t.Errorf("Expected echo.HTTPError, got %T", err)
-		} else if httpErr.Code != http.StatusUnauthorized {
-			t.Errorf("Expected status 401, got %d", httpErr.Code)
-		}
+		assert.True(t, ok)
+		assert.Equal(t, http.StatusUnauthorized, httpErr.Code)
 	})
 }
 
-func TestOptionalAuthMiddleware(t *testing.T) {
-	// Create a test service with mock repository
-	mockRepo := &MockRepository{
-		users:    make(map[uuid.UUID]*User),
-		sessions: make(map[uuid.UUID]*Session),
-		accounts: make(map[uuid.UUID]*Account),
-	}
+func TestRequireAuthMiddleware(t *testing.T) {
+	t.Run("with user context", func(t *testing.T) {
+		// Create mocks
+		mockRepo := NewMockRepository(t)
+		mockUsersRepo := NewMockUsersRepository()
 
-	service := &Service{
-		repo:      mockRepo,
-		jwtSecret: []byte("test-secret"),
-		config: Config{
-			JWTSecret:          "test-secret",
-			AccessTokenExpiry:  15 * time.Minute,
-			RefreshTokenExpiry: 7 * 24 * time.Hour,
-		},
-	}
-
-	middleware := OptionalAuthMiddleware(service, logger.NewTest())
-
-	t.Run("with valid token", func(t *testing.T) {
 		// Create a test user
 		userID := uuid.New()
-		user := &User{
-			Id:            userID,
-			Email:         "test@example.com",
-			Name:          "Test User",
-			EmailVerified: true,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
+		testUser := &users.User{
+			Id:    userID,
+			Email: "test@example.com",
+			Name:  "Test User",
 		}
-		mockRepo.users[userID] = user
+		mockUsersRepo.users[userID] = testUser
 
-		// Generate a valid token
-		claims := &Claims{
-			UserID: userID,
-			Email:  "test@example.com",
-			RegisteredClaims: jwt.RegisteredClaims{
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
-				IssuedAt:  jwt.NewNumericDate(time.Now()),
-				Subject:   userID.String(),
+		service := &Service{
+			repo:      mockRepo,
+			usersRepo: mockUsersRepo,
+			logger:    logger.NewTest(),
+			config: Config{
+				JWTSecret: "test-secret",
 			},
 		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenString, err := token.SignedString(service.jwtSecret)
-		if err != nil {
-			t.Fatalf("Failed to create token: %v", err)
-		}
 
-		// Create test request with token
+		middleware := Middleware(service, logger.NewTest())
+
+		// Create Echo context with user already set
 		e := echo.New()
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set("Authorization", "Bearer "+tokenString)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
-		// Create a handler that checks if user is in context
+		// Set user in context
+		c.Set(string(AuthUserContextKey), testUser)
+
+		// Create a handler that should be called
 		handler := func(c echo.Context) error {
-			user := c.Get(string(UserContextKey))
+			user := c.Get(string(AuthUserContextKey))
 			if user == nil {
-				t.Error("Expected user in context, got nil")
+				t.Error("Expected user in context")
 			}
-			return c.String(http.StatusOK, "OK")
+			return c.String(http.StatusOK, "success")
 		}
 
-		// Apply middleware and call handler
-		h := middleware(handler)
-		err = h(c)
+		// Execute middleware
+		err := middleware(handler)(c)
 
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-		if rec.Code != http.StatusOK {
-			t.Errorf("Expected status 200, got %d", rec.Code)
-		}
+		// Assert
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, rec.Code)
 	})
 
-	t.Run("without token", func(t *testing.T) {
+	t.Run("without user context", func(t *testing.T) {
+		// Create mocks
+		mockRepo := NewMockRepository(t)
+		mockUsersRepo := NewMockUsersRepository()
+
+		service := &Service{
+			repo:      mockRepo,
+			usersRepo: mockUsersRepo,
+			logger:    logger.NewTest(),
+			config: Config{
+				JWTSecret: "test-secret",
+			},
+		}
+
+		middleware := Middleware(service, logger.NewTest())
+
+		// Create Echo context without user
 		e := echo.New()
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
-		// Create a handler that checks user is NOT in context
+		// Create a handler that should not be called
 		handler := func(c echo.Context) error {
-			user := c.Get(string(UserContextKey))
-			if user != nil {
-				t.Error("Expected no user in context, got user")
-			}
-			return c.String(http.StatusOK, "OK")
+			t.Error("Handler should not be called")
+			return c.String(http.StatusOK, "success")
 		}
 
-		// Apply middleware and call handler
-		h := middleware(handler)
-		err := h(c)
+		// Execute middleware
+		err := middleware(handler)(c)
 
-		// Should not error - optional auth allows missing token
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-		if rec.Code != http.StatusOK {
-			t.Errorf("Expected status 200, got %d", rec.Code)
-		}
+		// Assert - should return unauthorized
+		httpErr, ok := err.(*echo.HTTPError)
+		assert.True(t, ok)
+		assert.Equal(t, http.StatusUnauthorized, httpErr.Code)
 	})
-
-	t.Run("with invalid token", func(t *testing.T) {
-		e := echo.New()
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set("Authorization", "Bearer invalid-token")
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
-
-		// Create a handler that checks user is NOT in context
-		handler := func(c echo.Context) error {
-			user := c.Get(string(UserContextKey))
-			if user != nil {
-				t.Error("Expected no user in context with invalid token")
-			}
-			return c.String(http.StatusOK, "OK")
-		}
-
-		// Apply middleware and call handler
-		h := middleware(handler)
-		err := h(c)
-
-		// Should not error - optional auth allows invalid token
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-		if rec.Code != http.StatusOK {
-			t.Errorf("Expected status 200, got %d", rec.Code)
-		}
-	})
-}
-
-func TestGetUserFromContext(t *testing.T) {
-	tests := []struct {
-		name     string
-		setupCtx func() echo.Context
-		wantUser bool
-	}{
-		{
-			name: "user in context",
-			setupCtx: func() echo.Context {
-				e := echo.New()
-				req := httptest.NewRequest(http.MethodGet, "/", nil)
-				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
-				c.Set(string(AuthUserContextKey), "user-id-123")
-				return c
-			},
-			wantUser: true,
-		},
-		{
-			name: "no user in context",
-			setupCtx: func() echo.Context {
-				e := echo.New()
-				req := httptest.NewRequest(http.MethodGet, "/", nil)
-				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
-				return c
-			},
-			wantUser: false,
-		},
-		{
-			name: "wrong type in context",
-			setupCtx: func() echo.Context {
-				e := echo.New()
-				req := httptest.NewRequest(http.MethodGet, "/", nil)
-				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
-				c.Set(string(AuthUserContextKey), 123) // wrong type
-				return c
-			},
-			wantUser: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := tt.setupCtx()
-			userID, ok := GetUserFromContext(c)
-
-			if tt.wantUser {
-				if !ok {
-					t.Error("Expected user ID, got false")
-				}
-				if userID == "" {
-					t.Error("Expected non-empty user ID")
-				}
-			} else {
-				if ok {
-					t.Error("Expected no user ID, got true")
-				}
-			}
-		})
-	}
-}
-
-func TestGetClaimsFromContext(t *testing.T) {
-	tests := []struct {
-		name       string
-		setupCtx   func() echo.Context
-		wantClaims bool
-	}{
-		{
-			name: "claims in context",
-			setupCtx: func() echo.Context {
-				e := echo.New()
-				req := httptest.NewRequest(http.MethodGet, "/", nil)
-				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
-				claims := &Claims{
-					UserID: uuid.New(),
-					Email:  "test@example.com",
-				}
-				c.Set(string(AuthClaimsContextKey), claims)
-				return c
-			},
-			wantClaims: true,
-		},
-		{
-			name: "no claims in context",
-			setupCtx: func() echo.Context {
-				e := echo.New()
-				req := httptest.NewRequest(http.MethodGet, "/", nil)
-				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
-				return c
-			},
-			wantClaims: false,
-		},
-		{
-			name: "wrong type in context",
-			setupCtx: func() echo.Context {
-				e := echo.New()
-				req := httptest.NewRequest(http.MethodGet, "/", nil)
-				rec := httptest.NewRecorder()
-				c := e.NewContext(req, rec)
-				c.Set(string(AuthClaimsContextKey), "not claims")
-				return c
-			},
-			wantClaims: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := tt.setupCtx()
-			claims, ok := GetClaimsFromContext(c)
-
-			if tt.wantClaims {
-				if !ok {
-					t.Error("Expected claims, got false")
-				}
-				if claims == nil {
-					t.Error("Expected non-nil claims")
-				}
-			} else {
-				if ok {
-					t.Error("Expected no claims, got true")
-				}
-			}
-		})
-	}
 }

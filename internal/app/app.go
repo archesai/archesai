@@ -9,8 +9,10 @@ import (
 	"time"
 
 	"github.com/archesai/archesai/internal/auth"
+	authrepository "github.com/archesai/archesai/internal/auth/adapters/repository"
 	"github.com/archesai/archesai/internal/config"
 	"github.com/archesai/archesai/internal/content"
+	contentrepo "github.com/archesai/archesai/internal/content/adapters/repository"
 	"github.com/archesai/archesai/internal/database"
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/database/sqlite"
@@ -18,8 +20,12 @@ import (
 	"github.com/archesai/archesai/internal/logger"
 	"github.com/archesai/archesai/internal/migrations"
 	"github.com/archesai/archesai/internal/organizations"
+	orgrepo "github.com/archesai/archesai/internal/organizations/adapters/repository"
 	"github.com/archesai/archesai/internal/server"
+	"github.com/archesai/archesai/internal/users"
+	usersrepo "github.com/archesai/archesai/internal/users/adapters/repository"
 	"github.com/archesai/archesai/internal/workflows"
+	workflowrepo "github.com/archesai/archesai/internal/workflows/adapters/repository"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 )
@@ -38,6 +44,11 @@ type App struct {
 	AuthRepository auth.Repository
 	AuthService    *auth.Service
 	AuthHandler    *auth.Handler
+
+	// Users domain
+	UsersRepository users.Repository
+	UsersService    *users.Service
+	UsersHandler    *users.Handler
 
 	// Organizations domain
 	OrganizationsRepository organizations.Repository
@@ -96,8 +107,9 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Create queries based on database type
 	var pgQueries *postgresql.Queries
 	var sqliteQueries *sqlite.Queries
-	var authRepo auth.ExtendedRepository
-	var organizationsRepo organizations.ExtendedRepository
+	var authRepo auth.Repository
+	var usersRepo users.Repository
+	var organizationsRepo organizations.Repository
 	var workflowsRepo workflows.Repository
 	var contentRepo content.Repository
 
@@ -114,10 +126,11 @@ func NewApp(cfg *config.Config) (*App, error) {
 		// Get the underlying pgxpool for PostgreSQL
 		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
 			pgQueries = postgresql.New(pool)
-			authRepo = auth.NewPostgresRepository(pgQueries)
-			organizationsRepo = organizations.NewPostgresRepository(pgQueries)
-			workflowsRepo = workflows.NewPostgresRepository(pgQueries)
-			contentRepo = content.NewPostgresRepository(pgQueries)
+			authRepo = authrepository.NewPostgresRepository(pool)
+			usersRepo = usersrepo.NewPostgresRepository(pool)
+			organizationsRepo = orgrepo.NewPostgresRepository(pool)
+			workflowsRepo = workflowrepo.NewPostgresRepository(pool)
+			contentRepo = contentrepo.NewPostgresRepository(pool)
 		} else {
 			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
 		}
@@ -125,10 +138,11 @@ func NewApp(cfg *config.Config) (*App, error) {
 		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
 			sqliteQueries = sqlite.New(sqlDB)
 			// Use SQLite repositories
-			authRepo = auth.NewSQLiteRepository(sqliteQueries)
-			organizationsRepo = organizations.NewSQLiteRepository(sqliteQueries)
-			workflowsRepo = workflows.NewSQLiteRepository(sqliteQueries)
-			contentRepo = content.NewSQLiteRepository(sqliteQueries)
+			authRepo = authrepository.NewSQLiteRepository(sqlDB)
+			usersRepo = usersrepo.NewSQLiteRepository(sqlDB)
+			organizationsRepo = orgrepo.NewSQLiteRepository(sqlDB)
+			workflowsRepo = workflowrepo.NewSQLiteRepository(sqlDB)
+			contentRepo = contentrepo.NewSQLiteRepository(sqlDB)
 			log.Info("Using SQLite repositories")
 		}
 	}
@@ -148,8 +162,16 @@ func NewApp(cfg *config.Config) (*App, error) {
 		AccessTokenExpiry:  accessTokenTTL,
 		RefreshTokenExpiry: refreshTokenTTL,
 	}
-	authService := auth.NewService(authRepo, authConfig, log)
+	authService := auth.NewService(authRepo, usersRepo, authConfig, log)
 	authHandler := auth.NewHandler(authService, log)
+
+	// Initialize users domain
+	// Create cache and event publisher for users
+	var usersCache users.Cache
+	var usersEvents users.EventPublisher
+	// TODO: Initialize actual cache and events implementations
+	usersService := users.NewService(usersRepo, usersCache, usersEvents, log)
+	usersHandler := users.NewHandler(usersService, log)
 
 	// Initialize organizations domain
 	organizationsService := organizations.NewService(organizationsRepo, log)
@@ -188,6 +210,11 @@ func NewApp(cfg *config.Config) (*App, error) {
 		AuthRepository: authRepo,
 		AuthService:    authService,
 		AuthHandler:    authHandler,
+
+		// Users domain
+		UsersRepository: usersRepo,
+		UsersService:    usersService,
+		UsersHandler:    usersHandler,
 
 		// Organizations domain
 		OrganizationsRepository: organizationsRepo,

@@ -23,6 +23,13 @@ type Repository interface {
 	UpdateRun(ctx context.Context, id uuid.UUID, entity *Run) (*Run, error)
 	DeleteRun(ctx context.Context, id uuid.UUID) error
 	ListRuns(ctx context.Context, params ListRunsParams) ([]*Run, int64, error)
+
+	// Tool operations
+	CreateTool(ctx context.Context, entity *Tool) (*Tool, error)
+	GetTool(ctx context.Context, id uuid.UUID) (*Tool, error)
+	UpdateTool(ctx context.Context, id uuid.UUID, entity *Tool) (*Tool, error)
+	DeleteTool(ctx context.Context, id uuid.UUID) error
+	ListTools(ctx context.Context, params ListToolsParams) ([]*Tool, int64, error)
 }
 
 // ListPipelinesParams represents parameters for listing pipelines.
@@ -33,6 +40,12 @@ type ListPipelinesParams struct {
 
 // ListRunsParams represents parameters for listing runs.
 type ListRunsParams struct {
+	Limit  int
+	Offset int
+}
+
+// ListToolsParams represents parameters for listing tools.
+type ListToolsParams struct {
 	Limit  int
 	Offset int
 }

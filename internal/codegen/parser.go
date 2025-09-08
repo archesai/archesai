@@ -455,11 +455,11 @@ func (p *Parser) GetWarnings() []string {
 func (p *Parser) inferDomain(filePath, schemaName string) string {
 	// Check common patterns
 	patterns := map[string][]string{
-		"auth":          {"User", "Account", "Session", "Token", "Login", "Register"},
+		"auth":          {"Account", "Session", "Token", "Login", "Register"},
+		"users":         {"User"},
 		"organizations": {"Organization", "Member", "Invitation", "Team"},
-		"workflows":     {"Workflow", "Pipeline", "Run", "Task", "Job"},
+		"workflows":     {"Workflow", "Pipeline", "Run", "Task", "Job", "Tool"},
 		"content":       {"Content", "Artifact", "Label", "File", "Document"},
-		"tools":         {"Tool", "Function", "Action", "Operation"},
 		"config":        {"Config", "Setting", "Preference"},
 	}
 
