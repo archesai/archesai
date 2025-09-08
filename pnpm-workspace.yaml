@@ -102,8 +102,6 @@ publicHoistPattern:
   - typescript
   - tailwindcss
 
-# reporter: silent
-
 strictDepBuilds: true
 
 strictPeerDependencies: true

@@ -48,6 +48,8 @@ make migrate-create name=feature  # New migration
 
 @../docs/TESTING.md
 @../docs/ARCHITECTURE.md
+@../docs/PROJECT_LAYOUT.md
+@../docs/MAKEFILE_COMMANDS.md
 @../README.md
 
 ## Task Master AI Instructions

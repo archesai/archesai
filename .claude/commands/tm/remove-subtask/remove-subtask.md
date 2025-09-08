@@ -43,14 +43,14 @@ task-master remove-subtask --id=<parentId.subtaskId> --convert
 
 ## Removal Process
 
-### For Deletion:
+### For Deletion
 
 1. Confirm if subtask has work done
 2. Update parent task estimates
 3. Remove subtask and its data
 4. Clean up dependencies
 
-### For Conversion:
+### For Conversion
 
 1. Assign new standalone task ID
 2. Preserve all task data

@@ -1,0 +1,1657 @@
+{
+  "config": {
+    "lang": ["en"],
+    "separator": "[\\s\\-]+",
+    "pipeline": ["stopWordFilter"]
+  },
+  "docs": [
+    {
+      "location": "contributing/",
+      "title": "Contributing to ArchesAI",
+      "text": "<p>Thank you for your interest in contributing to ArchesAI! This document provides guidelines and instructions for contributing to the project.</p>"
+    },
+    {
+      "location": "contributing/#code-of-conduct",
+      "title": "Code of Conduct",
+      "text": "<p>By participating in this project, you agree to abide by our Code of Conduct:</p> <ul> <li>Be respectful: Treat all contributors with respect</li> <li>Be constructive: Provide helpful feedback and suggestions</li> <li>Be inclusive: Welcome contributors of all backgrounds and experience levels</li> <li>Be professional: Keep discussions focused on the project</li> </ul>"
+    },
+    {
+      "location": "contributing/#getting-started",
+      "title": "Getting Started",
+      "text": ""
+    },
+    {
+      "location": "contributing/#prerequisites",
+      "title": "Prerequisites",
+      "text": "<p>Before contributing, ensure you have:</p> <ul> <li>Go 1.21+ installed</li> <li>PostgreSQL 15+ with pgvector extension</li> <li>Node.js 20+ and pnpm 8+</li> <li>Git configured with your GitHub account</li> <li>Make installed for running build commands</li> </ul>"
+    },
+    {
+      "location": "contributing/#setting-up-your-development-environment",
+      "title": "Setting Up Your Development Environment",
+      "text": "<ol> <li> <p>Fork the repository on GitHub</p> </li> <li> <p>Clone your fork:</p> </li> </ol> <pre><code>git clone https://github.com/YOUR_USERNAME/archesai.git\ncd archesai\n</code></pre> <ol> <li>Add upstream remote:</li> </ol> <pre><code>git remote add upstream https://github.com/archesai/archesai.git\n</code></pre> <ol> <li>Set up the project:</li> </ol> <pre><code># Copy environment variables\ncp .env.example .env\n\n# Install dependencies\nmake tools\ngo mod download\npnpm install\n\n# Set up database\ncreatedb archesai\npsql archesai -c \"CREATE EXTENSION IF NOT EXISTS vector;\"\nmake migrate-up\n\n# Generate code\nmake generate\n</code></pre> <ol> <li>Verify setup:</li> </ol> <pre><code>make test\nmake lint\n</code></pre>"
+    },
+    {
+      "location": "contributing/#development-workflow",
+      "title": "Development Workflow",
+      "text": ""
+    },
+    {
+      "location": "contributing/#branch-naming",
+      "title": "Branch Naming",
+      "text": "<p>Use descriptive branch names:</p> <ul> <li><code>feature/add-webhook-support</code></li> <li><code>fix/auth-token-expiry</code></li> <li><code>docs/update-api-guide</code></li> <li><code>refactor/optimize-queries</code></li> <li><code>test/add-workflow-tests</code></li> </ul>"
+    },
+    {
+      "location": "contributing/#making-changes",
+      "title": "Making Changes",
+      "text": "<ol> <li>Create a new branch:</li> </ol> <pre><code>git checkout -b feature/your-feature-name\n</code></pre> <ol> <li> <p>Make your changes following our coding standards</p> </li> <li> <p>Generate code if needed:</p> </li> </ol> <pre><code>make generate  # After API or database changes\n</code></pre> <ol> <li>Run tests:</li> </ol> <pre><code>make test\n</code></pre> <ol> <li>Lint your code:</li> </ol> <pre><code>make lint\n</code></pre> <ol> <li>Format your code:</li> </ol> <pre><code>make format\n</code></pre> <ol> <li>Commit your changes:</li> </ol> <pre><code>git add .\ngit commit -m \"feat: add new feature\"\n</code></pre>"
+    },
+    {
+      "location": "contributing/#commit-message-format",
+      "title": "Commit Message Format",
+      "text": "<p>We follow Conventional Commits:</p> <pre><code>&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;\n\n&lt;body&gt;\n\n&lt;footer&gt;\n</code></pre> <p>Types:</p> <ul> <li><code>feat</code>: New feature</li> <li><code>fix</code>: Bug fix</li> <li><code>docs</code>: Documentation changes</li> <li><code>style</code>: Code style changes (formatting, etc.)</li> <li><code>refactor</code>: Code refactoring</li> <li><code>test</code>: Adding or updating tests</li> <li><code>chore</code>: Maintenance tasks</li> <li><code>perf</code>: Performance improvements</li> </ul> <p>Examples:</p> <pre><code>feat(auth): add refresh token rotation\nfix(workflows): resolve DAG cycle detection bug\ndocs(api): update authentication examples\nrefactor(database): optimize artifact queries\n</code></pre>"
+    },
+    {
+      "location": "contributing/#submitting-a-pull-request",
+      "title": "Submitting a Pull Request",
+      "text": "<ol> <li>Push to your fork:</li> </ol> <pre><code>git push origin feature/your-feature-name\n</code></pre> <ol> <li> <p>Create a Pull Request on GitHub</p> </li> <li> <p>Fill out the PR template with:</p> </li> <li>Description of changes</li> <li>Related issue numbers</li> <li>Testing performed</li> <li> <p>Screenshots (if UI changes)</p> </li> <li> <p>Wait for review - maintainers will review your PR</p> </li> <li> <p>Address feedback - make requested changes and push updates</p> </li> </ol>"
+    },
+    {
+      "location": "contributing/#coding-standards",
+      "title": "Coding Standards",
+      "text": ""
+    },
+    {
+      "location": "contributing/#go-code",
+      "title": "Go Code",
+      "text": "<ul> <li>Follow Effective Go guidelines</li> <li>Use <code>gofmt</code> for formatting</li> <li>Write descriptive variable and function names</li> <li>Add comments for exported functions</li> <li>Handle errors explicitly</li> <li>Use interfaces for dependency injection</li> <li>Write table-driven tests</li> </ul> <p>Example:</p> <pre><code>// CreateUser creates a new user account with the provided details.\n// It returns an error if the email is already registered.\nfunc (s *AuthService) CreateUser(ctx context.Context, req CreateUserRequest) (*User, error) {\n    // Validate request\n    if err := req.Validate(); err != nil {\n        return nil, fmt.Errorf(\"invalid request: %w\", err)\n    }\n\n    // Check if user exists\n    existing, _ := s.repo.GetUserByEmail(ctx, req.Email)\n    if existing != nil {\n        return nil, ErrUserExists\n    }\n\n    // Create user\n    user := &amp;User{\n        ID:    uuid.New(),\n        Email: req.Email,\n        Name:  req.Name,\n    }\n\n    if err := s.repo.CreateUser(ctx, user); err != nil {\n        return nil, fmt.Errorf(\"failed to create user: %w\", err)\n    }\n\n    return user, nil\n}\n</code></pre>"
+    },
+    {
+      "location": "contributing/#typescriptreact-code",
+      "title": "TypeScript/React Code",
+      "text": "<ul> <li>Use TypeScript for all new code</li> <li>Follow React best practices and hooks</li> <li>Use functional components</li> <li>Implement proper error boundaries</li> <li>Write meaningful component and prop names</li> <li>Add JSDoc comments for complex functions</li> </ul> <p>Example:</p> <pre><code>/**\n * WorkflowEditor component for creating and editing workflow DAGs\n */\nexport const WorkflowEditor: React.FC&lt;WorkflowEditorProps&gt; = ({\n  workflow,\n  onSave,\n  readonly = false,\n}) =&gt; {\n  const [nodes, setNodes] = useState&lt;Node[]&gt;(workflow?.nodes || []);\n  const [edges, setEdges] = useState&lt;Edge[]&gt;(workflow?.edges || []);\n\n  const handleNodeAdd = useCallback((node: Node) =&gt; {\n    setNodes((prev) =&gt; [...prev, node]);\n  }, []);\n\n  // ... rest of component\n};\n</code></pre>"
+    },
+    {
+      "location": "contributing/#sql-queries",
+      "title": "SQL Queries",
+      "text": "<ul> <li>Use lowercase for SQL keywords</li> <li>Use snake_case for column names</li> <li>Add comments for complex queries</li> <li>Use parameterized queries (never concatenate)</li> <li>Follow SQLC conventions</li> </ul> <p>Example:</p> <pre><code>-- name: GetUserByEmail :one\n-- GetUserByEmail retrieves a user by their email address\nselect\n  id,\n  email,\n  name,\n  email_verified,\n  created_at,\n  updated_at\nfrom users\nwhere email = $1\nlimit 1;\n</code></pre>"
+    },
+    {
+      "location": "contributing/#api-design",
+      "title": "API Design",
+      "text": "<ul> <li>Follow RESTful principles</li> <li>Use proper HTTP status codes</li> <li>Implement pagination for list endpoints</li> <li>Use consistent error responses</li> <li>Document all endpoints in OpenAPI</li> </ul>"
+    },
+    {
+      "location": "contributing/#testing-guidelines",
+      "title": "Testing Guidelines",
+      "text": ""
+    },
+    {
+      "location": "contributing/#go-tests",
+      "title": "Go Tests",
+      "text": "<p>Write table-driven tests:</p> <pre><code>func TestCreateUser(t *testing.T) {\n    tests := []struct {\n        name    string\n        input   CreateUserRequest\n        want    *User\n        wantErr error\n    }{\n        {\n            name: \"valid user\",\n            input: CreateUserRequest{\n                Email: \"test@example.com\",\n                Name:  \"Test User\",\n            },\n            want: &amp;User{\n                Email: \"test@example.com\",\n                Name:  \"Test User\",\n            },\n            wantErr: nil,\n        },\n        {\n            name: \"duplicate email\",\n            input: CreateUserRequest{\n                Email: \"existing@example.com\",\n                Name:  \"Test User\",\n            },\n            want:    nil,\n            wantErr: ErrUserExists,\n        },\n    }\n\n    for _, tt := range tests {\n        t.Run(tt.name, func(t *testing.T) {\n            // Test implementation\n        })\n    }\n}\n</code></pre>"
+    },
+    {
+      "location": "contributing/#typescript-tests",
+      "title": "TypeScript Tests",
+      "text": "<p>Use Vitest for unit tests:</p> <pre><code>describe('WorkflowEditor', () =&gt; {\n  it('should render workflow nodes', () =&gt; {\n    const workflow = {\n      nodes: [{ id: '1', type: 'input', data: {} }],\n      edges: [],\n    };\n\n    const { getByTestId } = render(\n      &lt;WorkflowEditor workflow={workflow} onSave={jest.fn()} /&gt;\n    );\n\n    expect(getByTestId('node-1')).toBeInTheDocument();\n  });\n});\n</code></pre>"
+    },
+    {
+      "location": "contributing/#documentation",
+      "title": "Documentation",
+      "text": ""
+    },
+    {
+      "location": "contributing/#code-documentation",
+      "title": "Code Documentation",
+      "text": "<ul> <li>Add package-level documentation</li> <li>Document all exported functions and types</li> <li>Include examples for complex functionality</li> <li>Keep documentation up to date with code changes</li> </ul>"
+    },
+    {
+      "location": "contributing/#readme-updates",
+      "title": "README Updates",
+      "text": "<p>Update the README when:</p> <ul> <li>Adding new features</li> <li>Changing setup procedures</li> <li>Modifying configuration options</li> <li>Adding new dependencies</li> </ul>"
+    },
+    {
+      "location": "contributing/#api-documentation",
+      "title": "API Documentation",
+      "text": "<ul> <li>Update OpenAPI spec for API changes</li> <li>Include request/response examples</li> <li>Document error responses</li> <li>Add descriptions for all parameters</li> </ul>"
+    },
+    {
+      "location": "contributing/#architecture-guidelines",
+      "title": "Architecture Guidelines",
+      "text": ""
+    },
+    {
+      "location": "contributing/#hexagonal-architecture",
+      "title": "Hexagonal Architecture",
+      "text": "<p>Follow the hexagonal architecture pattern:</p> <ol> <li>Domain Layer (Core):</li> <li>Business logic</li> <li>Domain entities</li> <li>Use cases</li> <li> <p>Port interfaces</p> </li> <li> <p>Infrastructure Layer (Adapters):</p> </li> <li>Database implementations</li> <li>External service clients</li> <li> <p>File system operations</p> </li> <li> <p>Application Layer (Handlers):</p> </li> <li>HTTP handlers</li> <li>Middleware</li> <li>Request/response mapping</li> </ol>"
+    },
+    {
+      "location": "contributing/#adding-new-features",
+      "title": "Adding New Features",
+      "text": "<p>When adding a new feature:</p> <ol> <li>Define the API in <code>api/openapi.yaml</code></li> <li>Create database migration if needed</li> <li>Write SQL queries in <code>queries/</code></li> <li>Generate code: <code>make generate</code></li> <li>Implement domain logic in use cases</li> <li>Implement repository if needed</li> <li>Create HTTP handler</li> <li>Wire dependencies in <code>deps.go</code></li> <li>Add routes in <code>routes.go</code></li> <li>Write tests</li> <li>Update documentation</li> </ol>"
+    },
+    {
+      "location": "contributing/#review-process",
+      "title": "Review Process",
+      "text": ""
+    },
+    {
+      "location": "contributing/#what-we-look-for",
+      "title": "What We Look For",
+      "text": "<ul> <li>Code quality: Clean, maintainable, efficient code</li> <li>Tests: Adequate test coverage for new functionality</li> <li>Documentation: Clear comments and updated docs</li> <li>Architecture: Follows project patterns and conventions</li> <li>Performance: No significant performance regressions</li> <li>Security: No security vulnerabilities introduced</li> </ul>"
+    },
+    {
+      "location": "contributing/#review-timeline",
+      "title": "Review Timeline",
+      "text": "<ul> <li>Initial review: Within 2-3 business days</li> <li>Follow-up reviews: Within 1-2 business days</li> <li>Small fixes: Usually same day</li> </ul>"
+    },
+    {
+      "location": "contributing/#getting-help",
+      "title": "Getting Help",
+      "text": ""
+    },
+    {
+      "location": "contributing/#resources",
+      "title": "Resources",
+      "text": "<ul> <li>Development Guide</li> <li>Architecture Documentation</li> <li>API Documentation</li> <li>Project Issues</li> </ul>"
+    },
+    {
+      "location": "contributing/#communication",
+      "title": "Communication",
+      "text": "<ul> <li>GitHub Issues: Bug reports and feature requests</li> <li>GitHub Discussions: General questions and discussions</li> <li>Pull Requests: Code contributions and reviews</li> </ul>"
+    },
+    {
+      "location": "contributing/#release-process",
+      "title": "Release Process",
+      "text": ""
+    },
+    {
+      "location": "contributing/#versioning",
+      "title": "Versioning",
+      "text": "<p>We use Semantic Versioning:</p> <ul> <li>MAJOR: Breaking changes</li> <li>MINOR: New features (backward compatible)</li> <li>PATCH: Bug fixes (backward compatible)</li> </ul>"
+    },
+    {
+      "location": "contributing/#release-cycle",
+      "title": "Release Cycle",
+      "text": "<ul> <li>Patch releases: As needed for critical fixes</li> <li>Minor releases: Monthly</li> <li>Major releases: Quarterly or as needed</li> </ul>"
+    },
+    {
+      "location": "contributing/#recognition",
+      "title": "Recognition",
+      "text": "<p>Contributors are recognized in:</p> <ul> <li>Release notes</li> <li>Contributors file</li> <li>Project documentation</li> </ul> <p>Thank you for contributing to ArchesAI! Your efforts help make the project better for everyone.</p>"
+    },
+    {
+      "location": "getting-started/",
+      "title": "ArchesAI Documentation",
+      "text": "<p>Welcome to the ArchesAI documentation! This guide will help you understand, develop, and deploy the ArchesAI platform.</p>"
+    },
+    {
+      "location": "getting-started/#what-is-archesai",
+      "title": "What is ArchesAI?",
+      "text": "<p>ArchesAI is a high-performance data processing platform with AI-powered chat interface and workflow automation. It provides:</p> <ul> <li>Multi-Provider AI: Support for OpenAI, Claude, Gemini, Ollama</li> <li>Chat Interface: Simple persona-based chat system with session management</li> <li>Beautiful TUI: Terminal interface for configuration and chat</li> <li>Workflow Automation: DAG-based data processing pipelines</li> <li>Code Generation: OpenAPI and SQL-driven development</li> <li>Modern Stack: Go, PostgreSQL/SQLite, Redis</li> </ul>"
+    },
+    {
+      "location": "getting-started/#quick-start",
+      "title": "Quick Start",
+      "text": ""
+    },
+    {
+      "location": "getting-started/#1-configuration-viewer-no-api-key-needed",
+      "title": "1. Configuration Viewer (No API Key Needed)",
+      "text": "<pre><code>archesai tui\n</code></pre>"
+    },
+    {
+      "location": "getting-started/#2-api-server",
+      "title": "2. API Server",
+      "text": "<pre><code>archesai api\n</code></pre>"
+    },
+    {
+      "location": "getting-started/#3-ai-chat-interface",
+      "title": "3. AI Chat Interface",
+      "text": "<pre><code>export OPENAI_API_KEY=your-key\narchesai tui --chat\n\n# Or with Ollama (local)\narchesai tui --chat --provider=ollama\n</code></pre>"
+    },
+    {
+      "location": "getting-started/#documentation-structure",
+      "title": "Documentation Structure",
+      "text": "<p>This documentation is organized into several sections:</p>"
+    },
+    {
+      "location": "getting-started/#architecture",
+      "title": "\ud83c\udfd7\ufe0f Architecture",
+      "text": "<p>Learn about the system design, patterns, and overall architecture of ArchesAI.</p>"
+    },
+    {
+      "location": "getting-started/#development",
+      "title": "\ud83d\ude80 Development",
+      "text": "<p>Everything you need to know about setting up your development environment and contributing to the project.</p>"
+    },
+    {
+      "location": "getting-started/#api-reference",
+      "title": "\ud83d\udcda API Reference",
+      "text": "<p>Complete API documentation with endpoints, schemas, and examples.</p>"
+    },
+    {
+      "location": "getting-started/#features",
+      "title": "\ud83c\udfaf Features",
+      "text": "<p>Detailed guides for each feature domain: authentication, organizations, workflows, and content management.</p>"
+    },
+    {
+      "location": "getting-started/#deployment",
+      "title": "\ud83d\udc33 Deployment",
+      "text": "<p>Production deployment guides including Docker, Kubernetes, and infrastructure setup.</p>"
+    },
+    {
+      "location": "getting-started/#troubleshooting",
+      "title": "\ud83d\udd27 Troubleshooting",
+      "text": "<p>Common issues, debugging guides, and solutions.</p>"
+    },
+    {
+      "location": "getting-started/#security",
+      "title": "\ud83d\udd12 Security",
+      "text": "<p>Security best practices and guidelines.</p>"
+    },
+    {
+      "location": "getting-started/#performance",
+      "title": "\u26a1 Performance",
+      "text": "<p>Performance optimization and monitoring guides.</p>"
+    },
+    {
+      "location": "getting-started/#need-help",
+      "title": "Need Help?",
+      "text": "<ul> <li>Email: support@archesai.com</li> <li>Issues: GitHub Issues</li> <li>Contributing: See our Contributing Guide</li> </ul>"
+    },
+    {
+      "location": "getting-started/#license",
+      "title": "License",
+      "text": "<p>See LICENSE file for details.</p>"
+    },
+    {
+      "location": "readme/",
+      "title": "ArchesAI Documentation",
+      "text": "<p>This directory contains the comprehensive documentation for the ArchesAI project, built using MkDocs Material.</p>"
+    },
+    { "location": "readme/#setup", "title": "Setup", "text": "" },
+    {
+      "location": "readme/#prerequisites",
+      "title": "Prerequisites",
+      "text": "<ul> <li>Python 3.8 or later</li> <li>pip (Python package installer)</li> </ul>"
+    },
+    {
+      "location": "readme/#installation",
+      "title": "Installation",
+      "text": "<ol> <li>Install MkDocs and dependencies:</li> </ol> <pre><code>pip install -r requirements.txt\n</code></pre> <ol> <li>Serve the documentation locally:</li> </ol> <pre><code>mkdocs serve\n</code></pre> <ol> <li>Open http://localhost:8000 in your browser.</li> </ol>"
+    },
+    {
+      "location": "readme/#building",
+      "title": "Building",
+      "text": "<p>To build the static site:</p> <pre><code>mkdocs build\n</code></pre> <p>The generated site will be in the <code>site/</code> directory.</p>"
+    },
+    {
+      "location": "readme/#structure",
+      "title": "Structure",
+      "text": "<pre><code>docs/\n\u251c\u2500\u2500 mkdocs.yml              # MkDocs configuration\n\u251c\u2500\u2500 requirements.txt        # Python dependencies\n\u251c\u2500\u2500 index.md               # Homepage\n\u251c\u2500\u2500 DEVELOPMENT.md         # Development guide\n\u251c\u2500\u2500 api-reference/         # API documentation\n\u251c\u2500\u2500 architecture/          # Architecture docs\n\u251c\u2500\u2500 development/           # Development guides\n\u251c\u2500\u2500 deployment/            # Deployment guides\n\u251c\u2500\u2500 features/              # Feature documentation\n\u251c\u2500\u2500 troubleshooting/       # Troubleshooting guides\n\u251c\u2500\u2500 security/              # Security documentation\n\u2514\u2500\u2500 performance/           # Performance guides\n</code></pre>"
+    },
+    {
+      "location": "readme/#features",
+      "title": "Features",
+      "text": "<ul> <li>Material Design: Modern, responsive theme</li> <li>Search: Fast client-side search functionality</li> <li>Mermaid Diagrams: Built-in diagram rendering</li> <li>Code Highlighting: Syntax highlighting for multiple languages</li> <li>Dark/Light Mode: Toggle between themes</li> <li>Versioning: Support for multiple documentation versions</li> <li>Git Integration: Show last modified dates</li> </ul>"
+    },
+    {
+      "location": "readme/#contributing",
+      "title": "Contributing",
+      "text": "<p>When adding new documentation:</p> <ol> <li>Follow the existing structure and navigation in <code>mkdocs.yml</code></li> <li>Use the markdownlint configuration in <code>.markdownlint.json</code></li> <li>Include the page in the navigation structure</li> <li>Test locally with <code>mkdocs serve</code></li> </ol>"
+    },
+    {
+      "location": "readme/#deployment",
+      "title": "Deployment",
+      "text": "<p>Documentation is automatically built and deployed via GitHub Actions when changes are pushed to the main branch.</p>"
+    },
+    {
+      "location": "api-reference/overview/",
+      "title": "API Reference",
+      "text": "<p>Welcome to the ArchesAI API reference documentation. Our REST API is built using OpenAPI 3.0 specifications and provides comprehensive access to all platform features.</p>"
+    },
+    {
+      "location": "api-reference/overview/#overview",
+      "title": "Overview",
+      "text": "<p>The ArchesAI API is organized around REST principles with predictable URLs, standard HTTP response codes, and JSON request/response bodies. All API endpoints are prefixed with the API version.</p> <p>Base URL: <code>https://api.archesai.com/v1</code></p>"
+    },
+    {
+      "location": "api-reference/overview/#authentication",
+      "title": "Authentication",
+      "text": "<p>All API requests require authentication using Bearer tokens. See Authentication for detailed information about obtaining and using API keys.</p> <pre><code>curl -H \"Authorization: Bearer YOUR_API_KEY\" \\\n     https://api.archesai.com/v1/organizations\n</code></pre>"
+    },
+    {
+      "location": "api-reference/overview/#api-domains",
+      "title": "API Domains",
+      "text": ""
+    },
+    {
+      "location": "api-reference/overview/#authentication_1",
+      "title": "Authentication",
+      "text": "<p>User authentication, session management, and OAuth integration.</p>"
+    },
+    {
+      "location": "api-reference/overview/#organizations",
+      "title": "Organizations",
+      "text": "<p>Multi-tenant organization management, member invitations, and role-based access control.</p>"
+    },
+    {
+      "location": "api-reference/overview/#workflows",
+      "title": "Workflows",
+      "text": "<p>Pipeline creation, execution, and monitoring with DAG-based workflow automation.</p>"
+    },
+    {
+      "location": "api-reference/overview/#content",
+      "title": "Content",
+      "text": "<p>Artifact storage, vector embeddings, and content processing operations.</p>"
+    },
+    {
+      "location": "api-reference/overview/#response-format",
+      "title": "Response Format",
+      "text": "<p>All API responses follow a consistent format:</p> <pre><code>{\n  \"data\": {\n    // Response data\n  },\n  \"meta\": {\n    \"page\": 1,\n    \"limit\": 20,\n    \"total\": 100\n  }\n}\n</code></pre>"
+    },
+    {
+      "location": "api-reference/overview/#error-responses",
+      "title": "Error Responses",
+      "text": "<p>Errors follow RFC 7807 Problem Details format:</p> <pre><code>{\n  \"type\": \"/errors/validation-error\",\n  \"title\": \"Validation Error\",\n  \"status\": 400,\n  \"detail\": \"The request body is invalid\",\n  \"instance\": \"/v1/organizations\"\n}\n</code></pre>"
+    },
+    {
+      "location": "api-reference/overview/#rate-limiting",
+      "title": "Rate Limiting",
+      "text": "<p>API requests are rate limited to prevent abuse:</p> <ul> <li>Free tier: 100 requests per minute</li> <li>Pro tier: 1000 requests per minute</li> <li>Enterprise: Custom limits</li> </ul> <p>Rate limit headers are included in all responses:</p> <pre><code>X-RateLimit-Limit: 100\nX-RateLimit-Remaining: 95\nX-RateLimit-Reset: 1640995200\n</code></pre>"
+    },
+    {
+      "location": "api-reference/overview/#sdks-and-tools",
+      "title": "SDKs and Tools",
+      "text": "<ul> <li>Go SDK: Generated client in <code>web/client/</code></li> <li>TypeScript SDK: NPM package <code>@archesai/client</code></li> <li>OpenAPI Spec: Available in the <code>api/</code> directory</li> <li>Postman Collection: Import</li> </ul>"
+    },
+    {
+      "location": "api-reference/overview/#interactive-api-explorer",
+      "title": "Interactive API Explorer",
+      "text": "<p>Try our interactive API explorer at api.archesai.com/docs to test endpoints directly from your browser.</p>"
+    },
+    {
+      "location": "architecture/authentication/",
+      "title": "Authentication System Documentation",
+      "text": "<p>This document describes the authentication and authorization system implemented in ArchesAI.</p>"
+    },
+    {
+      "location": "architecture/authentication/#overview",
+      "title": "Overview",
+      "text": "<p>ArchesAI uses a JWT-based authentication system with refresh tokens for secure, stateless authentication. The system supports:</p> <ul> <li>User registration and login</li> <li>Access and refresh tokens</li> <li>Session management</li> <li>Password hashing with bcrypt</li> <li>Multi-organization support</li> <li>Token rotation for enhanced security</li> </ul>"
+    },
+    {
+      "location": "architecture/authentication/#architecture",
+      "title": "Architecture",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#components",
+      "title": "Components",
+      "text": "<ol> <li>Auth Domain (<code>internal/auth/</code>)</li> <li>Core business logic for authentication</li> <li>User and session entities</li> <li>Repository interfaces (ports)</li> <li> <p>Use cases for auth operations</p> </li> <li> <p>Auth Handlers (<code>internal/auth/handlers/http/</code>)</p> </li> <li>HTTP endpoints for auth operations</li> <li>Request/response handling</li> <li> <p>Input validation</p> </li> <li> <p>Auth Repository (<code>internal/auth/adapters/postgres/</code>)</p> </li> <li>PostgreSQL implementation of auth repository</li> <li>User and session persistence</li> <li> <p>Database queries via SQLC</p> </li> <li> <p>Auth Middleware (<code>internal/middleware/</code>)</p> </li> <li>JWT validation</li> <li>Request authentication</li> <li>Context enrichment with user claims</li> </ol>"
+    },
+    {
+      "location": "architecture/authentication/#token-system",
+      "title": "Token System",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#token-types",
+      "title": "Token Types",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#access-token",
+      "title": "Access Token",
+      "text": "<ul> <li>Purpose: Authenticate API requests</li> <li>Lifetime: 15 minutes (configurable)</li> <li>Storage: Client memory or secure storage</li> <li>Claims: User ID, email, issued at, expiration</li> </ul>"
+    },
+    {
+      "location": "architecture/authentication/#refresh-token",
+      "title": "Refresh Token",
+      "text": "<ul> <li>Purpose: Obtain new access tokens</li> <li>Lifetime: 7 days (configurable)</li> <li>Storage: Secure client storage (HttpOnly cookie recommended)</li> <li>Claims: User ID, session ID, issued at, expiration</li> </ul>"
+    },
+    {
+      "location": "architecture/authentication/#token-flow",
+      "title": "Token Flow",
+      "text": "<pre><code>sequenceDiagram\n    participant Client\n    participant API\n    participant AuthService\n    participant Database\n\n    Client-&gt;&gt;API: POST /auth/login (email, password)\n    API-&gt;&gt;AuthService: Authenticate user\n    AuthService-&gt;&gt;Database: Verify credentials\n    Database--&gt;&gt;AuthService: User data\n    AuthService-&gt;&gt;Database: Create session\n    AuthService--&gt;&gt;API: Access + Refresh tokens\n    API--&gt;&gt;Client: Tokens + User info\n\n    Note over Client: Access token expires\n\n    Client-&gt;&gt;API: POST /auth/refresh (refresh token)\n    API-&gt;&gt;AuthService: Validate refresh token\n    AuthService-&gt;&gt;Database: Verify session\n    AuthService--&gt;&gt;API: New access token\n    API--&gt;&gt;Client: New access token\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#database-schema",
+      "title": "Database Schema",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#users-table",
+      "title": "Users Table",
+      "text": "<pre><code>CREATE TABLE users (\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    email VARCHAR(255) UNIQUE NOT NULL,\n    name VARCHAR(255),\n    email_verified BOOLEAN DEFAULT false,\n    image TEXT,\n    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP\n);\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#sessions-table",
+      "title": "Sessions Table",
+      "text": "<pre><code>CREATE TABLE sessions (\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n    token TEXT UNIQUE NOT NULL,\n    expires_at TIMESTAMPTZ NOT NULL,\n    active_organization_id UUID,\n    ip_address VARCHAR(45),\n    user_agent TEXT,\n    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP\n);\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#accounts-table-for-oauth-providers",
+      "title": "Accounts Table (for OAuth providers)",
+      "text": "<pre><code>CREATE TABLE accounts (\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,\n    provider VARCHAR(50) NOT NULL,\n    provider_account_id VARCHAR(255) NOT NULL,\n    refresh_token TEXT,\n    access_token TEXT,\n    expires_at TIMESTAMPTZ,\n    token_type VARCHAR(50),\n    scope TEXT,\n    id_token TEXT,\n    session_state TEXT,\n    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,\n    UNIQUE(provider, provider_account_id)\n);\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#api-endpoints",
+      "title": "API Endpoints",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#public-endpoints",
+      "title": "Public Endpoints",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#register",
+      "title": "Register",
+      "text": "<pre><code>POST /api/auth/register\nContent-Type: application/json\n\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"name\": \"John Doe\"\n}\n</code></pre> <p>Response:</p> <pre><code>{\n  \"user\": {\n    \"id\": \"uuid\",\n    \"email\": \"user@example.com\",\n    \"name\": \"John Doe\"\n  },\n  \"tokens\": {\n    \"accessToken\": \"eyJhbGc...\",\n    \"refreshToken\": \"eyJhbGc...\",\n    \"expiresIn\": 900\n  }\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#login",
+      "title": "Login",
+      "text": "<pre><code>POST /api/auth/login\nContent-Type: application/json\n\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePass123!\"\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#refresh-token_1",
+      "title": "Refresh Token",
+      "text": "<pre><code>POST /api/auth/refresh\nContent-Type: application/json\n\n{\n  \"refreshToken\": \"eyJhbGc...\"\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#protected-endpoints",
+      "title": "Protected Endpoints",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#get-current-user",
+      "title": "Get Current User",
+      "text": "<pre><code>GET /api/auth/me\nAuthorization: Bearer &lt;access_token&gt;\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#logout",
+      "title": "Logout",
+      "text": "<pre><code>POST /api/auth/logout\nAuthorization: Bearer &lt;access_token&gt;\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#update-profile",
+      "title": "Update Profile",
+      "text": "<pre><code>PUT /api/auth/profile\nAuthorization: Bearer &lt;access_token&gt;\nContent-Type: application/json\n\n{\n  \"name\": \"Jane Doe\",\n  \"image\": \"https://example.com/avatar.jpg\"\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#implementation-details",
+      "title": "Implementation Details",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#password-hashing",
+      "title": "Password Hashing",
+      "text": "<p>Passwords are hashed using bcrypt with a cost factor of 10:</p> <pre><code>func hashPassword(password string) (string, error) {\n    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)\n    return string(bytes), err\n}\n\nfunc verifyPassword(password, hash string) bool {\n    err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))\n    return err == nil\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#jwt-generation",
+      "title": "JWT Generation",
+      "text": "<pre><code>func generateAccessToken(userID uuid.UUID, email string) (string, error) {\n    claims := &amp;Claims{\n        UserID: userID,\n        Email:  email,\n        RegisteredClaims: jwt.RegisteredClaims{\n            ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),\n            IssuedAt:  jwt.NewNumericDate(time.Now()),\n            Issuer:    \"archesai\",\n        },\n    }\n\n    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)\n    return token.SignedString([]byte(jwtSecret))\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#middleware-implementation",
+      "title": "Middleware Implementation",
+      "text": "<pre><code>func RequireAuth() echo.MiddlewareFunc {\n    return func(next echo.HandlerFunc) echo.HandlerFunc {\n        return func(c echo.Context) error {\n            // Extract token from Authorization header\n            auth := c.Request().Header.Get(\"Authorization\")\n            if auth == \"\" {\n                return echo.NewHTTPError(http.StatusUnauthorized, \"missing authorization\")\n            }\n\n            // Validate Bearer token format\n            parts := strings.Split(auth, \" \")\n            if len(parts) != 2 || parts[0] != \"Bearer\" {\n                return echo.NewHTTPError(http.StatusUnauthorized, \"invalid authorization format\")\n            }\n\n            // Parse and validate JWT\n            token, err := jwt.ParseWithClaims(parts[1], &amp;Claims{}, func(token *jwt.Token) (interface{}, error) {\n                return []byte(jwtSecret), nil\n            })\n\n            if err != nil || !token.Valid {\n                return echo.NewHTTPError(http.StatusUnauthorized, \"invalid token\")\n            }\n\n            // Add claims to context\n            claims := token.Claims.(*Claims)\n            c.Set(\"user_id\", claims.UserID)\n            c.Set(\"user_email\", claims.Email)\n\n            return next(c)\n        }\n    }\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#security-considerations",
+      "title": "Security Considerations",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#token-security",
+      "title": "Token Security",
+      "text": "<ol> <li>Secure Storage:</li> <li>Store access tokens in memory or secure client storage</li> <li>Use HttpOnly, Secure, SameSite cookies for refresh tokens in web apps</li> <li> <p>Never store tokens in localStorage for sensitive applications</p> </li> <li> <p>Token Rotation:</p> </li> <li>Rotate refresh tokens on use</li> <li>Implement token blacklisting for logout</li> <li> <p>Monitor for token reuse attacks</p> </li> <li> <p>HTTPS Only:</p> </li> <li>Always use HTTPS in production</li> <li>Set Secure flag on cookies</li> <li>Implement HSTS headers</li> </ol>"
+    },
+    {
+      "location": "architecture/authentication/#password-security",
+      "title": "Password Security",
+      "text": "<ol> <li>Requirements:</li> <li>Minimum 8 characters</li> <li>Mix of uppercase, lowercase, numbers, and symbols</li> <li> <p>Check against common password lists</p> </li> <li> <p>Storage:</p> </li> <li>Never store plaintext passwords</li> <li>Use bcrypt with cost factor \u2265 10</li> <li> <p>Salt passwords automatically (bcrypt handles this)</p> </li> <li> <p>Reset Flow:</p> </li> <li>Secure random reset tokens</li> <li>Time-limited validity (1 hour)</li> <li>Single use tokens</li> <li>Email verification required</li> </ol>"
+    },
+    {
+      "location": "architecture/authentication/#session-security",
+      "title": "Session Security",
+      "text": "<ol> <li>Session Management:</li> <li>Database-backed sessions</li> <li>Session expiration</li> <li>Device tracking (IP, User-Agent)</li> <li> <p>Concurrent session limits (optional)</p> </li> <li> <p>Invalidation:</p> </li> <li>Logout invalidates session</li> <li>Password change invalidates all sessions</li> <li>Admin can revoke user sessions</li> </ol>"
+    },
+    {
+      "location": "architecture/authentication/#multi-organization-support",
+      "title": "Multi-Organization Support",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#organization-context",
+      "title": "Organization Context",
+      "text": "<p>Users can belong to multiple organizations. The active organization is tracked in the session:</p> <pre><code>type Session struct {\n    ID                   uuid.UUID\n    UserID              uuid.UUID\n    ActiveOrganizationID *uuid.UUID\n    // ... other fields\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#switching-organizations",
+      "title": "Switching Organizations",
+      "text": "<pre><code>POST /api/auth/switch-organization\nAuthorization: Bearer &lt;access_token&gt;\nContent-Type: application/json\n\n{\n  \"organizationId\": \"org-uuid\"\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#organization-scoped-requests",
+      "title": "Organization-Scoped Requests",
+      "text": "<p>The active organization is included in the JWT claims and available in request context:</p> <pre><code>func (h *Handler) GetWorkflows(c echo.Context) error {\n    orgID := c.Get(\"organization_id\").(uuid.UUID)\n    // Query workflows for this organization\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#error-handling",
+      "title": "Error Handling",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#standard-error-responses",
+      "title": "Standard Error Responses",
+      "text": "<pre><code>{\n  \"error\": {\n    \"code\": \"INVALID_CREDENTIALS\",\n    \"message\": \"Invalid email or password\"\n  }\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#error-codes",
+      "title": "Error Codes",
+      "text": "<ul> <li><code>INVALID_CREDENTIALS</code>: Wrong email/password</li> <li><code>USER_EXISTS</code>: Email already registered</li> <li><code>INVALID_TOKEN</code>: Token validation failed</li> <li><code>TOKEN_EXPIRED</code>: Token has expired</li> <li><code>SESSION_EXPIRED</code>: Session has expired</li> <li><code>UNAUTHORIZED</code>: Missing or invalid authentication</li> <li><code>FORBIDDEN</code>: Insufficient permissions</li> </ul>"
+    },
+    {
+      "location": "architecture/authentication/#configuration",
+      "title": "Configuration",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#environment-variables",
+      "title": "Environment Variables",
+      "text": "<pre><code># JWT Configuration\nARCHESAI_JWT_SECRET=your-secret-key-min-32-chars\nARCHESAI_JWT_ACCESS_TOKEN_DURATION=15m\nARCHESAI_JWT_REFRESH_TOKEN_DURATION=7d\n\n# Password Policy\nARCHESAI_AUTH_PASSWORD_MIN_LENGTH=8\nARCHESAI_AUTH_PASSWORD_REQUIRE_UPPERCASE=true\nARCHESAI_AUTH_PASSWORD_REQUIRE_NUMBERS=true\nARCHESAI_AUTH_PASSWORD_REQUIRE_SYMBOLS=true\n\n# Session Configuration\nARCHESAI_AUTH_MAX_SESSIONS_PER_USER=5\nARCHESAI_AUTH_SESSION_IDLE_TIMEOUT=30m\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#testing",
+      "title": "Testing",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#unit-tests",
+      "title": "Unit Tests",
+      "text": "<p>Test auth service logic:</p> <pre><code>func TestAuthService_Login(t *testing.T) {\n    tests := []struct {\n        name    string\n        email   string\n        password string\n        wantErr bool\n    }{\n        {\n            name:     \"valid credentials\",\n            email:    \"test@example.com\",\n            password: \"correct_password\",\n            wantErr:  false,\n        },\n        {\n            name:     \"invalid password\",\n            email:    \"test@example.com\",\n            password: \"wrong_password\",\n            wantErr:  true,\n        },\n    }\n    // ... test implementation\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#integration-tests",
+      "title": "Integration Tests",
+      "text": "<p>Test complete auth flow:</p> <pre><code>func TestAuthFlow(t *testing.T) {\n    // 1. Register user\n    // 2. Login\n    // 3. Use access token\n    // 4. Refresh token\n    // 5. Logout\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/authentication/#migration-guide",
+      "title": "Migration Guide",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#from-session-based-auth",
+      "title": "From Session-Based Auth",
+      "text": "<ol> <li>Generate JWT secret</li> <li>Configure token durations</li> <li>Update client to handle tokens</li> <li>Implement token refresh logic</li> <li>Remove session cookies</li> </ol>"
+    },
+    {
+      "location": "architecture/authentication/#adding-oauth-providers",
+      "title": "Adding OAuth Providers",
+      "text": "<ol> <li>Configure provider credentials</li> <li>Implement OAuth callback handler</li> <li>Link OAuth accounts to users</li> <li>Handle account merging</li> </ol>"
+    },
+    {
+      "location": "architecture/authentication/#troubleshooting",
+      "title": "Troubleshooting",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#common-issues",
+      "title": "Common Issues",
+      "text": "<ol> <li>\"Invalid token\" errors:</li> <li>Check JWT secret configuration</li> <li>Verify token hasn't expired</li> <li> <p>Ensure proper Bearer token format</p> </li> <li> <p>\"User not found\" after registration:</p> </li> <li>Check database migrations</li> <li>Verify email uniqueness</li> <li> <p>Check for transaction rollbacks</p> </li> <li> <p>Session expired immediately:</p> </li> <li>Verify time configuration</li> <li>Check server time sync</li> <li>Review token duration settings</li> </ol>"
+    },
+    {
+      "location": "architecture/authentication/#future-enhancements",
+      "title": "Future Enhancements",
+      "text": ""
+    },
+    {
+      "location": "architecture/authentication/#planned-features",
+      "title": "Planned Features",
+      "text": "<ol> <li>OAuth Integration:</li> <li>Google OAuth</li> <li>GitHub OAuth</li> <li> <p>SAML support</p> </li> <li> <p>Enhanced Security:</p> </li> <li>Two-factor authentication (2FA)</li> <li>Biometric authentication</li> <li> <p>Risk-based authentication</p> </li> <li> <p>Advanced Session Management:</p> </li> <li>Device management</li> <li>Session activity logs</li> <li> <p>Geo-location tracking</p> </li> <li> <p>Role-Based Access Control:</p> </li> <li>Fine-grained permissions</li> <li>Custom roles</li> <li>Resource-level permissions</li> </ol>"
+    },
+    {
+      "location": "architecture/authentication/#references",
+      "title": "References",
+      "text": "<ul> <li>JWT RFC 7519</li> <li>OAuth 2.0 RFC 6749</li> <li>OWASP Authentication Cheat Sheet</li> <li>bcrypt</li> </ul>"
+    },
+    {
+      "location": "architecture/overview/",
+      "title": "Architecture Documentation",
+      "text": "<p>This section covers the system architecture, design patterns, and structural documentation for ArchesAI.</p>"
+    },
+    {
+      "location": "architecture/overview/#architecture-overview",
+      "title": "Architecture Overview",
+      "text": "<ul> <li>System Architecture - Complete system design and patterns</li> <li>Authentication - Authentication and authorization architecture</li> <li>Project Layout - Directory structure and code organization</li> </ul>"
+    },
+    {
+      "location": "architecture/overview/#key-architectural-concepts",
+      "title": "Key Architectural Concepts",
+      "text": ""
+    },
+    {
+      "location": "architecture/overview/#hexagonal-architecture",
+      "title": "Hexagonal Architecture",
+      "text": "<p>ArchesAI implements Hexagonal Architecture (Ports &amp; Adapters) with Domain-Driven Design principles, ensuring separation of concerns, testability, and business logic independence from infrastructure.</p>"
+    },
+    {
+      "location": "architecture/overview/#domain-driven-design",
+      "title": "Domain-Driven Design",
+      "text": "<p>Each bounded context (auth, organizations, workflows, content) operates independently with:</p> <ul> <li>Own entities and business rules</li> <li>Dedicated database tables</li> <li>Separate API endpoints</li> <li>No cross-domain imports</li> </ul>"
+    },
+    {
+      "location": "architecture/overview/#code-generation",
+      "title": "Code Generation",
+      "text": "<p>The project uses extensive code generation driven by:</p> <ul> <li>OpenAPI specs for types and HTTP handlers</li> <li>SQL queries for database operations</li> <li>Custom templates for repositories and adapters</li> </ul>"
+    },
+    {
+      "location": "architecture/overview/#architecture-diagrams",
+      "title": "Architecture Diagrams",
+      "text": "<p>Interactive Mermaid diagrams will be added in upcoming iterations.</p>"
+    },
+    {
+      "location": "architecture/project-layout/",
+      "title": "Project Layout",
+      "text": "<p>This document provides an overview of the ArchesAI project structure and organization.</p>"
+    },
+    {
+      "location": "architecture/project-layout/#directory-structure",
+      "title": "Directory Structure",
+      "text": "<pre><code>.\n\u251c\u2500\u2500 api/                          # OpenAPI specifications\n\u2502   \u251c\u2500\u2500 components/               # Reusable OpenAPI components\n\u2502   \u2502   \u251c\u2500\u2500 parameters/           # Common parameters\n\u2502   \u2502   \u251c\u2500\u2500 responses/            # Common responses\n\u2502   \u2502   \u2514\u2500\u2500 schemas/              # Data schemas\n\u2502   \u251c\u2500\u2500 paths/                    # API endpoint definitions\n\u2502   \u251c\u2500\u2500 openapi.bundled.yaml     # Bundled specification\n\u2502   \u2514\u2500\u2500 openapi.yaml             # Main OpenAPI spec\n\u251c\u2500\u2500 cmd/\n\u2502   \u2514\u2500\u2500 archesai/                 # Main application entry point\n\u2502       \u2514\u2500\u2500 main.go\n\u251c\u2500\u2500 deployments/                  # Deployment configurations\n\u2502   \u251c\u2500\u2500 development/              # Development environment\n\u2502   \u251c\u2500\u2500 docker/                   # Docker configurations\n\u2502   \u251c\u2500\u2500 gcp/                      # Google Cloud Platform\n\u2502   \u251c\u2500\u2500 helm/                     # Kubernetes Helm charts\n\u2502   \u2514\u2500\u2500 k3d/                      # Local k3d setup\n\u251c\u2500\u2500 docs/                         # Documentation\n\u2502   \u251c\u2500\u2500 ARCHITECTURE.md           # System architecture\n\u2502   \u251c\u2500\u2500 AUTHENTICATION.md         # Authentication documentation\n\u2502   \u251c\u2500\u2500 CONTRIBUTING.md           # Contribution guidelines\n\u2502   \u251c\u2500\u2500 TEST_COVERAGE_REPORT.md   # Test coverage reports\n\u2502   \u251c\u2500\u2500 TESTING.md               # Testing strategy\n\u2502   \u2514\u2500\u2500 TUI.md                   # Terminal UI documentation\n\u251c\u2500\u2500 internal/                     # Private application code\n\u2502   \u251c\u2500\u2500 app/                      # Application setup\n\u2502   \u251c\u2500\u2500 auth/                     # Authentication domain\n\u2502   \u251c\u2500\u2500 cli/                      # Command-line interface\n\u2502   \u251c\u2500\u2500 codegen/                  # Code generation system\n\u2502   \u251c\u2500\u2500 config/                   # Configuration management\n\u2502   \u251c\u2500\u2500 content/                  # Content management domain\n\u2502   \u251c\u2500\u2500 database/                 # Database layer\n\u2502   \u251c\u2500\u2500 health/                   # Health check endpoints\n\u2502   \u251c\u2500\u2500 llm/                      # Large Language Model integration\n\u2502   \u251c\u2500\u2500 logger/                   # Logging utilities\n\u2502   \u251c\u2500\u2500 migrations/               # Database migrations\n\u2502   \u251c\u2500\u2500 organizations/            # Organization management domain\n\u2502   \u251c\u2500\u2500 redis/                    # Redis integration\n\u2502   \u251c\u2500\u2500 server/                   # HTTP server setup\n\u2502   \u251c\u2500\u2500 storage/                  # File storage\n\u2502   \u251c\u2500\u2500 testutil/                 # Testing utilities\n\u2502   \u251c\u2500\u2500 tui/                      # Terminal user interface\n\u2502   \u251c\u2500\u2500 users/                    # User management domain\n\u2502   \u2514\u2500\u2500 workflows/                # Workflow automation domain\n\u251c\u2500\u2500 scripts/                      # Build and utility scripts\n\u251c\u2500\u2500 .taskmaster/                  # Task Master AI configuration\n\u2502   \u251c\u2500\u2500 docs/                     # Task Master documentation\n\u2502   \u251c\u2500\u2500 reports/                  # Analysis reports\n\u2502   \u251c\u2500\u2500 tasks/                    # Task definitions\n\u2502   \u2514\u2500\u2500 templates/                # Task templates\n\u251c\u2500\u2500 test/\n\u2502   \u2514\u2500\u2500 data/                     # Test data files\n\u251c\u2500\u2500 tools/                        # Development tools\n\u2502   \u251c\u2500\u2500 codegen/                  # Code generation tool\n\u2502   \u2514\u2500\u2500 pg-to-sqlite/             # Database conversion tool\n\u2514\u2500\u2500 web/                          # Frontend applications\n    \u251c\u2500\u2500 client/                   # API client library\n    \u251c\u2500\u2500 eslint/                   # ESLint configuration\n    \u251c\u2500\u2500 platform/                 # Main platform SPA\n    \u251c\u2500\u2500 prettier/                 # Prettier configuration\n    \u251c\u2500\u2500 typescript/               # TypeScript configuration\n    \u2514\u2500\u2500 ui/                       # Shared UI components\n</code></pre>"
+    },
+    {
+      "location": "architecture/project-layout/#key-directories-explained",
+      "title": "Key Directories Explained",
+      "text": ""
+    },
+    {
+      "location": "architecture/project-layout/#api",
+      "title": "<code>/api</code>",
+      "text": "<p>Contains the OpenAPI 3.0 specification split into logical components:</p> <ul> <li>components/: Reusable schemas, parameters, and responses</li> <li>paths/: Individual endpoint definitions organized by domain</li> <li>openapi.yaml: Main specification file that references all components</li> </ul>"
+    },
+    {
+      "location": "architecture/project-layout/#internal",
+      "title": "<code>/internal</code>",
+      "text": "<p>Private Go packages following domain-driven design:</p> <ul> <li>Domain packages (auth, organizations, workflows, content): Core business logic</li> <li>Infrastructure packages (database, redis, server): Technical implementations</li> <li>Shared packages (config, logger, testutil): Common utilities</li> </ul>"
+    },
+    {
+      "location": "architecture/project-layout/#web",
+      "title": "<code>/web</code>",
+      "text": "<p>Frontend applications and shared packages:</p> <ul> <li>platform/: Main React SPA using TanStack Router and Start</li> <li>client/: Generated TypeScript API client</li> <li>ui/: Shared component library</li> <li>Config packages: ESLint, Prettier, TypeScript configurations</li> </ul>"
+    },
+    {
+      "location": "architecture/project-layout/#deployments",
+      "title": "<code>/deployments</code>",
+      "text": "<p>All deployment-related configurations:</p> <ul> <li>docker/: Docker Compose for local development</li> <li>helm/: Kubernetes Helm charts for production</li> <li>k3d/: Local Kubernetes cluster setup</li> </ul>"
+    },
+    {
+      "location": "architecture/project-layout/#generated-files",
+      "title": "Generated Files",
+      "text": "<p>The project uses extensive code generation:</p> <ul> <li><code>*.gen.go</code>: Generated Go code (types, handlers, repositories)</li> <li><code>types.gen.go</code>: OpenAPI-generated type definitions</li> <li><code>http.gen.go</code>: HTTP handler interfaces</li> <li><code>repository.gen.go</code>: Database repository interfaces</li> </ul>"
+    },
+    {
+      "location": "architecture/project-layout/#architecture-patterns",
+      "title": "Architecture Patterns",
+      "text": ""
+    },
+    {
+      "location": "architecture/project-layout/#hexagonal-architecture",
+      "title": "Hexagonal Architecture",
+      "text": "<p>Each domain follows hexagonal architecture:</p> <pre><code>domain/\n\u251c\u2500\u2500 domain.go          # Domain entities and business rules\n\u251c\u2500\u2500 service.go         # Use cases and business logic\n\u251c\u2500\u2500 handler.go         # HTTP adapter (inbound port)\n\u251c\u2500\u2500 repository.gen.go  # Database adapter (outbound port)\n\u251c\u2500\u2500 cache.gen.go       # Cache adapter (outbound port)\n\u2514\u2500\u2500 events.gen.go      # Event publisher (outbound port)\n</code></pre>"
+    },
+    {
+      "location": "architecture/project-layout/#code-generation-flow",
+      "title": "Code Generation Flow",
+      "text": "<ol> <li>Define in OpenAPI (<code>api/</code>) and SQL (<code>internal/database/queries/</code>)</li> <li>Run <code>make generate</code> to create Go types and interfaces</li> <li>Implement business logic in service layer</li> <li>Generated adapters handle HTTP, database, and caching</li> </ol>"
+    },
+    {
+      "location": "architecture/project-layout/#testing-structure",
+      "title": "Testing Structure",
+      "text": "<p>Each domain includes comprehensive tests:</p> <ul> <li><code>service_test.go</code>: Business logic unit tests with mocks</li> <li><code>handler_test.go</code>: HTTP handler tests</li> <li><code>*_postgres_test.go</code>: Integration tests with real database</li> </ul>"
+    },
+    {
+      "location": "architecture/project-layout/#file-naming-conventions",
+      "title": "File Naming Conventions",
+      "text": "<ul> <li><code>*.gen.go</code>: Generated files (do not edit manually)</li> <li><code>*_test.go</code>: Test files</li> <li><code>mocks_test.go</code>: Test mocks and fixtures</li> <li><code>mappers.go</code>: Data transformation between layers</li> <li><code>adapters/</code>: External service integrations</li> </ul>"
+    },
+    {
+      "location": "architecture/project-layout/#configuration-files",
+      "title": "Configuration Files",
+      "text": "<ul> <li><code>.air.toml</code>: Hot reload configuration</li> <li><code>.golangci.yaml</code>: Go linter settings</li> <li><code>.mockery.yaml</code>: Mock generation settings</li> <li><code>sqlc.yaml</code>: Database code generation</li> <li><code>*.codegen.yaml</code>: Custom code generation templates</li> </ul>"
+    },
+    {
+      "location": "architecture/system-design/",
+      "title": "Architecture Documentation",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#overview",
+      "title": "Overview",
+      "text": "<p>ArchesAI implements Hexagonal Architecture (Ports &amp; Adapters) with Domain-Driven Design principles, ensuring separation of concerns, testability, and business logic independence from infrastructure.</p>"
+    },
+    {
+      "location": "architecture/system-design/#core-principles",
+      "title": "Core Principles",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#hexagonal-architecture",
+      "title": "Hexagonal Architecture",
+      "text": "<ul> <li>Core Domain: Business logic and rules</li> <li>Ports: Interfaces defining external interactions</li> <li>Adapters: Implementations connecting to external systems</li> </ul>"
+    },
+    {
+      "location": "architecture/system-design/#dependency-rule",
+      "title": "Dependency Rule",
+      "text": "<p>Dependencies flow inward toward the domain core:</p> <pre><code>External World \u2192 Adapters \u2192 Ports \u2192 Domain Core\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#domain-isolation",
+      "title": "Domain Isolation",
+      "text": "<p>Each bounded context (auth, organizations, workflows, content) operates independently with:</p> <ul> <li>Own entities and business rules</li> <li>Dedicated database tables</li> <li>Separate API endpoints</li> <li>No cross-domain imports</li> </ul>"
+    },
+    {
+      "location": "architecture/system-design/#system-architecture",
+      "title": "System Architecture",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#high-level-components",
+      "title": "High-Level Components",
+      "text": "<pre><code>graph TB\n    subgraph \"Client Layer\"\n        WEB[React SPA]\n        CLI[CLI Tools]\n        SDK[TypeScript SDK]\n    end\n\n    subgraph \"API Layer\"\n        GATEWAY[API Gateway/Load Balancer]\n        API[REST API Server]\n        DOCS[OpenAPI Docs]\n    end\n\n    subgraph \"Business Layer\"\n        AUTH[Auth Domain]\n        ORG[Organizations Domain]\n        WORK[Workflows Domain]\n        CONT[Content Domain]\n    end\n\n    subgraph \"Data Layer\"\n        PG[(PostgreSQL + pgvector)]\n        REDIS[(Redis Cache)]\n        S3[Object Storage]\n    end\n\n    subgraph \"External Services\"\n        OAUTH[OAuth Providers]\n        AI[AI/ML Services]\n        EMAIL[Email Service]\n    end\n\n    WEB --&gt; GATEWAY\n    CLI --&gt; GATEWAY\n    SDK --&gt; GATEWAY\n\n    GATEWAY --&gt; API\n    API --&gt; DOCS\n\n    API --&gt; AUTH\n    API --&gt; ORG\n    API --&gt; WORK\n    API --&gt; CONT\n\n    AUTH --&gt; PG\n    AUTH --&gt; REDIS\n    ORG --&gt; PG\n    WORK --&gt; PG\n    WORK --&gt; S3\n    CONT --&gt; PG\n    CONT --&gt; S3\n\n    AUTH --&gt; OAUTH\n    AUTH --&gt; EMAIL\n    WORK --&gt; AI\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#request-flow",
+      "title": "Request Flow",
+      "text": "<pre><code>sequenceDiagram\n    participant Client\n    participant Handler\n    participant Middleware\n    participant Service\n    participant Repository\n    participant Database\n\n    Client-&gt;&gt;Handler: HTTP Request\n    Handler-&gt;&gt;Middleware: Authentication\n    Middleware-&gt;&gt;Handler: User Context\n    Handler-&gt;&gt;Service: Business Operation\n    Service-&gt;&gt;Repository: Data Operation\n    Repository-&gt;&gt;Database: SQL Query\n    Database-&gt;&gt;Repository: Result\n    Repository-&gt;&gt;Service: Domain Entity\n    Service-&gt;&gt;Handler: Response\n    Handler-&gt;&gt;Client: HTTP Response\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#domain-architecture",
+      "title": "Domain Architecture",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#flat-package-structure",
+      "title": "Flat Package Structure",
+      "text": "<p>Each domain follows a flat package structure for simplicity:</p> <pre><code>internal/auth/\n\u251c\u2500\u2500 auth.go                    # Package documentation, constants, errors\n\u251c\u2500\u2500 service.go                 # Business logic and use cases\n\u251c\u2500\u2500 handler.go                 # HTTP request handlers\n\u251c\u2500\u2500 http.gen.go                # Generated HTTP server interface\n\u251c\u2500\u2500 middleware_http.go         # HTTP middleware (auth domain only)\n\u251c\u2500\u2500 repository_postgres.go     # PostgreSQL repository implementation\n\u251c\u2500\u2500 repository_sqlite.go       # SQLite repository implementation\n\u251c\u2500\u2500 repository.gen.go          # Generated repository interface\n\u251c\u2500\u2500 types.gen.go               # Generated OpenAPI types\n\u251c\u2500\u2500 cache.gen.go               # Generated cache interface\n\u251c\u2500\u2500 cache_memory.gen.go        # In-memory cache implementation\n\u251c\u2500\u2500 cache_redis.gen.go         # Redis cache implementation\n\u251c\u2500\u2500 events.gen.go              # Generated event definitions\n\u251c\u2500\u2500 events_redis.gen.go        # Redis event publisher\n\u2514\u2500\u2500 events_nats.gen.go         # NATS event publisher\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#service-layer-pattern",
+      "title": "Service Layer Pattern",
+      "text": "<p>The service layer orchestrates business operations:</p> <pre><code>type Service struct {\n    repo   Repository      // Data persistence\n    cache  Cache          // Performance optimization\n    events EventPublisher // Event-driven communication\n}\n\n// Business operation example\nfunc (s *Service) CreateUser(ctx context.Context, req CreateUserRequest) (*User, error) {\n    // 1. Validate business rules\n    if err := s.validateUserCreation(req); err != nil {\n        return nil, err\n    }\n\n    // 2. Execute business logic\n    user := &amp;User{\n        ID:    uuid.New(),\n        Email: req.Email,\n        Name:  req.Name,\n    }\n\n    // 3. Persist to repository\n    if err := s.repo.CreateUser(ctx, user); err != nil {\n        return nil, err\n    }\n\n    // 4. Update cache\n    _ = s.cache.SetUser(ctx, user, 5*time.Minute)\n\n    // 5. Publish domain event\n    _ = s.events.PublishUserCreated(ctx, user)\n\n    return user, nil\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#repository-pattern",
+      "title": "Repository Pattern",
+      "text": "<p>Repositories abstract data persistence:</p> <pre><code>// Port (interface) defined by domain\ntype Repository interface {\n    CreateUser(ctx context.Context, user *User) error\n    GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)\n    GetUserByEmail(ctx context.Context, email string) (*User, error)\n    UpdateUser(ctx context.Context, user *User) error\n    DeleteUser(ctx context.Context, id uuid.UUID) error\n}\n\n// Adapter (implementation) in infrastructure\ntype PostgresRepository struct {\n    queries *postgresql.Queries\n}\n\nfunc (r *PostgresRepository) CreateUser(ctx context.Context, user *User) error {\n    _, err := r.queries.CreateUser(ctx, postgresql.CreateUserParams{\n        Id:           user.ID.String(),\n        Email:        user.Email,\n        Name:         user.Name,\n        PasswordHash: user.PasswordHash,\n    })\n    return err\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#data-flow-architecture",
+      "title": "Data Flow Architecture",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#code-generation-pipeline",
+      "title": "Code Generation Pipeline",
+      "text": "<pre><code>graph LR\n    OPENAPI[OpenAPI Spec] --&gt; CODEGEN[Code Generator]\n    SQL[SQL Queries] --&gt; SQLC[SQLC Generator]\n\n    CODEGEN --&gt; TYPES[Go Types]\n    CODEGEN --&gt; HANDLERS[HTTP Handlers]\n    CODEGEN --&gt; CACHE[Cache Interfaces]\n    CODEGEN --&gt; EVENTS[Event Publishers]\n\n    SQLC --&gt; QUERIES[Database Queries]\n    SQLC --&gt; MODELS[Database Models]\n\n    TYPES --&gt; SERVICE[Service Layer]\n    HANDLERS --&gt; SERVICE\n    QUERIES --&gt; REPO[Repository]\n\n    SERVICE --&gt; REPO\n    SERVICE --&gt; CACHE\n    SERVICE --&gt; EVENTS\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#authentication-flow",
+      "title": "Authentication Flow",
+      "text": "<pre><code>sequenceDiagram\n    participant User\n    participant API\n    participant AuthMiddleware\n    participant AuthService\n    participant Database\n    participant JWT\n\n    User-&gt;&gt;API: POST /auth/login\n    API-&gt;&gt;AuthService: Authenticate(email, password)\n    AuthService-&gt;&gt;Database: GetUserByEmail\n    Database-&gt;&gt;AuthService: User\n    AuthService-&gt;&gt;AuthService: VerifyPassword\n    AuthService-&gt;&gt;JWT: GenerateTokens\n    JWT-&gt;&gt;AuthService: AccessToken, RefreshToken\n    AuthService-&gt;&gt;Database: CreateSession\n    AuthService-&gt;&gt;API: Tokens\n    API-&gt;&gt;User: 200 OK + Tokens\n\n    User-&gt;&gt;API: GET /api/resource + Bearer Token\n    API-&gt;&gt;AuthMiddleware: ValidateToken\n    AuthMiddleware-&gt;&gt;JWT: VerifyToken\n    JWT-&gt;&gt;AuthMiddleware: Claims\n    AuthMiddleware-&gt;&gt;Database: GetSession\n    Database-&gt;&gt;AuthMiddleware: Session\n    AuthMiddleware-&gt;&gt;API: User Context\n    API-&gt;&gt;User: 200 OK + Resource\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#database-architecture",
+      "title": "Database Architecture",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#schema-design",
+      "title": "Schema Design",
+      "text": "<pre><code>-- Multi-tenant foundation\nCREATE TABLE organizations (\n    id UUID PRIMARY KEY,\n    name VARCHAR(255) NOT NULL,\n    plan VARCHAR(50) DEFAULT 'free',\n    credits INTEGER DEFAULT 0,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\n-- User management\nCREATE TABLE users (\n    id UUID PRIMARY KEY,\n    email VARCHAR(255) UNIQUE NOT NULL,\n    name VARCHAR(255) NOT NULL,\n    password_hash VARCHAR(255),\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\n-- Organization membership\nCREATE TABLE members (\n    id UUID PRIMARY KEY,\n    user_id UUID REFERENCES users(id),\n    organization_id UUID REFERENCES organizations(id),\n    role VARCHAR(50) NOT NULL,\n    UNIQUE(user_id, organization_id)\n);\n\n-- Session management\nCREATE TABLE sessions (\n    token VARCHAR(255) PRIMARY KEY,\n    user_id UUID REFERENCES users(id),\n    expires_at TIMESTAMP NOT NULL,\n    active_organization_id UUID REFERENCES organizations(id)\n);\n\n-- Content storage with vectors\nCREATE TABLE artifacts (\n    id UUID PRIMARY KEY,\n    organization_id UUID REFERENCES organizations(id),\n    name VARCHAR(255) NOT NULL,\n    content TEXT,\n    embedding vector(1536),  -- pgvector for similarity search\n    metadata JSONB,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\n-- Workflow definitions\nCREATE TABLE pipelines (\n    id UUID PRIMARY KEY,\n    organization_id UUID REFERENCES organizations(id),\n    name VARCHAR(255) NOT NULL,\n    definition JSONB NOT NULL,  -- DAG structure\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\n-- Workflow executions\nCREATE TABLE runs (\n    id UUID PRIMARY KEY,\n    pipeline_id UUID REFERENCES pipelines(id),\n    status VARCHAR(50) NOT NULL,\n    progress DECIMAL(5,2) DEFAULT 0,\n    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n    completed_at TIMESTAMP\n);\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#indexing-strategy",
+      "title": "Indexing Strategy",
+      "text": "<pre><code>-- Performance indexes\nCREATE INDEX idx_users_email ON users(email);\nCREATE INDEX idx_sessions_token ON sessions(token);\nCREATE INDEX idx_sessions_user_id ON sessions(user_id);\nCREATE INDEX idx_members_user_org ON members(user_id, organization_id);\nCREATE INDEX idx_artifacts_org ON artifacts(organization_id);\nCREATE INDEX idx_pipelines_org ON pipelines(organization_id);\nCREATE INDEX idx_runs_pipeline ON runs(pipeline_id);\nCREATE INDEX idx_runs_status ON runs(status);\n\n-- Vector similarity search\nCREATE INDEX idx_artifacts_embedding ON artifacts\nUSING ivfflat (embedding vector_cosine_ops)\nWITH (lists = 100);\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#caching-architecture",
+      "title": "Caching Architecture",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#cache-layers",
+      "title": "Cache Layers",
+      "text": "<ol> <li>Application Cache (Redis)</li> <li>Session data</li> <li>User profiles</li> <li>Organization metadata</li> <li> <p>Temporary computation results</p> </li> <li> <p>Database Cache (PostgreSQL)</p> </li> <li>Query result caching</li> <li>Prepared statement caching</li> <li> <p>Connection pooling</p> </li> <li> <p>CDN Cache (CloudFlare/CloudFront)</p> </li> <li>Static assets</li> <li>API responses for public data</li> </ol>"
+    },
+    {
+      "location": "architecture/system-design/#cache-patterns",
+      "title": "Cache Patterns",
+      "text": "<pre><code>// Cache-Aside Pattern\nfunc (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {\n    // Try cache first\n    user, err := s.cache.GetUser(ctx, id)\n    if err == nil {\n        return user, nil\n    }\n\n    // Cache miss - get from database\n    user, err = s.repo.GetUserByID(ctx, id)\n    if err != nil {\n        return nil, err\n    }\n\n    // Update cache for next time\n    _ = s.cache.SetUser(ctx, user, 5*time.Minute)\n\n    return user, nil\n}\n\n// Write-Through Pattern\nfunc (s *Service) UpdateUser(ctx context.Context, user *User) error {\n    // Update database\n    if err := s.repo.UpdateUser(ctx, user); err != nil {\n        return err\n    }\n\n    // Update cache\n    _ = s.cache.SetUser(ctx, user, 5*time.Minute)\n\n    // Publish update event\n    _ = s.events.PublishUserUpdated(ctx, user)\n\n    return nil\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#security-architecture",
+      "title": "Security Architecture",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#defense-in-depth",
+      "title": "Defense in Depth",
+      "text": "<ol> <li>Network Layer</li> <li>TLS/HTTPS encryption</li> <li>Rate limiting</li> <li> <p>DDoS protection</p> </li> <li> <p>Application Layer</p> </li> <li>JWT authentication</li> <li>CORS configuration</li> <li>Input validation</li> <li> <p>SQL injection prevention (via SQLC)</p> </li> <li> <p>Data Layer</p> </li> <li>Encryption at rest</li> <li>Row-level security</li> <li>Audit logging</li> </ol>"
+    },
+    {
+      "location": "architecture/system-design/#authentication-authorization",
+      "title": "Authentication &amp; Authorization",
+      "text": "<pre><code>// JWT Claims Structure\ntype Claims struct {\n    UserID         uuid.UUID `json:\"user_id\"`\n    Email          string    `json:\"email\"`\n    OrganizationID uuid.UUID `json:\"organization_id\"`\n    Role           string    `json:\"role\"`\n    jwt.StandardClaims\n}\n\n// Middleware for protected routes\nfunc AuthMiddleware(jwtSecret string) echo.MiddlewareFunc {\n    return func(next echo.HandlerFunc) echo.HandlerFunc {\n        return func(c echo.Context) error {\n            // Extract token\n            token := extractToken(c.Request())\n\n            // Validate token\n            claims, err := validateToken(token, jwtSecret)\n            if err != nil {\n                return echo.NewHTTPError(http.StatusUnauthorized)\n            }\n\n            // Set user context\n            c.Set(\"user\", claims)\n\n            return next(c)\n        }\n    }\n}\n\n// Role-based access control\nfunc RequireRole(roles ...string) echo.MiddlewareFunc {\n    return func(next echo.HandlerFunc) echo.HandlerFunc {\n        return func(c echo.Context) error {\n            claims := c.Get(\"user\").(*Claims)\n\n            for _, role := range roles {\n                if claims.Role == role {\n                    return next(c)\n                }\n            }\n\n            return echo.NewHTTPError(http.StatusForbidden)\n        }\n    }\n}\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#scalability-considerations",
+      "title": "Scalability Considerations",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#horizontal-scaling",
+      "title": "Horizontal Scaling",
+      "text": "<ul> <li>Stateless API servers - Can scale horizontally behind load balancer</li> <li>Database read replicas - Distribute read load</li> <li>Redis clustering - Distributed caching</li> <li>Queue-based processing - Async job processing</li> </ul>"
+    },
+    {
+      "location": "architecture/system-design/#performance-optimizations",
+      "title": "Performance Optimizations",
+      "text": "<ol> <li>Connection Pooling</li> </ol> <pre><code>db.SetMaxOpenConns(25)\ndb.SetMaxIdleConns(5)\ndb.SetConnMaxLifetime(5 * time.Minute)\n</code></pre> <ol> <li>Batch Processing</li> </ol> <pre><code>// Process in batches to avoid memory issues\nconst batchSize = 100\nfor i := 0; i &lt; len(items); i += batchSize {\n    end := i + batchSize\n    if end &gt; len(items) {\n        end = len(items)\n    }\n    processBatch(items[i:end])\n}\n</code></pre> <ol> <li>Concurrent Processing</li> </ol> <pre><code>// Use worker pool pattern\njobs := make(chan Job, 100)\nresults := make(chan Result, 100)\n\n// Start workers\nfor w := 1; w &lt;= numWorkers; w++ {\n    go worker(jobs, results)\n}\n\n// Send jobs\nfor _, job := range allJobs {\n    jobs &lt;- job\n}\nclose(jobs)\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#monitoring-observability",
+      "title": "Monitoring &amp; Observability",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#metrics-collection",
+      "title": "Metrics Collection",
+      "text": "<ul> <li> <p>Application Metrics (Prometheus)</p> <ul> <li>Request latency</li> <li>Error rates</li> <li>Business metrics</li> </ul> </li> <li> <p>Infrastructure Metrics (Grafana)</p> <ul> <li>CPU/Memory usage</li> <li>Database connections</li> <li>Cache hit rates</li> </ul> </li> </ul>"
+    },
+    {
+      "location": "architecture/system-design/#logging-strategy",
+      "title": "Logging Strategy",
+      "text": "<pre><code>// Structured logging with context\nlogger.Info(\"Processing request\",\n    zap.String(\"request_id\", requestID),\n    zap.String(\"user_id\", userID),\n    zap.String(\"action\", \"create_artifact\"),\n    zap.Duration(\"duration\", duration),\n)\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#distributed-tracing",
+      "title": "Distributed Tracing",
+      "text": "<ul> <li>OpenTelemetry integration</li> <li>Request correlation IDs</li> <li>Cross-service tracing</li> </ul>"
+    },
+    {
+      "location": "architecture/system-design/#deployment-architecture",
+      "title": "Deployment Architecture",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#container-strategy",
+      "title": "Container Strategy",
+      "text": "<pre><code># Multi-stage build\nFROM golang:1.21-alpine AS builder\nWORKDIR /app\nCOPY . .\nRUN go build -o archesai cmd/archesai/main.go\n\nFROM alpine:latest\nRUN apk --no-cache add ca-certificates\nCOPY --from=builder /app/archesai /archesai\nEXPOSE 8080\nCMD [\"/archesai\"]\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#kubernetes-deployment",
+      "title": "Kubernetes Deployment",
+      "text": "<pre><code>apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: archesai-api\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: archesai-api\n  template:\n    metadata:\n      labels:\n        app: archesai-api\n    spec:\n      containers:\n        - name: api\n          image: archesai/api:latest\n          ports:\n            - containerPort: 8080\n          env:\n            - name: ARCHESAI_DATABASE_URL\n              valueFrom:\n                secretKeyRef:\n                  name: archesai-secrets\n                  key: database-url\n          resources:\n            requests:\n              memory: \"256Mi\"\n              cpu: \"250m\"\n            limits:\n              memory: \"512Mi\"\n              cpu: \"500m\"\n</code></pre>"
+    },
+    {
+      "location": "architecture/system-design/#future-considerations",
+      "title": "Future Considerations",
+      "text": ""
+    },
+    {
+      "location": "architecture/system-design/#planned-enhancements",
+      "title": "Planned Enhancements",
+      "text": "<ol> <li>GraphQL API - Alternative query interface</li> <li>gRPC Services - Internal service communication</li> <li>Event Sourcing - Audit trail and replay capability</li> <li>CQRS Pattern - Separate read/write models</li> <li>Service Mesh - Istio/Linkerd for microservices</li> <li>Multi-region - Geographic distribution</li> </ol>"
+    },
+    {
+      "location": "architecture/system-design/#technology-evaluations",
+      "title": "Technology Evaluations",
+      "text": "<ul> <li>Message Queue: Kafka vs NATS vs RabbitMQ</li> <li>Search Engine: Elasticsearch vs Meilisearch</li> <li>Time Series DB: InfluxDB vs TimescaleDB</li> <li>Graph Database: Neo4j vs DGraph</li> </ul>"
+    },
+    {
+      "location": "deployment/overview/",
+      "title": "Deployment Documentation",
+      "text": "<p>This section covers deployment strategies, infrastructure setup, and production configuration for ArchesAI.</p>"
+    },
+    {
+      "location": "deployment/overview/#deployment-options",
+      "title": "Deployment Options",
+      "text": ""
+    },
+    {
+      "location": "deployment/overview/#docker",
+      "title": "Docker",
+      "text": "<ul> <li>Multi-stage build optimization</li> <li>Environment configuration</li> <li>Container orchestration</li> <li>Development and production setups</li> </ul>"
+    },
+    {
+      "location": "deployment/overview/#kubernetes",
+      "title": "Kubernetes",
+      "text": "<ul> <li>Deployment manifests</li> <li>Helm charts</li> <li>Scaling strategies</li> <li>Monitoring setup</li> </ul>"
+    },
+    {
+      "location": "deployment/overview/#production",
+      "title": "Production",
+      "text": "<ul> <li>Production deployment checklist</li> <li>Security hardening</li> <li>Performance tuning</li> <li>Monitoring and observability</li> </ul>"
+    },
+    {
+      "location": "deployment/overview/#infrastructure",
+      "title": "Infrastructure",
+      "text": ""
+    },
+    {
+      "location": "deployment/overview/#database-setup",
+      "title": "Database Setup",
+      "text": "<ul> <li>PostgreSQL configuration</li> <li>pgvector setup for embeddings</li> <li>Connection pooling</li> <li>Backup strategies</li> </ul>"
+    },
+    {
+      "location": "deployment/overview/#caching",
+      "title": "Caching",
+      "text": "<ul> <li>Redis configuration for sessions</li> <li>Cache optimization strategies</li> </ul>"
+    },
+    {
+      "location": "deployment/overview/#cicd-pipeline",
+      "title": "CI/CD Pipeline",
+      "text": "<ul> <li>GitHub Actions workflows</li> <li>Automated testing</li> <li>Deployment automation</li> </ul> <p>Detailed deployment guides are coming in upcoming iterations.</p>"
+    },
+    {
+      "location": "features/overview/",
+      "title": "Features Documentation",
+      "text": "<p>This section provides detailed documentation for each feature domain in ArchesAI.</p>"
+    },
+    {
+      "location": "features/overview/#core-domains",
+      "title": "Core Domains",
+      "text": ""
+    },
+    {
+      "location": "features/overview/#authentication",
+      "title": "Authentication",
+      "text": "<ul> <li>JWT authentication flow</li> <li>Session management</li> <li>OAuth integration</li> <li>Role-based access control</li> </ul>"
+    },
+    {
+      "location": "features/overview/#organizations",
+      "title": "Organizations",
+      "text": "<ul> <li>Multi-tenancy implementation</li> <li>Member management</li> <li>Invitation system</li> <li>Billing integration</li> </ul>"
+    },
+    {
+      "location": "features/overview/#workflows",
+      "title": "Workflows",
+      "text": "<ul> <li>Pipeline creation</li> <li>DAG execution</li> <li>Tool registry system</li> <li>Run management</li> </ul>"
+    },
+    {
+      "location": "features/overview/#content",
+      "title": "Content",
+      "text": "<ul> <li>Artifact storage</li> <li>Vector embeddings</li> <li>Search functionality</li> <li>Processing pipeline</li> </ul>"
+    },
+    {
+      "location": "features/overview/#cross-domain-features",
+      "title": "Cross-Domain Features",
+      "text": ""
+    },
+    {
+      "location": "features/overview/#ai-integration",
+      "title": "AI Integration",
+      "text": "<ul> <li>Multi-provider LLM support (OpenAI, Claude, Gemini, Ollama)</li> <li>Chat interface with persona management</li> <li>Session-based conversations</li> </ul>"
+    },
+    {
+      "location": "features/overview/#terminal-user-interface",
+      "title": "Terminal User Interface",
+      "text": "<ul> <li>Configuration viewer</li> <li>Interactive chat system</li> <li>Development debugging tools</li> </ul>"
+    },
+    {
+      "location": "features/overview/#code-generation",
+      "title": "Code Generation",
+      "text": "<ul> <li>OpenAPI-driven development</li> <li>Automated boilerplate generation</li> <li>Type-safe database operations</li> </ul> <p>Individual feature documentation pages are coming in upcoming iterations.</p>"
+    },
+    {
+      "location": "features/tui/",
+      "title": "ArchesAI Terminal User Interface (TUI)",
+      "text": ""
+    },
+    {
+      "location": "features/tui/#overview",
+      "title": "Overview",
+      "text": "<p>The ArchesAI TUI provides an interactive terminal interface for configuration management and AI agent interactions.</p>"
+    },
+    {
+      "location": "features/tui/#features",
+      "title": "Features",
+      "text": "<ul> <li>Configuration Viewer (default mode) - Browse all settings without needing API keys</li> <li>AI Chat Interface (--chat mode) - Interactive conversations with AI agents</li> <li>Beautiful Design - Centered layout with color-coded status indicators</li> <li>Multi-Provider Support - OpenAI, Claude, Gemini, Ollama, DeepSeek</li> </ul>"
+    },
+    {
+      "location": "features/tui/#installation",
+      "title": "Installation",
+      "text": "<p>The TUI is built into the main ArchesAI binary:</p> <pre><code>go build -o archesai cmd/archesai/main.go\n</code></pre>"
+    },
+    { "location": "features/tui/#usage", "title": "Usage", "text": "" },
+    {
+      "location": "features/tui/#configuration-viewer-default",
+      "title": "Configuration Viewer (Default)",
+      "text": "<p>Launch the configuration viewer without any API keys:</p> <pre><code>archesai tui\n</code></pre> <p>This displays:</p> <ul> <li>\ud83d\uddc4\ufe0f Database Configuration</li> <li>\ud83c\udf10 Server Configuration</li> <li>\ud83d\udd10 Authentication Settings</li> <li>\ud83d\udce6 Redis Configuration</li> <li>\ud83d\udcbe Storage Settings</li> <li>\ud83e\udd16 AI Agents &amp; LLM Providers</li> <li>\ud83d\udcca System Status</li> <li>\ud83d\udd27 Environment Variables</li> </ul>"
+    },
+    {
+      "location": "features/tui/#ai-chat-mode",
+      "title": "AI Chat Mode",
+      "text": "<p>Launch the interactive AI chat interface:</p> <pre><code># With OpenAI (default)\nexport OPENAI_API_KEY=your-key\narchesai tui --chat\n\n# With specific provider\narchesai tui --chat --provider=claude --model=claude-3-opus\n\n# With API key flag\narchesai tui --chat --api-key=your-key --provider=openai\n\n# With Ollama (local)\narchesai tui --chat --provider=ollama --model=llama2\n</code></pre>"
+    },
+    {
+      "location": "features/tui/#keyboard-controls",
+      "title": "Keyboard Controls",
+      "text": "Key Action Context <code>\u2191/\u2193</code> Navigate items Menu/Lists <code>Enter</code> Select item Menu/Send message <code>ESC</code> Go back Sub-menus <code>Tab</code> Toggle agent list Chat mode <code>Ctrl+C</code> Quit Any time"
+    },
+    {
+      "location": "features/tui/#configuration-display",
+      "title": "Configuration Display",
+      "text": ""
+    },
+    {
+      "location": "features/tui/#status-indicators",
+      "title": "Status Indicators",
+      "text": "<ul> <li>\u25cf Green dot - Active/Configured</li> <li>\u25cf Orange dot - Inactive/Optional</li> <li>\u25cb Red circle - Not configured</li> <li>\u2713 Check mark - Enabled</li> <li>\u2717 X mark - Disabled</li> </ul>"
+    },
+    {
+      "location": "features/tui/#value-display",
+      "title": "Value Display",
+      "text": "<ul> <li>Regular values: Shown in light gray</li> <li>Sensitive data: Displayed as <code>\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022</code></li> <li>Empty values: Shown as \"not set\" in italics</li> </ul>"
+    },
+    { "location": "features/tui/#examples", "title": "Examples", "text": "" },
+    {
+      "location": "features/tui/#basic-usage",
+      "title": "Basic Usage",
+      "text": "<p>The TUI provides interactive prompts and feedback for all operations.</p>"
+    },
+    {
+      "location": "features/tui/#basic-usage-example",
+      "title": "Basic Usage Example",
+      "text": "<pre><code>package main\n\nimport (\n    \"log\"\n    \"os\"\n\n    \"github.com/archesai/archesai/internal/llm\"\n    \"github.com/archesai/archesai/internal/tui\"\n    tea \"github.com/charmbracelet/bubbletea\"\n)\n\nfunc main() {\n    // Initialize OpenAI client\n    apiKey := os.Getenv(\"OPENAI_API_KEY\")\n    llmClient := llm.NewOpenAILLM(apiKey)\n    chatClient := llm.NewChatClient(llmClient)\n\n    // Use built-in default personas\n    personas := []*llm.ChatPersona{\n        {\n            Name:         llm.DefaultPersonas.Assistant.Name,\n            SystemPrompt: llm.DefaultPersonas.Assistant.SystemPrompt,\n            Model:        \"gpt-4\",\n            Temperature:  llm.DefaultPersonas.Assistant.Temperature,\n        },\n        {\n            Name:         llm.DefaultPersonas.CodeHelper.Name,\n            SystemPrompt: llm.DefaultPersonas.CodeHelper.SystemPrompt,\n            Model:        \"gpt-4\",\n            Temperature:  llm.DefaultPersonas.CodeHelper.Temperature,\n        },\n    }\n\n    // Create and run TUI\n    model := tui.New(chatClient, personas)\n    program := tea.NewProgram(model, tea.WithAltScreen())\n\n    if _, err := program.Run(); err != nil {\n        log.Fatalf(\"Error running TUI: %v\", err)\n    }\n}\n</code></pre>"
+    },
+    {
+      "location": "features/tui/#using-default-personas",
+      "title": "Using Default Personas",
+      "text": "<pre><code>// Use built-in default personas\npersonas := []*llm.ChatPersona{\n    {\n        Name:         llm.DefaultPersonas.Assistant.Name,\n        SystemPrompt: llm.DefaultPersonas.Assistant.SystemPrompt,\n        Model:        \"gpt-4\",\n        Temperature:  llm.DefaultPersonas.Assistant.Temperature,\n    },\n    {\n        Name:         llm.DefaultPersonas.CodeHelper.Name,\n        SystemPrompt: llm.DefaultPersonas.CodeHelper.SystemPrompt,\n        Model:        \"gpt-4\",\n        Temperature:  llm.DefaultPersonas.CodeHelper.Temperature,\n    },\n}\n</code></pre>"
+    },
+    {
+      "location": "features/tui/#architecture",
+      "title": "Architecture",
+      "text": "<p>The TUI is built with:</p> <ul> <li>Bubble Tea - Terminal UI framework</li> <li>Lipgloss - Terminal styling</li> <li>ArchesAI LLM Package - Direct LLM client interfaces</li> </ul>"
+    },
+    {
+      "location": "features/tui/#design-principles",
+      "title": "Design Principles",
+      "text": "<ol> <li>No Setup Required - Config viewer works without any API keys</li> <li>Centered Layout - Fixed 60-character width for clean appearance</li> <li>Visual Feedback - Color-coded status indicators</li> <li>Responsive - Adapts to terminal size</li> <li>Consistent - Same formatting across all sections</li> <li>Simple Architecture - Direct LLM usage without complex abstractions</li> </ol>"
+    },
+    {
+      "location": "features/tui/#chat-interface-features",
+      "title": "Chat Interface Features",
+      "text": ""
+    },
+    {
+      "location": "features/tui/#multi-agent-support",
+      "title": "Multi-Agent Support",
+      "text": "<ul> <li>Switch between different AI personas using <code>Tab</code></li> <li>Each persona has its own conversation history</li> <li>Configurable system prompts and temperature settings</li> </ul>"
+    },
+    {
+      "location": "features/tui/#session-management",
+      "title": "Session Management",
+      "text": "<ul> <li>Automatic conversation history management</li> <li>Context preservation across messages</li> <li>Clean session state for each persona</li> </ul>"
+    },
+    {
+      "location": "features/tui/#provider-support",
+      "title": "Provider Support",
+      "text": "<ul> <li>OpenAI: Full support with all models (gpt-4, gpt-3.5-turbo, etc.)</li> <li>Ollama: Local model support (llama2, mistral, etc.)</li> <li>Claude/Gemini/DeepSeek: Ready for implementation</li> </ul>"
+    },
+    {
+      "location": "features/tui/#troubleshooting",
+      "title": "Troubleshooting",
+      "text": ""
+    },
+    {
+      "location": "features/tui/#terminal-issues",
+      "title": "Terminal Issues",
+      "text": "<ul> <li>Ensure your terminal supports 256 colors</li> <li>Use a modern terminal (iTerm2, Windows Terminal, Alacritty)</li> <li>Try resizing if display appears broken</li> </ul>"
+    },
+    {
+      "location": "features/tui/#api-key-issues",
+      "title": "API Key Issues",
+      "text": "<ul> <li>Set environment variables: <code>OPENAI_API_KEY</code>, <code>ANTHROPIC_API_KEY</code>, etc.</li> <li>Or use <code>--api-key</code> flag</li> <li>Verify key has proper permissions</li> </ul>"
+    },
+    {
+      "location": "features/tui/#provider-notes",
+      "title": "Provider Notes",
+      "text": "<ul> <li>OpenAI: Fully functional with streaming support</li> <li>Ollama: Requires local Ollama server running (http://localhost:11434)</li> <li>Claude/Gemini: Implementation ready, just need client setup</li> </ul>"
+    },
+    {
+      "location": "features/tui/#development",
+      "title": "Development",
+      "text": "<p>To modify the TUI:</p> <ol> <li>Edit <code>internal/tui/config_tui.go</code> for config viewer</li> <li>Edit <code>internal/tui/tui.go</code> for chat interface</li> <li>Edit <code>internal/cli/tui.go</code> for CLI integration</li> <li>Edit <code>internal/llm/chat.go</code> for chat client functionality</li> </ol> <p>Run tests:</p> <pre><code>go test ./internal/tui/...\ngo test ./internal/llm/...\n</code></pre>"
+    },
+    {
+      "location": "features/tui/#future-enhancements",
+      "title": "Future Enhancements",
+      "text": "<ul> <li>[ ] Search/filter in configuration</li> <li>[ ] Edit configuration values directly</li> <li>[ ] Export/import configuration</li> <li>[ ] Connection testing for services</li> <li>[ ] Theme customization</li> <li>[ ] Streaming response support in TUI</li> <li>[ ] File upload support for chat</li> <li>[ ] Tool/function calling integration</li> </ul>"
+    },
+    {
+      "location": "guides/development/",
+      "title": "Development Guide",
+      "text": "<p>Welcome to the ArchesAI development guide! This document covers everything you need to know to set up your development environment and contribute to the project.</p>"
+    },
+    {
+      "location": "guides/development/#prerequisites",
+      "title": "Prerequisites",
+      "text": "<ul> <li>Go 1.21 or later</li> <li>Node.js 18 or later</li> <li>PostgreSQL 15 or later (for development)</li> <li>Redis (for caching and sessions)</li> <li>Docker and Docker Compose (for containerized development)</li> </ul>"
+    },
+    {
+      "location": "guides/development/#quick-setup",
+      "title": "Quick Setup",
+      "text": "<ol> <li>Clone the repository:</li> </ol> <pre><code>git clone https://github.com/archesai/archesai.git\ncd archesai\n</code></pre> <ol> <li>Install dependencies:</li> </ol> <pre><code>make deps\n</code></pre> <ol> <li>Generate code:</li> </ol> <pre><code>make generate\n</code></pre> <ol> <li>Set up the database:</li> </ol> <pre><code>make migrate-up\n</code></pre> <ol> <li>Start development servers:</li> </ol> <pre><code>make dev          # Start backend\npnpm dev:platform # Start frontend (in another terminal)\n</code></pre>"
+    },
+    {
+      "location": "guides/development/#essential-commands",
+      "title": "Essential Commands",
+      "text": "<pre><code>make generate         # Run after API/SQL changes\nmake lint            # Check code quality\nmake dev             # Start backend server\npnpm dev:platform    # Start frontend\nmake format          # Format code\nmake test            # Run tests\n</code></pre> <p>For a complete list of commands, see Makefile Commands.</p>"
+    },
+    {
+      "location": "guides/development/#project-structure",
+      "title": "Project Structure",
+      "text": "<p>For a detailed overview of the project organization, see Project Layout.</p>"
+    },
+    {
+      "location": "guides/development/#development-workflow",
+      "title": "Development Workflow",
+      "text": "<ol> <li>Code Generation First: Define APIs in OpenAPI specs and database queries in SQL before implementing</li> <li>Run <code>make generate</code> after any changes to API or database schemas</li> <li>Follow the testing strategy outlined in Testing Documentation</li> <li>Use the TUI for configuration as described in the TUI Guide</li> </ol>"
+    },
+    {
+      "location": "guides/development/#contributing",
+      "title": "Contributing",
+      "text": "<p>See our Contributing Guide for detailed information about:</p> <ul> <li>Code style and conventions</li> <li>Pull request process</li> <li>Issue reporting</li> <li>Development best practices</li> </ul>"
+    },
+    {
+      "location": "guides/development/#architecture",
+      "title": "Architecture",
+      "text": "<p>Learn about the system design and patterns in our Architecture Documentation.</p>"
+    },
+    {
+      "location": "guides/development/#need-help",
+      "title": "Need Help?",
+      "text": "<ul> <li>Check the Troubleshooting Guide</li> <li>Open an issue on GitHub</li> </ul>"
+    },
+    {
+      "location": "guides/makefile-commands/",
+      "title": "Makefile Commands Reference",
+      "text": "<p>This document provides a comprehensive reference for all available Makefile targets in the ArchesAI project.</p>"
+    },
+    {
+      "location": "guides/makefile-commands/#usage",
+      "title": "Usage",
+      "text": "<pre><code>make [target]\n</code></pre> <p>To see this help in the terminal:</p> <pre><code>make help\n</code></pre>"
+    },
+    {
+      "location": "guides/makefile-commands/#available-targets",
+      "title": "Available Targets",
+      "text": ""
+    },
+    {
+      "location": "guides/makefile-commands/#core-development-commands",
+      "title": "Core Development Commands",
+      "text": "Command Description <code>make all</code> Default: generate, lint, and format code <code>make dev</code> Run all services in development mode <code>make generate</code> Generate all code <code>make lint</code> Run all linters <code>make format</code> Format all code <code>make test</code> Run all tests"
+    },
+    {
+      "location": "guides/makefile-commands/#build-commands",
+      "title": "Build Commands",
+      "text": "Command Description <code>make build</code> Build all binaries <code>make build-archesai</code> Build archesai server binary <code>make build-web</code> Build web assets <code>make clean</code> Clean build artifacts <code>make clean-generated</code> Clean all generated code"
+    },
+    {
+      "location": "guides/makefile-commands/#code-generation",
+      "title": "Code Generation",
+      "text": "Command Description <code>make generate</code> Generate all code <code>make generate-oapi</code> Generate OpenAPI server code <code>make generate-sqlc</code> Generate database code with sqlc <code>make generate-codegen</code> Generate codegen <code>make generate-codegen-types</code> Generate types for codegen configuration <code>make generate-mocks</code> Generate test mocks using mockery"
+    },
+    {
+      "location": "guides/makefile-commands/#dependency-management",
+      "title": "Dependency Management",
+      "text": "Command Description <code>make deps</code> Install all dependencies <code>make deps-go</code> Install Go dependencies and tools <code>make deps-node</code> Install Node.js dependencies <code>make deps-update</code> Update all dependencies <code>make deps-update-go</code> Update Go dependencies <code>make deps-update-node</code> Update Node.js dependencies"
+    },
+    {
+      "location": "guides/makefile-commands/#code-quality",
+      "title": "Code Quality",
+      "text": "Command Description <code>make lint</code> Run all linters <code>make lint-go</code> Run Go linter <code>make lint-node</code> Run Node.js linter (includes typecheck) <code>make lint-openapi</code> Lint OpenAPI specification <code>make format</code> Format all code <code>make format-go</code> Format Go code <code>make format-node</code> Format Node.js/TypeScript code <code>make typecheck-node</code> Run TypeScript type checking"
+    },
+    {
+      "location": "guides/makefile-commands/#testing",
+      "title": "Testing",
+      "text": "Command Description <code>make test</code> Run all tests <code>make test-short</code> Run short tests only (skip integration tests) <code>make test-verbose</code> Run all tests with verbose output <code>make test-bench</code> Run benchmark tests <code>make test-coverage</code> Generate test coverage report <code>make test-coverage-html</code> Generate HTML coverage report <code>make test-clean</code> Clean test cache and coverage files <code>make test-watch</code> Run tests in watch mode (requires fswatch) <code>make test-domain DOMAIN=auth</code> Test specific domain"
+    },
+    {
+      "location": "guides/makefile-commands/#database-operations",
+      "title": "Database Operations",
+      "text": "Command Description <code>make migrate</code> Alias for migrate-up <code>make migrate-up</code> Apply database migrations <code>make migrate-down</code> Rollback database migrations <code>make migrate-reset</code> Reset database to initial state <code>make migrate-status</code> Show migration status <code>make migrate-create name=add_users</code> Create new migration <code>make convert-schema</code> Convert PostgreSQL schema to SQLite"
+    },
+    {
+      "location": "guides/makefile-commands/#openapi-operations",
+      "title": "OpenAPI Operations",
+      "text": "Command Description <code>make openapi-bundle</code> Bundle OpenAPI into single file <code>make openapi-split</code> Split OpenAPI into multiple files <code>make openapi-stats</code> Show OpenAPI specification statistics"
+    },
+    {
+      "location": "guides/makefile-commands/#runtime-commands",
+      "title": "Runtime Commands",
+      "text": "Command Description <code>make run</code> Alias for run-api <code>make run-api</code> Run the API server <code>make run-web</code> Run the web UI server <code>make run-worker</code> Run the background worker <code>make tui</code> Launch the TUI interface <code>make watch</code> Run with hot reload (requires air)"
+    },
+    {
+      "location": "guides/makefile-commands/#docker-operations",
+      "title": "Docker Operations",
+      "text": "Command Description <code>make docker-run</code> Build and run with Docker Compose <code>make docker-stop</code> Stop Docker Compose services"
+    },
+    {
+      "location": "guides/makefile-commands/#kubernetesskaffold",
+      "title": "Kubernetes/Skaffold",
+      "text": "Command Description <code>make skaffold-dev</code> Run with Skaffold in dev mode <code>make skaffold-run</code> Deploy with Skaffold <code>make skaffold-delete</code> Delete Skaffold deployment"
+    },
+    {
+      "location": "guides/makefile-commands/#development-tools",
+      "title": "Development Tools",
+      "text": "Command Description <code>make install-tools</code> Install development tools <code>make install-completions</code> Install shell completions guide <code>make help</code> Show this help message"
+    },
+    {
+      "location": "guides/makefile-commands/#common-workflows",
+      "title": "Common Workflows",
+      "text": ""
+    },
+    {
+      "location": "guides/makefile-commands/#starting-development",
+      "title": "Starting Development",
+      "text": "<pre><code>make deps           # Install dependencies\nmake generate       # Generate code\nmake dev           # Start all services\n</code></pre>"
+    },
+    {
+      "location": "guides/makefile-commands/#after-api-changes",
+      "title": "After API Changes",
+      "text": "<pre><code>make generate-oapi  # Regenerate from OpenAPI\nmake lint          # Check for issues\nmake test          # Verify tests pass\n</code></pre>"
+    },
+    {
+      "location": "guides/makefile-commands/#after-database-changes",
+      "title": "After Database Changes",
+      "text": "<pre><code>make generate-sqlc  # Regenerate database code\nmake migrate-up     # Apply migrations\nmake test          # Verify tests pass\n</code></pre>"
+    },
+    {
+      "location": "guides/makefile-commands/#before-committing",
+      "title": "Before Committing",
+      "text": "<pre><code>make all           # Generate, lint, and format\nmake test          # Run all tests\n</code></pre>"
+    },
+    {
+      "location": "guides/makefile-commands/#production-build",
+      "title": "Production Build",
+      "text": "<pre><code>make clean         # Clean previous builds\nmake generate      # Ensure code is current\nmake build         # Build all binaries\n</code></pre>"
+    },
+    {
+      "location": "guides/makefile-commands/#tool-requirements",
+      "title": "Tool Requirements",
+      "text": "<p>Some commands require additional tools to be installed:</p> <ul> <li>fswatch: Required for <code>make test-watch</code></li> <li>air: Required for <code>make watch</code> (hot reload)</li> <li>Docker: Required for Docker-related commands</li> <li>Skaffold: Required for Kubernetes deployment commands</li> <li>kubectl: Required for Kubernetes operations</li> </ul> <p>Install tools with:</p> <pre><code>make install-tools\n</code></pre>"
+    },
+    {
+      "location": "guides/makefile-commands/#environment-variables",
+      "title": "Environment Variables",
+      "text": "<p>Some commands may require environment variables to be set:</p> <ul> <li>Database connection strings for migration commands</li> <li>API keys for integration tests</li> <li>Docker registry credentials for deployment</li> </ul> <p>See Development Guide for complete environment setup.</p>"
+    },
+    {
+      "location": "guides/overview/",
+      "title": "Development Setup",
+      "text": "<p>This section contains detailed guides for setting up your development environment and working with the ArchesAI codebase.</p>"
+    },
+    {
+      "location": "guides/overview/#getting-started",
+      "title": "Getting Started",
+      "text": "<ul> <li>Development Guide - Main development setup and workflow</li> <li>Testing Strategy - Comprehensive testing documentation</li> <li>Contributing Guidelines - How to contribute to the project</li> <li>Makefile Commands - Complete command reference</li> <li>TUI Guide - Terminal user interface documentation</li> </ul>"
+    },
+    {
+      "location": "guides/overview/#reports-and-coverage",
+      "title": "Reports and Coverage",
+      "text": "<ul> <li>Test Coverage Report - Current test coverage status</li> </ul>"
+    },
+    {
+      "location": "guides/overview/#development-topics",
+      "title": "Development Topics",
+      "text": ""
+    },
+    {
+      "location": "guides/overview/#code-generation",
+      "title": "Code Generation",
+      "text": "<p>Learn about our comprehensive code generation system:</p> <ul> <li>OpenAPI-driven type generation</li> <li>Database code generation with SQLC</li> <li>Repository and handler generation</li> <li>Event system generation</li> </ul>"
+    },
+    {
+      "location": "guides/overview/#testing",
+      "title": "Testing",
+      "text": "<ul> <li>Unit testing with mocks</li> <li>Integration testing with testcontainers</li> <li>End-to-end testing strategies</li> <li>Coverage reporting</li> </ul>"
+    },
+    {
+      "location": "guides/overview/#debugging",
+      "title": "Debugging",
+      "text": "<ul> <li>Using the TUI for debugging</li> <li>Log analysis</li> <li>Performance profiling</li> <li>Common debugging techniques</li> </ul>"
+    },
+    {
+      "location": "guides/overview/#tools-and-setup",
+      "title": "Tools and Setup",
+      "text": ""
+    },
+    {
+      "location": "guides/overview/#required-tools",
+      "title": "Required Tools",
+      "text": "<ul> <li>Go 1.21+</li> <li>Node.js 18+</li> <li>PostgreSQL 15+</li> <li>Redis</li> <li>Docker</li> </ul>"
+    },
+    {
+      "location": "guides/overview/#optional-tools",
+      "title": "Optional Tools",
+      "text": "<ul> <li>k3d (local Kubernetes)</li> <li>Air (hot reload)</li> <li>Make (build automation)</li> </ul>"
+    },
+    {
+      "location": "guides/overview/#quick-commands",
+      "title": "Quick Commands",
+      "text": "<pre><code># Start development\nmake dev\n\n# Generate all code\nmake generate\n\n# Run tests\nmake test\n\n# Lint and format\nmake lint format\n</code></pre>"
+    },
+    {
+      "location": "guides/test-coverage-report/",
+      "title": "Test Coverage Report",
+      "text": "<p>Generated: 2025-09-08 20:00:51 UTC</p>"
+    },
+    {
+      "location": "guides/test-coverage-report/#summary",
+      "title": "\ud83d\udcca Summary",
+      "text": "<p>Total Coverage: <code>5.1%</code> \ud83d\udd34</p> <p>\u26a0\ufe0f Warning: Coverage is below recommended threshold of 80%</p>"
+    },
+    {
+      "location": "guides/test-coverage-report/#coverage-by-package",
+      "title": "Coverage by Package",
+      "text": "Package Coverage Status <code>internal/auth</code> 16.9% \ud83d\udd34 Low <code>internal/auth/adapters/repository</code> 0.0% \u26ab None <code>internal/config</code> 47.2% \ud83d\udfe1 Medium <code>internal/content</code> 8.6% \ud83d\udd34 Low <code>internal/health</code> 3.9% \ud83d\udd34 Low <code>internal/organizations</code> 2.3% \ud83d\udd34 Low <code>internal/storage</code> - \u26ab No statements <code>internal/users</code> 14.5% \ud83d\udd34 Low <code>internal/workflows</code> 3.6% \ud83d\udd34 Low"
+    },
+    {
+      "location": "guides/test-coverage-report/#coverage-trends",
+      "title": "Coverage Trends",
+      "text": "<pre><code>Legend: \ud83d\udfe2 &gt;80% | \ud83d\udfe1 40-80% | \ud83d\udd34 &lt;40% | \u26ab 0%\n</code></pre>"
+    },
+    {
+      "location": "guides/test-coverage-report/#top-uncovered-files",
+      "title": "Top Uncovered Files",
+      "text": "<p>The following critical files have 0% coverage and should be prioritized:</p> <ul> <li><code>cmd/archesai/main.go</code> - Main application entry point</li> <li><code>internal/app/app.go</code> - Core application setup</li> <li><code>internal/app/app.go</code> - Core application setup</li> <li><code>internal/app/app.go</code> - Core application setup</li> <li><code>internal/app/app.go</code> - Core application setup</li> </ul>"
+    },
+    {
+      "location": "guides/test-coverage-report/#recommendations",
+      "title": "Recommendations",
+      "text": ""
+    },
+    {
+      "location": "guides/test-coverage-report/#immediate-actions-required",
+      "title": "Immediate Actions Required",
+      "text": "<ul> <li>[ ] Add basic unit tests for all packages</li> <li>[ ] Focus on critical business logic first</li> <li>[ ] Set up test infrastructure and mocks</li> <li>[ ] Aim for at least 40% coverage initially</li> </ul>"
+    },
+    {
+      "location": "guides/test-coverage-report/#next-steps",
+      "title": "Next Steps",
+      "text": "<ol> <li>Focus on packages with lowest coverage</li> <li>Add tests for critical user flows</li> <li>Implement continuous coverage monitoring</li> </ol>"
+    },
+    {
+      "location": "guides/test-coverage-report/#test-execution-details",
+      "title": "Test Execution Details",
+      "text": "<ul> <li>Total Packages: 9</li> <li>Packages with Tests: 9</li> <li>Test Execution Time: ~10s</li> </ul> <p>This report is automatically generated by GitHub Actions on every push to main.</p>"
+    },
+    {
+      "location": "guides/testing/",
+      "title": "Testing Documentation",
+      "text": ""
+    },
+    {
+      "location": "guides/testing/#overview",
+      "title": "Overview",
+      "text": "<p>This document outlines the testing strategy, patterns, and technical decisions for the ArchesAI backend.</p>"
+    },
+    {
+      "location": "guides/testing/#testing-philosophy",
+      "title": "Testing Philosophy",
+      "text": "<ul> <li>Minimal Dependencies: Tests use Go's standard library with minimal external dependencies</li> <li>Mock Repository Pattern: All database interactions are mocked using in-memory implementations</li> <li>Table-Driven Tests: Comprehensive test cases using Go's table-driven test pattern</li> <li>Domain Isolation: Each domain is tested independently without cross-domain dependencies</li> </ul>"
+    },
+    {
+      "location": "guides/testing/#technical-decisions",
+      "title": "Technical Decisions",
+      "text": ""
+    },
+    {
+      "location": "guides/testing/#1-mock-repository-pattern",
+      "title": "1. Mock Repository Pattern",
+      "text": "<p>Instead of using mocking libraries like <code>gomock</code> or <code>testify/mock</code>, we implement manual mock repositories:</p> <pre><code>type MockRepository struct {\n    entities map[uuid.UUID]*Entity\n    err      error  // Inject errors for testing error paths\n}\n</code></pre> <p>Benefits:</p> <ul> <li>No external dependencies</li> <li>Full control over mock behavior</li> <li>Compile-time type safety</li> <li>Easy to understand and maintain</li> </ul>"
+    },
+    {
+      "location": "guides/testing/#2-test-organization",
+      "title": "2. Test Organization",
+      "text": "<p>Each domain follows this structure:</p> <pre><code>internal/{domain}/\n\u251c\u2500\u2500 service_test.go      # Business logic tests\n\u251c\u2500\u2500 handler_test.go      # HTTP handler tests (if applicable)\n\u251c\u2500\u2500 middleware_test.go   # Middleware tests (if applicable)\n\u2514\u2500\u2500 postgres_test.go     # Integration tests with real database\n</code></pre>"
+    },
+    {
+      "location": "guides/testing/#3-integration-testing",
+      "title": "3. Integration Testing",
+      "text": "<p>For database integration tests, we use testcontainers:</p> <ul> <li>PostgreSQL containers for testing real database operations</li> <li>Redis containers for testing cache operations</li> <li>Automatic cleanup after tests complete</li> <li>Located in <code>internal/testutil/containers.go</code></li> </ul>"
+    },
+    {
+      "location": "guides/testing/#4-coverage-strategy",
+      "title": "4. Coverage Strategy",
+      "text": "<p>Current coverage by package:</p> <ul> <li><code>internal/auth</code> - 18.3% (most comprehensive)</li> <li><code>internal/organizations</code> - 8.3%</li> <li><code>internal/workflows</code> - 5.9%</li> </ul> <p>Target: 80%+ coverage for critical business logic</p>"
+    },
+    {
+      "location": "guides/testing/#test-patterns",
+      "title": "Test Patterns",
+      "text": ""
+    },
+    {
+      "location": "guides/testing/#service-tests",
+      "title": "Service Tests",
+      "text": "<pre><code>func TestService_Method(t *testing.T) {\n    tests := []struct {\n        name    string\n        input   InputType\n        setup   func(*MockRepository)  // Prepare mock state\n        wantErr bool\n    }{\n        // Test cases\n    }\n\n    for _, tt := range tests {\n        t.Run(tt.name, func(t *testing.T) {\n            repo := NewMockRepository()\n            tt.setup(repo)\n            service := NewService(repo, slog.Default())\n\n            result, err := service.Method(context.Background(), tt.input)\n\n            if (err != nil) != tt.wantErr {\n                t.Errorf(\"Method() error = %v, wantErr %v\", err, tt.wantErr)\n            }\n            // Additional assertions\n        })\n    }\n}\n</code></pre>"
+    },
+    {
+      "location": "guides/testing/#handler-tests",
+      "title": "Handler Tests",
+      "text": "<pre><code>func TestHandler_Endpoint(t *testing.T) {\n    // Create mock service\n    mockService := &amp;MockService{}\n    handler := NewHandler(mockService, slog.Default())\n\n    // Create Echo context with test request\n    e := echo.New()\n    req := httptest.NewRequest(http.MethodPost, \"/\", body)\n    rec := httptest.NewRecorder()\n    c := e.NewContext(req, rec)\n\n    // Execute handler\n    response, err := handler.Endpoint(c, request)\n\n    // Assert response\n}\n</code></pre>"
+    },
+    {
+      "location": "guides/testing/#integration-tests",
+      "title": "Integration Tests",
+      "text": "<pre><code>func TestPostgresRepository_Operations(t *testing.T) {\n    if testing.Short() {\n        t.Skip(\"Skipping integration test\")\n    }\n\n    ctx := context.Background()\n    pgContainer := testutil.StartPostgresContainer(ctx, t)\n\n    // Run migrations\n    err := pgContainer.RunMigrations(\"../../migrations\")\n    if err != nil {\n        t.Fatalf(\"Failed to run migrations: %v\", err)\n    }\n\n    // Test database operations\n}\n</code></pre>"
+    },
+    {
+      "location": "guides/testing/#running-tests",
+      "title": "Running Tests",
+      "text": "<pre><code># Run all tests\nmake test\n\n# Run with coverage\nmake test-coverage\n\n# Run specific domain tests\ngo test ./internal/auth/...\n\n# Run only unit tests (skip integration)\ngo test -short ./...\n\n# Generate HTML coverage report\nmake test-coverage-html\n\n# Run benchmarks\nmake test-bench\n\n# Run with race detection\ngo test -race ./...\n</code></pre>"
+    },
+    {
+      "location": "guides/testing/#important-notes",
+      "title": "Important Notes",
+      "text": ""
+    },
+    {
+      "location": "guides/testing/#type-compatibility",
+      "title": "Type Compatibility",
+      "text": "<ol> <li>OpenAPI Generated Types: Always use the exact generated types from <code>types.gen.go</code>:</li> <li><code>Email</code> field is <code>openapi_types.Email</code>, not <code>string</code></li> <li>Role enums use specific constants like <code>CreateMemberJSONBodyRoleAdmin</code></li> <li> <p>Request/Response types use generated structs</p> </li> <li> <p>UUID Handling:</p> </li> <li>User <code>Id</code> field is <code>uuid.UUID</code>, not <code>ID</code></li> <li> <p>Some fields like <code>OrganizationId</code> may be strings in certain contexts</p> </li> <li> <p>Context Keys:</p> </li> <li>Auth middleware uses <code>AuthUserContextKey</code> and <code>AuthClaimsContextKey</code></li> <li>Not <code>UserContextKey</code> or <code>ClaimsContextKey</code></li> </ol>"
+    },
+    {
+      "location": "guides/testing/#mock-repository-checklist",
+      "title": "Mock Repository Checklist",
+      "text": "<p>When creating a new mock repository:</p> <ol> <li>Implement all interface methods (use compile-time check)</li> <li>Include both success and error injection paths</li> <li>Properly handle not-found cases</li> <li>Update timestamps in Create/Update operations</li> <li>Use maps for in-memory storage</li> </ol>"
+    },
+    {
+      "location": "guides/testing/#common-pitfalls",
+      "title": "Common Pitfalls",
+      "text": "<ol> <li>Forgetting Generated Types: Always check <code>types.gen.go</code> for correct field types</li> <li>Missing Interface Methods: Use <code>var _ Interface = (*Mock)(nil)</code> to verify</li> <li>Incorrect Error Variables: Use domain-specific errors like <code>ErrUserNotFound</code></li> <li>Linting Issues: Run <code>make lint</code> before committing</li> <li>Format Issues: Run <code>gofmt -w</code> on test files</li> </ol>"
+    },
+    {
+      "location": "guides/testing/#test-data-fixtures",
+      "title": "Test Data Fixtures",
+      "text": "<p>Common test data patterns:</p> <pre><code>// User fixture\nuser := &amp;User{\n    Id:            uuid.New(),\n    Email:         \"test@example.com\",\n    Name:          \"Test User\",\n    EmailVerified: false,\n    CreatedAt:     time.Now(),\n    UpdatedAt:     time.Now(),\n}\n\n// Organization fixture\norg := &amp;Organization{\n    Id:           uuid.New(),\n    Name:         \"Test Org\",\n    BillingEmail: \"billing@example.com\",\n    Plan:         OrganizationPlan(DefaultPlan),\n}\n</code></pre>"
+    },
+    {
+      "location": "guides/testing/#coverage-goals",
+      "title": "Coverage Goals",
+      "text": ""
+    },
+    {
+      "location": "guides/testing/#priority-1-business-critical",
+      "title": "Priority 1 (Business Critical)",
+      "text": "<ul> <li>[ ] Auth domain - Target: 80%</li> <li>[ ] Organizations domain - Target: 70%</li> <li>[ ] Workflows domain - Target: 70%</li> <li>[ ] Content domain - Target: 70%</li> </ul>"
+    },
+    {
+      "location": "guides/testing/#priority-2-infrastructure",
+      "title": "Priority 2 (Infrastructure)",
+      "text": "<ul> <li>[ ] Database package - Target: 60%</li> <li>[ ] Config package - Target: 50%</li> <li>[ ] Storage package - Target: 60%</li> </ul>"
+    },
+    {
+      "location": "guides/testing/#priority-3-supporting",
+      "title": "Priority 3 (Supporting)",
+      "text": "<ul> <li>[ ] Server package - Target: 40%</li> <li>[ ] Health checks - Target: 50%</li> <li>[ ] CLI tools - Target: 30%</li> </ul>"
+    },
+    {
+      "location": "guides/testing/#future-improvements",
+      "title": "Future Improvements",
+      "text": "<ol> <li>E2E Tests: Add end-to-end API tests with full server startup</li> <li>Performance Tests: Add benchmarks for critical paths</li> <li>Fuzz Testing: Add fuzzing for input validation</li> <li>Contract Tests: Ensure API compatibility with OpenAPI spec</li> <li>Load Tests: Add k6 or similar for load testing</li> <li>Mutation Testing: Consider adding mutation testing for test quality</li> </ol>"
+    },
+    {
+      "location": "guides/testing/#contributing",
+      "title": "Contributing",
+      "text": "<p>When adding new tests:</p> <ol> <li>Follow established patterns in existing test files</li> <li>Include both success and error cases</li> <li>Use descriptive test names</li> <li>Update this documentation if introducing new patterns</li> <li>Ensure all tests pass with <code>make test</code></li> <li>Check coverage with <code>make test-coverage</code></li> </ol>"
+    },
+    {
+      "location": "performance/overview/",
+      "title": "Performance Documentation",
+      "text": "<p>This section covers performance optimization, monitoring, and scaling strategies for ArchesAI.</p>"
+    },
+    {
+      "location": "performance/overview/#performance-overview",
+      "title": "Performance Overview",
+      "text": "<p>ArchesAI is designed for high performance with several optimization strategies:</p> <ul> <li>Stateless API servers - Horizontal scaling capability</li> <li>Database read replicas - Distributed read load</li> <li>Redis clustering - Distributed caching</li> <li>Queue-based processing - Async job processing</li> </ul>"
+    },
+    {
+      "location": "performance/overview/#optimization-guide",
+      "title": "Optimization Guide",
+      "text": ""
+    },
+    {
+      "location": "performance/overview/#database-performance",
+      "title": "Database Performance",
+      "text": "<ul> <li>Connection pooling configuration</li> <li>Query optimization</li> <li>Index strategies</li> <li>Vector search optimization (pgvector)</li> </ul>"
+    },
+    {
+      "location": "performance/overview/#application-performance",
+      "title": "Application Performance",
+      "text": "<ul> <li>Go performance best practices</li> <li>Memory management</li> <li>Concurrent processing patterns</li> <li>HTTP client optimization</li> </ul>"
+    },
+    {
+      "location": "performance/overview/#caching-strategies",
+      "title": "Caching Strategies",
+      "text": "<ul> <li>Redis cache patterns</li> <li>Application-level caching</li> <li>CDN integration</li> </ul>"
+    },
+    {
+      "location": "performance/overview/#monitoring-observability",
+      "title": "Monitoring &amp; Observability",
+      "text": ""
+    },
+    {
+      "location": "performance/overview/#metrics-collection",
+      "title": "Metrics Collection",
+      "text": "<ul> <li>Application metrics (Prometheus)</li> <li>Infrastructure metrics (Grafana)</li> <li>Business metrics tracking</li> </ul>"
+    },
+    {
+      "location": "performance/overview/#performance-testing",
+      "title": "Performance Testing",
+      "text": "<ul> <li>Load testing strategies</li> <li>Benchmark procedures</li> <li>Performance regression detection</li> </ul> <p>Detailed performance guides and optimization documentation are coming in upcoming iterations.</p>"
+    },
+    {
+      "location": "security/overview/",
+      "title": "Security Documentation",
+      "text": "<p>This section covers security best practices, guidelines, and implementation details for ArchesAI.</p>"
+    },
+    {
+      "location": "security/overview/#security-overview",
+      "title": "Security Overview",
+      "text": "<p>ArchesAI implements defense-in-depth security across multiple layers:</p> <ul> <li>Network Layer: TLS/HTTPS encryption, rate limiting, DDoS protection</li> <li>Application Layer: JWT authentication, CORS configuration, input validation</li> <li>Data Layer: Encryption at rest, row-level security, audit logging</li> </ul>"
+    },
+    {
+      "location": "security/overview/#authentication-authorization",
+      "title": "Authentication &amp; Authorization",
+      "text": ""
+    },
+    {
+      "location": "security/overview/#jwt-implementation",
+      "title": "JWT Implementation",
+      "text": "<ul> <li>Token generation and validation</li> <li>Refresh token management</li> <li>Session security</li> </ul>"
+    },
+    {
+      "location": "security/overview/#role-based-access-control-rbac",
+      "title": "Role-Based Access Control (RBAC)",
+      "text": "<ul> <li>Organization-level permissions</li> <li>Member role management</li> <li>API endpoint protection</li> </ul>"
+    },
+    {
+      "location": "security/overview/#best-practices",
+      "title": "Best Practices",
+      "text": ""
+    },
+    {
+      "location": "security/overview/#development-security",
+      "title": "Development Security",
+      "text": "<ul> <li>Secure coding practices</li> <li>Secret management</li> <li>Dependency scanning</li> </ul>"
+    },
+    {
+      "location": "security/overview/#production-security",
+      "title": "Production Security",
+      "text": "<ul> <li>Environment hardening</li> <li>Monitoring and alerting</li> <li>Incident response</li> </ul>"
+    },
+    {
+      "location": "security/overview/#security-auditing",
+      "title": "Security Auditing",
+      "text": "<ul> <li>Regular security reviews</li> <li>Vulnerability assessments</li> <li>Compliance considerations</li> </ul> <p>Detailed security guides and best practices documentation are coming in upcoming iterations.</p>"
+    },
+    {
+      "location": "troubleshooting/common-issues/",
+      "title": "Troubleshooting Guide",
+      "text": "<p>This section helps you diagnose and resolve common issues with ArchesAI.</p>"
+    },
+    {
+      "location": "troubleshooting/common-issues/#common-issues",
+      "title": "Common Issues",
+      "text": ""
+    },
+    {
+      "location": "troubleshooting/common-issues/#development-issues",
+      "title": "Development Issues",
+      "text": "<ul> <li>Build failures</li> <li>Code generation problems</li> <li>Database connection issues</li> <li>Docker setup problems</li> </ul>"
+    },
+    {
+      "location": "troubleshooting/common-issues/#debugging-guide",
+      "title": "Debugging Guide",
+      "text": "<ul> <li>Using the TUI for debugging</li> <li>Log analysis techniques</li> <li>Performance profiling</li> <li>Network troubleshooting</li> </ul>"
+    },
+    {
+      "location": "troubleshooting/common-issues/#quick-fixes",
+      "title": "Quick Fixes",
+      "text": ""
+    },
+    {
+      "location": "troubleshooting/common-issues/#build-issues",
+      "title": "Build Issues",
+      "text": "<pre><code># Clean and regenerate everything\nmake clean-generated\nmake generate\nmake build\n</code></pre>"
+    },
+    {
+      "location": "troubleshooting/common-issues/#database-issues",
+      "title": "Database Issues",
+      "text": "<pre><code># Reset database\nmake migrate-reset\nmake migrate-up\n</code></pre>"
+    },
+    {
+      "location": "troubleshooting/common-issues/#docker-issues",
+      "title": "Docker Issues",
+      "text": "<pre><code># Clean Docker resources\nmake docs-clean\ndocker system prune\n</code></pre>"
+    },
+    {
+      "location": "troubleshooting/common-issues/#getting-help",
+      "title": "Getting Help",
+      "text": "<ol> <li>Check the logs first</li> <li>Review the Architecture Documentation</li> <li>Check Development Setup</li> <li>Open an issue on GitHub</li> </ol> <p>Detailed troubleshooting guides are coming in upcoming iterations.</p>"
+    }
+  ]
+}

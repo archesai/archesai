@@ -295,6 +295,30 @@ format-node: ## Format Node.js/TypeScript code
 	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------
+# Documentation
+# ------------------------------------------
+
+.PHONY: docs-lint
+docs-lint: ## Lint documentation with markdownlint
+	@echo -e "$(YELLOW)▶ Linting documentation...$(NC)"
+	@pnpm dlx markdownlint-cli --fix 'docs/**/*.md' --config .markdownlint.json
+	@echo -e "$(GREEN)✓ Documentation linting complete!$(NC)"
+
+.PHONY: docs-build
+docs-build: ## Build documentation static site with Docker
+	@echo -e "$(YELLOW)▶ Building documentation...$(NC)"
+	@cd docs && docker build -t archesai-docs .
+	@cd docs && docker run --rm -v "$(PWD):/docs" -u $(shell id -u):$(shell id -g) archesai-docs mkdocs build
+	@echo -e "$(GREEN)✓ Documentation built in docs/site/$(NC)"
+
+.PHONY: docs-run
+docs-run: ## Serve documentation locally with Docker
+	@echo -e "$(YELLOW)▶ Starting documentation server...$(NC)"
+	@cd docs && docker build -t archesai-docs .
+	@echo -e "$(GREEN)✓ Documentation server running at http://localhost:8000$(NC)"
+	@cd docs && docker run --rm -it -p 8000:8000 -v "$(PWD):/docs" -u $(shell id -u):$(shell id -g) archesai-docs mkdocs serve --dev-addr=0.0.0.0:8000
+
+# ------------------------------------------
 # OpenAPI Tools
 # ------------------------------------------
 

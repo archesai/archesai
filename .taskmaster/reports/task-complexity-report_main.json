@@ -1,213 +1,229 @@
 {
   "meta": {
-    "generatedAt": "2025-09-08T13:25:21.389Z",
-    "tasksAnalyzed": 25,
-    "totalTasks": 26,
-    "analysisCount": 25,
+    "generatedAt": "2025-09-08T20:39:50.897Z",
+    "tasksAnalyzed": 27,
+    "totalTasks": 28,
+    "analysisCount": 27,
     "thresholdScore": 5,
     "projectName": "Taskmaster",
-    "usedResearch": false
+    "usedResearch": true
   },
   "complexityAnalysis": [
     {
       "taskId": 2,
       "taskTitle": "Implement authentication system",
       "complexityScore": 7,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Break down JWT authentication and OAuth2 integration into implementable subtasks. The codebase already has basic auth structures, JWT claims, and token handling. Focus on: 1) Completing JWT middleware and token validation, 2) Implementing OAuth2 providers (Google, Microsoft, GitHub), 3) User registration/login flows, 4) Password reset with email verification, 5) Session management improvements, 6) Integration testing for all auth flows.",
-      "reasoning": "Auth foundations exist but OAuth2, password reset, and email verification are missing. JWT middleware is present but needs completion. Moderate complexity due to external OAuth providers."
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Break down JWT authentication implementation into: 1) Core JWT token generation and validation with refresh token support, 2) Session management with Redis cache integration, 3) OAuth2 provider integrations for Google, Microsoft, and GitHub with proper callback handling, 4) User registration flow with email verification, 5) Login/logout flows with proper session cleanup, 6) Password reset with secure token generation, 7) Authentication middleware updates for route protection, 8) Comprehensive test coverage for all auth flows. Focus on leveraging existing auth package structure and generated types.",
+      "reasoning": "High complexity due to multiple OAuth providers, JWT refresh token complexity, and security requirements. Existing auth package has JWT foundation (78 occurrences) but minimal OAuth support (3 occurrences). Need to integrate with existing users service, Redis session management, and middleware patterns already in place."
     },
     {
       "taskId": 3,
       "taskTitle": "Create organization management service",
       "complexityScore": 6,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Build comprehensive organization management with multi-tenancy. The codebase has basic organization structures and database models. Focus on: 1) Organization CRUD operations and settings, 2) Multi-tenant database isolation and middleware, 3) Member management and role assignments, 4) Organization invitation system, 5) Resource limits and quotas enforcement.",
-      "reasoning": "Organization domain exists with basic structure. Database models and handlers are present. Medium complexity due to multi-tenancy requirements and invitation flows."
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Implement organization management by: 1) Organization CRUD operations with proper validation, 2) Database tenant isolation using organization_id foreign keys, 3) Organization settings and resource limits/quotas, 4) User-organization membership relationships with roles, 5) Organization invitation system with email notifications, 6) Migration scripts for multi-tenant schema. Leverage existing organizations package structure and generated repository interfaces.",
+      "reasoning": "Moderate complexity with existing organizations package foundation. Multi-tenancy patterns are partially implemented with organization_id in database schema. Main work involves completing service layer, adding invitation flows, and ensuring proper isolation."
     },
     {
       "taskId": 4,
       "taskTitle": "Build core workflow engine",
-      "complexityScore": 9,
-      "recommendedSubtasks": 8,
-      "expansionPrompt": "Create a comprehensive DAG-based workflow engine from the existing foundation. The workflow domain exists with basic pipeline/run structures. Build: 1) DAG definition schema and validation, 2) Workflow parser and syntax validator, 3) Node type definitions and registry, 4) Edge connection and dependency management, 5) Workflow state machine, 6) Pipeline execution planning, 7) Error handling and validation framework, 8) Integration with existing run tracking system.",
-      "reasoning": "High complexity system requiring DAG processing, state management, and validation. Basic workflow structures exist but core engine missing. Complex algorithms needed."
+      "complexityScore": 8,
+      "recommendedSubtasks": 10,
+      "expansionPrompt": "Create workflow engine with: 1) DAG data structure implementation with cycle detection, 2) Workflow schema definition using JSONB for flexibility, 3) Parser for workflow definitions with validation, 4) Node type system with extensible interfaces, 5) Edge connections with dependency tracking, 6) Workflow state machine implementation, 7) Serialization/deserialization for persistence, 8) Workflow validation and error reporting, 9) Integration with existing Pipeline/Run database models, 10) Comprehensive unit tests for DAG operations. Build on existing workflows package (538 occurrences of workflow/pipeline).",
+      "reasoning": "High complexity for building execution engine from scratch. Existing workflows package has basic pipeline CRUD but lacks DAG implementation, execution engine, and state management. Requires complex graph algorithms and state machine design."
     },
     {
       "taskId": 5,
       "taskTitle": "Implement execution runtime",
       "complexityScore": 8,
-      "recommendedSubtasks": 7,
-      "expansionPrompt": "Build robust workflow execution runtime with monitoring and recovery. Leverage existing run tracking structures. Implement: 1) Execution lifecycle management, 2) Real-time state tracking and persistence, 3) Error handling and retry mechanisms, 4) Parallel execution coordination, 5) Execution history and audit logging, 6) Resource management and cleanup, 7) Integration with monitoring systems.",
-      "reasoning": "Complex runtime system requiring concurrency, state management, and error recovery. Existing run structures provide foundation but execution logic missing."
+      "recommendedSubtasks": 9,
+      "expansionPrompt": "Build execution runtime: 1) Execution context and state management, 2) Workflow executor with step orchestration, 3) State persistence to database during execution, 4) Error handling with configurable retry policies, 5) Execution monitoring and progress tracking, 6) Parallel execution support for independent nodes, 7) Execution history and audit logging, 8) Resource management and cleanup, 9) Integration tests with real workflows. Extend existing Run model and integrate with Redis queue system.",
+      "reasoning": "High complexity requiring concurrent execution, state management, and error recovery. Must integrate with existing queue_redis.go and Run database model. Complex orchestration logic with parallel execution and proper resource cleanup."
     },
     {
       "taskId": 6,
       "taskTitle": "Create tool registry system",
       "complexityScore": 6,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Build tool management system leveraging existing tool domain structures. The database models and handlers exist. Implement: 1) Tool definition schema and validation, 2) Tool registration and versioning, 3) Dependency resolution system, 4) Tool marketplace and discovery, 5) Tool testing and validation framework.",
-      "reasoning": "Medium complexity with existing tool domain foundation. Database models present but registry logic and versioning system needed."
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Implement tool registry: 1) Tool definition schema and validation, 2) Tool registration API and storage, 3) Version management system with semantic versioning, 4) Dependency resolution algorithm, 5) Tool marketplace data model and APIs, 6) Tool validation and testing framework, 7) Documentation generation for registered tools. Integrate with existing Tool database model and workflow engine.",
+      "reasoning": "Moderate complexity with existing Tool database model. Main challenges are versioning system, dependency resolution, and creating extensible tool interface that integrates with workflow engine."
     },
     {
       "taskId": 7,
       "taskTitle": "Build AI gateway service",
       "complexityScore": 7,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Create unified AI provider interface building on existing LLM package. The codebase has OpenAI and Ollama integrations. Extend to: 1) Add Claude/Anthropic provider integration, 2) Implement intelligent routing and load balancing, 3) Add request/response caching with Redis, 4) Cost tracking and optimization, 5) Fallback and retry mechanisms, 6) Rate limiting and quota management.",
-      "reasoning": "Good foundation exists with LLM package and OpenAI integration. Medium-high complexity due to multi-provider routing and optimization features."
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Create AI gateway: 1) Unified provider interface abstraction, 2) OpenAI integration with streaming support, 3) Anthropic Claude integration with proper error handling, 4) Intelligent routing logic based on cost/performance metrics, 5) Request/response caching with Redis, 6) Rate limiting and quota management, 7) Fallback mechanisms for provider failures, 8) Monitoring and cost tracking. Extend existing llm package (103 occurrences) with OpenAI client already present.",
+      "reasoning": "Moderately high complexity with existing LLM package foundation including OpenAI and Ollama. Need to add Anthropic, implement routing logic, caching layer, and proper fallback mechanisms. Cost tracking and monitoring add complexity."
     },
     {
       "taskId": 8,
       "taskTitle": "Implement prompt template engine",
       "complexityScore": 5,
-      "recommendedSubtasks": 4,
-      "expansionPrompt": "Build prompt management system as extension to AI gateway. Implement: 1) Template storage and versioning system, 2) Parameter substitution and validation engine, 3) Prompt composition and chaining logic, 4) Template optimization and suggestions.",
-      "reasoning": "Moderate complexity template system. Can leverage existing structures and focus on template logic and parameter handling."
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Build prompt template system: 1) Template storage schema with versioning, 2) Parameter system with type validation, 3) Template rendering engine with variable substitution, 4) Prompt composition and chaining logic, 5) Optimization suggestions using best practices, 6) Integration with AI gateway service. Focus on making templates reusable across different LLM providers.",
+      "reasoning": "Moderate complexity for template system. Main challenges are designing flexible parameter system, implementing composition logic, and ensuring templates work across different AI providers. Can leverage existing storage patterns."
     },
     {
       "taskId": 9,
       "taskTitle": "Create content processing pipeline",
-      "complexityScore": 7,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Build multi-modal content processing leveraging existing content domain and storage. Content structures exist with artifact management. Implement: 1) Content ingestion and validation, 2) Multi-format processing (text, images, documents), 3) Streaming support for large files, 4) Content transformation and extraction, 5) Integration with vector embeddings (pgvector), 6) Storage optimization and cleanup.",
-      "reasoning": "Content domain exists with artifact management and storage integration. Medium-high complexity due to multi-modal processing and streaming requirements."
+      "complexityScore": 6,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Implement content pipeline: 1) Content ingestion API for multiple formats, 2) Text processing and extraction, 3) Image processing with metadata extraction, 4) Document parsing (PDF, DOCX, etc.), 5) Streaming implementation for large files, 6) Content transformation and enrichment, 7) Integration with storage service. Build on existing content package and storage infrastructure.",
+      "reasoning": "Moderate complexity with existing content service foundation. Need to add multi-modal support, implement streaming for large files, and integrate various parsing libraries. Storage integration patterns already exist."
     },
     {
       "taskId": 10,
       "taskTitle": "Build React SPA foundation",
-      "complexityScore": 4,
-      "recommendedSubtasks": 4,
-      "expansionPrompt": "Complete React platform foundation building on existing web/platform structure. The project has React setup with TypeScript and routing. Focus on: 1) State management implementation (Zustand/Redux), 2) Base layout and navigation components, 3) Authentication integration with backend, 4) API client integration and error handling.",
-      "reasoning": "React foundation already exists in web/platform with TypeScript, routing, and UI components. Lower complexity to complete the remaining foundation pieces."
+      "complexityScore": 5,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Setup React foundation: 1) Configure React Router v6 with protected routes, 2) Implement Zustand/Redux state management setup, 3) Create base layout with responsive navigation, 4) Setup authentication context and hooks, 5) Configure API client with interceptors, 6) Implement error boundary and loading states. Leverage existing platform package with React, TypeScript, and Vite already configured.",
+      "reasoning": "Moderate complexity with existing React setup in platform package. Vite, TypeScript, and TanStack Query already configured. Main work is setting up routing, state management, and base components."
     },
     {
       "taskId": 11,
       "taskTitle": "Create visual workflow editor",
       "complexityScore": 8,
-      "recommendedSubtasks": 7,
-      "expansionPrompt": "Build React Flow-based DAG editor on existing platform. The platform has @xyflow/react available. Implement: 1) React Flow integration and setup, 2) Custom node types for workflow steps, 3) Drag-and-drop functionality and node palette, 4) Edge connection and validation, 5) Node configuration panels and forms, 6) Workflow serialization/deserialization, 7) Real-time validation and error display.",
-      "reasoning": "High complexity UI requiring React Flow mastery and complex state management. Foundation exists but sophisticated editor logic needed."
+      "recommendedSubtasks": 9,
+      "expansionPrompt": "Build workflow editor: 1) React Flow integration and customization, 2) Custom node components for different workflow steps, 3) Edge rendering with connection validation, 4) Drag-and-drop from tool palette, 5) Node configuration panels with forms, 6) Workflow validation visualization, 7) Undo/redo functionality, 8) Import/export workflow definitions, 9) Real-time collaboration preparation. @xyflow/react already added as dependency.",
+      "reasoning": "High complexity for interactive DAG editor. React Flow (@xyflow/react) dependency exists but requires extensive customization for nodes, edges, validation, and configuration panels. Complex state management for undo/redo and real-time updates."
     },
     {
       "taskId": 12,
       "taskTitle": "Implement execution monitoring UI",
       "complexityScore": 6,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Build real-time monitoring dashboard on React platform. WebSocket foundations exist. Implement: 1) Execution monitoring dashboard components, 2) Real-time WebSocket integration for status updates, 3) Log streaming and filtering interface, 4) Execution metrics and progress visualization, 5) Integration with execution runtime backend.",
-      "reasoning": "WebSocket foundation exists. Medium complexity for real-time UI components and streaming log interface. Good existing platform to build on."
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Create monitoring dashboard: 1) Execution status dashboard layout, 2) WebSocket connection setup for real-time updates, 3) Log viewer component with filtering and search, 4) Execution timeline visualization, 5) Metrics display with charts, 6) Error details and debugging view, 7) Integration with notification system. Leverage existing WebSocket server infrastructure.",
+      "reasoning": "Moderate complexity with WebSocket infrastructure in place (26 occurrences in server). Need to build real-time UI components, implement efficient log streaming, and create intuitive visualizations for execution status."
     },
     {
       "taskId": 13,
       "taskTitle": "Build AI chat interface",
       "complexityScore": 6,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Create conversational interface for workflow generation on React platform. LLM integration exists. Build: 1) Chat UI components with message streaming, 2) Integration with AI gateway for conversation, 3) Natural language to workflow conversion, 4) Conversation history and context management, 5) Workflow preview and confirmation interface.",
-      "reasoning": "Chat foundations and LLM integration exist. Medium complexity for streaming chat UI and natural language processing integration."
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Implement chat interface: 1) Chat UI component with message history, 2) Message streaming implementation, 3) Natural language to workflow parser, 4) Context management for conversations, 5) Chat history persistence, 6) File upload and attachment handling, 7) Integration with AI gateway and workflow generator. Build on existing chat.go in llm package.",
+      "reasoning": "Moderate complexity with existing chat infrastructure in llm package. Need to build React components, implement streaming UI, and create NL to workflow conversion logic. WebSocket infrastructure available for real-time updates."
     },
     {
       "taskId": 14,
       "taskTitle": "Create WebSocket API",
       "complexityScore": 5,
-      "recommendedSubtasks": 4,
-      "expansionPrompt": "Complete WebSocket implementation building on existing foundation. Basic WebSocket handler exists but is incomplete. Implement: 1) WebSocket server with authentication middleware, 2) Event subscription and broadcasting system, 3) Real-time notification delivery, 4) Connection management and reconnection logic.",
-      "reasoning": "WebSocket foundation exists with basic handler. Medium complexity to complete authentication and event system. Good existing infrastructure."
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Implement WebSocket API: 1) Extend existing WebSocket server with authentication, 2) Event subscription system with topics, 3) Real-time notification delivery, 4) Presence tracking for users, 5) Collaboration features (cursor, selections), 6) Connection management with auto-reconnect. Build on existing websocket.go implementation.",
+      "reasoning": "Moderate complexity with WebSocket foundation already implemented in server/websocket.go. Need to add authentication, subscription system, and collaboration features on top of existing infrastructure."
     },
     {
       "taskId": 15,
       "taskTitle": "Implement storage service",
       "complexityScore": 5,
-      "recommendedSubtasks": 4,
-      "expansionPrompt": "Complete storage service leveraging existing storage package and artifact management. Storage interface exists. Implement: 1) S3-compatible storage configuration (MinIO/AWS), 2) Artifact upload/download with proper content types, 3) Storage quotas and organization limits, 4) Content versioning and lifecycle management.",
-      "reasoning": "Storage package and artifact domain exist with good foundation. Medium complexity for S3 integration and quota management."
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Build storage service: 1) S3/MinIO client configuration, 2) Artifact upload/download APIs, 3) Storage quota enforcement, 4) Content versioning with metadata, 5) Cleanup and retention policies, 6) Integration tests with MinIO container. Extend existing storage package (32 occurrences of storage/S3/MinIO).",
+      "reasoning": "Moderate complexity with existing storage package foundation. Need to add S3 client configuration, implement quotas and versioning on top of basic storage operations already present."
     },
     {
       "taskId": 16,
       "taskTitle": "Build workflow template library",
       "complexityScore": 4,
-      "recommendedSubtasks": 4,
-      "expansionPrompt": "Create template system building on workflow and tool foundations. Implement: 1) Template storage and categorization system, 2) Template import/export functionality, 3) Template customization and parameter interface, 4) Template sharing and marketplace features.",
-      "reasoning": "Can leverage existing workflow and tool structures. Lower complexity template management system with good foundations to build on."
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Create template library: 1) Template storage and categorization schema, 2) Template import/export functionality, 3) Template customization interface, 4) Template sharing and permissions, 5) Pre-built template examples. Leverage existing workflow and tool registry systems.",
+      "reasoning": "Lower complexity as it builds on workflow engine and tool registry. Main work is creating UI for template management and implementing sharing mechanisms. Can reuse existing patterns."
     },
     {
       "taskId": 17,
       "taskTitle": "Implement role-based access control",
       "complexityScore": 6,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Build RBAC system extending existing auth and organization structures. Member roles exist in database. Implement: 1) Role definition and permission system, 2) Resource-level access control middleware, 3) Permission checking and enforcement, 4) Role assignment and management interface, 5) Integration with existing auth middleware.",
-      "reasoning": "Auth foundation and organization membership exist. Medium complexity for permission system and middleware integration."
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Implement RBAC: 1) Role and permission schema design, 2) Permission checking middleware, 3) Resource-level access control logic, 4) Role inheritance and hierarchy, 5) Permission caching for performance, 6) Admin interface for role management, 7) Audit logging for access control. Minimal RBAC currently exists (9 occurrences in auth).",
+      "reasoning": "Moderate complexity as RBAC foundation is minimal. Need to design permission system from scratch, implement efficient checking mechanisms, and integrate throughout the application. Middleware patterns exist to follow."
     },
     {
       "taskId": 18,
       "taskTitle": "Create monitoring and logging system",
-      "complexityScore": 6,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Implement comprehensive logging building on existing logger package and structured logging. Implement: 1) Enhanced structured logging with context, 2) Log aggregation and search capabilities, 3) Audit trail system for compliance, 4) Monitoring dashboards and alerting, 5) Integration with execution and auth systems.",
-      "reasoning": "Logger package exists with structured logging foundation. Medium complexity for aggregation, search, and audit trail features."
+      "complexityScore": 5,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Build monitoring system: 1) Structured logging setup with log levels, 2) Log aggregation pipeline, 3) Search and query interface, 4) Audit trail implementation, 5) Monitoring dashboards with Grafana, 6) Alert rules and notifications. Grafana and Loki deployments exist in Helm charts.",
+      "reasoning": "Moderate complexity with monitoring infrastructure (Grafana, Loki) already defined in Helm charts. Need to implement application-level logging, create dashboards, and set up aggregation pipeline."
     },
     {
       "taskId": 19,
       "taskTitle": "Build cost tracking and optimization",
-      "complexityScore": 6,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Create cost management system for AI usage building on LLM integration. Implement: 1) AI API cost tracking and metering, 2) Workflow cost estimation and budgeting, 3) Cost optimization recommendations, 4) Billing and usage reporting, 5) Cost alerts and limits.",
-      "reasoning": "LLM integration provides foundation for cost tracking. Medium complexity for metering, estimation, and reporting features."
+      "complexityScore": 5,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Implement cost tracking: 1) Cost tracking for each AI provider, 2) Usage metrics collection, 3) Cost estimation for workflows, 4) Optimization recommendations engine, 5) Billing reports and dashboards, 6) Budget alerts and limits. Integrate with AI gateway service for usage data.",
+      "reasoning": "Moderate complexity requiring integration with AI gateway to track usage. Need to implement cost models for different providers, create estimation logic, and build reporting infrastructure."
     },
     {
       "taskId": 20,
       "taskTitle": "Implement scheduling and triggers",
-      "complexityScore": 7,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Build scheduling system extending workflow execution runtime. Redis queue infrastructure exists. Implement: 1) Cron-based scheduler with persistence, 2) Webhook trigger system and validation, 3) Event-based triggers and pub/sub integration, 4) Schedule management interface, 5) Timezone handling and DST support, 6) Integration with workflow execution engine.",
-      "reasoning": "Good foundation with Redis queue and workflow runtime. Medium-high complexity for cron scheduling, webhooks, and timezone handling."
+      "complexityScore": 6,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Build scheduling system: 1) Cron expression parser and validator, 2) Schedule storage and management, 3) Schedule execution engine, 4) Webhook trigger endpoints, 5) Event-based trigger system, 6) Timezone handling, 7) Schedule management UI. Some trigger references exist (257 occurrences) but no implementation.",
+      "reasoning": "Moderate complexity for building scheduling engine from scratch. Cron parsing, timezone handling, and reliable execution are challenging. Need to integrate with workflow execution runtime."
     },
     {
       "taskId": 21,
       "taskTitle": "Create API documentation and SDK",
-      "complexityScore": 3,
-      "recommendedSubtasks": 3,
-      "expansionPrompt": "Generate comprehensive API documentation building on existing OpenAPI specification. OpenAPI 3.1 spec exists with comprehensive schemas. Implement: 1) Interactive API documentation generation and hosting, 2) TypeScript SDK generation and testing, 3) Code examples and integration tutorials.",
-      "reasoning": "OpenAPI spec is comprehensive and well-structured. Lower complexity as most work is code generation and documentation hosting."
+      "complexityScore": 4,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Generate documentation and SDK: 1) Generate OpenAPI 3.1 spec from code, 2) Setup Swagger UI or similar for interactive docs, 3) Generate TypeScript SDK using OpenAPI generator, 4) Create code examples and tutorials, 5) Setup documentation site. OpenAPI spec exists, docs endpoint exists at /docs.",
+      "reasoning": "Lower complexity as OpenAPI infrastructure exists with spec at api/openapi.yaml and docs endpoint configured. Main work is generating SDK and creating examples. Can use existing code generation patterns."
     },
     {
       "taskId": 22,
       "taskTitle": "Build testing infrastructure",
-      "complexityScore": 4,
-      "recommendedSubtasks": 4,
-      "expansionPrompt": "Complete testing infrastructure building on existing test foundation. Good test patterns exist in auth domain. Implement: 1) Comprehensive unit test coverage expansion, 2) Integration test suite with testcontainers, 3) E2E testing with Playwright (already configured), 4) CI/CD pipeline optimization and test automation.",
-      "reasoning": "Strong testing foundation exists with good patterns, testcontainers, and Playwright setup. Lower complexity to expand coverage and optimize CI/CD."
+      "complexityScore": 6,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Setup testing infrastructure: 1) Complete unit test setup with mocks, 2) Integration test suite with testcontainers, 3) E2E tests with Playwright setup, 4) GitHub Actions CI pipeline, 5) Coverage reporting and thresholds, 6) Test data fixtures and factories, 7) Performance benchmarks. Testcontainers and basic test structure exist.",
+      "reasoning": "Moderate complexity with testing foundation in place including testcontainers, mock patterns, and test-coverage.yml GitHub Action. Need to expand coverage, add E2E tests, and complete CI/CD pipeline."
     },
     {
       "taskId": 23,
       "taskTitle": "Implement deployment infrastructure",
-      "complexityScore": 3,
-      "recommendedSubtasks": 3,
-      "expansionPrompt": "Complete deployment infrastructure leveraging existing Helm charts and Kubernetes manifests. Comprehensive deployment structure exists in deployments/helm/. Implement: 1) Helm chart optimization and configuration management, 2) Auto-scaling policies and resource optimization, 3) Blue-green deployment automation and rollback procedures.",
-      "reasoning": "Deployment infrastructure largely complete with Helm charts and Kubernetes manifests. Lower complexity to optimize and add advanced deployment features."
+      "complexityScore": 7,
+      "recommendedSubtasks": 8,
+      "expansionPrompt": "Setup Kubernetes deployment: 1) Review and update existing Helm charts, 2) Configure horizontal pod autoscaling, 3) Setup Prometheus monitoring integration, 4) Implement blue-green deployment strategy, 5) Configure ingress and TLS, 6) Setup secrets management, 7) Create production values files, 8) Document deployment procedures. Extensive Helm charts exist (167 K8s references).",
+      "reasoning": "Moderately high complexity but significant Kubernetes/Helm infrastructure already exists with complete charts for all components. Need to refine configurations, add production features like autoscaling and blue-green deployments."
     },
     {
       "taskId": 24,
       "taskTitle": "Create onboarding and documentation",
       "complexityScore": 4,
-      "recommendedSubtasks": 4,
-      "expansionPrompt": "Build user onboarding system on React platform foundation. UI components and routing exist. Implement: 1) Interactive onboarding tutorial components, 2) Comprehensive user documentation and guides, 3) In-app help system and tooltips, 4) Video tutorial creation and integration.",
-      "reasoning": "React platform provides good foundation for onboarding UI. Medium complexity for tutorial system and comprehensive documentation."
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Build onboarding experience: 1) Interactive onboarding flow with steps, 2) User guide and documentation site, 3) In-app contextual help system, 4) Video tutorial creation, 5) Sample workflows and templates. Focus on first-time user experience.",
+      "reasoning": "Lower complexity focused on content creation and UI work. Can leverage existing component library and documentation patterns. Main effort is content creation and user flow design."
     },
     {
       "taskId": 25,
       "taskTitle": "Implement performance optimization",
-      "complexityScore": 7,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Optimize system performance across all components building on existing Redis caching and database infrastructure. Implement: 1) Database query optimization and indexing analysis, 2) Redis caching strategy enhancement, 3) API response optimization and compression, 4) Frontend performance optimization, 5) Profiling and monitoring integration, 6) Load testing and benchmarking.",
-      "reasoning": "Complex optimization task requiring analysis across entire stack. Good caching and database foundation exists but comprehensive optimization needed."
+      "complexityScore": 6,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Optimize system performance: 1) Database query analysis and index optimization, 2) Implement Redis caching strategies, 3) Query optimization with EXPLAIN analysis, 4) API response caching, 5) Frontend bundle optimization, 6) Performance profiling and bottleneck identification, 7) Load testing and benchmarks. Redis infrastructure exists.",
+      "reasoning": "Moderate complexity requiring systematic performance analysis. Redis caching infrastructure exists. Need to profile application, identify bottlenecks, and implement targeted optimizations across stack."
     },
     {
       "taskId": 26,
       "taskTitle": "Complete OpenAPI codegen system",
-      "complexityScore": 2,
-      "recommendedSubtasks": 2,
-      "expansionPrompt": "The comprehensive codegen system already exists and is fully implemented in internal/codegen/. The system generates all required boilerplate from OpenAPI specs including repositories, handlers, cache interfaces, events, and adapters. Focus on: 1) Validation that all generation features are working correctly, 2) Documentation and examples for using the existing system.",
-      "reasoning": "The codegen system is already complete and comprehensive. Very low complexity as the implementation exists with repository interfaces, cache systems, event publishers, and all described features."
+      "complexityScore": 8,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Complete codegen system: 1) Validate and test existing repository generation (issues found with hardcoded entities), 2) Fix repository templates for generic entity support, 3) Test cache interface generation, 4) Validate event system generation, 5) Test HTTP handler generation, 6) Implement domain auto-detection from tags, 7) Create comprehensive documentation. Repository generation has critical template issues requiring refactoring.",
+      "reasoning": "High complexity with partially working codegen system. Repository templates are hardcoded for specific entities (User/Session/Account) and need complete refactoring. Event and cache generation appear functional. Multiple subtasks already in progress."
+    },
+    {
+      "taskId": 27,
+      "taskTitle": "Fix failing tests and ensure all tests pass",
+      "complexityScore": 5,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Fix test failures: 1) Fix auth domain mock usage and type mismatches, 2) Resolve organizations domain type assertions, 3) Update mock generation configuration, 4) Fix any circular dependencies, 5) Address race conditions in tests, 6) Achieve full test suite passing. Focus on auth and organizations domains first.",
+      "reasoning": "Moderate complexity focusing on fixing existing test failures rather than writing new tests. Mock generation issues and type mismatches need resolution. Test infrastructure exists but needs corrections."
+    },
+    {
+      "taskId": 28,
+      "taskTitle": "Create GitHub Action for automated test coverage reporting",
+      "complexityScore": 4,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Setup coverage reporting: 1) Extend test-coverage.yml workflow with coverage analysis, 2) Create markdown report generator script, 3) Implement PR comment bot for coverage feedback, 4) Add coverage threshold checks, 5) Setup HTML report artifacts. Basic test-coverage.yml exists.",
+      "reasoning": "Lower complexity as test-coverage.yml GitHub Action already exists. Need to add coverage analysis, report generation, and PR commenting functionality using existing GitHub Actions patterns."
     }
   ]
 }

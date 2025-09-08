@@ -42,6 +42,7 @@ After quick init:
    ```
 
 3. Or create first task:
+
    ```
    /project:tm/add-task create initial setup
    ```

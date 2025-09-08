@@ -30,17 +30,19 @@ archesai tui --chat
 archesai tui --chat --provider=ollama
 ```
 
-For detailed installation and setup instructions, see [Development Guide](docs/DEVELOPMENT.md).
+For detailed installation and setup instructions, see [Development Guide](docs/guides/development.md).
 
 ## Documentation
 
 ### Core Documentation
 
-- [Terminal UI (TUI)](docs/TUI.md) - Configuration viewer and AI chat interface
+- [Terminal UI (TUI)](docs/features/tui.md) - Configuration viewer and AI chat interface
 - [API Reference](api/openapi.yaml) - OpenAPI specification
-- [Development Guide](docs/DEVELOPMENT.md) - Setup, build, and contribution guide
-- [Architecture](docs/ARCHITECTURE.md) - System design and patterns
-- [Contributing](docs/CONTRIBUTING.md) - How to contribute
+- [Development Guide](docs/guides/development.md) - Setup, build, and contribution guide
+- [Architecture](docs/architecture/system-design.md) - System design and patterns
+- [Contributing](docs/contributing.md) - How to contribute
+- [Project Layout](docs/architecture/project-layout.md) - Directory structure and organization
+- [Makefile Commands](docs/guides/makefile-commands.md) - Complete command reference
 
 ### Packages
 
@@ -82,7 +84,7 @@ make dev             # Start backend server
 pnpm dev:platform    # Start frontend
 ```
 
-For detailed development instructions, see [Development Guide](docs/DEVELOPMENT.md).
+For detailed development instructions, see [Development Guide](docs/guides/development.md).
 
 ## License
 
@@ -90,5 +92,5 @@ See [LICENSE](LICENSE) file for details.
 
 ## Support
 
-- Email: support@archesai.com
-- Issues: https://github.com/archesai/archesai/issues
+- Email: <support@archesai.com>
+- Issues: <https://github.com/archesai/archesai/issues>
