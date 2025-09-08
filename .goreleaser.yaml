@@ -14,7 +14,7 @@ env:
 
 builds:
   - binary: "{{ .ProjectName }}"
-    main: ./cmd/api
+    main: ./cmd/archesai
     goos:
       - darwin
       - linux

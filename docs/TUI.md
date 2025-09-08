@@ -89,7 +89,7 @@ archesai tui --chat --provider=ollama --model=llama2
 
 ### Basic Usage
 
-See [examples/tui.go](../docs/examples/tui.go) for complete working examples.
+The TUI provides interactive prompts and feedback for all operations.
 
 ### Basic Usage Example
 
