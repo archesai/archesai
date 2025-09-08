@@ -7,25 +7,29 @@ package postgresql
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const createPipelineStep = `-- name: CreatePipelineStep :one
 INSERT INTO pipeline_step (
+    id,
     pipeline_id,
     tool_id
 ) VALUES (
-    $1, $2
+    $1, $2, $3
 )
 RETURNING id, created_at, updated_at, pipeline_id, tool_id
 `
 
 type CreatePipelineStepParams struct {
-	PipelineId string `json:"pipeline_id"`
-	ToolId     string `json:"tool_id"`
+	Id         uuid.UUID
+	PipelineId uuid.UUID
+	ToolId     uuid.UUID
 }
 
 func (q *Queries) CreatePipelineStep(ctx context.Context, arg CreatePipelineStepParams) (PipelineStep, error) {
-	row := q.db.QueryRow(ctx, createPipelineStep, arg.PipelineId, arg.ToolId)
+	row := q.db.QueryRow(ctx, createPipelineStep, arg.Id, arg.PipelineId, arg.ToolId)
 	var i PipelineStep
 	err := row.Scan(
 		&i.Id,
@@ -42,7 +46,7 @@ DELETE FROM pipeline_step
 WHERE id = $1
 `
 
-func (q *Queries) DeletePipelineStep(ctx context.Context, id string) error {
+func (q *Queries) DeletePipelineStep(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deletePipelineStep, id)
 	return err
 }
@@ -52,7 +56,7 @@ DELETE FROM pipeline_step
 WHERE pipeline_id = $1
 `
 
-func (q *Queries) DeletePipelineStepsByPipeline(ctx context.Context, pipelineID string) error {
+func (q *Queries) DeletePipelineStepsByPipeline(ctx context.Context, pipelineID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deletePipelineStepsByPipeline, pipelineID)
 	return err
 }
@@ -62,7 +66,7 @@ SELECT id, created_at, updated_at, pipeline_id, tool_id FROM pipeline_step
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetPipelineStep(ctx context.Context, id string) (PipelineStep, error) {
+func (q *Queries) GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineStep, error) {
 	row := q.db.QueryRow(ctx, getPipelineStep, id)
 	var i PipelineStep
 	err := row.Scan(
@@ -82,8 +86,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListPipelineStepsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListPipelineSteps(ctx context.Context, arg ListPipelineStepsParams) ([]PipelineStep, error) {
@@ -120,9 +124,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListPipelineStepsByPipelineParams struct {
-	PipelineId string `json:"pipeline_id"`
-	Limit      int32  `json:"limit"`
-	Offset     int32  `json:"offset"`
+	PipelineId uuid.UUID
+	Limit      int32
+	Offset     int32
 }
 
 func (q *Queries) ListPipelineStepsByPipeline(ctx context.Context, arg ListPipelineStepsByPipelineParams) ([]PipelineStep, error) {
@@ -159,9 +163,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListPipelineStepsByToolParams struct {
-	ToolId string `json:"tool_id"`
-	Limit  int32  `json:"limit"`
-	Offset int32  `json:"offset"`
+	ToolId uuid.UUID
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListPipelineStepsByTool(ctx context.Context, arg ListPipelineStepsByToolParams) ([]PipelineStep, error) {
@@ -199,8 +203,8 @@ RETURNING id, created_at, updated_at, pipeline_id, tool_id
 `
 
 type UpdatePipelineStepParams struct {
-	Id     string  `json:"id"`
-	ToolId *string `json:"tool_id"`
+	Id     uuid.UUID
+	ToolId *uuid.UUID
 }
 
 func (q *Queries) UpdatePipelineStep(ctx context.Context, arg UpdatePipelineStepParams) (PipelineStep, error) {

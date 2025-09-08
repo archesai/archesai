@@ -1,9 +1,10 @@
 -- name: CreatePipelineStep :one
 INSERT INTO pipeline_step (
+    id,
     pipeline_id,
     tool_id
 ) VALUES (
-    $1, $2
+    $1, $2, $3
 )
 RETURNING *;
 

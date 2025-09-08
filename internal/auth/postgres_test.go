@@ -237,12 +237,12 @@ func TestPostgresRepository_SessionOperations(t *testing.T) {
 	t.Run("CreateSession", func(t *testing.T) {
 		session := &Session{
 			Id:                   uuid.New(),
-			UserId:               user.Id.String(),
+			UserId:               user.Id,
 			Token:                "test-token",
 			ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
 			CreatedAt:            time.Now(),
 			UpdatedAt:            time.Now(),
-			ActiveOrganizationId: "",
+			ActiveOrganizationId: uuid.Nil,
 			IpAddress:            "192.168.1.1",
 			UserAgent:            "TestAgent/1.0",
 		}
@@ -261,12 +261,12 @@ func TestPostgresRepository_SessionOperations(t *testing.T) {
 		token := "unique-token"
 		session := &Session{
 			Id:                   uuid.New(),
-			UserId:               user.Id.String(),
+			UserId:               user.Id,
 			Token:                token,
 			ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
 			CreatedAt:            time.Now(),
 			UpdatedAt:            time.Now(),
-			ActiveOrganizationId: "",
+			ActiveOrganizationId: uuid.Nil,
 			IpAddress:            "192.168.1.1",
 			UserAgent:            "TestAgent/1.0",
 		}
@@ -290,12 +290,12 @@ func TestPostgresRepository_SessionOperations(t *testing.T) {
 		// Create an expired session
 		expiredSession := &Session{
 			Id:                   uuid.New(),
-			UserId:               user.Id.String(),
+			UserId:               user.Id,
 			Token:                "expired-token",
 			ExpiresAt:            time.Now().Add(-time.Hour).Format(time.RFC3339), // Expired
 			CreatedAt:            time.Now(),
 			UpdatedAt:            time.Now(),
-			ActiveOrganizationId: "",
+			ActiveOrganizationId: uuid.Nil,
 			IpAddress:            "192.168.1.1",
 			UserAgent:            "TestAgent/1.0",
 		}
@@ -337,12 +337,12 @@ func TestPostgresRepository_SessionOperations(t *testing.T) {
 		for i := 0; i < 3; i++ {
 			session := &Session{
 				Id:                   uuid.New(),
-				UserId:               testUser.Id.String(),
+				UserId:               testUser.Id,
 				Token:                fmt.Sprintf("user-token-%d", i),
 				ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
 				CreatedAt:            time.Now(),
 				UpdatedAt:            time.Now(),
-				ActiveOrganizationId: "",
+				ActiveOrganizationId: uuid.Nil,
 				IpAddress:            "192.168.1.1",
 				UserAgent:            "TestAgent/1.0",
 			}

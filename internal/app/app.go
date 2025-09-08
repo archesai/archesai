@@ -16,6 +16,7 @@ import (
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/database/sqlite"
 	"github.com/archesai/archesai/internal/health"
+	"github.com/archesai/archesai/internal/migrations"
 	"github.com/archesai/archesai/internal/organizations"
 	"github.com/archesai/archesai/internal/server"
 	"github.com/archesai/archesai/internal/workflows"
@@ -108,7 +109,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 
 	// Run migrations if enabled
 	if cfg.Database.RunMigrations {
-		if err := database.RunMigrations(db, logger); err != nil {
+		if err := migrations.RunMigrations(db, logger); err != nil {
 			logger.Error("failed to run migrations", "error", err)
 			isProduction := cfg.Api.Environment == "production"
 			if isProduction {

@@ -536,9 +536,9 @@ helm install redis bitnami/redis \
   --set auth.enabled=false
 
 # Install ArchesAI
-helm install archesai ./helm/archesai \
+helm install archesai ./deployments/helm/arches \
   --namespace archesai \
-  --values ./helm/archesai/values.yaml
+  --values ./deployments/helm/arches/values.yaml
 ```
 
 ## Cloud Deployments

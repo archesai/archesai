@@ -1,5 +1,6 @@
 -- name: CreateAccount :one
 INSERT INTO account (
+    id,
     user_id,
     provider_id,
     account_id,
@@ -11,7 +12,7 @@ INSERT INTO account (
     id_token,
     password
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
 )
 RETURNING *;
 

@@ -7,31 +7,36 @@ package postgresql
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const createTool = `-- name: CreateTool :one
 INSERT INTO tool (
+    id,
     organization_id,
     name,
     description,
     input_mime_type,
     output_mime_type
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 )
 RETURNING id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
 `
 
 type CreateToolParams struct {
-	OrganizationId string `json:"organization_id"`
-	Name           string `json:"name"`
-	Description    string `json:"description"`
-	InputMimeType  string `json:"input_mime_type"`
-	OutputMimeType string `json:"output_mime_type"`
+	Id             uuid.UUID
+	OrganizationId uuid.UUID
+	Name           string
+	Description    string
+	InputMimeType  string
+	OutputMimeType string
 }
 
 func (q *Queries) CreateTool(ctx context.Context, arg CreateToolParams) (Tool, error) {
 	row := q.db.QueryRow(ctx, createTool,
+		arg.Id,
 		arg.OrganizationId,
 		arg.Name,
 		arg.Description,
@@ -57,7 +62,7 @@ DELETE FROM tool
 WHERE id = $1
 `
 
-func (q *Queries) DeleteTool(ctx context.Context, id string) error {
+func (q *Queries) DeleteTool(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteTool, id)
 	return err
 }
@@ -67,7 +72,7 @@ DELETE FROM tool
 WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteToolsByOrganization(ctx context.Context, organizationID string) error {
+func (q *Queries) DeleteToolsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteToolsByOrganization, organizationID)
 	return err
 }
@@ -77,7 +82,7 @@ SELECT id, created_at, updated_at, description, input_mime_type, name, organizat
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetTool(ctx context.Context, id string) (Tool, error) {
+func (q *Queries) GetTool(ctx context.Context, id uuid.UUID) (Tool, error) {
 	row := q.db.QueryRow(ctx, getTool, id)
 	var i Tool
 	err := row.Scan(
@@ -100,8 +105,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListToolsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListTools(ctx context.Context, arg ListToolsParams) ([]Tool, error) {
@@ -141,9 +146,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListToolsByOrganizationParams struct {
-	OrganizationId string `json:"organization_id"`
-	Limit          int32  `json:"limit"`
-	Offset         int32  `json:"offset"`
+	OrganizationId uuid.UUID
+	Limit          int32
+	Offset         int32
 }
 
 func (q *Queries) ListToolsByOrganization(ctx context.Context, arg ListToolsByOrganizationParams) ([]Tool, error) {
@@ -187,11 +192,11 @@ RETURNING id, created_at, updated_at, description, input_mime_type, name, organi
 `
 
 type UpdateToolParams struct {
-	Id             string  `json:"id"`
-	Name           *string `json:"name"`
-	Description    *string `json:"description"`
-	InputMimeType  *string `json:"input_mime_type"`
-	OutputMimeType *string `json:"output_mime_type"`
+	Id             uuid.UUID
+	Name           *string
+	Description    *string
+	InputMimeType  *string
+	OutputMimeType *string
 }
 
 func (q *Queries) UpdateTool(ctx context.Context, arg UpdateToolParams) (Tool, error) {

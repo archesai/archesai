@@ -7,27 +7,36 @@ package postgresql
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const createPipeline = `-- name: CreatePipeline :one
 INSERT INTO pipeline (
+    id,
     organization_id,
     name,
     description
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 )
 RETURNING id, created_at, updated_at, description, name, organization_id
 `
 
 type CreatePipelineParams struct {
-	OrganizationId string  `json:"organization_id"`
-	Name           *string `json:"name"`
-	Description    *string `json:"description"`
+	Id             uuid.UUID
+	OrganizationId uuid.UUID
+	Name           *string
+	Description    *string
 }
 
 func (q *Queries) CreatePipeline(ctx context.Context, arg CreatePipelineParams) (Pipeline, error) {
-	row := q.db.QueryRow(ctx, createPipeline, arg.OrganizationId, arg.Name, arg.Description)
+	row := q.db.QueryRow(ctx, createPipeline,
+		arg.Id,
+		arg.OrganizationId,
+		arg.Name,
+		arg.Description,
+	)
 	var i Pipeline
 	err := row.Scan(
 		&i.Id,
@@ -45,7 +54,7 @@ DELETE FROM pipeline
 WHERE id = $1
 `
 
-func (q *Queries) DeletePipeline(ctx context.Context, id string) error {
+func (q *Queries) DeletePipeline(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deletePipeline, id)
 	return err
 }
@@ -55,7 +64,7 @@ DELETE FROM pipeline
 WHERE organization_id = $1
 `
 
-func (q *Queries) DeletePipelinesByOrganization(ctx context.Context, organizationID string) error {
+func (q *Queries) DeletePipelinesByOrganization(ctx context.Context, organizationID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deletePipelinesByOrganization, organizationID)
 	return err
 }
@@ -65,7 +74,7 @@ SELECT id, created_at, updated_at, description, name, organization_id FROM pipel
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetPipeline(ctx context.Context, id string) (Pipeline, error) {
+func (q *Queries) GetPipeline(ctx context.Context, id uuid.UUID) (Pipeline, error) {
 	row := q.db.QueryRow(ctx, getPipeline, id)
 	var i Pipeline
 	err := row.Scan(
@@ -86,8 +95,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListPipelinesParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListPipelines(ctx context.Context, arg ListPipelinesParams) ([]Pipeline, error) {
@@ -125,9 +134,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListPipelinesByOrganizationParams struct {
-	OrganizationId string `json:"organization_id"`
-	Limit          int32  `json:"limit"`
-	Offset         int32  `json:"offset"`
+	OrganizationId uuid.UUID
+	Limit          int32
+	Offset         int32
 }
 
 func (q *Queries) ListPipelinesByOrganization(ctx context.Context, arg ListPipelinesByOrganizationParams) ([]Pipeline, error) {
@@ -167,9 +176,9 @@ RETURNING id, created_at, updated_at, description, name, organization_id
 `
 
 type UpdatePipelineParams struct {
-	Id          string  `json:"id"`
-	Name        *string `json:"name"`
-	Description *string `json:"description"`
+	Id          uuid.UUID
+	Name        *string
+	Description *string
 }
 
 func (q *Queries) UpdatePipeline(ctx context.Context, arg UpdatePipelineParams) (Pipeline, error) {

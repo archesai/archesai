@@ -4,7 +4,7 @@
 // The package includes:
 // - Database abstraction layer supporting PostgreSQL and SQLite
 // - Type-safe query generation using sqlc
-// - Database migrations using golang-migrate
+// - Database migrations using goose
 // - Connection pooling and health checks
 // - Transaction management
 package database
@@ -26,6 +26,18 @@ const (
 	TypePostgreSQL Type = "postgresql" // PostgreSQL database
 	TypeSQLite     Type = "sqlite"     // SQLite database
 )
+
+// String converts Type to string
+func (t Type) String() string {
+	switch t {
+	case TypePostgreSQL:
+		return "postgresql"
+	case TypeSQLite:
+		return "sqlite"
+	default:
+		return "unknown"
+	}
+}
 
 // Database defines the common interface for all database implementations
 type Database interface {

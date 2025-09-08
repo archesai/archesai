@@ -5,15 +5,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file" // Required for file-based migrations
 	"github.com/jackc/pgx/v5/pgxpool"
-	_ "github.com/lib/pq" // PostgreSQL driver for database/sql
+	_ "github.com/jackc/pgx/v5/stdlib" // PostgreSQL driver for database/sql
+	"github.com/pressly/goose/v3"
 	"github.com/redis/go-redis/v9"
 	"github.com/testcontainers/testcontainers-go"
 	tcpostgres "github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -80,30 +79,24 @@ func StartPostgresContainer(ctx context.Context, t *testing.T) *PostgresContaine
 
 // RunMigrations runs database migrations on the test database
 func (pc *PostgresContainer) RunMigrations(migrationsPath string) error {
-	db, err := sql.Open("postgres", pc.DSN)
+	db, err := sql.Open("pgx", pc.DSN)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
 	defer func() { _ = db.Close() }()
 
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
-	if err != nil {
-		return fmt.Errorf("failed to create migration driver: %w", err)
+	// Set environment variables for PostgreSQL
+	_ = os.Setenv("TIMESTAMP_TYPE", "TIMESTAMPTZ")
+	_ = os.Setenv("TIMESTAMP_DEFAULT", "CURRENT_TIMESTAMP")
+	_ = os.Setenv("REAL_TYPE", "DOUBLE PRECISION")
+
+	// Set goose dialect
+	if err := goose.SetDialect("postgres"); err != nil {
+		return fmt.Errorf("failed to set dialect: %w", err)
 	}
 
-	absPath, err := filepath.Abs(migrationsPath)
-	if err != nil {
-		return fmt.Errorf("failed to get absolute path: %w", err)
-	}
-
-	m, err := migrate.NewWithDatabaseInstance(
-		"file://"+absPath,
-		"postgres", driver)
-	if err != nil {
-		return fmt.Errorf("failed to create migration instance: %w", err)
-	}
-
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+	// Run migrations
+	if err := goose.Up(db, migrationsPath); err != nil {
 		return fmt.Errorf("failed to run migrations: %w", err)
 	}
 

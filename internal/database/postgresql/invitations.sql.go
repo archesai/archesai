@@ -9,11 +9,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createInvitation = `-- name: CreateInvitation :one
 INSERT INTO invitation (
+    id,
     organization_id,
     inviter_id,
     email,
@@ -21,22 +22,24 @@ INSERT INTO invitation (
     expires_at,
     status
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 )
 RETURNING id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
 `
 
 type CreateInvitationParams struct {
-	OrganizationId string    `json:"organization_id"`
-	InviterId      string    `json:"inviter_id"`
-	Email          string    `json:"email"`
-	Role           Role      `json:"role"`
-	ExpiresAt      time.Time `json:"expires_at"`
-	Status         string    `json:"status"`
+	Id             uuid.UUID
+	OrganizationId uuid.UUID
+	InviterId      uuid.UUID
+	Email          string
+	Role           string
+	ExpiresAt      time.Time
+	Status         string
 }
 
 func (q *Queries) CreateInvitation(ctx context.Context, arg CreateInvitationParams) (Invitation, error) {
 	row := q.db.QueryRow(ctx, createInvitation,
+		arg.Id,
 		arg.OrganizationId,
 		arg.InviterId,
 		arg.Email,
@@ -64,7 +67,7 @@ DELETE FROM invitation
 WHERE id = $1
 `
 
-func (q *Queries) DeleteInvitation(ctx context.Context, id string) error {
+func (q *Queries) DeleteInvitation(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteInvitation, id)
 	return err
 }
@@ -74,7 +77,7 @@ DELETE FROM invitation
 WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteInvitationsByOrganization(ctx context.Context, organizationID string) error {
+func (q *Queries) DeleteInvitationsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteInvitationsByOrganization, organizationID)
 	return err
 }
@@ -84,7 +87,7 @@ SELECT id, created_at, updated_at, email, expires_at, inviter_id, organization_i
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetInvitation(ctx context.Context, id string) (Invitation, error) {
+func (q *Queries) GetInvitation(ctx context.Context, id uuid.UUID) (Invitation, error) {
 	row := q.db.QueryRow(ctx, getInvitation, id)
 	var i Invitation
 	err := row.Scan(
@@ -107,8 +110,8 @@ WHERE organization_id = $1 AND email = $2 LIMIT 1
 `
 
 type GetInvitationByEmailParams struct {
-	OrganizationId string `json:"organization_id"`
-	Email          string `json:"email"`
+	OrganizationId uuid.UUID
+	Email          string
 }
 
 func (q *Queries) GetInvitationByEmail(ctx context.Context, arg GetInvitationByEmailParams) (Invitation, error) {
@@ -135,8 +138,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListInvitationsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListInvitations(ctx context.Context, arg ListInvitationsParams) ([]Invitation, error) {
@@ -177,9 +180,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListInvitationsByInviterParams struct {
-	InviterId string `json:"inviter_id"`
-	Limit     int32  `json:"limit"`
-	Offset    int32  `json:"offset"`
+	InviterId uuid.UUID
+	Limit     int32
+	Offset    int32
 }
 
 func (q *Queries) ListInvitationsByInviter(ctx context.Context, arg ListInvitationsByInviterParams) ([]Invitation, error) {
@@ -220,9 +223,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListInvitationsByOrganizationParams struct {
-	OrganizationId string `json:"organization_id"`
-	Limit          int32  `json:"limit"`
-	Offset         int32  `json:"offset"`
+	OrganizationId uuid.UUID
+	Limit          int32
+	Offset         int32
 }
 
 func (q *Queries) ListInvitationsByOrganization(ctx context.Context, arg ListInvitationsByOrganizationParams) ([]Invitation, error) {
@@ -268,11 +271,11 @@ RETURNING id, created_at, updated_at, email, expires_at, inviter_id, organizatio
 `
 
 type UpdateInvitationParams struct {
-	Id        string             `json:"id"`
-	Email     *string            `json:"email"`
-	Role      NullRole           `json:"role"`
-	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
-	Status    *string            `json:"status"`
+	Id        uuid.UUID
+	Email     *string
+	Role      *string
+	ExpiresAt *time.Time
+	Status    *string
 }
 
 func (q *Queries) UpdateInvitation(ctx context.Context, arg UpdateInvitationParams) (Invitation, error) {

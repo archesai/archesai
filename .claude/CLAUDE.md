@@ -7,6 +7,7 @@ make generate         # Run after API/SQL changes
 make lint            # Check code quality
 make dev             # Start backend server
 pnpm dev:platform    # Start frontend
+make format          # Format code
 ```
 
 ## Project Conventions

@@ -1,9 +1,10 @@
 -- name: CreateLabel :one
 INSERT INTO label (
+    id,
     organization_id,
     name
 ) VALUES (
-    $1, $2
+    $1, $2, $3
 )
 RETURNING *;
 

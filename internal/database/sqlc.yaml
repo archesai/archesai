@@ -3,23 +3,37 @@ sql:
   # PostgreSQL configuration
   - engine: "postgresql"
     queries: "queries"
-    schema: "migrations/postgresql"
+    schema: "../migrations/postgresql"
     gen:
       go:
         initialisms: []
         package: "postgresql"
+        emit_pointers_for_null_types: true
         out: "postgresql"
-        emit_json_tags: true
-        emit_enum_valid_method: true
-        emit_all_enum_values: true
         sql_package: "pgx/v5"
         emit_interface: true
         overrides:
           - db_type: "uuid"
             go_type: "github.com/google/uuid.UUID"
+          - db_type: "uuid"
+            go_type: "*github.com/google/uuid.UUID"
+            nullable: true
           - db_type: "timestamptz"
             go_type: "time.Time"
-          - db_type: "text"
+          - db_type: "timestamptz"
             nullable: true
             go_type:
-              type: "*string"
+              type: "*time.Time"
+  # - engine: "sqlite"
+  #   queries: "queries"
+  #   schema: "migrations/sqlite"
+  #   gen:
+  #     go:
+  #       initialisms: []
+  #       package: "sqlite"
+  #       out: "sqlite"
+  #       emit_json_tags: true
+  #       emit_enum_valid_method: true
+  #       emit_all_enum_values: true
+  #       sql_package: "pgx/v5"
+  #       emit_interface: true

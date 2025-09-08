@@ -1,10 +1,11 @@
 -- name: CreatePipeline :one
 INSERT INTO pipeline (
+    id,
     organization_id,
     name,
     description
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 )
 RETURNING *;
 

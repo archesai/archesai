@@ -345,12 +345,13 @@ make migrate-create name=add_user_profile
 ### Migration File Structure
 
 ```sql
--- migrations/TIMESTAMP_add_user_profile.up.sql
+-- internal/migrations/postgresql/TIMESTAMP_add_user_profile.sql
+-- +goose Up
 ALTER TABLE users ADD COLUMN bio TEXT;
 ALTER TABLE users ADD COLUMN avatar_url VARCHAR(255);
 CREATE INDEX idx_users_avatar_url ON users(avatar_url);
 
--- migrations/TIMESTAMP_add_user_profile.down.sql
+-- +goose Down
 DROP INDEX IF EXISTS idx_users_avatar_url;
 ALTER TABLE users DROP COLUMN IF EXISTS avatar_url;
 ALTER TABLE users DROP COLUMN IF EXISTS bio;

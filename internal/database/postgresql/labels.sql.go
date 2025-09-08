@@ -7,25 +7,29 @@ package postgresql
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const createLabel = `-- name: CreateLabel :one
 INSERT INTO label (
+    id,
     organization_id,
     name
 ) VALUES (
-    $1, $2
+    $1, $2, $3
 )
 RETURNING id, created_at, updated_at, name, organization_id
 `
 
 type CreateLabelParams struct {
-	OrganizationId string `json:"organization_id"`
-	Name           string `json:"name"`
+	Id             uuid.UUID
+	OrganizationId uuid.UUID
+	Name           string
 }
 
 func (q *Queries) CreateLabel(ctx context.Context, arg CreateLabelParams) (Label, error) {
-	row := q.db.QueryRow(ctx, createLabel, arg.OrganizationId, arg.Name)
+	row := q.db.QueryRow(ctx, createLabel, arg.Id, arg.OrganizationId, arg.Name)
 	var i Label
 	err := row.Scan(
 		&i.Id,
@@ -42,7 +46,7 @@ DELETE FROM label
 WHERE id = $1
 `
 
-func (q *Queries) DeleteLabel(ctx context.Context, id string) error {
+func (q *Queries) DeleteLabel(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteLabel, id)
 	return err
 }
@@ -52,7 +56,7 @@ DELETE FROM label
 WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteLabelsByOrganization(ctx context.Context, organizationID string) error {
+func (q *Queries) DeleteLabelsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteLabelsByOrganization, organizationID)
 	return err
 }
@@ -62,7 +66,7 @@ SELECT id, created_at, updated_at, name, organization_id FROM label
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetLabel(ctx context.Context, id string) (Label, error) {
+func (q *Queries) GetLabel(ctx context.Context, id uuid.UUID) (Label, error) {
 	row := q.db.QueryRow(ctx, getLabel, id)
 	var i Label
 	err := row.Scan(
@@ -81,8 +85,8 @@ WHERE organization_id = $1 AND name = $2 LIMIT 1
 `
 
 type GetLabelByNameParams struct {
-	OrganizationId string `json:"organization_id"`
-	Name           string `json:"name"`
+	OrganizationId uuid.UUID
+	Name           string
 }
 
 func (q *Queries) GetLabelByName(ctx context.Context, arg GetLabelByNameParams) (Label, error) {
@@ -105,8 +109,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListLabelsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListLabels(ctx context.Context, arg ListLabelsParams) ([]Label, error) {
@@ -143,9 +147,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListLabelsByOrganizationParams struct {
-	OrganizationId string `json:"organization_id"`
-	Limit          int32  `json:"limit"`
-	Offset         int32  `json:"offset"`
+	OrganizationId uuid.UUID
+	Limit          int32
+	Offset         int32
 }
 
 func (q *Queries) ListLabelsByOrganization(ctx context.Context, arg ListLabelsByOrganizationParams) ([]Label, error) {
@@ -183,8 +187,8 @@ RETURNING id, created_at, updated_at, name, organization_id
 `
 
 type UpdateLabelParams struct {
-	Id   string  `json:"id"`
-	Name *string `json:"name"`
+	Id   uuid.UUID
+	Name *string
 }
 
 func (q *Queries) UpdateLabel(ctx context.Context, arg UpdateLabelParams) (Label, error) {

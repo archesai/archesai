@@ -7,27 +7,36 @@ package postgresql
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const createMember = `-- name: CreateMember :one
 INSERT INTO member (
+    id,
     user_id,
     organization_id,
     role
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 )
 RETURNING id, created_at, updated_at, organization_id, role, user_id
 `
 
 type CreateMemberParams struct {
-	UserId         string `json:"user_id"`
-	OrganizationId string `json:"organization_id"`
-	Role           Role   `json:"role"`
+	Id             uuid.UUID
+	UserId         uuid.UUID
+	OrganizationId uuid.UUID
+	Role           string
 }
 
 func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Member, error) {
-	row := q.db.QueryRow(ctx, createMember, arg.UserId, arg.OrganizationId, arg.Role)
+	row := q.db.QueryRow(ctx, createMember,
+		arg.Id,
+		arg.UserId,
+		arg.OrganizationId,
+		arg.Role,
+	)
 	var i Member
 	err := row.Scan(
 		&i.Id,
@@ -45,7 +54,7 @@ DELETE FROM member
 WHERE id = $1
 `
 
-func (q *Queries) DeleteMember(ctx context.Context, id string) error {
+func (q *Queries) DeleteMember(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteMember, id)
 	return err
 }
@@ -55,7 +64,7 @@ DELETE FROM member
 WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteMembersByOrganization(ctx context.Context, organizationID string) error {
+func (q *Queries) DeleteMembersByOrganization(ctx context.Context, organizationID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteMembersByOrganization, organizationID)
 	return err
 }
@@ -65,7 +74,7 @@ SELECT id, created_at, updated_at, organization_id, role, user_id FROM member
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetMember(ctx context.Context, id string) (Member, error) {
+func (q *Queries) GetMember(ctx context.Context, id uuid.UUID) (Member, error) {
 	row := q.db.QueryRow(ctx, getMember, id)
 	var i Member
 	err := row.Scan(
@@ -85,8 +94,8 @@ WHERE user_id = $1 AND organization_id = $2 LIMIT 1
 `
 
 type GetMemberByUserAndOrgParams struct {
-	UserId         string `json:"user_id"`
-	OrganizationId string `json:"organization_id"`
+	UserId         uuid.UUID
+	OrganizationId uuid.UUID
 }
 
 func (q *Queries) GetMemberByUserAndOrg(ctx context.Context, arg GetMemberByUserAndOrgParams) (Member, error) {
@@ -110,8 +119,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListMembersParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListMembers(ctx context.Context, arg ListMembersParams) ([]Member, error) {
@@ -149,9 +158,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListMembersByOrganizationParams struct {
-	OrganizationId string `json:"organization_id"`
-	Limit          int32  `json:"limit"`
-	Offset         int32  `json:"offset"`
+	OrganizationId uuid.UUID
+	Limit          int32
+	Offset         int32
 }
 
 func (q *Queries) ListMembersByOrganization(ctx context.Context, arg ListMembersByOrganizationParams) ([]Member, error) {
@@ -189,9 +198,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListMembersByUserParams struct {
-	UserId string `json:"user_id"`
-	Limit  int32  `json:"limit"`
-	Offset int32  `json:"offset"`
+	UserId uuid.UUID
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListMembersByUser(ctx context.Context, arg ListMembersByUserParams) ([]Member, error) {
@@ -231,8 +240,8 @@ RETURNING id, created_at, updated_at, organization_id, role, user_id
 `
 
 type UpdateMemberParams struct {
-	Id   string   `json:"id"`
-	Role NullRole `json:"role"`
+	Id   uuid.UUID
+	Role *string
 }
 
 func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error) {

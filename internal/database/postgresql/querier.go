@@ -6,6 +6,8 @@ package postgresql
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
@@ -23,56 +25,56 @@ type Querier interface {
 	CreateTool(ctx context.Context, arg CreateToolParams) (Tool, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVerificationToken(ctx context.Context, arg CreateVerificationTokenParams) (VerificationToken, error)
-	DeleteAccount(ctx context.Context, id string) error
-	DeleteAccountsByUser(ctx context.Context, userID string) error
-	DeleteApiToken(ctx context.Context, id string) error
-	DeleteApiTokensByUser(ctx context.Context, userID string) error
-	DeleteArtifact(ctx context.Context, id string) error
-	DeleteArtifactsByOrganization(ctx context.Context, organizationID string) error
-	DeleteInvitation(ctx context.Context, id string) error
-	DeleteInvitationsByOrganization(ctx context.Context, organizationID string) error
-	DeleteLabel(ctx context.Context, id string) error
-	DeleteLabelsByOrganization(ctx context.Context, organizationID string) error
-	DeleteMember(ctx context.Context, id string) error
-	DeleteMembersByOrganization(ctx context.Context, organizationID string) error
-	DeleteOrganization(ctx context.Context, id string) error
-	DeletePipeline(ctx context.Context, id string) error
-	DeletePipelineStep(ctx context.Context, id string) error
-	DeletePipelineStepsByPipeline(ctx context.Context, pipelineID string) error
-	DeletePipelinesByOrganization(ctx context.Context, organizationID string) error
-	DeleteRun(ctx context.Context, id string) error
-	DeleteRunsByPipeline(ctx context.Context, pipelineID *string) error
-	DeleteSession(ctx context.Context, id string) error
-	DeleteSessionsByUser(ctx context.Context, userID string) error
-	DeleteTool(ctx context.Context, id string) error
-	DeleteToolsByOrganization(ctx context.Context, organizationID string) error
-	DeleteUser(ctx context.Context, id string) error
-	DeleteVerificationToken(ctx context.Context, id string) error
+	DeleteAccount(ctx context.Context, id uuid.UUID) error
+	DeleteAccountsByUser(ctx context.Context, userID uuid.UUID) error
+	DeleteApiToken(ctx context.Context, id uuid.UUID) error
+	DeleteApiTokensByUser(ctx context.Context, userID uuid.UUID) error
+	DeleteArtifact(ctx context.Context, id uuid.UUID) error
+	DeleteArtifactsByOrganization(ctx context.Context, organizationID uuid.UUID) error
+	DeleteInvitation(ctx context.Context, id uuid.UUID) error
+	DeleteInvitationsByOrganization(ctx context.Context, organizationID uuid.UUID) error
+	DeleteLabel(ctx context.Context, id uuid.UUID) error
+	DeleteLabelsByOrganization(ctx context.Context, organizationID uuid.UUID) error
+	DeleteMember(ctx context.Context, id uuid.UUID) error
+	DeleteMembersByOrganization(ctx context.Context, organizationID uuid.UUID) error
+	DeleteOrganization(ctx context.Context, id uuid.UUID) error
+	DeletePipeline(ctx context.Context, id uuid.UUID) error
+	DeletePipelineStep(ctx context.Context, id uuid.UUID) error
+	DeletePipelineStepsByPipeline(ctx context.Context, pipelineID uuid.UUID) error
+	DeletePipelinesByOrganization(ctx context.Context, organizationID uuid.UUID) error
+	DeleteRun(ctx context.Context, id uuid.UUID) error
+	DeleteRunsByPipeline(ctx context.Context, pipelineID *uuid.UUID) error
+	DeleteSession(ctx context.Context, id uuid.UUID) error
+	DeleteSessionsByUser(ctx context.Context, userID uuid.UUID) error
+	DeleteTool(ctx context.Context, id uuid.UUID) error
+	DeleteToolsByOrganization(ctx context.Context, organizationID uuid.UUID) error
+	DeleteUser(ctx context.Context, id uuid.UUID) error
+	DeleteVerificationToken(ctx context.Context, id uuid.UUID) error
 	DeleteVerificationTokensByIdentifier(ctx context.Context, identifier string) error
-	GetAccount(ctx context.Context, id string) (Account, error)
+	GetAccount(ctx context.Context, id uuid.UUID) (Account, error)
 	GetAccountByUser(ctx context.Context, arg GetAccountByUserParams) (Account, error)
-	GetApiToken(ctx context.Context, id string) (ApiToken, error)
+	GetApiToken(ctx context.Context, id uuid.UUID) (ApiToken, error)
 	GetApiTokenByKey(ctx context.Context, key string) (ApiToken, error)
-	GetArtifact(ctx context.Context, id string) (Artifact, error)
-	GetInvitation(ctx context.Context, id string) (Invitation, error)
+	GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, error)
+	GetInvitation(ctx context.Context, id uuid.UUID) (Invitation, error)
 	GetInvitationByEmail(ctx context.Context, arg GetInvitationByEmailParams) (Invitation, error)
-	GetLabel(ctx context.Context, id string) (Label, error)
+	GetLabel(ctx context.Context, id uuid.UUID) (Label, error)
 	GetLabelByName(ctx context.Context, arg GetLabelByNameParams) (Label, error)
-	GetMember(ctx context.Context, id string) (Member, error)
+	GetMember(ctx context.Context, id uuid.UUID) (Member, error)
 	GetMemberByUserAndOrg(ctx context.Context, arg GetMemberByUserAndOrgParams) (Member, error)
-	GetOrganization(ctx context.Context, id string) (Organization, error)
-	GetPipeline(ctx context.Context, id string) (Pipeline, error)
-	GetPipelineStep(ctx context.Context, id string) (PipelineStep, error)
-	GetRun(ctx context.Context, id string) (Run, error)
-	GetSession(ctx context.Context, id string) (Session, error)
+	GetOrganization(ctx context.Context, id uuid.UUID) (Organization, error)
+	GetPipeline(ctx context.Context, id uuid.UUID) (Pipeline, error)
+	GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineStep, error)
+	GetRun(ctx context.Context, id uuid.UUID) (Run, error)
+	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetSessionByToken(ctx context.Context, token string) (Session, error)
-	GetTool(ctx context.Context, id string) (Tool, error)
-	GetUser(ctx context.Context, id string) (User, error)
+	GetTool(ctx context.Context, id uuid.UUID) (Tool, error)
+	GetUser(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
-	GetVerificationToken(ctx context.Context, id string) (VerificationToken, error)
+	GetVerificationToken(ctx context.Context, id uuid.UUID) (VerificationToken, error)
 	GetVerificationTokenByValue(ctx context.Context, arg GetVerificationTokenByValueParams) (VerificationToken, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
-	ListAccountsByUser(ctx context.Context, userID string) ([]Account, error)
+	ListAccountsByUser(ctx context.Context, userID uuid.UUID) ([]Account, error)
 	ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([]ApiToken, error)
 	ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]ApiToken, error)
 	ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([]Artifact, error)

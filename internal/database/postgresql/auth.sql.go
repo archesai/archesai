@@ -9,11 +9,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createSession = `-- name: CreateSession :one
 INSERT INTO session (
+    id,
     user_id,
     token,
     expires_at,
@@ -21,22 +22,24 @@ INSERT INTO session (
     ip_address,
     user_agent
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 )
 RETURNING id, created_at, updated_at, active_organization_id, expires_at, ip_address, token, user_agent, user_id
 `
 
 type CreateSessionParams struct {
-	UserId               string    `json:"user_id"`
-	Token                string    `json:"token"`
-	ExpiresAt            time.Time `json:"expires_at"`
-	ActiveOrganizationId *string   `json:"active_organization_id"`
-	IpAddress            *string   `json:"ip_address"`
-	UserAgent            *string   `json:"user_agent"`
+	Id                   uuid.UUID
+	UserId               uuid.UUID
+	Token                string
+	ExpiresAt            time.Time
+	ActiveOrganizationId *uuid.UUID
+	IpAddress            *string
+	UserAgent            *string
 }
 
 func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
 	row := q.db.QueryRow(ctx, createSession,
+		arg.Id,
 		arg.UserId,
 		arg.Token,
 		arg.ExpiresAt,
@@ -64,7 +67,7 @@ DELETE FROM session
 WHERE id = $1
 `
 
-func (q *Queries) DeleteSession(ctx context.Context, id string) error {
+func (q *Queries) DeleteSession(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteSession, id)
 	return err
 }
@@ -74,7 +77,7 @@ DELETE FROM session
 WHERE user_id = $1
 `
 
-func (q *Queries) DeleteSessionsByUser(ctx context.Context, userID string) error {
+func (q *Queries) DeleteSessionsByUser(ctx context.Context, userID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteSessionsByUser, userID)
 	return err
 }
@@ -84,7 +87,7 @@ SELECT id, created_at, updated_at, active_organization_id, expires_at, ip_addres
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetSession(ctx context.Context, id string) (Session, error) {
+func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Session, error) {
 	row := q.db.QueryRow(ctx, getSession, id)
 	var i Session
 	err := row.Scan(
@@ -130,8 +133,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListSessionsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListSessions(ctx context.Context, arg ListSessionsParams) ([]Session, error) {
@@ -172,9 +175,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListSessionsByUserParams struct {
-	UserId string `json:"user_id"`
-	Limit  int32  `json:"limit"`
-	Offset int32  `json:"offset"`
+	UserId uuid.UUID
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUserParams) ([]Session, error) {
@@ -217,9 +220,9 @@ RETURNING id, created_at, updated_at, active_organization_id, expires_at, ip_add
 `
 
 type UpdateSessionParams struct {
-	Id                   string             `json:"id"`
-	ExpiresAt            pgtype.Timestamptz `json:"expires_at"`
-	ActiveOrganizationId *string            `json:"active_organization_id"`
+	Id                   uuid.UUID
+	ExpiresAt            *time.Time
+	ActiveOrganizationId *uuid.UUID
 }
 
 func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error) {

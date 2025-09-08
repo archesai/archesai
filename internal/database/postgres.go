@@ -197,6 +197,11 @@ func (db *PGDatabase) Underlying() interface{} {
 	return db.pool
 }
 
+// GetSQLDB returns the stdlib SQL database connection for migrations
+func (db *PGDatabase) GetSQLDB() *sql.DB {
+	return db.sqlDB
+}
+
 // Adapter types for pgx compatibility
 
 type pgRows struct {

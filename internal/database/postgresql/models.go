@@ -5,386 +5,192 @@
 package postgresql
 
 import (
-	"database/sql/driver"
-	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
-
-type PlanType string
-
-const (
-	PlanTypeBASIC     PlanType = "BASIC"
-	PlanTypeFREE      PlanType = "FREE"
-	PlanTypePREMIUM   PlanType = "PREMIUM"
-	PlanTypeSTANDARD  PlanType = "STANDARD"
-	PlanTypeUNLIMITED PlanType = "UNLIMITED"
-)
-
-func (e *PlanType) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = PlanType(s)
-	case string:
-		*e = PlanType(s)
-	default:
-		return fmt.Errorf("unsupported scan type for PlanType: %T", src)
-	}
-	return nil
-}
-
-type NullPlanType struct {
-	PlanType PlanType `json:"plan_type"`
-	Valid    bool     `json:"valid"` // Valid is true if PlanType is not NULL
-}
-
-// Scan implements the Scanner interface.
-func (ns *NullPlanType) Scan(value interface{}) error {
-	if value == nil {
-		ns.PlanType, ns.Valid = "", false
-		return nil
-	}
-	ns.Valid = true
-	return ns.PlanType.Scan(value)
-}
-
-// Value implements the driver Valuer interface.
-func (ns NullPlanType) Value() (driver.Value, error) {
-	if !ns.Valid {
-		return nil, nil
-	}
-	return string(ns.PlanType), nil
-}
-
-func (e PlanType) Valid() bool {
-	switch e {
-	case PlanTypeBASIC,
-		PlanTypeFREE,
-		PlanTypePREMIUM,
-		PlanTypeSTANDARD,
-		PlanTypeUNLIMITED:
-		return true
-	}
-	return false
-}
-
-func AllPlanTypeValues() []PlanType {
-	return []PlanType{
-		PlanTypeBASIC,
-		PlanTypeFREE,
-		PlanTypePREMIUM,
-		PlanTypeSTANDARD,
-		PlanTypeUNLIMITED,
-	}
-}
-
-type Role string
-
-const (
-	RoleAdmin  Role = "admin"
-	RoleOwner  Role = "owner"
-	RoleMember Role = "member"
-)
-
-func (e *Role) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = Role(s)
-	case string:
-		*e = Role(s)
-	default:
-		return fmt.Errorf("unsupported scan type for Role: %T", src)
-	}
-	return nil
-}
-
-type NullRole struct {
-	Role  Role `json:"role"`
-	Valid bool `json:"valid"` // Valid is true if Role is not NULL
-}
-
-// Scan implements the Scanner interface.
-func (ns *NullRole) Scan(value interface{}) error {
-	if value == nil {
-		ns.Role, ns.Valid = "", false
-		return nil
-	}
-	ns.Valid = true
-	return ns.Role.Scan(value)
-}
-
-// Value implements the driver Valuer interface.
-func (ns NullRole) Value() (driver.Value, error) {
-	if !ns.Valid {
-		return nil, nil
-	}
-	return string(ns.Role), nil
-}
-
-func (e Role) Valid() bool {
-	switch e {
-	case RoleAdmin,
-		RoleOwner,
-		RoleMember:
-		return true
-	}
-	return false
-}
-
-func AllRoleValues() []Role {
-	return []Role{
-		RoleAdmin,
-		RoleOwner,
-		RoleMember,
-	}
-}
-
-type RunStatus string
-
-const (
-	RunStatusCOMPLETED  RunStatus = "COMPLETED"
-	RunStatusFAILED     RunStatus = "FAILED"
-	RunStatusPROCESSING RunStatus = "PROCESSING"
-	RunStatusQUEUED     RunStatus = "QUEUED"
-)
-
-func (e *RunStatus) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = RunStatus(s)
-	case string:
-		*e = RunStatus(s)
-	default:
-		return fmt.Errorf("unsupported scan type for RunStatus: %T", src)
-	}
-	return nil
-}
-
-type NullRunStatus struct {
-	RunStatus RunStatus `json:"run_status"`
-	Valid     bool      `json:"valid"` // Valid is true if RunStatus is not NULL
-}
-
-// Scan implements the Scanner interface.
-func (ns *NullRunStatus) Scan(value interface{}) error {
-	if value == nil {
-		ns.RunStatus, ns.Valid = "", false
-		return nil
-	}
-	ns.Valid = true
-	return ns.RunStatus.Scan(value)
-}
-
-// Value implements the driver Valuer interface.
-func (ns NullRunStatus) Value() (driver.Value, error) {
-	if !ns.Valid {
-		return nil, nil
-	}
-	return string(ns.RunStatus), nil
-}
-
-func (e RunStatus) Valid() bool {
-	switch e {
-	case RunStatusCOMPLETED,
-		RunStatusFAILED,
-		RunStatusPROCESSING,
-		RunStatusQUEUED:
-		return true
-	}
-	return false
-}
-
-func AllRunStatusValues() []RunStatus {
-	return []RunStatus{
-		RunStatusCOMPLETED,
-		RunStatusFAILED,
-		RunStatusPROCESSING,
-		RunStatusQUEUED,
-	}
-}
 
 type Account struct {
-	Id                    string             `json:"id"`
-	CreatedAt             time.Time          `json:"created_at"`
-	UpdatedAt             time.Time          `json:"updated_at"`
-	AccessToken           *string            `json:"access_token"`
-	AccessTokenExpiresAt  pgtype.Timestamptz `json:"access_token_expires_at"`
-	AccountId             string             `json:"account_id"`
-	IdToken               *string            `json:"id_token"`
-	Password              *string            `json:"password"`
-	ProviderId            string             `json:"provider_id"`
-	RefreshToken          *string            `json:"refresh_token"`
-	RefreshTokenExpiresAt pgtype.Timestamptz `json:"refresh_token_expires_at"`
-	Scope                 *string            `json:"scope"`
-	UserId                string             `json:"user_id"`
+	Id                    uuid.UUID
+	CreatedAt             time.Time
+	UpdatedAt             time.Time
+	AccessToken           *string
+	AccessTokenExpiresAt  *time.Time
+	AccountId             string
+	IdToken               *string
+	Password              *string
+	ProviderId            string
+	RefreshToken          *string
+	RefreshTokenExpiresAt *time.Time
+	Scope                 *string
+	UserId                uuid.UUID
 }
 
 type ApiToken struct {
-	Id                  string             `json:"id"`
-	CreatedAt           time.Time          `json:"created_at"`
-	UpdatedAt           time.Time          `json:"updated_at"`
-	Enabled             bool               `json:"enabled"`
-	ExpiresAt           pgtype.Timestamptz `json:"expires_at"`
-	Key                 string             `json:"key"`
-	LastRefill          pgtype.Timestamptz `json:"last_refill"`
-	LastRequest         pgtype.Timestamptz `json:"last_request"`
-	Metadata            []byte             `json:"metadata"`
-	Name                *string            `json:"name"`
-	Permissions         *string            `json:"permissions"`
-	Prefix              *string            `json:"prefix"`
-	RateLimitEnabled    bool               `json:"rate_limit_enabled"`
-	RateLimitMax        pgtype.Int4        `json:"rate_limit_max"`
-	RateLimitTimeWindow pgtype.Int4        `json:"rate_limit_time_window"`
-	RefillAmount        pgtype.Int4        `json:"refill_amount"`
-	RefillInterval      pgtype.Int4        `json:"refill_interval"`
-	Remaining           pgtype.Int4        `json:"remaining"`
-	RequestCount        int32              `json:"request_count"`
-	Start               *string            `json:"start"`
-	UserId              string             `json:"user_id"`
+	Id                  uuid.UUID
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
+	Enabled             bool
+	ExpiresAt           *time.Time
+	Key                 string
+	LastRefill          *time.Time
+	LastRequest         *time.Time
+	Metadata            *string
+	Name                *string
+	Permissions         *string
+	Prefix              *string
+	RateLimitEnabled    bool
+	RateLimitMax        *int32
+	RateLimitTimeWindow *int32
+	RefillAmount        *int32
+	RefillInterval      *int32
+	Remaining           *int32
+	RequestCount        int32
+	Start               *string
+	UserId              uuid.UUID
 }
 
 type Artifact struct {
-	Id             string    `json:"id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	Credits        int32     `json:"credits"`
-	Description    *string   `json:"description"`
-	MimeType       string    `json:"mime_type"`
-	Name           *string   `json:"name"`
-	OrganizationId string    `json:"organization_id"`
-	PreviewImage   *string   `json:"preview_image"`
-	ProducerId     *string   `json:"producer_id"`
-	Text           *string   `json:"text"`
-	Url            *string   `json:"url"`
+	Id             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Credits        int32
+	Description    *string
+	MimeType       string
+	Name           *string
+	OrganizationId uuid.UUID
+	PreviewImage   *string
+	ProducerId     *uuid.UUID
+	Text           *string
+	Url            *string
 }
 
 type Invitation struct {
-	Id             string    `json:"id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	Email          string    `json:"email"`
-	ExpiresAt      time.Time `json:"expires_at"`
-	InviterId      string    `json:"inviter_id"`
-	OrganizationId string    `json:"organization_id"`
-	Role           Role      `json:"role"`
-	Status         string    `json:"status"`
+	Id             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Email          string
+	ExpiresAt      time.Time
+	InviterId      uuid.UUID
+	OrganizationId uuid.UUID
+	Role           string
+	Status         string
 }
 
 type Label struct {
-	Id             string    `json:"id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	Name           string    `json:"name"`
-	OrganizationId string    `json:"organization_id"`
+	Id             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Name           string
+	OrganizationId uuid.UUID
 }
 
 type LabelToArtifact struct {
-	LabelId    string `json:"label_id"`
-	ArtifactId string `json:"artifact_id"`
+	LabelId    uuid.UUID
+	ArtifactId uuid.UUID
 }
 
 type Member struct {
-	Id             string    `json:"id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	OrganizationId string    `json:"organization_id"`
-	Role           Role      `json:"role"`
-	UserId         string    `json:"user_id"`
+	Id             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	OrganizationId uuid.UUID
+	Role           string
+	UserId         uuid.UUID
 }
 
 type Organization struct {
-	Id               string    `json:"id"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
-	BillingEmail     *string   `json:"billing_email"`
-	Credits          int32     `json:"credits"`
-	Logo             *string   `json:"logo"`
-	Metadata         *string   `json:"metadata"`
-	Name             string    `json:"name"`
-	Plan             PlanType  `json:"plan"`
-	StripeCustomerId *string   `json:"stripe_customer_id"`
+	Id               uuid.UUID
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	BillingEmail     *string
+	Credits          int32
+	Logo             *string
+	Metadata         *string
+	Name             string
+	Plan             string
+	StripeCustomerId *string
 }
 
 type Pipeline struct {
-	Id             string    `json:"id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	Description    *string   `json:"description"`
-	Name           *string   `json:"name"`
-	OrganizationId string    `json:"organization_id"`
+	Id             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Description    *string
+	Name           *string
+	OrganizationId uuid.UUID
 }
 
 type PipelineStep struct {
-	Id         string    `json:"id"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	PipelineId string    `json:"pipeline_id"`
-	ToolId     string    `json:"tool_id"`
+	Id         uuid.UUID
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	PipelineId uuid.UUID
+	ToolId     uuid.UUID
 }
 
 type PipelineStepToDependency struct {
-	PipelineStepId string `json:"pipeline_step_id"`
-	PrerequisiteId string `json:"prerequisite_id"`
+	PipelineStepId uuid.UUID
+	PrerequisiteId uuid.UUID
 }
 
 type Run struct {
-	Id             string             `json:"id"`
-	CreatedAt      time.Time          `json:"created_at"`
-	UpdatedAt      time.Time          `json:"updated_at"`
-	CompletedAt    pgtype.Timestamptz `json:"completed_at"`
-	Error          *string            `json:"error"`
-	OrganizationId string             `json:"organization_id"`
-	PipelineId     *string            `json:"pipeline_id"`
-	Progress       float64            `json:"progress"`
-	StartedAt      pgtype.Timestamptz `json:"started_at"`
-	Status         RunStatus          `json:"status"`
-	ToolId         string             `json:"tool_id"`
+	Id             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	CompletedAt    *time.Time
+	Error          *string
+	OrganizationId uuid.UUID
+	PipelineId     *uuid.UUID
+	Progress       float64
+	StartedAt      *time.Time
+	Status         string
+	ToolId         string
 }
 
 type RunToArtifact struct {
-	RunId      string `json:"run_id"`
-	ArtifactId string `json:"artifact_id"`
+	RunId      uuid.UUID
+	ArtifactId uuid.UUID
 }
 
 type Session struct {
-	Id                   string    `json:"id"`
-	CreatedAt            time.Time `json:"created_at"`
-	UpdatedAt            time.Time `json:"updated_at"`
-	ActiveOrganizationId *string   `json:"active_organization_id"`
-	ExpiresAt            time.Time `json:"expires_at"`
-	IpAddress            *string   `json:"ip_address"`
-	Token                string    `json:"token"`
-	UserAgent            *string   `json:"user_agent"`
-	UserId               string    `json:"user_id"`
+	Id                   uuid.UUID
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
+	ActiveOrganizationId *uuid.UUID
+	ExpiresAt            time.Time
+	IpAddress            *string
+	Token                string
+	UserAgent            *string
+	UserId               uuid.UUID
 }
 
 type Tool struct {
-	Id             string    `json:"id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	Description    string    `json:"description"`
-	InputMimeType  string    `json:"input_mime_type"`
-	Name           string    `json:"name"`
-	OrganizationId string    `json:"organization_id"`
-	OutputMimeType string    `json:"output_mime_type"`
+	Id             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	Description    string
+	InputMimeType  string
+	Name           string
+	OrganizationId uuid.UUID
+	OutputMimeType string
 }
 
 type User struct {
-	Id            string    `json:"id"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	Email         string    `json:"email"`
-	EmailVerified bool      `json:"email_verified"`
-	Image         *string   `json:"image"`
-	Name          string    `json:"name"`
+	Id            uuid.UUID
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Email         string
+	EmailVerified bool
+	Image         *string
+	Name          string
 }
 
 type VerificationToken struct {
-	Id         string    `json:"id"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	ExpiresAt  time.Time `json:"expires_at"`
-	Identifier string    `json:"identifier"`
-	Value      string    `json:"value"`
+	Id         uuid.UUID
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	ExpiresAt  time.Time
+	Identifier string
+	Value      string
 }

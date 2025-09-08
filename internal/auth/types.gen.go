@@ -178,7 +178,7 @@ type Problem struct {
 // Session Schema for Session entity
 type Session struct {
 	// ActiveOrganizationId The active organization ID
-	ActiveOrganizationId string `json:"activeOrganizationId" yaml:"activeOrganizationId"`
+	ActiveOrganizationId openapi_types.UUID `json:"activeOrganizationId" yaml:"activeOrganizationId"`
 
 	// CreatedAt The date this item was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
@@ -202,7 +202,7 @@ type Session struct {
 	UserAgent string `json:"userAgent" yaml:"userAgent"`
 
 	// UserId The ID of the user associated with the session
-	UserId string `json:"userId" yaml:"userId"`
+	UserId openapi_types.UUID `json:"userId" yaml:"userId"`
 }
 
 // UUID Universally Unique Identifier

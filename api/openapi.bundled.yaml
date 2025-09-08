@@ -2822,8 +2822,9 @@ components:
         activeOrganizationId:
           description: The active organization ID
           type: string
-          example: example-id-123
-          minLength: 1
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
         expiresAt:
           description: The expiration date of the session
           type: string
@@ -2847,8 +2848,9 @@ components:
         userId:
           description: The ID of the user associated with the session
           type: string
-          minLength: 1
-          example: example-id-123
+          minLength: 36
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
       required:
         - createdAt
         - id

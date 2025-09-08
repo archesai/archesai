@@ -245,9 +245,8 @@ func (m *MockRepository) DeleteUserSessions(_ context.Context, userID uuid.UUID)
 	if m.err != nil {
 		return m.err
 	}
-	userIDStr := userID.String()
 	for id, session := range m.sessions {
-		if session.UserId == userIDStr {
+		if session.UserId == userID {
 			delete(m.sessions, id)
 		}
 	}
@@ -1027,14 +1026,14 @@ func TestCleanupExpiredSessions(t *testing.T) {
 	expiredSession := &Session{
 		Token:     "expired-token",
 		ExpiresAt: expiredTime.Format(time.RFC3339),
-		UserId:    user.Id.String(),
+		UserId:    user.Id,
 		IpAddress: "127.0.0.1",
 		UserAgent: "TestAgent",
 	}
 	validSession := &Session{
 		Token:     "valid-token",
 		ExpiresAt: validTime.Format(time.RFC3339),
-		UserId:    user.Id.String(),
+		UserId:    user.Id,
 		IpAddress: "127.0.0.1",
 		UserAgent: "TestAgent",
 	}
@@ -1380,7 +1379,7 @@ func TestCreateSession(t *testing.T) {
 			}
 
 			session := &Session{
-				UserId:    tt.userID.String(),
+				UserId:    tt.userID,
 				IpAddress: tt.ipAddress,
 				UserAgent: tt.userAgent,
 				Token:     "test-token-" + uuid.New().String(),
@@ -1406,8 +1405,8 @@ func TestCreateSession(t *testing.T) {
 				return
 			}
 
-			if createdSession.UserId != tt.userID.String() {
-				t.Errorf("Session UserID = %v, want %v", createdSession.UserId, tt.userID.String())
+			if createdSession.UserId != tt.userID {
+				t.Errorf("Session UserID = %v, want %v", createdSession.UserId, tt.userID)
 			}
 
 			if createdSession.IpAddress != tt.ipAddress {
@@ -1455,13 +1454,13 @@ func TestMockRepositoryEdgeCases(t *testing.T) {
 
 		session1 := &Session{
 			Id:        uuid.New(),
-			UserId:    userID1.String(),
+			UserId:    userID1,
 			Token:     "token1",
 			ExpiresAt: time.Now().Add(1 * time.Hour).Format(time.RFC3339),
 		}
 		session2 := &Session{
 			Id:        uuid.New(),
-			UserId:    userID2.String(),
+			UserId:    userID2,
 			Token:     "token2",
 			ExpiresAt: time.Now().Add(1 * time.Hour).Format(time.RFC3339),
 		}

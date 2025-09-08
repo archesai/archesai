@@ -7,33 +7,37 @@ package postgresql
 
 import (
 	"context"
+	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createRun = `-- name: CreateRun :one
 INSERT INTO run (
+    id,
     organization_id,
     pipeline_id,
     tool_id,
     status,
     progress
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 )
 RETURNING id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
 `
 
 type CreateRunParams struct {
-	OrganizationId string    `json:"organization_id"`
-	PipelineId     *string   `json:"pipeline_id"`
-	ToolId         string    `json:"tool_id"`
-	Status         RunStatus `json:"status"`
-	Progress       float64   `json:"progress"`
+	Id             uuid.UUID
+	OrganizationId uuid.UUID
+	PipelineId     *uuid.UUID
+	ToolId         string
+	Status         string
+	Progress       float64
 }
 
 func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) (Run, error) {
 	row := q.db.QueryRow(ctx, createRun,
+		arg.Id,
 		arg.OrganizationId,
 		arg.PipelineId,
 		arg.ToolId,
@@ -62,7 +66,7 @@ DELETE FROM run
 WHERE id = $1
 `
 
-func (q *Queries) DeleteRun(ctx context.Context, id string) error {
+func (q *Queries) DeleteRun(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteRun, id)
 	return err
 }
@@ -72,7 +76,7 @@ DELETE FROM run
 WHERE pipeline_id = $1
 `
 
-func (q *Queries) DeleteRunsByPipeline(ctx context.Context, pipelineID *string) error {
+func (q *Queries) DeleteRunsByPipeline(ctx context.Context, pipelineID *uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteRunsByPipeline, pipelineID)
 	return err
 }
@@ -82,7 +86,7 @@ SELECT id, created_at, updated_at, completed_at, error, organization_id, pipelin
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetRun(ctx context.Context, id string) (Run, error) {
+func (q *Queries) GetRun(ctx context.Context, id uuid.UUID) (Run, error) {
 	row := q.db.QueryRow(ctx, getRun, id)
 	var i Run
 	err := row.Scan(
@@ -108,8 +112,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListRunsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListRuns(ctx context.Context, arg ListRunsParams) ([]Run, error) {
@@ -152,9 +156,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListRunsByOrganizationParams struct {
-	OrganizationId string `json:"organization_id"`
-	Limit          int32  `json:"limit"`
-	Offset         int32  `json:"offset"`
+	OrganizationId uuid.UUID
+	Limit          int32
+	Offset         int32
 }
 
 func (q *Queries) ListRunsByOrganization(ctx context.Context, arg ListRunsByOrganizationParams) ([]Run, error) {
@@ -197,9 +201,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListRunsByPipelineParams struct {
-	PipelineId *string `json:"pipeline_id"`
-	Limit      int32   `json:"limit"`
-	Offset     int32   `json:"offset"`
+	PipelineId *uuid.UUID
+	Limit      int32
+	Offset     int32
 }
 
 func (q *Queries) ListRunsByPipeline(ctx context.Context, arg ListRunsByPipelineParams) ([]Run, error) {
@@ -242,9 +246,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListRunsByToolParams struct {
-	ToolId string `json:"tool_id"`
-	Limit  int32  `json:"limit"`
-	Offset int32  `json:"offset"`
+	ToolId string
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListRunsByTool(ctx context.Context, arg ListRunsByToolParams) ([]Run, error) {
@@ -295,14 +299,14 @@ RETURNING id, created_at, updated_at, completed_at, error, organization_id, pipe
 `
 
 type UpdateRunParams struct {
-	Id          string             `json:"id"`
-	PipelineId  *string            `json:"pipeline_id"`
-	ToolId      *string            `json:"tool_id"`
-	Status      NullRunStatus      `json:"status"`
-	Progress    pgtype.Float8      `json:"progress"`
-	Error       *string            `json:"error"`
-	StartedAt   pgtype.Timestamptz `json:"started_at"`
-	CompletedAt pgtype.Timestamptz `json:"completed_at"`
+	Id          uuid.UUID
+	PipelineId  *uuid.UUID
+	ToolId      *string
+	Status      *string
+	Progress    *float64
+	Error       *string
+	StartedAt   *time.Time
+	CompletedAt *time.Time
 }
 
 func (q *Queries) UpdateRun(ctx context.Context, arg UpdateRunParams) (Run, error) {

@@ -1,10 +1,11 @@
 -- name: CreateMember :one
 INSERT INTO member (
+    id,
     user_id,
     organization_id,
     role
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 )
 RETURNING *;
 

@@ -10,7 +10,6 @@ import (
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -27,14 +26,6 @@ var _ Repository = (*PostgresRepository)(nil)
 // NewPostgresRepository creates a new auth repository
 func NewPostgresRepository(q postgresql.Querier) *PostgresRepository {
 	return &PostgresRepository{q: q}
-}
-
-// handleNullableString converts *string to string
-func handleNullableString(s *string) string {
-	if s != nil {
-		return *s
-	}
-	return ""
 }
 
 // User operations
@@ -54,7 +45,7 @@ func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (
 // GetUser retrieves a user by their unique identifier.
 func (r *PostgresRepository) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
 	// Note: Generated queries expect string IDs, need to convert
-	row, err := r.q.GetUser(ctx, id.String())
+	row, err := r.q.GetUser(ctx, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrUserNotFound
@@ -93,7 +84,7 @@ func (r *PostgresRepository) UpdateUser(ctx context.Context, id uuid.UUID, entit
 	}
 
 	params := postgresql.UpdateUserParams{
-		Id:   id.String(),
+		Id:   id,
 		Name: name,
 	}
 
@@ -110,7 +101,7 @@ func (r *PostgresRepository) UpdateUser(ctx context.Context, id uuid.UUID, entit
 
 // DeleteUser removes a user from the database.
 func (r *PostgresRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
-	err := r.q.DeleteUser(ctx, id.String())
+	err := r.q.DeleteUser(ctx, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrUserNotFound
@@ -156,18 +147,13 @@ func (r *PostgresRepository) CreateSession(ctx context.Context, entity *Session)
 	// Parse ExpiresAt string to time
 	expiresAt, _ := time.Parse(time.RFC3339, entity.ExpiresAt)
 
-	var activeOrgID *string
-	if entity.ActiveOrganizationId != "" {
-		activeOrgID = &entity.ActiveOrganizationId
-	}
-
 	// TODO: Add token generation and storage
 	token := uuid.New().String()
 
 	params := postgresql.CreateSessionParams{
 		UserId:               entity.UserId,
 		Token:                token,
-		ActiveOrganizationId: activeOrgID,
+		ActiveOrganizationId: &entity.ActiveOrganizationId,
 		IpAddress:            nil, // TODO: Get from context
 		UserAgent:            nil, // TODO: Get from context
 		ExpiresAt:            expiresAt,
@@ -182,9 +168,14 @@ func (r *PostgresRepository) CreateSession(ctx context.Context, entity *Session)
 
 // GetSessionByToken retrieves a session by its token.
 func (r *PostgresRepository) GetSessionByToken(ctx context.Context, token string) (*Session, error) {
+	// Parse token as UUID for now since we're using UUID as token
+	tokenUUID, err := uuid.Parse(token)
+	if err != nil {
+		return nil, fmt.Errorf("invalid token format: %w", err)
+	}
 	// For now, token is the session ID
 	// TODO: Implement proper token mechanism
-	row, err := r.q.GetSession(ctx, token)
+	row, err := r.q.GetSession(ctx, tokenUUID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrSessionNotFound
@@ -196,7 +187,7 @@ func (r *PostgresRepository) GetSessionByToken(ctx context.Context, token string
 
 // GetSession retrieves a session by its ID.
 func (r *PostgresRepository) GetSession(ctx context.Context, id uuid.UUID) (*Session, error) {
-	row, err := r.q.GetSession(ctx, id.String())
+	row, err := r.q.GetSession(ctx, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrSessionNotFound
@@ -212,8 +203,8 @@ func (r *PostgresRepository) UpdateSession(ctx context.Context, id uuid.UUID, en
 	expiresAt, _ := time.Parse(time.RFC3339, entity.ExpiresAt)
 
 	params := postgresql.UpdateSessionParams{
-		Id:        id.String(),
-		ExpiresAt: pgtype.Timestamptz{Time: expiresAt, Valid: true},
+		Id:        id,
+		ExpiresAt: &expiresAt,
 	}
 
 	dbSession, err := r.q.UpdateSession(ctx, params)
@@ -228,7 +219,7 @@ func (r *PostgresRepository) UpdateSession(ctx context.Context, id uuid.UUID, en
 
 // DeleteSession removes a session from the database.
 func (r *PostgresRepository) DeleteSession(ctx context.Context, id uuid.UUID) error {
-	err := r.q.DeleteSession(ctx, id.String())
+	err := r.q.DeleteSession(ctx, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrSessionNotFound
@@ -303,7 +294,11 @@ func (r *PostgresRepository) ListSessions(_ context.Context, _ ListSessionsParam
 func (r *PostgresRepository) DeleteSessionByToken(ctx context.Context, token string) error {
 	// For now, token is the session ID
 	// TODO: Implement proper token mechanism
-	err := r.q.DeleteSession(ctx, token)
+	tokenUUID, err := uuid.Parse(token)
+	if err != nil {
+		return fmt.Errorf("invalid token format: %w", err)
+	}
+	err = r.q.DeleteSession(ctx, tokenUUID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return ErrSessionNotFound
@@ -316,7 +311,7 @@ func (r *PostgresRepository) DeleteSessionByToken(ctx context.Context, token str
 
 func (r *PostgresRepository) dbUserToEntity(dbUser *postgresql.User) *User {
 	return &User{
-		Id:    uuid.MustParse(dbUser.Id),
+		Id:    dbUser.Id,
 		Email: openapi_types.Email(dbUser.Email),
 		Name:  dbUser.Name,
 		// TODO: Add other fields as needed
@@ -324,12 +319,15 @@ func (r *PostgresRepository) dbUserToEntity(dbUser *postgresql.User) *User {
 }
 
 func (r *PostgresRepository) dbSessionToEntity(dbSession *postgresql.Session) *Session {
-	return &Session{
-		Id:                   uuid.MustParse(dbSession.Id),
-		UserId:               dbSession.UserId,
-		ExpiresAt:            dbSession.ExpiresAt.Format(time.RFC3339),
-		ActiveOrganizationId: handleNullableString(dbSession.ActiveOrganizationId),
+	session := &Session{
+		Id:        dbSession.Id,
+		UserId:    dbSession.UserId,
+		ExpiresAt: dbSession.ExpiresAt.Format(time.RFC3339),
 	}
+	if dbSession.ActiveOrganizationId != nil {
+		session.ActiveOrganizationId = *dbSession.ActiveOrganizationId
+	}
+	return session
 }
 
 // GetUserByUsername retrieves a user by username

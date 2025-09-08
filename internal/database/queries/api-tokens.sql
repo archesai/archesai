@@ -1,5 +1,6 @@
 -- name: CreateApiToken :one
 INSERT INTO api_token (
+    id,
     user_id,
     name,
     key,
@@ -15,7 +16,7 @@ INSERT INTO api_token (
     remaining,
     metadata
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
 )
 RETURNING *;
 

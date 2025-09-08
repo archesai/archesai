@@ -248,7 +248,7 @@ func TestHandler_Logout(t *testing.T) {
 				m.sessions = map[uuid.UUID]*Session{
 					sessionID: {
 						Id:        sessionID,
-						UserId:    uuid.New().String(),
+						UserId:    uuid.New(),
 						Token:     "test-token",
 						ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
 						CreatedAt: time.Now(),

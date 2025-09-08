@@ -8,11 +8,12 @@ package postgresql
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createArtifact = `-- name: CreateArtifact :one
 INSERT INTO artifact (
+    id,
     organization_id,
     name,
     description,
@@ -23,25 +24,27 @@ INSERT INTO artifact (
     producer_id,
     text
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 )
 RETURNING id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url
 `
 
 type CreateArtifactParams struct {
-	OrganizationId string  `json:"organization_id"`
-	Name           *string `json:"name"`
-	Description    *string `json:"description"`
-	MimeType       string  `json:"mime_type"`
-	Url            *string `json:"url"`
-	Credits        int32   `json:"credits"`
-	PreviewImage   *string `json:"preview_image"`
-	ProducerId     *string `json:"producer_id"`
-	Text           *string `json:"text"`
+	Id             uuid.UUID
+	OrganizationId uuid.UUID
+	Name           *string
+	Description    *string
+	MimeType       string
+	Url            *string
+	Credits        int32
+	PreviewImage   *string
+	ProducerId     *uuid.UUID
+	Text           *string
 }
 
 func (q *Queries) CreateArtifact(ctx context.Context, arg CreateArtifactParams) (Artifact, error) {
 	row := q.db.QueryRow(ctx, createArtifact,
+		arg.Id,
 		arg.OrganizationId,
 		arg.Name,
 		arg.Description,
@@ -75,7 +78,7 @@ DELETE FROM artifact
 WHERE id = $1
 `
 
-func (q *Queries) DeleteArtifact(ctx context.Context, id string) error {
+func (q *Queries) DeleteArtifact(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteArtifact, id)
 	return err
 }
@@ -85,7 +88,7 @@ DELETE FROM artifact
 WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteArtifactsByOrganization(ctx context.Context, organizationID string) error {
+func (q *Queries) DeleteArtifactsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteArtifactsByOrganization, organizationID)
 	return err
 }
@@ -95,7 +98,7 @@ SELECT id, created_at, updated_at, credits, description, mime_type, name, organi
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetArtifact(ctx context.Context, id string) (Artifact, error) {
+func (q *Queries) GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, error) {
 	row := q.db.QueryRow(ctx, getArtifact, id)
 	var i Artifact
 	err := row.Scan(
@@ -122,8 +125,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListArtifactsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([]Artifact, error) {
@@ -167,9 +170,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListArtifactsByOrganizationParams struct {
-	OrganizationId string `json:"organization_id"`
-	Limit          int32  `json:"limit"`
-	Offset         int32  `json:"offset"`
+	OrganizationId uuid.UUID
+	Limit          int32
+	Offset         int32
 }
 
 func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtifactsByOrganizationParams) ([]Artifact, error) {
@@ -213,9 +216,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListArtifactsByProducerParams struct {
-	ProducerId *string `json:"producer_id"`
-	Limit      int32   `json:"limit"`
-	Offset     int32   `json:"offset"`
+	ProducerId *uuid.UUID
+	Limit      int32
+	Offset     int32
 }
 
 func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifactsByProducerParams) ([]Artifact, error) {
@@ -266,14 +269,14 @@ RETURNING id, created_at, updated_at, credits, description, mime_type, name, org
 `
 
 type UpdateArtifactParams struct {
-	Id           string      `json:"id"`
-	Name         *string     `json:"name"`
-	Description  *string     `json:"description"`
-	MimeType     *string     `json:"mime_type"`
-	Url          *string     `json:"url"`
-	Credits      pgtype.Int4 `json:"credits"`
-	PreviewImage *string     `json:"preview_image"`
-	Text         *string     `json:"text"`
+	Id           uuid.UUID
+	Name         *string
+	Description  *string
+	MimeType     *string
+	Url          *string
+	Credits      *int32
+	PreviewImage *string
+	Text         *string
 }
 
 func (q *Queries) UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) (Artifact, error) {

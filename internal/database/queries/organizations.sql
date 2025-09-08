@@ -1,5 +1,6 @@
 -- name: CreateOrganization :one
 INSERT INTO organization (
+    id,
     name,
     billing_email,
     plan,
@@ -8,7 +9,7 @@ INSERT INTO organization (
     metadata,
     stripe_customer_id
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
+    $1, $2, $3, $4, $5, $6, $7, $8
 )
 RETURNING *;
 

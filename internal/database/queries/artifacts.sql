@@ -1,5 +1,6 @@
 -- name: CreateArtifact :one
 INSERT INTO artifact (
+    id,
     organization_id,
     name,
     description,
@@ -10,7 +11,7 @@ INSERT INTO artifact (
     producer_id,
     text
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 )
 RETURNING *;
 

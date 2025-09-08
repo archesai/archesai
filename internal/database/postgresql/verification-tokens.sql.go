@@ -9,28 +9,35 @@ import (
 	"context"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createVerificationToken = `-- name: CreateVerificationToken :one
 INSERT INTO verification_token (
+    id,
     identifier,
     value,
     expires_at
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 )
 RETURNING id, created_at, updated_at, expires_at, identifier, value
 `
 
 type CreateVerificationTokenParams struct {
-	Identifier string    `json:"identifier"`
-	Value      string    `json:"value"`
-	ExpiresAt  time.Time `json:"expires_at"`
+	Id         uuid.UUID
+	Identifier string
+	Value      string
+	ExpiresAt  time.Time
 }
 
 func (q *Queries) CreateVerificationToken(ctx context.Context, arg CreateVerificationTokenParams) (VerificationToken, error) {
-	row := q.db.QueryRow(ctx, createVerificationToken, arg.Identifier, arg.Value, arg.ExpiresAt)
+	row := q.db.QueryRow(ctx, createVerificationToken,
+		arg.Id,
+		arg.Identifier,
+		arg.Value,
+		arg.ExpiresAt,
+	)
 	var i VerificationToken
 	err := row.Scan(
 		&i.Id,
@@ -48,7 +55,7 @@ DELETE FROM verification_token
 WHERE id = $1
 `
 
-func (q *Queries) DeleteVerificationToken(ctx context.Context, id string) error {
+func (q *Queries) DeleteVerificationToken(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteVerificationToken, id)
 	return err
 }
@@ -68,7 +75,7 @@ SELECT id, created_at, updated_at, expires_at, identifier, value FROM verificati
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetVerificationToken(ctx context.Context, id string) (VerificationToken, error) {
+func (q *Queries) GetVerificationToken(ctx context.Context, id uuid.UUID) (VerificationToken, error) {
 	row := q.db.QueryRow(ctx, getVerificationToken, id)
 	var i VerificationToken
 	err := row.Scan(
@@ -88,8 +95,8 @@ WHERE identifier = $1 AND value = $2 LIMIT 1
 `
 
 type GetVerificationTokenByValueParams struct {
-	Identifier string `json:"identifier"`
-	Value      string `json:"value"`
+	Identifier string
+	Value      string
 }
 
 func (q *Queries) GetVerificationTokenByValue(ctx context.Context, arg GetVerificationTokenByValueParams) (VerificationToken, error) {
@@ -113,8 +120,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListVerificationTokensParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListVerificationTokens(ctx context.Context, arg ListVerificationTokensParams) ([]VerificationToken, error) {
@@ -152,9 +159,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListVerificationTokensByIdentifierParams struct {
-	Identifier string `json:"identifier"`
-	Limit      int32  `json:"limit"`
-	Offset     int32  `json:"offset"`
+	Identifier string
+	Limit      int32
+	Offset     int32
 }
 
 func (q *Queries) ListVerificationTokensByIdentifier(ctx context.Context, arg ListVerificationTokensByIdentifierParams) ([]VerificationToken, error) {
@@ -195,9 +202,9 @@ RETURNING id, created_at, updated_at, expires_at, identifier, value
 `
 
 type UpdateVerificationTokenParams struct {
-	Id        string             `json:"id"`
-	Value     *string            `json:"value"`
-	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
+	Id        uuid.UUID
+	Value     *string
+	ExpiresAt *time.Time
 }
 
 func (q *Queries) UpdateVerificationToken(ctx context.Context, arg UpdateVerificationTokenParams) (VerificationToken, error) {

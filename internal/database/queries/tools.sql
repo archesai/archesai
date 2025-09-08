@@ -1,12 +1,13 @@
 -- name: CreateTool :one
 INSERT INTO tool (
+    id,
     organization_id,
     name,
     description,
     input_mime_type,
     output_mime_type
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 )
 RETURNING *;
 

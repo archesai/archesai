@@ -155,13 +155,13 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *T
 	sessionNow := time.Now()
 	session := &Session{
 		Id:        uuid.New(),
-		UserId:    user.Id.String(),
+		UserId:    user.Id,
 		Token:     tokens.RefreshToken,
 		ExpiresAt: sessionNow.Add(s.config.SessionTokenExpiry).Format(time.RFC3339),
 		CreatedAt: sessionNow,
 		UpdatedAt: sessionNow,
 		// Required fields with empty defaults
-		ActiveOrganizationId: "",
+		ActiveOrganizationId: uuid.Nil,
 		IpAddress:            "",
 		UserAgent:            "",
 	}
@@ -213,12 +213,12 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 	sessionNow := time.Now()
 	session := &Session{
 		Id:                   uuid.New(),
-		UserId:               user.Id.String(),
+		UserId:               user.Id,
 		Token:                tokens.RefreshToken,
 		ExpiresAt:            sessionNow.Add(s.config.SessionTokenExpiry).Format(time.RFC3339),
 		CreatedAt:            sessionNow,
 		UpdatedAt:            sessionNow,
-		ActiveOrganizationId: "",
+		ActiveOrganizationId: uuid.Nil, // TODO: Set proper organization ID
 		IpAddress:            ipAddress,
 		UserAgent:            userAgent,
 	}

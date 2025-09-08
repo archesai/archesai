@@ -8,11 +8,12 @@ package postgresql
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createOrganization = `-- name: CreateOrganization :one
 INSERT INTO organization (
+    id,
     name,
     billing_email,
     plan,
@@ -21,23 +22,25 @@ INSERT INTO organization (
     metadata,
     stripe_customer_id
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
+    $1, $2, $3, $4, $5, $6, $7, $8
 )
 RETURNING id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
 `
 
 type CreateOrganizationParams struct {
-	Name             string   `json:"name"`
-	BillingEmail     *string  `json:"billing_email"`
-	Plan             PlanType `json:"plan"`
-	Credits          int32    `json:"credits"`
-	Logo             *string  `json:"logo"`
-	Metadata         *string  `json:"metadata"`
-	StripeCustomerId *string  `json:"stripe_customer_id"`
+	Id               uuid.UUID
+	Name             string
+	BillingEmail     *string
+	Plan             string
+	Credits          int32
+	Logo             *string
+	Metadata         *string
+	StripeCustomerId *string
 }
 
 func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganizationParams) (Organization, error) {
 	row := q.db.QueryRow(ctx, createOrganization,
+		arg.Id,
 		arg.Name,
 		arg.BillingEmail,
 		arg.Plan,
@@ -67,7 +70,7 @@ DELETE FROM organization
 WHERE id = $1
 `
 
-func (q *Queries) DeleteOrganization(ctx context.Context, id string) error {
+func (q *Queries) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteOrganization, id)
 	return err
 }
@@ -77,7 +80,7 @@ SELECT id, created_at, updated_at, billing_email, credits, logo, metadata, name,
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetOrganization(ctx context.Context, id string) (Organization, error) {
+func (q *Queries) GetOrganization(ctx context.Context, id uuid.UUID) (Organization, error) {
 	row := q.db.QueryRow(ctx, getOrganization, id)
 	var i Organization
 	err := row.Scan(
@@ -102,8 +105,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListOrganizationsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListOrganizations(ctx context.Context, arg ListOrganizationsParams) ([]Organization, error) {
@@ -152,14 +155,14 @@ RETURNING id, created_at, updated_at, billing_email, credits, logo, metadata, na
 `
 
 type UpdateOrganizationParams struct {
-	Id               string       `json:"id"`
-	Name             *string      `json:"name"`
-	BillingEmail     *string      `json:"billing_email"`
-	Plan             NullPlanType `json:"plan"`
-	Credits          pgtype.Int4  `json:"credits"`
-	Logo             *string      `json:"logo"`
-	Metadata         *string      `json:"metadata"`
-	StripeCustomerId *string      `json:"stripe_customer_id"`
+	Id               uuid.UUID
+	Name             *string
+	BillingEmail     *string
+	Plan             *string
+	Credits          *int32
+	Logo             *string
+	Metadata         *string
+	StripeCustomerId *string
 }
 
 func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganizationParams) (Organization, error) {

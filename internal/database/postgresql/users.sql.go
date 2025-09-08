@@ -8,30 +8,33 @@ package postgresql
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO "user" (
+    id,
     email,
     name,
     email_verified,
     image
 ) VALUES (
-    $1, $2, $3, $4
+    $1, $2, $3, $4, $5
 )
 RETURNING id, created_at, updated_at, email, email_verified, image, name
 `
 
 type CreateUserParams struct {
-	Email         string  `json:"email"`
-	Name          string  `json:"name"`
-	EmailVerified bool    `json:"email_verified"`
-	Image         *string `json:"image"`
+	Id            uuid.UUID
+	Email         string
+	Name          string
+	EmailVerified bool
+	Image         *string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, createUser,
+		arg.Id,
 		arg.Email,
 		arg.Name,
 		arg.EmailVerified,
@@ -55,7 +58,7 @@ DELETE FROM "user"
 WHERE id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id string) error {
+func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteUser, id)
 	return err
 }
@@ -65,7 +68,7 @@ SELECT id, created_at, updated_at, email, email_verified, image, name FROM "user
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, id)
 	var i User
 	err := row.Scan(
@@ -107,8 +110,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListUsersParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error) {
@@ -151,11 +154,11 @@ RETURNING id, created_at, updated_at, email, email_verified, image, name
 `
 
 type UpdateUserParams struct {
-	Id            string      `json:"id"`
-	Name          *string     `json:"name"`
-	Email         *string     `json:"email"`
-	EmailVerified pgtype.Bool `json:"email_verified"`
-	Image         *string     `json:"image"`
+	Id            uuid.UUID
+	Name          *string
+	Email         *string
+	EmailVerified *bool
+	Image         *string
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

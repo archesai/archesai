@@ -1,10 +1,11 @@
 -- name: CreateVerificationToken :one
 INSERT INTO verification_token (
+    id,
     identifier,
     value,
     expires_at
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 )
 RETURNING *;
 

@@ -1,5 +1,6 @@
 -- name: CreateInvitation :one
 INSERT INTO invitation (
+    id,
     organization_id,
     inviter_id,
     email,
@@ -7,7 +8,7 @@ INSERT INTO invitation (
     expires_at,
     status
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 )
 RETURNING *;
 

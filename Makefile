@@ -9,10 +9,10 @@
 # Build Configuration
 MAKEFLAGS += -j4 --no-print-directory
 SERVER_OUTPUT := bin/archesai
-CODEGEN_OUTPUT := bin/codegen
 
 # Database Configuration.
-MIGRATION_PATH := internal/database/migrations
+MIGRATION_PATH := internal/migrations/postgresql
+DATABASE_URL ?= postgresql://admin:password@localhost:5432/archesai-db
 
 # Terminal Colors
 GREEN := \033[0;32m
@@ -56,7 +56,7 @@ tui: build ## Launch the TUI interface
 	@./bin/archesai tui
 
 .PHONY: build
-build: build-archesai build-codegen ## Build all binaries
+build: build-archesai build-web ## Build all binaries
 	@echo -e "$(GREEN)✓ All builds complete!$(NC)"
 
 .PHONY: build-archesai
@@ -65,11 +65,11 @@ build-archesai: ## Build archesai server binary
 	@go build -o $(SERVER_OUTPUT) cmd/archesai/main.go
 	@echo -e "$(GREEN)✓ archesai built: $(SERVER_OUTPUT)$(NC)"
 
-.PHONY: build-codegen
-build-codegen: ## Build codegen binary
-	@echo -e "$(YELLOW)▶ Building codegen tool...$(NC)"
-	@go build -o $(CODEGEN_OUTPUT) cmd/codegen/main.go
-	@echo -e "$(GREEN)✓ codegen built: $(CODEGEN_OUTPUT)$(NC)"
+.PHONY: build-web
+build-web: ## Build web assets
+	@echo -e "$(YELLOW)▶ Building web assets...$(NC)"
+	@pnpm build
+	@echo -e "$(GREEN)✓ Web assets built!$(NC)"
 
 .PHONY: run
 run: run-api ## Alias for run-api
@@ -98,10 +98,16 @@ generate: generate-sqlc generate-oapi generate-codegen ## Generate all code
 	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
 .PHONY: generate-sqlc
-generate-sqlc: ## Generate database code with sqlc
+generate-sqlc: convert-schema ## Generate database code with sqlc
 	@echo -e "$(YELLOW)▶ Generating sqlc code...$(NC)"
 	@cd internal/database && go generate
 	@echo -e "$(GREEN)✓ sqlc generation complete!$(NC)"
+
+.PHONY: convert-schema
+convert-schema: ## Convert PostgreSQL schema to SQLite
+	@echo -e "$(YELLOW)▶ Converting PostgreSQL schema to SQLite...$(NC)"
+	@go run tools/pg-to-sqlite/main.go
+	@echo -e "$(GREEN)✓ Schema conversion complete!$(NC)"
 
 .PHONY: generate-oapi
 generate-oapi: openapi-bundle ## Generate OpenAPI server code
@@ -120,7 +126,7 @@ generate-oapi: openapi-bundle ## Generate OpenAPI server code
 .PHONY: generate-codegen
 generate-codegen: ## Generate codegen
 	@echo -e "$(YELLOW)▶ Generating code from OpenAPI schemas...$(NC)"
-	@go run cmd/codegen/main.go
+	@go run tools/codegen/main.go
 	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
 
 
@@ -134,21 +140,33 @@ migrate: migrate-up ## Alias for migrate-up
 .PHONY: migrate-up
 migrate-up: ## Apply database migrations
 	@echo -e "$(YELLOW)▶ Applying migrations...$(NC)"
-	@go run cmd/archesai/main.go migrate up
+	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" up
 	@echo -e "$(GREEN)✓ Migrations applied!$(NC)"
 
 .PHONY: migrate-down
 migrate-down: ## Rollback database migrations
 	@echo -e "$(YELLOW)▶ Rolling back migrations...$(NC)"
-	@go run cmd/archesai/main.go migrate down
+	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" down
 	@echo -e "$(GREEN)✓ Migrations rolled back!$(NC)"
 
 .PHONY: migrate-create
 migrate-create: ## Create new migration (usage: make migrate-create name=add_users)
 	@echo -e "$(YELLOW)▶ Creating migration: $(name)...$(NC)"
-	@which migrate > /dev/null || (echo "Please install golang-migrate: https://github.com/golang-migrate/migrate" && exit 1)
-	@go tool migrate create -ext sql -dir $(MIGRATION_PATH) -seq $(name)
+	@which goose > /dev/null || (echo "Please install goose: go install github.com/pressly/goose/v3/cmd/goose@latest" && exit 1)
+	@cd $(MIGRATION_PATH) && goose create $(name) sql
 	@echo -e "$(GREEN)✓ Migration created!$(NC)"
+
+.PHONY: migrate-status
+migrate-status: ## Show migration status
+	@echo -e "$(YELLOW)▶ Checking migration status...$(NC)"
+	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" status
+	@echo -e "$(GREEN)✓ Migration status checked!$(NC)"
+
+.PHONY: migrate-reset
+migrate-reset: ## Reset database to initial state
+	@echo -e "$(YELLOW)▶ Resetting database...$(NC)"
+	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" reset
+	@echo -e "$(GREEN)✓ Database reset complete!$(NC)"
 
 # ------------------------------------------
 # Testing
@@ -296,7 +314,7 @@ deps: deps-go deps-node ## Install all dependencies
 .PHONY: deps-go
 deps-go: ## Install Go dependencies and tools
 	@echo -e "$(YELLOW)▶ Installing Go dependencies...$(NC)"
-	@go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+	@go install github.com/pressly/goose/v3/cmd/goose@latest
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	@echo -e "$(GREEN)✓ Go dependencies installed!$(NC)"
 
@@ -394,11 +412,11 @@ k8s-cluster-stop: ## Stop k3d cluster
 
 .PHONY: k8s-deploy
 k8s-deploy: ## Deploy with Helm
-	@helm install dev ./helm/arches -f ./helm/dev-overrides.yaml
+	@helm install dev deployments/helm/arches -f deployments/helm/dev-overrides.yaml
 
 .PHONY: k8s-upgrade
 k8s-upgrade: ## Upgrade Helm deployment
-	@helm upgrade dev ./helm/arches -f ./helm/dev-overrides.yaml
+	@helm upgrade dev deployments/helm/arches -f deployments/helm/dev-overrides.yaml
 
 .PHONY: skaffold-dev
 skaffold-dev: ## Run with Skaffold in dev mode

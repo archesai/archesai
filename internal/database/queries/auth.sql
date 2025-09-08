@@ -1,5 +1,6 @@
 -- name: CreateSession :one
 INSERT INTO session (
+    id,
     user_id,
     token,
     expires_at,
@@ -7,7 +8,7 @@ INSERT INTO session (
     ip_address,
     user_agent
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 )
 RETURNING *;
 

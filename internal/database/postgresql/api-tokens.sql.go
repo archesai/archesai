@@ -7,12 +7,14 @@ package postgresql
 
 import (
 	"context"
+	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createApiToken = `-- name: CreateApiToken :one
 INSERT INTO api_token (
+    id,
     user_id,
     name,
     key,
@@ -28,30 +30,32 @@ INSERT INTO api_token (
     remaining,
     metadata
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
 )
 RETURNING id, created_at, updated_at, enabled, expires_at, key, last_refill, last_request, metadata, name, permissions, prefix, rate_limit_enabled, rate_limit_max, rate_limit_time_window, refill_amount, refill_interval, remaining, request_count, start, user_id
 `
 
 type CreateApiTokenParams struct {
-	UserId              string             `json:"user_id"`
-	Name                *string            `json:"name"`
-	Key                 string             `json:"key"`
-	Prefix              *string            `json:"prefix"`
-	Enabled             bool               `json:"enabled"`
-	ExpiresAt           pgtype.Timestamptz `json:"expires_at"`
-	Permissions         *string            `json:"permissions"`
-	RateLimitEnabled    bool               `json:"rate_limit_enabled"`
-	RateLimitMax        pgtype.Int4        `json:"rate_limit_max"`
-	RateLimitTimeWindow pgtype.Int4        `json:"rate_limit_time_window"`
-	RefillAmount        pgtype.Int4        `json:"refill_amount"`
-	RefillInterval      pgtype.Int4        `json:"refill_interval"`
-	Remaining           pgtype.Int4        `json:"remaining"`
-	Metadata            []byte             `json:"metadata"`
+	Id                  uuid.UUID
+	UserId              uuid.UUID
+	Name                *string
+	Key                 string
+	Prefix              *string
+	Enabled             bool
+	ExpiresAt           *time.Time
+	Permissions         *string
+	RateLimitEnabled    bool
+	RateLimitMax        *int32
+	RateLimitTimeWindow *int32
+	RefillAmount        *int32
+	RefillInterval      *int32
+	Remaining           *int32
+	Metadata            *string
 }
 
 func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (ApiToken, error) {
 	row := q.db.QueryRow(ctx, createApiToken,
+		arg.Id,
 		arg.UserId,
 		arg.Name,
 		arg.Key,
@@ -99,7 +103,7 @@ DELETE FROM api_token
 WHERE id = $1
 `
 
-func (q *Queries) DeleteApiToken(ctx context.Context, id string) error {
+func (q *Queries) DeleteApiToken(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteApiToken, id)
 	return err
 }
@@ -109,7 +113,7 @@ DELETE FROM api_token
 WHERE user_id = $1
 `
 
-func (q *Queries) DeleteApiTokensByUser(ctx context.Context, userID string) error {
+func (q *Queries) DeleteApiTokensByUser(ctx context.Context, userID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteApiTokensByUser, userID)
 	return err
 }
@@ -119,7 +123,7 @@ SELECT id, created_at, updated_at, enabled, expires_at, key, last_refill, last_r
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetApiToken(ctx context.Context, id string) (ApiToken, error) {
+func (q *Queries) GetApiToken(ctx context.Context, id uuid.UUID) (ApiToken, error) {
 	row := q.db.QueryRow(ctx, getApiToken, id)
 	var i ApiToken
 	err := row.Scan(
@@ -189,8 +193,8 @@ LIMIT $1 OFFSET $2
 `
 
 type ListApiTokensParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([]ApiToken, error) {
@@ -243,9 +247,9 @@ LIMIT $2 OFFSET $3
 `
 
 type ListApiTokensByUserParams struct {
-	UserId string `json:"user_id"`
-	Limit  int32  `json:"limit"`
-	Offset int32  `json:"offset"`
+	UserId uuid.UUID
+	Limit  int32
+	Offset int32
 }
 
 func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]ApiToken, error) {
@@ -306,15 +310,15 @@ RETURNING id, created_at, updated_at, enabled, expires_at, key, last_refill, las
 `
 
 type UpdateApiTokenParams struct {
-	Id                  string             `json:"id"`
-	Name                *string            `json:"name"`
-	Enabled             pgtype.Bool        `json:"enabled"`
-	ExpiresAt           pgtype.Timestamptz `json:"expires_at"`
-	Permissions         *string            `json:"permissions"`
-	RateLimitEnabled    pgtype.Bool        `json:"rate_limit_enabled"`
-	RateLimitMax        pgtype.Int4        `json:"rate_limit_max"`
-	RateLimitTimeWindow pgtype.Int4        `json:"rate_limit_time_window"`
-	Metadata            []byte             `json:"metadata"`
+	Id                  uuid.UUID
+	Name                *string
+	Enabled             *bool
+	ExpiresAt           *time.Time
+	Permissions         *string
+	RateLimitEnabled    *bool
+	RateLimitMax        *int32
+	RateLimitTimeWindow *int32
+	Metadata            *string
 }
 
 func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (ApiToken, error) {
