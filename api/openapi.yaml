@@ -88,6 +88,10 @@ paths:
     $ref: paths/workflows_pipelines.yaml
   /workflows/pipelines/{id}:
     $ref: paths/workflows_pipelines_{id}.yaml
+  /workflows/pipelines/{id}/steps:
+    $ref: paths/pipelines_{id}_steps.yaml
+  /workflows/pipelines/{id}/execution-plans:
+    $ref: paths/pipelines_{id}_execution-plans.yaml
   /workflows/runs:
     $ref: paths/workflows_runs.yaml
   /workflows/runs/{id}:

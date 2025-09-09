@@ -127,14 +127,14 @@ export function UserButton({
                 }
                 size={size}
               >
-                <Avatar>
+                <Avatar className="group-data-[collapsible=icon]:mx-auto">
                   <AvatarImage
                     alt={sessionData.user.email}
                     src={sessionData.user.image ?? undefined}
                   />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                   <span className="truncate font-semibold">
                     {sessionData.user.name}
                   </span>
@@ -142,7 +142,7 @@ export function UserButton({
                     {sessionData.user.email}
                   </span>
                 </div>
-                <ChevronsUpDownIcon className="ml-auto size-4" />
+                <ChevronsUpDownIcon className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
               </SidebarMenuButton>
             )}
           </DropdownMenuTrigger>

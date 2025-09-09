@@ -10,7 +10,6 @@ import {
   SidebarGroupContent,
   SidebarHeader,
   SidebarInput,
-  SidebarRail,
 } from "#components/shadcn/sidebar";
 import { OrganizationButton } from "#layouts/app-sidebar/organization-button";
 import { SidebarLinks } from "#layouts/app-sidebar/sidebar-links";
@@ -21,7 +20,11 @@ export function AppSidebar({
   ...props
 }: PageHeaderProps & React.ComponentProps<typeof Sidebar>): JSX.Element {
   return (
-    <Sidebar {...props}>
+    <Sidebar
+      {...props}
+      variant="inset"
+      collapsible="icon"
+    >
       <SidebarHeader>
         <OrganizationButton />
         {/* <SearchForm /> */}
@@ -32,7 +35,6 @@ export function AppSidebar({
       <SidebarFooter>
         <UserButton />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }

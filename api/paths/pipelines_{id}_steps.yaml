@@ -1,0 +1,113 @@
+get:
+  operationId: getPipelineSteps
+  summary: Get all steps for a pipeline
+  tags:
+    - Workflows
+  description: Retrieve all steps and their dependencies for a pipeline
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: Pipeline ID
+      schema:
+        type: string
+        format: uuid
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Pipeline steps retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: ../components/schemas/PipelineStep.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+    "401":
+      $ref: ../components/responses/Unauthorized.yaml
+
+post:
+  operationId: createPipelineStep
+  summary: Add a step to a pipeline
+  tags:
+    - Workflows
+  description: Create a new step in the pipeline
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: Pipeline ID
+      schema:
+        type: string
+        format: uuid
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            toolId:
+              description: The ID of the tool to use
+              type: string
+              format: uuid
+              minLength: 1
+              example: "987fcdeb-51a2-43d1-9876-543210fedcba"
+            name:
+              description: Name of the step
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: "Validate Input Data"
+            description:
+              description: Description of what this step does
+              type: string
+              maxLength: 1000
+              example: "Validates the input data against the configured schema"
+            config:
+              description: Configuration for the tool
+              type: object
+              additionalProperties: true
+            position:
+              description: Position in the pipeline (for ordering)
+              type: integer
+              minimum: 0
+              example: 1
+            dependencies:
+              description: IDs of steps this step depends on
+              type: array
+              items:
+                type: string
+                format: uuid
+          required:
+            - toolId
+            - name
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    "201":
+      description: Pipeline step created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/PipelineStep.yaml
+            required:
+              - data
+            additionalProperties: false
+    "400":
+      $ref: ../components/responses/BadRequest.yaml
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+    "401":
+      $ref: ../components/responses/Unauthorized.yaml

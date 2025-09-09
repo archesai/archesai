@@ -32,6 +32,18 @@ type ServerInterface interface {
 	// Update a pipeline
 	// (PATCH /workflows/pipelines/{id})
 	UpdatePipeline(ctx echo.Context, id openapi_types.UUID) error
+	// Get execution plan for a pipeline
+	// (GET /workflows/pipelines/{id}/execution-plans)
+	GetPipelineExecutionPlan(ctx echo.Context, id openapi_types.UUID) error
+	// Validate a pipeline configuration
+	// (POST /workflows/pipelines/{id}/execution-plans)
+	ValidatePipelineExecutionPlan(ctx echo.Context, id openapi_types.UUID) error
+	// Get all steps for a pipeline
+	// (GET /workflows/pipelines/{id}/steps)
+	GetPipelineSteps(ctx echo.Context, id openapi_types.UUID) error
+	// Add a step to a pipeline
+	// (POST /workflows/pipelines/{id}/steps)
+	CreatePipelineStep(ctx echo.Context, id openapi_types.UUID) error
 	// Find many runs
 	// (GET /workflows/runs)
 	FindManyRuns(ctx echo.Context, params FindManyRunsParams) error
@@ -165,6 +177,78 @@ func (w *ServerInterfaceWrapper) UpdatePipeline(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.UpdatePipeline(ctx, id)
+	return err
+}
+
+// GetPipelineExecutionPlan converts echo context to params.
+func (w *ServerInterfaceWrapper) GetPipelineExecutionPlan(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetPipelineExecutionPlan(ctx, id)
+	return err
+}
+
+// ValidatePipelineExecutionPlan converts echo context to params.
+func (w *ServerInterfaceWrapper) ValidatePipelineExecutionPlan(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ValidatePipelineExecutionPlan(ctx, id)
+	return err
+}
+
+// GetPipelineSteps converts echo context to params.
+func (w *ServerInterfaceWrapper) GetPipelineSteps(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetPipelineSteps(ctx, id)
+	return err
+}
+
+// CreatePipelineStep converts echo context to params.
+func (w *ServerInterfaceWrapper) CreatePipelineStep(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.CreatePipelineStep(ctx, id)
 	return err
 }
 
@@ -399,6 +483,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/workflows/pipelines/:id", wrapper.DeletePipeline)
 	router.GET(baseURL+"/workflows/pipelines/:id", wrapper.GetOnePipeline)
 	router.PATCH(baseURL+"/workflows/pipelines/:id", wrapper.UpdatePipeline)
+	router.GET(baseURL+"/workflows/pipelines/:id/execution-plans", wrapper.GetPipelineExecutionPlan)
+	router.POST(baseURL+"/workflows/pipelines/:id/execution-plans", wrapper.ValidatePipelineExecutionPlan)
+	router.GET(baseURL+"/workflows/pipelines/:id/steps", wrapper.GetPipelineSteps)
+	router.POST(baseURL+"/workflows/pipelines/:id/steps", wrapper.CreatePipelineStep)
 	router.GET(baseURL+"/workflows/runs", wrapper.FindManyRuns)
 	router.POST(baseURL+"/workflows/runs", wrapper.CreateRun)
 	router.DELETE(baseURL+"/workflows/runs/:id", wrapper.DeleteRun)
@@ -593,6 +681,226 @@ type UpdatePipeline404ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response UpdatePipeline404ApplicationProblemPlusJSONResponse) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineExecutionPlanRequestObject struct {
+	Id openapi_types.UUID `json:"id"`
+}
+
+type GetPipelineExecutionPlanResponseObject interface {
+	VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error
+}
+
+type GetPipelineExecutionPlan200JSONResponse struct {
+	Data struct {
+		// EstimatedDuration Estimated execution time in seconds
+		EstimatedDuration *int `json:"estimatedDuration,omitempty"`
+
+		// IsValid Whether the pipeline DAG is valid (no cycles)
+		IsValid bool `json:"isValid"`
+		Levels  []struct {
+			// Level Execution level (0-based)
+			Level int `json:"level"`
+
+			// Steps Step IDs that can run in parallel at this level
+			Steps []openapi_types.UUID `json:"steps"`
+		} `json:"levels"`
+		PipelineId openapi_types.UUID `json:"pipelineId"`
+
+		// TotalSteps Total number of steps in the pipeline
+		TotalSteps int `json:"totalSteps"`
+	} `json:"data"`
+}
+
+func (response GetPipelineExecutionPlan200JSONResponse) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineExecutionPlan400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetPipelineExecutionPlan400ApplicationProblemPlusJSONResponse) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineExecutionPlan401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response GetPipelineExecutionPlan401ApplicationProblemPlusJSONResponse) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineExecutionPlan404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetPipelineExecutionPlan404ApplicationProblemPlusJSONResponse) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ValidatePipelineExecutionPlanRequestObject struct {
+	Id openapi_types.UUID `json:"id"`
+}
+
+type ValidatePipelineExecutionPlanResponseObject interface {
+	VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error
+}
+
+type ValidatePipelineExecutionPlan200JSONResponse struct {
+	Data struct {
+		// Issues List of any warnings or non-critical issues
+		Issues *[]string `json:"issues,omitempty"`
+		Valid  bool      `json:"valid"`
+	} `json:"data"`
+}
+
+func (response ValidatePipelineExecutionPlan200JSONResponse) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ValidatePipelineExecutionPlan400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ValidatePipelineExecutionPlan400ApplicationProblemPlusJSONResponse) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ValidatePipelineExecutionPlan401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response ValidatePipelineExecutionPlan401ApplicationProblemPlusJSONResponse) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ValidatePipelineExecutionPlan404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ValidatePipelineExecutionPlan404ApplicationProblemPlusJSONResponse) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineStepsRequestObject struct {
+	Id openapi_types.UUID `json:"id"`
+}
+
+type GetPipelineStepsResponseObject interface {
+	VisitGetPipelineStepsResponse(w http.ResponseWriter) error
+}
+
+type GetPipelineSteps200JSONResponse struct {
+	Data []PipelineStep `json:"data"`
+}
+
+func (response GetPipelineSteps200JSONResponse) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineSteps401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response GetPipelineSteps401ApplicationProblemPlusJSONResponse) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineSteps404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetPipelineSteps404ApplicationProblemPlusJSONResponse) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreatePipelineStepRequestObject struct {
+	Id   openapi_types.UUID `json:"id"`
+	Body *CreatePipelineStepJSONRequestBody
+}
+
+type CreatePipelineStepResponseObject interface {
+	VisitCreatePipelineStepResponse(w http.ResponseWriter) error
+}
+
+type CreatePipelineStep201JSONResponse struct {
+	// Data Schema for PipelineStep entity
+	Data PipelineStep `json:"data"`
+}
+
+func (response CreatePipelineStep201JSONResponse) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreatePipelineStep400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreatePipelineStep400ApplicationProblemPlusJSONResponse) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreatePipelineStep401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response CreatePipelineStep401ApplicationProblemPlusJSONResponse) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreatePipelineStep404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreatePipelineStep404ApplicationProblemPlusJSONResponse) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -978,6 +1286,18 @@ type StrictServerInterface interface {
 	// Update a pipeline
 	// (PATCH /workflows/pipelines/{id})
 	UpdatePipeline(ctx context.Context, request UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error)
+	// Get execution plan for a pipeline
+	// (GET /workflows/pipelines/{id}/execution-plans)
+	GetPipelineExecutionPlan(ctx context.Context, request GetPipelineExecutionPlanRequestObject) (GetPipelineExecutionPlanResponseObject, error)
+	// Validate a pipeline configuration
+	// (POST /workflows/pipelines/{id}/execution-plans)
+	ValidatePipelineExecutionPlan(ctx context.Context, request ValidatePipelineExecutionPlanRequestObject) (ValidatePipelineExecutionPlanResponseObject, error)
+	// Get all steps for a pipeline
+	// (GET /workflows/pipelines/{id}/steps)
+	GetPipelineSteps(ctx context.Context, request GetPipelineStepsRequestObject) (GetPipelineStepsResponseObject, error)
+	// Add a step to a pipeline
+	// (POST /workflows/pipelines/{id}/steps)
+	CreatePipelineStep(ctx context.Context, request CreatePipelineStepRequestObject) (CreatePipelineStepResponseObject, error)
 	// Find many runs
 	// (GET /workflows/runs)
 	FindManyRuns(ctx context.Context, request FindManyRunsRequestObject) (FindManyRunsResponseObject, error)
@@ -1151,6 +1471,112 @@ func (sh *strictHandler) UpdatePipeline(ctx echo.Context, id openapi_types.UUID)
 		return err
 	} else if validResponse, ok := response.(UpdatePipelineResponseObject); ok {
 		return validResponse.VisitUpdatePipelineResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetPipelineExecutionPlan operation middleware
+func (sh *strictHandler) GetPipelineExecutionPlan(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetPipelineExecutionPlanRequestObject
+
+	request.Id = id
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetPipelineExecutionPlan(ctx.Request().Context(), request.(GetPipelineExecutionPlanRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetPipelineExecutionPlan")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetPipelineExecutionPlanResponseObject); ok {
+		return validResponse.VisitGetPipelineExecutionPlanResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// ValidatePipelineExecutionPlan operation middleware
+func (sh *strictHandler) ValidatePipelineExecutionPlan(ctx echo.Context, id openapi_types.UUID) error {
+	var request ValidatePipelineExecutionPlanRequestObject
+
+	request.Id = id
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ValidatePipelineExecutionPlan(ctx.Request().Context(), request.(ValidatePipelineExecutionPlanRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ValidatePipelineExecutionPlan")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ValidatePipelineExecutionPlanResponseObject); ok {
+		return validResponse.VisitValidatePipelineExecutionPlanResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetPipelineSteps operation middleware
+func (sh *strictHandler) GetPipelineSteps(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetPipelineStepsRequestObject
+
+	request.Id = id
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetPipelineSteps(ctx.Request().Context(), request.(GetPipelineStepsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetPipelineSteps")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetPipelineStepsResponseObject); ok {
+		return validResponse.VisitGetPipelineStepsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// CreatePipelineStep operation middleware
+func (sh *strictHandler) CreatePipelineStep(ctx echo.Context, id openapi_types.UUID) error {
+	var request CreatePipelineStepRequestObject
+
+	request.Id = id
+
+	var body CreatePipelineStepJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreatePipelineStep(ctx.Request().Context(), request.(CreatePipelineStepRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreatePipelineStep")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(CreatePipelineStepResponseObject); ok {
+		return validResponse.VisitCreatePipelineStepResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

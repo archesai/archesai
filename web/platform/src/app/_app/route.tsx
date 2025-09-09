@@ -12,7 +12,7 @@ import { siteRoutes } from "#lib/site-config";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: ({ context }) => {
-    if (!context.session?.data) {
+    if (process.env.ARCHESAI_AUTH_ENABLED && !context.session?.data) {
       throw redirect({ to: "/auth/login" });
     }
   },
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_app")({
 
 export default function AppLayout(): JSX.Element {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       {/* This is the sidebar that is displayed on the left side of the screen. */}
       <AppSidebar siteRoutes={siteRoutes} />
       {/* This is the main content area. */}

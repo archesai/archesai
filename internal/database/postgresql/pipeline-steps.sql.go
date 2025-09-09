@@ -7,9 +7,23 @@ package postgresql
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
+
+const countPipelineSteps = `-- name: CountPipelineSteps :one
+SELECT COUNT(*) as count
+FROM pipeline_step
+WHERE pipeline_id = $1
+`
+
+func (q *Queries) CountPipelineSteps(ctx context.Context, pipelineID uuid.UUID) (int64, error) {
+	row := q.db.QueryRow(ctx, countPipelineSteps, pipelineID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
 
 const createPipelineStep = `-- name: CreatePipelineStep :one
 INSERT INTO pipeline_step (
@@ -77,6 +91,62 @@ func (q *Queries) GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineSt
 		&i.ToolId,
 	)
 	return i, err
+}
+
+const getPipelineStepsWithDependencies = `-- name: GetPipelineStepsWithDependencies :many
+SELECT 
+    ps.id,
+    ps.pipeline_id,
+    ps.tool_id,
+    ps.created_at,
+    ps.updated_at,
+    COALESCE(
+        ARRAY_AGG(
+            DISTINCT psd.prerequisite_id
+        ) FILTER (WHERE psd.prerequisite_id IS NOT NULL),
+        ARRAY[]::UUID[]
+    ) as dependencies
+FROM pipeline_step ps
+LEFT JOIN pipeline_step_to_dependency psd ON ps.id = psd.pipeline_step_id
+WHERE ps.pipeline_id = $1
+GROUP BY ps.id, ps.pipeline_id, ps.tool_id, ps.created_at, ps.updated_at
+ORDER BY ps.created_at ASC
+`
+
+type GetPipelineStepsWithDependenciesRow struct {
+	Id           uuid.UUID
+	PipelineId   uuid.UUID
+	ToolId       uuid.UUID
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Dependencies interface{}
+}
+
+func (q *Queries) GetPipelineStepsWithDependencies(ctx context.Context, pipelineID uuid.UUID) ([]GetPipelineStepsWithDependenciesRow, error) {
+	rows, err := q.db.Query(ctx, getPipelineStepsWithDependencies, pipelineID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPipelineStepsWithDependenciesRow
+	for rows.Next() {
+		var i GetPipelineStepsWithDependenciesRow
+		if err := rows.Scan(
+			&i.Id,
+			&i.PipelineId,
+			&i.ToolId,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Dependencies,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listPipelineSteps = `-- name: ListPipelineSteps :many

@@ -220,7 +220,7 @@
             "description": "Create JSONB schema definition for workflow configurations and establish database models for DAG storage",
             "dependencies": [],
             "details": "Design flexible JSONB schema for workflow definitions supporting various node types and edge configurations. Update existing Pipeline model to support DAG structure. Define interfaces for nodes, edges, and workflow metadata. Ensure compatibility with existing workflows package structures.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -229,7 +229,7 @@
             "description": "Build the fundamental directed acyclic graph data structure with basic operations",
             "dependencies": [],
             "details": "Create DAG struct with nodes and edges collections. Implement add/remove operations for nodes and edges. Build adjacency list representation for efficient traversal. Add methods for getting predecessors and successors of nodes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -310,7 +310,7 @@
               "4.8"
             ],
             "details": "Update PostgresRepository to support DAG operations. Modify Pipeline model to store DAG definition in JSONB field. Enhance Run model to track node execution states. Add migration scripts for database schema updates.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -2583,7 +2583,7 @@
       "tag": "main",
       "created": "2025-09-08T12:34:56.551Z",
       "description": "Tasks for main context",
-      "updated": "2025-09-09T11:04:09.636Z"
+      "updated": "2025-09-09T13:31:31.200Z"
     }
   }
 }

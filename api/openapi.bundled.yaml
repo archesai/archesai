@@ -1623,6 +1623,242 @@ paths:
                 additionalProperties: false
         '404':
           $ref: '#/components/responses/NotFound'
+  /workflows/pipelines/{id}/steps:
+    get:
+      operationId: getPipelineSteps
+      summary: Get all steps for a pipeline
+      tags:
+        - Workflows
+      description: Retrieve all steps and their dependencies for a pipeline
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Pipeline ID
+          schema:
+            type: string
+            format: uuid
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Pipeline steps retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PipelineStep'
+                required:
+                  - data
+                additionalProperties: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: createPipelineStep
+      summary: Add a step to a pipeline
+      tags:
+        - Workflows
+      description: Create a new step in the pipeline
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Pipeline ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                toolId:
+                  description: The ID of the tool to use
+                  type: string
+                  format: uuid
+                  minLength: 1
+                  example: 987fcdeb-51a2-43d1-9876-543210fedcba
+                name:
+                  description: Name of the step
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  example: Validate Input Data
+                description:
+                  description: Description of what this step does
+                  type: string
+                  maxLength: 1000
+                  example: Validates the input data against the configured schema
+                config:
+                  description: Configuration for the tool
+                  type: object
+                  additionalProperties: true
+                position:
+                  description: Position in the pipeline (for ordering)
+                  type: integer
+                  minimum: 0
+                  example: 1
+                dependencies:
+                  description: IDs of steps this step depends on
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+              required:
+                - toolId
+                - name
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Pipeline step created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PipelineStep'
+                required:
+                  - data
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workflows/pipelines/{id}/execution-plans:
+    get:
+      operationId: getPipelineExecutionPlan
+      summary: Get execution plan for a pipeline
+      tags:
+        - Workflows
+      description: Get the DAG execution plan showing which steps can run in parallel
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Pipeline ID
+          schema:
+            type: string
+            format: uuid
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Execution plan retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      pipelineId:
+                        type: string
+                        format: uuid
+                        minLength: 1
+                        example: 123e4567-e89b-12d3-a456-426614174000
+                      levels:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            level:
+                              type: integer
+                              description: Execution level (0-based)
+                              example: 0
+                            steps:
+                              type: array
+                              items:
+                                type: string
+                                format: uuid
+                              description: Step IDs that can run in parallel at this level
+                          required:
+                            - level
+                            - steps
+                      totalSteps:
+                        type: integer
+                        description: Total number of steps in the pipeline
+                        example: 5
+                      isValid:
+                        type: boolean
+                        description: Whether the pipeline DAG is valid (no cycles)
+                        example: true
+                      estimatedDuration:
+                        type: integer
+                        description: Estimated execution time in seconds
+                        example: 3600
+                    required:
+                      - pipelineId
+                      - levels
+                      - totalSteps
+                      - isValid
+                required:
+                  - data
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      operationId: validatePipelineExecutionPlan
+      summary: Validate a pipeline configuration
+      tags:
+        - Workflows
+      description: Validate that a pipeline can be executed without issues
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Pipeline ID
+          schema:
+            type: string
+            format: uuid
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Pipeline is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      valid:
+                        type: boolean
+                        example: true
+                      issues:
+                        type: array
+                        items:
+                          type: string
+                        description: List of any warnings or non-critical issues
+                    required:
+                      - valid
+                required:
+                  - data
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /workflows/runs:
     post:
       operationId: createRun
@@ -3179,6 +3415,87 @@ components:
               maxLength: 1000
               example: Processes incoming data through validation, transformation, and storage steps
           required:
+            - name
+          additionalProperties: false
+    PipelineStep:
+      description: Schema for PipelineStep entity
+      allOf:
+        - $ref: '#/components/schemas/Base'
+        - type: object
+          properties:
+            pipelineId:
+              description: The ID of the pipeline this step belongs to
+              type: string
+              format: uuid
+              minLength: 1
+              example: 123e4567-e89b-12d3-a456-426614174000
+            toolId:
+              description: The ID of the tool to execute
+              type: string
+              format: uuid
+              minLength: 1
+              example: 987fcdeb-51a2-43d1-9876-543210fedcba
+            name:
+              description: Name of the step
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: Data Validation
+            description:
+              description: Description of what this step does
+              type: string
+              maxLength: 1000
+              example: Validates incoming data against schema
+            config:
+              description: Configuration parameters for the tool
+              type: object
+              additionalProperties: true
+              example:
+                schema: v1.0
+                strict: true
+                maxErrors: 10
+            position:
+              description: Position in the pipeline for ordering
+              type: integer
+              minimum: 0
+              example: 1
+            retries:
+              description: Number of retries on failure
+              type: integer
+              minimum: 0
+              maximum: 10
+              default: 0
+              example: 3
+            timeout:
+              description: Timeout in seconds
+              type: integer
+              minimum: 1
+              maximum: 86400
+              default: 3600
+              example: 1800
+            dependencies:
+              description: IDs of steps this step depends on
+              type: array
+              items:
+                type: string
+                format: uuid
+              example:
+                - 123e4567-e89b-12d3-a456-426614174000
+            status:
+              description: Current status of the step
+              type: string
+              enum:
+                - pending
+                - ready
+                - running
+                - completed
+                - failed
+                - skipped
+              default: pending
+              example: pending
+          required:
+            - pipelineId
+            - toolId
             - name
           additionalProperties: false
     Run:

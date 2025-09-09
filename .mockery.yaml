@@ -19,6 +19,8 @@ packages:
   github.com/archesai/archesai/internal/workflows:
     interfaces:
       Repository:
+      ToolRunner:
+      QueueService:
   github.com/archesai/archesai/internal/content:
     interfaces:
       Repository:

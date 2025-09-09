@@ -11,6 +11,9 @@ import (
 )
 
 type Querier interface {
+	// Check if adding this dependency would create a direct cycle
+	CheckDirectCircularDependency(ctx context.Context, arg CheckDirectCircularDependencyParams) (bool, error)
+	CountPipelineSteps(ctx context.Context, pipelineID uuid.UUID) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
 	CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (ApiToken, error)
@@ -21,6 +24,7 @@ type Querier interface {
 	CreateOrganization(ctx context.Context, arg CreateOrganizationParams) (Organization, error)
 	CreatePipeline(ctx context.Context, arg CreatePipelineParams) (Pipeline, error)
 	CreatePipelineStep(ctx context.Context, arg CreatePipelineStepParams) (PipelineStep, error)
+	CreatePipelineStepDependency(ctx context.Context, arg CreatePipelineStepDependencyParams) error
 	CreateRun(ctx context.Context, arg CreateRunParams) (Run, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateTool(ctx context.Context, arg CreateToolParams) (Tool, error)
@@ -28,6 +32,7 @@ type Querier interface {
 	CreateVerificationToken(ctx context.Context, arg CreateVerificationTokenParams) (VerificationToken, error)
 	DeleteAccount(ctx context.Context, id uuid.UUID) error
 	DeleteAccountsByUser(ctx context.Context, userID uuid.UUID) error
+	DeleteAllStepDependencies(ctx context.Context, pipelineStepID uuid.UUID) error
 	DeleteApiToken(ctx context.Context, id uuid.UUID) error
 	DeleteApiTokensByUser(ctx context.Context, userID uuid.UUID) error
 	DeleteArtifact(ctx context.Context, id uuid.UUID) error
@@ -41,6 +46,7 @@ type Querier interface {
 	DeleteOrganization(ctx context.Context, id uuid.UUID) error
 	DeletePipeline(ctx context.Context, id uuid.UUID) error
 	DeletePipelineStep(ctx context.Context, id uuid.UUID) error
+	DeletePipelineStepDependency(ctx context.Context, arg DeletePipelineStepDependencyParams) error
 	DeletePipelineStepsByPipeline(ctx context.Context, pipelineID uuid.UUID) error
 	DeletePipelinesByOrganization(ctx context.Context, organizationID uuid.UUID) error
 	DeleteRun(ctx context.Context, id uuid.UUID) error
@@ -66,9 +72,13 @@ type Querier interface {
 	GetOrganization(ctx context.Context, id uuid.UUID) (Organization, error)
 	GetPipeline(ctx context.Context, id uuid.UUID) (Pipeline, error)
 	GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineStep, error)
+	GetPipelineStepDependencies(ctx context.Context, pipelineID uuid.UUID) ([]GetPipelineStepDependenciesRow, error)
+	GetPipelineStepsWithDependencies(ctx context.Context, pipelineID uuid.UUID) ([]GetPipelineStepsWithDependenciesRow, error)
 	GetRun(ctx context.Context, id uuid.UUID) (Run, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetSessionByToken(ctx context.Context, token string) (Session, error)
+	GetStepDependencies(ctx context.Context, pipelineStepID uuid.UUID) ([]uuid.UUID, error)
+	GetStepDependents(ctx context.Context, prerequisiteID uuid.UUID) ([]uuid.UUID, error)
 	GetTool(ctx context.Context, id uuid.UUID) (Tool, error)
 	GetUser(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)

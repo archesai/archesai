@@ -76,7 +76,7 @@ run-server: ## Run the API server
 .PHONY: run-web
 run-web: ## Run the web UI server
 	@echo -e "$(YELLOW)▶ Starting web server...$(NC)"
-	@go run cmd/archesai/main.go web
+	@pnpm -F @archesai/platform dev --port 3000 --host 0.0.0.0
 
 .PHONY: run-worker
 run-worker: ## Run the background worker

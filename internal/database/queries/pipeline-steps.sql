@@ -43,3 +43,27 @@ WHERE id = $1;
 -- name: DeletePipelineStepsByPipeline :exec
 DELETE FROM pipeline_step
 WHERE pipeline_id = $1;
+
+-- name: CountPipelineSteps :one
+SELECT COUNT(*) as count
+FROM pipeline_step
+WHERE pipeline_id = $1;
+
+-- name: GetPipelineStepsWithDependencies :many
+SELECT 
+    ps.id,
+    ps.pipeline_id,
+    ps.tool_id,
+    ps.created_at,
+    ps.updated_at,
+    COALESCE(
+        ARRAY_AGG(
+            DISTINCT psd.prerequisite_id
+        ) FILTER (WHERE psd.prerequisite_id IS NOT NULL),
+        ARRAY[]::UUID[]
+    ) as dependencies
+FROM pipeline_step ps
+LEFT JOIN pipeline_step_to_dependency psd ON ps.id = psd.pipeline_step_id
+WHERE ps.pipeline_id = $1
+GROUP BY ps.id, ps.pipeline_id, ps.tool_id, ps.created_at, ps.updated_at
+ORDER BY ps.created_at ASC;

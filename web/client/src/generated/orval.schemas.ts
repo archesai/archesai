@@ -446,6 +446,79 @@ export type PipelineAllOf = {
 export type Pipeline = Base & OrganizationReference & PipelineAllOf;
 
 /**
+ * Configuration parameters for the tool
+ */
+export type PipelineStepAllOfConfig = { [key: string]: unknown };
+
+/**
+ * Current status of the step
+ */
+export type PipelineStepAllOfStatus = typeof PipelineStepAllOfStatus[keyof typeof PipelineStepAllOfStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelineStepAllOfStatus = {
+  pending: 'pending',
+  ready: 'ready',
+  running: 'running',
+  completed: 'completed',
+  failed: 'failed',
+  skipped: 'skipped',
+} as const;
+
+export type PipelineStepAllOf = {
+  /**
+   * The ID of the pipeline this step belongs to
+   * @minLength 1
+   */
+  pipelineId: string;
+  /**
+   * The ID of the tool to execute
+   * @minLength 1
+   */
+  toolId: string;
+  /**
+   * Name of the step
+   * @minLength 1
+   * @maxLength 255
+   */
+  name: string;
+  /**
+   * Description of what this step does
+   * @maxLength 1000
+   */
+  description?: string;
+  /** Configuration parameters for the tool */
+  config?: PipelineStepAllOfConfig;
+  /**
+   * Position in the pipeline for ordering
+   * @minimum 0
+   */
+  position?: number;
+  /**
+   * Number of retries on failure
+   * @minimum 0
+   * @maximum 10
+   */
+  retries?: number;
+  /**
+   * Timeout in seconds
+   * @minimum 1
+   * @maximum 86400
+   */
+  timeout?: number;
+  /** IDs of steps this step depends on */
+  dependencies?: string[];
+  /** Current status of the step */
+  status?: PipelineStepAllOfStatus;
+};
+
+/**
+ * Schema for PipelineStep entity
+ */
+export type PipelineStep = Base & PipelineStepAllOf;
+
+/**
  * @minLength 1
  */
 export type RunStatus = typeof RunStatus[keyof typeof RunStatus];
@@ -2467,6 +2540,80 @@ export type UpdatePipelineBody = {
 
 export type UpdatePipeline200 = {
   data: Pipeline;
+};
+
+export type GetPipelineSteps200 = {
+  data: PipelineStep[];
+};
+
+/**
+ * Configuration for the tool
+ */
+export type CreatePipelineStepBodyConfig = { [key: string]: unknown };
+
+export type CreatePipelineStepBody = {
+  /**
+   * The ID of the tool to use
+   * @minLength 1
+   */
+  toolId: string;
+  /**
+   * Name of the step
+   * @minLength 1
+   * @maxLength 255
+   */
+  name: string;
+  /**
+   * Description of what this step does
+   * @maxLength 1000
+   */
+  description?: string;
+  /** Configuration for the tool */
+  config?: CreatePipelineStepBodyConfig;
+  /**
+   * Position in the pipeline (for ordering)
+   * @minimum 0
+   */
+  position?: number;
+  /** IDs of steps this step depends on */
+  dependencies?: string[];
+};
+
+export type CreatePipelineStep201 = {
+  data: PipelineStep;
+};
+
+export type GetPipelineExecutionPlan200DataLevelsItem = {
+  /** Execution level (0-based) */
+  level: number;
+  /** Step IDs that can run in parallel at this level */
+  steps: string[];
+};
+
+export type GetPipelineExecutionPlan200Data = {
+  /** @minLength 1 */
+  pipelineId: string;
+  levels: GetPipelineExecutionPlan200DataLevelsItem[];
+  /** Total number of steps in the pipeline */
+  totalSteps: number;
+  /** Whether the pipeline DAG is valid (no cycles) */
+  isValid: boolean;
+  /** Estimated execution time in seconds */
+  estimatedDuration?: number;
+};
+
+export type GetPipelineExecutionPlan200 = {
+  data: GetPipelineExecutionPlan200Data;
+};
+
+export type ValidatePipelineExecutionPlan200Data = {
+  valid: boolean;
+  /** List of any warnings or non-critical issues */
+  issues?: string[];
+};
+
+export type ValidatePipelineExecutionPlan200 = {
+  data: ValidatePipelineExecutionPlan200Data;
 };
 
 export type CreateRunBody = {

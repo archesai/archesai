@@ -4,6 +4,10 @@ package workflows
 import (
 	"context"
 	"log/slog"
+	"time"
+
+	"github.com/google/uuid"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -160,6 +164,81 @@ func (h *Handler) DeletePipeline(ctx context.Context, req DeletePipelineRequestO
 	}
 
 	return DeletePipeline200JSONResponse{}, nil
+}
+
+// GetPipelineSteps retrieves all steps for a pipeline
+func (h *Handler) GetPipelineSteps(_ context.Context, req GetPipelineStepsRequestObject) (GetPipelineStepsResponseObject, error) {
+	// TODO: Implement GetPipelineSteps in service
+	_ = req
+	steps := []PipelineStep{}
+
+	return GetPipelineSteps200JSONResponse{
+		Data: steps,
+	}, nil
+}
+
+// CreatePipelineStep adds a step to a pipeline
+func (h *Handler) CreatePipelineStep(_ context.Context, req CreatePipelineStepRequestObject) (CreatePipelineStepResponseObject, error) {
+	// TODO: Implement CreatePipelineStep in service
+	step := PipelineStep{
+		Id:           uuid.New(),
+		PipelineId:   req.Id,
+		ToolId:       req.Body.ToolId,
+		Name:         req.Body.Name,
+		Description:  req.Body.Description,
+		Config:       req.Body.Config,
+		Position:     req.Body.Position,
+		Dependencies: req.Body.Dependencies,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	return CreatePipelineStep201JSONResponse{
+		Data: step,
+	}, nil
+}
+
+// GetPipelineExecutionPlan gets the execution plan for a pipeline
+func (h *Handler) GetPipelineExecutionPlan(_ context.Context, req GetPipelineExecutionPlanRequestObject) (GetPipelineExecutionPlanResponseObject, error) {
+	// TODO: Implement GetPipelineExecutionPlan in service
+	_ = req
+
+	return GetPipelineExecutionPlan200JSONResponse{
+		Data: struct {
+			EstimatedDuration *int `json:"estimatedDuration,omitempty"`
+			IsValid           bool `json:"isValid"`
+			Levels            []struct {
+				Level int                  `json:"level"`
+				Steps []openapi_types.UUID `json:"steps"`
+			} `json:"levels"`
+			PipelineId openapi_types.UUID `json:"pipelineId"` //nolint:revive // matches generated code
+			TotalSteps int                `json:"totalSteps"`
+		}{
+			PipelineId: req.Id,
+			IsValid:    true,
+			TotalSteps: 0,
+			Levels: []struct {
+				Level int                  `json:"level"`
+				Steps []openapi_types.UUID `json:"steps"`
+			}{},
+		},
+	}, nil
+}
+
+// ValidatePipelineExecutionPlan validates a pipeline configuration
+func (h *Handler) ValidatePipelineExecutionPlan(_ context.Context, req ValidatePipelineExecutionPlanRequestObject) (ValidatePipelineExecutionPlanResponseObject, error) {
+	// TODO: Implement ValidatePipelineExecutionPlan in service
+	_ = req
+
+	return ValidatePipelineExecutionPlan200JSONResponse{
+		Data: struct {
+			Issues *[]string `json:"issues,omitempty"`
+			Valid  bool      `json:"valid"`
+		}{
+			Valid:  true,
+			Issues: &[]string{},
+		},
+	}, nil
 }
 
 // Run handlers

@@ -16,6 +16,16 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
+// Defines values for PipelineStepStatus.
+const (
+	Completed PipelineStepStatus = "completed"
+	Failed    PipelineStepStatus = "failed"
+	Pending   PipelineStepStatus = "pending"
+	Ready     PipelineStepStatus = "ready"
+	Running   PipelineStepStatus = "running"
+	Skipped   PipelineStepStatus = "skipped"
+)
+
 // Defines values for RunStatus.
 const (
 	COMPLETED  RunStatus = "COMPLETED"
@@ -126,6 +136,51 @@ type Pipeline struct {
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
+
+// PipelineStep defines model for PipelineStep.
+type PipelineStep struct {
+	// Config Configuration parameters for the tool
+	Config map[string]interface{} `json:"config,omitempty,omitzero" yaml:"config,omitempty"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Dependencies IDs of steps this step depends on
+	Dependencies []openapi_types.UUID `json:"dependencies,omitempty,omitzero" yaml:"dependencies,omitempty"`
+
+	// Description Description of what this step does
+	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
+
+	// Name Name of the step
+	Name string `json:"name" yaml:"name"`
+
+	// PipelineId The ID of the pipeline this step belongs to
+	PipelineId openapi_types.UUID `json:"pipelineId" yaml:"pipelineId"`
+
+	// Position Position in the pipeline for ordering
+	Position int `json:"position,omitempty,omitzero" yaml:"position,omitempty"`
+
+	// Retries Number of retries on failure
+	Retries int `json:"retries,omitempty,omitzero" yaml:"retries,omitempty"`
+
+	// Status Current status of the step
+	Status PipelineStepStatus `json:"status,omitempty,omitzero" yaml:"status,omitempty"`
+
+	// Timeout Timeout in seconds
+	Timeout int `json:"timeout,omitempty,omitzero" yaml:"timeout,omitempty"`
+
+	// ToolId The ID of the tool to execute
+	ToolId openapi_types.UUID `json:"toolId" yaml:"toolId"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+}
+
+// PipelineStepStatus Current status of the step
+type PipelineStepStatus string
 
 // Problem RFC 7807 (Problem Details) compliant error response
 type Problem struct {
@@ -317,6 +372,27 @@ type UpdatePipelineJSONBody struct {
 	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 }
 
+// CreatePipelineStepJSONBody defines parameters for CreatePipelineStep.
+type CreatePipelineStepJSONBody struct {
+	// Config Configuration for the tool
+	Config map[string]interface{} `json:"config,omitempty,omitzero" yaml:"config,omitempty"`
+
+	// Dependencies IDs of steps this step depends on
+	Dependencies []openapi_types.UUID `json:"dependencies,omitempty,omitzero" yaml:"dependencies,omitempty"`
+
+	// Description Description of what this step does
+	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
+
+	// Name Name of the step
+	Name string `json:"name" yaml:"name"`
+
+	// Position Position in the pipeline (for ordering)
+	Position int `json:"position,omitempty,omitzero" yaml:"position,omitempty"`
+
+	// ToolId The ID of the tool to use
+	ToolId openapi_types.UUID `json:"toolId" yaml:"toolId"`
+}
+
 // FindManyRunsParams defines parameters for FindManyRuns.
 type FindManyRunsParams struct {
 	// Filter Filter runs by field values. Supported fields:
@@ -392,6 +468,9 @@ type CreatePipelineJSONRequestBody CreatePipelineJSONBody
 
 // UpdatePipelineJSONRequestBody defines body for UpdatePipeline for application/json ContentType.
 type UpdatePipelineJSONRequestBody UpdatePipelineJSONBody
+
+// CreatePipelineStepJSONRequestBody defines body for CreatePipelineStep for application/json ContentType.
+type CreatePipelineStepJSONRequestBody CreatePipelineStepJSONBody
 
 // CreateRunJSONRequestBody defines body for CreateRun for application/json ContentType.
 type CreateRunJSONRequestBody CreateRunJSONBody

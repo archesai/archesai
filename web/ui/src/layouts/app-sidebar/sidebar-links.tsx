@@ -43,18 +43,21 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
 
                     if (!children.length) {
                       return (
-                        <SidebarMenuItem key={rootRoute.href}>
+                        <SidebarMenuItem key={rootRoute.href} className="relative">
+                          {rootRoute.href === pathname && (
+                            <div className="absolute left-0 top-0 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />
+                          )}
                           <SidebarMenuButton
                             asChild
                             isActive={rootRoute.href === pathname}
                             tooltip={rootRoute.title}
                           >
                             <Link
-                              className="text-muted-foreground"
+                              className="text-muted-foreground flex items-center gap-2 group-data-[collapsible=icon]:gap-0"
                               to={rootRoute.href}
                             >
-                              <rootRoute.Icon />
-                              <span>{rootRoute.title}</span>
+                              <rootRoute.Icon className="group-data-[collapsible=icon]:mx-auto" />
+                              <span className="group-data-[collapsible=icon]:hidden">{rootRoute.title}</span>
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -71,12 +74,12 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
                             <SidebarMenuButton
-                              className="text-muted-foreground"
+                              className="text-muted-foreground flex items-center gap-2 group-data-[collapsible=icon]:gap-0"
                               tooltip={rootRoute.title}
                             >
-                              <rootRoute.Icon />
-                              <span>{rootRoute.title}</span>
-                              <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                              <rootRoute.Icon className="group-data-[collapsible=icon]:mx-auto" />
+                              <span className="group-data-[collapsible=icon]:hidden">{rootRoute.title}</span>
+                              <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent>
