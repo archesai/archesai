@@ -753,15 +753,11 @@ type ConfirmPasswordResetResponseObject interface {
 	VisitConfirmPasswordResetResponse(w http.ResponseWriter) error
 }
 
-type ConfirmPasswordReset204ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
-}
+type ConfirmPasswordReset204Response = NoContentResponse
 
-func (response ConfirmPasswordReset204ApplicationProblemPlusJSONResponse) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
+func (response ConfirmPasswordReset204Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
-
-	return json.NewEncoder(w).Encode(response)
+	return nil
 }
 
 type ConfirmPasswordReset401ApplicationProblemPlusJSONResponse struct {
@@ -775,7 +771,9 @@ func (response ConfirmPasswordReset401ApplicationProblemPlusJSONResponse) VisitC
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ConfirmPasswordReset404ApplicationProblemPlusJSONResponse Problem
+type ConfirmPasswordReset404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
 
 func (response ConfirmPasswordReset404ApplicationProblemPlusJSONResponse) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")

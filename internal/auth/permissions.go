@@ -169,6 +169,8 @@ var RolePermissions = map[Role][]Permission{
 		PermOrgManageMembers,
 		PermOrgManageBilling,
 		PermOrgManageSettings,
+		PermOrgInviteMembers,
+		PermOrgViewAuditLog,
 		PermWorkflowCreate,
 		PermWorkflowRead,
 		PermWorkflowUpdate,
@@ -178,6 +180,8 @@ var RolePermissions = map[Role][]Permission{
 		PermContentRead,
 		PermContentUpdate,
 		PermContentDelete,
+		PermContentShare,
+		PermContentPublish,
 		PermAIUsePremium,
 		PermAIManageKeys,
 		PermAPICreateKeys,
@@ -223,6 +227,7 @@ var RolePermissions = map[Role][]Permission{
 	},
 	RoleOrgMember: {
 		PermOrgRead,
+		PermWorkflowCreate,
 		PermWorkflowRead,
 		PermWorkflowExecute,
 		PermContentCreate,
@@ -233,6 +238,10 @@ var RolePermissions = map[Role][]Permission{
 	RoleOrgViewer: {
 		PermOrgRead,
 		PermWorkflowRead,
+		PermContentRead,
+	},
+	RoleOrgGuest: {
+		PermOrgRead,
 		PermContentRead,
 	},
 }
@@ -276,7 +285,7 @@ func GetAPIKeyScopes() []Scope {
 		ScopeExecuteWorkflows,
 		ScopeReadContent,
 		ScopeWriteContent,
-		// ScopeExecuteAI would go here when implemented
+		ScopeExecuteAI,
 	}
 }
 

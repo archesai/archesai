@@ -341,6 +341,9 @@ type LoginJSONBody struct {
 
 	// Password The password for the account
 	Password string `json:"password" yaml:"password"`
+
+	// RememberMe Whether to create a long-lived session
+	RememberMe bool `json:"rememberMe,omitempty,omitzero" yaml:"rememberMe,omitempty"`
 }
 
 // RequestPasswordResetJSONBody defines parameters for RequestPasswordReset.

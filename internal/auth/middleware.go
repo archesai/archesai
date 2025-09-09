@@ -54,14 +54,16 @@ func Middleware(authService *Service, logger *slog.Logger) echo.MiddlewareFunc {
 				return echo.NewHTTPError(http.StatusUnauthorized, "user not found")
 			}
 
-			// Set claims and user in context
+			// Set claims, user, and session token in context
 			c.Set(string(AuthClaimsContextKey), claims)
 			c.Set(string(AuthUserContextKey), claims.UserID)
 			c.Set(string(UserContextKey), user)
+			c.Set(string(SessionTokenContextKey), token) // Add session token to context
 
 			// Add user info to request context for downstream use
 			ctx := context.WithValue(c.Request().Context(), AuthClaimsContextKey, claims)
 			ctx = context.WithValue(ctx, AuthUserContextKey, claims.UserID)
+			ctx = context.WithValue(ctx, SessionTokenContextKey, token) // Add session token to request context
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)
@@ -91,15 +93,17 @@ func OptionalAuthMiddleware(authService *Service, logger *slog.Logger) echo.Midd
 					// Get user if token is valid
 					user, userErr := authService.GetUserByID(c.Request().Context(), claims.UserID)
 					if userErr == nil {
-						// Set claims and user in context if valid
+						// Set claims, user, and session token in context if valid
 						c.Set(string(AuthClaimsContextKey), claims)
 						c.Set(string(AuthUserContextKey), claims.UserID)
 						c.Set(string(UserContextKey), user)
+						c.Set(string(SessionTokenContextKey), token) // Add session token to context
 
 						// Add user info to request context
 						ctx := context.WithValue(c.Request().Context(), AuthClaimsContextKey, claims)
 						ctx = context.WithValue(ctx, AuthUserContextKey, claims.UserID)
 						ctx = context.WithValue(ctx, UserContextKey, user)
+						ctx = context.WithValue(ctx, SessionTokenContextKey, token) // Add session token to request context
 						c.SetRequest(c.Request().WithContext(ctx))
 					} else {
 						logger.Debug("user not found for valid token", "error", userErr)

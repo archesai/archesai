@@ -23,6 +23,11 @@ post:
               type: string
               minLength: 1
               example: example-string
+            rememberMe:
+              description: Whether to create a long-lived session
+              type: boolean
+              default: false
+              example: true
           required:
             - email
             - password

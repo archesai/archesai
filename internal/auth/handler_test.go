@@ -111,7 +111,7 @@ func TestHandler_Register(t *testing.T) {
 			request: RegisterRequestObject{
 				Body: &RegisterJSONRequestBody{
 					Email:    "test@example.com",
-					Password: "password123",
+					Password: "Password123!",
 					Name:     "Test User",
 				},
 			},
@@ -137,7 +137,7 @@ func TestHandler_Register(t *testing.T) {
 			request: RegisterRequestObject{
 				Body: &RegisterJSONRequestBody{
 					Email:    "existing@example.com",
-					Password: "password123",
+					Password: "Password123!",
 					Name:     "Existing User",
 				},
 			},
@@ -243,7 +243,7 @@ func TestHandler_Login(t *testing.T) {
 			request: LoginRequestObject{
 				Body: &LoginJSONRequestBody{
 					Email:    "test@example.com",
-					Password: "password123",
+					Password: "Password123!",
 				},
 			},
 			setupMocks: func(t *testing.T) (*Service, *MockUsersRepository) {
@@ -251,7 +251,7 @@ func TestHandler_Login(t *testing.T) {
 				mockUsersRepo := NewMockUsersRepository()
 
 				userID := uuid.New()
-				hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
+				hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Password123!"), bcrypt.DefaultCost)
 
 				// Setup account retrieval by provider and provider ID
 				mockRepo.EXPECT().GetAccountByProviderAndProviderID(mock.Anything, string(Local), "test@example.com").Return(&Account{
@@ -303,7 +303,7 @@ func TestHandler_Login(t *testing.T) {
 			request: LoginRequestObject{
 				Body: &LoginJSONRequestBody{
 					Email:    "nonexistent@example.com",
-					Password: "password123",
+					Password: "Password123!",
 				},
 			},
 			setupMocks: func(t *testing.T) (*Service, *MockUsersRepository) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -351,12 +352,98 @@ func (h *Handler) ConfirmEmailVerification(ctx context.Context, req ConfirmEmail
 	}, nil
 }
 
-// RequestPasswordReset handles password reset requests (stub implementation)
-func (h *Handler) RequestPasswordReset(_ context.Context, _ RequestPasswordResetRequestObject) (RequestPasswordResetResponseObject, error) {
-	return nil, fmt.Errorf("not implemented")
+// RequestPasswordReset handles password reset requests
+func (h *Handler) RequestPasswordReset(ctx context.Context, req RequestPasswordResetRequestObject) (RequestPasswordResetResponseObject, error) {
+	if req.Body == nil || req.Body.Email == "" {
+		return RequestPasswordReset400ApplicationProblemPlusJSONResponse{
+			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
+				Title:  "Invalid request",
+				Status: 400,
+				Type:   "invalid-request",
+				Detail: "Email address is required",
+			},
+		}, nil
+	}
+
+	// Request password reset
+	err := h.service.RequestPasswordReset(ctx, req.Body.Email)
+	if err != nil {
+		h.logger.Error("failed to request password reset", "error", err, "email", req.Body.Email)
+		return RequestPasswordReset400ApplicationProblemPlusJSONResponse{
+			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
+				Title:  "Failed to send password reset email",
+				Status: 400,
+				Type:   "email-send-failed",
+				Detail: "Could not send password reset email. Please try again later.",
+			},
+		}, nil
+	}
+
+	// Return 204 No Content on success (don't reveal if email exists)
+	return RequestPasswordReset204Response{}, nil
 }
 
-// ConfirmPasswordReset handles password reset confirmation (stub implementation)
-func (h *Handler) ConfirmPasswordReset(_ context.Context, _ ConfirmPasswordResetRequestObject) (ConfirmPasswordResetResponseObject, error) {
-	return nil, fmt.Errorf("not implemented")
+// ConfirmPasswordReset handles password reset confirmation
+func (h *Handler) ConfirmPasswordReset(ctx context.Context, req ConfirmPasswordResetRequestObject) (ConfirmPasswordResetResponseObject, error) {
+	if req.Body == nil || req.Body.Token == "" || req.Body.NewPassword == "" {
+		return ConfirmPasswordReset401ApplicationProblemPlusJSONResponse{
+			UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
+				Title:  "Invalid request",
+				Status: 400,
+				Type:   "invalid-request",
+				Detail: "Token and new password are required",
+			},
+		}, nil
+	}
+
+	// Confirm password reset
+	err := h.service.ConfirmPasswordReset(ctx, req.Body.Token, req.Body.NewPassword)
+	if err != nil {
+		switch err {
+		case ErrInvalidToken:
+			return ConfirmPasswordReset404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse{
+					Title:  "Invalid token",
+					Status: 404,
+					Type:   "invalid-token",
+					Detail: "The password reset token is invalid or has been used",
+				},
+			}, nil
+		case ErrTokenExpired:
+			return ConfirmPasswordReset401ApplicationProblemPlusJSONResponse{
+				UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
+					Title:  "Token expired",
+					Status: 401,
+					Type:   "token-expired",
+					Detail: "The password reset token has expired. Please request a new one.",
+				},
+			}, nil
+		case ErrUserNotFound, ErrAccountNotFound:
+			return ConfirmPasswordReset404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse{
+					Title:  "User not found",
+					Status: 404,
+					Type:   "user-not-found",
+					Detail: "The user associated with this token was not found",
+				},
+			}, nil
+		default:
+			// Check if it's a password validation error
+			if strings.Contains(err.Error(), "password validation failed") {
+				return ConfirmPasswordReset401ApplicationProblemPlusJSONResponse{
+					UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
+						Title:  "Invalid password",
+						Status: 400,
+						Type:   "invalid-password",
+						Detail: err.Error(),
+					},
+				}, nil
+			}
+			h.logger.Error("failed to confirm password reset", "error", err)
+			return nil, err
+		}
+	}
+
+	// Return 204 No Content on success
+	return ConfirmPasswordReset204Response{}, nil
 }

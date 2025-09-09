@@ -8,9 +8,11 @@ import (
 	"github.com/google/uuid"
 )
 
+const testEmail = "test@example.com"
+
 func TestClaimsBuilder(t *testing.T) {
 	userID := uuid.New()
-	email := "test@example.com"
+	email := testEmail
 
 	t.Run("basic claims creation", func(t *testing.T) {
 		claims := NewClaimsBuilder(userID, email).Build()

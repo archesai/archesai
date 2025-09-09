@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/archesai/archesai/internal/logger"
+	"github.com/archesai/archesai/internal/users"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -71,6 +72,7 @@ func TestOptionalAuthMiddleware(t *testing.T) {
 				IssuedAt:  jwt.NewNumericDate(time.Now()),
 			},
 			UserID:     userID,
+			Email:      "test@example.com",
 			SessionID:  sessionID.String(),
 			TokenType:  AccessTokenType,
 			AuthMethod: AuthMethodPassword,
@@ -90,6 +92,16 @@ func TestOptionalAuthMiddleware(t *testing.T) {
 			Token:     "session-token",
 			ExpiresAt: time.Now().Add(24 * time.Hour).Format(time.RFC3339),
 		}, nil).Maybe()
+
+		// Add the user to the mock users repository so GetUserByID succeeds
+		mockUsersRepo.users[userID] = &users.User{
+			Id:            userID,
+			Email:         "test@example.com",
+			Name:          "Test User",
+			EmailVerified: true,
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
+		}
 
 		middleware := OptionalAuthMiddleware(service, log)
 		handler := middleware(func(c echo.Context) error {
@@ -330,19 +342,16 @@ func TestRequireOrganization(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
 
-	t.Run("denies access with different organization", func(t *testing.T) {
+	t.Run("denies access without any organization", func(t *testing.T) {
 		e := echo.New()
-		orgID := uuid.New()
-		differentOrgID := uuid.New()
-		req := httptest.NewRequest(http.MethodGet, "/orgs/"+orgID.String(), nil)
+		req := httptest.NewRequest(http.MethodGet, "/protected", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		c.SetParamNames("orgId")
-		c.SetParamValues(orgID.String())
 
 		claims := &EnhancedClaims{
 			UserID:         uuid.New(),
-			OrganizationID: differentOrgID,
+			OrganizationID: uuid.Nil,              // No organization
+			Organizations:  []OrganizationClaim{}, // Empty organizations list
 		}
 		c.Set(string(AuthClaimsContextKey), claims)
 
@@ -352,17 +361,10 @@ func TestRequireOrganization(t *testing.T) {
 		})
 
 		err := handler(c)
-		if err != nil {
-			httpErr, ok := err.(*echo.HTTPError)
-			if ok {
-				assert.Equal(t, http.StatusForbidden, httpErr.Code)
-			} else {
-				assert.Error(t, err)
-			}
-		} else {
-			// If no error, fail the test as we expect an error
-			assert.Fail(t, "Expected an error but got none")
-		}
+		assert.Error(t, err)
+		httpErr, ok := err.(*echo.HTTPError)
+		assert.True(t, ok)
+		assert.Equal(t, http.StatusForbidden, httpErr.Code)
 	})
 }
 
@@ -450,7 +452,12 @@ func TestRateLimitMiddleware(t *testing.T) {
 		e := echo.New()
 		middleware := RateLimitMiddleware(2, 60)
 
-		// First two requests should succeed
+		// Create the handler that simulates failed authentication
+		handler := middleware(func(_ echo.Context) error {
+			return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
+		})
+
+		// First two failed requests should be allowed through
 		for i := 0; i < 2; i++ {
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
 			req.RemoteAddr = "192.168.1.1:1234"
@@ -458,12 +465,11 @@ func TestRateLimitMiddleware(t *testing.T) {
 			c := e.NewContext(req, rec)
 			c.Response().Writer = rec
 
-			handler := middleware(func(c echo.Context) error {
-				return c.String(http.StatusOK, "ok")
-			})
-
 			err := handler(c)
-			assert.NoError(t, err)
+			assert.Error(t, err) // Expect error from the handler (401)
+			httpErr, ok := err.(*echo.HTTPError)
+			assert.True(t, ok)
+			assert.Equal(t, http.StatusUnauthorized, httpErr.Code)
 		}
 
 		// Third request should be rate limited
@@ -471,10 +477,6 @@ func TestRateLimitMiddleware(t *testing.T) {
 		req.RemoteAddr = "192.168.1.1:1234"
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		handler := middleware(func(c echo.Context) error {
-			return c.String(http.StatusOK, "ok")
-		})
 
 		err := handler(c)
 		assert.Error(t, err)

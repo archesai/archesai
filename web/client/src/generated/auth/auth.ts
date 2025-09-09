@@ -45,15 +45,15 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 export const getRegisterUrl = () => {
 
 
-
+  
 
   return `/auth/register`
 }
 
 export const register = async (registerBody: RegisterBody, options?: RequestInit): Promise<TokenResponse> => {
-
+  
   return customFetch<TokenResponse>(getRegisterUrl(),
-  {
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -76,7 +76,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
+      
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof register>>, {data: RegisterBody}> = (props) => {
@@ -85,7 +85,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
           return  register(data,requestOptions)
         }
 
-
+        
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -117,15 +117,15 @@ export const useRegister = <TError = UnauthorizedResponse,
 export const getLoginUrl = () => {
 
 
-
+  
 
   return `/auth/login`
 }
 
 export const login = async (loginBody: LoginBody, options?: RequestInit): Promise<TokenResponse> => {
-
+  
   return customFetch<TokenResponse>(getLoginUrl(),
-  {
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -148,7 +148,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
+      
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof login>>, {data: LoginBody}> = (props) => {
@@ -157,7 +157,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
           return  login(data,requestOptions)
         }
 
-
+        
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -189,19 +189,19 @@ export const useLogin = <TError = UnauthorizedResponse,
 export const getLogoutUrl = () => {
 
 
-
+  
 
   return `/auth/logout`
 }
 
 export const logout = async ( options?: RequestInit): Promise<NoContentResponse> => {
-
+  
   return customFetch<NoContentResponse>(getLogoutUrl(),
-  {
+  {      
     ...options,
     method: 'POST'
-
-
+    
+    
   }
 );}
 
@@ -219,22 +219,22 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
+      
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof logout>>, void> = () => {
-
+          
 
           return  logout(requestOptions)
         }
 
-
+        
 
 
   return  { mutationFn, ...mutationOptions }}
 
     export type LogoutMutationResult = NonNullable<Awaited<ReturnType<typeof logout>>>
-
+    
     export type LogoutMutationError = UnauthorizedResponse
 
     /**
@@ -260,15 +260,15 @@ export const useLogout = <TError = UnauthorizedResponse,
 export const getConfirmEmailVerificationUrl = () => {
 
 
-
+  
 
   return `/auth/email-verification/verify`
 }
 
 export const confirmEmailVerification = async (confirmEmailVerificationBody: ConfirmEmailVerificationBody, options?: RequestInit): Promise<ConfirmEmailVerification200> => {
-
+  
   return customFetch<ConfirmEmailVerification200>(getConfirmEmailVerificationUrl(),
-  {
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -291,7 +291,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
+      
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmEmailVerification>>, {data: ConfirmEmailVerificationBody}> = (props) => {
@@ -300,7 +300,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
           return  confirmEmailVerification(data,requestOptions)
         }
 
-
+        
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -332,19 +332,19 @@ export const useConfirmEmailVerification = <TError = UnauthorizedResponse | NotF
 export const getRequestEmailVerificationUrl = () => {
 
 
-
+  
 
   return `/auth/email-verification/request`
 }
 
 export const requestEmailVerification = async ( options?: RequestInit): Promise<NoContentResponse> => {
-
+  
   return customFetch<NoContentResponse>(getRequestEmailVerificationUrl(),
-  {
+  {      
     ...options,
     method: 'POST'
-
-
+    
+    
   }
 );}
 
@@ -362,22 +362,22 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
+      
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestEmailVerification>>, void> = () => {
-
+          
 
           return  requestEmailVerification(requestOptions)
         }
 
-
+        
 
 
   return  { mutationFn, ...mutationOptions }}
 
     export type RequestEmailVerificationMutationResult = NonNullable<Awaited<ReturnType<typeof requestEmailVerification>>>
-
+    
     export type RequestEmailVerificationMutationError = BadRequestResponse | UnauthorizedResponse
 
     /**
@@ -403,15 +403,15 @@ export const useRequestEmailVerification = <TError = BadRequestResponse | Unauth
 export const getRequestPasswordResetUrl = () => {
 
 
-
+  
 
   return `/auth/password-reset/request`
 }
 
 export const requestPasswordReset = async (requestPasswordResetBody: RequestPasswordResetBody, options?: RequestInit): Promise<NoContentResponse> => {
-
+  
   return customFetch<NoContentResponse>(getRequestPasswordResetUrl(),
-  {
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -434,7 +434,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
+      
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestPasswordReset>>, {data: RequestPasswordResetBody}> = (props) => {
@@ -443,7 +443,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
           return  requestPasswordReset(data,requestOptions)
         }
 
-
+        
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -475,15 +475,15 @@ export const useRequestPasswordReset = <TError = BadRequestResponse,
 export const getConfirmPasswordResetUrl = () => {
 
 
-
+  
 
   return `/auth/password-reset/verify`
 }
 
-export const confirmPasswordReset = async (confirmPasswordResetBody: ConfirmPasswordResetBody, options?: RequestInit): Promise<NotFoundResponse> => {
-
-  return customFetch<NotFoundResponse>(getConfirmPasswordResetUrl(),
-  {
+export const confirmPasswordReset = async (confirmPasswordResetBody: ConfirmPasswordResetBody, options?: RequestInit): Promise<NoContentResponse> => {
+  
+  return customFetch<NoContentResponse>(getConfirmPasswordResetUrl(),
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -506,7 +506,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
+      
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmPasswordReset>>, {data: ConfirmPasswordResetBody}> = (props) => {
@@ -515,7 +515,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
           return  confirmPasswordReset(data,requestOptions)
         }
 
-
+        
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -547,15 +547,15 @@ export const useConfirmPasswordReset = <TError = UnauthorizedResponse | NotFound
 export const getRequestEmailChangeUrl = () => {
 
 
-
+  
 
   return `/auth/email-change/request`
 }
 
 export const requestEmailChange = async (requestEmailChangeBody: RequestEmailChangeBody, options?: RequestInit): Promise<NoContentResponse> => {
-
+  
   return customFetch<NoContentResponse>(getRequestEmailChangeUrl(),
-  {
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -578,7 +578,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
+      
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestEmailChange>>, {data: RequestEmailChangeBody}> = (props) => {
@@ -587,7 +587,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
           return  requestEmailChange(data,requestOptions)
         }
 
-
+        
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -619,15 +619,15 @@ export const useRequestEmailChange = <TError = BadRequestResponse | Unauthorized
 export const getConfirmEmailChangeUrl = () => {
 
 
-
+  
 
   return `/auth/email-change/verify`
 }
 
 export const confirmEmailChange = async (confirmEmailChangeBody: ConfirmEmailChangeBody, options?: RequestInit): Promise<NotFoundResponse> => {
-
+  
   return customFetch<NotFoundResponse>(getConfirmEmailChangeUrl(),
-  {
+  {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
@@ -650,7 +650,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       : {...options, mutation: {...options.mutation, mutationKey}}
       : {mutation: { mutationKey, }, request: undefined};
 
-
+      
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmEmailChange>>, {data: ConfirmEmailChangeBody}> = (props) => {
@@ -659,7 +659,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
           return  confirmEmailChange(data,requestOptions)
         }
 
-
+        
 
 
   return  { mutationFn, ...mutationOptions }}
@@ -684,3 +684,4 @@ export const useConfirmEmailChange = <TError = UnauthorizedResponse | NotFoundRe
 
       return useMutation(mutationOptions , queryClient);
     }
+    
