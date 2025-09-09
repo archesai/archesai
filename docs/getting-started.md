@@ -1,10 +1,12 @@
 # ArchesAI Documentation
 
-Welcome to the ArchesAI documentation! This guide will help you understand, develop, and deploy the ArchesAI platform.
+Welcome to the ArchesAI documentation! This guide will help you understand, develop, and deploy the
+ArchesAI platform.
 
 ## What is ArchesAI?
 
-ArchesAI is a high-performance data processing platform with AI-powered chat interface and workflow automation. It provides:
+ArchesAI is a high-performance data processing platform with AI-powered chat interface and workflow
+automation. It provides:
 
 - **Multi-Provider AI**: Support for OpenAI, Claude, Gemini, Ollama
 - **Chat Interface**: Simple persona-based chat system with session management
@@ -47,7 +49,8 @@ Learn about the system design, patterns, and overall architecture of ArchesAI.
 
 ### 🚀 [Development](guides/development.md)
 
-Everything you need to know about setting up your development environment and contributing to the project.
+Everything you need to know about setting up your development environment and contributing to the
+project.
 
 ### 📚 [API Reference](api-reference/overview.md)
 
@@ -55,7 +58,8 @@ Complete API documentation with endpoints, schemas, and examples.
 
 ### 🎯 [Features](features/overview.md)
 
-Detailed guides for each feature domain: authentication, organizations, workflows, and content management.
+Detailed guides for each feature domain: authentication, organizations, workflows, and content
+management.
 
 ### 🐳 [Deployment](deployment/overview.md)
 
@@ -73,9 +77,13 @@ Security best practices and guidelines.
 
 Performance optimization and monitoring guides.
 
+### 📊 [Monitoring](monitoring/overview.md)
+
+Built-in Grafana and Loki stack with pre-configured dashboards for comprehensive observability.
+
 ## Need Help?
 
-- **Email**: <support@archesai.com>
+- **Email**: [support@archesai.com](mailto:support@archesai.com)
 - **Issues**: [GitHub Issues](https://github.com/archesai/archesai/issues)
 - **Contributing**: See our [Contributing Guide](contributing.md)
 

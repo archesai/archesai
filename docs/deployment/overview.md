@@ -1,6 +1,7 @@
 # Deployment Documentation
 
-This section covers deployment strategies, infrastructure setup, and production configuration for ArchesAI.
+This section covers deployment strategies, infrastructure setup, and production configuration for
+ArchesAI.
 
 ## Deployment Options
 

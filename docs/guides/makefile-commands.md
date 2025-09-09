@@ -1,6 +1,7 @@
 # Makefile Commands Reference
 
-This document provides a comprehensive reference for all available Makefile targets in the ArchesAI project.
+This document provides a comprehensive reference for all available Makefile targets in the ArchesAI
+project.
 
 ## Usage
 

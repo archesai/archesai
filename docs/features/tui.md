@@ -2,7 +2,8 @@
 
 ## Overview
 
-The ArchesAI TUI provides an interactive terminal interface for configuration management and AI agent interactions.
+The ArchesAI TUI provides an interactive terminal interface for configuration management and AI
+agent interactions.
 
 ## Features
 
@@ -163,7 +164,6 @@ The TUI is built with:
 
 - [Bubble Tea](https://github.com/charmbracelet/bubbletea) - Terminal UI framework
 - [Lipgloss](https://github.com/charmbracelet/lipgloss) - Terminal styling
-- [ArchesAI LLM Package](../internal/llm/) - Direct LLM client interfaces
 
 ## Design Principles
 
@@ -211,7 +211,8 @@ The TUI is built with:
 ### Provider Notes
 
 - **OpenAI**: Fully functional with streaming support
-- **Ollama**: Requires local Ollama server running (<http://localhost:11434>)
+- **Ollama**: Requires local Ollama server running
+  ([http://localhost:11434](http://localhost:11434))
 - **Claude/Gemini**: Implementation ready, just need client setup
 
 ## Development

@@ -1,26 +1,56 @@
+<div align=center>
+
+<a href="https://archesai.com" alt="ArchesAI">
+  <img src="./assets/github-hero.png" width=630 alt="ArchesAI Platform">
+</a>
+
+[![Go Version](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat&labelColor=000000)](https://go.dev/)
+[![License](https://img.shields.io/badge/license-Proprietary-red?style=flat&labelColor=000000)](LICENSE)
+[![API Documentation](https://img.shields.io/badge/API-OpenAPI%203.0-green?style=flat&labelColor=000000)](http://localhost:8080/docs)
+[![GitHub Stars](https://img.shields.io/github/stars/archesai/archesai?style=flat&labelColor=000000)](https://github.com/archesai/archesai)
+[![Made with Go](https://img.shields.io/badge/Made%20with-Go-00ADD8.svg?style=flat&logo=go&labelColor=000)](https://go.dev)
+
+</div>
+
 # ArchesAI
 
-[![Go Version](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square)](https://go.dev/)
-[![License](https://img.shields.io/badge/license-Proprietary-red?style=flat-square)](LICENSE)
-[![API Documentation](https://img.shields.io/badge/API-OpenAPI%203.0-green?style=flat-square)](http://localhost:8080/docs)
+AI-powered data processing platform with workflow automation and beautiful terminal interfaces.
 
-A high-performance data processing platform with AI-powered chat interface and workflow automation.
+<a href="#-installation"><strong>Installation</strong></a> ·
+<a href="https://archesai.com/docs"><strong>Docs</strong></a> ·
+<a href="#-examples"><strong>Examples</strong></a> ·
+<a href="#-contributing--community"><strong>Contributing</strong></a> ·
+<a href="#-features"><strong>Features</strong></a>
 
-## Quick Start
+## Introduction
 
-### 1. Configuration Viewer (No API Key Needed)
+**ArchesAI** is a high-performance data processing platform that combines AI-powered chat
+interfaces, workflow automation, and beautiful terminal UIs to create powerful developer
+experiences.
+
+Built for developers who need:
+
+🚀 Fast & efficient data processing<br /> 🤖 Multi-provider AI integration<br /> 💬 Beautiful
+terminal chat interface<br /> ⚡ Workflow automation with DAG support<br /> 🔧 Code-first
+development with OpenAPI<br />
+
+## 🚀 Quick Start
+
+Get started with ArchesAI in seconds:
+
+### Configuration Viewer (No API Key Needed)
 
 ```bash
 archesai tui
 ```
 
-### 2. API Server
+### API Server
 
 ```bash
 archesai api
 ```
 
-### 3. AI Chat Interface
+### AI Chat Interface
 
 ```bash
 export OPENAI_API_KEY=your-key
@@ -30,7 +60,8 @@ archesai tui --chat
 archesai tui --chat --provider=ollama
 ```
 
-For detailed installation and setup instructions, see [Development Guide](docs/guides/development.md).
+For detailed installation and setup instructions, see
+[Development Guide](docs/guides/development.md).
 
 ## Documentation
 
@@ -64,14 +95,14 @@ For detailed installation and setup instructions, see [Development Guide](docs/g
 - [CLI](internal/cli/) - Command-line interface
 - [TUI](internal/tui/) - Terminal user interface
 
-## Features
+## ✨ Features
 
-- **Multi-Provider AI**: Support for OpenAI, Claude, Gemini, Ollama
-- **Chat Interface**: Simple persona-based chat system with session management
-- **Beautiful TUI**: Terminal interface for configuration and chat
-- **Workflow Automation**: DAG-based data processing pipelines
-- **Code Generation**: OpenAPI and SQL-driven development
-- **Modern Stack**: Go, PostgreSQL/SQLite, Redis
+- 🤖 **Multi-Provider AI**: Support for OpenAI, Claude, Gemini, Ollama
+- 💬 **Chat Interface**: Simple persona-based chat system with session management
+- 🎨 **Beautiful TUI**: Terminal interface for configuration and chat
+- ⚙️ **Workflow Automation**: DAG-based data processing pipelines
+- 🔩 **Code Generation**: OpenAPI and SQL-driven development
+- 🚀 **Modern Stack**: Go, PostgreSQL/SQLite, Redis
 
 ## Development
 
@@ -92,5 +123,5 @@ See [LICENSE](LICENSE) file for details.
 
 ## Support
 
-- Email: <support@archesai.com>
-- Issues: <https://github.com/archesai/archesai/issues>
+- Email: support@archesai.com
+- Issues: https://github.com/archesai/archesai/issues

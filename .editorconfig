@@ -23,7 +23,8 @@ max_line_length = 80
 [*.{json,jsonc}]
 
 # Markdown files
-[*.md]
+[*.{md,mdx}]
+max_line_length = off
 trim_trailing_whitespace = false
 
 # JavaScript/TypeScript files

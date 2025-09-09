@@ -1,0 +1,28 @@
+{
+  "name": "@archesai/docs",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "zudoku dev",
+    "copy:api": "cp ../../api/openapi.bundled.yaml ./apis/openapi.yaml",
+    "copy:docs": "cp -r ../../docs/** ./pages/documentation",
+    "build": "zudoku build",
+    "preview": "zudoku preview",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "motion": "catalog:ui",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "zudoku": "catalog:"
+  },
+  "devDependencies": {
+    "@archesai/eslint": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "eslint": "^9.35.0",
+    "typescript": "catalog:"
+  }
+}

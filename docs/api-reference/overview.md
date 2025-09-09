@@ -1,22 +1,20 @@
 # API Reference
 
-Welcome to the ArchesAI API reference documentation. Our REST API is built using
-OpenAPI 3.0 specifications and provides comprehensive access to all platform
-features.
+Welcome to the ArchesAI API reference documentation. Our REST API is built using OpenAPI 3.0
+specifications and provides comprehensive access to all platform features.
 
 ## Overview
 
-The ArchesAI API is organized around REST principles with predictable URLs,
-standard HTTP response codes, and JSON request/response bodies. All API
-endpoints are prefixed with the API version.
+The ArchesAI API is organized around REST principles with predictable URLs, standard HTTP response
+codes, and JSON request/response bodies. All API endpoints are prefixed with the API version.
 
 **Base URL**: `https://api.archesai.com/v1`
 
 ## Authentication
 
 All API requests require authentication using Bearer tokens. See
-[Authentication](../architecture/authentication.md) for detailed information about obtaining
-and using API keys.
+[Authentication](../architecture/authentication.md) for detailed information about obtaining and
+using API keys.
 
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
@@ -31,8 +29,7 @@ User authentication, session management, and OAuth integration.
 
 ### Organizations
 
-Multi-tenant organization management, member invitations, and role-based access
-control.
+Multi-tenant organization management, member invitations, and role-based access control.
 
 ### Workflows
 

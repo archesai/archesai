@@ -1099,8 +1099,8 @@ github.com/spaolacci/murmur3 v1.1.0 h1:7c1g84S4BPRrfL5Xrdp6fOJ206sU9y293DDHaoy0b
 github.com/spaolacci/murmur3 v1.1.0/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/speakeasy-api/jsonpath v0.6.2 h1:Mys71yd6u8kuowNCR0gCVPlVAHCmKtoGXYoAtcEbqXQ=
 github.com/speakeasy-api/jsonpath v0.6.2/go.mod h1:ymb2iSkyOycmzKwbEAYPJV/yi2rSmvBCLZJcyD+VVWw=
-github.com/speakeasy-api/openapi v1.6.3 h1:C7x86LocEng48rbE0OR8sJSdtP23S+jFdevnrwCToPU=
-github.com/speakeasy-api/openapi v1.6.3/go.mod h1:AJZiiCik4q+ItdPw4isiozMMUOzHvCT64fPW0rN1QhE=
+github.com/speakeasy-api/openapi v1.6.4 h1:WLoZYEK9xZQVb2JNkbXWS0HBwHYQ3GNqf+8Q3E/kXmA=
+github.com/speakeasy-api/openapi v1.6.4/go.mod h1:fy+CvRcKj+HDU0QNdnyG6UkfJOEjhqCuNC7o4AtLPAk=
 github.com/speakeasy-api/openapi-overlay v0.10.2 h1:VOdQ03eGKeiHnpb1boZCGm7x8Haj6gST0P3SGTX95GU=
 github.com/speakeasy-api/openapi-overlay v0.10.2/go.mod h1:n0iOU7AqKpNFfEt6tq7qYITC4f0yzVVdFw0S7hukemg=
 github.com/spf13/afero v1.15.0 h1:b/YBCLWAJdFWJTN9cLhiXXcD7mzKn9Dm86dNnfyQw1I=

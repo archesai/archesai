@@ -1,7 +1,7 @@
 # Development Guide
 
-Welcome to the ArchesAI development guide! This document covers everything you need to know to set up your
-development environment and contribute to the project.
+Welcome to the ArchesAI development guide! This document covers everything you need to know to set
+up your development environment and contribute to the project.
 
 ## Prerequisites
 
@@ -60,11 +60,13 @@ For a complete list of commands, see [Makefile Commands](makefile-commands.md).
 
 ## Project Structure
 
-For a detailed overview of the project organization, see [Project Layout](../architecture/project-layout.md).
+For a detailed overview of the project organization, see
+[Project Layout](../architecture/project-layout.md).
 
 ## Development Workflow
 
-1. **Code Generation First**: Define APIs in OpenAPI specs and database queries in SQL before implementing
+1. **Code Generation First**: Define APIs in OpenAPI specs and database queries in SQL before
+   implementing
 2. **Run `make generate`** after any changes to API or database schemas
 3. **Follow the testing strategy** outlined in [Testing Documentation](testing.md)
 4. **Use the TUI for configuration** as described in the [TUI Guide](../features/tui.md)
@@ -80,7 +82,8 @@ See our [Contributing Guide](../contributing.md) for detailed information about:
 
 ## Architecture
 
-Learn about the system design and patterns in our [Architecture Documentation](../architecture/system-design.md).
+Learn about the system design and patterns in our
+[Architecture Documentation](../architecture/system-design.md).
 
 ## Need Help?
 

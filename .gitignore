@@ -13,6 +13,9 @@ coverage
 out/
 next-env.d.ts
 
+# IDE/Editor configs
+jsconfig.json
+
 # nitro
 .nitro/
 .output/
@@ -99,3 +102,17 @@ node_modules/
 *.njsproj
 *.sln
 *.sw?
+
+website/public
+website/resources
+website/.hugo_build.lock
+
+
+
+
+# Generated files
+**/.docusaurus
+**/.cache-loader
+web/docs/pages/documentation
+web/docs/pages/docs
+web/ui/src/components/zudoku/**

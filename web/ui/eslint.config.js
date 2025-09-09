@@ -10,3 +10,17 @@ const config = [
 ];
 
 export default config;
+
+// rollupOptions: {
+//   external: [
+//     "react",
+//     "react-dom",
+//     "lucide-react",
+//     /@radix-ui/,
+//     "@sentry/react",
+
+// declare module "lucide-react/dist/esm/dynamicIconImports.js" {
+//   // biome-ignore lint/suspicious/noExplicitAny: Allow any type
+//   const icons: Record<string, any>;
+//   export default icons;
+// }

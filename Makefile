@@ -61,12 +61,6 @@ build-web: ## Build web assets
 	@pnpm build
 	@echo -e "$(GREEN)✓ Web assets built!$(NC)"
 
-.PHONY: build-docs
-build-docs: ## Build documentation static site with Docker
-	@echo -e "$(YELLOW)▶ Building documentation...$(NC)"
-	@cd docs && docker build -t archesai-docs .
-	@cd docs && docker run --rm -v "$(PWD):/docs" -u $(shell id -u):$(shell id -g) archesai-docs mkdocs build
-	@echo -e "$(GREEN)✓ Documentation built in docs/site/$(NC)"
 
 # ------------------------------------------
 # Run Commands
@@ -99,13 +93,6 @@ run-watch: ## Run with hot reload (requires air)
 run-tui: build ## Launch the TUI interface
 	@echo -e "$(YELLOW)▶ Launching TUI...$(NC)"
 	@./bin/archesai tui
-
-.PHONY: run-docs
-run-docs: ## Serve documentation locally with Docker
-	@echo -e "$(YELLOW)▶ Starting documentation server...$(NC)"
-	@cd docs && docker build -t archesai-docs .
-	@echo -e "$(GREEN)✓ Documentation server running at http://localhost:8000$(NC)"
-	@cd docs && docker run --rm -it -p 8000:8000 -v "$(PWD):/docs" -u $(shell id -u):$(shell id -g) archesai-docs mkdocs serve --dev-addr=0.0.0.0:8000
 
 # ------------------------------------------
 # Generate Commands
@@ -295,8 +282,33 @@ clean-test: ## Clean test cache and coverage files
 .PHONY: clean-docs
 clean-docs: ## Clean documentation build
 	@echo -e "$(YELLOW)▶ Cleaning documentation build...$(NC)"
-	@rm -rf docs/site/
+	@rm -rf web/docs/build web/docs/.docusaurus web/docs/docs website/
 	@echo -e "$(GREEN)✓ Documentation build cleaned!$(NC)"
+
+.PHONY: install-hugo
+install-hugo: ## Install Hugo Extended
+	@echo -e "$(YELLOW)▶ Installing Hugo Extended...$(NC)"
+	@go install -tags extended github.com/gohugoio/hugo@latest
+	@echo -e "$(GREEN)✓ Hugo Extended installed!$(NC)"
+	@hugo version
+
+.PHONY: build-docs
+build-docs: copy-docs ## Build Docusaurus documentation site
+	@echo -e "$(YELLOW)▶ Building Docusaurus documentation site...$(NC)"
+	@pnpm -F @archesai/docs build
+	@echo -e "$(GREEN)✓ Documentation built in web/docs/build/$(NC)"
+
+.PHONY: run-docs
+run-docs: copy-docs  ## Serve Docusaurus documentation in development mode
+	@echo -e "$(YELLOW)▶ Starting Docusaurus development server...$(NC)"
+	@pnpm -F @archesai/docs dev --port 3000 --host 0.0.0.0
+
+.PHONY: copy-docs
+copy-docs: ## Copy markdown docs to web/docs/docs
+	@echo -e "$(YELLOW)▶ Copying markdown docs to web/docs...$(NC)"
+	@pnpm -F @archesai/docs run copy:docs
+	@pnpm -F @archesai/docs run copy:api
+	@echo -e "$(GREEN)✓ Docs copied!$(NC)"
 
 # ------------------------------------------
 # Database Commands

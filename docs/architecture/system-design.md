@@ -2,8 +2,9 @@
 
 ## Overview
 
-ArchesAI implements **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design** principles,
-ensuring separation of concerns, testability, and business logic independence from infrastructure.
+ArchesAI implements **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design**
+principles, ensuring separation of concerns, testability, and business logic independence from
+infrastructure.
 
 ## Core Principles
 

@@ -20,16 +20,14 @@ Let me parse your request intelligently:
    - If arguments contain numbers → show specific tasks
    - If arguments contain "blocked" → show blocked tasks only
 
-2. **Smart Combinations**
-   Examples of what I understand:
+2. **Smart Combinations** Examples of what I understand:
    - "pending high" → pending tasks with high priority
    - "done today" → tasks completed today
    - "blocked" → tasks with unmet dependencies
    - "1-5" → tasks 1 through 5
    - "subtasks tree" → hierarchical view with subtasks
 
-3. **Execute Appropriate Query**
-   Based on parsed intent, run the most specific task-master command
+3. **Execute Appropriate Query** Based on parsed intent, run the most specific task-master command
 
 4. **Enhanced Display**
    - Group by relevant criteria
@@ -37,8 +35,7 @@ Let me parse your request intelligently:
    - Use visual indicators for quick scanning
    - Include relevant metrics
 
-5. **Intelligent Suggestions**
-   Based on what you're viewing, suggest next actions:
+5. **Intelligent Suggestions** Based on what you're viewing, suggest next actions:
    - Many pending? → Suggest priority order
    - Many blocked? → Show dependency resolution
    - Looking at specific tasks? → Show related tasks

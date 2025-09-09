@@ -21,7 +21,8 @@ make help           # See all make commands
 After modifying:
 
 - `api/**/*.yaml` → Run `make generate-oapi` (generates types.gen.go, http.gen.go)
-- `internal/database/**` or `internal/migrations/**` → Run `make generate-sqlc` (generates database code)
+- `internal/database/**` or `internal/migrations/**` → Run `make generate-sqlc` (generates database
+  code)
 - Any x-codegen annotations → Run `make generate-codegen` (generates repository.gen.go)
 
 ## Testing
@@ -40,21 +41,19 @@ make db-migrate-create name=feature  # New migration
 
 ## Quick Fixes
 
-**Build fails**: `make generate && make lint`
-**Type errors**: Check generated files are up to date
-**Directory moving**: Try not to have to cd into other directories all the time. You can pretty much do everything from the makefile, which is the preferable way of doing anything.
+**Build fails**: `make generate && make lint` **Type errors**: Check generated files are up to date
+**Directory moving**: Try not to have to cd into other directories all the time. You can pretty much
+do everything from the makefile, which is the preferable way of doing anything.
 
 ## Docs - MAKE SURE TO ALWAYS UPDATE THESE FILES AFTER MAKING A CHANGE
 
-@../docs/architecture/project-layout.md
-@../docs/architecture/overview.md
-@../docs/guides/makefile-commands.md
-@../docs/guides/testing.md
-@../README.md
+@../docs/architecture/project-layout.md @../docs/architecture/overview.md
+@../docs/guides/makefile-commands.md @../docs/guides/testing.md @../README.md
 
 ## Task Master AI Instructions
 
-**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
+**Import Task Master's development workflow commands and guidelines, treat as if import is in the
+main CLAUDE.md file.**
 
 @../.taskmaster/CLAUDE.md
 

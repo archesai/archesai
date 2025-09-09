@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document outlines the testing strategy, patterns, and technical decisions for the ArchesAI backend.
+This document outlines the testing strategy, patterns, and technical decisions for the ArchesAI
+backend.
 
 ## Testing Philosophy
 
@@ -15,7 +16,8 @@ This document outlines the testing strategy, patterns, and technical decisions f
 
 ### 1. Mock Repository Pattern
 
-Instead of using mocking libraries like `gomock` or `testify/mock`, we implement manual mock repositories:
+Instead of using mocking libraries like `gomock` or `testify/mock`, we implement manual mock
+repositories:
 
 ```go
 type MockRepository struct {

@@ -4,6 +4,15 @@
 
 /** @type { PrettierConfig | SortImportsConfig | TailwindConfig } */
 const prettierConfig = {
+  overrides: [
+    {
+      files: ["**/*.{md,mdx}"],
+      options: {
+        printWidth: 100,
+        proseWrap: "always",
+      },
+    },
+  ],
   importOrder: [
     "<TYPES>",
     "",

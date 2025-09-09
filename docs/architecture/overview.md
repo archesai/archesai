@@ -1,6 +1,7 @@
 # Architecture Documentation
 
-This section covers the system architecture, design patterns, and structural documentation for ArchesAI.
+This section covers the system architecture, design patterns, and structural documentation for
+ArchesAI.
 
 ## Architecture Overview
 
@@ -12,8 +13,9 @@ This section covers the system architecture, design patterns, and structural doc
 
 ### Hexagonal Architecture
 
-ArchesAI implements **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design** principles,
-ensuring separation of concerns, testability, and business logic independence from infrastructure.
+ArchesAI implements **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design**
+principles, ensuring separation of concerns, testability, and business logic independence from
+infrastructure.
 
 ### Domain-Driven Design
 

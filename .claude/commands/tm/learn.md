@@ -34,8 +34,7 @@ You'll want to start with:
 Try: /project:task-master:init demo-prd.md
 ```
 
-**Have tasks?**
-Let me analyze what you might need...
+**Have tasks?** Let me analyze what you might need...
 
 - Many pending tasks? → Learn sprint planning
 - Complex tasks? → Learn task expansion
@@ -107,8 +106,6 @@ Based on your experience level:
 
 ### 6. **Try This Now**
 
-Based on what you asked about, try:
-[Specific command suggestion based on $ARGUMENTS]
+Based on what you asked about, try: [Specific command suggestion based on $ARGUMENTS]
 
-Want to learn more about a specific command?
-Type: /project:help <command-name>
+Want to learn more about a specific command? Type: /project:help <command-name>

@@ -1,4 +1,5 @@
 name: Lint Go
+
 on: [push, pull_request]
 
 jobs:

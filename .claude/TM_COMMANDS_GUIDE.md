@@ -4,7 +4,8 @@ Complete guide to using Task Master through Claude Code's slash commands.
 
 ## Overview
 
-All Task Master functionality is available through the `/project:tm/` namespace with natural language support and intelligent features.
+All Task Master functionality is available through the `/project:tm/` namespace with natural
+language support and intelligent features.
 
 ## Quick Start
 

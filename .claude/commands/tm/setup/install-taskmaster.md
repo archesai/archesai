@@ -26,8 +26,7 @@ This command helps you get Task Master set up globally on your system.
    # Check Node version (need 16+)
    ```
 
-3. **Install Task Master Globally**
-   If not installed, run:
+3. **Install Task Master Globally** If not installed, run:
 
    ```bash
    npm install -g task-master-ai
@@ -50,8 +49,7 @@ This command helps you get Task Master set up globally on your system.
    task-master init
    ```
 
-6. **Configure AI Provider**
-   Ensure you have at least one AI provider API key set:
+6. **Configure AI Provider** Ensure you have at least one AI provider API key set:
 
    ```bash
    # Check current configuration

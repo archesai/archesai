@@ -18,23 +18,14 @@ I'll intelligently parse your request:
 
 ### 2. **Smart Parsing Examples**
 
-**"Add urgent task to fix login bug"**
-→ Title: Fix login bug
-→ Priority: high
-→ Type: bug
-→ Suggested complexity: medium
+**"Add urgent task to fix login bug"** → Title: Fix login bug → Priority: high → Type: bug →
+Suggested complexity: medium
 
-**"Create task for API documentation after task 23 is done"**
-→ Title: API documentation
-→ Dependencies: [23]
-→ Type: documentation
-→ Priority: medium
+**"Create task for API documentation after task 23 is done"** → Title: API documentation →
+Dependencies: [23] → Type: documentation → Priority: medium
 
-**"Need to refactor auth module - depends on 12 and 15, high complexity"**
-→ Title: Refactor auth module
-→ Dependencies: [12, 15]
-→ Complexity: high
-→ Type: refactor
+**"Need to refactor auth module - depends on 12 and 15, high complexity"** → Title: Refactor auth
+module → Dependencies: [12, 15] → Complexity: high → Type: refactor
 
 ### 3. **Context Enhancement**
 
