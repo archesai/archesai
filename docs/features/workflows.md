@@ -3,533 +3,545 @@
 ## Overview
 
 ArchesAI Workflows provide a powerful DAG-based (Directed Acyclic Graph) automation system for
-orchestrating complex data processing pipelines with AI tool integration.
+orchestrating complex data processing pipelines with AI tool integration, enabling automated,
+scalable, and intelligent data processing.
 
 ## Core Concepts
 
 ### Workflow Architecture
+
+Workflows in ArchesAI are built on a flexible, extensible architecture that supports complex processing patterns:
 
 ```typescript
 interface Workflow {
   id: string;
   name: string;
   description: string;
+  organizationId: string;
   dag: DirectedAcyclicGraph;
   tools: Tool[];
   triggers: Trigger[];
-  status: "draft" | "active" | "paused";
+  status: "draft" | "active" | "paused" | "archived";
+  version: number;
+  metadata: {
+    tags: string[];
+    category: string;
+    estimatedDuration: number;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
 ```
 
-### DAG Execution
+### Directed Acyclic Graph (DAG)
 
-- **Parallel Processing**: Execute independent nodes simultaneously
-- **Dependency Management**: Automatic ordering based on dependencies
-- **Error Handling**: Retry logic and fallback paths
-- **State Management**: Persistent workflow state across executions
+The DAG structure ensures proper execution order and prevents circular dependencies:
+
+```typescript
+interface DirectedAcyclicGraph {
+  nodes: Node[];
+  edges: Edge[];
+  entryPoints: string[];
+  exitPoints: string[];
+}
+
+interface Node {
+  id: string;
+  type: "tool" | "condition" | "parallel" | "loop" | "subworkflow";
+  config: NodeConfig;
+  inputs: Input[];
+  outputs: Output[];
+  retryPolicy?: RetryPolicy;
+}
+```
+
+## Workflow Components
+
+### 1. Tools
+
+Tools are the building blocks of workflows, providing specific functionality:
+
+```go
+// Tool registration example
+type Tool struct {
+    ID          string                 `json:"id"`
+    Name        string                 `json:"name"`
+    Category    string                 `json:"category"`
+    Description string                 `json:"description"`
+    InputSchema json.RawMessage        `json:"input_schema"`
+    OutputSchema json.RawMessage       `json:"output_schema"`
+    Execute     func(context.Context, map[string]interface{}) (map[string]interface{}, error)
+}
+```
+
+**Built-in Tools:**
+
+- **Data Processing**: JSON transform, CSV parser, XML processor
+- **AI Integration**: LLM completion, embedding generation, classification
+- **File Operations**: Read/write, format conversion, compression
+- **HTTP Operations**: API calls, webhooks, data fetching
+- **Database Operations**: Query, insert, update, delete
+- **Notification**: Email, Slack, webhooks
+
+### 2. Triggers
+
+Triggers initiate workflow execution:
+
+```yaml
+triggers:
+  - type: schedule
+    config:
+      cron: "0 9 * * MON-FRI"  # Every weekday at 9 AM
+      timezone: "America/New_York"
+  
+  - type: webhook
+    config:
+      path: "/webhooks/document-upload"
+      method: "POST"
+      authentication: "bearer"
+  
+  - type: event
+    config:
+      source: "s3"
+      event: "object.created"
+      bucket: "documents"
+  
+  - type: manual
+    config:
+      requireApproval: true
+      approvers: ["admin", "manager"]
+```
+
+### 3. Conditions
+
+Conditional logic for dynamic workflow paths:
+
+```yaml
+nodes:
+  - id: check_document_type
+    type: condition
+    config:
+      expression: "input.fileType == 'pdf'"
+      trueBranch: "process_pdf"
+      falseBranch: "process_other"
+```
+
+### 4. Parallel Processing
+
+Execute multiple branches simultaneously:
+
+```yaml
+nodes:
+  - id: parallel_analysis
+    type: parallel
+    config:
+      branches:
+        - id: sentiment_analysis
+          nodes: [analyze_sentiment, store_sentiment]
+        - id: entity_extraction
+          nodes: [extract_entities, validate_entities]
+      joinStrategy: "wait_all"  # or "wait_any", "wait_n"
+```
 
 ## Pipeline Creation
 
 ### Visual Pipeline Builder
 
-- Drag-and-drop interface
-- Real-time validation
-- Node connection visualization
-- Pipeline testing mode
+The web interface provides an intuitive pipeline creation experience:
+
+**Features:**
+
+- **Drag-and-drop interface**: Visual node placement
+- **Real-time validation**: Instant feedback on configuration errors
+- **Node connection visualization**: See data flow clearly
+- **Pipeline testing mode**: Test with sample data
+- **Version control**: Track changes and rollback
+- **Template library**: Start from pre-built templates
 
 ### YAML Definition
 
+Define workflows programmatically:
+
 ```yaml
 name: Document Processing Pipeline
-description: Extract and analyze document content
+description: Extract, analyze, and store document content
+version: 1.0.0
+
+metadata:
+  tags: ["document", "nlp", "extraction"]
+  category: "data-processing"
+  estimatedDuration: 300  # seconds
+
+# Input parameters
+parameters:
+  - name: document_url
+    type: string
+    required: true
+    description: URL of the document to process
+  
+  - name: output_format
+    type: string
+    default: "json"
+    enum: ["json", "xml", "csv"]
+
+# Workflow nodes
 nodes:
+  - id: fetch_document
+    type: tool
+    tool: http_fetch
+    config:
+      url: "${parameters.document_url}"
+      method: GET
+    outputs:
+      - name: document_content
+        type: binary
+
   - id: extract_text
     type: tool
     tool: pdf_extractor
     inputs:
-      file: "${workflow.input.document}"
+      - from: fetch_document.document_content
+    config:
+      ocr_enabled: true
+      language: "en"
+    outputs:
+      - name: extracted_text
+        type: string
 
-  - id: analyze_sentiment
-    type: tool
-    tool: sentiment_analyzer
-    dependencies: [extract_text]
-    inputs:
-      text: "${extract_text.output.content}"
+  - id: analyze_content
+    type: parallel
+    config:
+      branches:
+        - id: sentiment
+          nodes:
+            - id: analyze_sentiment
+              tool: sentiment_analyzer
+              inputs:
+                - from: extract_text.extracted_text
+        
+        - id: entities
+          nodes:
+            - id: extract_entities
+              tool: ner_extractor
+              inputs:
+                - from: extract_text.extracted_text
 
   - id: generate_summary
     type: tool
-    tool: ai_summarizer
-    dependencies: [extract_text]
+    tool: llm_summarizer
     inputs:
-      text: "${extract_text.output.content}"
-      max_length: 500
+      - from: extract_text.extracted_text
+    config:
+      model: "gpt-4"
+      max_tokens: 500
+      temperature: 0.3
 
   - id: store_results
     type: tool
-    tool: database_writer
-    dependencies: [analyze_sentiment, generate_summary]
+    tool: database_insert
     inputs:
-      sentiment: "${analyze_sentiment.output}"
-      summary: "${generate_summary.output}"
+      - from: extract_text.extracted_text
+      - from: analyze_sentiment.sentiment_score
+      - from: extract_entities.entities
+      - from: generate_summary.summary
+    config:
+      table: "processed_documents"
+      mapping:
+        text: "${extracted_text}"
+        sentiment: "${sentiment_score}"
+        entities: "${entities}"
+        summary: "${summary}"
+
+# Define execution flow
+edges:
+  - from: fetch_document
+    to: extract_text
+  - from: extract_text
+    to: analyze_content
+  - from: extract_text
+    to: generate_summary
+  - from: analyze_content
+    to: store_results
+  - from: generate_summary
+    to: store_results
+
+# Error handling
+error_handling:
+  default_strategy: "retry"
+  retry_config:
+    max_attempts: 3
+    backoff: "exponential"
+    initial_delay: 1000  # ms
+  
+  node_overrides:
+    fetch_document:
+      strategy: "fail_fast"
+    store_results:
+      strategy: "dead_letter_queue"
 ```
 
-### Programmatic Creation
+## Execution Engine
+
+### Run Management
 
 ```go
-workflow := &Workflow{
-    Name: "Data Processing Pipeline",
-    DAG: &DAG{
-        Nodes: []Node{
-            {
-                ID:   "fetch_data",
-                Type: "tool",
-                Tool: "http_fetcher",
-                Config: map[string]interface{}{
-                    "url": "https://api.example.com/data",
-                },
-            },
-            {
-                ID:           "process_data",
-                Type:         "tool",
-                Tool:         "data_processor",
-                Dependencies: []string{"fetch_data"},
-            },
-        },
-    },
+// Workflow execution
+type WorkflowRun struct {
+    ID           uuid.UUID              `json:"id"`
+    WorkflowID   uuid.UUID              `json:"workflow_id"`
+    Status       RunStatus              `json:"status"`
+    StartedAt    time.Time              `json:"started_at"`
+    CompletedAt  *time.Time             `json:"completed_at"`
+    Duration     time.Duration          `json:"duration"`
+    NodeStates   map[string]NodeState   `json:"node_states"`
+    Results      map[string]interface{} `json:"results"`
+    Errors       []RunError             `json:"errors"`
 }
+
+type RunStatus string
+
+const (
+    RunStatusPending   RunStatus = "pending"
+    RunStatusRunning   RunStatus = "running"
+    RunStatusCompleted RunStatus = "completed"
+    RunStatusFailed    RunStatus = "failed"
+    RunStatusCancelled RunStatus = "cancelled"
+)
 ```
 
-## Tool Registry System
+### Execution Features
 
-### Built-in Tools
+#### **Parallel Execution**
 
-#### Data Processing
+- Automatic detection of parallelizable nodes
+- Worker pool management
+- Resource allocation and limits
 
-- CSV Parser
-- JSON Transformer
-- XML Processor
-- Excel Reader
-- PDF Extractor
+#### **State Management**
 
-#### AI/ML Tools
+- Persistent state across node executions
+- Checkpoint and resume capability
+- Distributed state for scaled deployments
 
-- Text Summarizer
-- Sentiment Analyzer
-- Language Translator
-- Image Classifier
-- Entity Extractor
-
-#### Integration Tools
-
-- HTTP Client
-- Database Connector
-- S3 Uploader
-- Email Sender
-- Webhook Caller
-
-#### Transformation Tools
-
-- Data Mapper
-- Format Converter
-- Schema Validator
-- Data Enricher
-- Deduplicator
-
-### Custom Tool Development
-
-```go
-type Tool interface {
-    // Metadata
-    GetID() string
-    GetName() string
-    GetDescription() string
-    GetVersion() string
-
-    // Schema
-    GetInputSchema() *Schema
-    GetOutputSchema() *Schema
-    GetConfigSchema() *Schema
-
-    // Execution
-    Execute(ctx context.Context, input Input) (Output, error)
-    Validate(input Input) error
-}
-
-// Example custom tool
-type CustomProcessor struct {
-    id   string
-    name string
-}
-
-func (t *CustomProcessor) Execute(ctx context.Context, input Input) (Output, error) {
-    // Process input data
-    data := input.Get("data")
-
-    // Perform transformation
-    result := transform(data)
-
-    // Return output
-    return Output{
-        "processed": result,
-        "timestamp": time.Now(),
-    }, nil
-}
-```
-
-### Tool Registration
-
-```go
-// Register custom tool
-registry.Register(&CustomProcessor{
-    id:   "custom_processor",
-    name: "Custom Data Processor",
-})
-
-// Use in workflow
-workflow.AddNode(&Node{
-    Type: "tool",
-    Tool: "custom_processor",
-})
-```
-
-## Run Management
-
-### Execution Modes
-
-#### Manual Execution
-
-```bash
-POST /api/v1/workflows/:id/execute
-{
-  "inputs": {
-    "source": "manual",
-    "data": {...}
-  }
-}
-```
-
-#### Scheduled Execution
+#### **Error Handling**
 
 ```yaml
-triggers:
-  - type: schedule
-    cron: "0 9 * * MON-FRI" # Every weekday at 9 AM
-    timezone: "America/New_York"
+error_handling:
+  strategies:
+    retry:
+      max_attempts: 3
+      backoff: exponential
+      initial_delay: 1000ms
+    
+    circuit_breaker:
+      threshold: 5
+      timeout: 30s
+      half_open_requests: 3
+    
+    fallback:
+      handler: alternate_processing
+      
+    dead_letter_queue:
+      queue: failed_workflows
+      retention: 7d
 ```
 
-#### Event-Driven Execution
+## Monitoring & Observability
 
-```yaml
-triggers:
-  - type: webhook
-    endpoint: /webhooks/workflow/:id
-    secret: "${WEBHOOK_SECRET}"
+### Execution Metrics
 
-  - type: file_upload
-    bucket: "input-documents"
-    pattern: "*.pdf"
+```prometheus
+# Workflow execution metrics
+workflow_runs_total{workflow="document_processing", status="completed"} 1234
+workflow_run_duration_seconds{workflow="document_processing", quantile="0.99"} 45.2
+workflow_node_execution_time_seconds{node="extract_text", quantile="0.95"} 2.3
+workflow_errors_total{workflow="document_processing", error_type="timeout"} 12
 ```
 
-### Execution Monitoring
-
-```typescript
-interface WorkflowRun {
-  id: string;
-  workflowId: string;
-  status: "pending" | "running" | "completed" | "failed";
-  startedAt: Date;
-  completedAt?: Date;
-  nodes: NodeExecution[];
-  outputs: Record<string, any>;
-  errors?: Error[];
-}
-
-interface NodeExecution {
-  nodeId: string;
-  status: "pending" | "running" | "completed" | "failed" | "skipped";
-  startedAt?: Date;
-  completedAt?: Date;
-  inputs: Record<string, any>;
-  outputs?: Record<string, any>;
-  error?: Error;
-  retries: number;
-}
-```
-
-### Run History and Analytics
+### Run History
 
 ```sql
--- Get run statistics
-SELECT
-    workflow_id,
-    COUNT(*) as total_runs,
-    AVG(EXTRACT(EPOCH FROM (completed_at - started_at))) as avg_duration,
-    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as successful_runs,
-    SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_runs
-FROM workflow_runs
-WHERE started_at >= NOW() - INTERVAL '30 days'
-GROUP BY workflow_id;
+-- Query run history
+SELECT 
+    wr.id,
+    w.name as workflow_name,
+    wr.status,
+    wr.started_at,
+    wr.duration,
+    COUNT(CASE WHEN ns.status = 'failed' THEN 1 END) as failed_nodes
+FROM workflow_runs wr
+JOIN workflows w ON wr.workflow_id = w.id
+JOIN node_states ns ON ns.run_id = wr.id
+WHERE wr.started_at > NOW() - INTERVAL '24 hours'
+GROUP BY wr.id, w.name
+ORDER BY wr.started_at DESC;
 ```
+
+### Real-time Monitoring
+
+- **Live execution view**: See nodes executing in real-time
+- **Performance metrics**: CPU, memory, execution time per node
+- **Error tracking**: Immediate error notifications
+- **Resource usage**: Track API calls, database queries
 
 ## Advanced Features
 
-### Conditional Logic
+### 1. Subworkflows
+
+Compose complex workflows from simpler ones:
 
 ```yaml
 nodes:
-  - id: check_condition
-    type: condition
-    expression: "${previous.output.value > 100}"
-
-  - id: high_value_path
-    type: tool
-    tool: premium_processor
-    dependencies: [check_condition]
-    condition: "${check_condition.result == true}"
-
-  - id: normal_path
-    type: tool
-    tool: standard_processor
-    dependencies: [check_condition]
-    condition: "${check_condition.result == false}"
+  - id: process_batch
+    type: subworkflow
+    config:
+      workflow_id: "batch_processor_v2"
+      inputs:
+        items: "${batch_items}"
+      inherit_context: true
 ```
 
-### Loops and Iteration
+### 2. Dynamic Node Generation
+
+Create nodes dynamically based on input:
 
 ```yaml
 nodes:
-  - id: process_items
-    type: foreach
-    items: "${input.items}"
-    iterator: item
-    nodes:
-      - id: process_single
+  - id: dynamic_processor
+    type: loop
+    config:
+      items: "${input.file_list}"
+      iterator: "file"
+      template:
         type: tool
-        tool: item_processor
-        inputs:
-          data: "${item}"
+        tool: file_processor
+        config:
+          path: "${file.path}"
+          format: "${file.format}"
 ```
 
-### Error Handling
+### 3. Custom Tools
 
-```yaml
-nodes:
-  - id: risky_operation
-    type: tool
-    tool: external_api
-    retry:
-      attempts: 3
-      backoff: exponential
-      initial_delay: 1s
-    on_error:
-      - type: fallback
-        node: backup_processor
-      - type: notify
-        channel: slack
-        message: "Operation failed after retries"
-```
-
-### Parallel Processing
-
-```yaml
-nodes:
-  - id: split_data
-    type: tool
-    tool: data_splitter
-    outputs:
-      chunks: array
-
-  - id: process_chunks
-    type: parallel
-    dependencies: [split_data]
-    max_concurrency: 10
-    items: "${split_data.outputs.chunks}"
-    node:
-      type: tool
-      tool: chunk_processor
-
-  - id: merge_results
-    type: tool
-    tool: data_merger
-    dependencies: [process_chunks]
-```
-
-## API Endpoints
-
-### Workflow Management
-
-- `GET /api/v1/workflows` - List workflows
-- `POST /api/v1/workflows` - Create workflow
-- `GET /api/v1/workflows/:id` - Get workflow details
-- `PUT /api/v1/workflows/:id` - Update workflow
-- `DELETE /api/v1/workflows/:id` - Delete workflow
-- `POST /api/v1/workflows/:id/clone` - Clone workflow
-
-### Execution
-
-- `POST /api/v1/workflows/:id/execute` - Execute workflow
-- `GET /api/v1/workflows/:id/runs` - List workflow runs
-- `GET /api/v1/runs/:id` - Get run details
-- `POST /api/v1/runs/:id/cancel` - Cancel running workflow
-- `GET /api/v1/runs/:id/logs` - Get execution logs
-
-### Tools
-
-- `GET /api/v1/tools` - List available tools
-- `GET /api/v1/tools/:id` - Get tool details
-- `POST /api/v1/tools` - Register custom tool
-- `PUT /api/v1/tools/:id` - Update tool
-- `DELETE /api/v1/tools/:id` - Unregister tool
-
-## Performance Optimization
-
-### Caching Strategies
-
-- Node output caching
-- Tool result memoization
-- Dependency graph caching
-- Connection pooling
-
-### Resource Management
-
-```yaml
-resources:
-  cpu: 2
-  memory: 4Gi
-  timeout: 30m
-  max_retries: 3
-  queue_priority: high
-```
-
-### Scaling
-
-- Horizontal workflow execution
-- Distributed node processing
-- Queue-based load balancing
-- Auto-scaling based on metrics
-
-## Monitoring and Observability
-
-### Metrics
-
-- Workflow execution time
-- Node processing duration
-- Success/failure rates
-- Resource utilization
-- Queue depths
-
-### Logging
-
-```json
-{
-  "workflow_id": "wf_123",
-  "run_id": "run_456",
-  "node_id": "process_data",
-  "level": "info",
-  "message": "Processing 1000 records",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "metadata": {
-    "record_count": 1000,
-    "processing_time_ms": 250
-  }
-}
-```
-
-### Alerting
-
-- Workflow failure notifications
-- SLA breach alerts
-- Resource exhaustion warnings
-- Long-running workflow alerts
-
-## Testing
-
-### Unit Testing
+Register custom tools for specialized processing:
 
 ```go
-func TestWorkflowExecution(t *testing.T) {
-    workflow := CreateTestWorkflow()
-    executor := NewExecutor()
-
-    result, err := executor.Execute(workflow, TestInputs())
-
-    assert.NoError(t, err)
-    assert.Equal(t, "completed", result.Status)
-    assert.Contains(t, result.Outputs, "processed_data")
+// Register custom tool
+func RegisterCustomTool() error {
+    tool := &Tool{
+        ID:   "custom_analyzer",
+        Name: "Custom Data Analyzer",
+        Execute: func(ctx context.Context, input map[string]interface{}) (map[string]interface{}, error) {
+            // Custom processing logic
+            data := input["data"].(string)
+            result := analyzeData(data)
+            return map[string]interface{}{
+                "analysis": result,
+                "timestamp": time.Now(),
+            }, nil
+        },
+    }
+    return toolRegistry.Register(tool)
 }
 ```
 
-### Integration Testing
+### 4. Workflow Templates
 
-- End-to-end workflow testing
-- Tool integration verification
-- Trigger testing
-- Performance benchmarking
+Pre-built templates for common use cases:
+
+- **ETL Pipeline**: Extract, transform, load data
+- **Document Processing**: OCR, extraction, analysis
+- **Data Enrichment**: Enhance data with external sources
+- **ML Pipeline**: Training, evaluation, deployment
+- **Alert System**: Monitor, evaluate, notify
+
+## API Integration
+
+### REST API
+
+```bash
+# Create workflow
+POST /api/v1/workflows
+Content-Type: application/json
+{
+  "name": "My Workflow",
+  "dag": {...},
+  "triggers": [...]
+}
+
+# Execute workflow
+POST /api/v1/workflows/{id}/runs
+{
+  "parameters": {
+    "document_url": "https://example.com/doc.pdf"
+  }
+}
+
+# Get run status
+GET /api/v1/workflows/{id}/runs/{run_id}
+
+# List workflow runs
+GET /api/v1/workflows/{id}/runs?status=completed&limit=10
+```
+
+### SDK Usage
+
+```go
+// Go SDK example
+client := archesai.NewClient(apiKey)
+
+// Create workflow
+workflow, err := client.Workflows.Create(ctx, &archesai.WorkflowCreateRequest{
+    Name: "Document Processor",
+    DAG:  dag,
+})
+
+// Execute workflow
+run, err := client.Workflows.Execute(ctx, workflow.ID, map[string]interface{}{
+    "document_url": "https://example.com/document.pdf",
+})
+
+// Monitor execution
+for run.Status == archesai.RunStatusRunning {
+    run, err = client.Workflows.GetRun(ctx, workflow.ID, run.ID)
+    time.Sleep(2 * time.Second)
+}
+```
 
 ## Best Practices
 
-### Design Patterns
+### Design Principles
 
-- Keep workflows focused and single-purpose
-- Use sub-workflows for reusable components
-- Implement proper error handling
-- Version control workflow definitions
+1. **Keep nodes focused**: Single responsibility per node
+2. **Handle errors gracefully**: Use appropriate error strategies
+3. **Monitor performance**: Set up alerts for slow nodes
+4. **Version workflows**: Track changes and enable rollback
+5. **Test thoroughly**: Use test mode with sample data
+6. **Document workflows**: Clear descriptions and parameter docs
 
-### Security
+### Performance Optimization
 
-- Validate all inputs
-- Use secrets management for credentials
-- Implement rate limiting
-- Audit workflow executions
+- **Batch processing**: Group similar operations
+- **Caching**: Cache expensive computations
+- **Async operations**: Use async tools when possible
+- **Resource limits**: Set appropriate timeouts and memory limits
+- **Parallel execution**: Maximize parallelism where possible
 
-### Performance
+### Security Considerations
 
-- Minimize node dependencies
-- Use caching appropriately
-- Batch process where possible
-- Monitor resource usage
+- **Input validation**: Validate all workflow inputs
+- **Secret management**: Use secure credential storage
+- **Access control**: Implement proper RBAC
+- **Audit logging**: Track all workflow executions
+- **Data encryption**: Encrypt sensitive data in transit and at rest
 
-## Troubleshooting
+## Getting Started
 
-### Common Issues
+1. **Define your workflow**: Start with YAML or visual builder
+2. **Configure tools**: Set up required tool integrations
+3. **Set triggers**: Define how workflows start
+4. **Test execution**: Run with sample data
+5. **Deploy**: Activate workflow for production
+6. **Monitor**: Track execution and performance
 
-#### Workflow Stuck in Running
-
-- Check for deadlocks in dependencies
-- Verify external service availability
-- Review timeout settings
-- Check resource limits
-
-#### High Failure Rate
-
-- Review error logs
-- Check input validation
-- Verify tool configurations
-- Monitor external dependencies
-
-#### Performance Degradation
-
-- Analyze execution metrics
-- Check database query performance
-- Review caching effectiveness
-- Consider workflow optimization
-
-## Migration Guide
-
-### Importing Workflows
-
-1. Export workflow as YAML/JSON
-2. Validate schema compatibility
-3. Update tool references
-4. Test in staging environment
-5. Deploy to production
-
-### Version Migration
-
-- Backup existing workflows
-- Run migration scripts
-- Update tool versions
-- Test backward compatibility
-- Update documentation
+For detailed examples and tutorials, see the
+[Workflow Examples](https://github.com/archesai/archesai/tree/main/examples/workflows) repository.

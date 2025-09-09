@@ -1,161 +1,240 @@
 # Project Layout
 
-This document provides an overview of the ArchesAI project structure and organization.
-
 ## Directory Structure
 
 ```text
 .
 ├── api/                          # OpenAPI specifications
-│   ├── components/               # Reusable OpenAPI components
-│   │   ├── parameters/           # Common parameters
-│   │   ├── responses/            # Common responses
-│   │   └── schemas/              # Data schemas
-│   ├── paths/                    # API endpoint definitions
-│   ├── openapi.bundled.yaml     # Bundled specification
-│   └── openapi.yaml             # Main OpenAPI spec
+│   ├── components/               
+│   │   ├── parameters/           # Reusable query/path parameters
+│   │   ├── responses/            # Standard error/success responses
+│   │   └── schemas/              # Data models (User, Organization, etc.)
+│   ├── paths/                    # Endpoint definitions by domain
+│   │   ├── auth.yaml            # /auth/* endpoints
+│   │   ├── organizations.yaml   # /organizations/* endpoints
+│   │   └── workflows.yaml       # /workflows/* endpoints
+│   ├── openapi.yaml             # Main spec with $refs to components
+│   └── openapi.bundled.yaml     # Single-file bundle (generated)
+│
 ├── cmd/
-│   └── archesai/                 # Main application entry point
-│       └── main.go
-├── deployments/                  # Deployment configurations
-│   ├── development/              # Development environment
-│   ├── docker/                   # Docker configurations
-│   ├── gcp/                      # Google Cloud Platform
-│   ├── helm/                     # Kubernetes Helm charts
-│   └── k3d/                      # Local k3d setup
-├── docs/                         # Documentation
-│   ├── ARCHITECTURE.md           # System architecture
-│   ├── AUTHENTICATION.md         # Authentication documentation
-│   ├── CONTRIBUTING.md           # Contribution guidelines
-│   ├── TEST_COVERAGE_REPORT.md   # Test coverage reports
-│   ├── TESTING.md               # Testing strategy
-│   └── TUI.md                   # Terminal UI documentation
-├── internal/                     # Private application code
-│   ├── app/                      # Application setup
-│   ├── auth/                     # Authentication domain
-│   ├── cli/                      # Command-line interface
-│   ├── codegen/                  # Code generation system
-│   ├── config/                   # Configuration management
-│   ├── content/                  # Content management domain
-│   ├── database/                 # Database layer
-│   ├── health/                   # Health check endpoints
-│   ├── llm/                      # Large Language Model integration
-│   ├── logger/                   # Logging utilities
-│   ├── migrations/               # Database migrations
-│   ├── organizations/            # Organization management domain
-│   ├── redis/                    # Redis integration
-│   ├── server/                   # HTTP server setup
-│   ├── storage/                  # File storage
-│   ├── testutil/                 # Testing utilities
-│   ├── tui/                      # Terminal user interface
-│   ├── users/                    # User management domain
-│   └── workflows/                # Workflow automation domain
-├── scripts/                      # Build and utility scripts
-├── .taskmaster/                  # Task Master AI configuration
-│   ├── docs/                     # Task Master documentation
-│   ├── reports/                  # Analysis reports
-│   ├── tasks/                    # Task definitions
-│   └── templates/                # Task templates
+│   └── archesai/
+│       └── main.go              # Entry point, CLI commands
+│
+├── deployments/
+│   ├── docker/
+│   │   ├── Dockerfile           # Multi-stage build
+│   │   └── docker-compose.yml   # Local dev environment
+│   ├── helm/                    # Kubernetes Helm charts
+│   └── k3d/                     # Local k8s cluster config
+│
+├── docs/                        # Markdown documentation
+│   ├── api-reference/           
+│   ├── architecture/            
+│   ├── deployment/              
+│   ├── features/                
+│   ├── guides/                  
+│   ├── monitoring/              
+│   ├── performance/             
+│   ├── security/                
+│   └── troubleshooting/         
+│
+├── internal/                    # Private Go packages
+│   ├── app/                     # Application bootstrap, DI container
+│   │   ├── app.go              # Main app struct
+│   │   └── providers.go        # Service providers
+│   │
+│   ├── auth/                    # Authentication domain
+│   │   ├── domain.go           # User, Session, Token entities
+│   │   ├── service.go          # Login, Register, Verify logic
+│   │   ├── handler.go          # HTTP endpoints
+│   │   ├── middleware.go       # JWT validation middleware
+│   │   ├── repository.gen.go   # Generated DB queries
+│   │   ├── cache.gen.go        # Generated Redis cache
+│   │   ├── http.gen.go         # Generated HTTP interfaces
+│   │   ├── types.gen.go        # Generated OpenAPI types
+│   │   ├── mappers.go          # Entity <-> DTO conversions
+│   │   ├── service_test.go     # Unit tests with mocks
+│   │   └── postgres_test.go    # Integration tests
+│   │
+│   ├── organizations/           # Multi-tenancy domain
+│   ├── workflows/               # Workflow automation domain
+│   ├── content/                 # Content management domain
+│   ├── users/                   # User profiles domain
+│   │
+│   ├── database/               
+│   │   ├── migrations/          # SQL migration files
+│   │   │   ├── 001_initial.sql
+│   │   │   └── 002_add_workflows.sql
+│   │   ├── queries/             # SQLC query definitions
+│   │   │   ├── auth.sql        # Auth-related queries
+│   │   │   └── organizations.sql
+│   │   ├── schema.sql          # Complete schema
+│   │   └── db.go               # Database connection
+│   │
+│   ├── codegen/                # Custom code generator
+│   │   ├── templates/          # Go templates
+│   │   └── generator.go        # Generation logic
+│   │
+│   ├── config/                 # Configuration
+│   │   └── config.go           # Env vars, validation
+│   │
+│   ├── health/                 # Health checks
+│   │   └── handler.go          # /health/live, /health/ready
+│   │
+│   ├── llm/                    # LLM integrations
+│   │   ├── client.go           # Provider abstraction
+│   │   ├── openai.go           # OpenAI implementation
+│   │   └── anthropic.go        # Anthropic implementation
+│   │
+│   ├── logger/                 # Structured logging
+│   ├── redis/                  # Redis client and utilities
+│   ├── server/                 # HTTP server setup
+│   ├── storage/                # File storage (S3, local)
+│   ├── testutil/               # Test helpers
+│   │   ├── containers.go       # Testcontainers setup
+│   │   └── fixtures.go         # Common test data
+│   └── tui/                    # Terminal UI
+│       ├── app.go              # Bubble Tea app
+│       └── views/              # UI components
+│
+├── scripts/
+│   ├── generate-api-docs.sh
+│   ├── setup-dev.sh
+│   └── migrate.sh
+│
 ├── test/
-│   └── data/                     # Test data files
-├── tools/                        # Development tools
-│   ├── codegen/                  # Code generation tool
-│   └── pg-to-sqlite/             # Database conversion tool
-└── web/                          # Frontend applications
-    ├── client/                   # API client library
-    ├── eslint/                   # ESLint configuration
-    ├── platform/                 # Main platform SPA
-    ├── typescript/               # TypeScript configuration
-    └── ui/                       # Shared UI components
+│   └── data/                   # Test fixtures
+│       ├── sample.pdf
+│       └── users.json
+│
+├── tools/
+│   ├── codegen/                # Code generation CLI
+│   └── pg-to-sqlite/           # Schema converter
+│
+├── web/                        # Frontend monorepo
+│   ├── client/                 # Generated TypeScript client
+│   │   ├── src/
+│   │   │   └── generated/     # OpenAPI client code
+│   │   └── package.json
+│   │
+│   ├── docs/                   # Zudoku documentation site
+│   │   ├── apis/              # OpenAPI spec copy
+│   │   ├── pages/             # MDX documentation
+│   │   ├── public/            # Static assets
+│   │   ├── zudoku.config.tsx  # Site configuration
+│   │   └── package.json
+│   │
+│   ├── platform/              # Main React application
+│   │   ├── app/
+│   │   │   ├── routes/        # File-based routing
+│   │   │   ├── components/    # React components
+│   │   │   └── hooks/         # Custom hooks
+│   │   ├── public/
+│   │   └── package.json
+│   │
+│   ├── ui/                    # Shared component library
+│   │   ├── src/
+│   │   │   ├── Button/
+│   │   │   ├── Card/
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   ├── eslint/                # Shared ESLint config
+│   └── typescript/            # Shared TypeScript config
+│
+├── .taskmaster/               # Task Master AI
+│   ├── CLAUDE.md             # AI context
+│   ├── config.json           # Model configuration
+│   ├── docs/
+│   │   └── prd.txt          # Product requirements
+│   ├── reports/              # Complexity analysis
+│   └── tasks/
+│       ├── tasks.json        # Task database
+│       └── *.md              # Individual task files
+│
+├── .air.toml                 # Hot reload config
+├── .env.example              # Environment template
+├── .gitignore
+├── .golangci.yaml           # Go linter rules
+├── .markdownlint.json       # Markdown linter rules
+├── .mockery.yaml            # Mock generation config
+├── .redocly.yaml            # OpenAPI linter rules
+├── go.mod                   # Go dependencies
+├── go.sum
+├── LICENSE
+├── Makefile                 # Build automation
+├── package.json             # Root package.json
+├── pnpm-lock.yaml          # pnpm lockfile
+├── pnpm-workspace.yaml     # Monorepo config
+├── README.md
+├── sqlc.yaml               # Database code generation
+└── tsconfig.json           # Root TypeScript config
 ```
 
-## Key Directories Explained
+## Domain Package Structure
 
-### `/api`
-
-Contains the OpenAPI 3.0 specification split into logical components:
-
-- **components/**: Reusable schemas, parameters, and responses
-- **paths/**: Individual endpoint definitions organized by domain
-- **openapi.yaml**: Main specification file that references all components
-
-### `/internal`
-
-Private Go packages following domain-driven design:
-
-- **Domain packages** (auth, organizations, workflows, content): Core business logic
-- **Infrastructure packages** (database, redis, server): Technical implementations
-- **Shared packages** (config, logger, testutil): Common utilities
-
-### `/web`
-
-Frontend applications and shared packages:
-
-- **platform/**: Main React SPA using TanStack Router and Start
-- **client/**: Generated TypeScript API client
-- **ui/**: Shared component library
-- **Config packages**: ESLint, TypeScript configurations
-
-### `/deployments`
-
-All deployment-related configurations:
-
-- **docker/**: Docker Compose for local development
-- **helm/**: Kubernetes Helm charts for production
-- **k3d/**: Local Kubernetes cluster setup
-
-### Generated Files
-
-The project uses extensive code generation:
-
-- `*.gen.go`: Generated Go code (types, handlers, repositories)
-- `types.gen.go`: OpenAPI-generated type definitions
-- `http.gen.go`: HTTP handler interfaces
-- `repository.gen.go`: Database repository interfaces
-
-## Architecture Patterns
-
-### Hexagonal Architecture
-
-Each domain follows hexagonal architecture:
+Each domain in `/internal` follows this pattern:
 
 ```text
 domain/
-├── domain.go          # Domain entities and business rules
-├── service.go         # Use cases and business logic
-├── handler.go         # HTTP adapter (inbound port)
-├── repository.gen.go  # Database adapter (outbound port)
-├── cache.gen.go       # Cache adapter (outbound port)
-└── events.gen.go      # Event publisher (outbound port)
+├── domain.go          # Core entities, value objects, domain rules
+├── service.go         # Business logic, use cases
+├── handler.go         # HTTP request/response handling
+├── middleware.go      # Domain-specific middleware (optional)
+├── repository.gen.go  # Generated database interface
+├── cache.gen.go       # Generated cache layer (optional)
+├── events.gen.go      # Generated event publisher (optional)
+├── http.gen.go        # Generated HTTP interface from OpenAPI
+├── types.gen.go       # Generated types from OpenAPI
+├── mappers.go         # Convert between layers (entity <-> DTO)
+├── service_test.go    # Unit tests with mocked dependencies
+├── handler_test.go    # HTTP handler tests
+├── mocks_test.go      # Test mocks and fixtures
+└── postgres_test.go   # Integration tests with real database
 ```
 
-### Code Generation Flow
+## Generated Files
 
-1. Define in OpenAPI (`api/`) and SQL (`internal/database/queries/`)
-2. Run `make generate` to create Go types and interfaces
-3. Implement business logic in service layer
-4. Generated adapters handle HTTP, database, and caching
+### Go Generated Files
 
-### Testing Structure
+- `*.gen.go` - Do not edit manually
+- `types.gen.go` - OpenAPI struct definitions
+- `http.gen.go` - HTTP handler interfaces
+- `repository.gen.go` - Database query methods
+- `cache.gen.go` - Redis caching layer
+- `events.gen.go` - Event publishing
 
-Each domain includes comprehensive tests:
+### TypeScript Generated Files
 
-- `service_test.go`: Business logic unit tests with mocks
-- `handler_test.go`: HTTP handler tests
-- `*_postgres_test.go`: Integration tests with real database
+- `web/client/src/generated/` - Complete API client
+- Generated from `api/openapi.bundled.yaml`
+
+### SQL Generated Files
+
+- Database queries in `internal/database/queries/*.sql`
+- Generate Go code with `sqlc generate`
 
 ## File Naming Conventions
 
-- `*.gen.go`: Generated files (do not edit manually)
-- `*_test.go`: Test files
-- `mocks_test.go`: Test mocks and fixtures
-- `mappers.go`: Data transformation between layers
-- `adapters/`: External service integrations
+### Go Files
 
-## Configuration Files
+- `domain.go` - Domain entities and rules
+- `service.go` - Business logic
+- `handler.go` - HTTP handlers
+- `middleware.go` - Middleware functions
+- `mappers.go` - Type conversions
+- `*_test.go` - Test files
+- `*.gen.go` - Generated (don't edit)
 
-- `.air.toml`: Hot reload configuration
-- `.golangci.yaml`: Go linter settings
-- `.mockery.yaml`: Mock generation settings
-- `sqlc.yaml`: Database code generation
-- `*.codegen.yaml`: Custom code generation templates
+### Config Files
+
+- `.*.yaml` - YAML configs (golangci, mockery, sqlc)
+- `.*.toml` - TOML configs (air)
+- `.*.json` - JSON configs (markdownlint, tsconfig)
+- `.*rc` - RC files (prettierrc)
+
+### Documentation
+
+- `*.md` - Markdown docs
+- `*.mdx` - MDX with components (web/docs)
+- `README.md` - Package/directory docs

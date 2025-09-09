@@ -5,7 +5,11 @@
  * The Arches AI API
  * OpenAPI spec version: v0.0.0
  */
-
+import {
+  useMutation,
+  useQuery,
+  useSuspenseQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,10 +24,9 @@ import type {
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseQueryOptions,
-  UseSuspenseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { customFetch } from "../../fetcher";
+  UseSuspenseQueryResult
+} from '@tanstack/react-query';
+
 import type {
   BadRequestResponse,
   DeleteUser200,
@@ -33,763 +36,471 @@ import type {
   NotFoundResponse,
   UnauthorizedResponse,
   UpdateUser200,
-  UpdateUserBody,
-} from "../orval.schemas";
+  UpdateUserBody
+} from '../orval.schemas';
+
+import { customFetch } from '../../fetcher';
+
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
 
 /**
  * Find many users
  * @summary Find many users
  */
-export const getFindManyUsersUrl = (params?: FindManyUsersParams) => {
+export const getFindManyUsersUrl = (params?: FindManyUsersParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
     const explodeParameters = ["sort"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
-      value.forEach((v) =>
-        normalizedParams.append(key, v === null ? "null" : v.toString()),
-      );
+      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
       return;
     }
-
+      
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? "null" : value.toString());
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0
-    ? `/auth/users?${stringifiedParams}`
-    : `/auth/users`;
-};
+  return stringifiedParams.length > 0 ? `/auth/users?${stringifiedParams}` : `/auth/users`
+}
 
-export const findManyUsers = async (
-  params?: FindManyUsersParams,
-  options?: RequestInit,
-): Promise<FindManyUsers200> => {
-  return customFetch<FindManyUsers200>(getFindManyUsersUrl(params), {
+export const findManyUsers = async (params?: FindManyUsersParams, options?: RequestInit): Promise<FindManyUsers200> => {
+  
+  return customFetch<FindManyUsers200>(getFindManyUsersUrl(params),
+  {      
     ...options,
-    method: "GET",
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
 
-export const getFindManyUsersQueryKey = (params?: FindManyUsersParams) => {
-  return [`/auth/users`, ...(params ? [params] : [])] as const;
-};
 
-export const getFindManyUsersQueryOptions = <
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: FindManyUsersParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
+
+export const getFindManyUsersQueryKey = (params?: FindManyUsersParams,) => {
+    return [`/auth/users`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getFindManyUsersQueryOptions = <TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: FindManyUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindManyUsersQueryKey(params);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyUsers>>> = ({
-    signal,
-  }) => findManyUsers(params, { signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getFindManyUsersQueryKey(params);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof findManyUsers>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type FindManyUsersQueryResult = NonNullable<
-  Awaited<ReturnType<typeof findManyUsers>>
->;
-export type FindManyUsersQueryError = BadRequestResponse | UnauthorizedResponse;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyUsers>>> = ({ signal }) => findManyUsers(params, { signal, ...requestOptions });
 
-export function useFindManyUsers<
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params: undefined | FindManyUsersParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyUsersQueryResult = NonNullable<Awaited<ReturnType<typeof findManyUsers>>>
+export type FindManyUsersQueryError = BadRequestResponse | UnauthorizedResponse
+
+
+export function useFindManyUsers<TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  FindManyUsersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof findManyUsers>>,
           TError,
           Awaited<ReturnType<typeof findManyUsers>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useFindManyUsers<
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: FindManyUsersParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindManyUsers<TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: FindManyUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof findManyUsers>>,
           TError,
           Awaited<ReturnType<typeof findManyUsers>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useFindManyUsers<
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: FindManyUsersParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindManyUsers<TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: FindManyUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find many users
  */
 
-export function useFindManyUsers<
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: FindManyUsersParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getFindManyUsersQueryOptions(params, options);
+export function useFindManyUsers<TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: FindManyUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getFindManyUsersQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
-export const getFindManyUsersSuspenseQueryOptions = <
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: FindManyUsersParams,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyUsers>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
+
+
+export const getFindManyUsersSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: FindManyUsersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindManyUsersQueryKey(params);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyUsers>>> = ({
-    signal,
-  }) => findManyUsers(params, { signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getFindManyUsersQueryKey(params);
 
-  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
-    Awaited<ReturnType<typeof findManyUsers>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type FindManyUsersSuspenseQueryResult = NonNullable<
-  Awaited<ReturnType<typeof findManyUsers>>
->;
-export type FindManyUsersSuspenseQueryError =
-  | BadRequestResponse
-  | UnauthorizedResponse;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyUsers>>> = ({ signal }) => findManyUsers(params, { signal, ...requestOptions });
 
-export function useFindManyUsersSuspense<
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params: undefined | FindManyUsersParams,
-  options: {
-    query: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyUsers>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useFindManyUsersSuspense<
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: FindManyUsersParams,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyUsers>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useFindManyUsersSuspense<
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: FindManyUsersParams,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyUsers>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyUsersSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findManyUsers>>>
+export type FindManyUsersSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
+
+
+export function useFindManyUsersSuspense<TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  FindManyUsersParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindManyUsersSuspense<TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: FindManyUsersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFindManyUsersSuspense<TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: FindManyUsersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find many users
  */
 
-export function useFindManyUsersSuspense<
-  TData = Awaited<ReturnType<typeof findManyUsers>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: FindManyUsersParams,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyUsers>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getFindManyUsersSuspenseQueryOptions(params, options);
+export function useFindManyUsersSuspense<TData = Awaited<ReturnType<typeof findManyUsers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: FindManyUsersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useSuspenseQuery(
-    queryOptions,
-    queryClient,
-  ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getFindManyUsersSuspenseQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
 
 /**
  * Delete an user
  * @summary Delete an user
  */
-export const getDeleteUserUrl = (id: string | undefined | null) => {
-  return `/auth/users/${id}`;
-};
+export const getDeleteUserUrl = (id: string | undefined | null,) => {
 
-export const deleteUser = async (
-  id: string | undefined | null,
-  options?: RequestInit,
-): Promise<DeleteUser200> => {
-  return customFetch<DeleteUser200>(getDeleteUserUrl(id), {
+
+  
+
+  return `/auth/users/${id}`
+}
+
+export const deleteUser = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteUser200> => {
+  
+  return customFetch<DeleteUser200>(getDeleteUserUrl(id),
+  {      
     ...options,
-    method: "DELETE",
-  });
-};
+    method: 'DELETE'
+    
+    
+  }
+);}
 
-export const getDeleteUserMutationOptions = <
-  TError = NotFoundResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteUser>>,
-    TError,
-    { id: string | undefined | null },
-    TContext
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteUser>>,
-  TError,
-  { id: string | undefined | null },
-  TContext
-> => {
-  const mutationKey = ["deleteUser"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteUser>>,
-    { id: string | undefined | null }
-  > = (props) => {
-    const { id } = props ?? {};
 
-    return deleteUser(id, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getDeleteUserMutationOptions = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUser>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteUser>>, TError,{id: string | undefined | null}, TContext> => {
 
-export type DeleteUserMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteUser>>
->;
+const mutationKey = ['deleteUser'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-export type DeleteUserMutationError = NotFoundResponse;
+      
 
-/**
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteUser>>, {id: string | undefined | null}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteUser(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteUserMutationResult = NonNullable<Awaited<ReturnType<typeof deleteUser>>>
+    
+    export type DeleteUserMutationError = NotFoundResponse
+
+    /**
  * @summary Delete an user
  */
-export const useDeleteUser = <TError = NotFoundResponse, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteUser>>,
-      TError,
-      { id: string | undefined | null },
-      TContext
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deleteUser>>,
-  TError,
-  { id: string | undefined | null },
-  TContext
-> => {
-  const mutationOptions = getDeleteUserMutationOptions(options);
+export const useDeleteUser = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUser>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteUser>>,
+        TError,
+        {id: string | undefined | null},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getDeleteUserMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Find an user
  * @summary Find an user
  */
-export const getGetOneUserUrl = (id: string | undefined | null) => {
-  return `/auth/users/${id}`;
-};
+export const getGetOneUserUrl = (id: string | undefined | null,) => {
 
-export const getOneUser = async (
-  id: string | undefined | null,
-  options?: RequestInit,
-): Promise<GetOneUser200> => {
-  return customFetch<GetOneUser200>(getGetOneUserUrl(id), {
+
+  
+
+  return `/auth/users/${id}`
+}
+
+export const getOneUser = async (id: string | undefined | null, options?: RequestInit): Promise<GetOneUser200> => {
+  
+  return customFetch<GetOneUser200>(getGetOneUserUrl(id),
+  {      
     ...options,
-    method: "GET",
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
 
-export const getGetOneUserQueryKey = (id?: string | undefined | null) => {
-  return [`/auth/users/${id}`] as const;
-};
 
-export const getGetOneUserQueryOptions = <
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
+
+export const getGetOneUserQueryKey = (id?: string | undefined | null,) => {
+    return [`/auth/users/${id}`] as const;
+    }
+
+    
+export const getGetOneUserQueryOptions = <TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneUserQueryKey(id);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneUser>>> = ({
-    signal,
-  }) => getOneUser(id, { signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getGetOneUserQueryKey(id);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getOneUser>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetOneUserQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getOneUser>>
->;
-export type GetOneUserQueryError = NotFoundResponse;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneUser>>> = ({ signal }) => getOneUser(id, { signal, ...requestOptions });
 
-export function useGetOneUser<
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOneUserQueryResult = NonNullable<Awaited<ReturnType<typeof getOneUser>>>
+export type GetOneUserQueryError = NotFoundResponse
+
+
+export function useGetOneUser<TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getOneUser>>,
           TError,
           Awaited<ReturnType<typeof getOneUser>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetOneUser<
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOneUser<TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getOneUser>>,
           TError,
           Awaited<ReturnType<typeof getOneUser>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetOneUser<
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOneUser<TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find an user
  */
 
-export function useGetOneUser<
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetOneUserQueryOptions(id, options);
+export function useGetOneUser<TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetOneUserQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
-export const getGetOneUserSuspenseQueryOptions = <
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneUser>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
+
+
+export const getGetOneUserSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneUserQueryKey(id);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneUser>>> = ({
-    signal,
-  }) => getOneUser(id, { signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getGetOneUserQueryKey(id);
 
-  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
-    Awaited<ReturnType<typeof getOneUser>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetOneUserSuspenseQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getOneUser>>
->;
-export type GetOneUserSuspenseQueryError = NotFoundResponse;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneUser>>> = ({ signal }) => getOneUser(id, { signal, ...requestOptions });
 
-export function useGetOneUserSuspense<
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options: {
-    query: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneUser>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetOneUserSuspense<
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneUser>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetOneUserSuspense<
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneUser>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOneUserSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getOneUser>>>
+export type GetOneUserSuspenseQueryError = NotFoundResponse
+
+
+export function useGetOneUserSuspense<TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOneUserSuspense<TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOneUserSuspense<TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find an user
  */
 
-export function useGetOneUserSuspense<
-  TData = Awaited<ReturnType<typeof getOneUser>>,
-  TError = NotFoundResponse,
->(
-  id: string | undefined | null,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneUser>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetOneUserSuspenseQueryOptions(id, options);
+export function useGetOneUserSuspense<TData = Awaited<ReturnType<typeof getOneUser>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useSuspenseQuery(
-    queryOptions,
-    queryClient,
-  ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getGetOneUserSuspenseQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
 
 /**
  * Update an user
  * @summary Update an user
  */
-export const getUpdateUserUrl = (id: string | undefined | null) => {
-  return `/auth/users/${id}`;
-};
+export const getUpdateUserUrl = (id: string | undefined | null,) => {
 
-export const updateUser = async (
-  id: string | undefined | null,
-  updateUserBody: UpdateUserBody,
-  options?: RequestInit,
-): Promise<UpdateUser200> => {
-  return customFetch<UpdateUser200>(getUpdateUserUrl(id), {
+
+  
+
+  return `/auth/users/${id}`
+}
+
+export const updateUser = async (id: string | undefined | null,
+    updateUserBody: UpdateUserBody, options?: RequestInit): Promise<UpdateUser200> => {
+  
+  return customFetch<UpdateUser200>(getUpdateUserUrl(id),
+  {      
     ...options,
-    method: "PATCH",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(updateUserBody),
-  });
-};
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateUserBody,)
+  }
+);}
 
-export const getUpdateUserMutationOptions = <
-  TError = NotFoundResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateUser>>,
-    TError,
-    { id: string | undefined | null; data: UpdateUserBody },
-    TContext
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof updateUser>>,
-  TError,
-  { id: string | undefined | null; data: UpdateUserBody },
-  TContext
-> => {
-  const mutationKey = ["updateUser"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateUser>>,
-    { id: string | undefined | null; data: UpdateUserBody }
-  > = (props) => {
-    const { id, data } = props ?? {};
 
-    return updateUser(id, data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getUpdateUserMutationOptions = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{id: string | undefined | null;data: UpdateUserBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{id: string | undefined | null;data: UpdateUserBody}, TContext> => {
 
-export type UpdateUserMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateUser>>
->;
-export type UpdateUserMutationBody = UpdateUserBody;
-export type UpdateUserMutationError = NotFoundResponse;
+const mutationKey = ['updateUser'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-/**
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateUser>>, {id: string | undefined | null;data: UpdateUserBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateUser(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateUserMutationResult = NonNullable<Awaited<ReturnType<typeof updateUser>>>
+    export type UpdateUserMutationBody = UpdateUserBody
+    export type UpdateUserMutationError = NotFoundResponse
+
+    /**
  * @summary Update an user
  */
-export const useUpdateUser = <TError = NotFoundResponse, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateUser>>,
-      TError,
-      { id: string | undefined | null; data: UpdateUserBody },
-      TContext
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof updateUser>>,
-  TError,
-  { id: string | undefined | null; data: UpdateUserBody },
-  TContext
-> => {
-  const mutationOptions = getUpdateUserMutationOptions(options);
+export const useUpdateUser = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUser>>, TError,{id: string | undefined | null;data: UpdateUserBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateUser>>,
+        TError,
+        {id: string | undefined | null;data: UpdateUserBody},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getUpdateUserMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    

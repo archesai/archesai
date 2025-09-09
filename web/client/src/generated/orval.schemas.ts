@@ -8,9 +8,7 @@
 /**
  * A recursive filter node that can be a condition or group
  */
-export interface FilterNode {
-  [key: string]: unknown;
-}
+export interface FilterNode { [key: string]: unknown }
 
 /**
  * Pagination (page number & size)
@@ -52,16 +50,16 @@ export interface Base {
  * The authentication provider identifier
  * @minLength 1
  */
-export type AccountAllOfProviderId =
-  (typeof AccountAllOfProviderId)[keyof typeof AccountAllOfProviderId];
+export type AccountAllOfProviderId = typeof AccountAllOfProviderId[keyof typeof AccountAllOfProviderId];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AccountAllOfProviderId = {
-  local: "local",
-  google: "google",
-  github: "github",
-  microsoft: "microsoft",
-  apple: "apple",
+  local: 'local',
+  google: 'google',
+  github: 'github',
+  microsoft: 'microsoft',
+  apple: 'apple',
 } as const;
 
 export type AccountAllOf = {
@@ -252,16 +250,16 @@ export type User = Base & UserAllOf;
  * The current subscription plan
  * @minLength 1
  */
-export type OrganizationAllOfPlan =
-  (typeof OrganizationAllOfPlan)[keyof typeof OrganizationAllOfPlan];
+export type OrganizationAllOfPlan = typeof OrganizationAllOfPlan[keyof typeof OrganizationAllOfPlan];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationAllOfPlan = {
-  FREE: "FREE",
-  BASIC: "BASIC",
-  STANDARD: "STANDARD",
-  PREMIUM: "PREMIUM",
-  UNLIMITED: "UNLIMITED",
+  FREE: 'FREE',
+  BASIC: 'BASIC',
+  STANDARD: 'STANDARD',
+  PREMIUM: 'PREMIUM',
+  UNLIMITED: 'UNLIMITED',
 } as const;
 
 /**
@@ -312,13 +310,14 @@ export type Organization = Base & OrganizationAllOf;
  * The role of the member
  * @minLength 1
  */
-export type MemberRole = (typeof MemberRole)[keyof typeof MemberRole];
+export type MemberRole = typeof MemberRole[keyof typeof MemberRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MemberRole = {
-  admin: "admin",
-  owner: "owner",
-  member: "member",
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member',
 } as const;
 
 /**
@@ -361,14 +360,14 @@ export interface Member {
  * The role of the invitation
  * @minLength 1
  */
-export type InvitationRole =
-  (typeof InvitationRole)[keyof typeof InvitationRole];
+export type InvitationRole = typeof InvitationRole[keyof typeof InvitationRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationRole = {
-  admin: "admin",
-  owner: "owner",
-  member: "member",
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member',
 } as const;
 
 /**
@@ -449,14 +448,15 @@ export type Pipeline = Base & OrganizationReference & PipelineAllOf;
 /**
  * @minLength 1
  */
-export type RunStatus = (typeof RunStatus)[keyof typeof RunStatus];
+export type RunStatus = typeof RunStatus[keyof typeof RunStatus];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunStatus = {
-  COMPLETED: "COMPLETED",
-  FAILED: "FAILED",
-  PROCESSING: "PROCESSING",
-  QUEUED: "QUEUED",
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  PROCESSING: 'PROCESSING',
+  QUEUED: 'QUEUED',
 } as const;
 
 /**
@@ -678,14 +678,14 @@ export interface EmailConfig {
  * Kubernetes image pull policy
  * @minLength 1
  */
-export type ImageConfigPullPolicy =
-  (typeof ImageConfigPullPolicy)[keyof typeof ImageConfigPullPolicy];
+export type ImageConfigPullPolicy = typeof ImageConfigPullPolicy[keyof typeof ImageConfigPullPolicy];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ImageConfigPullPolicy = {
-  Always: "Always",
-  IfNotPresent: "IfNotPresent",
-  Never: "Never",
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never',
 } as const;
 
 /**
@@ -752,14 +752,14 @@ export interface ResourceConfig {
 /**
  * Deployment environment (development, staging, production)
  */
-export type APIConfigEnvironment =
-  (typeof APIConfigEnvironment)[keyof typeof APIConfigEnvironment];
+export type APIConfigEnvironment = typeof APIConfigEnvironment[keyof typeof APIConfigEnvironment];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const APIConfigEnvironment = {
-  development: "development",
-  staging: "staging",
-  production: "production",
+  development: 'development',
+  staging: 'staging',
+  production: 'production',
 } as const;
 
 /**
@@ -921,13 +921,13 @@ export interface PersistenceConfig {
 /**
  * Database type (postgresql or sqlite)
  */
-export type DatabaseConfigType =
-  (typeof DatabaseConfigType)[keyof typeof DatabaseConfigType];
+export type DatabaseConfigType = typeof DatabaseConfigType[keyof typeof DatabaseConfigType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DatabaseConfigType = {
-  postgresql: "postgresql",
-  sqlite: "sqlite",
+  postgresql: 'postgresql',
+  sqlite: 'sqlite',
 } as const;
 
 /**
@@ -1089,13 +1089,13 @@ export interface IngressConfig {
  * The embedding provider to use for vector embeddings
  * @minLength 1
  */
-export type EmbeddingConfigType =
-  (typeof EmbeddingConfigType)[keyof typeof EmbeddingConfigType];
+export type EmbeddingConfigType = typeof EmbeddingConfigType[keyof typeof EmbeddingConfigType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EmbeddingConfigType = {
-  openai: "openai",
-  ollama: "ollama",
+  openai: 'openai',
+  ollama: 'ollama',
 } as const;
 
 /**
@@ -1113,12 +1113,13 @@ export interface EmbeddingConfig {
  * LLM provider type
  * @minLength 1
  */
-export type LLMConfigType = (typeof LLMConfigType)[keyof typeof LLMConfigType];
+export type LLMConfigType = typeof LLMConfigType[keyof typeof LLMConfigType];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LLMConfigType = {
-  ollama: "ollama",
-  openai: "openai",
+  ollama: 'ollama',
+  openai: 'openai',
 } as const;
 
 /**
@@ -1213,18 +1214,18 @@ export interface IntelligenceConfig {
  * Minimum log level to output
  * @minLength 1
  */
-export type LoggingConfigLevel =
-  (typeof LoggingConfigLevel)[keyof typeof LoggingConfigLevel];
+export type LoggingConfigLevel = typeof LoggingConfigLevel[keyof typeof LoggingConfigLevel];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LoggingConfigLevel = {
-  fatal: "fatal",
-  error: "error",
-  warn: "warn",
-  info: "info",
-  debug: "debug",
-  trace: "trace",
-  silent: "silent",
+  fatal: 'fatal',
+  error: 'error',
+  warn: 'warn',
+  info: 'info',
+  debug: 'debug',
+  trace: 'trace',
+  silent: 'silent',
 } as const;
 
 /**
@@ -1435,36 +1436,36 @@ export type PageQueryParameter = {
 /**
  * @minLength 1
  */
-export type AccountsSortParameterItemField =
-  (typeof AccountsSortParameterItemField)[keyof typeof AccountsSortParameterItemField];
+export type AccountsSortParameterItemField = typeof AccountsSortParameterItemField[keyof typeof AccountsSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AccountsSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  accessToken: "accessToken",
-  accessTokenExpiresAt: "accessTokenExpiresAt",
-  accountId: "accountId",
-  idToken: "idToken",
-  password: "password",
-  providerId: "providerId",
-  refreshToken: "refreshToken",
-  refreshTokenExpiresAt: "refreshTokenExpiresAt",
-  scope: "scope",
-  userId: "userId",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  accessToken: 'accessToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  accountId: 'accountId',
+  idToken: 'idToken',
+  password: 'password',
+  providerId: 'providerId',
+  refreshToken: 'refreshToken',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  userId: 'userId',
 } as const;
 
 /**
  * @minLength 1
  */
-export type AccountsSortParameterItemOrder =
-  (typeof AccountsSortParameterItemOrder)[keyof typeof AccountsSortParameterItemOrder];
+export type AccountsSortParameterItemOrder = typeof AccountsSortParameterItemOrder[keyof typeof AccountsSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AccountsSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type AccountsSortParameterItem = {
@@ -1487,32 +1488,32 @@ export type SessionsFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type SessionsSortParameterItemField =
-  (typeof SessionsSortParameterItemField)[keyof typeof SessionsSortParameterItemField];
+export type SessionsSortParameterItemField = typeof SessionsSortParameterItemField[keyof typeof SessionsSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SessionsSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  activeOrganizationId: "activeOrganizationId",
-  expiresAt: "expiresAt",
-  ipAddress: "ipAddress",
-  token: "token",
-  userAgent: "userAgent",
-  userId: "userId",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  activeOrganizationId: 'activeOrganizationId',
+  expiresAt: 'expiresAt',
+  ipAddress: 'ipAddress',
+  token: 'token',
+  userAgent: 'userAgent',
+  userId: 'userId',
 } as const;
 
 /**
  * @minLength 1
  */
-export type SessionsSortParameterItemOrder =
-  (typeof SessionsSortParameterItemOrder)[keyof typeof SessionsSortParameterItemOrder];
+export type SessionsSortParameterItemOrder = typeof SessionsSortParameterItemOrder[keyof typeof SessionsSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SessionsSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type SessionsSortParameterItem = {
@@ -1535,30 +1536,30 @@ export type UsersFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type UsersSortParameterItemField =
-  (typeof UsersSortParameterItemField)[keyof typeof UsersSortParameterItemField];
+export type UsersSortParameterItemField = typeof UsersSortParameterItemField[keyof typeof UsersSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsersSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  email: "email",
-  emailVerified: "emailVerified",
-  image: "image",
-  name: "name",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  email: 'email',
+  emailVerified: 'emailVerified',
+  image: 'image',
+  name: 'name',
 } as const;
 
 /**
  * @minLength 1
  */
-export type UsersSortParameterItemOrder =
-  (typeof UsersSortParameterItemOrder)[keyof typeof UsersSortParameterItemOrder];
+export type UsersSortParameterItemOrder = typeof UsersSortParameterItemOrder[keyof typeof UsersSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsersSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type UsersSortParameterItem = {
@@ -1581,34 +1582,34 @@ export type OrganizationsFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type OrganizationsSortParameterItemField =
-  (typeof OrganizationsSortParameterItemField)[keyof typeof OrganizationsSortParameterItemField];
+export type OrganizationsSortParameterItemField = typeof OrganizationsSortParameterItemField[keyof typeof OrganizationsSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationsSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  billingEmail: "billingEmail",
-  credits: "credits",
-  logo: "logo",
-  metadata: "metadata",
-  name: "name",
-  plan: "plan",
-  slug: "slug",
-  stripeCustomerId: "stripeCustomerId",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  billingEmail: 'billingEmail',
+  credits: 'credits',
+  logo: 'logo',
+  metadata: 'metadata',
+  name: 'name',
+  plan: 'plan',
+  slug: 'slug',
+  stripeCustomerId: 'stripeCustomerId',
 } as const;
 
 /**
  * @minLength 1
  */
-export type OrganizationsSortParameterItemOrder =
-  (typeof OrganizationsSortParameterItemOrder)[keyof typeof OrganizationsSortParameterItemOrder];
+export type OrganizationsSortParameterItemOrder = typeof OrganizationsSortParameterItemOrder[keyof typeof OrganizationsSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationsSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type OrganizationsSortParameterItem = {
@@ -1631,29 +1632,29 @@ export type MembersFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type MembersSortParameterItemField =
-  (typeof MembersSortParameterItemField)[keyof typeof MembersSortParameterItemField];
+export type MembersSortParameterItemField = typeof MembersSortParameterItemField[keyof typeof MembersSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MembersSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  organizationId: "organizationId",
-  role: "role",
-  userId: "userId",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  role: 'role',
+  userId: 'userId',
 } as const;
 
 /**
  * @minLength 1
  */
-export type MembersSortParameterItemOrder =
-  (typeof MembersSortParameterItemOrder)[keyof typeof MembersSortParameterItemOrder];
+export type MembersSortParameterItemOrder = typeof MembersSortParameterItemOrder[keyof typeof MembersSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MembersSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type MembersSortParameterItem = {
@@ -1676,32 +1677,32 @@ export type InvitationsFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type InvitationsSortParameterItemField =
-  (typeof InvitationsSortParameterItemField)[keyof typeof InvitationsSortParameterItemField];
+export type InvitationsSortParameterItemField = typeof InvitationsSortParameterItemField[keyof typeof InvitationsSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationsSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  email: "email",
-  expiresAt: "expiresAt",
-  inviterId: "inviterId",
-  organizationId: "organizationId",
-  role: "role",
-  status: "status",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
+  organizationId: 'organizationId',
+  role: 'role',
+  status: 'status',
 } as const;
 
 /**
  * @minLength 1
  */
-export type InvitationsSortParameterItemOrder =
-  (typeof InvitationsSortParameterItemOrder)[keyof typeof InvitationsSortParameterItemOrder];
+export type InvitationsSortParameterItemOrder = typeof InvitationsSortParameterItemOrder[keyof typeof InvitationsSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationsSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type InvitationsSortParameterItem = {
@@ -1724,29 +1725,29 @@ export type PipelinesFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type PipelinesSortParameterItemField =
-  (typeof PipelinesSortParameterItemField)[keyof typeof PipelinesSortParameterItemField];
+export type PipelinesSortParameterItemField = typeof PipelinesSortParameterItemField[keyof typeof PipelinesSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PipelinesSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  description: "description",
-  name: "name",
-  organizationId: "organizationId",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  description: 'description',
+  name: 'name',
+  organizationId: 'organizationId',
 } as const;
 
 /**
  * @minLength 1
  */
-export type PipelinesSortParameterItemOrder =
-  (typeof PipelinesSortParameterItemOrder)[keyof typeof PipelinesSortParameterItemOrder];
+export type PipelinesSortParameterItemOrder = typeof PipelinesSortParameterItemOrder[keyof typeof PipelinesSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PipelinesSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type PipelinesSortParameterItem = {
@@ -1769,34 +1770,34 @@ export type RunsFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type RunsSortParameterItemField =
-  (typeof RunsSortParameterItemField)[keyof typeof RunsSortParameterItemField];
+export type RunsSortParameterItemField = typeof RunsSortParameterItemField[keyof typeof RunsSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunsSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  completedAt: "completedAt",
-  error: "error",
-  organizationId: "organizationId",
-  pipelineId: "pipelineId",
-  progress: "progress",
-  startedAt: "startedAt",
-  status: "status",
-  toolId: "toolId",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt',
+  error: 'error',
+  organizationId: 'organizationId',
+  pipelineId: 'pipelineId',
+  progress: 'progress',
+  startedAt: 'startedAt',
+  status: 'status',
+  toolId: 'toolId',
 } as const;
 
 /**
  * @minLength 1
  */
-export type RunsSortParameterItemOrder =
-  (typeof RunsSortParameterItemOrder)[keyof typeof RunsSortParameterItemOrder];
+export type RunsSortParameterItemOrder = typeof RunsSortParameterItemOrder[keyof typeof RunsSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunsSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type RunsSortParameterItem = {
@@ -1819,31 +1820,31 @@ export type ToolsFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type ToolsSortParameterItemField =
-  (typeof ToolsSortParameterItemField)[keyof typeof ToolsSortParameterItemField];
+export type ToolsSortParameterItemField = typeof ToolsSortParameterItemField[keyof typeof ToolsSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ToolsSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  description: "description",
-  inputMimeType: "inputMimeType",
-  name: "name",
-  organizationId: "organizationId",
-  outputMimeType: "outputMimeType",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  description: 'description',
+  inputMimeType: 'inputMimeType',
+  name: 'name',
+  organizationId: 'organizationId',
+  outputMimeType: 'outputMimeType',
 } as const;
 
 /**
  * @minLength 1
  */
-export type ToolsSortParameterItemOrder =
-  (typeof ToolsSortParameterItemOrder)[keyof typeof ToolsSortParameterItemOrder];
+export type ToolsSortParameterItemOrder = typeof ToolsSortParameterItemOrder[keyof typeof ToolsSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ToolsSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type ToolsSortParameterItem = {
@@ -1866,35 +1867,35 @@ export type ArtifactsFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type ArtifactsSortParameterItemField =
-  (typeof ArtifactsSortParameterItemField)[keyof typeof ArtifactsSortParameterItemField];
+export type ArtifactsSortParameterItemField = typeof ArtifactsSortParameterItemField[keyof typeof ArtifactsSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ArtifactsSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  credits: "credits",
-  description: "description",
-  mimeType: "mimeType",
-  name: "name",
-  organizationId: "organizationId",
-  previewImage: "previewImage",
-  producerId: "producerId",
-  text: "text",
-  url: "url",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  credits: 'credits',
+  description: 'description',
+  mimeType: 'mimeType',
+  name: 'name',
+  organizationId: 'organizationId',
+  previewImage: 'previewImage',
+  producerId: 'producerId',
+  text: 'text',
+  url: 'url',
 } as const;
 
 /**
  * @minLength 1
  */
-export type ArtifactsSortParameterItemOrder =
-  (typeof ArtifactsSortParameterItemOrder)[keyof typeof ArtifactsSortParameterItemOrder];
+export type ArtifactsSortParameterItemOrder = typeof ArtifactsSortParameterItemOrder[keyof typeof ArtifactsSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ArtifactsSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type ArtifactsSortParameterItem = {
@@ -1917,28 +1918,28 @@ export type LabelsFilterParameter = { [key: string]: unknown };
 /**
  * @minLength 1
  */
-export type LabelsSortParameterItemField =
-  (typeof LabelsSortParameterItemField)[keyof typeof LabelsSortParameterItemField];
+export type LabelsSortParameterItemField = typeof LabelsSortParameterItemField[keyof typeof LabelsSortParameterItemField];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LabelsSortParameterItemField = {
-  createdAt: "createdAt",
-  id: "id",
-  updatedAt: "updatedAt",
-  name: "name",
-  organizationId: "organizationId",
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  organizationId: 'organizationId',
 } as const;
 
 /**
  * @minLength 1
  */
-export type LabelsSortParameterItemOrder =
-  (typeof LabelsSortParameterItemOrder)[keyof typeof LabelsSortParameterItemOrder];
+export type LabelsSortParameterItemOrder = typeof LabelsSortParameterItemOrder[keyof typeof LabelsSortParameterItemOrder];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LabelsSortParameterItemOrder = {
-  asc: "asc",
-  desc: "desc",
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type LabelsSortParameterItem = {
@@ -1954,18 +1955,18 @@ export type LabelsSortParameterItem = {
 export type LabelsSortParameter = LabelsSortParameterItem[];
 
 export type AccountsFindManyParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: AccountsFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: AccountsSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: AccountsFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: AccountsSortParameter;
 };
 
 export type AccountsFindMany200Meta = {
@@ -2086,18 +2087,18 @@ export type ConfirmEmailChangeBody = {
 };
 
 export type FindManySessionsParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: SessionsFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: SessionsSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: SessionsFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: SessionsSortParameter;
 };
 
 export type FindManySessions200Meta = {
@@ -2131,18 +2132,18 @@ export type UpdateSession200 = {
 };
 
 export type FindManyUsersParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: UsersFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: UsersSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: UsersFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: UsersSortParameter;
 };
 
 export type FindManyUsers200Meta = {
@@ -2195,18 +2196,18 @@ export type CreateOrganization201 = {
 };
 
 export type FindManyOrganizationsParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: OrganizationsFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: OrganizationsSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: OrganizationsFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: OrganizationsSortParameter;
 };
 
 export type FindManyOrganizations200Meta = {
@@ -2242,14 +2243,14 @@ export type UpdateOrganization200 = {
  * The role of the member
  * @minLength 1
  */
-export type CreateMemberBodyRole =
-  (typeof CreateMemberBodyRole)[keyof typeof CreateMemberBodyRole];
+export type CreateMemberBodyRole = typeof CreateMemberBodyRole[keyof typeof CreateMemberBodyRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateMemberBodyRole = {
-  admin: "admin",
-  owner: "owner",
-  member: "member",
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member',
 } as const;
 
 export type CreateMemberBody = {
@@ -2265,18 +2266,18 @@ export type CreateMember201 = {
 };
 
 export type FindManyMembersParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: MembersFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: MembersSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: MembersFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: MembersSortParameter;
 };
 
 export type FindManyMembers200Meta = {
@@ -2300,14 +2301,14 @@ export type GetOneMember200 = {
 /**
  * The role of the member
  */
-export type UpdateMemberBodyRole =
-  (typeof UpdateMemberBodyRole)[keyof typeof UpdateMemberBodyRole];
+export type UpdateMemberBodyRole = typeof UpdateMemberBodyRole[keyof typeof UpdateMemberBodyRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateMemberBodyRole = {
-  admin: "admin",
-  owner: "owner",
-  member: "member",
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member',
 } as const;
 
 export type UpdateMemberBody = {
@@ -2323,14 +2324,14 @@ export type UpdateMember200 = {
  * The role of the invitation
  * @minLength 1
  */
-export type CreateInvitationBodyRole =
-  (typeof CreateInvitationBodyRole)[keyof typeof CreateInvitationBodyRole];
+export type CreateInvitationBodyRole = typeof CreateInvitationBodyRole[keyof typeof CreateInvitationBodyRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateInvitationBodyRole = {
-  admin: "admin",
-  owner: "owner",
-  member: "member",
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member',
 } as const;
 
 export type CreateInvitationBody = {
@@ -2351,18 +2352,18 @@ export type CreateInvitation201 = {
 };
 
 export type FindManyInvitationsParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: InvitationsFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: InvitationsSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: InvitationsFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: InvitationsSortParameter;
 };
 
 export type FindManyInvitations200Meta = {
@@ -2386,14 +2387,14 @@ export type GetOneInvitation200 = {
 /**
  * The role of the invitation
  */
-export type UpdateInvitationBodyRole =
-  (typeof UpdateInvitationBodyRole)[keyof typeof UpdateInvitationBodyRole];
+export type UpdateInvitationBodyRole = typeof UpdateInvitationBodyRole[keyof typeof UpdateInvitationBodyRole];
+
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateInvitationBodyRole = {
-  admin: "admin",
-  owner: "owner",
-  member: "member",
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member',
 } as const;
 
 export type UpdateInvitationBody = {
@@ -2425,18 +2426,18 @@ export type CreatePipeline201 = {
 };
 
 export type FindManyPipelinesParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: PipelinesFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: PipelinesSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: PipelinesFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: PipelinesSortParameter;
 };
 
 export type FindManyPipelines200Meta = {
@@ -2481,18 +2482,18 @@ export type CreateRun201 = {
 };
 
 export type FindManyRunsParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: RunsFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: RunsSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: RunsFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: RunsSortParameter;
 };
 
 export type FindManyRuns200Meta = {
@@ -2540,18 +2541,18 @@ export type CreateTool201 = {
 };
 
 export type FindManyToolsParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: ToolsFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: ToolsSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: ToolsFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: ToolsSortParameter;
 };
 
 export type FindManyTools200Meta = {
@@ -2607,18 +2608,18 @@ export type CreateArtifact201 = {
 };
 
 export type FindManyArtifactsParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: ArtifactsFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: ArtifactsSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: ArtifactsFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: ArtifactsSortParameter;
 };
 
 export type FindManyArtifacts200Meta = {
@@ -2668,18 +2669,18 @@ export type CreateLabel201 = {
 };
 
 export type FindManyLabelsParams = {
-  /**
-   * A recursive filter node that can be a condition or group
-   */
-  filter?: LabelsFilterParameter;
-  /**
-   * Pagination (page number & size)
-   */
-  page?: PageQueryParameter;
-  /**
-   * The sort parameter
-   */
-  sort?: LabelsSortParameter;
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: LabelsFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: LabelsSortParameter;
 };
 
 export type FindManyLabels200Meta = {
@@ -2711,3 +2712,4 @@ export type UpdateLabelBody = {
 export type UpdateLabel200 = {
   data: Label;
 };
+
