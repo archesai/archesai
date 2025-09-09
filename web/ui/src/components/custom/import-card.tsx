@@ -191,7 +191,7 @@ export default function ImportCard(): JSX.Element {
             {selectedFiles.map((file, idx) => (
               <li
                 className="flex items-center justify-between rounded-xs border bg-muted/50 p-2"
-                key={idx}
+                key={file.name}
               >
                 <span className="flex w-4/5 items-center gap-2 truncate text-foreground">
                   <span>{file.name}</span>
@@ -204,6 +204,7 @@ export default function ImportCard(): JSX.Element {
                   {`${(file.size / 1024).toFixed(2)} KB`}
                 </Badge>
                 <button
+                  type="button"
                   aria-label={`Remove ${file.name}`}
                   className="text-red-500 hover:text-red-700 focus:outline-hidden"
                   onClick={() => {

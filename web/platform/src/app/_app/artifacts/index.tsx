@@ -1,6 +1,5 @@
-import type { JSX } from "react";
-
 import { createFileRoute } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 import ArtifactDataTable from "#components/datatables/artifact-datatable";
 

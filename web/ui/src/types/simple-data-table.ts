@@ -21,7 +21,7 @@ export interface Option {
 
 // Extend TanStack Table column meta for filter configuration
 declare module "@tanstack/react-table" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // biome-ignore lint/correctness/noUnusedVariables: FIXME
   interface ColumnMeta<TData extends RowData, TValue> {
     filterVariant?: FilterVariant;
     icon?: React.FC<React.SVGProps<SVGSVGElement>>;

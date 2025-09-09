@@ -2,9 +2,6 @@ import type { Column } from "@tanstack/react-table";
 import type { JSX } from "react";
 
 import * as React from "react";
-
-import type { Option } from "#types/simple-data-table";
-
 import {
   CheckCircle2Icon,
   PlusSquareIcon,
@@ -28,6 +25,7 @@ import {
 } from "#components/shadcn/popover";
 import { Separator } from "#components/shadcn/separator";
 import { cn } from "#lib/utils";
+import type { Option } from "#types/simple-data-table";
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
@@ -91,15 +89,20 @@ export function DataTableFacetedFilter<TData, TValue>({
           variant="outline"
         >
           {selectedValues.size > 0 ? (
-            <div
+            <button
               aria-label={`Clear ${title} filter`}
               className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
               onClick={onReset}
-              role="button"
-              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onReset();
+                }
+              }}
+              type="button"
             >
               <XCircleIcon />
-            </div>
+            </button>
           ) : (
             <PlusSquareIcon />
           )}

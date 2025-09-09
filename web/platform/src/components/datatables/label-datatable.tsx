@@ -1,15 +1,9 @@
-import type { JSX } from "react";
-
-import { useNavigate } from "@tanstack/react-router";
-
 import type {
-  LabelEntity,
+  Label,
   LabelsFilterParameter,
   LabelsSortParameter,
   PageQueryParameter,
 } from "@archesai/client";
-import type { SearchQuery } from "@archesai/ui/types/entities";
-
 import {
   deleteLabel,
   getFindManyLabelsSuspenseQueryOptions,
@@ -19,6 +13,9 @@ import { Timestamp } from "@archesai/ui/components/custom/timestamp";
 import { DataTable } from "@archesai/ui/components/datatable/data-table";
 import { Badge } from "@archesai/ui/components/shadcn/badge";
 import { LABEL_ENTITY_KEY } from "@archesai/ui/lib/constants";
+import type { SearchQuery } from "@archesai/ui/types/entities";
+import { useNavigate } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 import LabelForm from "#components/forms/label-form";
 
@@ -34,7 +31,7 @@ export default function LabelDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<LabelEntity>
+    <DataTable<Label>
       columns={[
         {
           accessorKey: "name",
@@ -63,7 +60,7 @@ export default function LabelDataTable(): JSX.Element {
         await deleteLabel(id);
       }}
       entityKey={LABEL_ENTITY_KEY}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={async (chatbot) => {
         await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` });

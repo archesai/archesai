@@ -1,0 +1,77 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.3/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**/*.{ts,tsx,js,jsx,mjs,json,yml,yaml,css,html}",
+      "!**/templates",
+      "!**/*.gen.go",
+      "!**/generated",
+      "!**/*.gen.ts",
+      "!**/routeTree.gen.ts",
+      "!**/shadcn"
+    ]
+  },
+  "css": {
+    "linter": {
+      "enabled": false
+    },
+    "parser": {
+      "cssModules": false
+    },
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "formatter": {
+    "attributePosition": "multiline",
+    "useEditorconfig": true
+  },
+  "linter": {
+    "rules": {
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error"
+      },
+      "complexity": {
+        "noUselessFragments": "off"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      },
+      "style": {
+        "useExportType": "error",
+        "useNodejsImportProtocol": "error",
+        "useImportType": {
+          "level": "error",
+          "fix": "safe",
+          "options": {
+            "style": "separatedType"
+          }
+        }
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "attributePosition": "multiline"
+    }
+  },
+  "html": {
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "json": {
+    "parser": {
+      "allowComments": true,
+      "allowTrailingCommas": true
+    }
+  }
+}

@@ -1,11 +1,9 @@
-import type { JSX } from "react";
-
-import { Suspense } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-
 import { useGetOneArtifactSuspense } from "@archesai/client";
 import { ArtifactViewer } from "@archesai/ui/components/custom/artifact-viewer";
 import { Card } from "@archesai/ui/components/shadcn/card";
+import { createFileRoute } from "@tanstack/react-router";
+import type { JSX } from "react";
+import { Suspense } from "react";
 
 import {
   ArtifactDetailsBody,

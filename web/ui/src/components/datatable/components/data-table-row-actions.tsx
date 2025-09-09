@@ -1,8 +1,5 @@
 import type { Table } from "@tanstack/table-core";
 import type { JSX } from "react";
-
-import type { BaseEntity } from "#types/entities";
-
 import { DeleteItems } from "#components/custom/delete-items";
 import { MoreHorizontalIcon } from "#components/custom/icons";
 import { Button } from "#components/shadcn/button";
@@ -13,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "#components/shadcn/dropdown-menu";
+import type { BaseEntity } from "#types/entities";
 
 export interface DataTableRowActionsProps<TEntity extends BaseEntity> {
   deleteItem?: (id: string) => Promise<void>;

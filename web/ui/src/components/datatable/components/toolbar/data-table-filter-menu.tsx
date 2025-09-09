@@ -4,15 +4,6 @@ import type { Column, Table } from "@tanstack/react-table";
 import type { JSX } from "react";
 
 import * as React from "react";
-
-import type {
-  BaseEntity,
-  FilterCondition,
-  FilterNode,
-  FilterValue,
-} from "#types/entities";
-import type { FilterOperator } from "#types/simple-data-table";
-
 import {
   BadgeCheckIcon,
   CalendarIcon,
@@ -48,6 +39,13 @@ import {
 import { useFilterState } from "#hooks/use-filter-state";
 import { formatDate } from "#lib/format";
 import { cn } from "#lib/utils";
+import type {
+  BaseEntity,
+  FilterCondition,
+  FilterNode,
+  FilterValue,
+} from "#types/entities";
+import type { FilterOperator } from "#types/simple-data-table";
 import {
   getDefaultFilterOperator,
   getFilterOperators,
@@ -432,7 +430,7 @@ function DataTableFilterItem<TData extends BaseEntity>({
       id={filterItemId}
       key={filter.id}
       onKeyDown={onItemKeyDown}
-      role="listitem"
+      role="toolbar"
     >
       <Popover
         onOpenChange={setShowFieldSelector}
@@ -669,14 +667,16 @@ function onFilterInputRender<TData extends BaseEntity>({
   if (filter.operator === "isEmpty" || filter.operator === "isNotEmpty") {
     return (
       <div
-        aria-label={`${column.columnDef.meta?.label ?? ""} filter is ${
-          filter.operator === "isEmpty" ? "empty" : "not empty"
-        }`}
         aria-live="polite"
         className="h-full w-16 rounded-none border bg-transparent px-1.5 py-0.5 text-muted-foreground dark:bg-input/30"
         id={inputId}
-        role="status"
-      />
+      >
+        <span className="sr-only">
+          {`${column.columnDef.meta?.label ?? ""} filter is ${
+            filter.operator === "isEmpty" ? "empty" : "not empty"
+          }`}
+        </span>
+      </div>
     );
   }
 

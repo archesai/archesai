@@ -1,9 +1,3 @@
-import type { JSX } from "react";
-
-import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "motion/react";
-
 import { ArchesLogo } from "@archesai/ui/components/custom/arches-logo";
 import {
   ArrowRightIcon,
@@ -33,6 +27,10 @@ import {
   TabsList,
   TabsTrigger,
 } from "@archesai/ui/components/shadcn/tabs";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion } from "motion/react";
+import type { JSX } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/landing/")({
   component: RouteComponent,
@@ -412,9 +410,9 @@ export default function LandingPage(): JSX.Element {
               viewport={{ once: true }}
               whileInView="show"
             >
-              {features.map((feature, i) => (
+              {features.map((feature) => (
                 <motion.div
-                  key={i}
+                  key={feature.title}
                   variants={item}
                 >
                   <Card className="h-full overflow-hidden border-border/40 bg-gradient-to-b from-background to-muted/10 backdrop-blur transition-all hover:shadow-md">
@@ -489,7 +487,7 @@ export default function LandingPage(): JSX.Element {
                 <motion.div
                   className="relative z-10 flex flex-col items-center space-y-4 text-center"
                   initial={{ opacity: 0, y: 20 }}
-                  key={i}
+                  key={step.step}
                   transition={{ delay: i * 0.1, duration: 0.5 }}
                   viewport={{ once: true }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -580,7 +578,7 @@ export default function LandingPage(): JSX.Element {
               ].map((testimonial, i) => (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
-                  key={i}
+                  key={testimonial.author}
                   transition={{ delay: i * 0.05, duration: 0.5 }}
                   viewport={{ once: true }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -593,7 +591,7 @@ export default function LandingPage(): JSX.Element {
                           .map((_, j) => (
                             <StarIcon
                               className="size-4 fill-yellow-500 text-yellow-500"
-                              key={j}
+                              key={`star-${testimonial.author}-${j}`}
                             />
                           ))}
                       </div>
@@ -717,7 +715,7 @@ export default function LandingPage(): JSX.Element {
                     ].map((plan, i) => (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
-                        key={i}
+                        key={plan.name}
                         transition={{ delay: i * 0.1, duration: 0.5 }}
                         viewport={{ once: true }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -744,10 +742,10 @@ export default function LandingPage(): JSX.Element {
                               {plan.description}
                             </p>
                             <ul className="my-6 flex-grow space-y-3">
-                              {plan.features.map((feature, j) => (
+                              {plan.features.map((feature) => (
                                 <li
                                   className="flex items-center"
-                                  key={j}
+                                  key={feature}
                                 >
                                   <CheckCircle2Icon className="mr-2 size-4 text-primary" />
                                   <span>{feature}</span>
@@ -813,7 +811,7 @@ export default function LandingPage(): JSX.Element {
                     ].map((plan, i) => (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
-                        key={i}
+                        key={plan.name}
                         transition={{ delay: i * 0.1, duration: 0.5 }}
                         viewport={{ once: true }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -840,10 +838,10 @@ export default function LandingPage(): JSX.Element {
                               {plan.description}
                             </p>
                             <ul className="my-6 flex-grow space-y-3">
-                              {plan.features.map((feature, j) => (
+                              {plan.features.map((feature) => (
                                 <li
                                   className="flex items-center"
-                                  key={j}
+                                  key={feature}
                                 >
                                   <CheckCircle2Icon className="mr-2 size-4 text-primary" />
                                   <span>{feature}</span>
@@ -936,7 +934,7 @@ export default function LandingPage(): JSX.Element {
                 ].map((faq, i) => (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
-                    key={i}
+                    key={faq.question}
                     transition={{ delay: i * 0.05, duration: 0.3 }}
                     viewport={{ once: true }}
                     whileInView={{ opacity: 1, y: 0 }}

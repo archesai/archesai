@@ -1,7 +1,7 @@
-import type { DayPickerProps } from "react-day-picker";
+import { differenceInCalendarDays } from "date-fns";
 
 import * as React from "react";
-import { differenceInCalendarDays } from "date-fns";
+import type { DayPickerProps } from "react-day-picker";
 import {
   DayPicker,
   labelNext,
@@ -175,7 +175,7 @@ function Calendar({
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       style={{
-        width: 248.8 * (columnsDisplayed ?? 1) + "px",
+        width: `${248.8 * (columnsDisplayed ?? 1)}px`,
       }}
       classNames={{
         months: _monthsClassName,
@@ -229,7 +229,6 @@ function Calendar({
         ),
         MonthGrid: ({ className, children, ...props }) => (
           <MonthGrid
-            children={children}
             className={className}
             displayYears={displayYears}
             startMonth={startMonth}
@@ -237,7 +236,9 @@ function Calendar({
             navView={navView}
             setNavView={setNavView}
             {...props}
-          />
+          >
+            {children}
+          </MonthGrid>
         ),
       }}
       numberOfMonths={columnsDisplayed ?? 1}
@@ -407,7 +408,7 @@ function CaptionLabel({
     >
       {navView === "days"
         ? children
-        : displayYears.from + " - " + displayYears.to}
+        : `${displayYears.from} - ${displayYears.to}`}
     </Button>
   );
 }

@@ -1,7 +1,3 @@
-import type { JSX } from "react";
-
-import { Link } from "@tanstack/react-router";
-
 import { Button } from "@archesai/ui/components/shadcn/button";
 import {
   Card,
@@ -10,6 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@archesai/ui/components/shadcn/card";
+import { Link } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 export default function NotFound({
   children,

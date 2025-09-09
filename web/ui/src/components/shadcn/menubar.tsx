@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Menubar as MenubarPrimitive } from "radix-ui";
+import type * as React from "react";
 
 import {
   CheckIcon,

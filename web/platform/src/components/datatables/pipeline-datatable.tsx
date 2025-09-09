@@ -1,15 +1,9 @@
-import type { JSX } from "react";
-
-import { Link, useNavigate } from "@tanstack/react-router";
-
 import type {
   PageQueryParameter,
-  PipelineEntity,
+  Pipeline,
   PipelinesFilterParameter,
   PipelinesSortParameter,
 } from "@archesai/client";
-import type { SearchQuery } from "@archesai/ui/types/entities";
-
 import {
   deletePipeline,
   getFindManyPipelinesSuspenseQueryOptions,
@@ -18,6 +12,9 @@ import { WorkflowIcon } from "@archesai/ui/components/custom/icons";
 import { Timestamp } from "@archesai/ui/components/custom/timestamp";
 import { DataTable } from "@archesai/ui/components/datatable/data-table";
 import { PIPELINE_ENTITY_KEY } from "@archesai/ui/lib/constants";
+import type { SearchQuery } from "@archesai/ui/types/entities";
+import { Link, useNavigate } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 export default function PipelineDataTable(): JSX.Element {
   const navigate = useNavigate();
@@ -31,7 +28,7 @@ export default function PipelineDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<PipelineEntity>
+    <DataTable<Pipeline>
       columns={[
         {
           accessorKey: "name",
@@ -69,7 +66,7 @@ export default function PipelineDataTable(): JSX.Element {
         await deletePipeline(id);
       }}
       entityKey={PIPELINE_ENTITY_KEY}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={async (pipeline) => {
         await navigate({

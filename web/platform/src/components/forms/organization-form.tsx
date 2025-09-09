@@ -1,20 +1,18 @@
-import type { JSX } from "react";
-
 import type {
   CreateOrganizationBody,
   UpdateOrganizationMutationBody,
 } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-
 import {
   useCreateOrganization,
   useGetOneOrganizationSuspense,
   useGetOneSessionSuspense,
   useUpdateOrganization,
 } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 import { GenericForm } from "@archesai/ui/components/custom/generic-form";
 import { Input } from "@archesai/ui/components/shadcn/input";
 import { ORGANIZATION_ENTITY_KEY } from "@archesai/ui/lib/constants";
+import type { JSX } from "react";
 
 export default function OrganizationForm(): JSX.Element {
   const {

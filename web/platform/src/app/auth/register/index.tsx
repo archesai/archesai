@@ -1,13 +1,10 @@
-import type { JSX } from "react";
-
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-
 import type { RegisterBody } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-
 import { useRegister } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 import { GenericForm } from "@archesai/ui/components/custom/generic-form";
 import { Input } from "@archesai/ui/components/shadcn/input";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 import { TermsIndicator } from "#components/terms-indicator";
 

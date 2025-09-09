@@ -1,11 +1,7 @@
-import type { JSX } from "react";
-
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useRouter } from "@tanstack/react-router";
+import type { JSX } from "react";
 import { toast } from "sonner";
-
-import type { UserEntity } from "#types/entities";
-
 import {
   BadgeCheckIcon,
   ChevronsUpDownIcon,
@@ -36,6 +32,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "#components/shadcn/sidebar";
+import type { UserEntity } from "#types/entities";
 
 interface UserButtonProps {
   memberships?: {

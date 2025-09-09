@@ -1,12 +1,9 @@
 import type { UseSuspenseQueryOptions } from "@tanstack/react-query";
-import type { JSX } from "react";
-
-import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import type { JSX } from "react";
+import { useState } from "react";
 
 import type { LucideIcon } from "#components/custom/icons";
-import type { BaseEntity } from "#types/entities";
-
 import {
   CheckCircle2Icon,
   PlusSquareIcon,
@@ -27,6 +24,7 @@ import {
   PopoverTrigger,
 } from "#components/shadcn/popover";
 import { cn } from "#lib/utils";
+import type { BaseEntity } from "#types/entities";
 
 interface DataSelectorProps<TItem extends BaseEntity> {
   getItemDetails?: (item: TItem) => React.ReactNode;
@@ -115,15 +113,15 @@ export function DataSelector<TItem extends BaseEntity>({
               >
                 {isMultiSelect ? (
                   Array.isArray(selectedData) && selectedData.length > 0 ? (
-                    selectedData.length.toString() + " selected"
+                    `${selectedData.length.toString()} selected`
                   ) : (
-                    "Select " + itemType.toLowerCase() + "s..."
+                    `Select ${itemType.toLowerCase()}s...`
                   )
                 ) : (
                   <div className="flex items-center gap-1">
                     {icons
                       ?.filter((x) => x.name === (selectedData as TItem).id)
-                      .map((x, i) => {
+                      .map((x) => {
                         const iconColor = x.color;
                         return (
                           <x.Icon
@@ -131,7 +129,7 @@ export function DataSelector<TItem extends BaseEntity>({
                               "mx-auto h-4 w-4",
                               iconColor.startsWith("text-") ? iconColor : "",
                             )}
-                            key={i}
+                            key={`${x.name}-${x.color}`}
                             style={{
                               ...(iconColor.startsWith("#")
                                 ? { color: iconColor }
@@ -181,7 +179,7 @@ export function DataSelector<TItem extends BaseEntity>({
                     {/* Icon Rendering */}
                     {icons
                       ?.filter((x) => x.name === item.id)
-                      .map((x, i) => {
+                      .map((x) => {
                         const iconColor = x.color;
                         return (
                           <x.Icon
@@ -189,7 +187,7 @@ export function DataSelector<TItem extends BaseEntity>({
                               "mx-auto h-4 w-4",
                               iconColor.startsWith("text-") ? iconColor : "",
                             )}
-                            key={i}
+                            key={`${item.id}-${x.name}-${x.color}`}
                             style={{
                               ...(iconColor.startsWith("#")
                                 ? { color: iconColor }

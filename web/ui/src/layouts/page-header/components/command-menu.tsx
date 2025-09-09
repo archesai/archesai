@@ -1,10 +1,6 @@
-import type { JSX } from "react";
-
-import { useCallback, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-
-import type { SiteRoute } from "#lib/site-config.interface";
-
+import type { JSX } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LaptopIcon, MoonIcon, SunIcon } from "#components/custom/icons";
 import { Button } from "#components/shadcn/button";
 import {
@@ -17,6 +13,7 @@ import {
   CommandSeparator,
 } from "#components/shadcn/command";
 import { DialogDescription, DialogTitle } from "#components/shadcn/dialog";
+import type { SiteRoute } from "#lib/site-config.interface";
 import { cn } from "#lib/utils";
 
 interface DialogProps {

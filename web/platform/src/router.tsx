@@ -1,3 +1,4 @@
+import { toast } from "@archesai/ui/components/shadcn/sonner";
 import {
   keepPreviousData,
   MutationCache,
@@ -7,13 +8,10 @@ import {
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
-import { toast } from "@archesai/ui/components/shadcn/sonner";
-
 import { DefaultCatchBoundary } from "#components/default-catch-boundary";
 import NotFound from "#components/not-found";
 import { routeTree } from "#routeTree.gen";
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function createRouter() {
   if (typeof document !== "undefined") {
     notifyManager.setScheduler(window.requestAnimationFrame);

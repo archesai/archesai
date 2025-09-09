@@ -1,13 +1,10 @@
-import type { JSX } from "react";
-
-import { createFileRoute, Link } from "@tanstack/react-router";
-
 import type { RequestPasswordResetBody } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-
 import { useRequestPasswordReset } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 import { GenericForm } from "@archesai/ui/components/custom/generic-form";
 import { Input } from "@archesai/ui/components/shadcn/input";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 export const Route = createFileRoute("/auth/forgot-password/")({
   component: ForgotPasswordPage,

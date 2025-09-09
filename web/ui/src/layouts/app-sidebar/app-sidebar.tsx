@@ -1,7 +1,4 @@
 import type { JSX } from "react";
-
-import type { PageHeaderProps } from "#layouts/page-header/page-header";
-
 import { SearchIcon } from "#components/custom/icons";
 import { UserButton } from "#components/custom/user-button";
 import { Label } from "#components/shadcn/label";
@@ -17,6 +14,7 @@ import {
 } from "#components/shadcn/sidebar";
 import { OrganizationButton } from "#layouts/app-sidebar/organization-button";
 import { SidebarLinks } from "#layouts/app-sidebar/sidebar-links";
+import type { PageHeaderProps } from "#layouts/page-header/page-header";
 
 export function AppSidebar({
   siteRoutes,

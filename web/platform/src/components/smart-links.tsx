@@ -1,11 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
-import { createElement, useCallback, useMemo } from "react";
-import { Link as TanStackLink } from "@tanstack/react-router";
-
 import type { SmartLinkProps } from "@archesai/ui/hooks/use-link";
-
 import { filterUndefined, useLinkContext } from "@archesai/ui/hooks/use-link";
+import { Link as TanStackLink } from "@tanstack/react-router";
+import { createElement, useCallback, useMemo } from "react";
 
 /**
  * Smart Link that automatically chooses between:

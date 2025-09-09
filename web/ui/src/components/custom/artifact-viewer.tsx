@@ -20,7 +20,9 @@ export function ArtifactViewer({
         className="h-full w-full object-contain"
         controls
         src={artifact.text ?? ""}
-      />
+      >
+        <track kind="captions" />
+      </video>
     );
   } else if (artifact.mimeType.startsWith("image/") && artifact.text) {
     hoverContent = (

@@ -1,15 +1,12 @@
 "use no memo";
 
 import type { Table } from "@tanstack/react-table";
-import type { JSX } from "react";
-
-import { useState } from "react";
 import { flexRender } from "@tanstack/react-table";
-
-import type { BaseEntity } from "#types/entities";
-
+import type { JSX } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardFooter } from "#components/shadcn/card";
 import { cn } from "#lib/utils";
+import type { BaseEntity } from "#types/entities";
 
 export interface GridViewProps<TEntity extends BaseEntity> {
   grid?: (item: TEntity) => React.ReactNode;

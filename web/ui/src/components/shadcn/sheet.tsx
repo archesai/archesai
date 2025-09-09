@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Dialog as SheetPrimitive } from "radix-ui";
+import type * as React from "react";
 
 import { XCircleIcon } from "#components/custom/icons";
 import { cn } from "#lib/utils";

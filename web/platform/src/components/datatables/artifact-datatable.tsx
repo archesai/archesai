@@ -1,15 +1,9 @@
-import type { JSX } from "react";
-
-import { Link, useNavigate } from "@tanstack/react-router";
-
 import type {
-  ArtifactEntity,
+  Artifact,
   ArtifactsFilterParameter,
   ArtifactsSortParameter,
   PageQueryParameter,
 } from "@archesai/client";
-import type { SearchQuery } from "@archesai/ui/types/entities";
-
 import { getFindManyArtifactsSuspenseQueryOptions } from "@archesai/client";
 import {
   CalendarIcon,
@@ -20,6 +14,9 @@ import { Timestamp } from "@archesai/ui/components/custom/timestamp";
 import { DataTable } from "@archesai/ui/components/datatable/data-table";
 import { Badge } from "@archesai/ui/components/shadcn/badge";
 import { ARTIFACT_ENTITY_KEY } from "@archesai/ui/lib/constants";
+import type { SearchQuery } from "@archesai/ui/types/entities";
+import { Link, useNavigate } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 import ArtifactForm from "#components/forms/artifact-form";
 
@@ -35,7 +32,7 @@ export default function ArtifactDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<ArtifactEntity>
+    <DataTable<Artifact>
       columns={[
         {
           accessorKey: "name",
@@ -128,7 +125,7 @@ export default function ArtifactDataTable(): JSX.Element {
       ]}
       createForm={ArtifactForm}
       entityKey={ARTIFACT_ENTITY_KEY}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       grid={(_item) => {
         return (

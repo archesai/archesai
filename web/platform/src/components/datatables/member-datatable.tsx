@@ -1,13 +1,9 @@
-import type { JSX } from "react";
-
 import type {
-  MemberEntity,
+  Member,
   MembersFilterParameter,
   MembersSortParameter,
   PageQueryParameter,
 } from "@archesai/client";
-import type { SearchQuery } from "@archesai/ui/types/entities";
-
 import {
   deleteMember,
   getFindManyMembersSuspenseQueryOptions,
@@ -18,6 +14,8 @@ import { Timestamp } from "@archesai/ui/components/custom/timestamp";
 import { DataTable } from "@archesai/ui/components/datatable/data-table";
 import { Badge } from "@archesai/ui/components/shadcn/badge";
 import { MEMBER_ENTITY_KEY } from "@archesai/ui/lib/constants";
+import type { SearchQuery } from "@archesai/ui/types/entities";
+import type { JSX } from "react";
 
 import MemberForm from "#components/forms/member-form";
 
@@ -34,7 +32,7 @@ export default function MemberDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<MemberEntity>
+    <DataTable<Member>
       columns={[
         {
           accessorKey: "role",
@@ -67,7 +65,7 @@ export default function MemberDataTable(): JSX.Element {
         await deleteMember(organizationId, id);
       }}
       entityKey={MEMBER_ENTITY_KEY}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={() => {
         // Handle member selection if needed

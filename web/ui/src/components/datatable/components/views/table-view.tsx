@@ -1,12 +1,8 @@
 "use no memo";
 
 import type { Table as ReactTable } from "@tanstack/react-table";
-import type { JSX } from "react";
-
 import { flexRender } from "@tanstack/react-table";
-
-import type { BaseEntity } from "#types/entities";
-
+import type { JSX } from "react";
 import {
   Table,
   TableBody,
@@ -15,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "#components/shadcn/table";
+import type { BaseEntity } from "#types/entities";
 
 export interface TableViewProps<TEntity extends BaseEntity> {
   table: ReactTable<TEntity>;

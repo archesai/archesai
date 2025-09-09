@@ -2,9 +2,6 @@
 
 import type { Table } from "@tanstack/react-table";
 import type { JSX } from "react";
-
-import type { BaseEntity } from "#types/entities";
-
 import {
   CheckIcon,
   ChevronsUpDownIcon,
@@ -25,6 +22,7 @@ import {
   PopoverTrigger,
 } from "#components/shadcn/popover";
 import { cn, toSentenceCase } from "#lib/utils";
+import type { BaseEntity } from "#types/entities";
 
 interface DataTableViewOptionsProps<TEntity extends BaseEntity> {
   table: Table<TEntity>;

@@ -52,7 +52,7 @@ export default defineConfig({
     // }
   ],
   server: {
-    allowedHosts: ["platform.archesai.dev"],
+    allowedHosts: ["platform.archesai.dev", "moose"],
     host: "0.0.0.0",
     port: 3000,
   },

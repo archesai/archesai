@@ -1,10 +1,8 @@
-import type { ErrorComponentProps } from "@tanstack/react-router";
-import type { JSX } from "react";
-
-import { useQueryClient } from "@tanstack/react-query";
-import { Link, rootRouteId, useMatch, useRouter } from "@tanstack/react-router";
-
 import { Button } from "@archesai/ui/components/shadcn/button";
+import { useQueryClient } from "@tanstack/react-query";
+import type { ErrorComponentProps } from "@tanstack/react-router";
+import { Link, rootRouteId, useMatch, useRouter } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 export function DefaultCatchBoundary({
   error,

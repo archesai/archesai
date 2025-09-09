@@ -5,33 +5,30 @@
  * The Arches AI API
  * OpenAPI spec version: v0.0.0
  */
+
 import type {
   MutationFunction,
   QueryClient,
   UseMutationOptions,
   UseMutationResult,
 } from "@tanstack/react-query";
-
 import { useMutation } from "@tanstack/react-query";
-
+import { customFetch } from "../../fetcher";
 import type {
   BadRequestResponse,
   ConfirmEmailChangeBody,
   ConfirmEmailVerification200,
   ConfirmEmailVerificationBody,
   ConfirmPasswordResetBody,
-  Login200,
   LoginBody,
   NoContentResponse,
   NotFoundResponse,
-  Register201,
   RegisterBody,
   RequestEmailChangeBody,
   RequestPasswordResetBody,
+  TokenResponse,
   UnauthorizedResponse,
 } from "../orval.schemas";
-
-import { customFetch } from "../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -46,8 +43,8 @@ export const getRegisterUrl = () => {
 export const register = async (
   registerBody: RegisterBody,
   options?: RequestInit,
-): Promise<Register201> => {
-  return customFetch<Register201>(getRegisterUrl(), {
+): Promise<TokenResponse> => {
+  return customFetch<TokenResponse>(getRegisterUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -134,8 +131,8 @@ export const getLoginUrl = () => {
 export const login = async (
   loginBody: LoginBody,
   options?: RequestInit,
-): Promise<Login200> => {
-  return customFetch<Login200>(getLoginUrl(), {
+): Promise<TokenResponse> => {
+  return customFetch<TokenResponse>(getLoginUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },

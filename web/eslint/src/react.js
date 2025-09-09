@@ -1,7 +1,7 @@
 import pluginQuery from "@tanstack/eslint-plugin-query";
+import { defineConfig } from "eslint/config";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
-import { defineConfig } from "eslint/config";
 import globals from "globals";
 
 const reactFlatConfig = reactPlugin.configs.flat.recommended;

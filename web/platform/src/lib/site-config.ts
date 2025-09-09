@@ -1,5 +1,3 @@
-import type { SiteRoute } from "@archesai/ui/lib/site-config.interface";
-
 import {
   BookOpenIcon,
   Building2Icon,
@@ -16,6 +14,7 @@ import {
   Volume2Icon,
   WorkflowIcon,
 } from "@archesai/ui/components/custom/icons";
+import type { SiteRoute } from "@archesai/ui/lib/site-config.interface";
 
 export const siteRoutes: SiteRoute[] = [
   {

@@ -1,16 +1,11 @@
 "use no memo";
 
 import type { UseSuspenseQueryOptions } from "@tanstack/react-query";
-import type { AccessorKeyColumnDef, RowData } from "@tanstack/react-table";
-import type { JSX } from "react";
-
-import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import type { AccessorKeyColumnDef, RowData } from "@tanstack/react-table";
 import { VisuallyHidden } from "radix-ui";
-
-import type { BaseEntity, SearchQuery } from "#types/entities";
-import type { DataTableRowAction } from "#types/simple-data-table";
-
+import type { JSX } from "react";
+import { useState } from "react";
 import { DataTablePagination } from "#components/datatable/components/data-table-pagination";
 import { DataTableViewOptions } from "#components/datatable/components/data-table-view-options";
 import { TasksTableActionBar } from "#components/datatable/components/tasks-table-action-bar";
@@ -30,9 +25,11 @@ import {
 import { useDataTable } from "#hooks/use-data-table";
 import { useFilterState } from "#hooks/use-filter-state";
 import { useToggleView } from "#hooks/use-toggle-view";
+import type { BaseEntity, SearchQuery } from "#types/entities";
+import type { DataTableRowAction } from "#types/simple-data-table";
 
 declare module "@tanstack/table-core" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // biome-ignore lint/correctness/noUnusedVariables: FIXME
   interface TableMeta<TData extends RowData> {
     entityKey: string;
     label: string;
@@ -50,7 +47,7 @@ export interface DataTableProps<TEntity extends BaseEntity> {
     meta: {
       total: number;
     };
-  }>;
+  }>; // Allow any error type, not just Error
   grid?: (item: TEntity) => React.ReactNode;
   gridHover?: (item: TEntity) => React.ReactNode;
   handleSelect: (item: TEntity) => void;

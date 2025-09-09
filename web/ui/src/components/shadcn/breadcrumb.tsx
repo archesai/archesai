@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Slot as SlotPrimitive } from "radix-ui";
+import type * as React from "react";
 
 import { ChevronRightIcon, MoreHorizontalIcon } from "#components/custom/icons";
 import { cn } from "#lib/utils";

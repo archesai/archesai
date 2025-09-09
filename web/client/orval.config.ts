@@ -2,14 +2,12 @@ import { defineConfig } from "orval";
 
 export default defineConfig({
   archesai: {
-    hooks: {
-      afterAllFilesWrite: ["prettier --write"],
-    },
     input: {
       target: "../../api/openapi.bundled.yaml",
     },
     output: {
       allParamsOptional: true,
+      biome: true,
       client: "react-query",
       httpClient: "fetch",
       mode: "tags-split",
@@ -28,7 +26,6 @@ export default defineConfig({
           useSuspenseQuery: true,
         },
       },
-      prettier: true,
       // schemas: 'src/generated/models',
       target: "./generated/orval.ts",
       urlEncodeParameters: true,

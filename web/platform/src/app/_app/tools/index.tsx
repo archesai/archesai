@@ -1,6 +1,5 @@
-import type { JSX } from "react";
-
 import { createFileRoute } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 import ToolDataTable from "#components/datatables/tool-datatable";
 import { getRouteMeta } from "#lib/site-utils";

@@ -2,9 +2,6 @@ import type { JSX } from "react";
 
 import { useTransition } from "react";
 import { toast } from "sonner";
-
-import type { BaseEntity } from "#types/entities";
-
 import { Loader2Icon, TrashIcon } from "#components/custom/icons";
 import { Button } from "#components/shadcn/button";
 import {
@@ -19,6 +16,7 @@ import {
 } from "#components/shadcn/dialog";
 import { ScrollArea } from "#components/shadcn/scroll-area";
 import { Separator } from "#components/shadcn/separator";
+import type { BaseEntity } from "#types/entities";
 
 interface DeleteItemsProps<TEntity extends BaseEntity>
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
@@ -91,8 +89,8 @@ export const DeleteItems = <TEntity extends BaseEntity>(
           </p>
           <ScrollArea>
             <div className="max-h-72 p-4">
-              {props.items.map((item, i) => (
-                <p key={i}>{item.id}</p>
+              {props.items.map((item) => (
+                <p key={item.id}>{item.id}</p>
               ))}
             </div>
           </ScrollArea>

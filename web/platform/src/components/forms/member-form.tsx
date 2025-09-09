@@ -1,14 +1,11 @@
-import type { JSX } from "react";
-
 import type { CreateMemberBody, UpdateMemberBody } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-
 import {
   createMember,
   updateMember,
   useGetOneMemberSuspense,
   useGetOneSessionSuspense,
 } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 import { GenericForm } from "@archesai/ui/components/custom/generic-form";
 import { FormControl } from "@archesai/ui/components/shadcn/form";
 import { Input } from "@archesai/ui/components/shadcn/input";
@@ -20,6 +17,7 @@ import {
   SelectValue,
 } from "@archesai/ui/components/shadcn/select";
 import { MEMBER_ENTITY_KEY } from "@archesai/ui/lib/constants";
+import type { JSX } from "react";
 
 export default function MemberForm({ id }: { id?: string }): JSX.Element {
   const { data: sessionData } = useGetOneSessionSuspense("current");

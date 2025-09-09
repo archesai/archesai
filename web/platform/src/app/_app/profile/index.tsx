@@ -1,7 +1,3 @@
-import type { JSX } from "react";
-
-import { createFileRoute } from "@tanstack/react-router";
-
 import {
   useDeleteUser,
   useGetOneSessionSuspense,
@@ -18,6 +14,8 @@ import {
   CardTitle,
 } from "@archesai/ui/components/shadcn/card";
 import { Separator } from "@archesai/ui/components/shadcn/separator";
+import { createFileRoute } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 import UserForm from "#components/forms/user-form";
 

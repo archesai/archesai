@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { LinkProps as TanStackLinkProps } from "@tanstack/react-router";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 

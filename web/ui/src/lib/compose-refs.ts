@@ -8,13 +8,13 @@ type PossibleRef<T> = React.Ref<T> | undefined;
  */
 function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
   return (node) => {
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-    const cleanups: ((() => void) | void)[] = [];
+    const cleanups: ((() => void) | undefined)[] = [];
 
     for (const ref of refs) {
-      let cleanup;
+      let cleanup: (() => void) | undefined;
       if (typeof ref === "function") {
-        cleanup = ref(node);
+        const result = ref(node);
+        cleanup = typeof result === "function" ? result : undefined;
       } else {
         setRef(ref, node);
         cleanup = undefined;

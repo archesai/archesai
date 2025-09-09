@@ -34,7 +34,7 @@ export interface Page {
  */
 export type Uuid = string;
 
-export interface BaseEntity {
+export interface Base {
   id: Uuid;
   /**
    * The date and time when the resource was created
@@ -52,11 +52,11 @@ export interface BaseEntity {
  * The authentication provider identifier
  * @minLength 1
  */
-export type AccountEntityAllOfProviderId =
-  (typeof AccountEntityAllOfProviderId)[keyof typeof AccountEntityAllOfProviderId];
+export type AccountAllOfProviderId =
+  (typeof AccountAllOfProviderId)[keyof typeof AccountAllOfProviderId];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountEntityAllOfProviderId = {
+export const AccountAllOfProviderId = {
   local: "local",
   google: "google",
   github: "github",
@@ -64,7 +64,7 @@ export const AccountEntityAllOfProviderId = {
   apple: "apple",
 } as const;
 
-export type AccountEntityAllOf = {
+export type AccountAllOf = {
   /**
    * The unique identifier for the account from the provider
    * @minLength 1
@@ -76,7 +76,7 @@ export type AccountEntityAllOf = {
    * The authentication provider identifier
    * @minLength 1
    */
-  providerId: AccountEntityAllOfProviderId;
+  providerId: AccountAllOfProviderId;
   /** The OAuth access token */
   accessToken?: string;
   /** The access token expiration timestamp */
@@ -96,7 +96,7 @@ export type AccountEntityAllOf = {
 /**
  * Schema for Account entity (authentication provider account)
  */
-export type AccountEntity = BaseEntity & AccountEntityAllOf;
+export type Account = Base & AccountAllOf;
 
 /**
  * The invalid value that was provided
@@ -152,35 +152,30 @@ export interface Problem {
   errors?: ValidationError[];
 }
 
-/**
- * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
- */
-export type Email = string;
-
-export type UserEntityAllOf = {
-  /** The user's email address */
-  email: Email;
-  /** Whether the user's email has been verified */
-  emailVerified: boolean;
-  /** The user's avatar image URL */
-  image?: string;
+export interface TokenResponse {
   /**
-   * The user's display name
+   * JWT access token for API authentication
    * @minLength 1
-   * @maxLength 255
    */
-  name: string;
-};
-
-/**
- * Schema for User entity
- */
-export type UserEntity = BaseEntity & UserEntityAllOf;
+  access_token: string;
+  /**
+   * Refresh token for obtaining new access tokens
+   * @minLength 1
+   */
+  refresh_token: string;
+  /**
+   * Type of token (always "Bearer")
+   * @minLength 1
+   */
+  token_type: string;
+  /** Access token expiration time in seconds */
+  expires_in: number;
+}
 
 /**
  * Schema for Session entity
  */
-export interface SessionEntity {
+export interface Session {
   /**
    * The date this item was created
    * @minLength 1
@@ -198,7 +193,7 @@ export interface SessionEntity {
   updatedAt: string;
   /**
    * The active organization ID
-   * @minLength 1
+   * @minLength 36
    */
   activeOrganizationId: string;
   /**
@@ -223,20 +218,45 @@ export interface SessionEntity {
   userAgent: string;
   /**
    * The ID of the user associated with the session
-   * @minLength 1
+   * @minLength 36
    */
   userId: string;
 }
 
 /**
+ * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+ */
+export type Email = string;
+
+export type UserAllOf = {
+  /** The user's email address */
+  email: Email;
+  /** Whether the user's email has been verified */
+  emailVerified: boolean;
+  /** The user's avatar image URL */
+  image?: string;
+  /**
+   * The user's display name
+   * @minLength 1
+   * @maxLength 255
+   */
+  name: string;
+};
+
+/**
+ * Schema for User entity
+ */
+export type User = Base & UserAllOf;
+
+/**
  * The current subscription plan
  * @minLength 1
  */
-export type OrganizationEntityAllOfPlan =
-  (typeof OrganizationEntityAllOfPlan)[keyof typeof OrganizationEntityAllOfPlan];
+export type OrganizationAllOfPlan =
+  (typeof OrganizationAllOfPlan)[keyof typeof OrganizationAllOfPlan];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationEntityAllOfPlan = {
+export const OrganizationAllOfPlan = {
   FREE: "FREE",
   BASIC: "BASIC",
   STANDARD: "STANDARD",
@@ -247,9 +267,9 @@ export const OrganizationEntityAllOfPlan = {
 /**
  * Custom metadata in JSON format
  */
-export type OrganizationEntityAllOfMetadata = { [key: string]: unknown };
+export type OrganizationAllOfMetadata = { [key: string]: unknown };
 
-export type OrganizationEntityAllOf = {
+export type OrganizationAllOf = {
   /**
    * The organization's display name
    * @minLength 1
@@ -271,14 +291,14 @@ export type OrganizationEntityAllOf = {
    * The current subscription plan
    * @minLength 1
    */
-  plan: OrganizationEntityAllOfPlan;
+  plan: OrganizationAllOfPlan;
   /**
    * Available credits for this organization
    * @minimum 0
    */
   credits: number;
   /** Custom metadata in JSON format */
-  metadata: OrganizationEntityAllOfMetadata;
+  metadata: OrganizationAllOfMetadata;
   /** Stripe customer identifier */
   stripeCustomerId?: string;
 };
@@ -286,17 +306,16 @@ export type OrganizationEntityAllOf = {
 /**
  * Schema for Organization entity
  */
-export type OrganizationEntity = BaseEntity & OrganizationEntityAllOf;
+export type Organization = Base & OrganizationAllOf;
 
 /**
  * The role of the member
  * @minLength 1
  */
-export type MemberEntityRole =
-  (typeof MemberEntityRole)[keyof typeof MemberEntityRole];
+export type MemberRole = (typeof MemberRole)[keyof typeof MemberRole];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MemberEntityRole = {
+export const MemberRole = {
   admin: "admin",
   owner: "owner",
   member: "member",
@@ -305,7 +324,7 @@ export const MemberEntityRole = {
 /**
  * Schema for Member entity
  */
-export interface MemberEntity {
+export interface Member {
   /**
    * The date this item was created
    * @minLength 1
@@ -330,7 +349,7 @@ export interface MemberEntity {
    * The role of the member
    * @minLength 1
    */
-  role: MemberEntityRole;
+  role: MemberRole;
   /**
    * The user id
    * @minLength 1
@@ -342,11 +361,11 @@ export interface MemberEntity {
  * The role of the invitation
  * @minLength 1
  */
-export type InvitationEntityRole =
-  (typeof InvitationEntityRole)[keyof typeof InvitationEntityRole];
+export type InvitationRole =
+  (typeof InvitationRole)[keyof typeof InvitationRole];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationEntityRole = {
+export const InvitationRole = {
   admin: "admin",
   owner: "owner",
   member: "member",
@@ -355,7 +374,7 @@ export const InvitationEntityRole = {
 /**
  * Schema for Invitation entity
  */
-export interface InvitationEntity {
+export interface Invitation {
   /**
    * The date this item was created
    * @minLength 1
@@ -395,7 +414,7 @@ export interface InvitationEntity {
    * The role of the invitation
    * @minLength 1
    */
-  role: InvitationEntityRole;
+  role: InvitationRole;
   /**
    * The status of the invitation, e.g., pending, accepted, declined
    * @minLength 1
@@ -408,7 +427,7 @@ export interface OrganizationReference {
   organizationId: Uuid;
 }
 
-export type PipelineEntityAllOf = {
+export type PipelineAllOf = {
   /**
    * The pipeline's display name
    * @minLength 1
@@ -425,18 +444,15 @@ export type PipelineEntityAllOf = {
 /**
  * Schema for Pipeline entity
  */
-export type PipelineEntity = BaseEntity &
-  OrganizationReference &
-  PipelineEntityAllOf;
+export type Pipeline = Base & OrganizationReference & PipelineAllOf;
 
 /**
  * @minLength 1
  */
-export type RunEntityStatus =
-  (typeof RunEntityStatus)[keyof typeof RunEntityStatus];
+export type RunStatus = (typeof RunStatus)[keyof typeof RunStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunEntityStatus = {
+export const RunStatus = {
   COMPLETED: "COMPLETED",
   FAILED: "FAILED",
   PROCESSING: "PROCESSING",
@@ -446,7 +462,7 @@ export const RunEntityStatus = {
 /**
  * Schema for Run entity
  */
-export interface RunEntity {
+export interface Run {
   /**
    * The date this item was created
    * @minLength 1
@@ -490,7 +506,7 @@ export interface RunEntity {
    */
   startedAt?: string;
   /** @minLength 1 */
-  status: RunEntityStatus;
+  status: RunStatus;
   /**
    * The tool ID associated with the run
    * @minLength 1
@@ -501,7 +517,7 @@ export interface RunEntity {
 /**
  * Schema for Tool entity
  */
-export interface ToolEntity {
+export interface Tool {
   /**
    * The date this item was created
    * @minLength 1
@@ -547,7 +563,7 @@ export interface ToolEntity {
 /**
  * Schema for Artifact entity
  */
-export interface ArtifactEntity {
+export interface Artifact {
   /**
    * The date this item was created
    * @minLength 1
@@ -605,7 +621,7 @@ export interface ArtifactEntity {
 /**
  * Schema for Label entity
  */
-export interface LabelEntity {
+export interface Label {
   /**
    * The date this item was created
    * @minLength 1
@@ -1957,16 +1973,16 @@ export type AccountsFindMany200Meta = {
 };
 
 export type AccountsFindMany200 = {
-  data: AccountEntity[];
+  data: Account[];
   meta: AccountsFindMany200Meta;
 };
 
 export type AccountsGetOne200 = {
-  data: AccountEntity;
+  data: Account;
 };
 
 export type AccountsDelete200 = {
-  data: AccountEntity;
+  data: Account;
 };
 
 export type RegisterBody = {
@@ -1988,10 +2004,6 @@ export type RegisterBody = {
   password: string;
 };
 
-export type Register201 = {
-  data: UserEntity;
-};
-
 export type LoginBody = {
   /**
    * The email address associated with the account
@@ -2006,10 +2018,6 @@ export type LoginBody = {
   password: string;
 };
 
-export type Login200 = {
-  data: UserEntity;
-};
-
 export type ConfirmEmailVerificationBody = {
   /**
    * The password reset token
@@ -2019,8 +2027,8 @@ export type ConfirmEmailVerificationBody = {
 };
 
 export type ConfirmEmailVerification200 = {
-  session: SessionEntity;
-  user: UserEntity;
+  session: Session;
+  user: User;
 };
 
 export type RequestPasswordResetBody = {
@@ -2098,16 +2106,16 @@ export type FindManySessions200Meta = {
 };
 
 export type FindManySessions200 = {
-  data: SessionEntity[];
+  data: Session[];
   meta: FindManySessions200Meta;
 };
 
 export type DeleteSession200 = {
-  data: SessionEntity;
+  data: Session;
 };
 
 export type GetOneSession200 = {
-  data: SessionEntity;
+  data: Session;
 };
 
 export type UpdateSessionBody = {
@@ -2119,7 +2127,7 @@ export type UpdateSessionBody = {
 };
 
 export type UpdateSession200 = {
-  data: SessionEntity;
+  data: Session;
 };
 
 export type FindManyUsersParams = {
@@ -2143,16 +2151,16 @@ export type FindManyUsers200Meta = {
 };
 
 export type FindManyUsers200 = {
-  data: UserEntity[];
+  data: User[];
   meta: FindManyUsers200Meta;
 };
 
 export type DeleteUser200 = {
-  data: UserEntity;
+  data: User;
 };
 
 export type GetOneUser200 = {
-  data: UserEntity;
+  data: User;
 };
 
 export type UpdateUserBody = {
@@ -2166,7 +2174,7 @@ export type UpdateUserBody = {
 };
 
 export type UpdateUser200 = {
-  data: UserEntity;
+  data: User;
 };
 
 export type CreateOrganizationBody = {
@@ -2183,7 +2191,7 @@ export type CreateOrganizationBody = {
 };
 
 export type CreateOrganization201 = {
-  data: OrganizationEntity;
+  data: Organization;
 };
 
 export type FindManyOrganizationsParams = {
@@ -2207,16 +2215,16 @@ export type FindManyOrganizations200Meta = {
 };
 
 export type FindManyOrganizations200 = {
-  data: OrganizationEntity[];
+  data: Organization[];
   meta: FindManyOrganizations200Meta;
 };
 
 export type DeleteOrganization200 = {
-  data: OrganizationEntity;
+  data: Organization;
 };
 
 export type GetOneOrganization200 = {
-  data: OrganizationEntity;
+  data: Organization;
 };
 
 export type UpdateOrganizationBody = {
@@ -2227,7 +2235,7 @@ export type UpdateOrganizationBody = {
 };
 
 export type UpdateOrganization200 = {
-  data: OrganizationEntity;
+  data: Organization;
 };
 
 /**
@@ -2253,7 +2261,7 @@ export type CreateMemberBody = {
 };
 
 export type CreateMember201 = {
-  data: MemberEntity;
+  data: Member;
 };
 
 export type FindManyMembersParams = {
@@ -2277,16 +2285,16 @@ export type FindManyMembers200Meta = {
 };
 
 export type FindManyMembers200 = {
-  data: MemberEntity[];
+  data: Member[];
   meta: FindManyMembers200Meta;
 };
 
 export type DeleteMember200 = {
-  data: MemberEntity;
+  data: Member;
 };
 
 export type GetOneMember200 = {
-  data: MemberEntity;
+  data: Member;
 };
 
 /**
@@ -2308,7 +2316,7 @@ export type UpdateMemberBody = {
 };
 
 export type UpdateMember200 = {
-  data: MemberEntity;
+  data: Member;
 };
 
 /**
@@ -2339,7 +2347,7 @@ export type CreateInvitationBody = {
 };
 
 export type CreateInvitation201 = {
-  data: InvitationEntity;
+  data: Invitation;
 };
 
 export type FindManyInvitationsParams = {
@@ -2363,16 +2371,16 @@ export type FindManyInvitations200Meta = {
 };
 
 export type FindManyInvitations200 = {
-  data: InvitationEntity[];
+  data: Invitation[];
   meta: FindManyInvitations200Meta;
 };
 
 export type DeleteInvitation200 = {
-  data: InvitationEntity;
+  data: Invitation;
 };
 
 export type GetOneInvitation200 = {
-  data: InvitationEntity;
+  data: Invitation;
 };
 
 /**
@@ -2396,7 +2404,7 @@ export type UpdateInvitationBody = {
 };
 
 export type UpdateInvitation200 = {
-  data: InvitationEntity;
+  data: Invitation;
 };
 
 export type CreatePipelineBody = {
@@ -2413,7 +2421,7 @@ export type CreatePipelineBody = {
 };
 
 export type CreatePipeline201 = {
-  data: PipelineEntity;
+  data: Pipeline;
 };
 
 export type FindManyPipelinesParams = {
@@ -2437,16 +2445,16 @@ export type FindManyPipelines200Meta = {
 };
 
 export type FindManyPipelines200 = {
-  data: PipelineEntity[];
+  data: Pipeline[];
   meta: FindManyPipelines200Meta;
 };
 
 export type DeletePipeline200 = {
-  data: PipelineEntity;
+  data: Pipeline;
 };
 
 export type GetOnePipeline200 = {
-  data: PipelineEntity;
+  data: Pipeline;
 };
 
 export type UpdatePipelineBody = {
@@ -2457,7 +2465,7 @@ export type UpdatePipelineBody = {
 };
 
 export type UpdatePipeline200 = {
-  data: PipelineEntity;
+  data: Pipeline;
 };
 
 export type CreateRunBody = {
@@ -2469,7 +2477,7 @@ export type CreateRunBody = {
 };
 
 export type CreateRun201 = {
-  data: RunEntity;
+  data: Run;
 };
 
 export type FindManyRunsParams = {
@@ -2493,16 +2501,16 @@ export type FindManyRuns200Meta = {
 };
 
 export type FindManyRuns200 = {
-  data: RunEntity[];
+  data: Run[];
   meta: FindManyRuns200Meta;
 };
 
 export type DeleteRun200 = {
-  data: RunEntity;
+  data: Run;
 };
 
 export type GetOneRun200 = {
-  data: RunEntity;
+  data: Run;
 };
 
 export type UpdateRunBody = {
@@ -2511,7 +2519,7 @@ export type UpdateRunBody = {
 };
 
 export type UpdateRun200 = {
-  data: RunEntity;
+  data: Run;
 };
 
 export type CreateToolBody = {
@@ -2528,7 +2536,7 @@ export type CreateToolBody = {
 };
 
 export type CreateTool201 = {
-  data: ToolEntity;
+  data: Tool;
 };
 
 export type FindManyToolsParams = {
@@ -2552,16 +2560,16 @@ export type FindManyTools200Meta = {
 };
 
 export type FindManyTools200 = {
-  data: ToolEntity[];
+  data: Tool[];
   meta: FindManyTools200Meta;
 };
 
 export type DeleteTool200 = {
-  data: ToolEntity;
+  data: Tool;
 };
 
 export type GetOneTool200 = {
-  data: ToolEntity;
+  data: Tool;
 };
 
 export type UpdateToolBody = {
@@ -2578,7 +2586,7 @@ export type UpdateToolBody = {
 };
 
 export type UpdateTool200 = {
-  data: ToolEntity;
+  data: Tool;
 };
 
 export type CreateArtifactBody = {
@@ -2595,7 +2603,7 @@ export type CreateArtifactBody = {
 };
 
 export type CreateArtifact201 = {
-  data: ArtifactEntity;
+  data: Artifact;
 };
 
 export type FindManyArtifactsParams = {
@@ -2619,16 +2627,16 @@ export type FindManyArtifacts200Meta = {
 };
 
 export type FindManyArtifacts200 = {
-  data: ArtifactEntity[];
+  data: Artifact[];
   meta: FindManyArtifacts200Meta;
 };
 
 export type DeleteArtifact200 = {
-  data: ArtifactEntity;
+  data: Artifact;
 };
 
 export type GetOneArtifact200 = {
-  data: ArtifactEntity;
+  data: Artifact;
 };
 
 export type UpdateArtifactBody = {
@@ -2644,7 +2652,7 @@ export type UpdateArtifactBody = {
 };
 
 export type UpdateArtifact200 = {
-  data: ArtifactEntity;
+  data: Artifact;
 };
 
 export type CreateLabelBody = {
@@ -2656,7 +2664,7 @@ export type CreateLabelBody = {
 };
 
 export type CreateLabel201 = {
-  data: LabelEntity;
+  data: Label;
 };
 
 export type FindManyLabelsParams = {
@@ -2680,16 +2688,16 @@ export type FindManyLabels200Meta = {
 };
 
 export type FindManyLabels200 = {
-  data: LabelEntity[];
+  data: Label[];
   meta: FindManyLabels200Meta;
 };
 
 export type DeleteLabel200 = {
-  data: LabelEntity;
+  data: Label;
 };
 
 export type GetOneLabel200 = {
-  data: LabelEntity;
+  data: Label;
 };
 
 export type UpdateLabelBody = {
@@ -2701,5 +2709,5 @@ export type UpdateLabelBody = {
 };
 
 export type UpdateLabel200 = {
-  data: LabelEntity;
+  data: Label;
 };

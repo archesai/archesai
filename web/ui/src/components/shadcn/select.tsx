@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Select as SelectPrimitive } from "radix-ui";
+import type * as React from "react";
 
 import {
   CheckIcon,

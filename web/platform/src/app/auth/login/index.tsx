@@ -1,15 +1,12 @@
-import type { JSX } from "react";
-
-import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-
 import type { LoginBody } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-
 import { useLogin } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 import { GenericForm } from "@archesai/ui/components/custom/generic-form";
 import { Button } from "@archesai/ui/components/shadcn/button";
 import { Input } from "@archesai/ui/components/shadcn/input";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 import { TermsIndicator } from "#components/terms-indicator";
 

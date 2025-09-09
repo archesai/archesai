@@ -5,6 +5,7 @@
  * The Arches AI API
  * OpenAPI spec version: v0.0.0
  */
+
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -21,9 +22,8 @@ import type {
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult,
 } from "@tanstack/react-query";
-
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-
+import { customFetch } from "../../fetcher";
 import type {
   AccountsDelete200,
   AccountsFindMany200,
@@ -33,8 +33,6 @@ import type {
   NotFoundResponse,
   UnauthorizedResponse,
 } from "../orval.schemas";
-
-import { customFetch } from "../../fetcher";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 

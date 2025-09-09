@@ -1,11 +1,9 @@
 import type { JSX } from "react";
 
 import { toast } from "sonner";
-
-import type { UserEntity } from "#types/entities";
-
 import { RocketIcon } from "#components/custom/icons";
 import { Alert, AlertTitle } from "#components/shadcn/alert";
+import type { UserEntity } from "#types/entities";
 
 export interface VerifyEmailAlertProps {
   onRequestEmailVerification: () => Promise<void>;
@@ -43,13 +41,20 @@ export function VerifyEmailAlert({
       <AlertTitle className="flex items-center font-normal text-primary-foreground">
         <span className="flex gap-1">
           Please
-          <div
+          <button
             className="cursor-pointer font-semibold underline"
             onClick={handleRequestEmailVerification}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleRequestEmailVerification();
+              }
+            }}
+            type="button"
           >
             {" "}
             verify your email address{" "}
-          </div>{" "}
+          </button>{" "}
           to continue using the app.
         </span>
       </AlertTitle>

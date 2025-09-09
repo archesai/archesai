@@ -1,9 +1,6 @@
 import type { JSX } from "react";
 
 import { useState } from "react";
-
-import type { RunEntity } from "#types/entities";
-
 import {
   BanIcon,
   CheckCircle2Icon,
@@ -17,25 +14,35 @@ import {
   PopoverTrigger,
 } from "#components/shadcn/popover";
 
+interface RunLike {
+  status: string;
+  startedAt?: string;
+  completedAt?: string;
+  error?: string | null;
+}
+
 export const StatusTypeEnumButton = ({
   onClick,
   run,
 }: {
   onClick?: () => void;
-  run: RunEntity;
+  run: RunLike;
   size?: "lg" | "sm";
 }): JSX.Element => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const renderIcon = () => {
-    switch (run.status) {
+    const normalizedStatus = run.status.toLowerCase();
+    switch (normalizedStatus) {
       case "completed":
         return <CheckCircle2Icon className="text-green-500" />;
       case "failed":
         return <BanIcon className="text-destructive" />;
       case "pending":
+      case "queued":
         return <ClockArrowUpIcon className="text-orange-400" />;
       case "running":
+      case "processing":
         return <Loader2Icon className="animate-spin text-primary" />;
       default:
         return null;
@@ -76,7 +83,7 @@ export const StatusTypeEnumButton = ({
                 new Date(run.startedAt).getTime()}
           </div>
         )}
-        {/* 
+        {/*
         <div>
           <strong className='font-semibold'>Progress:</strong>{' '}
           {Math.round(run.progress * 100)}% // FIXME

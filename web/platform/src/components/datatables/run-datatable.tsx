@@ -1,15 +1,9 @@
-import type { JSX } from "react";
-
-import { Link, useNavigate } from "@tanstack/react-router";
-
 import type {
   PageQueryParameter,
-  RunEntity,
+  Run,
   RunsFilterParameter,
   RunsSortParameter,
 } from "@archesai/client";
-import type { SearchQuery } from "@archesai/ui/types/entities";
-
 import {
   deleteRun,
   getFindManyRunsSuspenseQueryOptions,
@@ -19,6 +13,9 @@ import { StatusTypeEnumButton } from "@archesai/ui/components/custom/run-status-
 import { Timestamp } from "@archesai/ui/components/custom/timestamp";
 import { DataTable } from "@archesai/ui/components/datatable/data-table";
 import { RUN_ENTITY_KEY } from "@archesai/ui/lib/constants";
+import type { SearchQuery } from "@archesai/ui/types/entities";
+import { Link, useNavigate } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 export default function RunDataTable(): JSX.Element {
   const navigate = useNavigate();
@@ -32,7 +29,7 @@ export default function RunDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<RunEntity>
+    <DataTable<Run>
       columns={[
         {
           accessorKey: "id",
@@ -56,8 +53,7 @@ export default function RunDataTable(): JSX.Element {
           cell: ({ row }) => {
             return (
               <StatusTypeEnumButton
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-                run={row.original as any}
+                run={row.original}
                 size="sm"
               />
             );
@@ -107,7 +103,7 @@ export default function RunDataTable(): JSX.Element {
         await deleteRun(id);
       }}
       entityKey={RUN_ENTITY_KEY}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={async (run) => {
         await navigate({ params: { runId: run.id }, to: `/runs/$runId` });

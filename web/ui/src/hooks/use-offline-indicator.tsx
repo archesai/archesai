@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { onlineManager } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 export function useOfflineIndicator(): void {

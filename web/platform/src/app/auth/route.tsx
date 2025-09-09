@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import { ArchesLogo } from "@archesai/ui/components/custom/arches-logo";
 
 import {
   createFileRoute,
@@ -6,14 +6,12 @@ import {
   Outlet,
   redirect,
 } from "@tanstack/react-router";
-
-import { ArchesLogo } from "@archesai/ui/components/custom/arches-logo";
+import type { JSX } from "react";
 
 export const Route = createFileRoute("/auth")({
   beforeLoad: ({ context }) => {
     const REDIRECT_URL = "/";
     if (context.session?.data) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw redirect({
         to: REDIRECT_URL,
       });

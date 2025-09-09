@@ -1,10 +1,8 @@
-import type { DragEvent, JSX } from "react";
-
-import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
-
 import { UploadCloudIcon } from "@archesai/ui/components/custom/icons";
 import { cn } from "@archesai/ui/lib/utils";
+import { AnimatePresence, motion } from "motion/react";
+import type { DragEvent, JSX } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface FileError {
   code: string;
@@ -506,9 +504,7 @@ export default function FileUpload({
 
   return (
     <div
-      aria-label="File upload"
       className={cn("relative mx-auto w-full max-w-sm", className ?? "")}
-      role="complementary"
     >
       <div className="group relative w-full rounded-xl bg-white p-0.5 ring-1 ring-gray-200 dark:bg-black dark:ring-white/10">
         <div className="absolute inset-x-0 -top-px h-px w-full bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />

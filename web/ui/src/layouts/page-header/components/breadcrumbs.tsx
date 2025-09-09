@@ -1,6 +1,5 @@
-import type { JSX } from "react";
-
 import { useLocation } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 import {
   Breadcrumb,
@@ -18,7 +17,7 @@ export const BreadCrumbs = (): JSX.Element => {
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
   const breadcrumbs = pathSegments.map((segment, index) => {
-    const path = "/" + pathSegments.slice(0, index + 1).join("/");
+    const path = `/${pathSegments.slice(0, index + 1).join("/")}`;
     const title = segment
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))

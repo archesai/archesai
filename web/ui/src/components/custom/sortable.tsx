@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import type {
   Announcements,
   DndContextProps,
@@ -10,25 +9,12 @@ import type {
   ScreenReaderInstructions,
   UniqueIdentifier,
 } from "@dnd-kit/core";
-import type { SortableContextProps } from "@dnd-kit/sortable";
-import type { JSX } from "react";
-
-import {
-  createContext,
-  forwardRef,
-  useCallback,
-  useContext,
-  useId,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from "react";
 import {
   closestCenter,
   closestCorners,
-  defaultDropAnimationSideEffects,
   DndContext,
   DragOverlay,
+  defaultDropAnimationSideEffects,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
@@ -40,6 +26,7 @@ import {
   restrictToParentElement,
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
+import type { SortableContextProps } from "@dnd-kit/sortable";
 import {
   arrayMove,
   horizontalListSortingStrategy,
@@ -50,6 +37,17 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Slot } from "@radix-ui/react-slot";
+import type { JSX } from "react";
+import {
+  createContext,
+  forwardRef,
+  useCallback,
+  useContext,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import * as ReactDOM from "react-dom";
 
 import { useComposedRefs } from "#lib/compose-refs";
@@ -450,7 +448,7 @@ const SortableItem = forwardRef<HTMLDivElement, SortableItemProps>(
       setNodeRef,
       transform,
       transition,
-      // @ts-ignore FIXME
+      // @ts-expect-error FIXME
     } = useSortable({ disabled, id: value });
 
     const composedRef = useComposedRefs(forwardedRef, (node) => {
@@ -468,7 +466,7 @@ const SortableItem = forwardRef<HTMLDivElement, SortableItemProps>(
     }, [transform, transition, style]);
 
     const itemContext = useMemo<SortableItemContextValue>(
-      // @ts-ignore FIXME
+      // @ts-expect-error FIXME
       () => ({
         attributes,
         disabled,
@@ -597,7 +595,7 @@ function SortableOverlay(props: SortableOverlayProps): JSX.Element | null {
   if (!container) return null;
 
   return ReactDOM.createPortal(
-    // @ts-ignore FIXME
+    // @ts-expect-error FIXME
     <DragOverlay
       className={cn(!context.flatCursor && "cursor-grabbing")}
       dropAnimation={dropAnimation}

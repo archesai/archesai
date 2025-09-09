@@ -1,8 +1,7 @@
 import type { Column } from "@tanstack/react-table";
 import type { JSX } from "react";
-import type { DateRange } from "react-day-picker";
-
 import { useCallback, useMemo } from "react";
+import type { DateRange } from "react-day-picker";
 
 import { CalendarIcon, XCircleIcon } from "#components/custom/icons";
 import { Button } from "#components/shadcn/button";
@@ -148,15 +147,21 @@ export function DataTableDateFilter<TData>({
           variant="outline"
         >
           {hasValue ? (
-            <div
+            <button
               aria-label={`Clear ${title} filter`}
               className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
               onClick={onReset}
-              role="button"
-              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  // biome-ignore lint/suspicious/noExplicitAny: Event type mismatch between keyboard and mouse events
+                  onReset(e as any);
+                }
+              }}
+              type="button"
             >
               <XCircleIcon />
-            </div>
+            </button>
           ) : (
             <CalendarIcon />
           )}

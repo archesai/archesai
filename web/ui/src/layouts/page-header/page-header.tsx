@@ -1,13 +1,11 @@
 import type { JSX } from "react";
-
-import type { SiteRoute } from "#lib/site-config.interface";
-
 import { UserButton } from "#components/custom/user-button";
 import { Separator } from "#components/shadcn/separator";
 import { SidebarTrigger } from "#components/shadcn/sidebar";
 import { BreadCrumbs } from "#layouts/page-header/components/breadcrumbs";
 import { CommandMenu } from "#layouts/page-header/components/command-menu";
 import { ThemeToggle } from "#layouts/page-header/components/theme-toggle";
+import type { SiteRoute } from "#lib/site-config.interface";
 
 export interface PageHeaderProps {
   siteRoutes: SiteRoute[];

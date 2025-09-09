@@ -2,11 +2,9 @@ import type { Column } from "@tanstack/react-table";
 import type { JSX } from "react";
 
 import { useCallback, useMemo } from "react";
-
-import type { BaseEntity, FilterCondition } from "#types/entities";
-
 import { Input } from "#components/shadcn/input";
 import { cn } from "#lib/utils";
+import type { BaseEntity, FilterCondition } from "#types/entities";
 
 interface DataTableRangeFilterProps<TData extends BaseEntity>
   extends React.ComponentProps<"div"> {

@@ -1,14 +1,13 @@
 {
-  "eslint.workingDirectories": [{ "pattern": "web/*/" }],
   "files.exclude": {
     "**/.cache": true,
     "**/.coverage": true,
     "**/.nitro": true,
     "**/.output": true,
     "**/.tanstack": true,
-    "**/node_modules": true,
+    "**/bin": true,
     "**/dist": true,
-    "**/bin": true
+    "**/node_modules": true
   },
   "tailwindCSS.experimental.configFile": {
     "./web/platform/src/styles/globals.css": "./web/platform/src/**",

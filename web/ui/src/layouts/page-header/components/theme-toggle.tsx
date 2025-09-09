@@ -1,6 +1,5 @@
-import type { JSX } from "react";
-
 import { useTheme } from "next-themes";
+import type { JSX } from "react";
 
 import { MoonIcon, SunIcon } from "#components/custom/icons";
 import { Button } from "#components/shadcn/button";

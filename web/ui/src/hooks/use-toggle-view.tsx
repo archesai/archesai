@@ -19,12 +19,15 @@ const setCookie = (name: string, value: string, days = 30) => {
 
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API not widely supported yet
   document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
 };
 
 export const useToggleView = ({
   defaultView = "table",
-}: { defaultView?: ViewType } = {}): {
+}: {
+  defaultView?: ViewType;
+} = {}): {
   setView: (newView: ViewType) => void;
   toggleView: () => void;
   view: ViewType;

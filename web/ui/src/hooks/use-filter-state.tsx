@@ -1,6 +1,5 @@
-import type { SortingState } from "@tanstack/react-table";
-
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import type { SortingState } from "@tanstack/react-table";
 
 import type {
   BaseEntity,

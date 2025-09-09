@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Command as CommandPrimitive } from "cmdk";
+import type * as React from "react";
 
 import { SearchIcon } from "#components/custom/icons";
 import {

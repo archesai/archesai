@@ -86,7 +86,7 @@ const FieldList: React.FC<FieldListProps> = ({ fields, setFields }) => {
           field={field}
           fields={fields}
           index={index}
-          key={index}
+          key={field.fieldName}
           setFields={setFields}
         />
       ))}
@@ -261,7 +261,7 @@ const generateFieldSchema = (
       field.subFields?.forEach((subField) => {
         fieldSchema += generateFieldSchema(subField, indentLevel + 1);
       });
-      fieldSchema += indent + "})";
+      fieldSchema += `${indent}})`;
       break;
     case "string":
       fieldSchema = "z.string()";
@@ -274,7 +274,7 @@ const generateFieldSchema = (
     fieldSchema += ".optional()";
   }
 
-  fieldString += fieldSchema + ",\n";
+  fieldString += `${fieldSchema},\n`;
   return fieldString;
 };
 

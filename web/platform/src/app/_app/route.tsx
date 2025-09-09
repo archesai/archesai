@@ -1,7 +1,3 @@
-import type { JSX } from "react";
-
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-
 import { Separator } from "@archesai/ui/components/shadcn/separator";
 import {
   SidebarInset,
@@ -9,13 +5,14 @@ import {
 } from "@archesai/ui/components/shadcn/sidebar";
 import { AppSidebar } from "@archesai/ui/layouts/app-sidebar/app-sidebar";
 import { PageHeader } from "@archesai/ui/layouts/page-header/page-header";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 import { siteRoutes } from "#lib/site-config";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: ({ context }) => {
     if (!context.session?.data) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw redirect({ to: "/auth/login" });
     }
   },

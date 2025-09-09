@@ -35,7 +35,10 @@ const LargeLogo = ({ scale }: { scale: number }): JSX.Element => {
       xmlnsXlink="http://www.w3.org/1999/xlink"
       zoomAndPan="magnify"
     >
-      <button className="bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3">
+      <button
+        type="button"
+        className="bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3"
+      >
         Submit
       </button>
       <defs>

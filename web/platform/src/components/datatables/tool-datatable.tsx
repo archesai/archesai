@@ -1,15 +1,9 @@
-import type { JSX } from "react";
-
-import { Link, useNavigate } from "@tanstack/react-router";
-
 import type {
   PageQueryParameter,
-  ToolEntity,
+  Tool,
   ToolsFilterParameter,
   ToolsSortParameter,
 } from "@archesai/client";
-import type { SearchQuery } from "@archesai/ui/types/entities";
-
 import {
   deleteTool,
   getFindManyToolsSuspenseQueryOptions,
@@ -23,6 +17,9 @@ import { Timestamp } from "@archesai/ui/components/custom/timestamp";
 import { DataTable } from "@archesai/ui/components/datatable/data-table";
 import { Badge } from "@archesai/ui/components/shadcn/badge";
 import { TOOL_ENTITY_KEY } from "@archesai/ui/lib/constants";
+import type { SearchQuery } from "@archesai/ui/types/entities";
+import { Link, useNavigate } from "@tanstack/react-router";
+import type { JSX } from "react";
 
 export default function ToolDataTable(): JSX.Element {
   const navigate = useNavigate();
@@ -36,7 +33,7 @@ export default function ToolDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<ToolEntity>
+    <DataTable<Tool>
       columns={[
         {
           accessorKey: "name",
@@ -122,7 +119,7 @@ export default function ToolDataTable(): JSX.Element {
         await deleteTool(id);
       }}
       entityKey={TOOL_ENTITY_KEY}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={async (tool) => {
         await navigate({ to: `/tool/single?toolId=${tool.id}` });

@@ -1,9 +1,5 @@
-import type { JSX } from "react";
-
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
-
-import type { PageHeaderProps } from "#layouts/page-header/page-header";
-
+import type { JSX } from "react";
 import { ChevronRightIcon } from "#components/custom/icons";
 import {
   Collapsible,
@@ -21,6 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "#components/shadcn/sidebar";
+import type { PageHeaderProps } from "#layouts/page-header/page-header";
 
 export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
   const router = useRouter();
@@ -38,7 +35,7 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
               <SidebarMenu>
                 {siteRoutes
                   .filter((rootRoute) => rootRoute.section === section)
-                  .map((rootRoute, i) => {
+                  .map((rootRoute) => {
                     const isActive = rootRoute.children?.some((route) =>
                       router.state.location.pathname.startsWith(route.href),
                     );
@@ -46,7 +43,7 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
 
                     if (!children.length) {
                       return (
-                        <SidebarMenuItem key={i}>
+                        <SidebarMenuItem key={rootRoute.href}>
                           <SidebarMenuButton
                             asChild
                             isActive={rootRoute.href === pathname}

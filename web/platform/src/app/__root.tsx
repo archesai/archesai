@@ -1,7 +1,12 @@
 /// <reference types="vite/client" />
-import type { QueryClient } from "@tanstack/react-query";
-import type { JSX } from "react";
 
+import type { GetOneSession200 } from "@archesai/client";
+import { getGetOneSessionQueryKey } from "@archesai/client";
+import { Toaster } from "@archesai/ui/components/shadcn/sonner";
+import { LinkProvider } from "@archesai/ui/hooks/use-link";
+import { seo } from "@archesai/ui/lib/seo";
+import { ThemeProvider } from "@archesai/ui/providers/theme-provider";
+import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
@@ -10,14 +15,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-
-import type { GetOneSession200 } from "@archesai/client";
-
-import { getGetOneSessionQueryKey } from "@archesai/client";
-import { Toaster } from "@archesai/ui/components/shadcn/sonner";
-import { LinkProvider } from "@archesai/ui/hooks/use-link";
-import { seo } from "@archesai/ui/lib/seo";
-import { ThemeProvider } from "@archesai/ui/providers/theme-provider";
+import type { JSX } from "react";
 
 import { DefaultCatchBoundary } from "#components/default-catch-boundary";
 import NotFound from "#components/not-found";

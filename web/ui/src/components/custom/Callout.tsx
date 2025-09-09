@@ -1,12 +1,11 @@
 import type { LucideIcon } from "lucide-react";
-import type { JSX, ReactNode } from "react";
-
 import {
   AlertTriangleIcon,
   InfoIcon,
   LightbulbIcon,
   ShieldAlertIcon,
 } from "lucide-react";
+import type { JSX, ReactNode } from "react";
 
 import { cn } from "#lib/utils";
 

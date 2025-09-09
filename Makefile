@@ -58,9 +58,8 @@ build-server: ## Build archesai server binary
 .PHONY: build-web
 build-web: ## Build web assets
 	@echo -e "$(YELLOW)▶ Building web assets...$(NC)"
-	@pnpm build
+	@cd web/platform && pnpm build
 	@echo -e "$(GREEN)✓ Web assets built!$(NC)"
-
 
 # ------------------------------------------
 # Run Commands
@@ -99,7 +98,7 @@ run-tui: build ## Launch the TUI interface
 # ------------------------------------------
 
 .PHONY: generate
-generate: generate-sqlc generate-oapi generate-codegen generate-mocks ## Generate all code
+generate: generate-sqlc generate-oapi generate-codegen-types generate-codegen generate-mocks generate-js-client ## Generate all code
 	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
 .PHONY: generate-sqlc
@@ -144,6 +143,12 @@ generate-mocks: ## Generate test mocks using mockery
 	@command -v mockery >/dev/null 2>&1 || go install github.com/vektra/mockery/v3@v3.5.4
 	@mockery
 	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"
+
+.PHONY: generate-js-client
+generate-js-client: api-bundle ## Generate JavaScript/TypeScript client from OpenAPI
+	@echo -e "$(YELLOW)▶ Generating JavaScript/TypeScript client...$(NC)"
+	@cd ./web/client && pnpm orval
+	@echo -e "$(GREEN)✓ JavaScript/TypeScript client generated!$(NC)"
 
 # ------------------------------------------
 # Test Commands
@@ -212,20 +217,20 @@ lint-go: ## Run Go linter
 lint-node: lint-typecheck ## Run Node.js linter (includes typecheck)
 	@echo -e "$(YELLOW)▶ Running Node.js linter...$(NC)"
 	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
-	@pnpm lint
+	@pnpm biome lint --fix
 	@echo -e "$(GREEN)✓ Node.js linting complete!$(NC)"
 
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
 	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml lint api/openapi.yaml
+	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml lint api/openapi.yaml > /dev/null 2>&1
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
 .PHONY: lint-typecheck
 lint-typecheck: ## Run TypeScript type checking
 	@echo -e "$(YELLOW)▶ Type checking TypeScript...$(NC)"
 	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
-	@pnpm typecheck
+	@pnpm tsc --build --emitDeclarationOnly
 	@echo -e "$(GREEN)✓ TypeScript type checking complete!$(NC)"
 
 .PHONY: lint-docs
@@ -252,7 +257,7 @@ format-go: ## Format Go code
 format-node: ## Format Node.js/TypeScript code
 	@echo -e "$(YELLOW)▶ Formatting Node.js code...$(NC)"
 	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
-	@pnpm format
+# 	@pnpm biome format --write
 	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------
@@ -260,11 +265,17 @@ format-node: ## Format Node.js/TypeScript code
 # ------------------------------------------
 
 .PHONY: clean
-clean: ## Clean build artifacts
+clean: clean-test clean-generated clean-docs clean-deps ## Clean build artifacts
 	@echo -e "$(YELLOW)▶ Cleaning build artifacts...$(NC)"
 	@rm -rf bin/
-	@rm -f coverage.out coverage.html
 	@echo -e "$(GREEN)✓ Clean complete!$(NC)"
+
+.PHONY: clean-dist
+clean-dist: ## Clean distribution builds
+	@echo -e "$(YELLOW)▶ Cleaning distribution builds...$(NC)"
+	@pnpm -r exec sh -c 'rm -rf .cache .tanstack dist .nitro .output'
+	@rm -rf bin
+	@echo -e "$(GREEN)✓ Distribution builds cleaned!$(NC)"
 
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
@@ -284,6 +295,22 @@ clean-docs: ## Clean documentation build
 	@echo -e "$(YELLOW)▶ Cleaning documentation build...$(NC)"
 	@rm -rf web/docs/build web/docs/.docusaurus web/docs/docs website/
 	@echo -e "$(GREEN)✓ Documentation build cleaned!$(NC)"
+
+.PHONY: clean-deps
+clean-deps: clean-node-deps clean-go-deps ## Clean all dependencies
+	@echo -e "$(GREEN)✓ All dependencies cleaned!$(NC)"
+
+.PHONY: clean-node-deps
+clean-node-deps: ## Clean Node.js dependencies
+	@echo -e "$(YELLOW)▶ Cleaning Node.js dependencies...$(NC)"
+	@rm -rf node_modules pnpm-lock.yaml
+	@echo -e "$(GREEN)✓ Node.js dependencies cleaned!$(NC)"
+
+.PHONY: clean-go-deps
+clean-go-deps: ## Clean Go module cache
+	@echo -e "$(YELLOW)▶ Cleaning Go module cache...$(NC)"
+	@go clean -modcache
+	@echo -e "$(GREEN)✓ Go module cache cleaned!$(NC)"
 
 .PHONY: install-hugo
 install-hugo: ## Install Hugo Extended
@@ -309,6 +336,7 @@ copy-docs: ## Copy markdown docs to web/docs/docs
 	@pnpm -F @archesai/docs run copy:docs
 	@pnpm -F @archesai/docs run copy:api
 	@echo -e "$(GREEN)✓ Docs copied!$(NC)"
+
 
 # ------------------------------------------
 # Database Commands
@@ -356,7 +384,7 @@ db-migrate-reset: ## Reset database to initial state
 api-bundle: lint-openapi ## Bundle OpenAPI into single file
 	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
 	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml
-	@pnpm prettier --write api/openapi.bundled.yaml
+# 	@pnpm biome format --write api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
 
 .PHONY: api-split

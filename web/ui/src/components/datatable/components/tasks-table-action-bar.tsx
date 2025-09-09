@@ -7,8 +7,6 @@ import * as React from "react";
 
 // import { toast } from 'sonner'
 
-import type { BaseEntity } from "#types/entities";
-
 import { DownloadIcon, TrashIcon } from "#components/custom/icons";
 import {
   DataTableActionBar,
@@ -17,6 +15,7 @@ import {
 } from "#components/datatable/components/data-table-action-bar";
 import { Separator } from "#components/shadcn/separator";
 import { exportTableToCSV } from "#lib/export";
+import type { BaseEntity } from "#types/entities";
 
 const _actions = ["export", "delete"] as const;
 

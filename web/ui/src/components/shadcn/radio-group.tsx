@@ -1,5 +1,5 @@
-import * as React from "react";
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
+import type * as React from "react";
 
 import { CircleIcon } from "#components/custom/icons";
 import { cn } from "#lib/utils";

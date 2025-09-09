@@ -1,15 +1,10 @@
-import type { JSX } from "react";
-
-import { useState } from "react";
-
 import type { CreateArtifactBody, UpdateArtifactBody } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-
 import {
   createArtifact,
   updateArtifact,
   useGetOneArtifactSuspense,
 } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 import { GenericForm } from "@archesai/ui/components/custom/generic-form";
 // import ImportCard from '@archesai/ui/components/custom/import-card'
 import { Input } from "@archesai/ui/components/shadcn/input";
@@ -21,6 +16,8 @@ import {
 } from "@archesai/ui/components/shadcn/tabs";
 import { Textarea } from "@archesai/ui/components/shadcn/textarea";
 import { ARTIFACT_ENTITY_KEY } from "@archesai/ui/lib/constants";
+import type { JSX } from "react";
+import { useState } from "react";
 
 export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
   const [tab, setTab] = useState<"file" | "text" | "url">("file");

@@ -88,20 +88,20 @@
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-sm:
-    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
-    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0), 0px 1px 2px -1px
+    hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow:
-    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
-    0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0), 0px 1px 2px -1px
+    hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-md:
-    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
-    0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0), 0px 2px 4px -1px
+    hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-lg:
-    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
-    0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0), 0px 4px 6px -1px
+    hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-xl:
-    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0),
-    0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0);
+    0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0), 0px 8px 10px -1px
+    hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
 }
 
@@ -177,21 +177,6 @@
     }
   }
 
-  select {
-    @apply focus:outline-hidden focus-visible:ring-primary focus-visible:ring-[1.5px];
-  }
-
-  .CollapsibleContent {
-    --easing: cubic-bezier(0.4, 0, 0.2, 1);
-    --slide-offset: -0.75rem;
-  }
-  .CollapsibleContent[data-state="open"] {
-    animation: slideDown 300ms var(--easing);
-  }
-  .CollapsibleContent[data-state="closed"] {
-    animation: slideUp 300ms var(--easing);
-  }
-
   @keyframes accordion-up {
     from {
       height: var(--radix-accordion-content-height);
@@ -212,6 +197,21 @@
       opacity: 0;
     }
   }
+}
+
+select {
+  @apply focus:outline-hidden focus-visible:ring-primary focus-visible:ring-[1.5px];
+}
+
+.CollapsibleContent {
+  --easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --slide-offset: -0.75rem;
+}
+.CollapsibleContent[data-state="open"] {
+  animation: slideDown 300ms var(--easing);
+}
+.CollapsibleContent[data-state="closed"] {
+  animation: slideUp 300ms var(--easing);
 }
 
 @layer base {

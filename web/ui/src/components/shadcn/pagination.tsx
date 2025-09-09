@@ -1,17 +1,17 @@
-import * as React from "react";
+import type * as React from "react";
 
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   MoreHorizontalIcon,
 } from "#components/custom/icons";
-import { Button, buttonVariants } from "#components/shadcn/button";
+import type { Button } from "#components/shadcn/button";
+import { buttonVariants } from "#components/shadcn/button";
 import { cn } from "#lib/utils";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
-      role="navigation"
       aria-label="pagination"
       data-slot="pagination"
       className={cn("mx-auto flex w-full justify-center", className)}

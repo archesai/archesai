@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Accordion as AccordionPrimitive } from "radix-ui";
+import type * as React from "react";
 
 import { ChevronDownIcon } from "#components/custom/icons";
 import { cn } from "#lib/utils";

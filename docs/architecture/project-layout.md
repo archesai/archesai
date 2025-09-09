@@ -65,7 +65,6 @@ This document provides an overview of the ArchesAI project structure and organiz
     ├── client/                   # API client library
     ├── eslint/                   # ESLint configuration
     ├── platform/                 # Main platform SPA
-    ├── prettier/                 # Prettier configuration
     ├── typescript/               # TypeScript configuration
     └── ui/                       # Shared UI components
 ```
@@ -95,7 +94,7 @@ Frontend applications and shared packages:
 - **platform/**: Main React SPA using TanStack Router and Start
 - **client/**: Generated TypeScript API client
 - **ui/**: Shared component library
-- **Config packages**: ESLint, Prettier, TypeScript configurations
+- **Config packages**: ESLint, TypeScript configurations
 
 ### `/deployments`
 

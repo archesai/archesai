@@ -3,7 +3,8 @@ import type { JSX } from "react";
 
 // import '@xyflow/react/dist/style.css'
 
-import { useCallback, useMemo } from "react";
+import { Button } from "@archesai/ui/components/shadcn/button";
+import { Card } from "@archesai/ui/components/shadcn/card";
 import {
   addEdge,
   Background,
@@ -16,9 +17,7 @@ import {
   useEdgesState,
   useNodesState,
 } from "@xyflow/react";
-
-import { Button } from "@archesai/ui/components/shadcn/button";
-import { Card } from "@archesai/ui/components/shadcn/card";
+import { useCallback, useMemo } from "react";
 
 // PipelineStepEntity doesn't exist in generated types yet
 interface PipelineStepEntity {

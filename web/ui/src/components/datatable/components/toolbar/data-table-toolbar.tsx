@@ -4,9 +4,6 @@ import type { Column, Table } from "@tanstack/react-table";
 import type { JSX } from "react";
 
 import { useCallback, useMemo } from "react";
-
-import type { BaseEntity } from "#types/entities";
-
 import { XCircleIcon } from "#components/custom/icons";
 import { DataTableViewOptions } from "#components/datatable/components/data-table-view-options";
 import { DataTableDateFilter } from "#components/datatable/components/filters/data-table-date-filter";
@@ -15,6 +12,7 @@ import { DataTableSliderFilter } from "#components/datatable/components/filters/
 import { Button } from "#components/shadcn/button";
 import { Input } from "#components/shadcn/input";
 import { cn } from "#lib/utils";
+import type { BaseEntity } from "#types/entities";
 
 export interface DataTableToolbarProps<TEntity extends BaseEntity> {
   table: Table<TEntity>;

@@ -7,9 +7,9 @@ pre-commit:
   #     glob: "**/*.{ts,tsx,json,js,jsx,css,html}"
   #     run: pnpm biome check --write {staged_files}
   #     stage_fixed: true
-  #   prettier:
+  #   biome:
   #     glob: "**/*.{md,mdx,yml,yaml}"
-  #     run: pnpm prettier --write {staged_files}
+  #     run: pnpm biome  --write {staged_files}
   #     stage_fixed: true
 
   commands:

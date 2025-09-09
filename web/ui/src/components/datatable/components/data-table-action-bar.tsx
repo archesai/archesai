@@ -1,10 +1,9 @@
 "use no memo";
 
 import type { Table } from "@tanstack/react-table";
-import type { JSX } from "react";
-
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import type { JSX } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import * as ReactDOM from "react-dom";
 
 import { Loader2Icon, XCircleIcon } from "#components/custom/icons";

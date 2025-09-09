@@ -1,7 +1,6 @@
 import type { JSX } from "react";
-import type { ControllerRenderProps, FieldValues } from "react-hook-form";
-
 import { useEffect } from "react";
+import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
 import { Loader2Icon } from "#components/custom/icons";
