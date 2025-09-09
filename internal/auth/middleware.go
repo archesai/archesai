@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -114,10 +115,10 @@ func OptionalAuthMiddleware(authService *Service, logger *slog.Logger) echo.Midd
 }
 
 // RequireRole creates a middleware that requires specific roles
-func RequireRole(roles ...string) echo.MiddlewareFunc {
+func RequireRole(roles ...Role) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			claims, ok := c.Get(string(AuthClaimsContextKey)).(*Claims)
+			claims, ok := c.Get(string(AuthClaimsContextKey)).(*EnhancedClaims)
 			if !ok {
 				return echo.NewHTTPError(http.StatusUnauthorized, "missing authentication")
 			}
@@ -125,8 +126,7 @@ func RequireRole(roles ...string) echo.MiddlewareFunc {
 			// Check if user has required role
 			hasRole := false
 			for _, role := range roles {
-				// FIX ME
-				if claims.Email == role {
+				if claims.HasRole(string(role)) {
 					hasRole = true
 					break
 				}
@@ -141,17 +141,59 @@ func RequireRole(roles ...string) echo.MiddlewareFunc {
 	}
 }
 
-// RequireOrganization creates a middleware that requires organization membership
-func RequireOrganization() echo.MiddlewareFunc {
+// RequirePermission creates a middleware that requires specific permissions
+func RequirePermission(permissions ...Permission) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			claims, ok := c.Get(string(AuthClaimsContextKey)).(*Claims)
+			claims, ok := c.Get(string(AuthClaimsContextKey)).(*EnhancedClaims)
 			if !ok {
 				return echo.NewHTTPError(http.StatusUnauthorized, "missing authentication")
 			}
 
-			// FIXME
-			if claims.Audience == nil {
+			// Check if user has all required permissions
+			for _, permission := range permissions {
+				if !claims.HasPermission(string(permission)) {
+					return echo.NewHTTPError(http.StatusForbidden, "insufficient permissions")
+				}
+			}
+
+			return next(c)
+		}
+	}
+}
+
+// RequireScope creates a middleware that requires specific API scopes
+func RequireScope(scopes ...Scope) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			claims, ok := c.Get(string(AuthClaimsContextKey)).(*EnhancedClaims)
+			if !ok {
+				return echo.NewHTTPError(http.StatusUnauthorized, "missing authentication")
+			}
+
+			// Check if user has all required scopes
+			for _, scope := range scopes {
+				if !claims.HasScope(string(scope)) {
+					return echo.NewHTTPError(http.StatusForbidden, "insufficient scope")
+				}
+			}
+
+			return next(c)
+		}
+	}
+}
+
+// RequireOrganization creates a middleware that requires organization membership
+func RequireOrganization() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			claims, ok := c.Get(string(AuthClaimsContextKey)).(*EnhancedClaims)
+			if !ok {
+				return echo.NewHTTPError(http.StatusUnauthorized, "missing authentication")
+			}
+
+			// Check if user has an active organization
+			if claims.OrganizationID == uuid.Nil && len(claims.Organizations) == 0 {
 				return echo.NewHTTPError(http.StatusForbidden, "organization membership required")
 			}
 
@@ -181,13 +223,29 @@ func extractToken(c echo.Context) string {
 }
 
 // GetUserFromContext retrieves the user ID from the context
-func GetUserFromContext(c echo.Context) (string, bool) {
-	userID, ok := c.Get(string(AuthUserContextKey)).(string)
+func GetUserFromContext(c echo.Context) (uuid.UUID, bool) {
+	userID, ok := c.Get(string(AuthUserContextKey)).(uuid.UUID)
 	return userID, ok
 }
 
-// GetClaimsFromContext retrieves the claims from the context
-func GetClaimsFromContext(c echo.Context) (*Claims, bool) {
+// GetClaimsFromContext retrieves the enhanced claims from the context
+func GetClaimsFromContext(c echo.Context) (*EnhancedClaims, bool) {
+	claims, ok := c.Get(string(AuthClaimsContextKey)).(*EnhancedClaims)
+	return claims, ok
+}
+
+// GetLegacyClaimsFromContext retrieves legacy claims from the context (for backward compatibility)
+func GetLegacyClaimsFromContext(c echo.Context) (*Claims, bool) {
+	// Try to get enhanced claims first and convert
+	if enhanced, ok := c.Get(string(AuthClaimsContextKey)).(*EnhancedClaims); ok {
+		legacy := &Claims{
+			UserID:           enhanced.UserID,
+			Email:            enhanced.Email,
+			RegisteredClaims: enhanced.RegisteredClaims,
+		}
+		return legacy, true
+	}
+	// Fall back to direct legacy claims
 	claims, ok := c.Get(string(AuthClaimsContextKey)).(*Claims)
 	return claims, ok
 }

@@ -20,6 +20,80 @@ const (
 	testPassword = "SecurePass123!"
 )
 
+// TestService_ValidatePassword tests password validation
+func TestService_ValidatePassword(t *testing.T) {
+	service, _, _ := createTestService(t)
+
+	tests := []struct {
+		name        string
+		password    string
+		wantErr     bool
+		errContains string
+	}{
+		{
+			name:     "valid password",
+			password: "SecurePass123!",
+			wantErr:  false,
+		},
+		{
+			name:        "too short",
+			password:    "Pass1!",
+			wantErr:     true,
+			errContains: "at least 8 characters",
+		},
+		{
+			name:        "too long",
+			password:    string(make([]byte, 129)),
+			wantErr:     true,
+			errContains: "not exceed 128 characters",
+		},
+		{
+			name:        "missing uppercase",
+			password:    "securepass123!",
+			wantErr:     true,
+			errContains: "uppercase letter",
+		},
+		{
+			name:        "missing lowercase",
+			password:    "SECUREPASS123!",
+			wantErr:     true,
+			errContains: "lowercase letter",
+		},
+		{
+			name:        "missing number",
+			password:    "SecurePass!",
+			wantErr:     true,
+			errContains: "number",
+		},
+		{
+			name:        "missing special character",
+			password:    "SecurePass123",
+			wantErr:     true,
+			errContains: "special character",
+		},
+		{
+			name:        "multiple missing requirements",
+			password:    "password",
+			wantErr:     true,
+			errContains: "uppercase letter, number, special character",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := service.validatePassword(tt.password)
+			if tt.wantErr {
+				assert.Error(t, err)
+				if tt.errContains != "" {
+					assert.Contains(t, err.Error(), tt.errContains)
+				}
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
 // Note: Using MockUsersRepository from handler_test.go to avoid duplication
 
 // Test helper function to create a service with mocks
@@ -208,9 +282,10 @@ func TestService_Login(t *testing.T) {
 // TestService_RefreshToken tests token refresh
 func TestService_RefreshToken(t *testing.T) {
 	t.Run("successful refresh", func(t *testing.T) {
-		service, _, mockUsersRepo := createTestService(t)
+		service, mockRepo, mockUsersRepo := createTestService(t)
 
 		userID := uuid.New()
+		sessionID := uuid.New()
 		testUser := &users.User{
 			Id:    userID,
 			Email: "test@example.com",
@@ -220,15 +295,30 @@ func TestService_RefreshToken(t *testing.T) {
 		// Add user to mock repository
 		mockUsersRepo.users[userID] = testUser
 
+		// Setup mock for GetSession
+		session := &Session{
+			Id:                   sessionID,
+			UserId:               userID,
+			Token:                "session-token",
+			ActiveOrganizationId: uuid.New(),
+			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
+			IpAddress:            "192.168.1.1",
+			UserAgent:            "Test Agent",
+		}
+		mockRepo.EXPECT().GetSession(mock.Anything, sessionID).Return(session, nil).Maybe()
+
 		// Create a valid refresh token
-		claims := &Claims{
-			UserID: userID,
-			Email:  "test@example.com",
+		claims := &RefreshClaims{
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
 				IssuedAt:  jwt.NewNumericDate(time.Now()),
 				NotBefore: jwt.NewNumericDate(time.Now()),
+				Subject:   userID.String(),
 			},
+			UserID:     userID,
+			TokenType:  RefreshTokenType,
+			SessionID:  sessionID.String(),
+			AuthMethod: AuthMethodPassword,
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		refreshToken, _ := token.SignedString([]byte("test-secret"))

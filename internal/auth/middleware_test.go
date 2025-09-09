@@ -45,15 +45,18 @@ func TestAuthMiddleware(t *testing.T) {
 
 		middleware := Middleware(service, logger.NewTest())
 
-		// Create a valid JWT token with proper Claims structure
-		claims := &Claims{
-			UserID: userID,
-			Email:  "test@example.com",
+		// Create a valid JWT token with proper EnhancedClaims structure
+		claims := &EnhancedClaims{
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
 				IssuedAt:  jwt.NewNumericDate(time.Now()),
 				NotBefore: jwt.NewNumericDate(time.Now()),
+				Subject:   userID.String(),
 			},
+			UserID:     userID,
+			Email:      "test@example.com",
+			TokenType:  AccessTokenType,
+			AuthMethod: AuthMethodPassword,
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, _ := token.SignedString([]byte("test-secret"))
@@ -179,14 +182,17 @@ func TestAuthMiddleware(t *testing.T) {
 
 		// Create an expired JWT token
 		userID := uuid.New()
-		claims := &Claims{
-			UserID: userID,
-			Email:  "test@example.com",
+		claims := &EnhancedClaims{
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(-time.Hour)), // Expired
 				IssuedAt:  jwt.NewNumericDate(time.Now().Add(-2 * time.Hour)),
 				NotBefore: jwt.NewNumericDate(time.Now().Add(-2 * time.Hour)),
+				Subject:   userID.String(),
 			},
+			UserID:     userID,
+			Email:      "test@example.com",
+			TokenType:  AccessTokenType,
+			AuthMethod: AuthMethodPassword,
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, _ := token.SignedString([]byte("test-secret"))
@@ -234,14 +240,17 @@ func TestAuthMiddleware(t *testing.T) {
 
 		// Create a valid JWT token but session doesn't exist
 		userID := uuid.New()
-		claims := &Claims{
-			UserID: userID,
-			Email:  "test@example.com",
+		claims := &EnhancedClaims{
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
 				IssuedAt:  jwt.NewNumericDate(time.Now()),
 				NotBefore: jwt.NewNumericDate(time.Now()),
+				Subject:   userID.String(),
 			},
+			UserID:     userID,
+			Email:      "test@example.com",
+			TokenType:  AccessTokenType,
+			AuthMethod: AuthMethodPassword,
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, _ := token.SignedString([]byte("test-secret"))
@@ -297,14 +306,17 @@ func TestRequireAuthMiddleware(t *testing.T) {
 		middleware := Middleware(service, logger.NewTest())
 
 		// Create a valid JWT token
-		claims := &Claims{
-			UserID: userID,
-			Email:  "test@example.com",
+		claims := &EnhancedClaims{
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
 				IssuedAt:  jwt.NewNumericDate(time.Now()),
 				NotBefore: jwt.NewNumericDate(time.Now()),
+				Subject:   userID.String(),
 			},
+			UserID:     userID,
+			Email:      "test@example.com",
+			TokenType:  AccessTokenType,
+			AuthMethod: AuthMethodPassword,
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, _ := token.SignedString([]byte("test-secret"))

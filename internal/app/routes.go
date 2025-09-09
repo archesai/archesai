@@ -16,9 +16,14 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	// API v1 group
 	v1 := e.Group("/api/v1")
 
-	// Register auth routes using StrictHandler pattern
+	// Register auth routes using StrictHandler pattern with rate limiting
 	strictAuthHandler := auth.NewAuthStrictHandler(a.AuthHandler)
-	auth.RegisterHandlers(v1, strictAuthHandler)
+
+	// Apply rate limiting to the entire auth group
+	// This will limit registration, login, and password reset endpoints
+	authGroup := v1.Group("")
+	authGroup.Use(auth.RateLimitMiddleware(10, 60)) // 10 requests per minute
+	auth.RegisterHandlers(authGroup, strictAuthHandler)
 
 	// Register users routes using StrictHandler pattern
 	strictUsersHandler := users.NewUserStrictHandler(a.UsersHandler)
