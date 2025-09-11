@@ -15,7 +15,7 @@ require (
 	github.com/openai/openai-go v1.12.0
 	github.com/pgvector/pgvector-go v0.3.0
 	github.com/pressly/goose/v3 v3.25.0
-	github.com/redis/go-redis/v9 v9.13.0
+	github.com/redis/go-redis/v9 v9.14.0
 	github.com/speakeasy-api/openapi v1.6.4
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
