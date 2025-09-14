@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "private": true,
+  "imports": {
+    "#*": "./src/*.tsx"
+  },
   "scripts": {
     "dev": "zudoku dev",
     "copy:api": "cp ../../api/openapi.bundled.yaml ./apis/openapi.yaml",
@@ -22,7 +25,8 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
-    "eslint": "^9.35.0",
-    "typescript": "catalog:"
+    "eslint": "catalog:eslint",
+    "typescript": "catalog:",
+    "vitest": "catalog:test"
   }
 }

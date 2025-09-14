@@ -35,9 +35,9 @@ post:
             - userId
     required: true
   responses:
-    "204":
+    '204':
       $ref: ../components/responses/NotFound.yaml
-    "401":
+    '401':
       $ref: ../components/responses/Unauthorized.yaml
-    "404":
+    '404':
       $ref: ../components/responses/NotFound.yaml

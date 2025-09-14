@@ -24,7 +24,7 @@ delete:
   security:
     - bearerAuth: []
   responses:
-    "200":
+    '200':
       description: Default Response
       content:
         application/json:
@@ -36,7 +36,7 @@ delete:
             required:
               - data
             additionalProperties: false
-    "404":
+    '404':
       $ref: ../components/responses/NotFound.yaml
 get:
   operationId: getOneInvitation
@@ -64,7 +64,7 @@ get:
   security:
     - bearerAuth: []
   responses:
-    "200":
+    '200':
       description: Default Response
       content:
         application/json:
@@ -76,7 +76,7 @@ get:
             required:
               - data
             additionalProperties: false
-    "404":
+    '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
   operationId: updateInvitation
@@ -122,7 +122,7 @@ patch:
   security:
     - bearerAuth: []
   responses:
-    "200":
+    '200':
       description: Default Response
       content:
         application/json:
@@ -134,5 +134,5 @@ patch:
             required:
               - data
             additionalProperties: false
-    "404":
+    '404':
       $ref: ../components/responses/NotFound.yaml

@@ -16,7 +16,7 @@ properties:
   path_prefix:
     description: URL path prefix
     type: string
-    pattern: "^/[a-z][a-z0-9-/]*$"
+    pattern: '^/[a-z][a-z0-9-/]*$'
   validation:
     description: Request validation configuration
     type: object

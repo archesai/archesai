@@ -22,7 +22,7 @@ allOf:
         description: Detailed description of the pipeline's purpose
         type: string
         maxLength: 1000
-        example: "Processes incoming data through validation, transformation, and storage steps"
+        example: 'Processes incoming data through validation, transformation, and storage steps'
     required:
       - name
     additionalProperties: false

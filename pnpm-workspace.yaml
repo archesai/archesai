@@ -1,12 +1,15 @@
 packages:
   - web/*
 
-autoInstallPeers: false
+autoInstallPeers: true
 
 catalog:
-  '@biomejs/biome': 2.2.3
-  '@types/node': 24.3.1
+  '@biomejs/biome': 2.2.4
+  '@redocly/cli': 2.1.2
+  '@types/node': 24.4.0
   '@xyflow/react': 12.8.4
+  markdownlint-cli: 0.45.0
+  prettier: 3.6.2
   socket.io-client: 4.8.1
   task-master-ai: 0.26.0
   typescript: 5.9.2
@@ -22,20 +25,20 @@ catalogs:
     eslint: 9.35.0
     eslint-plugin-react: 7.37.5
     eslint-plugin-react-hooks: 5.2.0
-    globals: 16.3.0
+    globals: 16.4.0
     typescript-eslint: 8.43.0
   react19:
-    '@types/react': ^19.1.12
+    '@types/react': ^19.1.13
     '@types/react-dom': ^19.1.9
     react: ^19.1.1
     react-dom: ^19.1.1
   tanstack:
-    '@tanstack/react-query': 5.87.1
-    '@tanstack/react-query-devtools': 5.87.3
-    '@tanstack/react-router': 1.131.36
-    '@tanstack/react-router-devtools': 1.131.36
-    '@tanstack/react-router-ssr-query': 1.131.36
-    '@tanstack/react-start': 1.131.36
+    '@tanstack/react-query': 5.87.4
+    '@tanstack/react-query-devtools': 5.87.4
+    '@tanstack/react-router': 1.131.41
+    '@tanstack/react-router-devtools': 1.131.42
+    '@tanstack/react-router-ssr-query': 1.131.41
+    '@tanstack/react-start': 1.131.43
     '@tanstack/react-table': 8.21.3
     '@tanstack/table-core': 8.21.3
   test:
@@ -47,20 +50,20 @@ catalogs:
     '@dnd-kit/modifiers': 9.0.0
     '@dnd-kit/sortable': 10.0.0
     '@dnd-kit/utilities': 3.2.2
-    '@fontsource/geist': 5.2.6
+    '@fontsource/geist': 5.2.7
     '@fontsource/geist-mono': 5.2.6
     '@radix-ui/react-slot': 1.2.3
     class-variance-authority: 0.7.1
     clsx: 2.1.1
     cmdk: 1.1.1
     date-fns: 4.1.0
-    lucide-react: 0.543.0
+    lucide-react: 0.544.0
     motion: 12.23.12
     next-themes: 0.4.6
     radix-ui: 1.4.3
-    react-day-picker: 9.9.0
+    react-day-picker: 9.10.0
     react-hook-form: 7.62.0
-    react-resizable-panels: 3.0.5
+    react-resizable-panels: 3.0.6
     sonner: 2.0.7
     tailwind-merge: 3.3.1
     tailwindcss: 4.1.13
@@ -101,5 +104,3 @@ publicHoistPattern:
 strictDepBuilds: true
 
 strictPeerDependencies: true
-
-useNodeVersion: 24.7.0

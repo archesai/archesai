@@ -13,7 +13,7 @@ env:
   - PACKAGE_PATH=github.com/archesai/archesai/cmd
 
 builds:
-  - binary: "{{ .ProjectName }}"
+  - binary: '{{ .ProjectName }}'
     main: ./cmd/archesai
     goos:
       - darwin
@@ -62,8 +62,8 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - "^docs:"
-      - "^test:"
+      - '^docs:'
+      - '^test:'
 
 checksum:
-  name_template: "checksums.txt"
+  name_template: 'checksums.txt'

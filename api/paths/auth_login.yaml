@@ -33,11 +33,11 @@ post:
             - password
     required: true
   responses:
-    "200":
+    '200':
       description: Successful login
       content:
         application/json:
           schema:
             $ref: ../components/schemas/TokenResponse.yaml
-    "401":
+    '401':
       $ref: ../components/responses/Unauthorized.yaml

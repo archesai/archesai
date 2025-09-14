@@ -140,8 +140,7 @@ generate-codegen: generate-codegen-types ## Generate codegen
 .PHONY: generate-mocks
 generate-mocks: ## Generate test mocks using mockery
 	@echo -e "$(YELLOW)▶ Generating test mocks...$(NC)"
-	@command -v mockery >/dev/null 2>&1 || go install github.com/vektra/mockery/v3@v3.5.4
-	@mockery
+	@go tool mockery 
 	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"
 
 .PHONY: generate-js-client
@@ -203,40 +202,37 @@ test-watch: ## Run tests in watch mode (requires fswatch)
 # ------------------------------------------
 
 .PHONY: lint
-lint: lint-go lint-openapi lint-node lint-docs ## Run all linters
+lint: lint-go lint-ts lint-openapi lint-docs ## Run all linters
 	@echo -e "$(GREEN)✓ All linting complete!$(NC)"
 
 .PHONY: lint-go
 lint-go: ## Run Go linter
 	@echo -e "$(YELLOW)▶ Running Go linter...$(NC)"
-	@which golangci-lint > /dev/null || (echo "Installing golangci-lint..." && pacman -Syu golangci-lint)
 	@golangci-lint run ./...
 	@echo -e "$(GREEN)✓ Go linting complete!$(NC)"
 
-.PHONY: lint-node
-lint-node: lint-typecheck ## Run Node.js linter (includes typecheck)
+.PHONY: lint-ts
+lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 	@echo -e "$(YELLOW)▶ Running Node.js linter...$(NC)"
-	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
 	@pnpm biome lint --fix
 	@echo -e "$(GREEN)✓ Node.js linting complete!$(NC)"
 
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
 	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml lint api/openapi.yaml > /dev/null 2>&1
+	@pnpm redocly --config .redocly.yaml lint api/openapi.yaml > /dev/null 2>&1
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
 .PHONY: lint-typecheck
 lint-typecheck: ## Run TypeScript type checking
 	@echo -e "$(YELLOW)▶ Type checking TypeScript...$(NC)"
-	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
 	@pnpm tsc --build --emitDeclarationOnly
 	@echo -e "$(GREEN)✓ TypeScript type checking complete!$(NC)"
 
 .PHONY: lint-docs
 lint-docs: ## Lint documentation with markdownlint
 	@echo -e "$(YELLOW)▶ Linting documentation...$(NC)"
-	@pnpm dlx markdownlint-cli --fix 'docs/**/*.md' --config .markdownlint.json
+	@pnpm markdownlint --fix 'docs/**/*.md' --config .markdownlint.json
 	@echo -e "$(GREEN)✓ Documentation linting complete!$(NC)"
 
 # ------------------------------------------
@@ -244,7 +240,7 @@ lint-docs: ## Lint documentation with markdownlint
 # ------------------------------------------
 
 .PHONY: format
-format: format-go format-node ## Format all code
+format: format-go format-ts format-prettier ## Format all code
 	@echo -e "$(GREEN)✓ All code formatted!$(NC)"
 
 .PHONY: format-go
@@ -253,11 +249,16 @@ format-go: ## Format Go code
 	@go fmt ./...
 	@echo -e "$(GREEN)✓ Go code formatted!$(NC)"
 
-.PHONY: format-node
-format-node: ## Format Node.js/TypeScript code
+.PHONY: format-go
+format-prettier: ## Format Go code
+	@echo -e "$(YELLOW)▶ Formatting Go code...$(NC)"
+	@pnpm prettier --list-different --write --log-level warn .
+	@echo -e "$(GREEN)✓ Go code formatted!$(NC)"
+
+.PHONY: format-ts
+format-ts: ## Format Node.js/TypeScript code
 	@echo -e "$(YELLOW)▶ Formatting Node.js code...$(NC)"
-	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
-# 	@pnpm biome format --write
+	@pnpm biome format --write
 	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------
@@ -267,14 +268,13 @@ format-node: ## Format Node.js/TypeScript code
 .PHONY: clean
 clean: clean-test clean-generated clean-docs clean-deps ## Clean build artifacts
 	@echo -e "$(YELLOW)▶ Cleaning build artifacts...$(NC)"
-	@rm -rf bin/
+	@rm -rf bin
 	@echo -e "$(GREEN)✓ Clean complete!$(NC)"
 
-.PHONY: clean-dist
-clean-dist: ## Clean distribution builds
+.PHONY: clean-ts
+clean-ts: ## Clean distribution builds
 	@echo -e "$(YELLOW)▶ Cleaning distribution builds...$(NC)"
 	@pnpm -r exec sh -c 'rm -rf .cache .tanstack dist .nitro .output'
-	@rm -rf bin
 	@echo -e "$(GREEN)✓ Distribution builds cleaned!$(NC)"
 
 .PHONY: clean-generated
@@ -297,11 +297,11 @@ clean-docs: ## Clean documentation build
 	@echo -e "$(GREEN)✓ Documentation build cleaned!$(NC)"
 
 .PHONY: clean-deps
-clean-deps: clean-node-deps clean-go-deps ## Clean all dependencies
+clean-deps: clean-ts-deps clean-go-deps ## Clean all dependencies
 	@echo -e "$(GREEN)✓ All dependencies cleaned!$(NC)"
 
-.PHONY: clean-node-deps
-clean-node-deps: ## Clean Node.js dependencies
+.PHONY: clean-ts-deps
+clean-ts-deps: ## Clean Node.js dependencies
 	@echo -e "$(YELLOW)▶ Cleaning Node.js dependencies...$(NC)"
 	@rm -rf node_modules pnpm-lock.yaml
 	@echo -e "$(GREEN)✓ Node.js dependencies cleaned!$(NC)"
@@ -311,13 +311,6 @@ clean-go-deps: ## Clean Go module cache
 	@echo -e "$(YELLOW)▶ Cleaning Go module cache...$(NC)"
 	@go clean -modcache
 	@echo -e "$(GREEN)✓ Go module cache cleaned!$(NC)"
-
-.PHONY: install-hugo
-install-hugo: ## Install Hugo Extended
-	@echo -e "$(YELLOW)▶ Installing Hugo Extended...$(NC)"
-	@go install -tags extended github.com/gohugoio/hugo@latest
-	@echo -e "$(GREEN)✓ Hugo Extended installed!$(NC)"
-	@hugo version
 
 .PHONY: build-docs
 build-docs: copy-docs ## Build Docusaurus documentation site
@@ -348,32 +341,31 @@ db-migrate: db-migrate-up ## Alias for db-migrate-up
 .PHONY: db-migrate-up
 db-migrate-up: ## Apply database migrations
 	@echo -e "$(YELLOW)▶ Applying migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" up
+	@cd $(MIGRATION_PATH) && go tool goose postgres "$(DATABASE_URL)" up
 	@echo -e "$(GREEN)✓ Migrations applied!$(NC)"
 
 .PHONY: db-migrate-down
 db-migrate-down: ## Rollback database migrations
 	@echo -e "$(YELLOW)▶ Rolling back migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" down
+	@cd $(MIGRATION_PATH) && go tool goose postgres "$(DATABASE_URL)" down
 	@echo -e "$(GREEN)✓ Migrations rolled back!$(NC)"
 
 .PHONY: db-migrate-create
 db-migrate-create: ## Create new migration (usage: make db-migrate-create name=add_users)
 	@echo -e "$(YELLOW)▶ Creating migration: $(name)...$(NC)"
-	@which goose > /dev/null || (echo "Please install goose: go install github.com/pressly/goose/v3/cmd/goose@latest" && exit 1)
-	@cd $(MIGRATION_PATH) && goose create $(name) sql
+	@cd $(MIGRATION_PATH) && go tool goose create $(name) sql
 	@echo -e "$(GREEN)✓ Migration created!$(NC)"
 
 .PHONY: db-migrate-status
 db-migrate-status: ## Show migration status
 	@echo -e "$(YELLOW)▶ Checking migration status...$(NC)"
-	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" status
+	@cd $(MIGRATION_PATH) && go tool goose postgres "$(DATABASE_URL)" status
 	@echo -e "$(GREEN)✓ Migration status checked!$(NC)"
 
 .PHONY: db-migrate-reset
 db-migrate-reset: ## Reset database to initial state
 	@echo -e "$(YELLOW)▶ Resetting database...$(NC)"
-	@cd $(MIGRATION_PATH) && goose postgres "$(DATABASE_URL)" reset
+	@cd $(MIGRATION_PATH) && go tool goose postgres "$(DATABASE_URL)" reset
 	@echo -e "$(GREEN)✓ Database reset complete!$(NC)"
 
 # ------------------------------------------
@@ -383,45 +375,43 @@ db-migrate-reset: ## Reset database to initial state
 .PHONY: api-bundle
 api-bundle: lint-openapi ## Bundle OpenAPI into single file
 	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
-	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml
-# 	@pnpm biome format --write api/openapi.bundled.yaml
+	@pnpm redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
 
 .PHONY: api-split
 api-split: lint-openapi ## Split OpenAPI into multiple files
 	@echo -e "$(YELLOW)▶ Splitting OpenAPI spec...$(NC)"
-	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml split api/openapi.bundled.yaml --outDir api/split
+	@pnpm redocly --config .redocly.yaml split api/openapi.bundled.yaml --outDir api/split
 	@echo -e "$(GREEN)✓ OpenAPI split: api/split/$(NC)"
 
 .PHONY: api-stats
 api-stats: ## Show OpenAPI specification statistics
 	@echo -e "$(YELLOW)▶ Analyzing OpenAPI spec...$(NC)"
-	@pnpm --package=@redocly/cli dlx redocly --config .redocly.yaml stats api/openapi.yaml
+	@pnpm redocly --config .redocly.yaml stats api/openapi.yaml
+	@echo -e "$(GREEN)✓ OpenAPI analysis complete!$(NC)"
 
 # ------------------------------------------
 # Dependency Commands
 # ------------------------------------------
 
 .PHONY: deps
-deps: deps-go deps-node ## Install all dependencies
+deps: deps-go deps-ts ## Install all dependencies
 	@echo -e "$(GREEN)✓ All dependencies installed!$(NC)"
 
 .PHONY: deps-go
 deps-go: ## Install Go dependencies and tools
 	@echo -e "$(YELLOW)▶ Installing Go dependencies...$(NC)"
-	@go install github.com/pressly/goose/v3/cmd/goose@latest
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	@go mod download
 	@echo -e "$(GREEN)✓ Go dependencies installed!$(NC)"
 
-.PHONY: deps-node
-deps-node: ## Install Node.js dependencies
+.PHONY: deps-ts
+deps-ts: ## Install Node.js dependencies
 	@echo -e "$(YELLOW)▶ Installing Node.js dependencies...$(NC)"
-	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
 	@pnpm install
 	@echo -e "$(GREEN)✓ Node.js dependencies installed!$(NC)"
 
 .PHONY: deps-update
-deps-update: deps-update-go deps-update-node ## Update all dependencies
+deps-update: deps-update-go deps-update-ts ## Update all dependencies
 	@echo -e "$(GREEN)✓ All dependencies updated!$(NC)"
 
 .PHONY: deps-update-go
@@ -431,24 +421,15 @@ deps-update-go: ## Update Go dependencies
 	@go mod tidy
 	@echo -e "$(GREEN)✓ Go dependencies updated!$(NC)"
 
-.PHONY: deps-update-node
-deps-update-node: ## Update Node.js dependencies
+.PHONY: deps-update-ts
+deps-update-ts: ## Update Node.js dependencies
 	@echo -e "$(YELLOW)▶ Updating Node.js dependencies...$(NC)"
-	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
-	@pnpm update
+	@pnpm update -r --latest
 	@echo -e "$(GREEN)✓ Node.js dependencies updated!$(NC)"
 
 # ------------------------------------------
 # Install Commands
 # ------------------------------------------
-
-.PHONY: install-tools
-install-tools: ## Install development tools
-	@echo -e "$(YELLOW)▶ Installing development tools...$(NC)"
-	@go get -tool github.com/air-verse/air@latest
-	@go get -tool github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-	@go get -tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
-	@echo -e "$(GREEN)✓ Tools installed!$(NC)"
 
 .PHONY: install-completions
 install-completions: ## Install shell completions guide

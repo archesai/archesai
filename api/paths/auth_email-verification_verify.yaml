@@ -19,7 +19,7 @@ post:
             - token
     required: true
   responses:
-    "200":
+    '200':
       description: Default Response
       content:
         application/json:
@@ -34,7 +34,7 @@ post:
               - session
               - user
             additionalProperties: false
-    "401":
+    '401':
       $ref: ../components/responses/Unauthorized.yaml
-    "404":
+    '404':
       $ref: ../components/responses/NotFound.yaml

@@ -232,11 +232,7 @@ Example:
 /**
  * WorkflowEditor component for creating and editing workflow DAGs
  */
-export const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
-  workflow,
-  onSave,
-  readonly = false,
-}) => {
+export const WorkflowEditor: React.FC<WorkflowEditorProps> = ({ workflow, onSave, readonly = false }) => {
   const [nodes, setNodes] = useState<Node[]>(workflow?.nodes || []);
   const [edges, setEdges] = useState<Edge[]>(workflow?.edges || []);
 

@@ -15,7 +15,6 @@ for development to a full Kubernetes cluster for enterprise production.
 - **[Docker](docker.md)** - Container-based deployment with Docker Compose
 - **[Kubernetes](kubernetes.md)** - Production orchestration with Helm charts
 - **[Production](production.md)** - Production deployment best practices
-- **[Site Deployment](site.md)** - Documentation site deployment
 
 ## Deployment Options
 
@@ -46,7 +45,7 @@ docker-compose -f deployments/docker/docker-compose.dev.yml up
 
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 services:
   api:
     image: archesai/api:latest
@@ -58,12 +57,12 @@ services:
     depends_on:
       - postgres
       - redis
-  
+
   postgres:
     image: postgres:15-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  
+
   redis:
     image: redis:7-alpine
     volumes:
@@ -98,17 +97,17 @@ spec:
         app: archesai-api
     spec:
       containers:
-      - name: api
-        image: archesai/api:v1.0.0
-        ports:
-        - containerPort: 8080
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
+        - name: api
+          image: archesai/api:v1.0.0
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
 ```
 
 **Features:**
@@ -193,7 +192,7 @@ upstream archesai_api {
 server {
     listen 443 ssl http2;
     server_name api.archesai.com;
-    
+
     location / {
         proxy_pass http://archesai_api;
         proxy_set_header Host $host;
@@ -248,12 +247,12 @@ TRACING_ENDPOINT=http://jaeger:14268
 
 ### Resource Requirements
 
-| Component | Development | Staging | Production |
-|-----------|------------|---------|------------|
-| **API Server** | 256MB RAM, 0.25 CPU | 512MB RAM, 0.5 CPU | 1GB RAM, 1 CPU |
-| **PostgreSQL** | 512MB RAM, 0.5 CPU | 2GB RAM, 1 CPU | 8GB RAM, 4 CPU |
-| **Redis** | 128MB RAM, 0.1 CPU | 256MB RAM, 0.25 CPU | 1GB RAM, 0.5 CPU |
-| **Storage** | 10GB | 100GB | 1TB+ |
+| Component      | Development         | Staging             | Production       |
+| -------------- | ------------------- | ------------------- | ---------------- |
+| **API Server** | 256MB RAM, 0.25 CPU | 512MB RAM, 0.5 CPU  | 1GB RAM, 1 CPU   |
+| **PostgreSQL** | 512MB RAM, 0.5 CPU  | 2GB RAM, 1 CPU      | 8GB RAM, 4 CPU   |
+| **Redis**      | 128MB RAM, 0.1 CPU  | 256MB RAM, 0.25 CPU | 1GB RAM, 0.5 CPU |
+| **Storage**    | 10GB                | 100GB               | 1TB+             |
 
 ## Deployment Process
 
@@ -311,24 +310,24 @@ name: Deploy to Production
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Build and push Docker image
         run: |
           docker build -t archesai/api:${{ github.ref_name }} .
           docker push archesai/api:${{ github.ref_name }}
-      
+
       - name: Deploy to Kubernetes
         run: |
           kubectl set image deployment/archesai-api \
             api=archesai/api:${{ github.ref_name }}
-      
+
       - name: Wait for rollout
         run: kubectl rollout status deployment/archesai-api
 ```
@@ -351,18 +350,18 @@ spec:
   minReplicas: 3
   maxReplicas: 20
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 ### Database Scaling

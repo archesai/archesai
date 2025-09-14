@@ -1,118 +1,86 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-node_modules
+# Dependencies
+node_modules/
 .pnp
 .pnp.js
 
-# testing
-coverage
-
-# next.js
-.next/
+# Build outputs
+build/
+dist/
 out/
-next-env.d.ts
-
-# IDE/Editor configs
-jsconfig.json
-
-# nitro
+.next/
 .nitro/
 .output/
-.tanstack
+.tanstack/
+.turbo/
+.swc/
+.cache/
+.cache-loader/
+bin/
 
-# expo
-.expo/
-expo-env.d.ts
-apps/expo/.gitignore
-apps/expo/ios
-apps/expo/android
+# Testing
+coverage/
+test-output/
 
-# production
-build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+dev-debug.log
+logs/
 
-# local env files
+# Environment
 .env
 .env*.local
 
-# vercel
-.vercel
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+expo-env.d.ts
 
-# typescript
-dist/
-
-# turbo
-.turbo
-
-# infra
-build.json
-**/*.pem
-
-# tmp
-_tmp
-
-# Next.js
-.next
-out
-
-.swc
-
-vite.config.*.timestamp*
-vitest.config.*.timestamp*
-
-**/*.tsbuildinfo
-
-test-output
-
-**/src/metadata.ts
-
-**/charts/**
-
-.cache
-
-**/tmp
-
-bin
-
-logs
-*.log
-
-.mcp.json
-
-# Logs
-dev-debug.log
-# Dependency directories
-node_modules/
-# Environment variables
-# Editor directories and files
-.idea
-.vscode
+# IDE/Editor
+.idea/
+.vscode/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+jsconfig.json
 
-website/public
-website/resources
-website/.hugo_build.lock
+# Platform specific
+.DS_Store
+*.pem
 
+# Project specific
+## Expo
+.expo/
+apps/expo/.gitignore
+apps/expo/ios/
+apps/expo/android/
 
+## Documentation
+.docusaurus/
+.hugo_build.lock
+website/public/
+website/resources/
+web/docs/pages/documentation/
+web/docs/pages/docs/
+web/ui/src/components/zudoku/
 
+## Config/Generated
+build.json
+.mcp.json
+**/src/metadata.ts
+**/charts/
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
 
-# Generated files
-**/.docusaurus
-**/.cache-loader
-web/docs/pages/documentation
-web/docs/pages/docs
-web/ui/src/components/zudoku/**
+# Temporary
+_tmp/
+tmp/
+**/tmp/
+
+# Deployment
+.vercel/

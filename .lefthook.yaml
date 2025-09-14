@@ -1,37 +1,17 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/evilmartians/lefthook/refs/heads/master/schema.json
 pre-commit:
   parallel: true
-
-  # commands:
-  #   biome:
-  #     glob: "**/*.{ts,tsx,json,js,jsx,css,html}"
-  #     run: pnpm biome check --write {staged_files}
-  #     stage_fixed: true
-  #   biome:
-  #     glob: "**/*.{md,mdx,yml,yaml}"
-  #     run: pnpm biome  --write {staged_files}
-  #     stage_fixed: true
-
   commands:
-    # golangci-lint:
-    #   glob: "*.go"
-    #   run: golangci-lint run --fix {staged_files}
-    #   stage_fixed: true
-
     lint:
       run: make lint
 
     go-mod-tidy:
-      glob: "go.{mod,sum}"
+      glob: 'go.{mod,sum}'
       run: go mod tidy
-
-    # eslint:
-    #   run: pnpm lint
-    #   stage_fixed: true
 
     format:
       run: make format
-      stage_fixed: false
+      stage_fixed: true
 
 commit-msg:
   commands:

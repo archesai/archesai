@@ -11,7 +11,7 @@ properties:
     type: array
     items:
       type: string
-      pattern: "^[a-z_]+$"
+      pattern: '^[a-z_]+$'
     example: [created, updated, deleted]
   handler:
     $ref: ./XCodegenHandler.yaml

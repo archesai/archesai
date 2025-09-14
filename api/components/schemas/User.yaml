@@ -12,7 +12,7 @@ x-codegen:
   cache:
     enabled: true
     ttl: 300 # 5 minutes
-    key_pattern: "user:{id}"
+    key_pattern: 'user:{id}'
     invalidate_on: [update, delete]
   events:
     - created
@@ -44,7 +44,7 @@ allOf:
       image:
         description: The user's avatar image URL
         type: string
-        example: "https://example.com/avatar.jpg"
+        example: 'https://example.com/avatar.jpg'
       name:
         description: The user's display name
         type: string

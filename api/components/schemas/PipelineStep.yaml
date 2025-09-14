@@ -9,30 +9,30 @@ allOf:
         type: string
         format: uuid
         minLength: 1
-        example: "123e4567-e89b-12d3-a456-426614174000"
+        example: '123e4567-e89b-12d3-a456-426614174000'
       toolId:
         description: The ID of the tool to execute
         type: string
         format: uuid
         minLength: 1
-        example: "987fcdeb-51a2-43d1-9876-543210fedcba"
+        example: '987fcdeb-51a2-43d1-9876-543210fedcba'
       name:
         description: Name of the step
         type: string
         minLength: 1
         maxLength: 255
-        example: "Data Validation"
+        example: 'Data Validation'
       description:
         description: Description of what this step does
         type: string
         maxLength: 1000
-        example: "Validates incoming data against schema"
+        example: 'Validates incoming data against schema'
       config:
         description: Configuration parameters for the tool
         type: object
         additionalProperties: true
         example:
-          schema: "v1.0"
+          schema: 'v1.0'
           strict: true
           maxErrors: 10
       position:
@@ -60,7 +60,7 @@ allOf:
         items:
           type: string
           format: uuid
-        example: ["123e4567-e89b-12d3-a456-426614174000"]
+        example: ['123e4567-e89b-12d3-a456-426614174000']
       status:
         description: Current status of the step
         type: string

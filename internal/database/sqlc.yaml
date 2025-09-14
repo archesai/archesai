@@ -1,29 +1,29 @@
-version: "2"
+version: '2'
 sql:
   # PostgreSQL configuration
-  - engine: "postgresql"
-    queries: "queries"
-    schema: "../migrations/postgresql"
+  - engine: 'postgresql'
+    queries: 'queries'
+    schema: '../migrations/postgresql'
     gen:
       go:
         initialisms: []
-        package: "postgresql"
+        package: 'postgresql'
         emit_pointers_for_null_types: true
-        out: "postgresql"
-        sql_package: "pgx/v5"
+        out: 'postgresql'
+        sql_package: 'pgx/v5'
         emit_interface: true
         overrides:
-          - db_type: "uuid"
-            go_type: "github.com/google/uuid.UUID"
-          - db_type: "uuid"
-            go_type: "*github.com/google/uuid.UUID"
+          - db_type: 'uuid'
+            go_type: 'github.com/google/uuid.UUID'
+          - db_type: 'uuid'
+            go_type: '*github.com/google/uuid.UUID'
             nullable: true
-          - db_type: "timestamptz"
-            go_type: "time.Time"
-          - db_type: "timestamptz"
+          - db_type: 'timestamptz'
+            go_type: 'time.Time'
+          - db_type: 'timestamptz'
             nullable: true
             go_type:
-              type: "*time.Time"
+              type: '*time.Time'
   # - engine: "sqlite"
   #   queries: "queries"
   #   schema: "migrations/sqlite"

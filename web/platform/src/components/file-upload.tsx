@@ -503,9 +503,7 @@ export default function FileUpload({
   }, [onFileRemove]);
 
   return (
-    <div
-      className={cn("relative mx-auto w-full max-w-sm", className ?? "")}
-    >
+    <div className={cn("relative mx-auto w-full max-w-sm", className ?? "")}>
       <div className="group relative w-full rounded-xl bg-white p-0.5 ring-1 ring-gray-200 dark:bg-black dark:ring-white/10">
         <div className="absolute inset-x-0 -top-px h-px w-full bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
 

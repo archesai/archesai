@@ -47,8 +47,11 @@ do everything from the makefile, which is the preferable way of doing anything.
 
 ## Docs - MAKE SURE TO ALWAYS UPDATE THESE FILES AFTER MAKING A CHANGE
 
-@../docs/architecture/project-layout.md @../docs/architecture/overview.md
-@../docs/guides/makefile-commands.md @../docs/guides/testing.md @../README.md
+@../docs/architecture/project-layout.md
+@../docs/architecture/overview.md
+@../docs/guides/makefile-commands.md
+@../docs/guides/testing.md
+@../README.md
 
 ## Task Master AI Instructions
 
@@ -61,3 +64,8 @@ TIPS:
 
 - DO NOT SWITCH DIRECTORIES, STAY IN THE ROOT AT ALL TIMES
 - Do not create your own mocks. Always try to use mockery and generate from an interface. We have done this many times in this project.
+
+ALWAYS USER MOCKERY FOR GETTING MOCKS, NEVER CREATE MOCKED SERVICES OR REPOSITORIES OR ANYTHING MANUALLY.
+RUN go tool mockery
+WE ARE RUNNING MOCKERY v3
+MOCKERY CONFIG IS .mockery.yaml

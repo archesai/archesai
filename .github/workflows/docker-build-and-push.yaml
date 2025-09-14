@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       service:
-        description: "Name of the service to build and tag (e.g., api, platform)"
+        description: 'Name of the service to build and tag (e.g., api, platform)'
         required: true
         type: string
 
@@ -70,7 +70,7 @@ jobs:
           tags: us-east4-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/images/${{ inputs.service }}:latest
           cache-from: type=registry,ref=us-east4-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/images/${{ inputs.service }}:buildcache
           cache-to: type=registry,ref=us-east4-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/images/${{ inputs.service }}:buildcache,mode=max
-          context: "{{defaultContext}}:${{ inputs.service }}"
+          context: '{{defaultContext}}:${{ inputs.service }}'
 
       - name: Tag Image
         run: |

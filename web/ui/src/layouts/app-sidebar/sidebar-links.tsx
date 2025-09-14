@@ -43,7 +43,10 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
 
                     if (!children.length) {
                       return (
-                        <SidebarMenuItem key={rootRoute.href} className="relative">
+                        <SidebarMenuItem
+                          key={rootRoute.href}
+                          className="relative"
+                        >
                           {rootRoute.href === pathname && (
                             <div className="absolute left-0 top-0 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />
                           )}
@@ -57,7 +60,9 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                               to={rootRoute.href}
                             >
                               <rootRoute.Icon className="group-data-[collapsible=icon]:mx-auto" />
-                              <span className="group-data-[collapsible=icon]:hidden">{rootRoute.title}</span>
+                              <span className="group-data-[collapsible=icon]:hidden">
+                                {rootRoute.title}
+                              </span>
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -78,7 +83,9 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                               tooltip={rootRoute.title}
                             >
                               <rootRoute.Icon className="group-data-[collapsible=icon]:mx-auto" />
-                              <span className="group-data-[collapsible=icon]:hidden">{rootRoute.title}</span>
+                              <span className="group-data-[collapsible=icon]:hidden">
+                                {rootRoute.title}
+                              </span>
                               <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>

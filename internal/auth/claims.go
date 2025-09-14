@@ -18,6 +18,8 @@ const (
 	RefreshTokenType TokenType = "refresh"
 	// APIKeyTokenType represents an API key token
 	APIKeyTokenType TokenType = "api_key"
+	// SessionTokenType represents a session token
+	SessionTokenType TokenType = "session"
 )
 
 // Method represents the authentication method used
@@ -93,6 +95,13 @@ type RefreshClaims struct {
 	TokenType  TokenType `json:"token_type"`
 	SessionID  string    `json:"sid"`
 	AuthMethod Method    `json:"auth_method"`
+}
+
+// SessionClaims represents minimal claims for session tokens
+type SessionClaims struct {
+	jwt.RegisteredClaims
+	UserID    uuid.UUID `json:"uid"`
+	TokenType TokenType `json:"token_type"`
 }
 
 // APIKeyClaims represents claims for API key tokens

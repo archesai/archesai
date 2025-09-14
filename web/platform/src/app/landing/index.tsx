@@ -105,7 +105,9 @@ export default function LandingPage({
               <Link
                 key={link.label}
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                {...(link.scrollTo ? { search: { scrollTo: link.scrollTo } } : {})}
+                {...(link.scrollTo
+                  ? { search: { scrollTo: link.scrollTo } }
+                  : {})}
                 to={link.to}
               >
                 {link.label}
@@ -157,7 +159,9 @@ export default function LandingPage({
                   onClick={() => {
                     setMobileMenuOpen(false);
                   }}
-                  {...(link.scrollTo ? { search: { scrollTo: link.scrollTo } } : {})}
+                  {...(link.scrollTo
+                    ? { search: { scrollTo: link.scrollTo } }
+                    : {})}
                   to={link.to}
                 >
                   {link.label}
@@ -815,7 +819,9 @@ export default function LandingPage({
                   <li key={link.label}>
                     <Link
                       className="text-muted-foreground transition-colors hover:text-foreground"
-                      {...(link.scrollTo ? { search: { scrollTo: link.scrollTo } } : {})}
+                      {...(link.scrollTo
+                        ? { search: { scrollTo: link.scrollTo } }
+                        : {})}
                       to={link.to}
                     >
                       {link.label}

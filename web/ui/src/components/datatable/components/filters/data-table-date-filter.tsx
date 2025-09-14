@@ -152,7 +152,7 @@ export function DataTableDateFilter<TData>({
               className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
               onClick={onReset}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
+                if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   // biome-ignore lint/suspicious/noExplicitAny: Event type mismatch between keyboard and mouse events
                   onReset(e as any);

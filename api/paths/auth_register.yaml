@@ -34,11 +34,11 @@ post:
             - password
     required: true
   responses:
-    "201":
+    '201':
       description: Successful registration
       content:
         application/json:
           schema:
             $ref: ../components/schemas/TokenResponse.yaml
-    "401":
+    '401':
       $ref: ../components/responses/Unauthorized.yaml

@@ -5,7 +5,7 @@ post:
     - Auth
   description: This endpoint will log you out of the current session
   responses:
-    "204":
+    '204':
       $ref: ../components/responses/NoContent.yaml
-    "401":
+    '401':
       $ref: ../components/responses/Unauthorized.yaml

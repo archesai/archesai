@@ -12,6 +12,7 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
 max_line_length = 80
+quote_type = double
 
 # CSS files
 [*.css]
@@ -31,7 +32,8 @@ trim_trailing_whitespace = false
 [*.{ts,tsx}]
 
 # YAML files
-[*.{yaml}]
+[*.{yaml,yml}]
+quote_type = single
 
 # Go files
 [*.go]

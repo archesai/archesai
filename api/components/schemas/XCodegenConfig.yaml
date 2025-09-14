@@ -9,7 +9,7 @@ properties:
   env_prefix:
     description: Environment variable prefix
     type: string
-    pattern: "^[A-Z][A-Z0-9_]*$"
+    pattern: '^[A-Z][A-Z0-9_]*$'
   config_file:
     description: Configuration file name
     type: string

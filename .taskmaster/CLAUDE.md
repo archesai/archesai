@@ -213,14 +213,7 @@ Add to `.claude/settings.json`:
 
 ```json
 {
-  "allowedTools": [
-    "Edit",
-    "Bash(task-master *)",
-    "Bash(git commit:*)",
-    "Bash(git add:*)",
-    "Bash(npm run *)",
-    "mcp__task_master_ai__*"
-  ]
+  "allowedTools": ["Edit", "Bash(task-master *)", "Bash(git commit:*)", "Bash(git add:*)", "Bash(npm run *)", "mcp__task_master_ai__*"]
 }
 ```
 

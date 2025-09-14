@@ -1,0 +1,14 @@
+# Ignore all files by default
+*
+
+# But don't ignore directories (so prettier can traverse)
+!*/
+
+# Format only markdown files
+!**/*.md
+!**/*.mdx
+!**/*.yml
+!**/*.yaml
+
+**/templates
+pnpm-lock.yaml

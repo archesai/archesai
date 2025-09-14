@@ -32,7 +32,7 @@ post:
   security:
     - bearerAuth: []
   responses:
-    "201":
+    '201':
       description: Default Response
       content:
         application/json:
@@ -44,9 +44,9 @@ post:
             required:
               - data
             additionalProperties: false
-    "400":
+    '400':
       $ref: ../components/responses/BadRequest.yaml
-    "401":
+    '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
   operationId: findManyMembers
@@ -67,7 +67,7 @@ get:
   security:
     - bearerAuth: []
   responses:
-    "200":
+    '200':
       description: Default Response
       content:
         application/json:
@@ -92,7 +92,7 @@ get:
               - data
               - meta
             additionalProperties: false
-    "400":
+    '400':
       $ref: ../components/responses/BadRequest.yaml
-    "401":
+    '401':
       $ref: ../components/responses/Unauthorized.yaml

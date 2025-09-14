@@ -2090,6 +2090,8 @@ export type LoginBody = {
    * @minLength 1
    */
   password: string;
+  /** Whether to create a long-lived session */
+  rememberMe?: boolean;
 };
 
 export type ConfirmEmailVerificationBody = {

@@ -5,7 +5,7 @@
 ```text
 .
 ├── api/                          # OpenAPI specifications
-│   ├── components/               
+│   ├── components/
 │   │   ├── parameters/           # Reusable query/path parameters
 │   │   ├── responses/            # Standard error/success responses
 │   │   └── schemas/              # Data models (User, Organization, etc.)
@@ -28,15 +28,15 @@
 │   └── k3d/                     # Local k8s cluster config
 │
 ├── docs/                        # Markdown documentation
-│   ├── api-reference/           
-│   ├── architecture/            
-│   ├── deployment/              
-│   ├── features/                
-│   ├── guides/                  
-│   ├── monitoring/              
-│   ├── performance/             
-│   ├── security/                
-│   └── troubleshooting/         
+│   ├── api-reference/
+│   ├── architecture/
+│   ├── deployment/
+│   ├── features/
+│   ├── guides/
+│   ├── monitoring/
+│   ├── performance/
+│   ├── security/
+│   └── troubleshooting/
 │
 ├── internal/                    # Private Go packages
 │   ├── app/                     # Application bootstrap, DI container
@@ -61,7 +61,7 @@
 │   ├── content/                 # Content management domain
 │   ├── users/                   # User profiles domain
 │   │
-│   ├── database/               
+│   ├── database/
 │   │   ├── migrations/          # SQL migration files
 │   │   │   ├── 001_initial.sql
 │   │   │   └── 002_add_workflows.sql

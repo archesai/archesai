@@ -91,21 +91,21 @@ Triggers initiate workflow execution:
 triggers:
   - type: schedule
     config:
-      cron: "0 9 * * MON-FRI"  # Every weekday at 9 AM
+      cron: "0 9 * * MON-FRI" # Every weekday at 9 AM
       timezone: "America/New_York"
-  
+
   - type: webhook
     config:
       path: "/webhooks/document-upload"
       method: "POST"
       authentication: "bearer"
-  
+
   - type: event
     config:
       source: "s3"
       event: "object.created"
       bucket: "documents"
-  
+
   - type: manual
     config:
       requireApproval: true
@@ -140,7 +140,7 @@ nodes:
           nodes: [analyze_sentiment, store_sentiment]
         - id: entity_extraction
           nodes: [extract_entities, validate_entities]
-      joinStrategy: "wait_all"  # or "wait_any", "wait_n"
+      joinStrategy: "wait_all" # or "wait_any", "wait_n"
 ```
 
 ## Pipeline Creation
@@ -170,7 +170,7 @@ version: 1.0.0
 metadata:
   tags: ["document", "nlp", "extraction"]
   category: "data-processing"
-  estimatedDuration: 300  # seconds
+  estimatedDuration: 300 # seconds
 
 # Input parameters
 parameters:
@@ -178,7 +178,7 @@ parameters:
     type: string
     required: true
     description: URL of the document to process
-  
+
   - name: output_format
     type: string
     default: "json"
@@ -218,7 +218,7 @@ nodes:
               tool: sentiment_analyzer
               inputs:
                 - from: extract_text.extracted_text
-        
+
         - id: entities
           nodes:
             - id: extract_entities
@@ -271,8 +271,8 @@ error_handling:
   retry_config:
     max_attempts: 3
     backoff: "exponential"
-    initial_delay: 1000  # ms
-  
+    initial_delay: 1000 # ms
+
   node_overrides:
     fetch_document:
       strategy: "fail_fast"
@@ -332,15 +332,15 @@ error_handling:
       max_attempts: 3
       backoff: exponential
       initial_delay: 1000ms
-    
+
     circuit_breaker:
       threshold: 5
       timeout: 30s
       half_open_requests: 3
-    
+
     fallback:
       handler: alternate_processing
-      
+
     dead_letter_queue:
       queue: failed_workflows
       retention: 7d
@@ -362,7 +362,7 @@ workflow_errors_total{workflow="document_processing", error_type="timeout"} 12
 
 ```sql
 -- Query run history
-SELECT 
+SELECT
     wr.id,
     w.name as workflow_name,
     wr.status,

@@ -498,3 +498,65 @@ func TestSessionManager_RefreshSession(t *testing.T) {
 		assert.True(t, time.Until(newExpiry) > 23*time.Hour)
 	})
 }
+
+// Test OAuth state management functions
+func TestOAuthStateManagement(t *testing.T) {
+	// OAuth state is managed in-memory, not through cache
+	sessionMgr := &SessionManager{}
+	ctx := context.Background()
+
+	// Reset the global state store for testing
+	oauthStateStore.Lock()
+	oauthStateStore.states = make(map[string]oauthState)
+	oauthStateStore.Unlock()
+
+	t.Run("store and retrieve OAuth state", func(t *testing.T) {
+		state := "test-state-123"
+		provider := "google"
+		redirectURI := "http://localhost:8080/callback"
+		ttl := 10 * time.Minute
+
+		// Store state
+		err := sessionMgr.StoreOAuthState(ctx, state, provider, redirectURI, ttl)
+		assert.NoError(t, err)
+
+		// Retrieve redirect URI
+		retrievedURI, err := sessionMgr.GetOAuthRedirectURI(ctx, state)
+		assert.NoError(t, err)
+		assert.Equal(t, redirectURI, retrievedURI)
+
+		// Delete state
+		err = sessionMgr.DeleteOAuthState(ctx, state)
+		assert.NoError(t, err)
+
+		// Verify state is deleted
+		_, err = sessionMgr.GetOAuthRedirectURI(ctx, state)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "state not found")
+	})
+
+	t.Run("retrieve non-existent state", func(t *testing.T) {
+		_, err := sessionMgr.GetOAuthRedirectURI(ctx, "non-existent")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "state not found")
+	})
+
+	t.Run("expired state is not returned", func(t *testing.T) {
+		state := "expire-test"
+		provider := "github"
+		redirectURI := "http://localhost:8080/callback"
+		ttl := 1 * time.Millisecond // Very short TTL
+
+		// Store state
+		err := sessionMgr.StoreOAuthState(ctx, state, provider, redirectURI, ttl)
+		assert.NoError(t, err)
+
+		// Wait for expiration
+		time.Sleep(2 * time.Millisecond)
+
+		// Try to retrieve - should fail
+		_, err = sessionMgr.GetOAuthRedirectURI(ctx, state)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "state not found")
+	})
+}

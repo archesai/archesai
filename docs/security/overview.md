@@ -143,12 +143,12 @@ cors.Config{
 
 #### **Data Classification**
 
-| Level | Description | Examples | Protection |
-|-------|-------------|----------|------------|
-| **Critical** | Highly sensitive data | Passwords, API keys | Encrypted, audited, restricted access |
-| **Confidential** | Private user data | PII, financial data | Encrypted, access controlled |
-| **Internal** | Business data | Analytics, metrics | Access controlled |
-| **Public** | Open information | Documentation | No special protection |
+| Level            | Description           | Examples            | Protection                            |
+| ---------------- | --------------------- | ------------------- | ------------------------------------- |
+| **Critical**     | Highly sensitive data | Passwords, API keys | Encrypted, audited, restricted access |
+| **Confidential** | Private user data     | PII, financial data | Encrypted, access controlled          |
+| **Internal**     | Business data         | Analytics, metrics  | Access controlled                     |
+| **Public**       | Open information      | Documentation       | No special protection                 |
 
 ### 4. Identity & Access Management
 
@@ -159,19 +159,19 @@ roles:
   owner:
     permissions: ["*"]
     description: "Full organization access"
-  
+
   admin:
-    permissions: 
+    permissions:
       - "users:*"
       - "settings:*"
       - "billing:view"
-    
+
   member:
     permissions:
       - "projects:create"
       - "projects:read"
       - "projects:update:owned"
-  
+
   viewer:
     permissions:
       - "projects:read"
@@ -226,7 +226,7 @@ roles:
 # GitHub Actions security scanning
 - name: Run security scan
   uses: github/codeql-action/analyze@v2
-  
+
 - name: Dependency check
   run: |
     go list -json -m all | nancy sleuth
