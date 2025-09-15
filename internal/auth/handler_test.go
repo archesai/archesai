@@ -5,9 +5,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/logger"
+	"github.com/archesai/archesai/internal/sessions"
 	"github.com/archesai/archesai/internal/users"
 	"github.com/google/uuid"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,7 +19,7 @@ func TestHandler_Register(t *testing.T) {
 	tests := []struct {
 		name           string
 		request        RegisterRequestObject
-		mockUser       *User
+		mockUser       *users.User
 		mockTokens     *TokenResponse
 		mockError      error
 		expectedStatus int
@@ -30,9 +33,9 @@ func TestHandler_Register(t *testing.T) {
 					Name:     "Test User",
 				},
 			},
-			mockUser: &User{
+			mockUser: &users.User{
 				Id:            uuid.New(),
-				Email:         "test@example.com",
+				Email:         openapi_types.Email("test@example.com"),
 				Name:          "Test User",
 				EmailVerified: false,
 				CreatedAt:     time.Now(),
@@ -66,49 +69,77 @@ func TestHandler_Register(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Setup mock repositories
-			mockRepo := NewMockRepository(t)
-			mockUsersRepo := NewMockUsersRepository()
+			mockAccountsRepo := NewMockAccountsRepository(t)
+			mockSessionsRepo := NewMockSessionsRepository(t)
+			mockUsersRepo := NewMockUsersRepository(t)
+			cache := NewMockSessionsCache(t)
 
-			// Setup mock service
-			mockService := &Service{
-				repo:      mockRepo,
-				usersRepo: mockUsersRepo,
-				logger:    logger.NewTest(),
-				config: Config{
-					JWTSecret:          "test-secret",
-					AccessTokenExpiry:  15 * time.Minute,
-					RefreshTokenExpiry: 7 * 24 * time.Hour,
-				},
+			// Setup cache expectations
+			cache.EXPECT().Set(mock.Anything, mock.AnythingOfType("*sessions.Session"), mock.AnythingOfType("time.Duration")).Return(nil).Maybe()
+			cache.EXPECT().GetByToken(mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Maybe()
+			cache.EXPECT().Get(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil, nil).Maybe()
+			cache.EXPECT().Delete(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Maybe()
+
+			// Setup config
+			config := Config{
+				JWTSecret:          "test-secret",
+				AccessTokenExpiry:  15 * time.Minute,
+				RefreshTokenExpiry: 7 * 24 * time.Hour,
+				BCryptCost:         10,
 			}
+
+			// Create service using NewService
+			mockService := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
 
 			// Setup users repository mock and expectations
 			switch tt.name {
 			case "user already exists":
-				// Pre-populate with existing user
+				// Mock GetByEmail to return existing user
 				existingUser := &users.User{
 					Id:    uuid.New(),
-					Email: "existing@example.com",
+					Email: openapi_types.Email("existing@example.com"),
 					Name:  "Existing User",
 				}
-				mockUsersRepo.users[existingUser.Id] = existingUser
+				mockUsersRepo.EXPECT().GetByEmail(mock.Anything, "existing@example.com").Return(existingUser, nil)
 			case "successful registration":
 				// Setup expectations for successful registration
-				mockRepo.EXPECT().CreateAccount(mock.Anything, mock.AnythingOfType("*auth.Account")).Return(&Account{
+				mockUsersRepo.EXPECT().GetByEmail(mock.Anything, "test@example.com").Return(nil, users.ErrUserNotFound)
+				mockUsersRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*users.User")).RunAndReturn(func(_ context.Context, u *users.User) (*users.User, error) {
+					u.Id = uuid.New()
+					u.CreatedAt = time.Now()
+					u.UpdatedAt = time.Now()
+					return u, nil
+				})
+
+				sessionID := uuid.New()
+				mockAccountsRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*accounts.Account")).Return(&accounts.Account{
 					Id:         uuid.New(),
 					UserId:     uuid.New(),
-					ProviderId: Local,
+					ProviderId: accounts.Local,
 					AccountId:  "test@example.com",
 					CreatedAt:  time.Now(),
 					UpdatedAt:  time.Now(),
 				}, nil)
 
-				mockRepo.EXPECT().CreateSession(mock.Anything, mock.AnythingOfType("*auth.Session")).Return(&Session{
-					Id:        uuid.New(),
-					Token:     "test-token",
-					UserId:    uuid.New(),
-					ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
+				mockSessionsRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*sessions.Session")).Return(&sessions.Session{
+					Id:                   sessionID,
+					Token:                "test-token",
+					UserId:               uuid.New(),
+					ActiveOrganizationId: uuid.New(),
+					ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
+					CreatedAt:            time.Now(),
+					UpdatedAt:            time.Now(),
+				}, nil)
+
+				// Add expectation for UpdateSession which is called to set ActiveOrganizationId
+				mockSessionsRepo.EXPECT().Update(mock.Anything, sessionID, mock.AnythingOfType("*sessions.Session")).Return(&sessions.Session{
+					Id:                   sessionID,
+					Token:                "test-token",
+					UserId:               uuid.New(),
+					ActiveOrganizationId: uuid.New(),
+					ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
+					CreatedAt:            time.Now(),
+					UpdatedAt:            time.Now(),
 				}, nil)
 			}
 
@@ -149,7 +180,7 @@ func TestHandler_Login(t *testing.T) {
 	tests := []struct {
 		name           string
 		request        LoginRequestObject
-		setupMocks     func(*testing.T) (*Service, *MockUsersRepository)
+		setupMocks     func(*testing.T) *Service
 		expectedError  bool
 		expectedStatus int
 	}{
@@ -161,54 +192,73 @@ func TestHandler_Login(t *testing.T) {
 					Password: "Password123!",
 				},
 			},
-			setupMocks: func(t *testing.T) (*Service, *MockUsersRepository) {
-				mockRepo := NewMockRepository(t)
-				mockUsersRepo := NewMockUsersRepository()
+			setupMocks: func(t *testing.T) *Service {
+				mockAccountsRepo := NewMockAccountsRepository(t)
+				mockSessionsRepo := NewMockSessionsRepository(t)
+				mockUsersRepo := NewMockUsersRepository(t)
+				cache := NewMockSessionsCache(t)
+
+				// Setup cache expectations
+				cache.EXPECT().Set(mock.Anything, mock.AnythingOfType("*sessions.Session"), mock.AnythingOfType("time.Duration")).Return(nil).Maybe()
+				cache.EXPECT().GetByToken(mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Maybe()
+				cache.EXPECT().Get(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil, nil).Maybe()
+				cache.EXPECT().Delete(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Maybe()
 
 				userID := uuid.New()
 				hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("Password123!"), bcrypt.DefaultCost)
 
 				// Setup account retrieval by provider and provider ID
-				mockRepo.EXPECT().GetAccountByProviderAndProviderID(mock.Anything, string(Local), "test@example.com").Return(&Account{
+				mockAccountsRepo.EXPECT().GetByProviderId(mock.Anything, "local", "test@example.com").Return(&accounts.Account{
 					Id:         uuid.New(),
 					UserId:     userID,
-					ProviderId: Local,
+					ProviderId: accounts.Local,
 					AccountId:  "test@example.com",
 					Password:   string(hashedPassword),
 					CreatedAt:  time.Now(),
 					UpdatedAt:  time.Now(),
 				}, nil)
 
+				sessionID := uuid.New()
 				// Setup session creation
-				mockRepo.EXPECT().CreateSession(mock.Anything, mock.Anything).Return(&Session{
-					Id:        uuid.New(),
-					UserId:    userID,
-					Token:     "test-token",
-					ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
+				mockSessionsRepo.EXPECT().Create(mock.Anything, mock.Anything).Return(&sessions.Session{
+					Id:                   sessionID,
+					UserId:               userID,
+					Token:                "test-token",
+					ActiveOrganizationId: uuid.New(),
+					ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
+					CreatedAt:            time.Now(),
+					UpdatedAt:            time.Now(),
+				}, nil)
+
+				// Add expectation for UpdateSession which is called to set ActiveOrganizationId
+				mockSessionsRepo.EXPECT().Update(mock.Anything, sessionID, mock.AnythingOfType("*sessions.Session")).Return(&sessions.Session{
+					Id:                   sessionID,
+					Token:                "test-token",
+					UserId:               userID,
+					ActiveOrganizationId: uuid.New(),
+					ExpiresAt:            time.Now().Add(time.Hour).Format(time.RFC3339),
+					CreatedAt:            time.Now(),
+					UpdatedAt:            time.Now(),
 				}, nil)
 
 				// Setup user in users repo
 				user := &users.User{
 					Id:    userID,
-					Email: "test@example.com",
+					Email: openapi_types.Email("test@example.com"),
 					Name:  "Test User",
 				}
-				mockUsersRepo.users[userID] = user
+				mockUsersRepo.EXPECT().GetByEmail(mock.Anything, "test@example.com").Return(user, nil)
 
-				service := &Service{
-					repo:      mockRepo,
-					usersRepo: mockUsersRepo,
-					logger:    logger.NewTest(),
-					config: Config{
-						JWTSecret:          "test-secret",
-						AccessTokenExpiry:  15 * time.Minute,
-						RefreshTokenExpiry: 7 * 24 * time.Hour,
-					},
+				config := Config{
+					JWTSecret:          "test-secret",
+					AccessTokenExpiry:  15 * time.Minute,
+					RefreshTokenExpiry: 7 * 24 * time.Hour,
+					BCryptCost:         10,
 				}
 
-				return service, mockUsersRepo
+				service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
+
+				return service
 			},
 			expectedError:  false,
 			expectedStatus: 200,
@@ -221,25 +271,31 @@ func TestHandler_Login(t *testing.T) {
 					Password: "Password123!",
 				},
 			},
-			setupMocks: func(t *testing.T) (*Service, *MockUsersRepository) {
-				mockRepo := NewMockRepository(t)
-				mockUsersRepo := NewMockUsersRepository()
+			setupMocks: func(t *testing.T) *Service {
+				mockAccountsRepo := NewMockAccountsRepository(t)
+				mockSessionsRepo := NewMockSessionsRepository(t)
+				mockUsersRepo := NewMockUsersRepository(t)
+				cache := NewMockSessionsCache(t)
 
-				// The user doesn't exist in the users repository, so GetAccountByProviderAndProviderID should never be called
-				// No expectation needed for GetAccountByProviderAndProviderID since the service returns early
+				// Setup cache expectations
+				cache.EXPECT().Set(mock.Anything, mock.AnythingOfType("*sessions.Session"), mock.AnythingOfType("time.Duration")).Return(nil).Maybe()
+				cache.EXPECT().GetByToken(mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Maybe()
+				cache.EXPECT().Get(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil, nil).Maybe()
+				cache.EXPECT().Delete(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Maybe()
 
-				service := &Service{
-					repo:      mockRepo,
-					usersRepo: mockUsersRepo,
-					logger:    logger.NewTest(),
-					config: Config{
-						JWTSecret:          "test-secret",
-						AccessTokenExpiry:  15 * time.Minute,
-						RefreshTokenExpiry: 7 * 24 * time.Hour,
-					},
+				// The user doesn't exist in the users repository
+				mockUsersRepo.EXPECT().GetByEmail(mock.Anything, "nonexistent@example.com").Return(nil, users.ErrUserNotFound)
+
+				config := Config{
+					JWTSecret:          "test-secret",
+					AccessTokenExpiry:  15 * time.Minute,
+					RefreshTokenExpiry: 7 * 24 * time.Hour,
+					BCryptCost:         10,
 				}
 
-				return service, mockUsersRepo
+				service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
+
+				return service
 			},
 			expectedError:  false, // Returns 401 response, not error
 			expectedStatus: 401,
@@ -249,7 +305,7 @@ func TestHandler_Login(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Setup mocks
-			service, _ := tt.setupMocks(t)
+			service := tt.setupMocks(t)
 			handler := NewHandler(service, logger.NewTest())
 
 			// Execute
@@ -289,27 +345,38 @@ func TestHandler_Logout(t *testing.T) {
 			name:    "successful logout",
 			request: LogoutRequestObject{},
 			setupMocks: func(t *testing.T) *Service {
-				mockRepo := NewMockRepository(t)
-				mockUsersRepo := NewMockUsersRepository()
+				mockAccountsRepo := NewMockAccountsRepository(t)
+				mockSessionsRepo := NewMockSessionsRepository(t)
+				mockUsersRepo := NewMockUsersRepository(t)
+				cache := NewMockSessionsCache(t)
+
+				// Setup cache expectations
+				cache.EXPECT().Set(mock.Anything, mock.AnythingOfType("*sessions.Session"), mock.AnythingOfType("time.Duration")).Return(nil).Maybe()
+				cache.EXPECT().GetByToken(mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Maybe()
+				cache.EXPECT().Get(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil, nil).Maybe()
+				cache.EXPECT().Delete(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Maybe()
 
 				// Setup get session and delete session
-				testSession := &Session{
-					Id:        uuid.New(),
+				sessionID := uuid.New()
+				testSession := &sessions.Session{
+					Id:        sessionID,
 					UserId:    uuid.New(),
 					Token:     "test-token",
 					ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
 				}
-				mockRepo.EXPECT().GetSessionByToken(mock.Anything, "test-token").Return(testSession, nil)
-				mockRepo.EXPECT().DeleteSession(mock.Anything, testSession.Id).Return(nil)
+				mockSessionsRepo.EXPECT().GetByToken(mock.Anything, "test-token").Return(testSession, nil)
+				// SessionManager's DeleteSession calls Get first
+				mockSessionsRepo.EXPECT().Get(mock.Anything, sessionID).Return(testSession, nil)
+				mockSessionsRepo.EXPECT().Delete(mock.Anything, sessionID).Return(nil)
 
-				service := &Service{
-					repo:      mockRepo,
-					usersRepo: mockUsersRepo,
-					logger:    logger.NewTest(),
-					config: Config{
-						JWTSecret: "test-secret",
-					},
+				config := Config{
+					JWTSecret:          "test-secret",
+					AccessTokenExpiry:  15 * time.Minute,
+					RefreshTokenExpiry: 7 * 24 * time.Hour,
+					BCryptCost:         10,
 				}
+
+				service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
 
 				return service
 			},
@@ -320,20 +387,28 @@ func TestHandler_Logout(t *testing.T) {
 			name:    "session not found",
 			request: LogoutRequestObject{},
 			setupMocks: func(t *testing.T) *Service {
-				mockRepo := NewMockRepository(t)
-				mockUsersRepo := NewMockUsersRepository()
+				mockAccountsRepo := NewMockAccountsRepository(t)
+				mockSessionsRepo := NewMockSessionsRepository(t)
+				mockUsersRepo := NewMockUsersRepository(t)
+				cache := NewMockSessionsCache(t)
+
+				// Setup cache expectations
+				cache.EXPECT().Set(mock.Anything, mock.AnythingOfType("*sessions.Session"), mock.AnythingOfType("time.Duration")).Return(nil).Maybe()
+				cache.EXPECT().GetByToken(mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Maybe()
+				cache.EXPECT().Get(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil, nil).Maybe()
+				cache.EXPECT().Delete(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Maybe()
 
 				// Setup get session returns not found
-				mockRepo.EXPECT().GetSessionByToken(mock.Anything, "non-existent-token").Return(nil, ErrSessionNotFound)
+				mockSessionsRepo.EXPECT().GetByToken(mock.Anything, "non-existent-token").Return(nil, sessions.ErrSessionNotFound)
 
-				service := &Service{
-					repo:      mockRepo,
-					usersRepo: mockUsersRepo,
-					logger:    logger.NewTest(),
-					config: Config{
-						JWTSecret: "test-secret",
-					},
+				config := Config{
+					JWTSecret:          "test-secret",
+					AccessTokenExpiry:  15 * time.Minute,
+					RefreshTokenExpiry: 7 * 24 * time.Hour,
+					BCryptCost:         10,
 				}
+
+				service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
 
 				return service
 			},

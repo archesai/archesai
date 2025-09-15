@@ -2,7 +2,7 @@ delete:
   operationId: deleteLabel
   summary: Delete a label
   tags:
-    - Content
+    - Labels
   description: Delete a label
   parameters:
     - schema:
@@ -34,7 +34,7 @@ get:
   operationId: getOneLabel
   summary: Find a label
   tags:
-    - Content
+    - Labels
   description: Find a label
   parameters:
     - schema:
@@ -66,7 +66,7 @@ patch:
   operationId: updateLabel
   summary: Update a label
   tags:
-    - Content
+    - Labels
   description: Update a label
   requestBody:
     content:

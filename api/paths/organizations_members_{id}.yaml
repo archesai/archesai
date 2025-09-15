@@ -2,7 +2,7 @@ delete:
   operationId: deleteMember
   summary: Delete a member
   tags:
-    - Organizations
+    - Members
   description: Delete a member
   parameters:
     - schema:
@@ -42,7 +42,7 @@ get:
   operationId: getOneMember
   summary: Find a member
   tags:
-    - Organizations
+    - Members
   description: Find a member
   parameters:
     - schema:
@@ -82,7 +82,7 @@ patch:
   operationId: updateMember
   summary: Update a member
   tags:
-    - Organizations
+    - Members
   description: Update a member
   requestBody:
     content:

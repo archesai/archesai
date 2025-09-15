@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/archesai/archesai/internal/accounts"
+	"github.com/archesai/archesai/internal/sessions"
 	"github.com/archesai/archesai/internal/users"
 	"github.com/google/uuid"
 )
@@ -17,8 +19,8 @@ import (
 type OAuthService struct {
 	providers      map[string]OAuthProvider
 	service        *Service
-	sessionManager *SessionManager
-	repo           Repository
+	sessionManager *sessions.SessionManager
+	repo           accounts.Repository
 	usersRepo      users.Repository
 	logger         *slog.Logger
 }
@@ -26,8 +28,8 @@ type OAuthService struct {
 // NewOAuthService creates a new OAuth service
 func NewOAuthService(
 	service *Service,
-	sessionManager *SessionManager,
-	repo Repository,
+	sessionManager *sessions.SessionManager,
+	repo accounts.Repository,
 	usersRepo users.Repository,
 	logger *slog.Logger,
 ) *OAuthService {
@@ -60,7 +62,7 @@ func (s *OAuthService) GetAuthURL(ctx context.Context, providerID string, redire
 	}
 
 	// Store state in session with expiry (5 minutes)
-	if err := s.sessionManager.StoreOAuthState(ctx, state, providerID, redirectURI, 5*time.Minute); err != nil {
+	if err := s.StoreOAuthState(ctx, state, providerID, redirectURI, 5*time.Minute); err != nil {
 		return "", "", fmt.Errorf("failed to store state: %w", err)
 	}
 
@@ -81,7 +83,7 @@ func (s *OAuthService) HandleCallback(ctx context.Context, providerID, code, sta
 	}
 
 	// Get redirect URI from stored state
-	redirectURI, err := s.sessionManager.GetOAuthRedirectURI(ctx, state)
+	redirectURI, err := s.GetOAuthRedirectURI(ctx, state)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get redirect URI: %w", err)
 	}
@@ -99,7 +101,7 @@ func (s *OAuthService) HandleCallback(ctx context.Context, providerID, code, sta
 	}
 
 	// Check if user already exists
-	account, err := s.repo.GetAccountByProviderAndProviderID(ctx, providerID, userInfo.ProviderAccountID)
+	account, err := s.repo.GetByProviderId(ctx, providerID, userInfo.ProviderAccountID)
 	var user *User
 
 	if err != nil {
@@ -110,7 +112,7 @@ func (s *OAuthService) HandleCallback(ctx context.Context, providerID, code, sta
 		}
 	} else {
 		// Account exists, get the user from users repository
-		usersUser, err := s.usersRepo.GetUser(ctx, account.UserId)
+		usersUser, err := s.usersRepo.Get(ctx, account.UserId)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to get user: %w", err)
 		}
@@ -130,7 +132,7 @@ func (s *OAuthService) HandleCallback(ctx context.Context, providerID, code, sta
 		if tokens.RefreshToken != "" && tokens.RefreshToken != account.RefreshToken {
 			account.RefreshToken = tokens.RefreshToken
 			account.UpdatedAt = time.Now()
-			if _, err := s.repo.UpdateAccount(ctx, account.Id, account); err != nil {
+			if _, err := s.repo.Update(ctx, account.Id, account); err != nil {
 				s.logger.Warn("failed to update refresh token", "error", err)
 			}
 		}
@@ -163,7 +165,7 @@ func (s *OAuthService) HandleCallback(ctx context.Context, providerID, code, sta
 	}
 
 	// Clean up OAuth state
-	_ = s.sessionManager.DeleteOAuthState(ctx, state)
+	_ = s.DeleteOAuthState(ctx, state)
 
 	return user, jwtTokens, nil
 }
@@ -184,25 +186,25 @@ func (s *OAuthService) createOAuthUser(ctx context.Context, providerID string, u
 	}
 
 	// Save user to database
-	createdUser, err := s.usersRepo.CreateUser(ctx, userEntity)
+	createdUser, err := s.usersRepo.Create(ctx, userEntity)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
 	// Create OAuth account
-	account := &Account{
+	account := &accounts.Account{
 		Id:           uuid.New(),
 		UserId:       createdUser.Id,
-		ProviderId:   AccountProviderId(providerID),
+		ProviderId:   accounts.AccountProviderId(providerID),
 		AccountId:    userInfo.ProviderAccountID,
 		RefreshToken: tokens.RefreshToken,
 		CreatedAt:    now,
 		UpdatedAt:    now,
 	}
 
-	if _, err = s.repo.CreateAccount(ctx, account); err != nil {
+	if _, err = s.repo.Create(ctx, account); err != nil {
 		// Rollback user creation
-		_ = s.usersRepo.DeleteUser(ctx, createdUser.Id)
+		_ = s.usersRepo.Delete(ctx, createdUser.Id)
 		return nil, fmt.Errorf("failed to create account: %w", err)
 	}
 
@@ -221,7 +223,7 @@ func (s *OAuthService) createOAuthUser(ctx context.Context, providerID string, u
 // RefreshOAuthToken refreshes an OAuth access token
 func (s *OAuthService) RefreshOAuthToken(ctx context.Context, userID uuid.UUID, providerID string) (*OAuthTokens, error) {
 	// Get the user's OAuth account
-	accounts, _, err := s.repo.ListAccounts(ctx, ListAccountsParams{
+	accounts, _, err := s.repo.List(ctx, accounts.ListAccountsParams{
 		UserID:     &userID,
 		ProviderID: &providerID,
 		Limit:      1,
@@ -250,7 +252,7 @@ func (s *OAuthService) RefreshOAuthToken(ctx context.Context, userID uuid.UUID, 
 	account.RefreshToken = tokens.RefreshToken
 	account.UpdatedAt = time.Now()
 
-	if _, err := s.repo.UpdateAccount(ctx, account.Id, account); err != nil {
+	if _, err := s.repo.Update(ctx, account.Id, account); err != nil {
 		s.logger.Warn("failed to update account tokens", "error", err)
 	}
 
@@ -282,7 +284,7 @@ type oauthState struct {
 }
 
 // StoreOAuthState stores OAuth state data temporarily
-func (sm *SessionManager) StoreOAuthState(_ context.Context, state, provider, redirectURI string, ttl time.Duration) error {
+func (s *OAuthService) StoreOAuthState(_ context.Context, state, provider, redirectURI string, ttl time.Duration) error {
 	oauthStateStore.Lock()
 	defer oauthStateStore.Unlock()
 
@@ -304,7 +306,7 @@ func (sm *SessionManager) StoreOAuthState(_ context.Context, state, provider, re
 }
 
 // GetOAuthRedirectURI retrieves the redirect URI for a state
-func (sm *SessionManager) GetOAuthRedirectURI(_ context.Context, state string) (string, error) {
+func (s *OAuthService) GetOAuthRedirectURI(_ context.Context, state string) (string, error) {
 	oauthStateStore.RLock()
 	defer oauthStateStore.RUnlock()
 
@@ -318,7 +320,7 @@ func (sm *SessionManager) GetOAuthRedirectURI(_ context.Context, state string) (
 }
 
 // DeleteOAuthState removes OAuth state data
-func (sm *SessionManager) DeleteOAuthState(_ context.Context, state string) error {
+func (s *OAuthService) DeleteOAuthState(_ context.Context, state string) error {
 	oauthStateStore.Lock()
 	defer oauthStateStore.Unlock()
 

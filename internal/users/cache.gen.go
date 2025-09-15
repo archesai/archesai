@@ -16,12 +16,10 @@ var ErrCacheMiss = genericcache.ErrCacheMiss
 type Cache interface {
 
 	// User caching
-	GetUser(ctx context.Context, id uuid.UUID) (*User, error)
-	SetUser(ctx context.Context, entity *User, ttl time.Duration) error
-	DeleteUser(ctx context.Context, id uuid.UUID) error
-	GetUserByEmail(ctx context.Context, email string) (*User, error)
-	SetUserByEmail(ctx context.Context, email string, entity *User, ttl time.Duration) error
-	DeleteUserByEmail(ctx context.Context, email string) error
+	Get(ctx context.Context, id uuid.UUID) (*User, error)
+	Set(ctx context.Context, entity *User, ttl time.Duration) error
+	Delete(ctx context.Context, id uuid.UUID) error
+	GetByEmail(ctx context.Context, email string) (*User, error)
 
 	// Batch operations
 	FlushAll(ctx context.Context) error
@@ -44,8 +42,8 @@ func NewCacheAdapter(userCache genericcache.Cache[User]) Cache {
 	}
 }
 
-// GetUser retrieves user from cache by ID
-func (a *CacheAdapter) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+// Get retrieves user from cache by ID
+func (a *CacheAdapter) Get(ctx context.Context, id uuid.UUID) (*User, error) {
 	entity, err := a.userCache.Get(ctx, id.String())
 	if err != nil {
 		return nil, err
@@ -56,21 +54,21 @@ func (a *CacheAdapter) GetUser(ctx context.Context, id uuid.UUID) (*User, error)
 	return entity, nil
 }
 
-// SetUser stores user in cache with TTL
-func (a *CacheAdapter) SetUser(ctx context.Context, entity *User, ttl time.Duration) error {
+// Set stores user in cache with TTL
+func (a *CacheAdapter) Set(ctx context.Context, entity *User, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
 	return a.userCache.Set(ctx, entity.Id.String(), entity, ttl)
 }
 
-// DeleteUser removes user from cache
-func (a *CacheAdapter) DeleteUser(ctx context.Context, id uuid.UUID) error {
+// Delete removes user from cache
+func (a *CacheAdapter) Delete(ctx context.Context, id uuid.UUID) error {
 	return a.userCache.Delete(ctx, id.String())
 }
 
-// GetUserByEmail retrieves user from cache by email
-func (a *CacheAdapter) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+// GetByEmail retrieves user from cache by email
+func (a *CacheAdapter) GetByEmail(ctx context.Context, email string) (*User, error) {
 	key := "email:" + email
 	entity, err := a.userCache.Get(ctx, key)
 	if err != nil {
@@ -80,21 +78,6 @@ func (a *CacheAdapter) GetUserByEmail(ctx context.Context, email string) (*User,
 		return nil, ErrCacheMiss
 	}
 	return entity, nil
-}
-
-// SetUserByEmail stores user in cache indexed by email
-func (a *CacheAdapter) SetUserByEmail(ctx context.Context, email string, entity *User, ttl time.Duration) error {
-	if entity == nil {
-		return nil
-	}
-	key := "email:" + email
-	return a.userCache.Set(ctx, key, entity, ttl)
-}
-
-// DeleteUserByEmail removes user from cache by email
-func (a *CacheAdapter) DeleteUserByEmail(ctx context.Context, email string) error {
-	key := "email:" + email
-	return a.userCache.Delete(ctx, key)
 }
 
 // FlushAll clears all cached data

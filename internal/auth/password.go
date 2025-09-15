@@ -94,7 +94,7 @@ func (s *Service) RequestPasswordReset(ctx context.Context, email string) error 
 	}
 
 	// Get user by email
-	user, err := s.usersRepo.GetUserByEmail(ctx, email)
+	user, err := s.usersRepo.GetByEmail(ctx, email)
 	if err != nil {
 		// Don't reveal if user exists or not
 		s.logger.Warn("password reset requested for non-existent user", "email", email)

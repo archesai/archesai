@@ -6,10 +6,10 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [slug, stripeCustomerId]
     additional_methods:
-      - name: GetOrganizationBySlug
+      - name: GetBySlug
         params: [slug]
         returns: single
-      - name: GetOrganizationByStripeCustomerId
+      - name: GetByStripeCustomerId
         params: [stripeCustomerId]
         returns: single
   cache:

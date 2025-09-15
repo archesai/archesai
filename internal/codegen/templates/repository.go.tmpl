@@ -8,28 +8,20 @@ import (
 {{end}}
 )
 
-// Repository provides data access operations for {{.Domain}} domain.
+{{range .Entities}}{{$entity := .}}
+// Repository handles {{lower .Name}} persistence
 type Repository interface {
-{{range .Entities}}
-	// {{.Name}} operations
-	{{if contains .Operations "create"}}Create{{.Name}}(ctx context.Context, entity *{{.Type}}) (*{{.Type}}, error){{end}}
-	{{if contains .Operations "read"}}Get{{.Name}}(ctx context.Context, id uuid.UUID) (*{{.Type}}, error){{end}}
-	{{if contains .Operations "update"}}Update{{.Name}}(ctx context.Context, id uuid.UUID, entity *{{.Type}}) (*{{.Type}}, error){{end}}
-	{{if contains .Operations "delete"}}Delete{{.Name}}(ctx context.Context, id uuid.UUID) error{{end}}
-	{{if contains .Operations "list"}}List{{.Name}}s(ctx context.Context, params List{{.Name}}sParams) ([]*{{.Type}}, int64, error){{end}}
-	
-	{{/* Handle hardcoded additional methods for now */}}
-	{{if eq .Name "User"}}// Additional User operations
-	GetUserByEmail(ctx context.Context, email string) (*User, error){{end}}
-	{{if eq .Name "Session"}}// Additional Session operations
-	GetSessionByToken(ctx context.Context, token string) (*Session, error)
-	DeleteSessionByToken(ctx context.Context, token string) error
-	DeleteUserSessions(ctx context.Context, userID uuid.UUID) error
-	DeleteExpiredSessions(ctx context.Context) error{{end}}
-	{{if eq .Name "Account"}}// Additional Account operations
-	GetAccountByProviderAndProviderID(ctx context.Context, provider, providerID string) (*Account, error)
-	ListUserAccounts(ctx context.Context, userID uuid.UUID) ([]*Account, error){{end}}
-{{end}}}
+	{{if contains .Operations "create"}}Create(ctx context.Context, entity *{{.Type}}) (*{{.Type}}, error){{end}}
+	{{if contains .Operations "read"}}Get(ctx context.Context, id uuid.UUID) (*{{.Type}}, error){{end}}
+	{{if contains .Operations "update"}}Update(ctx context.Context, id uuid.UUID, entity *{{.Type}}) (*{{.Type}}, error){{end}}
+	{{if contains .Operations "delete"}}Delete(ctx context.Context, id uuid.UUID) error{{end}}
+	{{if contains .Operations "list"}}List(ctx context.Context, params List{{.Name}}sParams) ([]*{{.Type}}, int64, error){{end}}
+{{if .AdditionalMethods}}
+	// Additional operations
+{{range .AdditionalMethods}}	{{.Name}}(ctx context.Context{{range $i, $param := .Params}}, {{$param}} {{paramType $param}}{{end}}) {{if eq .Returns "single"}}(*{{$entity.Type}}, error){{else if eq .Returns "multiple"}}([]*{{$entity.Type}}, error){{else if eq .Returns "exists"}}(bool, error){{else if eq .Returns "count"}}(int, error){{else if eq .Returns "void"}}error{{else}}error{{end}}
+{{end}}{{end}}
+}
+{{end}}
 
 {{range .Entities}}
 // List{{.Name}}sParams represents parameters for listing {{lower .Name}}s.

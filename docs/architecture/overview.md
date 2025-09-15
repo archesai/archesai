@@ -69,19 +69,40 @@ The system is organized into distinct bounded contexts, each representing a core
 - Billing and subscription handling
 - Organization-level settings
 
-#### **Workflows Domain**
+#### **Pipelines Domain**
 
-- DAG-based workflow definitions
+- DAG-based pipeline definitions
 - Pipeline execution engine
-- Tool registry and integration
-- Run history and monitoring
+- Task orchestration and scheduling
+- Execution monitoring
 
-#### **Content Domain**
+#### **Artifacts Domain**
 
 - Artifact storage and retrieval
-- Vector embeddings for semantic search
-- Content processing pipelines
+- File management and versioning
+- Content processing
 - Metadata management
+
+#### **Tools Domain**
+
+- Tool registry and integration
+- Tool capability management
+- External service integration
+- Tool execution framework
+
+#### **Runs Domain**
+
+- Pipeline run management
+- Run history and monitoring
+- Execution state tracking
+- Result aggregation
+
+#### **Sessions Domain**
+
+- User session management
+- Session persistence and caching
+- Session-based authentication
+- Activity tracking
 
 Each domain maintains:
 
@@ -210,6 +231,7 @@ Generates:
 - Reduced boilerplate code
 - Consistent patterns
 - Self-documenting APIs
+- Automatic mock generation for testing
 
 ## Architecture Evolution
 

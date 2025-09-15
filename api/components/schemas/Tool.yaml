@@ -5,8 +5,9 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [organizationId]
     additional_methods:
-      - name: GetToolsByOrganization
+      - name: ListByOrganization
         params: [organizationId]
+        returns: multiple
 type: object
 properties:
   createdAt:

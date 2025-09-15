@@ -22,22 +22,32 @@ security:
 tags:
   - name: Accounts
     description: User account management
+  - name: Artifacts
+    description: Content artifact management
   - name: Auth
     description: Authentication and authorization operations
   - name: Config
     description: Configuration management
-  - name: Content
-    description: Content artifacts and labels
   - name: Health
     description: Health check operations
+  - name: Invitations
+    description: Organization invitation management
+  - name: Labels
+    description: Content label management
+  - name: Members
+    description: Organization member management
   - name: Organizations
-    description: Organization management, membership, and invitations
+    description: Organization management
+  - name: Pipelines
+    description: Pipeline management
+  - name: Runs
+    description: Pipeline run management
   - name: Sessions
     description: User session management
+  - name: Tools
+    description: Tool management
   - name: Users
     description: User profile management
-  - name: Workflows
-    description: Pipeline workflows, runs, and tools
 paths:
   /auth/accounts:
     get:
@@ -955,7 +965,7 @@ paths:
       operationId: createMember
       summary: Create a new member
       tags:
-        - Organizations
+        - Members
       description: Create a new member
       parameters:
         - in: path
@@ -1005,7 +1015,7 @@ paths:
       operationId: findManyMembers
       summary: Find many members
       tags:
-        - Organizations
+        - Members
       description: Find many members
       parameters:
         - in: path
@@ -1054,7 +1064,7 @@ paths:
       operationId: deleteMember
       summary: Delete a member
       tags:
-        - Organizations
+        - Members
       description: Delete a member
       parameters:
         - schema:
@@ -1094,7 +1104,7 @@ paths:
       operationId: getOneMember
       summary: Find a member
       tags:
-        - Organizations
+        - Members
       description: Find a member
       parameters:
         - schema:
@@ -1134,7 +1144,7 @@ paths:
       operationId: updateMember
       summary: Update a member
       tags:
-        - Organizations
+        - Members
       description: Update a member
       requestBody:
         content:
@@ -1189,7 +1199,7 @@ paths:
       operationId: createInvitation
       summary: Create a new invitation
       tags:
-        - Organizations
+        - Invitations
       description: Create a new invitation
       parameters:
         - schema:
@@ -1247,7 +1257,7 @@ paths:
       operationId: findManyInvitations
       summary: Find many invitations
       tags:
-        - Organizations
+        - Invitations
       description: Find many invitations
       parameters:
         - schema:
@@ -1298,7 +1308,7 @@ paths:
       operationId: deleteInvitation
       summary: Delete an invitation
       tags:
-        - Organizations
+        - Invitations
       description: Delete an invitation
       parameters:
         - schema:
@@ -1338,7 +1348,7 @@ paths:
       operationId: getOneInvitation
       summary: Find an invitation
       tags:
-        - Organizations
+        - Invitations
       description: Find an invitation
       parameters:
         - schema:
@@ -1378,7 +1388,7 @@ paths:
       operationId: updateInvitation
       summary: Update an invitation
       tags:
-        - Organizations
+        - Invitations
       description: Update an invitation
       requestBody:
         content:
@@ -1437,7 +1447,7 @@ paths:
       operationId: createPipeline
       summary: Create a new pipeline
       tags:
-        - Workflows
+        - Pipelines
       description: Create a new pipeline
       requestBody:
         content:
@@ -1479,7 +1489,7 @@ paths:
       operationId: findManyPipelines
       summary: Find many pipelines
       tags:
-        - Workflows
+        - Pipelines
       description: Find many pipelines
       parameters:
         - $ref: '#/components/parameters/PipelinesFilter'
@@ -1522,7 +1532,7 @@ paths:
       operationId: deletePipeline
       summary: Delete a pipeline
       tags:
-        - Workflows
+        - Pipelines
       description: Delete a pipeline
       parameters:
         - schema:
@@ -1554,7 +1564,7 @@ paths:
       operationId: getOnePipeline
       summary: Find a pipeline
       tags:
-        - Workflows
+        - Pipelines
       description: Find a pipeline
       parameters:
         - schema:
@@ -1586,7 +1596,7 @@ paths:
       operationId: updatePipeline
       summary: Update a pipeline
       tags:
-        - Workflows
+        - Pipelines
       description: Update a pipeline
       requestBody:
         content:
@@ -1633,7 +1643,7 @@ paths:
       operationId: getPipelineSteps
       summary: Get all steps for a pipeline
       tags:
-        - Workflows
+        - Pipelines
       description: Retrieve all steps and their dependencies for a pipeline
       parameters:
         - name: id
@@ -1668,7 +1678,7 @@ paths:
       operationId: createPipelineStep
       summary: Add a step to a pipeline
       tags:
-        - Workflows
+        - Pipelines
       description: Create a new step in the pipeline
       parameters:
         - name: id
@@ -1746,7 +1756,7 @@ paths:
       operationId: getPipelineExecutionPlan
       summary: Get execution plan for a pipeline
       tags:
-        - Workflows
+        - Pipelines
       description: Get the DAG execution plan showing which steps can run in parallel
       parameters:
         - name: id
@@ -1822,7 +1832,7 @@ paths:
       operationId: validatePipelineExecutionPlan
       summary: Validate a pipeline configuration
       tags:
-        - Workflows
+        - Pipelines
       description: Validate that a pipeline can be executed without issues
       parameters:
         - name: id
@@ -1869,7 +1879,7 @@ paths:
       operationId: createRun
       summary: Create a new run
       tags:
-        - Workflows
+        - Runs
       description: Create a new run
       requestBody:
         content:
@@ -1908,7 +1918,7 @@ paths:
       operationId: findManyRuns
       summary: Find many runs
       tags:
-        - Workflows
+        - Runs
       description: Find many runs
       parameters:
         - $ref: '#/components/parameters/RunsFilter'
@@ -1951,7 +1961,7 @@ paths:
       operationId: deleteRun
       summary: Delete a run
       tags:
-        - Workflows
+        - Runs
       description: Delete a run
       parameters:
         - schema:
@@ -1983,7 +1993,7 @@ paths:
       operationId: getOneRun
       summary: Find a run
       tags:
-        - Workflows
+        - Runs
       description: Find a run
       parameters:
         - schema:
@@ -2015,7 +2025,7 @@ paths:
       operationId: updateRun
       summary: Update a run
       tags:
-        - Workflows
+        - Runs
       description: Update a run
       requestBody:
         content:
@@ -2058,7 +2068,7 @@ paths:
       operationId: createTool
       summary: Create a new tool
       tags:
-        - Workflows
+        - Tools
       description: Create a new tool
       requestBody:
         content:
@@ -2103,7 +2113,7 @@ paths:
       operationId: findManyTools
       summary: Find many tools
       tags:
-        - Workflows
+        - Tools
       description: Find many tools
       parameters:
         - $ref: '#/components/parameters/ToolsFilter'
@@ -2146,7 +2156,7 @@ paths:
       operationId: deleteTool
       summary: Delete a tool
       tags:
-        - Workflows
+        - Tools
       description: Delete a tool
       parameters:
         - schema:
@@ -2178,7 +2188,7 @@ paths:
       operationId: getOneTool
       summary: Find a tool
       tags:
-        - Workflows
+        - Tools
       description: Find a tool
       parameters:
         - schema:
@@ -2210,7 +2220,7 @@ paths:
       operationId: updateTool
       summary: Update a tool
       tags:
-        - Workflows
+        - Tools
       description: Update a tool
       requestBody:
         content:
@@ -2259,7 +2269,7 @@ paths:
       operationId: createArtifact
       summary: Create a new artifact
       tags:
-        - Content
+        - Artifacts
       description: Create a new artifact
       requestBody:
         content:
@@ -2303,7 +2313,7 @@ paths:
       operationId: findManyArtifacts
       summary: Find many artifacts
       tags:
-        - Content
+        - Artifacts
       description: Find many artifacts
       parameters:
         - $ref: '#/components/parameters/ArtifactsFilter'
@@ -2346,7 +2356,7 @@ paths:
       operationId: deleteArtifact
       summary: Delete an artifact
       tags:
-        - Content
+        - Artifacts
       description: Delete an artifact
       parameters:
         - schema:
@@ -2378,7 +2388,7 @@ paths:
       operationId: getOneArtifact
       summary: Find an artifact
       tags:
-        - Content
+        - Artifacts
       description: Find an artifact
       parameters:
         - schema:
@@ -2410,7 +2420,7 @@ paths:
       operationId: updateArtifact
       summary: Update an artifact
       tags:
-        - Content
+        - Artifacts
       description: Update an artifact
       requestBody:
         content:
@@ -2462,7 +2472,7 @@ paths:
       operationId: createLabel
       summary: Create a new label
       tags:
-        - Content
+        - Labels
       description: Create a new label
       requestBody:
         content:
@@ -2501,7 +2511,7 @@ paths:
       operationId: findManyLabels
       summary: Find many labels
       tags:
-        - Content
+        - Labels
       description: Find many labels
       parameters:
         - $ref: '#/components/parameters/LabelsFilter'
@@ -2544,7 +2554,7 @@ paths:
       operationId: deleteLabel
       summary: Delete a label
       tags:
-        - Content
+        - Labels
       description: Delete a label
       parameters:
         - schema:
@@ -2576,7 +2586,7 @@ paths:
       operationId: getOneLabel
       summary: Find a label
       tags:
-        - Content
+        - Labels
       description: Find a label
       parameters:
         - schema:
@@ -2608,7 +2618,7 @@ paths:
       operationId: updateLabel
       summary: Update a label
       tags:
-        - Content
+        - Labels
       description: Update a label
       requestBody:
         content:
@@ -2757,12 +2767,12 @@ components:
             - userId
             - accountId
           additional_methods:
-            - name: GetAccountByProviderID
+            - name: GetByProviderId
               params:
                 - provider
                 - providerAccountId
               returns: single
-            - name: ListUserAccounts
+            - name: ListByUserId
               params:
                 - userId
               returns: multiple
@@ -2960,19 +2970,19 @@ components:
             - userId
             - token
           additional_methods:
-            - name: GetSessionByToken
+            - name: GetByToken
               params:
                 - token
               returns: single
-            - name: DeleteSessionByToken
+            - name: DeleteByToken
               params:
                 - token
               returns: void
-            - name: DeleteUserSessions
+            - name: DeleteByUser
               params:
                 - userId
               returns: void
-            - name: DeleteExpiredSessions
+            - name: DeleteExpired
               params: []
               returns: void
         cache:
@@ -3068,7 +3078,7 @@ components:
           indices:
             - email
           additional_methods:
-            - name: GetUserByEmail
+            - name: GetByEmail
               params:
                 - email
               returns: single
@@ -3137,11 +3147,11 @@ components:
             - slug
             - stripeCustomerId
           additional_methods:
-            - name: GetOrganizationBySlug
+            - name: GetBySlug
               params:
                 - slug
               returns: single
-            - name: GetOrganizationByStripeCustomerId
+            - name: GetByStripeCustomerId
               params:
                 - stripeCustomerId
               returns: single
@@ -3232,16 +3242,19 @@ components:
             - organizationId
             - userId
           additional_methods:
-            - name: GetMembersByOrganization
+            - name: ListByOrganization
               params:
                 - organizationId
-            - name: GetMembersByUser
+              returns: multiple
+            - name: ListByUser
               params:
                 - userId
-            - name: GetMemberByUserAndOrganization
+              returns: multiple
+            - name: GetByUserAndOrganization
               params:
                 - userId
                 - organizationId
+              returns: single
       type: object
       properties:
         createdAt:
@@ -3304,16 +3317,19 @@ components:
             - email
             - inviterId
           additional_methods:
-            - name: GetInvitationsByOrganization
+            - name: ListByOrganization
               params:
                 - organizationId
-            - name: GetInvitationByEmail
+              returns: multiple
+            - name: GetByEmail
               params:
                 - email
                 - organizationId
-            - name: GetInvitationsByInviter
+              returns: single
+            - name: ListByInviter
               params:
                 - inviterId
+              returns: multiple
       type: object
       properties:
         createdAt:
@@ -3400,9 +3416,10 @@ components:
           indices:
             - organizationId
           additional_methods:
-            - name: GetPipelinesByOrganization
+            - name: ListByOrganization
               params:
                 - organizationId
+              returns: multiple
       allOf:
         - $ref: '#/components/schemas/Base'
         - $ref: '#/components/schemas/OrganizationReference'
@@ -3518,15 +3535,18 @@ components:
             - organizationId
             - toolId
           additional_methods:
-            - name: GetRunsByPipeline
+            - name: ListByPipeline
               params:
                 - pipelineId
-            - name: GetRunsByOrganization
+              returns: multiple
+            - name: ListByOrganization
               params:
                 - organizationId
-            - name: GetRunsByTool
+              returns: multiple
+            - name: ListByTool
               params:
                 - toolId
+              returns: multiple
       type: object
       properties:
         createdAt:
@@ -3615,9 +3635,10 @@ components:
           indices:
             - organizationId
           additional_methods:
-            - name: GetToolsByOrganization
+            - name: ListByOrganization
               params:
                 - organizationId
+              returns: multiple
       type: object
       properties:
         createdAt:
@@ -3687,12 +3708,14 @@ components:
             - organizationId
             - producerId
           additional_methods:
-            - name: GetArtifactsByOrganization
+            - name: ListByOrganization
               params:
                 - organizationId
-            - name: GetArtifactsByProducer
+              returns: multiple
+            - name: ListByProducer
               params:
                 - producerId
+              returns: multiple
       type: object
       properties:
         createdAt:
@@ -3775,13 +3798,15 @@ components:
             - organizationId
             - name
           additional_methods:
-            - name: GetLabelsByOrganization
+            - name: ListByOrganization
               params:
                 - organizationId
-            - name: GetLabelByName
+              returns: multiple
+            - name: GetByName
               params:
                 - name
                 - organizationId
+              returns: single
       type: object
       properties:
         createdAt:

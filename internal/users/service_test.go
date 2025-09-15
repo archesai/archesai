@@ -58,7 +58,7 @@ func TestGetUser(t *testing.T) {
 			name:   "Existing user - cache hit",
 			userID: user.Id,
 			setupMocks: func(_ *MockRepository, cache *MockCache) {
-				cache.On("GetUser", mock.Anything, user.Id).Return(user, nil)
+				cache.EXPECT().Get(mock.Anything, user.Id).Return(user, nil)
 			},
 			wantErr: nil,
 		},
@@ -66,9 +66,9 @@ func TestGetUser(t *testing.T) {
 			name:   "Existing user - cache miss",
 			userID: user.Id,
 			setupMocks: func(repo *MockRepository, cache *MockCache) {
-				cache.On("GetUser", mock.Anything, user.Id).Return(nil, ErrCacheMiss)
-				repo.On("GetUser", mock.Anything, user.Id).Return(user, nil)
-				cache.On("SetUser", mock.Anything, user, mock.Anything).Return(nil)
+				cache.EXPECT().Get(mock.Anything, user.Id).Return(nil, ErrCacheMiss)
+				repo.EXPECT().Get(mock.Anything, user.Id).Return(user, nil)
+				cache.EXPECT().Set(mock.Anything, user, mock.Anything).Return(nil)
 			},
 			wantErr: nil,
 		},
@@ -76,8 +76,8 @@ func TestGetUser(t *testing.T) {
 			name:   "Non-existent user",
 			userID: uuid.New(),
 			setupMocks: func(repo *MockRepository, cache *MockCache) {
-				cache.On("GetUser", mock.Anything, mock.Anything).Return(nil, ErrCacheMiss)
-				repo.On("GetUser", mock.Anything, mock.Anything).Return(nil, ErrUserNotFound)
+				cache.EXPECT().Get(mock.Anything, mock.Anything).Return(nil, ErrCacheMiss)
+				repo.EXPECT().Get(mock.Anything, mock.Anything).Return(nil, ErrUserNotFound)
 			},
 			wantErr: ErrUserNotFound,
 		},
@@ -85,8 +85,8 @@ func TestGetUser(t *testing.T) {
 			name:   "Repository error",
 			userID: user.Id,
 			setupMocks: func(repo *MockRepository, cache *MockCache) {
-				cache.On("GetUser", mock.Anything, user.Id).Return(nil, ErrCacheMiss)
-				repo.On("GetUser", mock.Anything, user.Id).Return(nil, errors.New("database error"))
+				cache.EXPECT().Get(mock.Anything, user.Id).Return(nil, ErrCacheMiss)
+				repo.EXPECT().Get(mock.Anything, user.Id).Return(nil, errors.New("database error"))
 			},
 			wantErr: errors.New("database error"),
 		},
@@ -97,7 +97,7 @@ func TestGetUser(t *testing.T) {
 			service, mockRepo, mockCache, _ := createTestService(t)
 			tt.setupMocks(mockRepo, mockCache)
 
-			gotUser, err := service.GetUser(context.Background(), tt.userID)
+			gotUser, err := service.Get(context.Background(), tt.userID)
 
 			if tt.wantErr != nil {
 				assert.Error(t, err)
@@ -139,7 +139,7 @@ func TestUpdateUser(t *testing.T) {
 				Email: "newemail@example.com",
 			},
 			setupMocks: func(repo *MockRepository, cache *MockCache, events *MockEventPublisher) {
-				repo.On("GetUser", mock.Anything, user.Id).Return(user, nil)
+				repo.EXPECT().Get(mock.Anything, user.Id).Return(user, nil)
 				updatedUser := &User{
 					Id:            user.Id,
 					Email:         openapi_types.Email("newemail@example.com"),
@@ -148,11 +148,11 @@ func TestUpdateUser(t *testing.T) {
 					CreatedAt:     user.CreatedAt,
 					UpdatedAt:     time.Now(),
 				}
-				repo.On("UpdateUser", mock.Anything, user.Id, mock.MatchedBy(func(u *User) bool {
+				repo.EXPECT().Update(mock.Anything, user.Id, mock.MatchedBy(func(u *User) bool {
 					return string(u.Email) == "newemail@example.com"
 				})).Return(updatedUser, nil)
-				cache.On("SetUser", mock.Anything, mock.Anything, mock.Anything).Return(nil)
-				events.On("PublishUserUpdated", mock.Anything, mock.Anything).Return(nil)
+				cache.EXPECT().Set(mock.Anything, mock.Anything, mock.Anything).Return(nil)
+				events.EXPECT().PublishUserUpdated(mock.Anything, mock.Anything).Return(nil)
 			},
 			wantErr: false,
 		},
@@ -163,7 +163,7 @@ func TestUpdateUser(t *testing.T) {
 				Email: "test@example.com",
 			},
 			setupMocks: func(repo *MockRepository, _ *MockCache, _ *MockEventPublisher) {
-				repo.On("GetUser", mock.Anything, mock.Anything).Return(nil, ErrUserNotFound)
+				repo.EXPECT().Get(mock.Anything, mock.Anything).Return(nil, ErrUserNotFound)
 			},
 			wantErr: true,
 		},
@@ -174,7 +174,7 @@ func TestUpdateUser(t *testing.T) {
 			service, mockRepo, mockCache, mockEvents := createTestService(t)
 			tt.setupMocks(mockRepo, mockCache, mockEvents)
 
-			updatedUser, err := service.UpdateUser(context.Background(), tt.userID, tt.req)
+			updatedUser, err := service.Update(context.Background(), tt.userID, tt.req)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -211,11 +211,10 @@ func TestDeleteUser(t *testing.T) {
 			name:   "Delete existing user",
 			userID: user.Id,
 			setupMocks: func(repo *MockRepository, cache *MockCache, events *MockEventPublisher) {
-				repo.On("GetUser", mock.Anything, user.Id).Return(user, nil)
-				repo.On("DeleteUser", mock.Anything, user.Id).Return(nil)
-				cache.On("DeleteUser", mock.Anything, user.Id).Return(nil)
-				cache.On("DeleteUserByEmail", mock.Anything, string(user.Email)).Return(nil)
-				events.On("PublishUserDeleted", mock.Anything, user).Return(nil)
+				repo.EXPECT().Get(mock.Anything, user.Id).Return(user, nil)
+				repo.EXPECT().Delete(mock.Anything, user.Id).Return(nil)
+				cache.EXPECT().Delete(mock.Anything, user.Id).Return(nil)
+				events.EXPECT().PublishUserDeleted(mock.Anything, user).Return(nil)
 			},
 			wantErr: nil,
 		},
@@ -223,7 +222,7 @@ func TestDeleteUser(t *testing.T) {
 			name:   "Delete non-existent user",
 			userID: uuid.New(),
 			setupMocks: func(repo *MockRepository, _ *MockCache, _ *MockEventPublisher) {
-				repo.On("GetUser", mock.Anything, mock.Anything).Return(nil, ErrUserNotFound)
+				repo.EXPECT().Get(mock.Anything, mock.Anything).Return(nil, ErrUserNotFound)
 			},
 			wantErr: ErrUserNotFound,
 		},
@@ -234,7 +233,7 @@ func TestDeleteUser(t *testing.T) {
 			service, mockRepo, mockCache, mockEvents := createTestService(t)
 			tt.setupMocks(mockRepo, mockCache, mockEvents)
 
-			err := service.DeleteUser(context.Background(), tt.userID)
+			err := service.Delete(context.Background(), tt.userID)
 
 			if tt.wantErr != nil {
 				assert.Error(t, err)
@@ -280,7 +279,7 @@ func TestListUsers(t *testing.T) {
 			limit:  10,
 			offset: 0,
 			setupMocks: func(repo *MockRepository) {
-				repo.On("ListUsers", mock.Anything, ListUsersParams{
+				repo.EXPECT().List(mock.Anything, ListUsersParams{
 					Limit:  10,
 					Offset: 0,
 				}).Return(users, int64(2), nil)
@@ -292,7 +291,7 @@ func TestListUsers(t *testing.T) {
 			limit:  1,
 			offset: 0,
 			setupMocks: func(repo *MockRepository) {
-				repo.On("ListUsers", mock.Anything, ListUsersParams{
+				repo.EXPECT().List(mock.Anything, ListUsersParams{
 					Limit:  1,
 					Offset: 0,
 				}).Return(users[:1], int64(2), nil)
@@ -306,7 +305,7 @@ func TestListUsers(t *testing.T) {
 			service, mockRepo, _, _ := createTestService(t)
 			tt.setupMocks(mockRepo)
 
-			gotUsers, err := service.ListUsers(context.Background(), tt.limit, tt.offset)
+			gotUsers, err := service.List(context.Background(), tt.limit, tt.offset)
 
 			assert.NoError(t, err)
 			assert.Len(t, gotUsers, tt.wantCount)
@@ -333,9 +332,9 @@ func TestGetUserByEmail(t *testing.T) {
 			name:  "Existing user - cache miss",
 			email: "test@example.com",
 			setupMocks: func(repo *MockRepository, cache *MockCache) {
-				cache.On("GetUserByEmail", mock.Anything, "test@example.com").Return(nil, ErrCacheMiss)
-				repo.On("GetUserByEmail", mock.Anything, "test@example.com").Return(user, nil)
-				cache.On("SetUserByEmail", mock.Anything, "test@example.com", user, mock.Anything).Return(nil)
+				cache.EXPECT().GetByEmail(mock.Anything, "test@example.com").Return(nil, ErrCacheMiss)
+				repo.EXPECT().GetByEmail(mock.Anything, "test@example.com").Return(user, nil)
+				cache.EXPECT().Set(mock.Anything, user, mock.Anything).Return(nil)
 			},
 			wantErr: nil,
 		},
@@ -343,8 +342,8 @@ func TestGetUserByEmail(t *testing.T) {
 			name:  "Non-existent user",
 			email: "nonexistent@example.com",
 			setupMocks: func(repo *MockRepository, cache *MockCache) {
-				cache.On("GetUserByEmail", mock.Anything, "nonexistent@example.com").Return(nil, ErrCacheMiss)
-				repo.On("GetUserByEmail", mock.Anything, "nonexistent@example.com").Return(nil, ErrUserNotFound)
+				cache.EXPECT().GetByEmail(mock.Anything, "nonexistent@example.com").Return(nil, ErrCacheMiss)
+				repo.EXPECT().GetByEmail(mock.Anything, "nonexistent@example.com").Return(nil, ErrUserNotFound)
 			},
 			wantErr: ErrUserNotFound,
 		},
@@ -352,8 +351,8 @@ func TestGetUserByEmail(t *testing.T) {
 			name:  "Repository error",
 			email: "test@example.com",
 			setupMocks: func(repo *MockRepository, cache *MockCache) {
-				cache.On("GetUserByEmail", mock.Anything, "test@example.com").Return(nil, ErrCacheMiss)
-				repo.On("GetUserByEmail", mock.Anything, "test@example.com").Return(nil, errors.New("database error"))
+				cache.EXPECT().GetByEmail(mock.Anything, "test@example.com").Return(nil, ErrCacheMiss)
+				repo.EXPECT().GetByEmail(mock.Anything, "test@example.com").Return(nil, errors.New("database error"))
 			},
 			wantErr: errors.New("database error"),
 		},
@@ -364,7 +363,7 @@ func TestGetUserByEmail(t *testing.T) {
 			service, mockRepo, mockCache, _ := createTestService(t)
 			tt.setupMocks(mockRepo, mockCache)
 
-			gotUser, err := service.GetUserByEmail(context.Background(), tt.email)
+			gotUser, err := service.GetByEmail(context.Background(), tt.email)
 
 			if tt.wantErr != nil {
 				assert.Error(t, err)

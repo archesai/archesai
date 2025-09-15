@@ -5,31 +5,17 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/database/postgresql"
-	"github.com/archesai/archesai/internal/email"
+	"github.com/archesai/archesai/internal/sessions"
 	"github.com/archesai/archesai/internal/users"
 	"github.com/google/uuid"
 )
 
-// SetDatabaseQueries sets the database queries for the service
-func (s *Service) SetDatabaseQueries(queries *postgresql.Queries) {
-	s.dbQueries = queries
-}
-
-// SetEmailService sets the email service for the service
-func (s *Service) SetEmailService(emailService *email.Service) {
-	s.emailService = emailService
-}
-
-// SetAPIKeyService sets the API key service for the service
-func (s *Service) SetAPIKeyService(apiKeyService *APIKeyService) {
-	s.apiKeyService = apiKeyService
-}
-
 // Register creates a new user account
 func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*users.User, *TokenResponse, error) {
 	// Check if user already exists
-	existingUser, err := s.usersRepo.GetUserByEmail(ctx, string(req.Email))
+	existingUser, err := s.usersRepo.GetByEmail(ctx, string(req.Email))
 	if err == nil && existingUser != nil {
 		return nil, nil, ErrUserExists
 	}
@@ -58,7 +44,7 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*users.Us
 	}
 
 	// Save user to database - repository expects User
-	createdEntity, err := s.usersRepo.CreateUser(ctx, user)
+	createdEntity, err := s.usersRepo.Create(ctx, user)
 	if err != nil {
 		s.logger.Error("failed to create user", "error", err)
 		return nil, nil, fmt.Errorf("failed to create user: %w", err)
@@ -67,21 +53,21 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*users.Us
 	user = createdEntity
 
 	// Create local account with password
-	account := &Account{
+	account := &accounts.Account{
 		Id:         uuid.New(),
 		UserId:     user.Id,
-		ProviderId: Local,
+		ProviderId: accounts.Local,
 		AccountId:  string(user.Email), // Use email as account ID for local auth
 		Password:   hashedPassword,
 		CreatedAt:  now,
 		UpdatedAt:  now,
 	}
 
-	_, err = s.repo.CreateAccount(ctx, account)
+	_, err = s.accountsRepo.Create(ctx, account)
 	if err != nil {
 		s.logger.Error("failed to create account", "error", err)
 		// Try to clean up the created user
-		_ = s.usersRepo.DeleteUser(ctx, user.Id)
+		_ = s.usersRepo.Delete(ctx, user.Id)
 		return nil, nil, fmt.Errorf("failed to create account: %w", err)
 	}
 
@@ -121,23 +107,23 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*users.Us
 	}
 
 	// Create session - use SessionManager if available
-	var session *Session
+	var session *sessions.Session
 	if s.sessionManager != nil {
-		session, err = s.sessionManager.CreateSession(ctx, user.Id, uuid.Nil, "", "")
+		session, err = s.sessionManager.Create(ctx, user.Id, uuid.Nil, "", "")
 		if err != nil {
 			s.logger.Error("failed to create session", "error", err)
 			return nil, nil, fmt.Errorf("failed to create session: %w", err)
 		}
 		// Update session with refresh token
 		session.Token = tokens.RefreshToken
-		_, err = s.sessionManager.UpdateSession(ctx, session.Id, session)
+		_, err = s.sessionManager.Update(ctx, session.Id, session)
 		if err != nil {
 			s.logger.Error("failed to update session token", "error", err)
 		}
 	} else {
 		// Fallback to direct repository
 		sessionNow := time.Now()
-		session = &Session{
+		session = &sessions.Session{
 			Id:        uuid.New(),
 			UserId:    user.Id,
 			Token:     tokens.RefreshToken,
@@ -149,7 +135,7 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*users.Us
 			IpAddress:            "",
 			UserAgent:            "",
 		}
-		_, err = s.repo.CreateSession(ctx, session)
+		_, err = s.sessionsRepo.Create(ctx, session)
 		if err != nil {
 			s.logger.Error("failed to create session", "error", err)
 			return nil, nil, fmt.Errorf("failed to create session: %w", err)
@@ -171,7 +157,7 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 	}
 
 	// Get user by email
-	userEntity, err := s.usersRepo.GetUserByEmail(ctx, string(req.Email))
+	userEntity, err := s.usersRepo.GetByEmail(ctx, string(req.Email))
 	if err != nil {
 		// Track failed attempt
 		s.trackFailedLoginAttempt(ctx, ipAddress, string(req.Email))
@@ -180,7 +166,7 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 	}
 
 	// Get the user's local account to verify password
-	account, err := s.repo.GetAccountByProviderAndProviderID(ctx, string(Local), string(req.Email))
+	account, err := s.accountsRepo.GetByProviderId(ctx, string(accounts.Local), string(req.Email))
 	if err != nil {
 		// Track failed attempt
 		s.trackFailedLoginAttempt(ctx, ipAddress, string(req.Email))
@@ -205,7 +191,7 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 
 	// Check concurrent session limits
 	if s.config.MaxConcurrentSessions > 0 {
-		activeSessions, err := s.ListUserSessions(ctx, user.Id)
+		activeSessions, err := s.sessionManager.ListUserSessions(ctx, user.Id)
 		if err == nil && len(activeSessions) >= s.config.MaxConcurrentSessions {
 			// Remove oldest session if limit reached
 			s.logger.Info("concurrent session limit reached, removing oldest session",
@@ -221,7 +207,7 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 						oldestSession = session
 					}
 				}
-				_ = s.repo.DeleteSession(ctx, oldestSession.Id)
+				_ = s.sessionsRepo.Delete(ctx, oldestSession.Id)
 			}
 		}
 	}
@@ -243,24 +229,24 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 	}
 
 	// Create session - use SessionManager if available
-	var session *Session
+	var session *sessions.Session
 	if s.sessionManager != nil {
 		// TODO: Get organization ID from user's default org
-		session, err = s.sessionManager.CreateSession(ctx, user.Id, uuid.Nil, ipAddress, userAgent)
+		session, err = s.sessionManager.Create(ctx, user.Id, uuid.Nil, ipAddress, userAgent)
 		if err != nil {
 			s.logger.Error("failed to create session", "error", err)
 			return nil, nil, fmt.Errorf("failed to create session: %w", err)
 		}
 		// Update session with refresh token
 		session.Token = tokens.RefreshToken
-		_, err = s.sessionManager.UpdateSession(ctx, session.Id, session)
+		_, err = s.sessionManager.Update(ctx, session.Id, session)
 		if err != nil {
 			s.logger.Error("failed to update session token", "error", err)
 		}
 	} else {
 		// Fallback to direct repository
 		sessionNow := time.Now()
-		session = &Session{
+		session = &sessions.Session{
 			Id:                   uuid.New(),
 			UserId:               user.Id,
 			Token:                tokens.RefreshToken,
@@ -271,7 +257,7 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 			IpAddress:            ipAddress,
 			UserAgent:            userAgent,
 		}
-		_, err = s.repo.CreateSession(ctx, session)
+		_, err = s.sessionsRepo.Create(ctx, session)
 		if err != nil {
 			s.logger.Error("failed to create session", "error", err)
 			return nil, nil, fmt.Errorf("failed to create session: %w", err)
@@ -296,13 +282,13 @@ func (s *Service) Logout(ctx context.Context, token string) error {
 	}
 
 	// Fallback to direct repository
-	session, err := s.repo.GetSessionByToken(ctx, token)
+	session, err := s.sessionsRepo.GetByToken(ctx, token)
 	if err != nil {
 		return ErrInvalidToken
 	}
 
 	// Delete session
-	if err := s.repo.DeleteSession(ctx, session.Id); err != nil {
+	if err := s.sessionsRepo.Delete(ctx, session.Id); err != nil {
 		s.logger.Error("failed to delete session", "error", err)
 		return fmt.Errorf("failed to delete session: %w", err)
 	}
@@ -313,5 +299,5 @@ func (s *Service) Logout(ctx context.Context, token string) error {
 
 // GetUserByID retrieves a user by their ID
 func (s *Service) GetUserByID(ctx context.Context, userID uuid.UUID) (*users.User, error) {
-	return s.usersRepo.GetUser(ctx, userID)
+	return s.usersRepo.Get(ctx, userID)
 }

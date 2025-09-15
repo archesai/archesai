@@ -15,4 +15,10 @@ var (
 
 	// ErrInvitationNotFound is returned when an invitation is not found
 	ErrInvitationNotFound = errors.New("invitation not found")
+
+	// ErrInvitationNotPending is returned when an invitation is not in pending status
+	ErrInvitationNotPending = errors.New("invitation is not pending")
+
+	// ErrInvitationExpired is returned when an invitation has expired
+	ErrInvitationExpired = errors.New("invitation expired")
 )

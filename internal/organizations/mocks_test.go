@@ -39,12 +39,12 @@ func (_m *MockCache) EXPECT() *MockCache_Expecter {
 	return &MockCache_Expecter{mock: &_m.Mock}
 }
 
-// DeleteOrganization provides a mock function for the type MockCache
-func (_mock *MockCache) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
+// Delete provides a mock function for the type MockCache
+func (_mock *MockCache) Delete(ctx context.Context, id uuid.UUID) error {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for DeleteOrganization")
+		panic("no return value specified for Delete")
 	}
 
 	var r0 error
@@ -56,19 +56,19 @@ func (_mock *MockCache) DeleteOrganization(ctx context.Context, id uuid.UUID) er
 	return r0
 }
 
-// MockCache_DeleteOrganization_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteOrganization'
-type MockCache_DeleteOrganization_Call struct {
+// MockCache_Delete_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Delete'
+type MockCache_Delete_Call struct {
 	*mock.Call
 }
 
-// DeleteOrganization is a helper method to define mock.On call
+// Delete is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockCache_Expecter) DeleteOrganization(ctx interface{}, id interface{}) *MockCache_DeleteOrganization_Call {
-	return &MockCache_DeleteOrganization_Call{Call: _e.mock.On("DeleteOrganization", ctx, id)}
+func (_e *MockCache_Expecter) Delete(ctx interface{}, id interface{}) *MockCache_Delete_Call {
+	return &MockCache_Delete_Call{Call: _e.mock.On("Delete", ctx, id)}
 }
 
-func (_c *MockCache_DeleteOrganization_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockCache_DeleteOrganization_Call {
+func (_c *MockCache_Delete_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockCache_Delete_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -86,12 +86,12 @@ func (_c *MockCache_DeleteOrganization_Call) Run(run func(ctx context.Context, i
 	return _c
 }
 
-func (_c *MockCache_DeleteOrganization_Call) Return(err error) *MockCache_DeleteOrganization_Call {
+func (_c *MockCache_Delete_Call) Return(err error) *MockCache_Delete_Call {
 	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *MockCache_DeleteOrganization_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockCache_DeleteOrganization_Call {
+func (_c *MockCache_Delete_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockCache_Delete_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -147,12 +147,12 @@ func (_c *MockCache_FlushAll_Call) RunAndReturn(run func(ctx context.Context) er
 	return _c
 }
 
-// GetOrganization provides a mock function for the type MockCache
-func (_mock *MockCache) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
+// Get provides a mock function for the type MockCache
+func (_mock *MockCache) Get(ctx context.Context, id uuid.UUID) (*Organization, error) {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetOrganization")
+		panic("no return value specified for Get")
 	}
 
 	var r0 *Organization
@@ -175,19 +175,19 @@ func (_mock *MockCache) GetOrganization(ctx context.Context, id uuid.UUID) (*Org
 	return r0, r1
 }
 
-// MockCache_GetOrganization_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetOrganization'
-type MockCache_GetOrganization_Call struct {
+// MockCache_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type MockCache_Get_Call struct {
 	*mock.Call
 }
 
-// GetOrganization is a helper method to define mock.On call
+// Get is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockCache_Expecter) GetOrganization(ctx interface{}, id interface{}) *MockCache_GetOrganization_Call {
-	return &MockCache_GetOrganization_Call{Call: _e.mock.On("GetOrganization", ctx, id)}
+func (_e *MockCache_Expecter) Get(ctx interface{}, id interface{}) *MockCache_Get_Call {
+	return &MockCache_Get_Call{Call: _e.mock.On("Get", ctx, id)}
 }
 
-func (_c *MockCache_GetOrganization_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockCache_GetOrganization_Call {
+func (_c *MockCache_Get_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockCache_Get_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -205,22 +205,158 @@ func (_c *MockCache_GetOrganization_Call) Run(run func(ctx context.Context, id u
 	return _c
 }
 
-func (_c *MockCache_GetOrganization_Call) Return(organization *Organization, err error) *MockCache_GetOrganization_Call {
+func (_c *MockCache_Get_Call) Return(organization *Organization, err error) *MockCache_Get_Call {
 	_c.Call.Return(organization, err)
 	return _c
 }
 
-func (_c *MockCache_GetOrganization_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*Organization, error)) *MockCache_GetOrganization_Call {
+func (_c *MockCache_Get_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*Organization, error)) *MockCache_Get_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// SetOrganization provides a mock function for the type MockCache
-func (_mock *MockCache) SetOrganization(ctx context.Context, entity *Organization, ttl time.Duration) error {
+// GetBySlug provides a mock function for the type MockCache
+func (_mock *MockCache) GetBySlug(ctx context.Context, slug string) (*Organization, error) {
+	ret := _mock.Called(ctx, slug)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBySlug")
+	}
+
+	var r0 *Organization
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*Organization, error)); ok {
+		return returnFunc(ctx, slug)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *Organization); ok {
+		r0 = returnFunc(ctx, slug)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Organization)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, slug)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockCache_GetBySlug_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBySlug'
+type MockCache_GetBySlug_Call struct {
+	*mock.Call
+}
+
+// GetBySlug is a helper method to define mock.On call
+//   - ctx context.Context
+//   - slug string
+func (_e *MockCache_Expecter) GetBySlug(ctx interface{}, slug interface{}) *MockCache_GetBySlug_Call {
+	return &MockCache_GetBySlug_Call{Call: _e.mock.On("GetBySlug", ctx, slug)}
+}
+
+func (_c *MockCache_GetBySlug_Call) Run(run func(ctx context.Context, slug string)) *MockCache_GetBySlug_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockCache_GetBySlug_Call) Return(organization *Organization, err error) *MockCache_GetBySlug_Call {
+	_c.Call.Return(organization, err)
+	return _c
+}
+
+func (_c *MockCache_GetBySlug_Call) RunAndReturn(run func(ctx context.Context, slug string) (*Organization, error)) *MockCache_GetBySlug_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetByStripeCustomerId provides a mock function for the type MockCache
+func (_mock *MockCache) GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error) {
+	ret := _mock.Called(ctx, stripeCustomerId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetByStripeCustomerId")
+	}
+
+	var r0 *Organization
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*Organization, error)); ok {
+		return returnFunc(ctx, stripeCustomerId)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *Organization); ok {
+		r0 = returnFunc(ctx, stripeCustomerId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*Organization)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, stripeCustomerId)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockCache_GetByStripeCustomerId_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByStripeCustomerId'
+type MockCache_GetByStripeCustomerId_Call struct {
+	*mock.Call
+}
+
+// GetByStripeCustomerId is a helper method to define mock.On call
+//   - ctx context.Context
+//   - stripeCustomerId string
+func (_e *MockCache_Expecter) GetByStripeCustomerId(ctx interface{}, stripeCustomerId interface{}) *MockCache_GetByStripeCustomerId_Call {
+	return &MockCache_GetByStripeCustomerId_Call{Call: _e.mock.On("GetByStripeCustomerId", ctx, stripeCustomerId)}
+}
+
+func (_c *MockCache_GetByStripeCustomerId_Call) Run(run func(ctx context.Context, stripeCustomerId string)) *MockCache_GetByStripeCustomerId_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockCache_GetByStripeCustomerId_Call) Return(organization *Organization, err error) *MockCache_GetByStripeCustomerId_Call {
+	_c.Call.Return(organization, err)
+	return _c
+}
+
+func (_c *MockCache_GetByStripeCustomerId_Call) RunAndReturn(run func(ctx context.Context, stripeCustomerId string) (*Organization, error)) *MockCache_GetByStripeCustomerId_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Set provides a mock function for the type MockCache
+func (_mock *MockCache) Set(ctx context.Context, entity *Organization, ttl time.Duration) error {
 	ret := _mock.Called(ctx, entity, ttl)
 
 	if len(ret) == 0 {
-		panic("no return value specified for SetOrganization")
+		panic("no return value specified for Set")
 	}
 
 	var r0 error
@@ -232,20 +368,20 @@ func (_mock *MockCache) SetOrganization(ctx context.Context, entity *Organizatio
 	return r0
 }
 
-// MockCache_SetOrganization_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetOrganization'
-type MockCache_SetOrganization_Call struct {
+// MockCache_Set_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Set'
+type MockCache_Set_Call struct {
 	*mock.Call
 }
 
-// SetOrganization is a helper method to define mock.On call
+// Set is a helper method to define mock.On call
 //   - ctx context.Context
 //   - entity *Organization
 //   - ttl time.Duration
-func (_e *MockCache_Expecter) SetOrganization(ctx interface{}, entity interface{}, ttl interface{}) *MockCache_SetOrganization_Call {
-	return &MockCache_SetOrganization_Call{Call: _e.mock.On("SetOrganization", ctx, entity, ttl)}
+func (_e *MockCache_Expecter) Set(ctx interface{}, entity interface{}, ttl interface{}) *MockCache_Set_Call {
+	return &MockCache_Set_Call{Call: _e.mock.On("Set", ctx, entity, ttl)}
 }
 
-func (_c *MockCache_SetOrganization_Call) Run(run func(ctx context.Context, entity *Organization, ttl time.Duration)) *MockCache_SetOrganization_Call {
+func (_c *MockCache_Set_Call) Run(run func(ctx context.Context, entity *Organization, ttl time.Duration)) *MockCache_Set_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -268,12 +404,12 @@ func (_c *MockCache_SetOrganization_Call) Run(run func(ctx context.Context, enti
 	return _c
 }
 
-func (_c *MockCache_SetOrganization_Call) Return(err error) *MockCache_SetOrganization_Call {
+func (_c *MockCache_Set_Call) Return(err error) *MockCache_Set_Call {
 	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *MockCache_SetOrganization_Call) RunAndReturn(run func(ctx context.Context, entity *Organization, ttl time.Duration) error) *MockCache_SetOrganization_Call {
+func (_c *MockCache_Set_Call) RunAndReturn(run func(ctx context.Context, entity *Organization, ttl time.Duration) error) *MockCache_Set_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -617,148 +753,12 @@ func (_m *MockRepository) EXPECT() *MockRepository_Expecter {
 	return &MockRepository_Expecter{mock: &_m.Mock}
 }
 
-// CreateInvitation provides a mock function for the type MockRepository
-func (_mock *MockRepository) CreateInvitation(ctx context.Context, entity *Invitation) (*Invitation, error) {
+// Create provides a mock function for the type MockRepository
+func (_mock *MockRepository) Create(ctx context.Context, entity *Organization) (*Organization, error) {
 	ret := _mock.Called(ctx, entity)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CreateInvitation")
-	}
-
-	var r0 *Invitation
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *Invitation) (*Invitation, error)); ok {
-		return returnFunc(ctx, entity)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *Invitation) *Invitation); ok {
-		r0 = returnFunc(ctx, entity)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*Invitation)
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, *Invitation) error); ok {
-		r1 = returnFunc(ctx, entity)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockRepository_CreateInvitation_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateInvitation'
-type MockRepository_CreateInvitation_Call struct {
-	*mock.Call
-}
-
-// CreateInvitation is a helper method to define mock.On call
-//   - ctx context.Context
-//   - entity *Invitation
-func (_e *MockRepository_Expecter) CreateInvitation(ctx interface{}, entity interface{}) *MockRepository_CreateInvitation_Call {
-	return &MockRepository_CreateInvitation_Call{Call: _e.mock.On("CreateInvitation", ctx, entity)}
-}
-
-func (_c *MockRepository_CreateInvitation_Call) Run(run func(ctx context.Context, entity *Invitation)) *MockRepository_CreateInvitation_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 *Invitation
-		if args[1] != nil {
-			arg1 = args[1].(*Invitation)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockRepository_CreateInvitation_Call) Return(invitation *Invitation, err error) *MockRepository_CreateInvitation_Call {
-	_c.Call.Return(invitation, err)
-	return _c
-}
-
-func (_c *MockRepository_CreateInvitation_Call) RunAndReturn(run func(ctx context.Context, entity *Invitation) (*Invitation, error)) *MockRepository_CreateInvitation_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// CreateMember provides a mock function for the type MockRepository
-func (_mock *MockRepository) CreateMember(ctx context.Context, entity *Member) (*Member, error) {
-	ret := _mock.Called(ctx, entity)
-
-	if len(ret) == 0 {
-		panic("no return value specified for CreateMember")
-	}
-
-	var r0 *Member
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *Member) (*Member, error)); ok {
-		return returnFunc(ctx, entity)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *Member) *Member); ok {
-		r0 = returnFunc(ctx, entity)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*Member)
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, *Member) error); ok {
-		r1 = returnFunc(ctx, entity)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockRepository_CreateMember_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateMember'
-type MockRepository_CreateMember_Call struct {
-	*mock.Call
-}
-
-// CreateMember is a helper method to define mock.On call
-//   - ctx context.Context
-//   - entity *Member
-func (_e *MockRepository_Expecter) CreateMember(ctx interface{}, entity interface{}) *MockRepository_CreateMember_Call {
-	return &MockRepository_CreateMember_Call{Call: _e.mock.On("CreateMember", ctx, entity)}
-}
-
-func (_c *MockRepository_CreateMember_Call) Run(run func(ctx context.Context, entity *Member)) *MockRepository_CreateMember_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 *Member
-		if args[1] != nil {
-			arg1 = args[1].(*Member)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockRepository_CreateMember_Call) Return(member *Member, err error) *MockRepository_CreateMember_Call {
-	_c.Call.Return(member, err)
-	return _c
-}
-
-func (_c *MockRepository_CreateMember_Call) RunAndReturn(run func(ctx context.Context, entity *Member) (*Member, error)) *MockRepository_CreateMember_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// CreateOrganization provides a mock function for the type MockRepository
-func (_mock *MockRepository) CreateOrganization(ctx context.Context, entity *Organization) (*Organization, error) {
-	ret := _mock.Called(ctx, entity)
-
-	if len(ret) == 0 {
-		panic("no return value specified for CreateOrganization")
+		panic("no return value specified for Create")
 	}
 
 	var r0 *Organization
@@ -781,19 +781,19 @@ func (_mock *MockRepository) CreateOrganization(ctx context.Context, entity *Org
 	return r0, r1
 }
 
-// MockRepository_CreateOrganization_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateOrganization'
-type MockRepository_CreateOrganization_Call struct {
+// MockRepository_Create_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Create'
+type MockRepository_Create_Call struct {
 	*mock.Call
 }
 
-// CreateOrganization is a helper method to define mock.On call
+// Create is a helper method to define mock.On call
 //   - ctx context.Context
 //   - entity *Organization
-func (_e *MockRepository_Expecter) CreateOrganization(ctx interface{}, entity interface{}) *MockRepository_CreateOrganization_Call {
-	return &MockRepository_CreateOrganization_Call{Call: _e.mock.On("CreateOrganization", ctx, entity)}
+func (_e *MockRepository_Expecter) Create(ctx interface{}, entity interface{}) *MockRepository_Create_Call {
+	return &MockRepository_Create_Call{Call: _e.mock.On("Create", ctx, entity)}
 }
 
-func (_c *MockRepository_CreateOrganization_Call) Run(run func(ctx context.Context, entity *Organization)) *MockRepository_CreateOrganization_Call {
+func (_c *MockRepository_Create_Call) Run(run func(ctx context.Context, entity *Organization)) *MockRepository_Create_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -811,22 +811,22 @@ func (_c *MockRepository_CreateOrganization_Call) Run(run func(ctx context.Conte
 	return _c
 }
 
-func (_c *MockRepository_CreateOrganization_Call) Return(organization *Organization, err error) *MockRepository_CreateOrganization_Call {
+func (_c *MockRepository_Create_Call) Return(organization *Organization, err error) *MockRepository_Create_Call {
 	_c.Call.Return(organization, err)
 	return _c
 }
 
-func (_c *MockRepository_CreateOrganization_Call) RunAndReturn(run func(ctx context.Context, entity *Organization) (*Organization, error)) *MockRepository_CreateOrganization_Call {
+func (_c *MockRepository_Create_Call) RunAndReturn(run func(ctx context.Context, entity *Organization) (*Organization, error)) *MockRepository_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// DeleteInvitation provides a mock function for the type MockRepository
-func (_mock *MockRepository) DeleteInvitation(ctx context.Context, id uuid.UUID) error {
+// Delete provides a mock function for the type MockRepository
+func (_mock *MockRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for DeleteInvitation")
+		panic("no return value specified for Delete")
 	}
 
 	var r0 error
@@ -838,19 +838,19 @@ func (_mock *MockRepository) DeleteInvitation(ctx context.Context, id uuid.UUID)
 	return r0
 }
 
-// MockRepository_DeleteInvitation_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteInvitation'
-type MockRepository_DeleteInvitation_Call struct {
+// MockRepository_Delete_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Delete'
+type MockRepository_Delete_Call struct {
 	*mock.Call
 }
 
-// DeleteInvitation is a helper method to define mock.On call
+// Delete is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockRepository_Expecter) DeleteInvitation(ctx interface{}, id interface{}) *MockRepository_DeleteInvitation_Call {
-	return &MockRepository_DeleteInvitation_Call{Call: _e.mock.On("DeleteInvitation", ctx, id)}
+func (_e *MockRepository_Expecter) Delete(ctx interface{}, id interface{}) *MockRepository_Delete_Call {
+	return &MockRepository_Delete_Call{Call: _e.mock.On("Delete", ctx, id)}
 }
 
-func (_c *MockRepository_DeleteInvitation_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_DeleteInvitation_Call {
+func (_c *MockRepository_Delete_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_Delete_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -868,272 +868,22 @@ func (_c *MockRepository_DeleteInvitation_Call) Run(run func(ctx context.Context
 	return _c
 }
 
-func (_c *MockRepository_DeleteInvitation_Call) Return(err error) *MockRepository_DeleteInvitation_Call {
+func (_c *MockRepository_Delete_Call) Return(err error) *MockRepository_Delete_Call {
 	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *MockRepository_DeleteInvitation_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockRepository_DeleteInvitation_Call {
+func (_c *MockRepository_Delete_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockRepository_Delete_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// DeleteMember provides a mock function for the type MockRepository
-func (_mock *MockRepository) DeleteMember(ctx context.Context, id uuid.UUID) error {
+// Get provides a mock function for the type MockRepository
+func (_mock *MockRepository) Get(ctx context.Context, id uuid.UUID) (*Organization, error) {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for DeleteMember")
-	}
-
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
-		r0 = returnFunc(ctx, id)
-	} else {
-		r0 = ret.Error(0)
-	}
-	return r0
-}
-
-// MockRepository_DeleteMember_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteMember'
-type MockRepository_DeleteMember_Call struct {
-	*mock.Call
-}
-
-// DeleteMember is a helper method to define mock.On call
-//   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockRepository_Expecter) DeleteMember(ctx interface{}, id interface{}) *MockRepository_DeleteMember_Call {
-	return &MockRepository_DeleteMember_Call{Call: _e.mock.On("DeleteMember", ctx, id)}
-}
-
-func (_c *MockRepository_DeleteMember_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_DeleteMember_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 uuid.UUID
-		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockRepository_DeleteMember_Call) Return(err error) *MockRepository_DeleteMember_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockRepository_DeleteMember_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockRepository_DeleteMember_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// DeleteOrganization provides a mock function for the type MockRepository
-func (_mock *MockRepository) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
-	ret := _mock.Called(ctx, id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for DeleteOrganization")
-	}
-
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
-		r0 = returnFunc(ctx, id)
-	} else {
-		r0 = ret.Error(0)
-	}
-	return r0
-}
-
-// MockRepository_DeleteOrganization_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteOrganization'
-type MockRepository_DeleteOrganization_Call struct {
-	*mock.Call
-}
-
-// DeleteOrganization is a helper method to define mock.On call
-//   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockRepository_Expecter) DeleteOrganization(ctx interface{}, id interface{}) *MockRepository_DeleteOrganization_Call {
-	return &MockRepository_DeleteOrganization_Call{Call: _e.mock.On("DeleteOrganization", ctx, id)}
-}
-
-func (_c *MockRepository_DeleteOrganization_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_DeleteOrganization_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 uuid.UUID
-		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockRepository_DeleteOrganization_Call) Return(err error) *MockRepository_DeleteOrganization_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockRepository_DeleteOrganization_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockRepository_DeleteOrganization_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// GetInvitation provides a mock function for the type MockRepository
-func (_mock *MockRepository) GetInvitation(ctx context.Context, id uuid.UUID) (*Invitation, error) {
-	ret := _mock.Called(ctx, id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetInvitation")
-	}
-
-	var r0 *Invitation
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (*Invitation, error)); ok {
-		return returnFunc(ctx, id)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) *Invitation); ok {
-		r0 = returnFunc(ctx, id)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*Invitation)
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
-		r1 = returnFunc(ctx, id)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockRepository_GetInvitation_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetInvitation'
-type MockRepository_GetInvitation_Call struct {
-	*mock.Call
-}
-
-// GetInvitation is a helper method to define mock.On call
-//   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockRepository_Expecter) GetInvitation(ctx interface{}, id interface{}) *MockRepository_GetInvitation_Call {
-	return &MockRepository_GetInvitation_Call{Call: _e.mock.On("GetInvitation", ctx, id)}
-}
-
-func (_c *MockRepository_GetInvitation_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_GetInvitation_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 uuid.UUID
-		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockRepository_GetInvitation_Call) Return(invitation *Invitation, err error) *MockRepository_GetInvitation_Call {
-	_c.Call.Return(invitation, err)
-	return _c
-}
-
-func (_c *MockRepository_GetInvitation_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*Invitation, error)) *MockRepository_GetInvitation_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// GetMember provides a mock function for the type MockRepository
-func (_mock *MockRepository) GetMember(ctx context.Context, id uuid.UUID) (*Member, error) {
-	ret := _mock.Called(ctx, id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetMember")
-	}
-
-	var r0 *Member
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) (*Member, error)); ok {
-		return returnFunc(ctx, id)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID) *Member); ok {
-		r0 = returnFunc(ctx, id)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*Member)
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
-		r1 = returnFunc(ctx, id)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockRepository_GetMember_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMember'
-type MockRepository_GetMember_Call struct {
-	*mock.Call
-}
-
-// GetMember is a helper method to define mock.On call
-//   - ctx context.Context
-//   - id uuid.UUID
-func (_e *MockRepository_Expecter) GetMember(ctx interface{}, id interface{}) *MockRepository_GetMember_Call {
-	return &MockRepository_GetMember_Call{Call: _e.mock.On("GetMember", ctx, id)}
-}
-
-func (_c *MockRepository_GetMember_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_GetMember_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 uuid.UUID
-		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockRepository_GetMember_Call) Return(member *Member, err error) *MockRepository_GetMember_Call {
-	_c.Call.Return(member, err)
-	return _c
-}
-
-func (_c *MockRepository_GetMember_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*Member, error)) *MockRepository_GetMember_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// GetOrganization provides a mock function for the type MockRepository
-func (_mock *MockRepository) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
-	ret := _mock.Called(ctx, id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetOrganization")
+		panic("no return value specified for Get")
 	}
 
 	var r0 *Organization
@@ -1156,19 +906,19 @@ func (_mock *MockRepository) GetOrganization(ctx context.Context, id uuid.UUID) 
 	return r0, r1
 }
 
-// MockRepository_GetOrganization_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetOrganization'
-type MockRepository_GetOrganization_Call struct {
+// MockRepository_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type MockRepository_Get_Call struct {
 	*mock.Call
 }
 
-// GetOrganization is a helper method to define mock.On call
+// Get is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockRepository_Expecter) GetOrganization(ctx interface{}, id interface{}) *MockRepository_GetOrganization_Call {
-	return &MockRepository_GetOrganization_Call{Call: _e.mock.On("GetOrganization", ctx, id)}
+func (_e *MockRepository_Expecter) Get(ctx interface{}, id interface{}) *MockRepository_Get_Call {
+	return &MockRepository_Get_Call{Call: _e.mock.On("Get", ctx, id)}
 }
 
-func (_c *MockRepository_GetOrganization_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_GetOrganization_Call {
+func (_c *MockRepository_Get_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_Get_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -1186,71 +936,65 @@ func (_c *MockRepository_GetOrganization_Call) Run(run func(ctx context.Context,
 	return _c
 }
 
-func (_c *MockRepository_GetOrganization_Call) Return(organization *Organization, err error) *MockRepository_GetOrganization_Call {
+func (_c *MockRepository_Get_Call) Return(organization *Organization, err error) *MockRepository_Get_Call {
 	_c.Call.Return(organization, err)
 	return _c
 }
 
-func (_c *MockRepository_GetOrganization_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*Organization, error)) *MockRepository_GetOrganization_Call {
+func (_c *MockRepository_Get_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*Organization, error)) *MockRepository_Get_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// ListInvitations provides a mock function for the type MockRepository
-func (_mock *MockRepository) ListInvitations(ctx context.Context, params ListInvitationsParams) ([]*Invitation, int64, error) {
-	ret := _mock.Called(ctx, params)
+// GetBySlug provides a mock function for the type MockRepository
+func (_mock *MockRepository) GetBySlug(ctx context.Context, slug string) (*Organization, error) {
+	ret := _mock.Called(ctx, slug)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ListInvitations")
+		panic("no return value specified for GetBySlug")
 	}
 
-	var r0 []*Invitation
-	var r1 int64
-	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, ListInvitationsParams) ([]*Invitation, int64, error)); ok {
-		return returnFunc(ctx, params)
+	var r0 *Organization
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*Organization, error)); ok {
+		return returnFunc(ctx, slug)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, ListInvitationsParams) []*Invitation); ok {
-		r0 = returnFunc(ctx, params)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *Organization); ok {
+		r0 = returnFunc(ctx, slug)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*Invitation)
+			r0 = ret.Get(0).(*Organization)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, ListInvitationsParams) int64); ok {
-		r1 = returnFunc(ctx, params)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, slug)
 	} else {
-		r1 = ret.Get(1).(int64)
+		r1 = ret.Error(1)
 	}
-	if returnFunc, ok := ret.Get(2).(func(context.Context, ListInvitationsParams) error); ok {
-		r2 = returnFunc(ctx, params)
-	} else {
-		r2 = ret.Error(2)
-	}
-	return r0, r1, r2
+	return r0, r1
 }
 
-// MockRepository_ListInvitations_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListInvitations'
-type MockRepository_ListInvitations_Call struct {
+// MockRepository_GetBySlug_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBySlug'
+type MockRepository_GetBySlug_Call struct {
 	*mock.Call
 }
 
-// ListInvitations is a helper method to define mock.On call
+// GetBySlug is a helper method to define mock.On call
 //   - ctx context.Context
-//   - params ListInvitationsParams
-func (_e *MockRepository_Expecter) ListInvitations(ctx interface{}, params interface{}) *MockRepository_ListInvitations_Call {
-	return &MockRepository_ListInvitations_Call{Call: _e.mock.On("ListInvitations", ctx, params)}
+//   - slug string
+func (_e *MockRepository_Expecter) GetBySlug(ctx interface{}, slug interface{}) *MockRepository_GetBySlug_Call {
+	return &MockRepository_GetBySlug_Call{Call: _e.mock.On("GetBySlug", ctx, slug)}
 }
 
-func (_c *MockRepository_ListInvitations_Call) Run(run func(ctx context.Context, params ListInvitationsParams)) *MockRepository_ListInvitations_Call {
+func (_c *MockRepository_GetBySlug_Call) Run(run func(ctx context.Context, slug string)) *MockRepository_GetBySlug_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 ListInvitationsParams
+		var arg1 string
 		if args[1] != nil {
-			arg1 = args[1].(ListInvitationsParams)
+			arg1 = args[1].(string)
 		}
 		run(
 			arg0,
@@ -1260,71 +1004,65 @@ func (_c *MockRepository_ListInvitations_Call) Run(run func(ctx context.Context,
 	return _c
 }
 
-func (_c *MockRepository_ListInvitations_Call) Return(invitations []*Invitation, n int64, err error) *MockRepository_ListInvitations_Call {
-	_c.Call.Return(invitations, n, err)
+func (_c *MockRepository_GetBySlug_Call) Return(organization *Organization, err error) *MockRepository_GetBySlug_Call {
+	_c.Call.Return(organization, err)
 	return _c
 }
 
-func (_c *MockRepository_ListInvitations_Call) RunAndReturn(run func(ctx context.Context, params ListInvitationsParams) ([]*Invitation, int64, error)) *MockRepository_ListInvitations_Call {
+func (_c *MockRepository_GetBySlug_Call) RunAndReturn(run func(ctx context.Context, slug string) (*Organization, error)) *MockRepository_GetBySlug_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// ListMembers provides a mock function for the type MockRepository
-func (_mock *MockRepository) ListMembers(ctx context.Context, params ListMembersParams) ([]*Member, int64, error) {
-	ret := _mock.Called(ctx, params)
+// GetByStripeCustomerId provides a mock function for the type MockRepository
+func (_mock *MockRepository) GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error) {
+	ret := _mock.Called(ctx, stripeCustomerId)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ListMembers")
+		panic("no return value specified for GetByStripeCustomerId")
 	}
 
-	var r0 []*Member
-	var r1 int64
-	var r2 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, ListMembersParams) ([]*Member, int64, error)); ok {
-		return returnFunc(ctx, params)
+	var r0 *Organization
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*Organization, error)); ok {
+		return returnFunc(ctx, stripeCustomerId)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, ListMembersParams) []*Member); ok {
-		r0 = returnFunc(ctx, params)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *Organization); ok {
+		r0 = returnFunc(ctx, stripeCustomerId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*Member)
+			r0 = ret.Get(0).(*Organization)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, ListMembersParams) int64); ok {
-		r1 = returnFunc(ctx, params)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, stripeCustomerId)
 	} else {
-		r1 = ret.Get(1).(int64)
+		r1 = ret.Error(1)
 	}
-	if returnFunc, ok := ret.Get(2).(func(context.Context, ListMembersParams) error); ok {
-		r2 = returnFunc(ctx, params)
-	} else {
-		r2 = ret.Error(2)
-	}
-	return r0, r1, r2
+	return r0, r1
 }
 
-// MockRepository_ListMembers_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListMembers'
-type MockRepository_ListMembers_Call struct {
+// MockRepository_GetByStripeCustomerId_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByStripeCustomerId'
+type MockRepository_GetByStripeCustomerId_Call struct {
 	*mock.Call
 }
 
-// ListMembers is a helper method to define mock.On call
+// GetByStripeCustomerId is a helper method to define mock.On call
 //   - ctx context.Context
-//   - params ListMembersParams
-func (_e *MockRepository_Expecter) ListMembers(ctx interface{}, params interface{}) *MockRepository_ListMembers_Call {
-	return &MockRepository_ListMembers_Call{Call: _e.mock.On("ListMembers", ctx, params)}
+//   - stripeCustomerId string
+func (_e *MockRepository_Expecter) GetByStripeCustomerId(ctx interface{}, stripeCustomerId interface{}) *MockRepository_GetByStripeCustomerId_Call {
+	return &MockRepository_GetByStripeCustomerId_Call{Call: _e.mock.On("GetByStripeCustomerId", ctx, stripeCustomerId)}
 }
 
-func (_c *MockRepository_ListMembers_Call) Run(run func(ctx context.Context, params ListMembersParams)) *MockRepository_ListMembers_Call {
+func (_c *MockRepository_GetByStripeCustomerId_Call) Run(run func(ctx context.Context, stripeCustomerId string)) *MockRepository_GetByStripeCustomerId_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 ListMembersParams
+		var arg1 string
 		if args[1] != nil {
-			arg1 = args[1].(ListMembersParams)
+			arg1 = args[1].(string)
 		}
 		run(
 			arg0,
@@ -1334,22 +1072,22 @@ func (_c *MockRepository_ListMembers_Call) Run(run func(ctx context.Context, par
 	return _c
 }
 
-func (_c *MockRepository_ListMembers_Call) Return(members []*Member, n int64, err error) *MockRepository_ListMembers_Call {
-	_c.Call.Return(members, n, err)
+func (_c *MockRepository_GetByStripeCustomerId_Call) Return(organization *Organization, err error) *MockRepository_GetByStripeCustomerId_Call {
+	_c.Call.Return(organization, err)
 	return _c
 }
 
-func (_c *MockRepository_ListMembers_Call) RunAndReturn(run func(ctx context.Context, params ListMembersParams) ([]*Member, int64, error)) *MockRepository_ListMembers_Call {
+func (_c *MockRepository_GetByStripeCustomerId_Call) RunAndReturn(run func(ctx context.Context, stripeCustomerId string) (*Organization, error)) *MockRepository_GetByStripeCustomerId_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// ListOrganizations provides a mock function for the type MockRepository
-func (_mock *MockRepository) ListOrganizations(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error) {
+// List provides a mock function for the type MockRepository
+func (_mock *MockRepository) List(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error) {
 	ret := _mock.Called(ctx, params)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ListOrganizations")
+		panic("no return value specified for List")
 	}
 
 	var r0 []*Organization
@@ -1378,19 +1116,19 @@ func (_mock *MockRepository) ListOrganizations(ctx context.Context, params ListO
 	return r0, r1, r2
 }
 
-// MockRepository_ListOrganizations_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListOrganizations'
-type MockRepository_ListOrganizations_Call struct {
+// MockRepository_List_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'List'
+type MockRepository_List_Call struct {
 	*mock.Call
 }
 
-// ListOrganizations is a helper method to define mock.On call
+// List is a helper method to define mock.On call
 //   - ctx context.Context
 //   - params ListOrganizationsParams
-func (_e *MockRepository_Expecter) ListOrganizations(ctx interface{}, params interface{}) *MockRepository_ListOrganizations_Call {
-	return &MockRepository_ListOrganizations_Call{Call: _e.mock.On("ListOrganizations", ctx, params)}
+func (_e *MockRepository_Expecter) List(ctx interface{}, params interface{}) *MockRepository_List_Call {
+	return &MockRepository_List_Call{Call: _e.mock.On("List", ctx, params)}
 }
 
-func (_c *MockRepository_ListOrganizations_Call) Run(run func(ctx context.Context, params ListOrganizationsParams)) *MockRepository_ListOrganizations_Call {
+func (_c *MockRepository_List_Call) Run(run func(ctx context.Context, params ListOrganizationsParams)) *MockRepository_List_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -1408,170 +1146,22 @@ func (_c *MockRepository_ListOrganizations_Call) Run(run func(ctx context.Contex
 	return _c
 }
 
-func (_c *MockRepository_ListOrganizations_Call) Return(organizations []*Organization, n int64, err error) *MockRepository_ListOrganizations_Call {
+func (_c *MockRepository_List_Call) Return(organizations []*Organization, n int64, err error) *MockRepository_List_Call {
 	_c.Call.Return(organizations, n, err)
 	return _c
 }
 
-func (_c *MockRepository_ListOrganizations_Call) RunAndReturn(run func(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error)) *MockRepository_ListOrganizations_Call {
+func (_c *MockRepository_List_Call) RunAndReturn(run func(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error)) *MockRepository_List_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// UpdateInvitation provides a mock function for the type MockRepository
-func (_mock *MockRepository) UpdateInvitation(ctx context.Context, id uuid.UUID, entity *Invitation) (*Invitation, error) {
+// Update provides a mock function for the type MockRepository
+func (_mock *MockRepository) Update(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error) {
 	ret := _mock.Called(ctx, id, entity)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UpdateInvitation")
-	}
-
-	var r0 *Invitation
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID, *Invitation) (*Invitation, error)); ok {
-		return returnFunc(ctx, id, entity)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID, *Invitation) *Invitation); ok {
-		r0 = returnFunc(ctx, id, entity)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*Invitation)
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID, *Invitation) error); ok {
-		r1 = returnFunc(ctx, id, entity)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockRepository_UpdateInvitation_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateInvitation'
-type MockRepository_UpdateInvitation_Call struct {
-	*mock.Call
-}
-
-// UpdateInvitation is a helper method to define mock.On call
-//   - ctx context.Context
-//   - id uuid.UUID
-//   - entity *Invitation
-func (_e *MockRepository_Expecter) UpdateInvitation(ctx interface{}, id interface{}, entity interface{}) *MockRepository_UpdateInvitation_Call {
-	return &MockRepository_UpdateInvitation_Call{Call: _e.mock.On("UpdateInvitation", ctx, id, entity)}
-}
-
-func (_c *MockRepository_UpdateInvitation_Call) Run(run func(ctx context.Context, id uuid.UUID, entity *Invitation)) *MockRepository_UpdateInvitation_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 uuid.UUID
-		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
-		}
-		var arg2 *Invitation
-		if args[2] != nil {
-			arg2 = args[2].(*Invitation)
-		}
-		run(
-			arg0,
-			arg1,
-			arg2,
-		)
-	})
-	return _c
-}
-
-func (_c *MockRepository_UpdateInvitation_Call) Return(invitation *Invitation, err error) *MockRepository_UpdateInvitation_Call {
-	_c.Call.Return(invitation, err)
-	return _c
-}
-
-func (_c *MockRepository_UpdateInvitation_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID, entity *Invitation) (*Invitation, error)) *MockRepository_UpdateInvitation_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// UpdateMember provides a mock function for the type MockRepository
-func (_mock *MockRepository) UpdateMember(ctx context.Context, id uuid.UUID, entity *Member) (*Member, error) {
-	ret := _mock.Called(ctx, id, entity)
-
-	if len(ret) == 0 {
-		panic("no return value specified for UpdateMember")
-	}
-
-	var r0 *Member
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID, *Member) (*Member, error)); ok {
-		return returnFunc(ctx, id, entity)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, uuid.UUID, *Member) *Member); ok {
-		r0 = returnFunc(ctx, id, entity)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*Member)
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, uuid.UUID, *Member) error); ok {
-		r1 = returnFunc(ctx, id, entity)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockRepository_UpdateMember_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateMember'
-type MockRepository_UpdateMember_Call struct {
-	*mock.Call
-}
-
-// UpdateMember is a helper method to define mock.On call
-//   - ctx context.Context
-//   - id uuid.UUID
-//   - entity *Member
-func (_e *MockRepository_Expecter) UpdateMember(ctx interface{}, id interface{}, entity interface{}) *MockRepository_UpdateMember_Call {
-	return &MockRepository_UpdateMember_Call{Call: _e.mock.On("UpdateMember", ctx, id, entity)}
-}
-
-func (_c *MockRepository_UpdateMember_Call) Run(run func(ctx context.Context, id uuid.UUID, entity *Member)) *MockRepository_UpdateMember_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 uuid.UUID
-		if args[1] != nil {
-			arg1 = args[1].(uuid.UUID)
-		}
-		var arg2 *Member
-		if args[2] != nil {
-			arg2 = args[2].(*Member)
-		}
-		run(
-			arg0,
-			arg1,
-			arg2,
-		)
-	})
-	return _c
-}
-
-func (_c *MockRepository_UpdateMember_Call) Return(member *Member, err error) *MockRepository_UpdateMember_Call {
-	_c.Call.Return(member, err)
-	return _c
-}
-
-func (_c *MockRepository_UpdateMember_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID, entity *Member) (*Member, error)) *MockRepository_UpdateMember_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// UpdateOrganization provides a mock function for the type MockRepository
-func (_mock *MockRepository) UpdateOrganization(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error) {
-	ret := _mock.Called(ctx, id, entity)
-
-	if len(ret) == 0 {
-		panic("no return value specified for UpdateOrganization")
+		panic("no return value specified for Update")
 	}
 
 	var r0 *Organization
@@ -1594,20 +1184,20 @@ func (_mock *MockRepository) UpdateOrganization(ctx context.Context, id uuid.UUI
 	return r0, r1
 }
 
-// MockRepository_UpdateOrganization_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateOrganization'
-type MockRepository_UpdateOrganization_Call struct {
+// MockRepository_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type MockRepository_Update_Call struct {
 	*mock.Call
 }
 
-// UpdateOrganization is a helper method to define mock.On call
+// Update is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
 //   - entity *Organization
-func (_e *MockRepository_Expecter) UpdateOrganization(ctx interface{}, id interface{}, entity interface{}) *MockRepository_UpdateOrganization_Call {
-	return &MockRepository_UpdateOrganization_Call{Call: _e.mock.On("UpdateOrganization", ctx, id, entity)}
+func (_e *MockRepository_Expecter) Update(ctx interface{}, id interface{}, entity interface{}) *MockRepository_Update_Call {
+	return &MockRepository_Update_Call{Call: _e.mock.On("Update", ctx, id, entity)}
 }
 
-func (_c *MockRepository_UpdateOrganization_Call) Run(run func(ctx context.Context, id uuid.UUID, entity *Organization)) *MockRepository_UpdateOrganization_Call {
+func (_c *MockRepository_Update_Call) Run(run func(ctx context.Context, id uuid.UUID, entity *Organization)) *MockRepository_Update_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -1630,12 +1220,12 @@ func (_c *MockRepository_UpdateOrganization_Call) Run(run func(ctx context.Conte
 	return _c
 }
 
-func (_c *MockRepository_UpdateOrganization_Call) Return(organization *Organization, err error) *MockRepository_UpdateOrganization_Call {
+func (_c *MockRepository_Update_Call) Return(organization *Organization, err error) *MockRepository_Update_Call {
 	_c.Call.Return(organization, err)
 	return _c
 }
 
-func (_c *MockRepository_UpdateOrganization_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error)) *MockRepository_UpdateOrganization_Call {
+func (_c *MockRepository_Update_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error)) *MockRepository_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }

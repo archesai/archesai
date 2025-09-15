@@ -43,7 +43,7 @@ func (h *Handler) GetOneUser(ctx context.Context, req GetOneUserRequestObject) (
 		}, nil
 	}
 
-	user, err := h.service.GetUser(ctx, userID)
+	user, err := h.service.Get(ctx, userID)
 	if err != nil {
 		switch err {
 		case ErrUserNotFound:
@@ -93,7 +93,7 @@ func (h *Handler) UpdateUser(ctx context.Context, req UpdateUserRequestObject) (
 		updateReq.Image = req.Body.Image
 	}
 
-	user, err := h.service.UpdateUser(ctx, userID, updateReq)
+	user, err := h.service.Update(ctx, userID, updateReq)
 	if err != nil {
 		switch err {
 		case ErrUserNotFound:
@@ -138,7 +138,7 @@ func (h *Handler) DeleteUser(ctx context.Context, req DeleteUserRequestObject) (
 	}
 
 	// Get the user first for the response
-	user, err := h.service.GetUser(ctx, userID)
+	user, err := h.service.Get(ctx, userID)
 	if err != nil {
 		switch err {
 		case ErrUserNotFound:
@@ -163,7 +163,7 @@ func (h *Handler) DeleteUser(ctx context.Context, req DeleteUserRequestObject) (
 		}
 	}
 
-	err = h.service.DeleteUser(ctx, userID)
+	err = h.service.Delete(ctx, userID)
 	if err != nil {
 		h.logger.Error("failed to delete user", "error", err)
 		return DeleteUser404ApplicationProblemPlusJSONResponse{
@@ -194,7 +194,7 @@ func (h *Handler) FindManyUsers(ctx context.Context, req FindManyUsersRequestObj
 		offset = int32((req.Params.Page.Number - 1) * int(limit))
 	}
 
-	users, err := h.service.ListUsers(ctx, limit, offset)
+	users, err := h.service.List(ctx, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list users", "error", err)
 		return FindManyUsers400ApplicationProblemPlusJSONResponse{

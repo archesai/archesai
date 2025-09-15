@@ -2,7 +2,7 @@ post:
   operationId: createLabel
   summary: Create a new label
   tags:
-    - Content
+    - Labels
   description: Create a new label
   requestBody:
     content:
@@ -41,7 +41,7 @@ get:
   operationId: findManyLabels
   summary: Find many labels
   tags:
-    - Content
+    - Labels
   description: Find many labels
   parameters:
     - $ref: ../components/parameters/LabelsFilter.yaml

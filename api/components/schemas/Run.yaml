@@ -5,12 +5,15 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [pipelineId, organizationId, toolId]
     additional_methods:
-      - name: GetRunsByPipeline
+      - name: ListByPipeline
         params: [pipelineId]
-      - name: GetRunsByOrganization
+        returns: multiple
+      - name: ListByOrganization
         params: [organizationId]
-      - name: GetRunsByTool
+        returns: multiple
+      - name: ListByTool
         params: [toolId]
+        returns: multiple
 type: object
 properties:
   createdAt:

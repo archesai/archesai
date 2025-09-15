@@ -56,9 +56,16 @@
 │   │   ├── service_test.go     # Unit tests with mocks
 │   │   └── postgres_test.go    # Integration tests
 │   │
+│   ├── accounts/                # Account management domain
+│   ├── artifacts/               # Artifact storage and management
+│   ├── invitations/             # Invitation system
+│   ├── labels/                  # Label management
+│   ├── members/                 # Organization members
 │   ├── organizations/           # Multi-tenancy domain
-│   ├── workflows/               # Workflow automation domain
-│   ├── content/                 # Content management domain
+│   ├── pipelines/               # Pipeline execution engine
+│   ├── runs/                    # Pipeline run management
+│   ├── sessions/                # Session management
+│   ├── tools/                   # Tool registry and integration
 │   ├── users/                   # User profiles domain
 │   │
 │   ├── database/
@@ -75,11 +82,23 @@
 │   │   ├── templates/          # Go templates
 │   │   └── generator.go        # Generation logic
 │   │
-│   ├── config/                 # Configuration
-│   │   └── config.go           # Env vars, validation
+│   ├── cache/                   # Cache utilities
+│   │
+│   ├── cli/                     # CLI commands
+│   │   └── commands.go         # Command definitions
+│   │
+│   ├── config/                  # Configuration
+│   │   ├── config.go           # Env vars, validation
+│   │   └── loader.go           # Config loading utilities
 │   │
 │   ├── health/                 # Health checks
 │   │   └── handler.go          # /health/live, /health/ready
+│   │
+│   ├── email/                  # Email service
+│   │   └── service.go          # Email sending logic
+│   │
+│   ├── events/                 # Event system
+│   │   └── publisher.go        # Event publishing
 │   │
 │   ├── llm/                    # LLM integrations
 │   │   ├── client.go           # Provider abstraction
@@ -177,7 +196,7 @@ Each domain in `/internal` follows this pattern:
 
 ```text
 domain/
-├── domain.go          # Core entities, value objects, domain rules
+├── generate.go        # Code generation annotations
 ├── service.go         # Business logic, use cases
 ├── handler.go         # HTTP request/response handling
 ├── middleware.go      # Domain-specific middleware (optional)
@@ -186,11 +205,11 @@ domain/
 ├── events.gen.go      # Generated event publisher (optional)
 ├── http.gen.go        # Generated HTTP interface from OpenAPI
 ├── types.gen.go       # Generated types from OpenAPI
-├── mappers.go         # Convert between layers (entity <-> DTO)
+├── mappers.go         # Convert between layers (optional)
 ├── service_test.go    # Unit tests with mocked dependencies
-├── handler_test.go    # HTTP handler tests
-├── mocks_test.go      # Test mocks and fixtures
-└── postgres_test.go   # Integration tests with real database
+├── handler_test.go    # HTTP handler tests (optional)
+├── mocks_test.go      # Generated test mocks
+└── postgres_test.go   # Integration tests (optional)
 ```
 
 ## Generated Files
@@ -218,11 +237,11 @@ domain/
 
 ### Go Files
 
-- `domain.go` - Domain entities and rules
+- `generate.go` - Code generation annotations
 - `service.go` - Business logic
 - `handler.go` - HTTP handlers
 - `middleware.go` - Middleware functions
-- `mappers.go` - Type conversions
+- `mappers.go` - Type conversions (optional)
 - `*_test.go` - Test files
 - `*.gen.go` - Generated (don't edit)
 

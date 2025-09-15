@@ -2,7 +2,7 @@ delete:
   operationId: deletePipeline
   summary: Delete a pipeline
   tags:
-    - Workflows
+    - Pipelines
   description: Delete a pipeline
   parameters:
     - schema:
@@ -34,7 +34,7 @@ get:
   operationId: getOnePipeline
   summary: Find a pipeline
   tags:
-    - Workflows
+    - Pipelines
   description: Find a pipeline
   parameters:
     - schema:
@@ -66,7 +66,7 @@ patch:
   operationId: updatePipeline
   summary: Update a pipeline
   tags:
-    - Workflows
+    - Pipelines
   description: Update a pipeline
   requestBody:
     content:

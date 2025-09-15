@@ -6,10 +6,10 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [userId, accountId]
     additional_methods:
-      - name: GetAccountByProviderID
+      - name: GetByProviderId
         params: [provider, providerAccountId]
         returns: single
-      - name: ListUserAccounts
+      - name: ListByUserId
         params: [userId]
         returns: multiple
   cache:

@@ -7,41 +7,17 @@ import (
 	"github.com/google/uuid"
 )
 
-// Repository provides data access operations for organizations domain.
+// Repository handles organization persistence
 type Repository interface {
+	Create(ctx context.Context, entity *Organization) (*Organization, error)
+	Get(ctx context.Context, id uuid.UUID) (*Organization, error)
+	Update(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error)
 
-	// Invitation operations
-	CreateInvitation(ctx context.Context, entity *Invitation) (*Invitation, error)
-	GetInvitation(ctx context.Context, id uuid.UUID) (*Invitation, error)
-	UpdateInvitation(ctx context.Context, id uuid.UUID, entity *Invitation) (*Invitation, error)
-	DeleteInvitation(ctx context.Context, id uuid.UUID) error
-	ListInvitations(ctx context.Context, params ListInvitationsParams) ([]*Invitation, int64, error)
-
-	// Member operations
-	CreateMember(ctx context.Context, entity *Member) (*Member, error)
-	GetMember(ctx context.Context, id uuid.UUID) (*Member, error)
-	UpdateMember(ctx context.Context, id uuid.UUID, entity *Member) (*Member, error)
-	DeleteMember(ctx context.Context, id uuid.UUID) error
-	ListMembers(ctx context.Context, params ListMembersParams) ([]*Member, int64, error)
-
-	// Organization operations
-	CreateOrganization(ctx context.Context, entity *Organization) (*Organization, error)
-	GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error)
-	UpdateOrganization(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error)
-	DeleteOrganization(ctx context.Context, id uuid.UUID) error
-	ListOrganizations(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error)
-}
-
-// ListInvitationsParams represents parameters for listing invitations.
-type ListInvitationsParams struct {
-	Limit  int
-	Offset int
-}
-
-// ListMembersParams represents parameters for listing members.
-type ListMembersParams struct {
-	Limit  int
-	Offset int
+	// Additional operations
+	GetBySlug(ctx context.Context, slug string) (*Organization, error)
+	GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error)
 }
 
 // ListOrganizationsParams represents parameters for listing organizations.

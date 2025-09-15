@@ -16,22 +16,22 @@ backend.
 
 ### 1. Mock Repository Pattern
 
-Instead of using mocking libraries like `gomock` or `testify/mock`, we implement manual mock
-repositories:
+We use mockery v3 to generate mocks from interfaces. This is configured in `.mockery.yaml`:
 
-```go
-type MockRepository struct {
-    entities map[uuid.UUID]*Entity
-    err      error  // Inject errors for testing error paths
-}
+```bash
+# Generate mocks for all interfaces
+make generate-mocks
+
+# Or directly
+go run github.com/vektra/mockery/v2
 ```
 
 **Benefits:**
 
-- No external dependencies
-- Full control over mock behavior
-- Compile-time type safety
-- Easy to understand and maintain
+- Automatic generation from interfaces
+- Consistent mock patterns
+- Type-safe mocks
+- Integration with testify assertions
 
 ### 2. Test Organization
 
@@ -58,9 +58,20 @@ For database integration tests, we use testcontainers:
 
 Current coverage by package:
 
-- `internal/auth` - 18.3% (most comprehensive)
-- `internal/organizations` - 8.3%
-- `internal/workflows` - 5.9%
+- `internal/auth` - 20.2%
+- `internal/sessions` - 27.2%
+- `internal/config` - 47.2%
+- `internal/artifacts` - 17.2%
+- `internal/labels` - 16.3%
+- `internal/pipelines` - 12.8%
+- `internal/users` - 12.2%
+- `internal/runs` - 6.4%
+- `internal/health` - 3.9%
+- `internal/organizations` - 3.3%
+- `internal/tools` - 0.0%
+- `internal/accounts` - 0.0%
+- `internal/invitations` - 0.0%
+- `internal/members` - 0.0%
 
 Target: 80%+ coverage for critical business logic
 
@@ -180,15 +191,15 @@ go test -race ./...
    - Auth middleware uses `AuthUserContextKey` and `AuthClaimsContextKey`
    - Not `UserContextKey` or `ClaimsContextKey`
 
-### Mock Repository Checklist
+### Mock Generation Checklist
 
-When creating a new mock repository:
+When creating mocks for testing:
 
-1. Implement all interface methods (use compile-time check)
-2. Include both success and error injection paths
-3. Properly handle not-found cases
-4. Update timestamps in Create/Update operations
-5. Use maps for in-memory storage
+1. Never create manual mocks - always use mockery
+2. Define interfaces first, then generate mocks
+3. Run `make generate-mocks` after interface changes
+4. Use generated mocks in `mocks_test.go` files
+5. Mock files follow pattern `Mock{InterfaceName}`
 
 ### Common Pitfalls
 
@@ -226,15 +237,18 @@ org := &Organization{
 
 ### Priority 1 (Business Critical)
 
-- [ ] Auth domain - Target: 80%
-- [ ] Organizations domain - Target: 70%
-- [ ] Workflows domain - Target: 70%
-- [ ] Content domain - Target: 70%
+- [ ] Auth domain - Current: 20.2%, Target: 80%
+- [ ] Organizations domain - Current: 3.3%, Target: 70%
+- [ ] Pipelines domain - Current: 12.8%, Target: 70%
+- [ ] Artifacts domain - Current: 17.2%, Target: 70%
+- [ ] Tools domain - Current: 0.0%, Target: 60%
+- [ ] Users domain - Current: 12.2%, Target: 60%
 
 ### Priority 2 (Infrastructure)
 
+- [x] Config package - Current: 47.2%, Target: 50%
+- [ ] Sessions package - Current: 27.2%, Target: 60%
 - [ ] Database package - Target: 60%
-- [ ] Config package - Target: 50%
 - [ ] Storage package - Target: 60%
 
 ### Priority 3 (Supporting)

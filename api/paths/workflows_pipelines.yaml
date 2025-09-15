@@ -2,7 +2,7 @@ post:
   operationId: createPipeline
   summary: Create a new pipeline
   tags:
-    - Workflows
+    - Pipelines
   description: Create a new pipeline
   requestBody:
     content:
@@ -44,7 +44,7 @@ get:
   operationId: findManyPipelines
   summary: Find many pipelines
   tags:
-    - Workflows
+    - Pipelines
   description: Find many pipelines
   parameters:
     - $ref: ../components/parameters/PipelinesFilter.yaml

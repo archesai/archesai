@@ -2,7 +2,7 @@ post:
   operationId: createArtifact
   summary: Create a new artifact
   tags:
-    - Content
+    - Artifacts
   description: Create a new artifact
   requestBody:
     content:
@@ -46,7 +46,7 @@ get:
   operationId: findManyArtifacts
   summary: Find many artifacts
   tags:
-    - Content
+    - Artifacts
   description: Find many artifacts
   parameters:
     - $ref: ../components/parameters/ArtifactsFilter.yaml

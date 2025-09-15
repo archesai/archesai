@@ -7,18 +7,16 @@ import (
 	"github.com/google/uuid"
 )
 
-// Repository provides data access operations for users domain.
+// Repository handles user persistence
 type Repository interface {
+	Create(ctx context.Context, entity *User) (*User, error)
+	Get(ctx context.Context, id uuid.UUID) (*User, error)
+	Update(ctx context.Context, id uuid.UUID, entity *User) (*User, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, params ListUsersParams) ([]*User, int64, error)
 
-	// User operations
-	CreateUser(ctx context.Context, entity *User) (*User, error)
-	GetUser(ctx context.Context, id uuid.UUID) (*User, error)
-	UpdateUser(ctx context.Context, id uuid.UUID, entity *User) (*User, error)
-	DeleteUser(ctx context.Context, id uuid.UUID) error
-	ListUsers(ctx context.Context, params ListUsersParams) ([]*User, int64, error)
-
-	// Additional User operations
-	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	// Additional operations
+	GetByEmail(ctx context.Context, email string) (*User, error)
 }
 
 // ListUsersParams represents parameters for listing users.

@@ -119,19 +119,20 @@ generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 .PHONY: generate-oapi
 generate-oapi: generate-codegen-types ## Generate OpenAPI server code
 	@echo -e "$(YELLOW)▶ Generating OpenAPI server code...$(NC)"
-	@echo "  Generating domain types..."
-	@for domain in auth content config health organizations users workflows; do \
-		cd internal/$$domain && \
-		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
-		cd - > /dev/null; \
+	@for dir in internal/*/generate.go; do \
+		if [ -f "$$dir" ]; then \
+			domain=$$(dirname $$dir | xargs basename); \
+			cd internal/$$domain && \
+			{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
+			cd - > /dev/null; \
+		fi \
 	done
-	@echo "  HTTP handlers generation is now part of domain types generation"
 	@echo -e "$(GREEN)✓ OpenAPI generation complete!$(NC)"
 
 .PHONY: generate-codegen-types
 generate-codegen-types: api-bundle ## Generate types for codegen configuration
 	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
-	@cd internal/codegen && go generate codegen.go
+	@cd internal/codegen && go generate
 	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
 
 .PHONY: generate-codegen
@@ -252,11 +253,11 @@ format-go: ## Format Go code
 	@go fmt ./...
 	@echo -e "$(GREEN)✓ Go code formatted!$(NC)"
 
-.PHONY: format-go
-format-prettier: ## Format Go code
-	@echo -e "$(YELLOW)▶ Formatting Go code...$(NC)"
+.PHONY: format-prettier
+format-prettier: ## Format code with Prettier
+	@echo -e "$(YELLOW)▶ Formatting code with Prettier...$(NC)"
 	@pnpm prettier --list-different --write --log-level warn .
-	@echo -e "$(GREEN)✓ Go code formatted!$(NC)"
+	@echo -e "$(GREEN)✓ Code formatted with Prettier!$(NC)"
 
 .PHONY: format-ts
 format-ts: ## Format Node.js/TypeScript code
@@ -288,6 +289,7 @@ clean-go: ## Clean Go build artifacts
 clean-generated: ## Clean all generated code
 	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
 	@find . -type f -name "*.gen.go" -exec rm -f {} +
+	@find . -type f -name "mocks_test.go" -exec rm -f {} +
 	@rm -rf ./web/client/src/generated
 	@rm -f ./api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ Generated code cleaned!$(NC)"

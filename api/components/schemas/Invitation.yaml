@@ -5,12 +5,15 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [organizationId, email, inviterId]
     additional_methods:
-      - name: GetInvitationsByOrganization
+      - name: ListByOrganization
         params: [organizationId]
-      - name: GetInvitationByEmail
+        returns: multiple
+      - name: GetByEmail
         params: [email, organizationId]
-      - name: GetInvitationsByInviter
+        returns: single
+      - name: ListByInviter
         params: [inviterId]
+        returns: multiple
 type: object
 properties:
   createdAt:

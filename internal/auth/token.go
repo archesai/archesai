@@ -79,7 +79,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Token
 	}
 
 	// Get the user
-	user, err := s.usersRepo.GetUser(ctx, claims.UserID)
+	user, err := s.usersRepo.Get(ctx, claims.UserID)
 	if err != nil {
 		s.logger.Error("failed to get user for refresh", "user_id", claims.UserID, "error", err)
 		return nil, ErrUserNotFound
@@ -89,7 +89,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Token
 	if claims.SessionID != "" {
 		sessionID, err := uuid.Parse(claims.SessionID)
 		if err == nil {
-			session, err := s.repo.GetSession(ctx, sessionID)
+			session, err := s.sessionsRepo.Get(ctx, sessionID)
 			if err != nil || session == nil {
 				s.logger.Warn("session not found for refresh", "session_id", claims.SessionID)
 				return nil, ErrSessionNotFound

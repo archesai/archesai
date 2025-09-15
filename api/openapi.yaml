@@ -23,22 +23,32 @@ security:
 tags:
   - name: Accounts
     description: User account management
+  - name: Artifacts
+    description: Content artifact management
   - name: Auth
     description: Authentication and authorization operations
   - name: Config
     description: Configuration management
-  - name: Content
-    description: Content artifacts and labels
   - name: Health
     description: Health check operations
+  - name: Invitations
+    description: Organization invitation management
+  - name: Labels
+    description: Content label management
+  - name: Members
+    description: Organization member management
   - name: Organizations
-    description: Organization management, membership, and invitations
+    description: Organization management
+  - name: Pipelines
+    description: Pipeline management
+  - name: Runs
+    description: Pipeline run management
   - name: Sessions
     description: User session management
+  - name: Tools
+    description: Tool management
   - name: Users
     description: User profile management
-  - name: Workflows
-    description: Pipeline workflows, runs, and tools
 paths:
   /auth/accounts:
     $ref: paths/auth_accounts.yaml

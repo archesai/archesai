@@ -5,10 +5,12 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [organizationId, producerId]
     additional_methods:
-      - name: GetArtifactsByOrganization
+      - name: ListByOrganization
         params: [organizationId]
-      - name: GetArtifactsByProducer
+        returns: multiple
+      - name: ListByProducer
         params: [producerId]
+        returns: multiple
 type: object
 properties:
   createdAt:

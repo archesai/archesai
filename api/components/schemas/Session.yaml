@@ -6,16 +6,16 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [userId, token]
     additional_methods:
-      - name: GetSessionByToken
+      - name: GetByToken
         params: [token]
         returns: single
-      - name: DeleteSessionByToken
+      - name: DeleteByToken
         params: [token]
         returns: void
-      - name: DeleteUserSessions
+      - name: DeleteByUser
         params: [userId]
         returns: void
-      - name: DeleteExpiredSessions
+      - name: DeleteExpired
         params: []
         returns: void
   cache:

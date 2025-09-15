@@ -16,9 +16,11 @@ var ErrCacheMiss = genericcache.ErrCacheMiss
 type Cache interface {
 
 	// Organization caching
-	GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error)
-	SetOrganization(ctx context.Context, entity *Organization, ttl time.Duration) error
-	DeleteOrganization(ctx context.Context, id uuid.UUID) error
+	Get(ctx context.Context, id uuid.UUID) (*Organization, error)
+	Set(ctx context.Context, entity *Organization, ttl time.Duration) error
+	Delete(ctx context.Context, id uuid.UUID) error
+	GetBySlug(ctx context.Context, slug string) (*Organization, error)
+	GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error)
 
 	// Batch operations
 	FlushAll(ctx context.Context) error
@@ -41,8 +43,8 @@ func NewCacheAdapter(organizationCache genericcache.Cache[Organization]) Cache {
 	}
 }
 
-// GetOrganization retrieves organization from cache by ID
-func (a *CacheAdapter) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
+// Get retrieves organization from cache by ID
+func (a *CacheAdapter) Get(ctx context.Context, id uuid.UUID) (*Organization, error) {
 	entity, err := a.organizationCache.Get(ctx, id.String())
 	if err != nil {
 		return nil, err
@@ -53,17 +55,43 @@ func (a *CacheAdapter) GetOrganization(ctx context.Context, id uuid.UUID) (*Orga
 	return entity, nil
 }
 
-// SetOrganization stores organization in cache with TTL
-func (a *CacheAdapter) SetOrganization(ctx context.Context, entity *Organization, ttl time.Duration) error {
+// Set stores organization in cache with TTL
+func (a *CacheAdapter) Set(ctx context.Context, entity *Organization, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
 	return a.organizationCache.Set(ctx, entity.Id.String(), entity, ttl)
 }
 
-// DeleteOrganization removes organization from cache
-func (a *CacheAdapter) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
+// Delete removes organization from cache
+func (a *CacheAdapter) Delete(ctx context.Context, id uuid.UUID) error {
 	return a.organizationCache.Delete(ctx, id.String())
+}
+
+// GetBySlug retrieves organization from cache by slug
+func (a *CacheAdapter) GetBySlug(ctx context.Context, slug string) (*Organization, error) {
+	key := "slug:" + slug
+	entity, err := a.organizationCache.Get(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	if entity == nil {
+		return nil, ErrCacheMiss
+	}
+	return entity, nil
+}
+
+// GetByStripeCustomerId retrieves organization from cache by stripeCustomerId
+func (a *CacheAdapter) GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error) {
+	key := "stripeCustomerId:" + stripeCustomerId
+	entity, err := a.organizationCache.Get(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	if entity == nil {
+		return nil, ErrCacheMiss
+	}
+	return entity, nil
 }
 
 // FlushAll clears all cached data

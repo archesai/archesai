@@ -69,3 +69,10 @@ ALWAYS USER MOCKERY FOR GETTING MOCKS, NEVER CREATE MOCKED SERVICES OR REPOSITOR
 RUN go tool mockery
 WE ARE RUNNING MOCKERY v3
 MOCKERY CONFIG IS .mockery.yaml
+
+DO NOT KEEP DEPRECATED OR LEGACY CODE, ALWAYS MAKE SURE YOU JUST IMPLEMENT LATEST
+
+i want you to improve test coverage as much as possible.
+you should only ever use mocks from mockery that will be found in mocks_test.go.
+if you need to get a mocked interface from another package, alias the interface
+in your local package and add it to .mockery.yaml

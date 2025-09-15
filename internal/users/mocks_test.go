@@ -39,12 +39,12 @@ func (_m *MockCache) EXPECT() *MockCache_Expecter {
 	return &MockCache_Expecter{mock: &_m.Mock}
 }
 
-// DeleteUser provides a mock function for the type MockCache
-func (_mock *MockCache) DeleteUser(ctx context.Context, id uuid.UUID) error {
+// Delete provides a mock function for the type MockCache
+func (_mock *MockCache) Delete(ctx context.Context, id uuid.UUID) error {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for DeleteUser")
+		panic("no return value specified for Delete")
 	}
 
 	var r0 error
@@ -56,19 +56,19 @@ func (_mock *MockCache) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	return r0
 }
 
-// MockCache_DeleteUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteUser'
-type MockCache_DeleteUser_Call struct {
+// MockCache_Delete_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Delete'
+type MockCache_Delete_Call struct {
 	*mock.Call
 }
 
-// DeleteUser is a helper method to define mock.On call
+// Delete is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockCache_Expecter) DeleteUser(ctx interface{}, id interface{}) *MockCache_DeleteUser_Call {
-	return &MockCache_DeleteUser_Call{Call: _e.mock.On("DeleteUser", ctx, id)}
+func (_e *MockCache_Expecter) Delete(ctx interface{}, id interface{}) *MockCache_Delete_Call {
+	return &MockCache_Delete_Call{Call: _e.mock.On("Delete", ctx, id)}
 }
 
-func (_c *MockCache_DeleteUser_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockCache_DeleteUser_Call {
+func (_c *MockCache_Delete_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockCache_Delete_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -86,69 +86,12 @@ func (_c *MockCache_DeleteUser_Call) Run(run func(ctx context.Context, id uuid.U
 	return _c
 }
 
-func (_c *MockCache_DeleteUser_Call) Return(err error) *MockCache_DeleteUser_Call {
+func (_c *MockCache_Delete_Call) Return(err error) *MockCache_Delete_Call {
 	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *MockCache_DeleteUser_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockCache_DeleteUser_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// DeleteUserByEmail provides a mock function for the type MockCache
-func (_mock *MockCache) DeleteUserByEmail(ctx context.Context, email string) error {
-	ret := _mock.Called(ctx, email)
-
-	if len(ret) == 0 {
-		panic("no return value specified for DeleteUserByEmail")
-	}
-
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) error); ok {
-		r0 = returnFunc(ctx, email)
-	} else {
-		r0 = ret.Error(0)
-	}
-	return r0
-}
-
-// MockCache_DeleteUserByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteUserByEmail'
-type MockCache_DeleteUserByEmail_Call struct {
-	*mock.Call
-}
-
-// DeleteUserByEmail is a helper method to define mock.On call
-//   - ctx context.Context
-//   - email string
-func (_e *MockCache_Expecter) DeleteUserByEmail(ctx interface{}, email interface{}) *MockCache_DeleteUserByEmail_Call {
-	return &MockCache_DeleteUserByEmail_Call{Call: _e.mock.On("DeleteUserByEmail", ctx, email)}
-}
-
-func (_c *MockCache_DeleteUserByEmail_Call) Run(run func(ctx context.Context, email string)) *MockCache_DeleteUserByEmail_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 string
-		if args[1] != nil {
-			arg1 = args[1].(string)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockCache_DeleteUserByEmail_Call) Return(err error) *MockCache_DeleteUserByEmail_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockCache_DeleteUserByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) error) *MockCache_DeleteUserByEmail_Call {
+func (_c *MockCache_Delete_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockCache_Delete_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -204,12 +147,12 @@ func (_c *MockCache_FlushAll_Call) RunAndReturn(run func(ctx context.Context) er
 	return _c
 }
 
-// GetUser provides a mock function for the type MockCache
-func (_mock *MockCache) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+// Get provides a mock function for the type MockCache
+func (_mock *MockCache) Get(ctx context.Context, id uuid.UUID) (*User, error) {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetUser")
+		panic("no return value specified for Get")
 	}
 
 	var r0 *User
@@ -232,19 +175,19 @@ func (_mock *MockCache) GetUser(ctx context.Context, id uuid.UUID) (*User, error
 	return r0, r1
 }
 
-// MockCache_GetUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUser'
-type MockCache_GetUser_Call struct {
+// MockCache_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type MockCache_Get_Call struct {
 	*mock.Call
 }
 
-// GetUser is a helper method to define mock.On call
+// Get is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockCache_Expecter) GetUser(ctx interface{}, id interface{}) *MockCache_GetUser_Call {
-	return &MockCache_GetUser_Call{Call: _e.mock.On("GetUser", ctx, id)}
+func (_e *MockCache_Expecter) Get(ctx interface{}, id interface{}) *MockCache_Get_Call {
+	return &MockCache_Get_Call{Call: _e.mock.On("Get", ctx, id)}
 }
 
-func (_c *MockCache_GetUser_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockCache_GetUser_Call {
+func (_c *MockCache_Get_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockCache_Get_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -262,22 +205,22 @@ func (_c *MockCache_GetUser_Call) Run(run func(ctx context.Context, id uuid.UUID
 	return _c
 }
 
-func (_c *MockCache_GetUser_Call) Return(user *User, err error) *MockCache_GetUser_Call {
+func (_c *MockCache_Get_Call) Return(user *User, err error) *MockCache_Get_Call {
 	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockCache_GetUser_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*User, error)) *MockCache_GetUser_Call {
+func (_c *MockCache_Get_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*User, error)) *MockCache_Get_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// GetUserByEmail provides a mock function for the type MockCache
-func (_mock *MockCache) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+// GetByEmail provides a mock function for the type MockCache
+func (_mock *MockCache) GetByEmail(ctx context.Context, email string) (*User, error) {
 	ret := _mock.Called(ctx, email)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetUserByEmail")
+		panic("no return value specified for GetByEmail")
 	}
 
 	var r0 *User
@@ -300,19 +243,19 @@ func (_mock *MockCache) GetUserByEmail(ctx context.Context, email string) (*User
 	return r0, r1
 }
 
-// MockCache_GetUserByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByEmail'
-type MockCache_GetUserByEmail_Call struct {
+// MockCache_GetByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByEmail'
+type MockCache_GetByEmail_Call struct {
 	*mock.Call
 }
 
-// GetUserByEmail is a helper method to define mock.On call
+// GetByEmail is a helper method to define mock.On call
 //   - ctx context.Context
 //   - email string
-func (_e *MockCache_Expecter) GetUserByEmail(ctx interface{}, email interface{}) *MockCache_GetUserByEmail_Call {
-	return &MockCache_GetUserByEmail_Call{Call: _e.mock.On("GetUserByEmail", ctx, email)}
+func (_e *MockCache_Expecter) GetByEmail(ctx interface{}, email interface{}) *MockCache_GetByEmail_Call {
+	return &MockCache_GetByEmail_Call{Call: _e.mock.On("GetByEmail", ctx, email)}
 }
 
-func (_c *MockCache_GetUserByEmail_Call) Run(run func(ctx context.Context, email string)) *MockCache_GetUserByEmail_Call {
+func (_c *MockCache_GetByEmail_Call) Run(run func(ctx context.Context, email string)) *MockCache_GetByEmail_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -330,22 +273,22 @@ func (_c *MockCache_GetUserByEmail_Call) Run(run func(ctx context.Context, email
 	return _c
 }
 
-func (_c *MockCache_GetUserByEmail_Call) Return(user *User, err error) *MockCache_GetUserByEmail_Call {
+func (_c *MockCache_GetByEmail_Call) Return(user *User, err error) *MockCache_GetByEmail_Call {
 	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockCache_GetUserByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (*User, error)) *MockCache_GetUserByEmail_Call {
+func (_c *MockCache_GetByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (*User, error)) *MockCache_GetByEmail_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// SetUser provides a mock function for the type MockCache
-func (_mock *MockCache) SetUser(ctx context.Context, entity *User, ttl time.Duration) error {
+// Set provides a mock function for the type MockCache
+func (_mock *MockCache) Set(ctx context.Context, entity *User, ttl time.Duration) error {
 	ret := _mock.Called(ctx, entity, ttl)
 
 	if len(ret) == 0 {
-		panic("no return value specified for SetUser")
+		panic("no return value specified for Set")
 	}
 
 	var r0 error
@@ -357,20 +300,20 @@ func (_mock *MockCache) SetUser(ctx context.Context, entity *User, ttl time.Dura
 	return r0
 }
 
-// MockCache_SetUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetUser'
-type MockCache_SetUser_Call struct {
+// MockCache_Set_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Set'
+type MockCache_Set_Call struct {
 	*mock.Call
 }
 
-// SetUser is a helper method to define mock.On call
+// Set is a helper method to define mock.On call
 //   - ctx context.Context
 //   - entity *User
 //   - ttl time.Duration
-func (_e *MockCache_Expecter) SetUser(ctx interface{}, entity interface{}, ttl interface{}) *MockCache_SetUser_Call {
-	return &MockCache_SetUser_Call{Call: _e.mock.On("SetUser", ctx, entity, ttl)}
+func (_e *MockCache_Expecter) Set(ctx interface{}, entity interface{}, ttl interface{}) *MockCache_Set_Call {
+	return &MockCache_Set_Call{Call: _e.mock.On("Set", ctx, entity, ttl)}
 }
 
-func (_c *MockCache_SetUser_Call) Run(run func(ctx context.Context, entity *User, ttl time.Duration)) *MockCache_SetUser_Call {
+func (_c *MockCache_Set_Call) Run(run func(ctx context.Context, entity *User, ttl time.Duration)) *MockCache_Set_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -393,81 +336,12 @@ func (_c *MockCache_SetUser_Call) Run(run func(ctx context.Context, entity *User
 	return _c
 }
 
-func (_c *MockCache_SetUser_Call) Return(err error) *MockCache_SetUser_Call {
+func (_c *MockCache_Set_Call) Return(err error) *MockCache_Set_Call {
 	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *MockCache_SetUser_Call) RunAndReturn(run func(ctx context.Context, entity *User, ttl time.Duration) error) *MockCache_SetUser_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// SetUserByEmail provides a mock function for the type MockCache
-func (_mock *MockCache) SetUserByEmail(ctx context.Context, email string, entity *User, ttl time.Duration) error {
-	ret := _mock.Called(ctx, email, entity, ttl)
-
-	if len(ret) == 0 {
-		panic("no return value specified for SetUserByEmail")
-	}
-
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, *User, time.Duration) error); ok {
-		r0 = returnFunc(ctx, email, entity, ttl)
-	} else {
-		r0 = ret.Error(0)
-	}
-	return r0
-}
-
-// MockCache_SetUserByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetUserByEmail'
-type MockCache_SetUserByEmail_Call struct {
-	*mock.Call
-}
-
-// SetUserByEmail is a helper method to define mock.On call
-//   - ctx context.Context
-//   - email string
-//   - entity *User
-//   - ttl time.Duration
-func (_e *MockCache_Expecter) SetUserByEmail(ctx interface{}, email interface{}, entity interface{}, ttl interface{}) *MockCache_SetUserByEmail_Call {
-	return &MockCache_SetUserByEmail_Call{Call: _e.mock.On("SetUserByEmail", ctx, email, entity, ttl)}
-}
-
-func (_c *MockCache_SetUserByEmail_Call) Run(run func(ctx context.Context, email string, entity *User, ttl time.Duration)) *MockCache_SetUserByEmail_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 string
-		if args[1] != nil {
-			arg1 = args[1].(string)
-		}
-		var arg2 *User
-		if args[2] != nil {
-			arg2 = args[2].(*User)
-		}
-		var arg3 time.Duration
-		if args[3] != nil {
-			arg3 = args[3].(time.Duration)
-		}
-		run(
-			arg0,
-			arg1,
-			arg2,
-			arg3,
-		)
-	})
-	return _c
-}
-
-func (_c *MockCache_SetUserByEmail_Call) Return(err error) *MockCache_SetUserByEmail_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockCache_SetUserByEmail_Call) RunAndReturn(run func(ctx context.Context, email string, entity *User, ttl time.Duration) error) *MockCache_SetUserByEmail_Call {
+func (_c *MockCache_Set_Call) RunAndReturn(run func(ctx context.Context, entity *User, ttl time.Duration) error) *MockCache_Set_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -754,12 +628,12 @@ func (_m *MockRepository) EXPECT() *MockRepository_Expecter {
 	return &MockRepository_Expecter{mock: &_m.Mock}
 }
 
-// CreateUser provides a mock function for the type MockRepository
-func (_mock *MockRepository) CreateUser(ctx context.Context, entity *User) (*User, error) {
+// Create provides a mock function for the type MockRepository
+func (_mock *MockRepository) Create(ctx context.Context, entity *User) (*User, error) {
 	ret := _mock.Called(ctx, entity)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CreateUser")
+		panic("no return value specified for Create")
 	}
 
 	var r0 *User
@@ -782,19 +656,19 @@ func (_mock *MockRepository) CreateUser(ctx context.Context, entity *User) (*Use
 	return r0, r1
 }
 
-// MockRepository_CreateUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateUser'
-type MockRepository_CreateUser_Call struct {
+// MockRepository_Create_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Create'
+type MockRepository_Create_Call struct {
 	*mock.Call
 }
 
-// CreateUser is a helper method to define mock.On call
+// Create is a helper method to define mock.On call
 //   - ctx context.Context
 //   - entity *User
-func (_e *MockRepository_Expecter) CreateUser(ctx interface{}, entity interface{}) *MockRepository_CreateUser_Call {
-	return &MockRepository_CreateUser_Call{Call: _e.mock.On("CreateUser", ctx, entity)}
+func (_e *MockRepository_Expecter) Create(ctx interface{}, entity interface{}) *MockRepository_Create_Call {
+	return &MockRepository_Create_Call{Call: _e.mock.On("Create", ctx, entity)}
 }
 
-func (_c *MockRepository_CreateUser_Call) Run(run func(ctx context.Context, entity *User)) *MockRepository_CreateUser_Call {
+func (_c *MockRepository_Create_Call) Run(run func(ctx context.Context, entity *User)) *MockRepository_Create_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -812,22 +686,22 @@ func (_c *MockRepository_CreateUser_Call) Run(run func(ctx context.Context, enti
 	return _c
 }
 
-func (_c *MockRepository_CreateUser_Call) Return(user *User, err error) *MockRepository_CreateUser_Call {
+func (_c *MockRepository_Create_Call) Return(user *User, err error) *MockRepository_Create_Call {
 	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockRepository_CreateUser_Call) RunAndReturn(run func(ctx context.Context, entity *User) (*User, error)) *MockRepository_CreateUser_Call {
+func (_c *MockRepository_Create_Call) RunAndReturn(run func(ctx context.Context, entity *User) (*User, error)) *MockRepository_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// DeleteUser provides a mock function for the type MockRepository
-func (_mock *MockRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
+// Delete provides a mock function for the type MockRepository
+func (_mock *MockRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for DeleteUser")
+		panic("no return value specified for Delete")
 	}
 
 	var r0 error
@@ -839,19 +713,19 @@ func (_mock *MockRepository) DeleteUser(ctx context.Context, id uuid.UUID) error
 	return r0
 }
 
-// MockRepository_DeleteUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteUser'
-type MockRepository_DeleteUser_Call struct {
+// MockRepository_Delete_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Delete'
+type MockRepository_Delete_Call struct {
 	*mock.Call
 }
 
-// DeleteUser is a helper method to define mock.On call
+// Delete is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockRepository_Expecter) DeleteUser(ctx interface{}, id interface{}) *MockRepository_DeleteUser_Call {
-	return &MockRepository_DeleteUser_Call{Call: _e.mock.On("DeleteUser", ctx, id)}
+func (_e *MockRepository_Expecter) Delete(ctx interface{}, id interface{}) *MockRepository_Delete_Call {
+	return &MockRepository_Delete_Call{Call: _e.mock.On("Delete", ctx, id)}
 }
 
-func (_c *MockRepository_DeleteUser_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_DeleteUser_Call {
+func (_c *MockRepository_Delete_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_Delete_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -869,22 +743,22 @@ func (_c *MockRepository_DeleteUser_Call) Run(run func(ctx context.Context, id u
 	return _c
 }
 
-func (_c *MockRepository_DeleteUser_Call) Return(err error) *MockRepository_DeleteUser_Call {
+func (_c *MockRepository_Delete_Call) Return(err error) *MockRepository_Delete_Call {
 	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *MockRepository_DeleteUser_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockRepository_DeleteUser_Call {
+func (_c *MockRepository_Delete_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) error) *MockRepository_Delete_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// GetUser provides a mock function for the type MockRepository
-func (_mock *MockRepository) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+// Get provides a mock function for the type MockRepository
+func (_mock *MockRepository) Get(ctx context.Context, id uuid.UUID) (*User, error) {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetUser")
+		panic("no return value specified for Get")
 	}
 
 	var r0 *User
@@ -907,19 +781,19 @@ func (_mock *MockRepository) GetUser(ctx context.Context, id uuid.UUID) (*User, 
 	return r0, r1
 }
 
-// MockRepository_GetUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUser'
-type MockRepository_GetUser_Call struct {
+// MockRepository_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type MockRepository_Get_Call struct {
 	*mock.Call
 }
 
-// GetUser is a helper method to define mock.On call
+// Get is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
-func (_e *MockRepository_Expecter) GetUser(ctx interface{}, id interface{}) *MockRepository_GetUser_Call {
-	return &MockRepository_GetUser_Call{Call: _e.mock.On("GetUser", ctx, id)}
+func (_e *MockRepository_Expecter) Get(ctx interface{}, id interface{}) *MockRepository_Get_Call {
+	return &MockRepository_Get_Call{Call: _e.mock.On("Get", ctx, id)}
 }
 
-func (_c *MockRepository_GetUser_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_GetUser_Call {
+func (_c *MockRepository_Get_Call) Run(run func(ctx context.Context, id uuid.UUID)) *MockRepository_Get_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -937,22 +811,22 @@ func (_c *MockRepository_GetUser_Call) Run(run func(ctx context.Context, id uuid
 	return _c
 }
 
-func (_c *MockRepository_GetUser_Call) Return(user *User, err error) *MockRepository_GetUser_Call {
+func (_c *MockRepository_Get_Call) Return(user *User, err error) *MockRepository_Get_Call {
 	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockRepository_GetUser_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*User, error)) *MockRepository_GetUser_Call {
+func (_c *MockRepository_Get_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID) (*User, error)) *MockRepository_Get_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// GetUserByEmail provides a mock function for the type MockRepository
-func (_mock *MockRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+// GetByEmail provides a mock function for the type MockRepository
+func (_mock *MockRepository) GetByEmail(ctx context.Context, email string) (*User, error) {
 	ret := _mock.Called(ctx, email)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetUserByEmail")
+		panic("no return value specified for GetByEmail")
 	}
 
 	var r0 *User
@@ -975,19 +849,19 @@ func (_mock *MockRepository) GetUserByEmail(ctx context.Context, email string) (
 	return r0, r1
 }
 
-// MockRepository_GetUserByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByEmail'
-type MockRepository_GetUserByEmail_Call struct {
+// MockRepository_GetByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByEmail'
+type MockRepository_GetByEmail_Call struct {
 	*mock.Call
 }
 
-// GetUserByEmail is a helper method to define mock.On call
+// GetByEmail is a helper method to define mock.On call
 //   - ctx context.Context
 //   - email string
-func (_e *MockRepository_Expecter) GetUserByEmail(ctx interface{}, email interface{}) *MockRepository_GetUserByEmail_Call {
-	return &MockRepository_GetUserByEmail_Call{Call: _e.mock.On("GetUserByEmail", ctx, email)}
+func (_e *MockRepository_Expecter) GetByEmail(ctx interface{}, email interface{}) *MockRepository_GetByEmail_Call {
+	return &MockRepository_GetByEmail_Call{Call: _e.mock.On("GetByEmail", ctx, email)}
 }
 
-func (_c *MockRepository_GetUserByEmail_Call) Run(run func(ctx context.Context, email string)) *MockRepository_GetUserByEmail_Call {
+func (_c *MockRepository_GetByEmail_Call) Run(run func(ctx context.Context, email string)) *MockRepository_GetByEmail_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -1005,22 +879,22 @@ func (_c *MockRepository_GetUserByEmail_Call) Run(run func(ctx context.Context, 
 	return _c
 }
 
-func (_c *MockRepository_GetUserByEmail_Call) Return(user *User, err error) *MockRepository_GetUserByEmail_Call {
+func (_c *MockRepository_GetByEmail_Call) Return(user *User, err error) *MockRepository_GetByEmail_Call {
 	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockRepository_GetUserByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (*User, error)) *MockRepository_GetUserByEmail_Call {
+func (_c *MockRepository_GetByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (*User, error)) *MockRepository_GetByEmail_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// ListUsers provides a mock function for the type MockRepository
-func (_mock *MockRepository) ListUsers(ctx context.Context, params ListUsersParams) ([]*User, int64, error) {
+// List provides a mock function for the type MockRepository
+func (_mock *MockRepository) List(ctx context.Context, params ListUsersParams) ([]*User, int64, error) {
 	ret := _mock.Called(ctx, params)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ListUsers")
+		panic("no return value specified for List")
 	}
 
 	var r0 []*User
@@ -1049,19 +923,19 @@ func (_mock *MockRepository) ListUsers(ctx context.Context, params ListUsersPara
 	return r0, r1, r2
 }
 
-// MockRepository_ListUsers_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListUsers'
-type MockRepository_ListUsers_Call struct {
+// MockRepository_List_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'List'
+type MockRepository_List_Call struct {
 	*mock.Call
 }
 
-// ListUsers is a helper method to define mock.On call
+// List is a helper method to define mock.On call
 //   - ctx context.Context
 //   - params ListUsersParams
-func (_e *MockRepository_Expecter) ListUsers(ctx interface{}, params interface{}) *MockRepository_ListUsers_Call {
-	return &MockRepository_ListUsers_Call{Call: _e.mock.On("ListUsers", ctx, params)}
+func (_e *MockRepository_Expecter) List(ctx interface{}, params interface{}) *MockRepository_List_Call {
+	return &MockRepository_List_Call{Call: _e.mock.On("List", ctx, params)}
 }
 
-func (_c *MockRepository_ListUsers_Call) Run(run func(ctx context.Context, params ListUsersParams)) *MockRepository_ListUsers_Call {
+func (_c *MockRepository_List_Call) Run(run func(ctx context.Context, params ListUsersParams)) *MockRepository_List_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -1079,22 +953,22 @@ func (_c *MockRepository_ListUsers_Call) Run(run func(ctx context.Context, param
 	return _c
 }
 
-func (_c *MockRepository_ListUsers_Call) Return(users []*User, n int64, err error) *MockRepository_ListUsers_Call {
+func (_c *MockRepository_List_Call) Return(users []*User, n int64, err error) *MockRepository_List_Call {
 	_c.Call.Return(users, n, err)
 	return _c
 }
 
-func (_c *MockRepository_ListUsers_Call) RunAndReturn(run func(ctx context.Context, params ListUsersParams) ([]*User, int64, error)) *MockRepository_ListUsers_Call {
+func (_c *MockRepository_List_Call) RunAndReturn(run func(ctx context.Context, params ListUsersParams) ([]*User, int64, error)) *MockRepository_List_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// UpdateUser provides a mock function for the type MockRepository
-func (_mock *MockRepository) UpdateUser(ctx context.Context, id uuid.UUID, entity *User) (*User, error) {
+// Update provides a mock function for the type MockRepository
+func (_mock *MockRepository) Update(ctx context.Context, id uuid.UUID, entity *User) (*User, error) {
 	ret := _mock.Called(ctx, id, entity)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UpdateUser")
+		panic("no return value specified for Update")
 	}
 
 	var r0 *User
@@ -1117,20 +991,20 @@ func (_mock *MockRepository) UpdateUser(ctx context.Context, id uuid.UUID, entit
 	return r0, r1
 }
 
-// MockRepository_UpdateUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateUser'
-type MockRepository_UpdateUser_Call struct {
+// MockRepository_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type MockRepository_Update_Call struct {
 	*mock.Call
 }
 
-// UpdateUser is a helper method to define mock.On call
+// Update is a helper method to define mock.On call
 //   - ctx context.Context
 //   - id uuid.UUID
 //   - entity *User
-func (_e *MockRepository_Expecter) UpdateUser(ctx interface{}, id interface{}, entity interface{}) *MockRepository_UpdateUser_Call {
-	return &MockRepository_UpdateUser_Call{Call: _e.mock.On("UpdateUser", ctx, id, entity)}
+func (_e *MockRepository_Expecter) Update(ctx interface{}, id interface{}, entity interface{}) *MockRepository_Update_Call {
+	return &MockRepository_Update_Call{Call: _e.mock.On("Update", ctx, id, entity)}
 }
 
-func (_c *MockRepository_UpdateUser_Call) Run(run func(ctx context.Context, id uuid.UUID, entity *User)) *MockRepository_UpdateUser_Call {
+func (_c *MockRepository_Update_Call) Run(run func(ctx context.Context, id uuid.UUID, entity *User)) *MockRepository_Update_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -1153,12 +1027,12 @@ func (_c *MockRepository_UpdateUser_Call) Run(run func(ctx context.Context, id u
 	return _c
 }
 
-func (_c *MockRepository_UpdateUser_Call) Return(user *User, err error) *MockRepository_UpdateUser_Call {
+func (_c *MockRepository_Update_Call) Return(user *User, err error) *MockRepository_Update_Call {
 	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockRepository_UpdateUser_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID, entity *User) (*User, error)) *MockRepository_UpdateUser_Call {
+func (_c *MockRepository_Update_Call) RunAndReturn(run func(ctx context.Context, id uuid.UUID, entity *User) (*User, error)) *MockRepository_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }

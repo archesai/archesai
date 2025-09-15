@@ -514,9 +514,13 @@ func prepareRepositoryData(domain string, schemas []*ParsedSchema) interface{} {
 		if schema.XCodegen != nil && schema.XCodegen.Repository.AdditionalMethods != nil {
 			for _, method := range schema.XCodegen.Repository.AdditionalMethods {
 				additionalMethods = append(additionalMethods, struct {
-					Name string
+					Name    string
+					Params  []string
+					Returns string
 				}{
-					Name: method.Name,
+					Name:    method.Name,
+					Params:  method.Params,
+					Returns: string(method.Returns),
 				})
 			}
 		}
@@ -553,16 +557,54 @@ func prepareRepositoryData(domain string, schemas []*ParsedSchema) interface{} {
 }
 
 func prepareCacheData(domain string, schemas []*ParsedSchema) interface{} {
+	var entities []interface{}
+	for _, schema := range schemas {
+		ops := []string{}
+		if schema.XCodegen.Cache.Enabled {
+			ops = append(ops, "get", "set", "delete")
+		}
+
+		// Extract additional methods from x-codegen repository config
+		var additionalMethods []interface{}
+		if schema.XCodegen != nil && schema.XCodegen.Repository.AdditionalMethods != nil {
+			for _, method := range schema.XCodegen.Repository.AdditionalMethods {
+				additionalMethods = append(additionalMethods, struct {
+					Name    string
+					Params  []string
+					Returns string
+				}{
+					Name:    method.Name,
+					Params:  method.Params,
+					Returns: string(method.Returns),
+				})
+			}
+		}
+
+		entities = append(entities, struct {
+			Name              string
+			Type              string
+			Operations        []string
+			AdditionalMethods []interface{}
+			XCodegen          *XCodegen
+		}{
+			Name:              schema.Name,
+			Type:              schema.Name, // Type is same as Name for cache
+			Operations:        ops,
+			AdditionalMethods: additionalMethods,
+			XCodegen:          schema.XCodegen,
+		})
+	}
+
 	return struct {
-		Domain  string
-		Package string
-		Schemas []*ParsedSchema
-		Imports []string
+		Domain   string
+		Package  string
+		Entities []interface{}
+		Imports  []string
 	}{
-		Domain:  domain,
-		Package: domain,
-		Schemas: schemas,
-		Imports: []string{"github.com/google/uuid"},
+		Domain:   domain,
+		Package:  domain,
+		Entities: entities,
+		Imports:  []string{"github.com/google/uuid"},
 	}
 }
 
@@ -745,16 +787,6 @@ func autoDetectDomains(schemas map[string]*ParsedSchema) map[string]DomainConfig
 		// In the future, this could be enhanced to extract tags from the OpenAPI spec
 		domains[domain] = DomainConfig{
 			Schemas: schemaNames,
-		}
-	}
-
-	// If no domains detected, use default mapping
-	if len(domains) == 0 {
-		domains = map[string]DomainConfig{
-			"auth":          {Tags: []string{"Auth", "Users", "Sessions", "Accounts"}},
-			"organizations": {Tags: []string{"Organizations", "Members", "Invitations"}},
-			"workflows":     {Tags: []string{"Workflows", "Pipelines", "Runs", "Tools"}},
-			"content":       {Tags: []string{"Content", "Artifacts", "Labels"}},
 		}
 	}
 

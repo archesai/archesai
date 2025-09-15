@@ -7,8 +7,10 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/email"
+	"github.com/archesai/archesai/internal/sessions"
 	"github.com/archesai/archesai/internal/users"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -21,10 +23,11 @@ type LoginRequest = LoginJSONBody
 
 // Service handles authentication operations
 type Service struct {
-	repo           Repository
+	accountsRepo   accounts.Repository
+	sessionsRepo   sessions.Repository
 	usersRepo      users.Repository
-	cache          Cache
-	sessionManager *SessionManager
+	cache          sessions.Cache
+	sessionManager *sessions.SessionManager
 	apiKeyService  *APIKeyService // API key management
 	jwtSecret      []byte
 	logger         *slog.Logger
@@ -47,10 +50,10 @@ type Config struct {
 
 // NewService creates a new authentication service with cache support
 // If cache is nil, a NoOpCache will be used as fallback
-func NewService(repo Repository, usersRepo users.Repository, cache Cache, config Config, logger *slog.Logger) *Service {
+func NewService(accountsRepo accounts.Repository, sessionsRepo sessions.Repository, usersRepo users.Repository, cache sessions.Cache, config Config, logger *slog.Logger) *Service {
 	// Use NoOpCache if no cache provided
 	if cache == nil {
-		cache = NewNoOpCache()
+		cache = sessions.NewNoOpCache()
 	}
 	if config.AccessTokenExpiry == 0 {
 		config.AccessTokenExpiry = 15 * time.Minute
@@ -66,12 +69,11 @@ func NewService(repo Repository, usersRepo users.Repository, cache Cache, config
 	}
 
 	// Always create session manager with the cache (might be NoOpCache)
-	sessionManager := NewSessionManager(repo, cache, config.SessionTokenExpiry)
+	sessionManager := sessions.NewSessionManager(sessionsRepo, cache, config.SessionTokenExpiry)
 
-	// Note: API Key Service must be set separately using SetAPIKeyService
-	// as it requires its own repository
 	return &Service{
-		repo:           repo,
+		accountsRepo:   accountsRepo,
+		sessionsRepo:   sessionsRepo,
 		usersRepo:      usersRepo,
 		cache:          cache,
 		sessionManager: sessionManager,

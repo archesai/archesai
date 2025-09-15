@@ -2,7 +2,7 @@ get:
   operationId: getPipelineSteps
   summary: Get all steps for a pipeline
   tags:
-    - Workflows
+    - Pipelines
   description: Retrieve all steps and their dependencies for a pipeline
   parameters:
     - name: id
@@ -38,7 +38,7 @@ post:
   operationId: createPipelineStep
   summary: Add a step to a pipeline
   tags:
-    - Workflows
+    - Pipelines
   description: Create a new step in the pipeline
   parameters:
     - name: id

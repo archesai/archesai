@@ -6,24 +6,25 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/archesai/archesai/internal/auth"
-	authrepository "github.com/archesai/archesai/internal/auth/adapters/repository"
+	"github.com/archesai/archesai/internal/accounts"
+	"github.com/archesai/archesai/internal/artifacts"
 	"github.com/archesai/archesai/internal/cache"
 	"github.com/archesai/archesai/internal/config"
-	"github.com/archesai/archesai/internal/content"
-	contentrepo "github.com/archesai/archesai/internal/content/adapters/repository"
 	"github.com/archesai/archesai/internal/database"
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/database/sqlite"
 	"github.com/archesai/archesai/internal/events"
+	"github.com/archesai/archesai/internal/invitations"
+	"github.com/archesai/archesai/internal/labels"
 	"github.com/archesai/archesai/internal/logger"
+	"github.com/archesai/archesai/internal/members"
 	"github.com/archesai/archesai/internal/organizations"
-	orgrepo "github.com/archesai/archesai/internal/organizations/adapters/repository"
+	"github.com/archesai/archesai/internal/pipelines"
 	"github.com/archesai/archesai/internal/redis"
+	"github.com/archesai/archesai/internal/runs"
+	"github.com/archesai/archesai/internal/sessions"
+	"github.com/archesai/archesai/internal/tools"
 	"github.com/archesai/archesai/internal/users"
-	usersrepo "github.com/archesai/archesai/internal/users/adapters/repository"
-	"github.com/archesai/archesai/internal/workflows"
-	workflowrepo "github.com/archesai/archesai/internal/workflows/adapters/repository"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -32,7 +33,7 @@ type Infrastructure struct {
 	Logger         *slog.Logger
 	Database       database.Database
 	EventPublisher events.Publisher
-	AuthCache      auth.Cache
+	AuthCache      sessions.Cache
 	UsersCache     users.Cache
 	// Single Redis client shared across components
 	redisClient *redis.Client
@@ -40,11 +41,17 @@ type Infrastructure struct {
 
 // Repositories holds all domain repositories
 type Repositories struct {
-	Auth          auth.Repository
+	Accounts      accounts.Repository
+	Sessions      sessions.Repository
 	Users         users.Repository
 	Organizations organizations.Repository
-	Workflows     workflows.Repository
-	Content       content.Repository
+	Pipelines     pipelines.Repository
+	Runs          runs.Repository
+	Tools         tools.Repository
+	Artifacts     artifacts.Repository
+	Labels        labels.Repository
+	Members       members.Repository
+	Invitations   invitations.Repository
 }
 
 // NewInfrastructure creates all infrastructure components
@@ -85,9 +92,8 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 			log.Warn("failed to connect to Redis, using in-memory alternatives", "error", err)
 			infra.EventPublisher = events.NewNoOpPublisher()
 			// Use memory cache for auth
-			accountCache := cache.NewMemoryCache[auth.Account]()
-			sessionCache := cache.NewMemoryCache[auth.Session]()
-			infra.AuthCache = auth.NewCacheAdapter(accountCache, sessionCache)
+			sessionCache := cache.NewMemoryCache[sessions.Session]()
+			infra.AuthCache = sessions.NewCacheAdapter(sessionCache)
 			// Use NoOp cache for users (will be replaced later)
 			infra.UsersCache = users.NewNoOpCache()
 		} else {
@@ -95,9 +101,8 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 			infra.redisClient = redisClient
 			infra.EventPublisher = events.NewRedisPublisher(redisClient.GetRedisClient())
 			// Use Redis cache for auth
-			accountCache := cache.NewRedisCache[auth.Account](redisClient.GetRedisClient(), "auth:account")
-			sessionCache := cache.NewRedisCache[auth.Session](redisClient.GetRedisClient(), "auth:session")
-			infra.AuthCache = auth.NewCacheAdapter(accountCache, sessionCache)
+			sessionCache := cache.NewRedisCache[sessions.Session](redisClient.GetRedisClient(), "auth:session")
+			infra.AuthCache = sessions.NewCacheAdapter(sessionCache)
 			// Use NoOp cache for users (will be replaced later)
 			infra.UsersCache = users.NewNoOpCache()
 		}
@@ -105,9 +110,8 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 		// Use in-memory implementations when Redis is disabled
 		infra.EventPublisher = events.NewNoOpPublisher()
 		// Use memory cache for auth
-		accountCache := cache.NewMemoryCache[auth.Account]()
-		sessionCache := cache.NewMemoryCache[auth.Session]()
-		infra.AuthCache = auth.NewCacheAdapter(accountCache, sessionCache)
+		sessionCache := cache.NewMemoryCache[sessions.Session]()
+		infra.AuthCache = sessions.NewCacheAdapter(sessionCache)
 		// Use NoOp cache for users (will be replaced later)
 		infra.UsersCache = users.NewNoOpCache()
 	}
@@ -134,11 +138,24 @@ func NewRepositories(db database.Database, cfg *config.Config) (*Repositories, e
 			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
 		}
 
-		repos.Auth = authrepository.NewPostgresRepository(pool)
-		repos.Users = usersrepo.NewPostgresRepository(pool)
-		repos.Organizations = orgrepo.NewPostgresRepository(pool)
-		repos.Workflows = workflowrepo.NewPostgresRepository(pool)
-		repos.Content = contentrepo.NewPostgresRepository(pool)
+		// Core repositories
+		repos.Accounts = accounts.NewPostgresRepository(pool)
+		repos.Sessions = sessions.NewPostgresRepository(pool)
+		repos.Users = users.NewPostgresRepository(pool)
+		repos.Organizations = organizations.NewPostgresRepository(pool)
+
+		// Pipeline repositories
+		repos.Pipelines = pipelines.NewPostgresRepository(pool)
+		repos.Runs = runs.NewPostgresRepository(pool)
+		repos.Tools = tools.NewPostgresRepository(pool)
+
+		// Content repositories
+		repos.Artifacts = artifacts.NewPostgresRepository(pool)
+		repos.Labels = labels.NewPostgresRepository(pool)
+
+		// Organization-related repositories
+		repos.Members = members.NewPostgresRepository(pool)
+		repos.Invitations = invitations.NewPostgresRepository(pool)
 
 	case database.TypeSQLite:
 		sqlDB, ok := db.Underlying().(*sql.DB)
@@ -146,11 +163,24 @@ func NewRepositories(db database.Database, cfg *config.Config) (*Repositories, e
 			return nil, fmt.Errorf("failed to get SQLite connection")
 		}
 
-		repos.Auth = authrepository.NewSQLiteRepository(sqlDB)
-		repos.Users = usersrepo.NewSQLiteRepository(sqlDB)
-		repos.Organizations = orgrepo.NewSQLiteRepository(sqlDB)
-		repos.Workflows = workflowrepo.NewSQLiteRepository(sqlDB)
-		repos.Content = contentrepo.NewSQLiteRepository(sqlDB)
+		// Core repositories
+		repos.Accounts = accounts.NewSQLiteRepository(sqlDB)
+		repos.Sessions = sessions.NewSQLiteRepository(sqlDB)
+		repos.Users = users.NewSQLiteRepository(sqlDB)
+		repos.Organizations = organizations.NewSQLiteRepository(sqlDB)
+
+		// Pipeline repositories
+		repos.Pipelines = pipelines.NewSQLiteRepository(sqlDB)
+		repos.Runs = runs.NewSQLiteRepository(sqlDB)
+		repos.Tools = tools.NewSQLiteRepository(sqlDB)
+
+		// Content repositories
+		repos.Artifacts = artifacts.NewSQLiteRepository(sqlDB)
+		repos.Labels = labels.NewSQLiteRepository(sqlDB)
+
+		// Organization-related repositories
+		repos.Members = members.NewSQLiteRepository(sqlDB)
+		repos.Invitations = invitations.NewSQLiteRepository(sqlDB)
 
 	default:
 		return nil, fmt.Errorf("unsupported database type: %v", dbType)

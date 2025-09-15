@@ -2,7 +2,7 @@ post:
   operationId: createInvitation
   summary: Create a new invitation
   tags:
-    - Organizations
+    - Invitations
   description: Create a new invitation
   parameters:
     - schema:
@@ -60,7 +60,7 @@ get:
   operationId: findManyInvitations
   summary: Find many invitations
   tags:
-    - Organizations
+    - Invitations
   description: Find many invitations
   parameters:
     - schema:

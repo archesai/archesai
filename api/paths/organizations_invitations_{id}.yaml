@@ -2,7 +2,7 @@ delete:
   operationId: deleteInvitation
   summary: Delete an invitation
   tags:
-    - Organizations
+    - Invitations
   description: Delete an invitation
   parameters:
     - schema:
@@ -42,7 +42,7 @@ get:
   operationId: getOneInvitation
   summary: Find an invitation
   tags:
-    - Organizations
+    - Invitations
   description: Find an invitation
   parameters:
     - schema:
@@ -82,7 +82,7 @@ patch:
   operationId: updateInvitation
   summary: Update an invitation
   tags:
-    - Organizations
+    - Invitations
   description: Update an invitation
   requestBody:
     content:

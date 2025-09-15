@@ -3,11 +3,15 @@ package app
 import (
 	"github.com/archesai/archesai/internal/auth"
 	// "github.com/archesai/archesai/internal/config"
-	"github.com/archesai/archesai/internal/content"
+	// "github.com/archesai/archesai/internal/content"
 	"github.com/archesai/archesai/internal/health"
 	"github.com/archesai/archesai/internal/organizations"
+	"github.com/archesai/archesai/internal/pipelines"
+	"github.com/archesai/archesai/internal/runs"
+	"github.com/archesai/archesai/internal/tools"
 	"github.com/archesai/archesai/internal/users"
-	"github.com/archesai/archesai/internal/workflows"
+
+	// "github.com/archesai/archesai/internal/workflows"
 	"github.com/labstack/echo/v4"
 )
 
@@ -44,19 +48,28 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	users.RegisterHandlers(protected, strictUsersHandler)
 
 	// Organizations routes - require authentication and organization membership
-	strictOrganizationsHandler := organizations.NewOrganizationStrictHandler(a.OrganizationsHandler)
+	strictOrganizationsHandler := organizations.NewStrictHandler(a.OrganizationsHandler, nil)
 	// Create a separate group for organization routes with additional checks
 	orgGroup := v1.Group("")
 	orgGroup.Use(auth.RequireAuth(a.AuthService, auth.MiddlewarePresets.OrganizationMember, a.Logger))
 	organizations.RegisterHandlers(orgGroup, strictOrganizationsHandler)
 
-	// Workflows routes - require authentication
-	strictWorkflowsHandler := workflows.NewWorkflowStrictHandler(a.WorkflowsHandler)
-	workflows.RegisterHandlers(protected, strictWorkflowsHandler)
+	// Pipelines routes - require authentication
+	strictPipelinesHandler := pipelines.NewStrictHandler(a.PipelinesHandler, nil)
+	pipelines.RegisterHandlers(protected, strictPipelinesHandler)
 
+	// Runs routes - require authentication
+	strictRunsHandler := runs.NewStrictHandler(a.RunsHandler, nil)
+	runs.RegisterHandlers(protected, strictRunsHandler)
+
+	// Tools routes - require authentication
+	strictToolsHandler := tools.NewStrictHandler(a.ToolsHandler, nil)
+	tools.RegisterHandlers(protected, strictToolsHandler)
+
+	// TODO: Add routes for artifacts, labels, members, invitations when implemented
 	// Content routes - require authentication
-	strictContentHandler := content.NewContentStrictHandler(a.ContentHandler)
-	content.RegisterHandlers(protected, strictContentHandler)
+	// strictContentHandler := content.NewContentStrictHandler(a.ContentHandler)
+	// content.RegisterHandlers(protected, strictContentHandler)
 
 	// ========================================
 	// API-ONLY ROUTES (API key authentication)

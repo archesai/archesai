@@ -2,7 +2,7 @@ post:
   operationId: createRun
   summary: Create a new run
   tags:
-    - Workflows
+    - Runs
   description: Create a new run
   requestBody:
     content:
@@ -41,7 +41,7 @@ get:
   operationId: findManyRuns
   summary: Find many runs
   tags:
-    - Workflows
+    - Runs
   description: Find many runs
   parameters:
     - $ref: ../components/parameters/RunsFilter.yaml

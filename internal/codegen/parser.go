@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -452,39 +451,24 @@ func (p *Parser) GetWarnings() []string {
 }
 
 // inferDomain attempts to infer the domain from schema name.
-func (p *Parser) inferDomain(filePath, schemaName string) string {
-	// Check common patterns
-	patterns := map[string][]string{
-		"auth":          {"Account", "Session", "Token", "Login", "Register"},
-		"users":         {"User"},
-		"organizations": {"Organization", "Member", "Invitation", "Team"},
-		"workflows":     {"Workflow", "Pipeline", "Run", "Task", "Job", "Tool"},
-		"content":       {"Content", "Artifact", "Label", "File", "Document"},
-		"config":        {"Config", "Setting", "Preference"},
-	}
+func (p *Parser) inferDomain(_, schemaName string) string {
+	// Simple rule: use lowercase plural form of the entity name
+	// This creates a one-to-one mapping between entities and packages
 
-	for domain, names := range patterns {
-		for _, name := range names {
-			if strings.HasPrefix(schemaName, name) {
-				return domain
-			}
-		}
-	}
+	// Convert schema name to lowercase
+	lower := strings.ToLower(schemaName)
 
-	// Try to extract from file path if provided
-	if filePath != "" {
-		dir := filepath.Dir(filePath)
-		parts := strings.Split(dir, string(os.PathSeparator))
-		if len(parts) > 0 {
-			lastPart := parts[len(parts)-1]
-			if lastPart != "schemas" && lastPart != "components" {
-				return strings.ToLower(lastPart)
-			}
-		}
+	// Simple pluralization rules
+	if strings.HasSuffix(lower, "s") {
+		// Already plural (e.g., "sessions" stays "sessions")
+		return lower
 	}
-
-	// Default to schema name in lowercase
-	return strings.ToLower(schemaName)
+	if strings.HasSuffix(lower, "y") {
+		// Change y to ies (e.g., "entity" -> "entities")
+		return lower[:len(lower)-1] + "ies"
+	}
+	// Just add s (e.g., "user" -> "users", "artifact" -> "artifacts")
+	return lower + "s"
 }
 
 // WalkAllSchemas walks through all schemas including nested ones.

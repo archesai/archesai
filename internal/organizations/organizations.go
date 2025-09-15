@@ -2,16 +2,21 @@
 // organization CRUD operations, member management, and invitation handling.
 package organizations
 
+import (
+	"github.com/archesai/archesai/internal/invitations"
+	"github.com/archesai/archesai/internal/members"
+)
+
 // Domain types
 type (
 	// OrganizationAlias is an alias to avoid conflicts with generated type
 	OrganizationAlias = Organization
 
 	// MemberAlias is an alias to avoid conflicts with generated type
-	MemberAlias = Member
+	MemberAlias = members.Member
 
 	// InvitationAlias is an alias to avoid conflicts with generated type
-	InvitationAlias = Invitation
+	InvitationAlias = invitations.Invitation
 
 	// CreateOrganizationRequest represents a request to create an organization
 	CreateOrganizationRequest = CreateOrganizationJSONBody
@@ -20,13 +25,13 @@ type (
 	UpdateOrganizationRequest = UpdateOrganizationJSONBody
 
 	// CreateMemberRequest represents a request to create a member
-	CreateMemberRequest = CreateMemberJSONBody
+	CreateMemberRequest = members.CreateMemberJSONBody
 
 	// UpdateMemberRequest represents a request to update a member
-	UpdateMemberRequest = UpdateMemberJSONBody
+	UpdateMemberRequest = members.UpdateMemberJSONBody
 
 	// CreateInvitationRequest represents a request to create an invitation
-	CreateInvitationRequest = CreateInvitationJSONBody
+	CreateInvitationRequest = invitations.CreateInvitationJSONBody
 )
 
 // Domain constants

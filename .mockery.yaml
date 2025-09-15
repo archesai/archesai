@@ -1,5 +1,7 @@
 template: 'testify'
 dir: '{{.InterfaceDir}}'
+include-auto-generated: true
+recursive: true
 packages:
   github.com/archesai/archesai/internal/users:
     interfaces:
@@ -8,20 +10,44 @@ packages:
       EventPublisher:
   github.com/archesai/archesai/internal/auth:
     interfaces:
-      Repository:
-      Cache:
-      EventPublisher:
+      AccountsRepository:
+      SessionsRepository:
+      SessionsCache:
+      UsersRepository:
   github.com/archesai/archesai/internal/organizations:
     interfaces:
       Repository:
       Cache:
       EventPublisher:
-  github.com/archesai/archesai/internal/workflows:
+  github.com/archesai/archesai/internal/artifacts:
     interfaces:
       Repository:
-      ToolRunner:
-      QueueService:
-  github.com/archesai/archesai/internal/content:
+  github.com/archesai/archesai/internal/labels:
     interfaces:
       Repository:
+  github.com/archesai/archesai/internal/members:
+    interfaces:
+      Repository:
+  github.com/archesai/archesai/internal/invitations:
+    interfaces:
+      Repository:
+  github.com/archesai/archesai/internal/pipelines:
+    interfaces:
+      Repository:
+  github.com/archesai/archesai/internal/runs:
+    interfaces:
+      Repository:
+  github.com/archesai/archesai/internal/tools:
+    interfaces:
+      Repository:
+  github.com/archesai/archesai/internal/accounts:
+    interfaces:
+      Repository:
+      Cache:
+      EventPublisher:
+  github.com/archesai/archesai/internal/sessions:
+    interfaces:
+      Repository:
+      Cache:
+      EventPublisher:
 log-level: warn

@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,37 +12,38 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAuthMiddleware(t *testing.T) {
 	t.Run("valid token", func(t *testing.T) {
 		// Create mocks
-		mockRepo := NewMockRepository(t)
-		mockUsersRepo := NewMockUsersRepository()
+		mockAccountsRepo := NewMockAccountsRepository(t)
+		mockSessionsRepo := NewMockSessionsRepository(t)
+		mockUsersRepo := NewMockUsersRepository(t)
+		cache := NewMockSessionsCache(t)
 
 		// Create a test user
 		userID := uuid.New()
 		testUser := &users.User{
 			Id:    userID,
-			Email: "test@example.com",
+			Email: openapi_types.Email("test@example.com"),
 			Name:  "Test User",
 		}
-		mockUsersRepo.users[userID] = testUser
+		mockUsersRepo.EXPECT().Get(mock.Anything, userID).Return(testUser, nil)
 
 		// No need to setup session expectations - middleware doesn't check sessions
 
-		service := &Service{
-			repo:      mockRepo,
-			usersRepo: mockUsersRepo,
-			jwtSecret: []byte("test-secret"),
-			logger:    logger.NewTest(),
-			config: Config{
-				JWTSecret:          "test-secret",
-				AccessTokenExpiry:  15 * time.Minute,
-				RefreshTokenExpiry: 7 * 24 * time.Hour,
-			},
+		config := Config{
+			JWTSecret:          "test-secret",
+			AccessTokenExpiry:  15 * time.Minute,
+			RefreshTokenExpiry: 7 * 24 * time.Hour,
+			BCryptCost:         10,
 		}
+
+		service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
 
 		middleware := Middleware(service, logger.NewTest())
 
@@ -90,18 +90,19 @@ func TestAuthMiddleware(t *testing.T) {
 
 	t.Run("missing token", func(t *testing.T) {
 		// Create mocks
-		mockRepo := NewMockRepository(t)
-		mockUsersRepo := NewMockUsersRepository()
+		mockAccountsRepo := NewMockAccountsRepository(t)
+		mockSessionsRepo := NewMockSessionsRepository(t)
+		mockUsersRepo := NewMockUsersRepository(t)
+		cache := NewMockSessionsCache(t)
 
-		service := &Service{
-			repo:      mockRepo,
-			usersRepo: mockUsersRepo,
-			jwtSecret: []byte("test-secret"),
-			logger:    logger.NewTest(),
-			config: Config{
-				JWTSecret: "test-secret",
-			},
+		config := Config{
+			JWTSecret:          "test-secret",
+			AccessTokenExpiry:  15 * time.Minute,
+			RefreshTokenExpiry: 7 * 24 * time.Hour,
+			BCryptCost:         10,
 		}
+
+		service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
 
 		middleware := Middleware(service, logger.NewTest())
 
@@ -128,18 +129,19 @@ func TestAuthMiddleware(t *testing.T) {
 
 	t.Run("invalid token", func(t *testing.T) {
 		// Create mocks
-		mockRepo := NewMockRepository(t)
-		mockUsersRepo := NewMockUsersRepository()
+		mockAccountsRepo := NewMockAccountsRepository(t)
+		mockSessionsRepo := NewMockSessionsRepository(t)
+		mockUsersRepo := NewMockUsersRepository(t)
+		cache := NewMockSessionsCache(t)
 
-		service := &Service{
-			repo:      mockRepo,
-			usersRepo: mockUsersRepo,
-			jwtSecret: []byte("test-secret"),
-			logger:    logger.NewTest(),
-			config: Config{
-				JWTSecret: "test-secret",
-			},
+		config := Config{
+			JWTSecret:          "test-secret",
+			AccessTokenExpiry:  15 * time.Minute,
+			RefreshTokenExpiry: 7 * 24 * time.Hour,
+			BCryptCost:         10,
 		}
+
+		service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
 
 		middleware := Middleware(service, logger.NewTest())
 
@@ -167,18 +169,19 @@ func TestAuthMiddleware(t *testing.T) {
 
 	t.Run("expired token", func(t *testing.T) {
 		// Create mocks
-		mockRepo := NewMockRepository(t)
-		mockUsersRepo := NewMockUsersRepository()
+		mockAccountsRepo := NewMockAccountsRepository(t)
+		mockSessionsRepo := NewMockSessionsRepository(t)
+		mockUsersRepo := NewMockUsersRepository(t)
+		cache := NewMockSessionsCache(t)
 
-		service := &Service{
-			repo:      mockRepo,
-			usersRepo: mockUsersRepo,
-			jwtSecret: []byte("test-secret"),
-			logger:    logger.NewTest(),
-			config: Config{
-				JWTSecret: "test-secret",
-			},
+		config := Config{
+			JWTSecret:          "test-secret",
+			AccessTokenExpiry:  15 * time.Minute,
+			RefreshTokenExpiry: 7 * 24 * time.Hour,
+			BCryptCost:         10,
 		}
+
+		service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
 
 		middleware := Middleware(service, logger.NewTest())
 
@@ -223,25 +226,33 @@ func TestAuthMiddleware(t *testing.T) {
 
 	t.Run("session not found", func(t *testing.T) {
 		// Create mocks
-		mockRepo := NewMockRepository(t)
-		mockUsersRepo := NewMockUsersRepository()
-
-		// No session expectations needed - middleware doesn't check sessions
-
-		service := &Service{
-			repo:      mockRepo,
-			usersRepo: mockUsersRepo,
-			jwtSecret: []byte("test-secret"),
-			logger:    logger.NewTest(),
-			config: Config{
-				JWTSecret: "test-secret",
-			},
-		}
-
-		middleware := Middleware(service, logger.NewTest())
+		mockAccountsRepo := NewMockAccountsRepository(t)
+		mockSessionsRepo := NewMockSessionsRepository(t)
+		mockUsersRepo := NewMockUsersRepository(t)
 
 		// Create a valid JWT token but session doesn't exist
 		userID := uuid.New()
+
+		// Setup user expectation - middleware verifies user exists
+		mockUsersRepo.EXPECT().Get(mock.Anything, userID).Return(nil, users.ErrUserNotFound)
+
+		cache := NewMockSessionsCache(t)
+		// Setup cache expectations
+		cache.EXPECT().Set(mock.Anything, mock.AnythingOfType("*sessions.Session"), mock.AnythingOfType("time.Duration")).Return(nil).Maybe()
+		cache.EXPECT().GetByToken(mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Maybe()
+		cache.EXPECT().Get(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil, nil).Maybe()
+		cache.EXPECT().Delete(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Maybe()
+
+		config := Config{
+			JWTSecret:          "test-secret",
+			AccessTokenExpiry:  15 * time.Minute,
+			RefreshTokenExpiry: 7 * 24 * time.Hour,
+			BCryptCost:         10,
+		}
+
+		service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
+
+		middleware := Middleware(service, logger.NewTest())
 		claims := &EnhancedClaims{
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
@@ -283,8 +294,9 @@ func TestAuthMiddleware(t *testing.T) {
 func TestRequireAuthMiddleware(t *testing.T) {
 	t.Run("with user context", func(t *testing.T) {
 		// Create mocks
-		mockRepo := NewMockRepository(t)
-		mockUsersRepo := NewMockUsersRepository()
+		mockAccountsRepo := NewMockAccountsRepository(t)
+		mockSessionsRepo := NewMockSessionsRepository(t)
+		mockUsersRepo := NewMockUsersRepository(t)
 
 		// Create a test user
 		userID := uuid.New()
@@ -293,17 +305,24 @@ func TestRequireAuthMiddleware(t *testing.T) {
 			Email: "test@example.com",
 			Name:  "Test User",
 		}
-		mockUsersRepo.users[userID] = testUser
+		// Setup mock expectation
+		mockUsersRepo.EXPECT().Get(mock.Anything, userID).Return(testUser, nil)
 
-		service := &Service{
-			repo:      mockRepo,
-			usersRepo: mockUsersRepo,
-			jwtSecret: []byte("test-secret"),
-			logger:    logger.NewTest(),
-			config: Config{
-				JWTSecret: "test-secret",
-			},
+		cache := NewMockSessionsCache(t)
+		// Setup cache expectations
+		cache.EXPECT().Set(mock.Anything, mock.AnythingOfType("*sessions.Session"), mock.AnythingOfType("time.Duration")).Return(nil).Maybe()
+		cache.EXPECT().GetByToken(mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Maybe()
+		cache.EXPECT().Get(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil, nil).Maybe()
+		cache.EXPECT().Delete(mock.Anything, mock.AnythingOfType("uuid.UUID")).Return(nil).Maybe()
+
+		config := Config{
+			JWTSecret:          "test-secret",
+			AccessTokenExpiry:  15 * time.Minute,
+			RefreshTokenExpiry: 7 * 24 * time.Hour,
+			BCryptCost:         10,
 		}
+
+		service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
 
 		middleware := Middleware(service, logger.NewTest())
 
@@ -349,18 +368,19 @@ func TestRequireAuthMiddleware(t *testing.T) {
 
 	t.Run("without user context", func(t *testing.T) {
 		// Create mocks
-		mockRepo := NewMockRepository(t)
-		mockUsersRepo := NewMockUsersRepository()
+		mockAccountsRepo := NewMockAccountsRepository(t)
+		mockSessionsRepo := NewMockSessionsRepository(t)
+		mockUsersRepo := NewMockUsersRepository(t)
+		cache := NewMockSessionsCache(t)
 
-		service := &Service{
-			repo:      mockRepo,
-			usersRepo: mockUsersRepo,
-			jwtSecret: []byte("test-secret"),
-			logger:    logger.NewTest(),
-			config: Config{
-				JWTSecret: "test-secret",
-			},
+		config := Config{
+			JWTSecret:          "test-secret",
+			AccessTokenExpiry:  15 * time.Minute,
+			RefreshTokenExpiry: 7 * 24 * time.Hour,
+			BCryptCost:         10,
 		}
+
+		service := NewService(mockAccountsRepo, mockSessionsRepo, mockUsersRepo, cache, config, logger.NewTest())
 
 		middleware := Middleware(service, logger.NewTest())
 
@@ -723,5 +743,3 @@ func (m *mockAPIKeyRepository) ValidateAPIKeyHash(_ context.Context, prefix, key
 	}
 	return nil, ErrInvalidCredentials
 }
-
-var ErrNotFound = errors.New("not found")

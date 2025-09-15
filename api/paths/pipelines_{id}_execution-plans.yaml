@@ -2,7 +2,7 @@ get:
   operationId: getPipelineExecutionPlan
   summary: Get execution plan for a pipeline
   tags:
-    - Workflows
+    - Pipelines
   description: Get the DAG execution plan showing which steps can run in parallel
   parameters:
     - name: id
@@ -79,7 +79,7 @@ post:
   operationId: validatePipelineExecutionPlan
   summary: Validate a pipeline configuration
   tags:
-    - Workflows
+    - Pipelines
   description: Validate that a pipeline can be executed without issues
   parameters:
     - name: id

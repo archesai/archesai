@@ -14,18 +14,13 @@ var ErrCacheMiss = genericcache.ErrCacheMiss
 
 // Cache provides caching operations for {{.Domain}} domain.
 type Cache interface {
-{{range .Schemas}}{{if .XCodegen.Cache}}
+{{range .Entities}}{{$entity := .}}{{if .XCodegen.Cache}}
 	// {{.Name}} caching
-	Get{{.Name}}(ctx context.Context, id uuid.UUID) (*{{.Name}}, error)
-	Set{{.Name}}(ctx context.Context, entity *{{.Name}}, ttl time.Duration) error
-	Delete{{.Name}}(ctx context.Context, id uuid.UUID) error
-	{{if eq .Name "User"}}Get{{.Name}}ByEmail(ctx context.Context, email string) (*{{.Name}}, error)
-	Set{{.Name}}ByEmail(ctx context.Context, email string, entity *{{.Name}}, ttl time.Duration) error
-	Delete{{.Name}}ByEmail(ctx context.Context, email string) error{{end}}
-	{{if eq .Name "Session"}}Get{{.Name}}ByToken(ctx context.Context, token string) (*{{.Name}}, error)
-	Set{{.Name}}ByToken(ctx context.Context, token string, entity *{{.Name}}, ttl time.Duration) error
-	Delete{{.Name}}ByToken(ctx context.Context, token string) error
-	DeleteUser{{.Name}}s(ctx context.Context, userID uuid.UUID) error{{end}}
+	{{if contains .Operations "get"}}Get(ctx context.Context, id uuid.UUID) (*{{.Type}}, error){{end}}
+	{{if contains .Operations "set"}}Set(ctx context.Context, entity *{{.Type}}, ttl time.Duration) error{{end}}
+	{{if contains .Operations "delete"}}Delete(ctx context.Context, id uuid.UUID) error{{end}}
+{{if .AdditionalMethods}}{{range .AdditionalMethods}}	{{.Name}}(ctx context.Context{{range $i, $param := .Params}}, {{$param}} {{paramType $param}}{{end}}) {{if eq .Returns "single"}}(*{{$entity.Type}}, error){{else if eq .Returns "multiple"}}([]*{{$entity.Type}}, error){{else}}error{{end}}
+{{end}}{{end}}
 {{end}}{{end}}
 
 	// Batch operations
@@ -34,24 +29,24 @@ type Cache interface {
 
 // NewNoOpCache creates a no-op cache using the generic NoOpCache with the adapter
 func NewNoOpCache() Cache {
-	return NewCacheAdapter({{range $i, $s := .Schemas}}{{if $s.XCodegen.Cache}}{{if $i}}, {{end}}genericcache.NewNoOpCache[{{$s.Name}}](){{end}}{{end}})
+	return NewCacheAdapter({{range $i, $e := .Entities}}{{if $e.XCodegen.Cache}}{{if $i}}, {{end}}genericcache.NewNoOpCache[{{$e.Type}}](){{end}}{{end}})
 }
 
 // CacheAdapter adapts generic cache implementations to the domain Cache interface
 type CacheAdapter struct {
-{{range .Schemas}}{{if .XCodegen.Cache}}	{{.Name | lower}}Cache genericcache.Cache[{{.Name}}]
+{{range .Entities}}{{if .XCodegen.Cache}}	{{.Name | lower}}Cache genericcache.Cache[{{.Type}}]
 {{end}}{{end}}}
 
 // NewCacheAdapter creates a new cache adapter using generic caches
-func NewCacheAdapter({{range $i, $s := .Schemas}}{{if $s.XCodegen.Cache}}{{if $i}}, {{end}}{{$s.Name | lower}}Cache genericcache.Cache[{{$s.Name}}]{{end}}{{end}}) Cache {
+func NewCacheAdapter({{range $i, $e := .Entities}}{{if $e.XCodegen.Cache}}{{if $i}}, {{end}}{{$e.Name | lower}}Cache genericcache.Cache[{{$e.Type}}]{{end}}{{end}}) Cache {
 	return &CacheAdapter{
-{{range .Schemas}}{{if .XCodegen.Cache}}		{{.Name | lower}}Cache: {{.Name | lower}}Cache,
+{{range .Entities}}{{if .XCodegen.Cache}}		{{.Name | lower}}Cache: {{.Name | lower}}Cache,
 {{end}}{{end}}	}
 }
 
-{{range .Schemas}}{{if .XCodegen.Cache}}
-// Get{{.Name}} retrieves {{.Name | lower}} from cache by ID
-func (a *CacheAdapter) Get{{.Name}}(ctx context.Context, id uuid.UUID) (*{{.Name}}, error) {
+{{range .Entities}}{{$entity := .}}{{if .XCodegen.Cache}}
+// Get retrieves {{.Name | lower}} from cache by ID
+func (a *CacheAdapter) Get(ctx context.Context, id uuid.UUID) (*{{.Type}}, error) {
 	entity, err := a.{{.Name | lower}}Cache.Get(ctx, id.String())
 	if err != nil {
 		return nil, err
@@ -62,24 +57,25 @@ func (a *CacheAdapter) Get{{.Name}}(ctx context.Context, id uuid.UUID) (*{{.Name
 	return entity, nil
 }
 
-// Set{{.Name}} stores {{.Name | lower}} in cache with TTL
-func (a *CacheAdapter) Set{{.Name}}(ctx context.Context, entity *{{.Name}}, ttl time.Duration) error {
+// Set stores {{.Name | lower}} in cache with TTL
+func (a *CacheAdapter) Set(ctx context.Context, entity *{{.Type}}, ttl time.Duration) error {
 	if entity == nil {
 		return nil
 	}
 	return a.{{.Name | lower}}Cache.Set(ctx, entity.Id.String(), entity, ttl)
 }
 
-// Delete{{.Name}} removes {{.Name | lower}} from cache
-func (a *CacheAdapter) Delete{{.Name}}(ctx context.Context, id uuid.UUID) error {
+// Delete removes {{.Name | lower}} from cache
+func (a *CacheAdapter) Delete(ctx context.Context, id uuid.UUID) error {
 	return a.{{.Name | lower}}Cache.Delete(ctx, id.String())
 }
 
-{{if eq .Name "User"}}
-// Get{{.Name}}ByEmail retrieves {{.Name | lower}} from cache by email
-func (a *CacheAdapter) Get{{.Name}}ByEmail(ctx context.Context, email string) (*{{.Name}}, error) {
-	key := "email:" + email
-	entity, err := a.{{.Name | lower}}Cache.Get(ctx, key)
+{{if .AdditionalMethods}}{{range .AdditionalMethods}}
+{{if eq .Returns "single"}}
+// {{.Name}} retrieves {{$entity.Name | lower}} from cache by {{range .Params}}{{.}}{{end}}
+func (a *CacheAdapter) {{.Name}}(ctx context.Context{{range $i, $param := .Params}}, {{$param}} {{paramType $param}}{{end}}) (*{{$entity.Type}}, error) {
+	key := "{{index .Params 0}}:" + {{if isUUIDParam (index .Params 0)}}{{index .Params 0}}.String(){{else}}{{index .Params 0}}{{end}}
+	entity, err := a.{{$entity.Name | lower}}Cache.Get(ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -88,62 +84,29 @@ func (a *CacheAdapter) Get{{.Name}}ByEmail(ctx context.Context, email string) (*
 	}
 	return entity, nil
 }
-
-// Set{{.Name}}ByEmail stores {{.Name | lower}} in cache indexed by email
-func (a *CacheAdapter) Set{{.Name}}ByEmail(ctx context.Context, email string, entity *{{.Name}}, ttl time.Duration) error {
-	if entity == nil {
-		return nil
-	}
-	key := "email:" + email
-	return a.{{.Name | lower}}Cache.Set(ctx, key, entity, ttl)
+{{else if eq .Returns "multiple"}}
+// {{.Name}} retrieves multiple {{$entity.Name | lower}}s from cache by {{range .Params}}{{.}}{{end}}
+func (a *CacheAdapter) {{.Name}}(ctx context.Context{{range $i, $param := .Params}}, {{$param}} {{paramType $param}}{{end}}) ([]*{{$entity.Type}}, error) {
+	// List operations typically aren't cached as they're dynamic
+	// Return cache miss to fall back to database
+	return nil, ErrCacheMiss
 }
-
-// Delete{{.Name}}ByEmail removes {{.Name | lower}} from cache by email
-func (a *CacheAdapter) Delete{{.Name}}ByEmail(ctx context.Context, email string) error {
-	key := "email:" + email
-	return a.{{.Name | lower}}Cache.Delete(ctx, key)
-}{{end}}
-
-{{if eq .Name "Session"}}
-// Get{{.Name}}ByToken retrieves {{.Name | lower}} from cache by token
-func (a *CacheAdapter) Get{{.Name}}ByToken(ctx context.Context, token string) (*{{.Name}}, error) {
-	key := "token:" + token
-	entity, err := a.{{.Name | lower}}Cache.Get(ctx, key)
-	if err != nil {
-		return nil, err
-	}
-	if entity == nil {
-		return nil, ErrCacheMiss
-	}
-	return entity, nil
-}
-
-// Set{{.Name}}ByToken stores {{.Name | lower}} in cache indexed by token
-func (a *CacheAdapter) Set{{.Name}}ByToken(ctx context.Context, token string, entity *{{.Name}}, ttl time.Duration) error {
-	if entity == nil {
-		return nil
-	}
-	key := "token:" + token
-	return a.{{.Name | lower}}Cache.Set(ctx, key, entity, ttl)
-}
-
-// Delete{{.Name}}ByToken removes {{.Name | lower}} from cache by token
-func (a *CacheAdapter) Delete{{.Name}}ByToken(ctx context.Context, token string) error {
-	key := "token:" + token
-	return a.{{.Name | lower}}Cache.Delete(ctx, key)
-}
-
-// DeleteUser{{.Name}}s removes all sessions for a user from cache
-func (a *CacheAdapter) DeleteUser{{.Name}}s(ctx context.Context, userID uuid.UUID) error {
-	// This would require a more complex implementation with indexing
+{{else if eq .Returns "void"}}
+// {{.Name}} removes cache entries{{if .Params}} by {{range .Params}}{{.}}{{end}}{{end}}
+func (a *CacheAdapter) {{.Name}}(ctx context.Context{{range $i, $param := .Params}}, {{$param}} {{paramType $param}}{{end}}) error {
+	{{if .Params}}{{if len .Params | eq 1}}key := "{{index .Params 0}}:" + {{if isUUIDParam (index .Params 0)}}{{index .Params 0}}.String(){{else}}{{index .Params 0}}{{end}}
+	return a.{{$entity.Name | lower}}Cache.Delete(ctx, key){{else}}// This would require a more complex implementation with multiple parameters
 	// For now, returning nil as it's best-effort cleanup
-	return nil
-}{{end}}
+	return nil{{end}}{{else}}// This would require a more complex implementation
+	// For now, returning nil as it's best-effort cleanup
+	return nil{{end}}
+}
+{{end}}{{end}}{{end}}
 {{end}}{{end}}
 
 // FlushAll clears all cached data
 func (a *CacheAdapter) FlushAll(ctx context.Context) error {
-{{range .Schemas}}{{if .XCodegen.Cache}}	if err := a.{{.Name | lower}}Cache.Clear(ctx); err != nil {
+{{range .Entities}}{{if .XCodegen.Cache}}	if err := a.{{.Name | lower}}Cache.Clear(ctx); err != nil {
 		return err
 	}
 {{end}}{{end}}	return nil

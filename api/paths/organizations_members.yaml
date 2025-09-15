@@ -2,7 +2,7 @@ post:
   operationId: createMember
   summary: Create a new member
   tags:
-    - Organizations
+    - Members
   description: Create a new member
   parameters:
     - in: path
@@ -52,7 +52,7 @@ get:
   operationId: findManyMembers
   summary: Find many members
   tags:
-    - Organizations
+    - Members
   description: Find many members
   parameters:
     - in: path

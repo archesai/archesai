@@ -5,10 +5,12 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [organizationId, name]
     additional_methods:
-      - name: GetLabelsByOrganization
+      - name: ListByOrganization
         params: [organizationId]
-      - name: GetLabelByName
+        returns: multiple
+      - name: GetByName
         params: [name, organizationId]
+        returns: single
 type: object
 properties:
   createdAt:

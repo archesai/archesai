@@ -68,7 +68,7 @@ they can be marked as 'done'.
 
    ```bash
    # TypeScript compilation
-   cd [project directory] && npx tsc --noEmit
+   cd [project directory] && pnpm tsc --noEmit
 
    # Run specified tests
    npm test [specific test files]

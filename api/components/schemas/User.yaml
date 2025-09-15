@@ -6,7 +6,7 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [email]
     additional_methods:
-      - name: GetUserByEmail
+      - name: GetByEmail
         params: [email]
         returns: single
   cache:
