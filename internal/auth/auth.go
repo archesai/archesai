@@ -45,8 +45,13 @@ type Config struct {
 	MaxConcurrentSessions int // Maximum concurrent sessions per user (0 = unlimited)
 }
 
-// NewService creates a new authentication service
-func NewService(repo Repository, usersRepo users.Repository, config Config, logger *slog.Logger) *Service {
+// NewService creates a new authentication service with cache support
+// If cache is nil, a NoOpCache will be used as fallback
+func NewService(repo Repository, usersRepo users.Repository, cache Cache, config Config, logger *slog.Logger) *Service {
+	// Use NoOpCache if no cache provided
+	if cache == nil {
+		cache = NewNoOpCache()
+	}
 	if config.AccessTokenExpiry == 0 {
 		config.AccessTokenExpiry = 15 * time.Minute
 	}
@@ -60,37 +65,8 @@ func NewService(repo Repository, usersRepo users.Repository, config Config, logg
 		config.BCryptCost = bcrypt.DefaultCost
 	}
 
-	// Note: API Key Service must be set separately using SetAPIKeyService
-	// as it requires its own repository
-	return &Service{
-		repo:      repo,
-		usersRepo: usersRepo,
-		jwtSecret: []byte(config.JWTSecret),
-		logger:    logger,
-		config:    config,
-	}
-}
-
-// NewServiceWithCache creates a new auth service with Redis cache support
-func NewServiceWithCache(repo Repository, usersRepo users.Repository, cache Cache, config Config, logger *slog.Logger) *Service {
-	if config.AccessTokenExpiry == 0 {
-		config.AccessTokenExpiry = 15 * time.Minute
-	}
-	if config.RefreshTokenExpiry == 0 {
-		config.RefreshTokenExpiry = 7 * 24 * time.Hour
-	}
-	if config.SessionTokenExpiry == 0 {
-		config.SessionTokenExpiry = 30 * 24 * time.Hour
-	}
-	if config.BCryptCost == 0 {
-		config.BCryptCost = bcrypt.DefaultCost
-	}
-
-	// Create session manager if cache is provided
-	var sessionManager *SessionManager
-	if cache != nil {
-		sessionManager = NewSessionManager(repo, cache, config.SessionTokenExpiry)
-	}
+	// Always create session manager with the cache (might be NoOpCache)
+	sessionManager := NewSessionManager(repo, cache, config.SessionTokenExpiry)
 
 	// Note: API Key Service must be set separately using SetAPIKeyService
 	// as it requires its own repository

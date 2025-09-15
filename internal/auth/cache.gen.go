@@ -3,16 +3,14 @@ package auth
 
 import (
 	"context"
-	"errors"
-	"github.com/google/uuid"
 	"time"
+
+	genericcache "github.com/archesai/archesai/internal/cache"
+	"github.com/google/uuid"
 )
 
-// Common cache errors
-var (
-	ErrCacheMiss = errors.New("cache miss")
-	ErrCacheSet  = errors.New("cache set failed")
-)
+// ErrCacheMiss re-exported from generic cache package
+var ErrCacheMiss = genericcache.ErrCacheMiss
 
 // Cache provides caching operations for auth domain.
 type Cache interface {
@@ -36,56 +34,120 @@ type Cache interface {
 	FlushAll(ctx context.Context) error
 }
 
-// NoOpCache is a no-op cache implementation that always returns cache misses.
-type NoOpCache struct{}
-
-// NewNoOpCache creates a new no-op cache.
+// NewNoOpCache creates a no-op cache using the generic NoOpCache with the adapter
 func NewNoOpCache() Cache {
-	return &NoOpCache{}
+	return NewCacheAdapter(genericcache.NewNoOpCache[Account](), genericcache.NewNoOpCache[Session]())
 }
 
-// Account no-op operations
-func (c *NoOpCache) GetAccount(ctx context.Context, id uuid.UUID) (*Account, error) {
-	return nil, ErrCacheMiss
+// CacheAdapter adapts generic cache implementations to the domain Cache interface
+type CacheAdapter struct {
+	accountCache genericcache.Cache[Account]
+	sessionCache genericcache.Cache[Session]
 }
 
-func (c *NoOpCache) SetAccount(ctx context.Context, entity *Account, ttl time.Duration) error {
+// NewCacheAdapter creates a new cache adapter using generic caches
+func NewCacheAdapter(accountCache genericcache.Cache[Account], sessionCache genericcache.Cache[Session]) Cache {
+	return &CacheAdapter{
+		accountCache: accountCache,
+		sessionCache: sessionCache,
+	}
+}
+
+// GetAccount retrieves account from cache by ID
+func (a *CacheAdapter) GetAccount(ctx context.Context, id uuid.UUID) (*Account, error) {
+	entity, err := a.accountCache.Get(ctx, id.String())
+	if err != nil {
+		return nil, err
+	}
+	if entity == nil {
+		return nil, ErrCacheMiss
+	}
+	return entity, nil
+}
+
+// SetAccount stores account in cache with TTL
+func (a *CacheAdapter) SetAccount(ctx context.Context, entity *Account, ttl time.Duration) error {
+	if entity == nil {
+		return nil
+	}
+	return a.accountCache.Set(ctx, entity.Id.String(), entity, ttl)
+}
+
+// DeleteAccount removes account from cache
+func (a *CacheAdapter) DeleteAccount(ctx context.Context, id uuid.UUID) error {
+	return a.accountCache.Delete(ctx, id.String())
+}
+
+// GetSession retrieves session from cache by ID
+func (a *CacheAdapter) GetSession(ctx context.Context, id uuid.UUID) (*Session, error) {
+	entity, err := a.sessionCache.Get(ctx, id.String())
+	if err != nil {
+		return nil, err
+	}
+	if entity == nil {
+		return nil, ErrCacheMiss
+	}
+	return entity, nil
+}
+
+// SetSession stores session in cache with TTL
+func (a *CacheAdapter) SetSession(ctx context.Context, entity *Session, ttl time.Duration) error {
+	if entity == nil {
+		return nil
+	}
+	return a.sessionCache.Set(ctx, entity.Id.String(), entity, ttl)
+}
+
+// DeleteSession removes session from cache
+func (a *CacheAdapter) DeleteSession(ctx context.Context, id uuid.UUID) error {
+	return a.sessionCache.Delete(ctx, id.String())
+}
+
+// GetSessionByToken retrieves session from cache by token
+func (a *CacheAdapter) GetSessionByToken(ctx context.Context, token string) (*Session, error) {
+	key := "token:" + token
+	entity, err := a.sessionCache.Get(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	if entity == nil {
+		return nil, ErrCacheMiss
+	}
+	return entity, nil
+}
+
+// SetSessionByToken stores session in cache indexed by token
+func (a *CacheAdapter) SetSessionByToken(ctx context.Context, token string, entity *Session, ttl time.Duration) error {
+	if entity == nil {
+		return nil
+	}
+	key := "token:" + token
+	return a.sessionCache.Set(ctx, key, entity, ttl)
+}
+
+// DeleteSessionByToken removes session from cache by token
+func (a *CacheAdapter) DeleteSessionByToken(ctx context.Context, token string) error {
+	key := "token:" + token
+	return a.sessionCache.Delete(ctx, key)
+}
+
+// DeleteUserSessions removes all sessions for a user from cache
+func (a *CacheAdapter) DeleteUserSessions(ctx context.Context, userID uuid.UUID) error {
+	// This would require a more complex implementation with indexing
+	// For now, returning nil as it's best-effort cleanup
 	return nil
 }
 
-func (c *NoOpCache) DeleteAccount(ctx context.Context, id uuid.UUID) error {
+// FlushAll clears all cached data
+func (a *CacheAdapter) FlushAll(ctx context.Context) error {
+	if err := a.accountCache.Clear(ctx); err != nil {
+		return err
+	}
+	if err := a.sessionCache.Clear(ctx); err != nil {
+		return err
+	}
 	return nil
 }
 
-// Session no-op operations
-func (c *NoOpCache) GetSession(ctx context.Context, id uuid.UUID) (*Session, error) {
-	return nil, ErrCacheMiss
-}
-
-func (c *NoOpCache) SetSession(ctx context.Context, entity *Session, ttl time.Duration) error {
-	return nil
-}
-
-func (c *NoOpCache) DeleteSession(ctx context.Context, id uuid.UUID) error {
-	return nil
-}
-
-func (c *NoOpCache) GetSessionByToken(ctx context.Context, token string) (*Session, error) {
-	return nil, ErrCacheMiss
-}
-
-func (c *NoOpCache) SetSessionByToken(ctx context.Context, token string, entity *Session, ttl time.Duration) error {
-	return nil
-}
-
-func (c *NoOpCache) DeleteSessionByToken(ctx context.Context, token string) error {
-	return nil
-}
-
-func (c *NoOpCache) DeleteUserSessions(ctx context.Context, userID uuid.UUID) error {
-	return nil
-}
-
-func (c *NoOpCache) FlushAll(ctx context.Context) error {
-	return nil
-}
+// Ensure CacheAdapter implements Cache interface
+var _ Cache = (*CacheAdapter)(nil)

@@ -53,12 +53,6 @@ const (
 
 // Key prefixes for different subsystems
 const (
-	// CacheKeyPrefix is the prefix for cache keys
-	CacheKeyPrefix = "cache:"
-
-	// SessionKeyPrefix is the prefix for session keys
-	SessionKeyPrefix = "session:"
-
 	// QueueKeyPrefix is the prefix for queue keys
 	QueueKeyPrefix = "queue:"
 

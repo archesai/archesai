@@ -8,22 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// GetUserSessions retrieves all sessions for a user
-func (s *Service) GetUserSessions(ctx context.Context, userID uuid.UUID) ([]*Session, error) {
-	// Use SessionManager if available
-	if s.sessionManager != nil {
-		return s.sessionManager.ListUserSessions(ctx, userID)
-	}
-
-	// Fallback to direct repository
-	userIDStr := userID.String()
-	sessions, _, err := s.repo.ListSessions(ctx, ListSessionsParams{
-		UserID: &userIDStr,
-		Limit:  100,
-	})
-	return sessions, err
-}
-
 // RevokeSession revokes a specific session
 func (s *Service) RevokeSession(ctx context.Context, sessionID uuid.UUID) error {
 	return s.repo.DeleteSession(ctx, sessionID)

@@ -590,63 +590,6 @@ func (_c *MockEventPublisher_PublishOrganizationUpdated_Call) RunAndReturn(run f
 	return _c
 }
 
-// PublishRaw provides a mock function for the type MockEventPublisher
-func (_mock *MockEventPublisher) PublishRaw(ctx context.Context, event *Event) error {
-	ret := _mock.Called(ctx, event)
-
-	if len(ret) == 0 {
-		panic("no return value specified for PublishRaw")
-	}
-
-	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, *Event) error); ok {
-		r0 = returnFunc(ctx, event)
-	} else {
-		r0 = ret.Error(0)
-	}
-	return r0
-}
-
-// MockEventPublisher_PublishRaw_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PublishRaw'
-type MockEventPublisher_PublishRaw_Call struct {
-	*mock.Call
-}
-
-// PublishRaw is a helper method to define mock.On call
-//   - ctx context.Context
-//   - event *Event
-func (_e *MockEventPublisher_Expecter) PublishRaw(ctx interface{}, event interface{}) *MockEventPublisher_PublishRaw_Call {
-	return &MockEventPublisher_PublishRaw_Call{Call: _e.mock.On("PublishRaw", ctx, event)}
-}
-
-func (_c *MockEventPublisher_PublishRaw_Call) Run(run func(ctx context.Context, event *Event)) *MockEventPublisher_PublishRaw_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 context.Context
-		if args[0] != nil {
-			arg0 = args[0].(context.Context)
-		}
-		var arg1 *Event
-		if args[1] != nil {
-			arg1 = args[1].(*Event)
-		}
-		run(
-			arg0,
-			arg1,
-		)
-	})
-	return _c
-}
-
-func (_c *MockEventPublisher_PublishRaw_Call) Return(err error) *MockEventPublisher_PublishRaw_Call {
-	_c.Call.Return(err)
-	return _c
-}
-
-func (_c *MockEventPublisher_PublishRaw_Call) RunAndReturn(run func(ctx context.Context, event *Event) error) *MockEventPublisher_PublishRaw_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // NewMockRepository creates a new instance of MockRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockRepository(t interface {

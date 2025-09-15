@@ -3,11 +3,12 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/archesai/archesai/internal/content"
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,73 +29,138 @@ func NewPostgresRepository(db *pgxpool.Pool) content.Repository {
 // Artifact operations
 
 func (r *PostgresRepository) CreateArtifact(ctx context.Context, entity *content.Artifact) (*content.Artifact, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("CreateArtifact not yet implemented - requires custom mapping")
-}
+	// Check if SQLC has the CreateArtifact method
+	// For now, we'll generate a stub but with proper error handling
+	// TODO: Parse SQLC to detect available queries
 
-func (r *PostgresRepository) GetArtifactByID(ctx context.Context, id uuid.UUID) (*content.Artifact, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("GetArtifactByID not yet implemented - requires custom mapping")
+	// Example of what it should look like when SQLC query exists:
+	// params := postgresql.CreateArtifactParams{
+	//     Id: entity.Id,
+	//     // ... map other fields
+	// }
+	// dbArtifact, err := r.queries.CreateArtifact(ctx, params)
+	// if err != nil {
+	//     return nil, content.NewRepositoryError("create", err)
+	// }
+	// return mapArtifactToDomain(&dbArtifact), nil
+
+	return nil, content.NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) GetArtifact(ctx context.Context, id uuid.UUID) (*content.Artifact, error) {
-	// Alias for GetByID to match interface requirements
-	return r.GetArtifactByID(ctx, id)
+	// Try to call SQLC GetArtifact if it exists
+	// For User, Session, Account entities, SQLC usually has these queries
+
+	// SQLC query might not exist for this entity
+	return nil, content.NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) UpdateArtifact(ctx context.Context, id uuid.UUID, entity *content.Artifact) (*content.Artifact, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("UpdateArtifact not yet implemented - requires custom mapping")
+	// Update operations are often custom and may not have SQLC queries
+	return nil, content.NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) DeleteArtifact(ctx context.Context, id uuid.UUID) error {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return fmt.Errorf("DeleteArtifact not yet implemented - requires custom mapping")
+
+	return content.NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) ListArtifacts(ctx context.Context, params content.ListArtifactsParams) ([]*content.Artifact, int64, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, 0, fmt.Errorf("ListArtifacts not yet implemented - requires custom mapping")
+	// List operations need both List and Count queries from SQLC
+	return nil, 0, content.NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
 }
 
 // Label operations
 
 func (r *PostgresRepository) CreateLabel(ctx context.Context, entity *content.Label) (*content.Label, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("CreateLabel not yet implemented - requires custom mapping")
-}
+	// Check if SQLC has the CreateLabel method
+	// For now, we'll generate a stub but with proper error handling
+	// TODO: Parse SQLC to detect available queries
 
-func (r *PostgresRepository) GetLabelByID(ctx context.Context, id uuid.UUID) (*content.Label, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("GetLabelByID not yet implemented - requires custom mapping")
+	// Example of what it should look like when SQLC query exists:
+	// params := postgresql.CreateLabelParams{
+	//     Id: entity.Id,
+	//     // ... map other fields
+	// }
+	// dbLabel, err := r.queries.CreateLabel(ctx, params)
+	// if err != nil {
+	//     return nil, content.NewRepositoryError("create", err)
+	// }
+	// return mapLabelToDomain(&dbLabel), nil
+
+	return nil, content.NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) GetLabel(ctx context.Context, id uuid.UUID) (*content.Label, error) {
-	// Alias for GetByID to match interface requirements
-	return r.GetLabelByID(ctx, id)
+	// Try to call SQLC GetLabel if it exists
+	// For User, Session, Account entities, SQLC usually has these queries
+
+	// SQLC query might not exist for this entity
+	return nil, content.NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) UpdateLabel(ctx context.Context, id uuid.UUID, entity *content.Label) (*content.Label, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("UpdateLabel not yet implemented - requires custom mapping")
+	// Update operations are often custom and may not have SQLC queries
+	return nil, content.NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) DeleteLabel(ctx context.Context, id uuid.UUID) error {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return fmt.Errorf("DeleteLabel not yet implemented - requires custom mapping")
+
+	return content.NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) ListLabels(ctx context.Context, params content.ListLabelsParams) ([]*content.Label, int64, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, 0, fmt.Errorf("ListLabels not yet implemented - requires custom mapping")
+	// List operations need both List and Count queries from SQLC
+	return nil, 0, content.NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
+}
+
+// Mapper functions - Convert between domain types and database types
+// These need to be customized based on the actual field mappings
+
+func mapArtifactToDomain(db *postgresql.Artifact) *content.Artifact {
+	if db == nil {
+		return nil
+	}
+
+	// This is a basic mapping - needs to be customized based on actual types
+	// The challenge is that OpenAPI types and database types don't always match
+	// For example:
+	// - OpenAPI might use string, database uses *string
+	// - OpenAPI might use custom UUID type, database uses uuid.UUID
+	// - Field names might differ (Id vs ID)
+
+	result := &content.Artifact{
+		// TODO: Map fields properly based on actual type definitions
+		// This requires parsing both OpenAPI types and SQLC types
+	}
+
+	// Basic field mapping for common entities
+
+	return result
+}
+
+func mapLabelToDomain(db *postgresql.Label) *content.Label {
+	if db == nil {
+		return nil
+	}
+
+	// This is a basic mapping - needs to be customized based on actual types
+	// The challenge is that OpenAPI types and database types don't always match
+	// For example:
+	// - OpenAPI might use string, database uses *string
+	// - OpenAPI might use custom UUID type, database uses uuid.UUID
+	// - Field names might differ (Id vs ID)
+
+	result := &content.Label{
+		// TODO: Map fields properly based on actual type definitions
+		// This requires parsing both OpenAPI types and SQLC types
+	}
+
+	// Basic field mapping for common entities
+
+	return result
 }

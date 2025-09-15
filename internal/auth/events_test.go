@@ -120,7 +120,7 @@ func TestEventSystem(t *testing.T) {
 
 func TestEventTypes(t *testing.T) {
 	// Verify event type constants are defined correctly
-	expectedTypes := map[string]auth.EventType{
+	expectedTypes := map[string]string{
 		"account.created":   auth.EventAccountCreated,
 		"account.updated":   auth.EventAccountUpdated,
 		"account.deleted":   auth.EventAccountDeleted,
@@ -133,7 +133,7 @@ func TestEventTypes(t *testing.T) {
 	}
 
 	for expected, actual := range expectedTypes {
-		if string(actual) != expected {
+		if actual != expected {
 			t.Errorf("EventType mismatch: expected %s, got %s", expected, actual)
 		}
 	}
@@ -151,14 +151,14 @@ func TestEventStructures(t *testing.T) {
 
 	// Test event creation functions
 	createdEvent := auth.NewAccountCreatedEvent(account)
-	if createdEvent.Entity != account {
+	if createdEvent.Account != account {
 		t.Error("Event entity does not match original")
 	}
-	if createdEvent.Type != auth.EventAccountCreated {
-		t.Errorf("Event type mismatch: expected %s, got %s", auth.EventAccountCreated, createdEvent.Type)
+	if createdEvent.EventType() != auth.EventAccountCreated {
+		t.Errorf("Event type mismatch: expected %s, got %s", auth.EventAccountCreated, createdEvent.EventType())
 	}
-	if createdEvent.Source != "auth" {
-		t.Errorf("Event source mismatch: expected auth, got %s", createdEvent.Source)
+	if createdEvent.EventDomain() != "auth" {
+		t.Errorf("Event domain mismatch: expected auth, got %s", createdEvent.EventDomain())
 	}
 
 	// Verify event has required fields
@@ -168,7 +168,7 @@ func TestEventStructures(t *testing.T) {
 	if createdEvent.Timestamp.IsZero() {
 		t.Error("Event timestamp is zero")
 	}
-	if createdEvent.Data != account {
+	if createdEvent.EventData() != account {
 		t.Error("Event data does not match entity")
 	}
 }

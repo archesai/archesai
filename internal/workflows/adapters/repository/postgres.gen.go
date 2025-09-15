@@ -3,11 +3,12 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/workflows"
 	"github.com/google/uuid"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,110 +29,206 @@ func NewPostgresRepository(db *pgxpool.Pool) workflows.Repository {
 // Pipeline operations
 
 func (r *PostgresRepository) CreatePipeline(ctx context.Context, entity *workflows.Pipeline) (*workflows.Pipeline, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("CreatePipeline not yet implemented - requires custom mapping")
-}
+	// Check if SQLC has the CreatePipeline method
+	// For now, we'll generate a stub but with proper error handling
+	// TODO: Parse SQLC to detect available queries
 
-func (r *PostgresRepository) GetPipelineByID(ctx context.Context, id uuid.UUID) (*workflows.Pipeline, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("GetPipelineByID not yet implemented - requires custom mapping")
+	// Example of what it should look like when SQLC query exists:
+	// params := postgresql.CreatePipelineParams{
+	//     Id: entity.Id,
+	//     // ... map other fields
+	// }
+	// dbPipeline, err := r.queries.CreatePipeline(ctx, params)
+	// if err != nil {
+	//     return nil, workflows.NewRepositoryError("create", err)
+	// }
+	// return mapPipelineToDomain(&dbPipeline), nil
+
+	return nil, workflows.NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) GetPipeline(ctx context.Context, id uuid.UUID) (*workflows.Pipeline, error) {
-	// Alias for GetByID to match interface requirements
-	return r.GetPipelineByID(ctx, id)
+	// Try to call SQLC GetPipeline if it exists
+	// For User, Session, Account entities, SQLC usually has these queries
+
+	// SQLC query might not exist for this entity
+	return nil, workflows.NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) UpdatePipeline(ctx context.Context, id uuid.UUID, entity *workflows.Pipeline) (*workflows.Pipeline, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("UpdatePipeline not yet implemented - requires custom mapping")
+	// Update operations are often custom and may not have SQLC queries
+	return nil, workflows.NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) DeletePipeline(ctx context.Context, id uuid.UUID) error {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return fmt.Errorf("DeletePipeline not yet implemented - requires custom mapping")
+
+	return workflows.NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) ListPipelines(ctx context.Context, params workflows.ListPipelinesParams) ([]*workflows.Pipeline, int64, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, 0, fmt.Errorf("ListPipelines not yet implemented - requires custom mapping")
+	// List operations need both List and Count queries from SQLC
+	return nil, 0, workflows.NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
 }
 
 // Run operations
 
 func (r *PostgresRepository) CreateRun(ctx context.Context, entity *workflows.Run) (*workflows.Run, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("CreateRun not yet implemented - requires custom mapping")
-}
+	// Check if SQLC has the CreateRun method
+	// For now, we'll generate a stub but with proper error handling
+	// TODO: Parse SQLC to detect available queries
 
-func (r *PostgresRepository) GetRunByID(ctx context.Context, id uuid.UUID) (*workflows.Run, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("GetRunByID not yet implemented - requires custom mapping")
+	// Example of what it should look like when SQLC query exists:
+	// params := postgresql.CreateRunParams{
+	//     Id: entity.Id,
+	//     // ... map other fields
+	// }
+	// dbRun, err := r.queries.CreateRun(ctx, params)
+	// if err != nil {
+	//     return nil, workflows.NewRepositoryError("create", err)
+	// }
+	// return mapRunToDomain(&dbRun), nil
+
+	return nil, workflows.NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) GetRun(ctx context.Context, id uuid.UUID) (*workflows.Run, error) {
-	// Alias for GetByID to match interface requirements
-	return r.GetRunByID(ctx, id)
+	// Try to call SQLC GetRun if it exists
+	// For User, Session, Account entities, SQLC usually has these queries
+
+	// SQLC query might not exist for this entity
+	return nil, workflows.NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) UpdateRun(ctx context.Context, id uuid.UUID, entity *workflows.Run) (*workflows.Run, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("UpdateRun not yet implemented - requires custom mapping")
+	// Update operations are often custom and may not have SQLC queries
+	return nil, workflows.NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) DeleteRun(ctx context.Context, id uuid.UUID) error {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return fmt.Errorf("DeleteRun not yet implemented - requires custom mapping")
+
+	return workflows.NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) ListRuns(ctx context.Context, params workflows.ListRunsParams) ([]*workflows.Run, int64, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, 0, fmt.Errorf("ListRuns not yet implemented - requires custom mapping")
+	// List operations need both List and Count queries from SQLC
+	return nil, 0, workflows.NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
 }
 
 // Tool operations
 
 func (r *PostgresRepository) CreateTool(ctx context.Context, entity *workflows.Tool) (*workflows.Tool, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("CreateTool not yet implemented - requires custom mapping")
-}
+	// Check if SQLC has the CreateTool method
+	// For now, we'll generate a stub but with proper error handling
+	// TODO: Parse SQLC to detect available queries
 
-func (r *PostgresRepository) GetToolByID(ctx context.Context, id uuid.UUID) (*workflows.Tool, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("GetToolByID not yet implemented - requires custom mapping")
+	// Example of what it should look like when SQLC query exists:
+	// params := postgresql.CreateToolParams{
+	//     Id: entity.Id,
+	//     // ... map other fields
+	// }
+	// dbTool, err := r.queries.CreateTool(ctx, params)
+	// if err != nil {
+	//     return nil, workflows.NewRepositoryError("create", err)
+	// }
+	// return mapToolToDomain(&dbTool), nil
+
+	return nil, workflows.NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) GetTool(ctx context.Context, id uuid.UUID) (*workflows.Tool, error) {
-	// Alias for GetByID to match interface requirements
-	return r.GetToolByID(ctx, id)
+	// Try to call SQLC GetTool if it exists
+	// For User, Session, Account entities, SQLC usually has these queries
+
+	// SQLC query might not exist for this entity
+	return nil, workflows.NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) UpdateTool(ctx context.Context, id uuid.UUID, entity *workflows.Tool) (*workflows.Tool, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("UpdateTool not yet implemented - requires custom mapping")
+	// Update operations are often custom and may not have SQLC queries
+	return nil, workflows.NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) DeleteTool(ctx context.Context, id uuid.UUID) error {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return fmt.Errorf("DeleteTool not yet implemented - requires custom mapping")
+
+	return workflows.NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) ListTools(ctx context.Context, params workflows.ListToolsParams) ([]*workflows.Tool, int64, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, 0, fmt.Errorf("ListTools not yet implemented - requires custom mapping")
+	// List operations need both List and Count queries from SQLC
+	return nil, 0, workflows.NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
+}
+
+// Mapper functions - Convert between domain types and database types
+// These need to be customized based on the actual field mappings
+
+func mapPipelineToDomain(db *postgresql.Pipeline) *workflows.Pipeline {
+	if db == nil {
+		return nil
+	}
+
+	// This is a basic mapping - needs to be customized based on actual types
+	// The challenge is that OpenAPI types and database types don't always match
+	// For example:
+	// - OpenAPI might use string, database uses *string
+	// - OpenAPI might use custom UUID type, database uses uuid.UUID
+	// - Field names might differ (Id vs ID)
+
+	result := &workflows.Pipeline{
+		// TODO: Map fields properly based on actual type definitions
+		// This requires parsing both OpenAPI types and SQLC types
+	}
+
+	// Basic field mapping for common entities
+
+	return result
+}
+
+func mapRunToDomain(db *postgresql.Run) *workflows.Run {
+	if db == nil {
+		return nil
+	}
+
+	// This is a basic mapping - needs to be customized based on actual types
+	// The challenge is that OpenAPI types and database types don't always match
+	// For example:
+	// - OpenAPI might use string, database uses *string
+	// - OpenAPI might use custom UUID type, database uses uuid.UUID
+	// - Field names might differ (Id vs ID)
+
+	result := &workflows.Run{
+		// TODO: Map fields properly based on actual type definitions
+		// This requires parsing both OpenAPI types and SQLC types
+	}
+
+	// Basic field mapping for common entities
+
+	return result
+}
+
+func mapToolToDomain(db *postgresql.Tool) *workflows.Tool {
+	if db == nil {
+		return nil
+	}
+
+	// This is a basic mapping - needs to be customized based on actual types
+	// The challenge is that OpenAPI types and database types don't always match
+	// For example:
+	// - OpenAPI might use string, database uses *string
+	// - OpenAPI might use custom UUID type, database uses uuid.UUID
+	// - Field names might differ (Id vs ID)
+
+	result := &workflows.Tool{
+		// TODO: Map fields properly based on actual type definitions
+		// This requires parsing both OpenAPI types and SQLC types
+	}
+
+	// Basic field mapping for common entities
+
+	return result
 }

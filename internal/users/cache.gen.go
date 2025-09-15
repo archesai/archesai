@@ -3,16 +3,14 @@ package users
 
 import (
 	"context"
-	"errors"
-	"github.com/google/uuid"
 	"time"
+
+	genericcache "github.com/archesai/archesai/internal/cache"
+	"github.com/google/uuid"
 )
 
-// Common cache errors
-var (
-	ErrCacheMiss = errors.New("cache miss")
-	ErrCacheSet  = errors.New("cache set failed")
-)
+// ErrCacheMiss re-exported from generic cache package
+var ErrCacheMiss = genericcache.ErrCacheMiss
 
 // Cache provides caching operations for users domain.
 type Cache interface {
@@ -29,39 +27,83 @@ type Cache interface {
 	FlushAll(ctx context.Context) error
 }
 
-// NoOpCache is a no-op cache implementation that always returns cache misses.
-type NoOpCache struct{}
-
-// NewNoOpCache creates a new no-op cache.
+// NewNoOpCache creates a no-op cache using the generic NoOpCache with the adapter
 func NewNoOpCache() Cache {
-	return &NoOpCache{}
+	return NewCacheAdapter(genericcache.NewNoOpCache[User]())
 }
 
-// User no-op operations
-func (c *NoOpCache) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
-	return nil, ErrCacheMiss
+// CacheAdapter adapts generic cache implementations to the domain Cache interface
+type CacheAdapter struct {
+	userCache genericcache.Cache[User]
 }
 
-func (c *NoOpCache) SetUser(ctx context.Context, entity *User, ttl time.Duration) error {
+// NewCacheAdapter creates a new cache adapter using generic caches
+func NewCacheAdapter(userCache genericcache.Cache[User]) Cache {
+	return &CacheAdapter{
+		userCache: userCache,
+	}
+}
+
+// GetUser retrieves user from cache by ID
+func (a *CacheAdapter) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+	entity, err := a.userCache.Get(ctx, id.String())
+	if err != nil {
+		return nil, err
+	}
+	if entity == nil {
+		return nil, ErrCacheMiss
+	}
+	return entity, nil
+}
+
+// SetUser stores user in cache with TTL
+func (a *CacheAdapter) SetUser(ctx context.Context, entity *User, ttl time.Duration) error {
+	if entity == nil {
+		return nil
+	}
+	return a.userCache.Set(ctx, entity.Id.String(), entity, ttl)
+}
+
+// DeleteUser removes user from cache
+func (a *CacheAdapter) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	return a.userCache.Delete(ctx, id.String())
+}
+
+// GetUserByEmail retrieves user from cache by email
+func (a *CacheAdapter) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	key := "email:" + email
+	entity, err := a.userCache.Get(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	if entity == nil {
+		return nil, ErrCacheMiss
+	}
+	return entity, nil
+}
+
+// SetUserByEmail stores user in cache indexed by email
+func (a *CacheAdapter) SetUserByEmail(ctx context.Context, email string, entity *User, ttl time.Duration) error {
+	if entity == nil {
+		return nil
+	}
+	key := "email:" + email
+	return a.userCache.Set(ctx, key, entity, ttl)
+}
+
+// DeleteUserByEmail removes user from cache by email
+func (a *CacheAdapter) DeleteUserByEmail(ctx context.Context, email string) error {
+	key := "email:" + email
+	return a.userCache.Delete(ctx, key)
+}
+
+// FlushAll clears all cached data
+func (a *CacheAdapter) FlushAll(ctx context.Context) error {
+	if err := a.userCache.Clear(ctx); err != nil {
+		return err
+	}
 	return nil
 }
 
-func (c *NoOpCache) DeleteUser(ctx context.Context, id uuid.UUID) error {
-	return nil
-}
-
-func (c *NoOpCache) GetUserByEmail(ctx context.Context, email string) (*User, error) {
-	return nil, ErrCacheMiss
-}
-
-func (c *NoOpCache) SetUserByEmail(ctx context.Context, email string, entity *User, ttl time.Duration) error {
-	return nil
-}
-
-func (c *NoOpCache) DeleteUserByEmail(ctx context.Context, email string) error {
-	return nil
-}
-
-func (c *NoOpCache) FlushAll(ctx context.Context) error {
-	return nil
-}
+// Ensure CacheAdapter implements Cache interface
+var _ Cache = (*CacheAdapter)(nil)

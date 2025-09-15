@@ -3,76 +3,71 @@ package {{.Package}}
 
 import (
 	"context"
-	"time"
-{{range .Imports}}	"{{.}}"
-{{end}}
+	"github.com/archesai/archesai/internal/events"
 )
 
-// EventType represents the type of event.
-type EventType string
-
-// Event types for {{.Domain}} domain.
+// Event type constants for {{.Domain}} domain.
 const (
-{{range $entity := .Entities}}{{range .Events}}	Event{{$entity.Name}}{{title .Type}} EventType = "{{lower $entity.Name}}.{{kebabCase .Type}}"
+{{range $entity := .Entities}}{{range .Events}}	Event{{$entity.Name}}{{title .Type}} = "{{lower $entity.Name}}.{{kebabCase .Type}}"
 {{end}}{{end}})
-
-// Event represents a domain event.
-type Event struct {
-	ID        string      `json:"id"`
-	Type      EventType   `json:"type"`
-	Timestamp time.Time   `json:"timestamp"`
-	Source    string      `json:"source"`
-	Data      interface{} `json:"data"`
-	Metadata  map[string]string `json:"metadata,omitempty"`
-}
-
-// EventPublisher publishes domain events.
-type EventPublisher interface {
-{{range $entity := .Entities}}{{range .Events}}	// Publish{{$entity.Name}}{{title .Type}} publishes a {{.Description}} event for {{$entity.Name}}.
-	Publish{{$entity.Name}}{{title .Type}}(ctx context.Context, entity *{{$entity.Type}}) error
-{{end}}{{end}}
-	// PublishRaw publishes a raw event.
-	PublishRaw(ctx context.Context, event *Event) error
-}
-
-// NoOpEventPublisher is a no-op event publisher implementation.
-type NoOpEventPublisher struct{}
-
-// NewNoOpEventPublisher creates a new no-op event publisher.
-func NewNoOpEventPublisher() EventPublisher {
-	return &NoOpEventPublisher{}
-}
-
-{{range $entity := .Entities}}{{range .Events}}
-// Publish{{$entity.Name}}{{title .Type}} does nothing in no-op implementation.
-func (p *NoOpEventPublisher) Publish{{$entity.Name}}{{title .Type}}(ctx context.Context, entity *{{$entity.Type}}) error {
-	return nil
-}
-{{end}}{{end}}
-
-// PublishRaw does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishRaw(ctx context.Context, event *Event) error {
-	return nil
-}
 
 {{range $entity := .Entities}}{{range $event := .Events}}
 // {{$entity.Name}}{{title $event.Type}}Event represents a {{$event.Description}} event for {{$entity.Name}}.
 type {{$entity.Name}}{{title $event.Type}}Event struct {
-	Event
-	Entity *{{$entity.Type}} `json:"entity"`
+	events.BaseEvent
+	{{$entity.Name}} *{{$entity.Type}} `json:"{{lower $entity.Name}}"`
 }
 
 // New{{$entity.Name}}{{title $event.Type}}Event creates a new {{$entity.Name}} {{$event.Type}} event.
 func New{{$entity.Name}}{{title $event.Type}}Event(entity *{{$entity.Type}}) *{{$entity.Name}}{{title $event.Type}}Event {
 	return &{{$entity.Name}}{{title $event.Type}}Event{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      Event{{$entity.Name}}{{title $event.Type}},
-			Timestamp: time.Now().UTC(),
-			Source:    "{{lower $.Domain}}",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("{{lower $.Domain}}", Event{{$entity.Name}}{{title $event.Type}}),
+		{{$entity.Name}}: entity,
 	}
 }
+
+// EventType returns the event type string.
+func (e *{{$entity.Name}}{{title $event.Type}}Event) EventType() string {
+	return Event{{$entity.Name}}{{title $event.Type}}
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *{{$entity.Name}}{{title $event.Type}}Event) EventDomain() string {
+	return "{{lower $.Domain}}"
+}
+
+// EventData returns the actual event data.
+func (e *{{$entity.Name}}{{title $event.Type}}Event) EventData() interface{} {
+	return e.{{$entity.Name}}
+}
 {{end}}{{end}}
+
+// EventPublisher publishes domain events for {{.Domain}}.
+type EventPublisher interface {
+{{range $entity := .Entities}}{{range .Events}}	Publish{{$entity.Name}}{{title .Type}}(ctx context.Context, entity *{{$entity.Type}}) error
+{{end}}{{end}}}
+
+// eventPublisher implements EventPublisher for {{.Domain}} domain.
+type eventPublisher struct {
+	publisher events.Publisher
+}
+
+// NewEventPublisher creates a new event publisher for {{.Domain}} domain.
+func NewEventPublisher(publisher events.Publisher) EventPublisher {
+	return &eventPublisher{
+		publisher: publisher,
+	}
+}
+
+{{range $entity := .Entities}}{{range .Events}}
+// Publish{{$entity.Name}}{{title .Type}} publishes a {{.Description}} event for {{$entity.Name}}.
+func (p *eventPublisher) Publish{{$entity.Name}}{{title .Type}}(ctx context.Context, entity *{{$entity.Type}}) error {
+	event := New{{$entity.Name}}{{title .Type}}Event(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+{{end}}{{end}}
+
+// NewNoOpEventPublisher creates a new no-op event publisher for testing.
+func NewNoOpEventPublisher() EventPublisher {
+	return NewEventPublisher(events.NewNoOpPublisher())
+}

@@ -3,155 +3,178 @@ package users
 
 import (
 	"context"
-	"github.com/google/uuid"
-	"time"
+	"github.com/archesai/archesai/internal/events"
 )
 
-// EventType represents the type of event.
-type EventType string
-
-// Event types for users domain.
+// Event type constants for users domain.
 const (
-	EventUserCreated        EventType = "user.created"
-	EventUserUpdated        EventType = "user.updated"
-	EventUserDeleted        EventType = "user.deleted"
-	EventUserEmail_verified EventType = "user.email-verified"
+	EventUserCreated        = "user.created"
+	EventUserUpdated        = "user.updated"
+	EventUserDeleted        = "user.deleted"
+	EventUserEmail_verified = "user.email-verified"
 )
-
-// Event represents a domain event.
-type Event struct {
-	ID        string            `json:"id"`
-	Type      EventType         `json:"type"`
-	Timestamp time.Time         `json:"timestamp"`
-	Source    string            `json:"source"`
-	Data      interface{}       `json:"data"`
-	Metadata  map[string]string `json:"metadata,omitempty"`
-}
-
-// EventPublisher publishes domain events.
-type EventPublisher interface {
-	// PublishUserCreated publishes a created event event for User.
-	PublishUserCreated(ctx context.Context, entity *User) error
-	// PublishUserUpdated publishes a updated event event for User.
-	PublishUserUpdated(ctx context.Context, entity *User) error
-	// PublishUserDeleted publishes a deleted event event for User.
-	PublishUserDeleted(ctx context.Context, entity *User) error
-	// PublishUserEmail_verified publishes a email_verified event event for User.
-	PublishUserEmail_verified(ctx context.Context, entity *User) error
-
-	// PublishRaw publishes a raw event.
-	PublishRaw(ctx context.Context, event *Event) error
-}
-
-// NoOpEventPublisher is a no-op event publisher implementation.
-type NoOpEventPublisher struct{}
-
-// NewNoOpEventPublisher creates a new no-op event publisher.
-func NewNoOpEventPublisher() EventPublisher {
-	return &NoOpEventPublisher{}
-}
-
-// PublishUserCreated does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishUserCreated(ctx context.Context, entity *User) error {
-	return nil
-}
-
-// PublishUserUpdated does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishUserUpdated(ctx context.Context, entity *User) error {
-	return nil
-}
-
-// PublishUserDeleted does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishUserDeleted(ctx context.Context, entity *User) error {
-	return nil
-}
-
-// PublishUserEmail_verified does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishUserEmail_verified(ctx context.Context, entity *User) error {
-	return nil
-}
-
-// PublishRaw does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishRaw(ctx context.Context, event *Event) error {
-	return nil
-}
 
 // UserCreatedEvent represents a created event event for User.
 type UserCreatedEvent struct {
-	Event
-	Entity *User `json:"entity"`
+	events.BaseEvent
+	User *User `json:"user"`
 }
 
 // NewUserCreatedEvent creates a new User created event.
 func NewUserCreatedEvent(entity *User) *UserCreatedEvent {
 	return &UserCreatedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventUserCreated,
-			Timestamp: time.Now().UTC(),
-			Source:    "users",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("users", EventUserCreated),
+		User:      entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *UserCreatedEvent) EventType() string {
+	return EventUserCreated
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *UserCreatedEvent) EventDomain() string {
+	return "users"
+}
+
+// EventData returns the actual event data.
+func (e *UserCreatedEvent) EventData() interface{} {
+	return e.User
 }
 
 // UserUpdatedEvent represents a updated event event for User.
 type UserUpdatedEvent struct {
-	Event
-	Entity *User `json:"entity"`
+	events.BaseEvent
+	User *User `json:"user"`
 }
 
 // NewUserUpdatedEvent creates a new User updated event.
 func NewUserUpdatedEvent(entity *User) *UserUpdatedEvent {
 	return &UserUpdatedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventUserUpdated,
-			Timestamp: time.Now().UTC(),
-			Source:    "users",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("users", EventUserUpdated),
+		User:      entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *UserUpdatedEvent) EventType() string {
+	return EventUserUpdated
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *UserUpdatedEvent) EventDomain() string {
+	return "users"
+}
+
+// EventData returns the actual event data.
+func (e *UserUpdatedEvent) EventData() interface{} {
+	return e.User
 }
 
 // UserDeletedEvent represents a deleted event event for User.
 type UserDeletedEvent struct {
-	Event
-	Entity *User `json:"entity"`
+	events.BaseEvent
+	User *User `json:"user"`
 }
 
 // NewUserDeletedEvent creates a new User deleted event.
 func NewUserDeletedEvent(entity *User) *UserDeletedEvent {
 	return &UserDeletedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventUserDeleted,
-			Timestamp: time.Now().UTC(),
-			Source:    "users",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("users", EventUserDeleted),
+		User:      entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *UserDeletedEvent) EventType() string {
+	return EventUserDeleted
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *UserDeletedEvent) EventDomain() string {
+	return "users"
+}
+
+// EventData returns the actual event data.
+func (e *UserDeletedEvent) EventData() interface{} {
+	return e.User
 }
 
 // UserEmail_verifiedEvent represents a email_verified event event for User.
 type UserEmail_verifiedEvent struct {
-	Event
-	Entity *User `json:"entity"`
+	events.BaseEvent
+	User *User `json:"user"`
 }
 
 // NewUserEmail_verifiedEvent creates a new User email_verified event.
 func NewUserEmail_verifiedEvent(entity *User) *UserEmail_verifiedEvent {
 	return &UserEmail_verifiedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventUserEmail_verified,
-			Timestamp: time.Now().UTC(),
-			Source:    "users",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("users", EventUserEmail_verified),
+		User:      entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *UserEmail_verifiedEvent) EventType() string {
+	return EventUserEmail_verified
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *UserEmail_verifiedEvent) EventDomain() string {
+	return "users"
+}
+
+// EventData returns the actual event data.
+func (e *UserEmail_verifiedEvent) EventData() interface{} {
+	return e.User
+}
+
+// EventPublisher publishes domain events for users.
+type EventPublisher interface {
+	PublishUserCreated(ctx context.Context, entity *User) error
+	PublishUserUpdated(ctx context.Context, entity *User) error
+	PublishUserDeleted(ctx context.Context, entity *User) error
+	PublishUserEmail_verified(ctx context.Context, entity *User) error
+}
+
+// eventPublisher implements EventPublisher for users domain.
+type eventPublisher struct {
+	publisher events.Publisher
+}
+
+// NewEventPublisher creates a new event publisher for users domain.
+func NewEventPublisher(publisher events.Publisher) EventPublisher {
+	return &eventPublisher{
+		publisher: publisher,
+	}
+}
+
+// PublishUserCreated publishes a created event event for User.
+func (p *eventPublisher) PublishUserCreated(ctx context.Context, entity *User) error {
+	event := NewUserCreatedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishUserUpdated publishes a updated event event for User.
+func (p *eventPublisher) PublishUserUpdated(ctx context.Context, entity *User) error {
+	event := NewUserUpdatedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishUserDeleted publishes a deleted event event for User.
+func (p *eventPublisher) PublishUserDeleted(ctx context.Context, entity *User) error {
+	event := NewUserDeletedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishUserEmail_verified publishes a email_verified event event for User.
+func (p *eventPublisher) PublishUserEmail_verified(ctx context.Context, entity *User) error {
+	event := NewUserEmail_verifiedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// NewNoOpEventPublisher creates a new no-op event publisher for testing.
+func NewNoOpEventPublisher() EventPublisher {
+	return NewEventPublisher(events.NewNoOpPublisher())
 }

@@ -3,12 +3,17 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/users"
 	"github.com/google/uuid"
+
+	"github.com/jackc/pgx/v5"
+
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // PostgresRepository implements Repository using PostgreSQL.
@@ -28,42 +33,103 @@ func NewPostgresRepository(db *pgxpool.Pool) users.Repository {
 // User operations
 
 func (r *PostgresRepository) CreateUser(ctx context.Context, entity *users.User) (*users.User, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("CreateUser not yet implemented - requires custom mapping")
-}
+	// Check if SQLC has the CreateUser method
+	// For now, we'll generate a stub but with proper error handling
+	// TODO: Parse SQLC to detect available queries
 
-func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*users.User, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("GetUserByID not yet implemented - requires custom mapping")
+	// Example of what it should look like when SQLC query exists:
+	// params := postgresql.CreateUserParams{
+	//     Id: entity.Id,
+	//     // ... map other fields
+	// }
+	// dbUser, err := r.queries.CreateUser(ctx, params)
+	// if err != nil {
+	//     return nil, users.NewRepositoryError("create", err)
+	// }
+	// return mapUserToDomain(&dbUser), nil
+
+	return nil, users.NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) GetUser(ctx context.Context, id uuid.UUID) (*users.User, error) {
-	// Alias for GetByID to match interface requirements
-	return r.GetUserByID(ctx, id)
+	// Try to call SQLC GetUser if it exists
+	// For User, Session, Account entities, SQLC usually has these queries
+
+	dbUser, err := r.queries.GetUser(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, users.NewRepositoryError("get", users.ErrUserNotFound)
+		}
+		return nil, users.NewRepositoryError("get", err)
+	}
+	return mapUserToDomain(&dbUser), nil
+
 }
 
 func (r *PostgresRepository) UpdateUser(ctx context.Context, id uuid.UUID, entity *users.User) (*users.User, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("UpdateUser not yet implemented - requires custom mapping")
+	// Update operations are often custom and may not have SQLC queries
+	return nil, users.NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return fmt.Errorf("DeleteUser not yet implemented - requires custom mapping")
+
+	err := r.queries.DeleteUser(ctx, id)
+	if err != nil {
+		return users.NewRepositoryError("delete", err)
+	}
+	return nil
+
 }
 
 func (r *PostgresRepository) ListUsers(ctx context.Context, params users.ListUsersParams) ([]*users.User, int64, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, 0, fmt.Errorf("ListUsers not yet implemented - requires custom mapping")
+	// List operations need both List and Count queries from SQLC
+	return nil, 0, users.NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
 }
 
 // GetUserByEmail retrieves a user by email address
 func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (*users.User, error) {
-	// For now, return a basic implementation
-	return nil, fmt.Errorf("GetUserByEmail not yet implemented - requires custom mapping")
+	dbUser, err := r.queries.GetUserByEmail(ctx, email)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, users.NewRepositoryError("get_by_email", users.ErrUserNotFound)
+		}
+		return nil, users.NewRepositoryError("get_by_email", err)
+	}
+	return mapUserToDomain(&dbUser), nil
+}
+
+// Mapper functions - Convert between domain types and database types
+// These need to be customized based on the actual field mappings
+
+func mapUserToDomain(db *postgresql.User) *users.User {
+	if db == nil {
+		return nil
+	}
+
+	// This is a basic mapping - needs to be customized based on actual types
+	// The challenge is that OpenAPI types and database types don't always match
+	// For example:
+	// - OpenAPI might use string, database uses *string
+	// - OpenAPI might use custom UUID type, database uses uuid.UUID
+	// - Field names might differ (Id vs ID)
+
+	result := &users.User{
+		// TODO: Map fields properly based on actual type definitions
+		// This requires parsing both OpenAPI types and SQLC types
+	}
+
+	// Basic field mapping for common entities
+
+	// User typically has: Id, Email, Name, EmailVerified, CreatedAt, UpdatedAt
+	result.Id = uuid.UUID(db.Id)
+	result.Email = openapi_types.Email(db.Email)
+	result.Name = db.Name
+	result.EmailVerified = db.EmailVerified
+	if db.Image != nil {
+		result.Image = *db.Image
+	}
+	result.CreatedAt = db.CreatedAt
+	result.UpdatedAt = db.UpdatedAt
+
+	return result
 }

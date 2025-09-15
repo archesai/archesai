@@ -6,22 +6,22 @@ output: internal
 # Following hexagonal architecture - these are infrastructure adapters
 # Paths are relative to the domain directory (e.g., internal/auth/adapters/)
 generators:
-  # Repository pattern - ports and adapters
+  # Repository pattern - Generate interfaces and implementations
   repository:
     interface: 'repository.gen.go' # Domain interfaces (ports)
-    postgres: 'adapters/repository/postgres.gen.go' # PostgreSQL implementation
-    sqlite: 'adapters/repository/sqlite.gen.go' # SQLite implementation
+    postgres: 'adapters/repository/postgres.gen.go' # PostgreSQL implementation with SQLC
+    sqlite: 'adapters/repository/sqlite.gen.go' # SQLite implementation with SQLC
 
-  # Cache adapters (for now in domain root until subpackage imports are fixed)
+  # Cache adapters - Generate cache interfaces and implementations
   cache:
-    interface: 'cache.gen.go'
-    memory: 'adapters/cache/memory.gen.go'
-    redis: 'adapters/cache/redis.gen.go'
+    interface: 'cache.gen.go' # Domain cache interface
+    # redis: 'adapters/cache/redis.gen.go' # Redis implementation (future)
+    # memory: 'adapters/cache/memory.gen.go' # In-memory implementation (future)
 
-  # Event publishing adapters (for now in domain root until subpackage imports are fixed)
+  # Event publishing adapters - only generate domain event types
   events:
     interface: 'events.gen.go'
-    redis: 'adapters/events/redis.gen.go'
+    # redis: 'adapters/events/redis.gen.go' # Now using shared publisher in internal/events
     # nats: "events_nats.gen.go" # Requires NATS dependency
 
   # HTTP handlers (infrastructure/delivery)

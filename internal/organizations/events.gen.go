@@ -3,183 +3,215 @@ package organizations
 
 import (
 	"context"
-	"github.com/google/uuid"
-	"time"
+	"github.com/archesai/archesai/internal/events"
 )
 
-// EventType represents the type of event.
-type EventType string
-
-// Event types for organizations domain.
+// Event type constants for organizations domain.
 const (
-	EventOrganizationCreated         EventType = "organization.created"
-	EventOrganizationUpdated         EventType = "organization.updated"
-	EventOrganizationDeleted         EventType = "organization.deleted"
-	EventOrganizationPlan_changed    EventType = "organization.plan-changed"
-	EventOrganizationCredits_updated EventType = "organization.credits-updated"
+	EventOrganizationCreated         = "organization.created"
+	EventOrganizationUpdated         = "organization.updated"
+	EventOrganizationDeleted         = "organization.deleted"
+	EventOrganizationPlan_changed    = "organization.plan-changed"
+	EventOrganizationCredits_updated = "organization.credits-updated"
 )
-
-// Event represents a domain event.
-type Event struct {
-	ID        string            `json:"id"`
-	Type      EventType         `json:"type"`
-	Timestamp time.Time         `json:"timestamp"`
-	Source    string            `json:"source"`
-	Data      interface{}       `json:"data"`
-	Metadata  map[string]string `json:"metadata,omitempty"`
-}
-
-// EventPublisher publishes domain events.
-type EventPublisher interface {
-	// PublishOrganizationCreated publishes a created event event for Organization.
-	PublishOrganizationCreated(ctx context.Context, entity *Organization) error
-	// PublishOrganizationUpdated publishes a updated event event for Organization.
-	PublishOrganizationUpdated(ctx context.Context, entity *Organization) error
-	// PublishOrganizationDeleted publishes a deleted event event for Organization.
-	PublishOrganizationDeleted(ctx context.Context, entity *Organization) error
-	// PublishOrganizationPlan_changed publishes a plan_changed event event for Organization.
-	PublishOrganizationPlan_changed(ctx context.Context, entity *Organization) error
-	// PublishOrganizationCredits_updated publishes a credits_updated event event for Organization.
-	PublishOrganizationCredits_updated(ctx context.Context, entity *Organization) error
-
-	// PublishRaw publishes a raw event.
-	PublishRaw(ctx context.Context, event *Event) error
-}
-
-// NoOpEventPublisher is a no-op event publisher implementation.
-type NoOpEventPublisher struct{}
-
-// NewNoOpEventPublisher creates a new no-op event publisher.
-func NewNoOpEventPublisher() EventPublisher {
-	return &NoOpEventPublisher{}
-}
-
-// PublishOrganizationCreated does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishOrganizationCreated(ctx context.Context, entity *Organization) error {
-	return nil
-}
-
-// PublishOrganizationUpdated does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishOrganizationUpdated(ctx context.Context, entity *Organization) error {
-	return nil
-}
-
-// PublishOrganizationDeleted does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishOrganizationDeleted(ctx context.Context, entity *Organization) error {
-	return nil
-}
-
-// PublishOrganizationPlan_changed does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishOrganizationPlan_changed(ctx context.Context, entity *Organization) error {
-	return nil
-}
-
-// PublishOrganizationCredits_updated does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishOrganizationCredits_updated(ctx context.Context, entity *Organization) error {
-	return nil
-}
-
-// PublishRaw does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishRaw(ctx context.Context, event *Event) error {
-	return nil
-}
 
 // OrganizationCreatedEvent represents a created event event for Organization.
 type OrganizationCreatedEvent struct {
-	Event
-	Entity *Organization `json:"entity"`
+	events.BaseEvent
+	Organization *Organization `json:"organization"`
 }
 
 // NewOrganizationCreatedEvent creates a new Organization created event.
 func NewOrganizationCreatedEvent(entity *Organization) *OrganizationCreatedEvent {
 	return &OrganizationCreatedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventOrganizationCreated,
-			Timestamp: time.Now().UTC(),
-			Source:    "organizations",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent:    events.NewBaseEvent("organizations", EventOrganizationCreated),
+		Organization: entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *OrganizationCreatedEvent) EventType() string {
+	return EventOrganizationCreated
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *OrganizationCreatedEvent) EventDomain() string {
+	return "organizations"
+}
+
+// EventData returns the actual event data.
+func (e *OrganizationCreatedEvent) EventData() interface{} {
+	return e.Organization
 }
 
 // OrganizationUpdatedEvent represents a updated event event for Organization.
 type OrganizationUpdatedEvent struct {
-	Event
-	Entity *Organization `json:"entity"`
+	events.BaseEvent
+	Organization *Organization `json:"organization"`
 }
 
 // NewOrganizationUpdatedEvent creates a new Organization updated event.
 func NewOrganizationUpdatedEvent(entity *Organization) *OrganizationUpdatedEvent {
 	return &OrganizationUpdatedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventOrganizationUpdated,
-			Timestamp: time.Now().UTC(),
-			Source:    "organizations",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent:    events.NewBaseEvent("organizations", EventOrganizationUpdated),
+		Organization: entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *OrganizationUpdatedEvent) EventType() string {
+	return EventOrganizationUpdated
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *OrganizationUpdatedEvent) EventDomain() string {
+	return "organizations"
+}
+
+// EventData returns the actual event data.
+func (e *OrganizationUpdatedEvent) EventData() interface{} {
+	return e.Organization
 }
 
 // OrganizationDeletedEvent represents a deleted event event for Organization.
 type OrganizationDeletedEvent struct {
-	Event
-	Entity *Organization `json:"entity"`
+	events.BaseEvent
+	Organization *Organization `json:"organization"`
 }
 
 // NewOrganizationDeletedEvent creates a new Organization deleted event.
 func NewOrganizationDeletedEvent(entity *Organization) *OrganizationDeletedEvent {
 	return &OrganizationDeletedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventOrganizationDeleted,
-			Timestamp: time.Now().UTC(),
-			Source:    "organizations",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent:    events.NewBaseEvent("organizations", EventOrganizationDeleted),
+		Organization: entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *OrganizationDeletedEvent) EventType() string {
+	return EventOrganizationDeleted
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *OrganizationDeletedEvent) EventDomain() string {
+	return "organizations"
+}
+
+// EventData returns the actual event data.
+func (e *OrganizationDeletedEvent) EventData() interface{} {
+	return e.Organization
 }
 
 // OrganizationPlan_changedEvent represents a plan_changed event event for Organization.
 type OrganizationPlan_changedEvent struct {
-	Event
-	Entity *Organization `json:"entity"`
+	events.BaseEvent
+	Organization *Organization `json:"organization"`
 }
 
 // NewOrganizationPlan_changedEvent creates a new Organization plan_changed event.
 func NewOrganizationPlan_changedEvent(entity *Organization) *OrganizationPlan_changedEvent {
 	return &OrganizationPlan_changedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventOrganizationPlan_changed,
-			Timestamp: time.Now().UTC(),
-			Source:    "organizations",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent:    events.NewBaseEvent("organizations", EventOrganizationPlan_changed),
+		Organization: entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *OrganizationPlan_changedEvent) EventType() string {
+	return EventOrganizationPlan_changed
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *OrganizationPlan_changedEvent) EventDomain() string {
+	return "organizations"
+}
+
+// EventData returns the actual event data.
+func (e *OrganizationPlan_changedEvent) EventData() interface{} {
+	return e.Organization
 }
 
 // OrganizationCredits_updatedEvent represents a credits_updated event event for Organization.
 type OrganizationCredits_updatedEvent struct {
-	Event
-	Entity *Organization `json:"entity"`
+	events.BaseEvent
+	Organization *Organization `json:"organization"`
 }
 
 // NewOrganizationCredits_updatedEvent creates a new Organization credits_updated event.
 func NewOrganizationCredits_updatedEvent(entity *Organization) *OrganizationCredits_updatedEvent {
 	return &OrganizationCredits_updatedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventOrganizationCredits_updated,
-			Timestamp: time.Now().UTC(),
-			Source:    "organizations",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent:    events.NewBaseEvent("organizations", EventOrganizationCredits_updated),
+		Organization: entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *OrganizationCredits_updatedEvent) EventType() string {
+	return EventOrganizationCredits_updated
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *OrganizationCredits_updatedEvent) EventDomain() string {
+	return "organizations"
+}
+
+// EventData returns the actual event data.
+func (e *OrganizationCredits_updatedEvent) EventData() interface{} {
+	return e.Organization
+}
+
+// EventPublisher publishes domain events for organizations.
+type EventPublisher interface {
+	PublishOrganizationCreated(ctx context.Context, entity *Organization) error
+	PublishOrganizationUpdated(ctx context.Context, entity *Organization) error
+	PublishOrganizationDeleted(ctx context.Context, entity *Organization) error
+	PublishOrganizationPlan_changed(ctx context.Context, entity *Organization) error
+	PublishOrganizationCredits_updated(ctx context.Context, entity *Organization) error
+}
+
+// eventPublisher implements EventPublisher for organizations domain.
+type eventPublisher struct {
+	publisher events.Publisher
+}
+
+// NewEventPublisher creates a new event publisher for organizations domain.
+func NewEventPublisher(publisher events.Publisher) EventPublisher {
+	return &eventPublisher{
+		publisher: publisher,
+	}
+}
+
+// PublishOrganizationCreated publishes a created event event for Organization.
+func (p *eventPublisher) PublishOrganizationCreated(ctx context.Context, entity *Organization) error {
+	event := NewOrganizationCreatedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishOrganizationUpdated publishes a updated event event for Organization.
+func (p *eventPublisher) PublishOrganizationUpdated(ctx context.Context, entity *Organization) error {
+	event := NewOrganizationUpdatedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishOrganizationDeleted publishes a deleted event event for Organization.
+func (p *eventPublisher) PublishOrganizationDeleted(ctx context.Context, entity *Organization) error {
+	event := NewOrganizationDeletedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishOrganizationPlan_changed publishes a plan_changed event event for Organization.
+func (p *eventPublisher) PublishOrganizationPlan_changed(ctx context.Context, entity *Organization) error {
+	event := NewOrganizationPlan_changedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishOrganizationCredits_updated publishes a credits_updated event event for Organization.
+func (p *eventPublisher) PublishOrganizationCredits_updated(ctx context.Context, entity *Organization) error {
+	event := NewOrganizationCredits_updatedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// NewNoOpEventPublisher creates a new no-op event publisher for testing.
+func NewNoOpEventPublisher() EventPublisher {
+	return NewEventPublisher(events.NewNoOpPublisher())
 }

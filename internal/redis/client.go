@@ -10,13 +10,11 @@ import (
 
 // Client wraps the Redis client with domain-specific functionality
 type Client struct {
-	redis   *redis.Client
-	Cache   *Cache
-	Queue   *Queue
-	Session *Session
-	PubSub  *PubSub
-	config  *Config
-	logger  *slog.Logger
+	redis  *redis.Client
+	Queue  *Queue
+	PubSub *PubSub
+	config *Config
+	logger *slog.Logger
 }
 
 // NewClient creates a new Redis client with all features
@@ -82,19 +80,9 @@ func NewClient(config *Config, logger *slog.Logger) (*Client, error) {
 	}
 
 	// Initialize features based on config
-	if config.EnableCache {
-		client.Cache = NewCache(redisClient)
-		logger.Info("Redis cache enabled")
-	}
-
 	if config.EnableQueue {
 		client.Queue = NewQueue(redisClient)
 		logger.Info("Redis queue enabled")
-	}
-
-	if config.EnableSession {
-		client.Session = NewSession(redisClient)
-		logger.Info("Redis session storage enabled")
 	}
 
 	if config.EnablePubSub {

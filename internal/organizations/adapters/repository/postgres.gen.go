@@ -3,11 +3,12 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/organizations"
 	"github.com/google/uuid"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,110 +29,206 @@ func NewPostgresRepository(db *pgxpool.Pool) organizations.Repository {
 // Invitation operations
 
 func (r *PostgresRepository) CreateInvitation(ctx context.Context, entity *organizations.Invitation) (*organizations.Invitation, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("CreateInvitation not yet implemented - requires custom mapping")
-}
+	// Check if SQLC has the CreateInvitation method
+	// For now, we'll generate a stub but with proper error handling
+	// TODO: Parse SQLC to detect available queries
 
-func (r *PostgresRepository) GetInvitationByID(ctx context.Context, id uuid.UUID) (*organizations.Invitation, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("GetInvitationByID not yet implemented - requires custom mapping")
+	// Example of what it should look like when SQLC query exists:
+	// params := postgresql.CreateInvitationParams{
+	//     Id: entity.Id,
+	//     // ... map other fields
+	// }
+	// dbInvitation, err := r.queries.CreateInvitation(ctx, params)
+	// if err != nil {
+	//     return nil, organizations.NewRepositoryError("create", err)
+	// }
+	// return mapInvitationToDomain(&dbInvitation), nil
+
+	return nil, organizations.NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) GetInvitation(ctx context.Context, id uuid.UUID) (*organizations.Invitation, error) {
-	// Alias for GetByID to match interface requirements
-	return r.GetInvitationByID(ctx, id)
+	// Try to call SQLC GetInvitation if it exists
+	// For User, Session, Account entities, SQLC usually has these queries
+
+	// SQLC query might not exist for this entity
+	return nil, organizations.NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) UpdateInvitation(ctx context.Context, id uuid.UUID, entity *organizations.Invitation) (*organizations.Invitation, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("UpdateInvitation not yet implemented - requires custom mapping")
+	// Update operations are often custom and may not have SQLC queries
+	return nil, organizations.NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) DeleteInvitation(ctx context.Context, id uuid.UUID) error {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return fmt.Errorf("DeleteInvitation not yet implemented - requires custom mapping")
+
+	return organizations.NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) ListInvitations(ctx context.Context, params organizations.ListInvitationsParams) ([]*organizations.Invitation, int64, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, 0, fmt.Errorf("ListInvitations not yet implemented - requires custom mapping")
+	// List operations need both List and Count queries from SQLC
+	return nil, 0, organizations.NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
 }
 
 // Member operations
 
 func (r *PostgresRepository) CreateMember(ctx context.Context, entity *organizations.Member) (*organizations.Member, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("CreateMember not yet implemented - requires custom mapping")
-}
+	// Check if SQLC has the CreateMember method
+	// For now, we'll generate a stub but with proper error handling
+	// TODO: Parse SQLC to detect available queries
 
-func (r *PostgresRepository) GetMemberByID(ctx context.Context, id uuid.UUID) (*organizations.Member, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("GetMemberByID not yet implemented - requires custom mapping")
+	// Example of what it should look like when SQLC query exists:
+	// params := postgresql.CreateMemberParams{
+	//     Id: entity.Id,
+	//     // ... map other fields
+	// }
+	// dbMember, err := r.queries.CreateMember(ctx, params)
+	// if err != nil {
+	//     return nil, organizations.NewRepositoryError("create", err)
+	// }
+	// return mapMemberToDomain(&dbMember), nil
+
+	return nil, organizations.NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) GetMember(ctx context.Context, id uuid.UUID) (*organizations.Member, error) {
-	// Alias for GetByID to match interface requirements
-	return r.GetMemberByID(ctx, id)
+	// Try to call SQLC GetMember if it exists
+	// For User, Session, Account entities, SQLC usually has these queries
+
+	// SQLC query might not exist for this entity
+	return nil, organizations.NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) UpdateMember(ctx context.Context, id uuid.UUID, entity *organizations.Member) (*organizations.Member, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("UpdateMember not yet implemented - requires custom mapping")
+	// Update operations are often custom and may not have SQLC queries
+	return nil, organizations.NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) DeleteMember(ctx context.Context, id uuid.UUID) error {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return fmt.Errorf("DeleteMember not yet implemented - requires custom mapping")
+
+	return organizations.NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) ListMembers(ctx context.Context, params organizations.ListMembersParams) ([]*organizations.Member, int64, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, 0, fmt.Errorf("ListMembers not yet implemented - requires custom mapping")
+	// List operations need both List and Count queries from SQLC
+	return nil, 0, organizations.NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
 }
 
 // Organization operations
 
 func (r *PostgresRepository) CreateOrganization(ctx context.Context, entity *organizations.Organization) (*organizations.Organization, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("CreateOrganization not yet implemented - requires custom mapping")
-}
+	// Check if SQLC has the CreateOrganization method
+	// For now, we'll generate a stub but with proper error handling
+	// TODO: Parse SQLC to detect available queries
 
-func (r *PostgresRepository) GetOrganizationByID(ctx context.Context, id uuid.UUID) (*organizations.Organization, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("GetOrganizationByID not yet implemented - requires custom mapping")
+	// Example of what it should look like when SQLC query exists:
+	// params := postgresql.CreateOrganizationParams{
+	//     Id: entity.Id,
+	//     // ... map other fields
+	// }
+	// dbOrganization, err := r.queries.CreateOrganization(ctx, params)
+	// if err != nil {
+	//     return nil, organizations.NewRepositoryError("create", err)
+	// }
+	// return mapOrganizationToDomain(&dbOrganization), nil
+
+	return nil, organizations.NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) GetOrganization(ctx context.Context, id uuid.UUID) (*organizations.Organization, error) {
-	// Alias for GetByID to match interface requirements
-	return r.GetOrganizationByID(ctx, id)
+	// Try to call SQLC GetOrganization if it exists
+	// For User, Session, Account entities, SQLC usually has these queries
+
+	// SQLC query might not exist for this entity
+	return nil, organizations.NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) UpdateOrganization(ctx context.Context, id uuid.UUID, entity *organizations.Organization) (*organizations.Organization, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, fmt.Errorf("UpdateOrganization not yet implemented - requires custom mapping")
+	// Update operations are often custom and may not have SQLC queries
+	return nil, organizations.NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
 }
 
 func (r *PostgresRepository) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return fmt.Errorf("DeleteOrganization not yet implemented - requires custom mapping")
+
+	return organizations.NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+
 }
 
 func (r *PostgresRepository) ListOrganizations(ctx context.Context, params organizations.ListOrganizationsParams) ([]*organizations.Organization, int64, error) {
-	// For now, return a basic implementation
-	// Actual implementation would need to be customized per entity
-	return nil, 0, fmt.Errorf("ListOrganizations not yet implemented - requires custom mapping")
+	// List operations need both List and Count queries from SQLC
+	return nil, 0, organizations.NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
+}
+
+// Mapper functions - Convert between domain types and database types
+// These need to be customized based on the actual field mappings
+
+func mapInvitationToDomain(db *postgresql.Invitation) *organizations.Invitation {
+	if db == nil {
+		return nil
+	}
+
+	// This is a basic mapping - needs to be customized based on actual types
+	// The challenge is that OpenAPI types and database types don't always match
+	// For example:
+	// - OpenAPI might use string, database uses *string
+	// - OpenAPI might use custom UUID type, database uses uuid.UUID
+	// - Field names might differ (Id vs ID)
+
+	result := &organizations.Invitation{
+		// TODO: Map fields properly based on actual type definitions
+		// This requires parsing both OpenAPI types and SQLC types
+	}
+
+	// Basic field mapping for common entities
+
+	return result
+}
+
+func mapMemberToDomain(db *postgresql.Member) *organizations.Member {
+	if db == nil {
+		return nil
+	}
+
+	// This is a basic mapping - needs to be customized based on actual types
+	// The challenge is that OpenAPI types and database types don't always match
+	// For example:
+	// - OpenAPI might use string, database uses *string
+	// - OpenAPI might use custom UUID type, database uses uuid.UUID
+	// - Field names might differ (Id vs ID)
+
+	result := &organizations.Member{
+		// TODO: Map fields properly based on actual type definitions
+		// This requires parsing both OpenAPI types and SQLC types
+	}
+
+	// Basic field mapping for common entities
+
+	return result
+}
+
+func mapOrganizationToDomain(db *postgresql.Organization) *organizations.Organization {
+	if db == nil {
+		return nil
+	}
+
+	// This is a basic mapping - needs to be customized based on actual types
+	// The challenge is that OpenAPI types and database types don't always match
+	// For example:
+	// - OpenAPI might use string, database uses *string
+	// - OpenAPI might use custom UUID type, database uses uuid.UUID
+	// - Field names might differ (Id vs ID)
+
+	result := &organizations.Organization{
+		// TODO: Map fields properly based on actual type definitions
+		// This requires parsing both OpenAPI types and SQLC types
+	}
+
+	// Basic field mapping for common entities
+
+	return result
 }

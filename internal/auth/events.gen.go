@@ -3,295 +3,363 @@ package auth
 
 import (
 	"context"
-	"github.com/google/uuid"
-	"time"
+	"github.com/archesai/archesai/internal/events"
 )
 
-// EventType represents the type of event.
-type EventType string
-
-// Event types for auth domain.
+// Event type constants for auth domain.
 const (
-	EventAccountCreated   EventType = "account.created"
-	EventAccountUpdated   EventType = "account.updated"
-	EventAccountDeleted   EventType = "account.deleted"
-	EventAccountLinked    EventType = "account.linked"
-	EventAccountUnlinked  EventType = "account.unlinked"
-	EventSessionCreated   EventType = "session.created"
-	EventSessionRefreshed EventType = "session.refreshed"
-	EventSessionExpired   EventType = "session.expired"
-	EventSessionDeleted   EventType = "session.deleted"
+	EventAccountCreated   = "account.created"
+	EventAccountUpdated   = "account.updated"
+	EventAccountDeleted   = "account.deleted"
+	EventAccountLinked    = "account.linked"
+	EventAccountUnlinked  = "account.unlinked"
+	EventSessionCreated   = "session.created"
+	EventSessionRefreshed = "session.refreshed"
+	EventSessionExpired   = "session.expired"
+	EventSessionDeleted   = "session.deleted"
 )
-
-// Event represents a domain event.
-type Event struct {
-	ID        string            `json:"id"`
-	Type      EventType         `json:"type"`
-	Timestamp time.Time         `json:"timestamp"`
-	Source    string            `json:"source"`
-	Data      interface{}       `json:"data"`
-	Metadata  map[string]string `json:"metadata,omitempty"`
-}
-
-// EventPublisher publishes domain events.
-type EventPublisher interface {
-	// PublishAccountCreated publishes a created event event for Account.
-	PublishAccountCreated(ctx context.Context, entity *Account) error
-	// PublishAccountUpdated publishes a updated event event for Account.
-	PublishAccountUpdated(ctx context.Context, entity *Account) error
-	// PublishAccountDeleted publishes a deleted event event for Account.
-	PublishAccountDeleted(ctx context.Context, entity *Account) error
-	// PublishAccountLinked publishes a linked event event for Account.
-	PublishAccountLinked(ctx context.Context, entity *Account) error
-	// PublishAccountUnlinked publishes a unlinked event event for Account.
-	PublishAccountUnlinked(ctx context.Context, entity *Account) error
-	// PublishSessionCreated publishes a created event event for Session.
-	PublishSessionCreated(ctx context.Context, entity *Session) error
-	// PublishSessionRefreshed publishes a refreshed event event for Session.
-	PublishSessionRefreshed(ctx context.Context, entity *Session) error
-	// PublishSessionExpired publishes a expired event event for Session.
-	PublishSessionExpired(ctx context.Context, entity *Session) error
-	// PublishSessionDeleted publishes a deleted event event for Session.
-	PublishSessionDeleted(ctx context.Context, entity *Session) error
-
-	// PublishRaw publishes a raw event.
-	PublishRaw(ctx context.Context, event *Event) error
-}
-
-// NoOpEventPublisher is a no-op event publisher implementation.
-type NoOpEventPublisher struct{}
-
-// NewNoOpEventPublisher creates a new no-op event publisher.
-func NewNoOpEventPublisher() EventPublisher {
-	return &NoOpEventPublisher{}
-}
-
-// PublishAccountCreated does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishAccountCreated(ctx context.Context, entity *Account) error {
-	return nil
-}
-
-// PublishAccountUpdated does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishAccountUpdated(ctx context.Context, entity *Account) error {
-	return nil
-}
-
-// PublishAccountDeleted does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishAccountDeleted(ctx context.Context, entity *Account) error {
-	return nil
-}
-
-// PublishAccountLinked does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishAccountLinked(ctx context.Context, entity *Account) error {
-	return nil
-}
-
-// PublishAccountUnlinked does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishAccountUnlinked(ctx context.Context, entity *Account) error {
-	return nil
-}
-
-// PublishSessionCreated does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishSessionCreated(ctx context.Context, entity *Session) error {
-	return nil
-}
-
-// PublishSessionRefreshed does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishSessionRefreshed(ctx context.Context, entity *Session) error {
-	return nil
-}
-
-// PublishSessionExpired does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishSessionExpired(ctx context.Context, entity *Session) error {
-	return nil
-}
-
-// PublishSessionDeleted does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishSessionDeleted(ctx context.Context, entity *Session) error {
-	return nil
-}
-
-// PublishRaw does nothing in no-op implementation.
-func (p *NoOpEventPublisher) PublishRaw(ctx context.Context, event *Event) error {
-	return nil
-}
 
 // AccountCreatedEvent represents a created event event for Account.
 type AccountCreatedEvent struct {
-	Event
-	Entity *Account `json:"entity"`
+	events.BaseEvent
+	Account *Account `json:"account"`
 }
 
 // NewAccountCreatedEvent creates a new Account created event.
 func NewAccountCreatedEvent(entity *Account) *AccountCreatedEvent {
 	return &AccountCreatedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventAccountCreated,
-			Timestamp: time.Now().UTC(),
-			Source:    "auth",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("auth", EventAccountCreated),
+		Account:   entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *AccountCreatedEvent) EventType() string {
+	return EventAccountCreated
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *AccountCreatedEvent) EventDomain() string {
+	return "auth"
+}
+
+// EventData returns the actual event data.
+func (e *AccountCreatedEvent) EventData() interface{} {
+	return e.Account
 }
 
 // AccountUpdatedEvent represents a updated event event for Account.
 type AccountUpdatedEvent struct {
-	Event
-	Entity *Account `json:"entity"`
+	events.BaseEvent
+	Account *Account `json:"account"`
 }
 
 // NewAccountUpdatedEvent creates a new Account updated event.
 func NewAccountUpdatedEvent(entity *Account) *AccountUpdatedEvent {
 	return &AccountUpdatedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventAccountUpdated,
-			Timestamp: time.Now().UTC(),
-			Source:    "auth",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("auth", EventAccountUpdated),
+		Account:   entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *AccountUpdatedEvent) EventType() string {
+	return EventAccountUpdated
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *AccountUpdatedEvent) EventDomain() string {
+	return "auth"
+}
+
+// EventData returns the actual event data.
+func (e *AccountUpdatedEvent) EventData() interface{} {
+	return e.Account
 }
 
 // AccountDeletedEvent represents a deleted event event for Account.
 type AccountDeletedEvent struct {
-	Event
-	Entity *Account `json:"entity"`
+	events.BaseEvent
+	Account *Account `json:"account"`
 }
 
 // NewAccountDeletedEvent creates a new Account deleted event.
 func NewAccountDeletedEvent(entity *Account) *AccountDeletedEvent {
 	return &AccountDeletedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventAccountDeleted,
-			Timestamp: time.Now().UTC(),
-			Source:    "auth",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("auth", EventAccountDeleted),
+		Account:   entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *AccountDeletedEvent) EventType() string {
+	return EventAccountDeleted
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *AccountDeletedEvent) EventDomain() string {
+	return "auth"
+}
+
+// EventData returns the actual event data.
+func (e *AccountDeletedEvent) EventData() interface{} {
+	return e.Account
 }
 
 // AccountLinkedEvent represents a linked event event for Account.
 type AccountLinkedEvent struct {
-	Event
-	Entity *Account `json:"entity"`
+	events.BaseEvent
+	Account *Account `json:"account"`
 }
 
 // NewAccountLinkedEvent creates a new Account linked event.
 func NewAccountLinkedEvent(entity *Account) *AccountLinkedEvent {
 	return &AccountLinkedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventAccountLinked,
-			Timestamp: time.Now().UTC(),
-			Source:    "auth",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("auth", EventAccountLinked),
+		Account:   entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *AccountLinkedEvent) EventType() string {
+	return EventAccountLinked
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *AccountLinkedEvent) EventDomain() string {
+	return "auth"
+}
+
+// EventData returns the actual event data.
+func (e *AccountLinkedEvent) EventData() interface{} {
+	return e.Account
 }
 
 // AccountUnlinkedEvent represents a unlinked event event for Account.
 type AccountUnlinkedEvent struct {
-	Event
-	Entity *Account `json:"entity"`
+	events.BaseEvent
+	Account *Account `json:"account"`
 }
 
 // NewAccountUnlinkedEvent creates a new Account unlinked event.
 func NewAccountUnlinkedEvent(entity *Account) *AccountUnlinkedEvent {
 	return &AccountUnlinkedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventAccountUnlinked,
-			Timestamp: time.Now().UTC(),
-			Source:    "auth",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("auth", EventAccountUnlinked),
+		Account:   entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *AccountUnlinkedEvent) EventType() string {
+	return EventAccountUnlinked
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *AccountUnlinkedEvent) EventDomain() string {
+	return "auth"
+}
+
+// EventData returns the actual event data.
+func (e *AccountUnlinkedEvent) EventData() interface{} {
+	return e.Account
 }
 
 // SessionCreatedEvent represents a created event event for Session.
 type SessionCreatedEvent struct {
-	Event
-	Entity *Session `json:"entity"`
+	events.BaseEvent
+	Session *Session `json:"session"`
 }
 
 // NewSessionCreatedEvent creates a new Session created event.
 func NewSessionCreatedEvent(entity *Session) *SessionCreatedEvent {
 	return &SessionCreatedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventSessionCreated,
-			Timestamp: time.Now().UTC(),
-			Source:    "auth",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("auth", EventSessionCreated),
+		Session:   entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *SessionCreatedEvent) EventType() string {
+	return EventSessionCreated
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *SessionCreatedEvent) EventDomain() string {
+	return "auth"
+}
+
+// EventData returns the actual event data.
+func (e *SessionCreatedEvent) EventData() interface{} {
+	return e.Session
 }
 
 // SessionRefreshedEvent represents a refreshed event event for Session.
 type SessionRefreshedEvent struct {
-	Event
-	Entity *Session `json:"entity"`
+	events.BaseEvent
+	Session *Session `json:"session"`
 }
 
 // NewSessionRefreshedEvent creates a new Session refreshed event.
 func NewSessionRefreshedEvent(entity *Session) *SessionRefreshedEvent {
 	return &SessionRefreshedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventSessionRefreshed,
-			Timestamp: time.Now().UTC(),
-			Source:    "auth",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("auth", EventSessionRefreshed),
+		Session:   entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *SessionRefreshedEvent) EventType() string {
+	return EventSessionRefreshed
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *SessionRefreshedEvent) EventDomain() string {
+	return "auth"
+}
+
+// EventData returns the actual event data.
+func (e *SessionRefreshedEvent) EventData() interface{} {
+	return e.Session
 }
 
 // SessionExpiredEvent represents a expired event event for Session.
 type SessionExpiredEvent struct {
-	Event
-	Entity *Session `json:"entity"`
+	events.BaseEvent
+	Session *Session `json:"session"`
 }
 
 // NewSessionExpiredEvent creates a new Session expired event.
 func NewSessionExpiredEvent(entity *Session) *SessionExpiredEvent {
 	return &SessionExpiredEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventSessionExpired,
-			Timestamp: time.Now().UTC(),
-			Source:    "auth",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("auth", EventSessionExpired),
+		Session:   entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *SessionExpiredEvent) EventType() string {
+	return EventSessionExpired
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *SessionExpiredEvent) EventDomain() string {
+	return "auth"
+}
+
+// EventData returns the actual event data.
+func (e *SessionExpiredEvent) EventData() interface{} {
+	return e.Session
 }
 
 // SessionDeletedEvent represents a deleted event event for Session.
 type SessionDeletedEvent struct {
-	Event
-	Entity *Session `json:"entity"`
+	events.BaseEvent
+	Session *Session `json:"session"`
 }
 
 // NewSessionDeletedEvent creates a new Session deleted event.
 func NewSessionDeletedEvent(entity *Session) *SessionDeletedEvent {
 	return &SessionDeletedEvent{
-		Event: Event{
-			ID:        uuid.New().String(),
-			Type:      EventSessionDeleted,
-			Timestamp: time.Now().UTC(),
-			Source:    "auth",
-			Data:      entity,
-		},
-		Entity: entity,
+		BaseEvent: events.NewBaseEvent("auth", EventSessionDeleted),
+		Session:   entity,
 	}
+}
+
+// EventType returns the event type string.
+func (e *SessionDeletedEvent) EventType() string {
+	return EventSessionDeleted
+}
+
+// EventDomain returns the domain this event belongs to.
+func (e *SessionDeletedEvent) EventDomain() string {
+	return "auth"
+}
+
+// EventData returns the actual event data.
+func (e *SessionDeletedEvent) EventData() interface{} {
+	return e.Session
+}
+
+// EventPublisher publishes domain events for auth.
+type EventPublisher interface {
+	PublishAccountCreated(ctx context.Context, entity *Account) error
+	PublishAccountUpdated(ctx context.Context, entity *Account) error
+	PublishAccountDeleted(ctx context.Context, entity *Account) error
+	PublishAccountLinked(ctx context.Context, entity *Account) error
+	PublishAccountUnlinked(ctx context.Context, entity *Account) error
+	PublishSessionCreated(ctx context.Context, entity *Session) error
+	PublishSessionRefreshed(ctx context.Context, entity *Session) error
+	PublishSessionExpired(ctx context.Context, entity *Session) error
+	PublishSessionDeleted(ctx context.Context, entity *Session) error
+}
+
+// eventPublisher implements EventPublisher for auth domain.
+type eventPublisher struct {
+	publisher events.Publisher
+}
+
+// NewEventPublisher creates a new event publisher for auth domain.
+func NewEventPublisher(publisher events.Publisher) EventPublisher {
+	return &eventPublisher{
+		publisher: publisher,
+	}
+}
+
+// PublishAccountCreated publishes a created event event for Account.
+func (p *eventPublisher) PublishAccountCreated(ctx context.Context, entity *Account) error {
+	event := NewAccountCreatedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishAccountUpdated publishes a updated event event for Account.
+func (p *eventPublisher) PublishAccountUpdated(ctx context.Context, entity *Account) error {
+	event := NewAccountUpdatedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishAccountDeleted publishes a deleted event event for Account.
+func (p *eventPublisher) PublishAccountDeleted(ctx context.Context, entity *Account) error {
+	event := NewAccountDeletedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishAccountLinked publishes a linked event event for Account.
+func (p *eventPublisher) PublishAccountLinked(ctx context.Context, entity *Account) error {
+	event := NewAccountLinkedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishAccountUnlinked publishes a unlinked event event for Account.
+func (p *eventPublisher) PublishAccountUnlinked(ctx context.Context, entity *Account) error {
+	event := NewAccountUnlinkedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishSessionCreated publishes a created event event for Session.
+func (p *eventPublisher) PublishSessionCreated(ctx context.Context, entity *Session) error {
+	event := NewSessionCreatedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishSessionRefreshed publishes a refreshed event event for Session.
+func (p *eventPublisher) PublishSessionRefreshed(ctx context.Context, entity *Session) error {
+	event := NewSessionRefreshedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishSessionExpired publishes a expired event event for Session.
+func (p *eventPublisher) PublishSessionExpired(ctx context.Context, entity *Session) error {
+	event := NewSessionExpiredEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// PublishSessionDeleted publishes a deleted event event for Session.
+func (p *eventPublisher) PublishSessionDeleted(ctx context.Context, entity *Session) error {
+	event := NewSessionDeletedEvent(entity)
+	return events.PublishDomainEvent(ctx, p.publisher, event)
+}
+
+// NewNoOpEventPublisher creates a new no-op event publisher for testing.
+func NewNoOpEventPublisher() EventPublisher {
+	return NewEventPublisher(events.NewNoOpPublisher())
 }

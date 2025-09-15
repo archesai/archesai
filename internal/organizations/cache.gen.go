@@ -3,16 +3,14 @@ package organizations
 
 import (
 	"context"
-	"errors"
-	"github.com/google/uuid"
 	"time"
+
+	genericcache "github.com/archesai/archesai/internal/cache"
+	"github.com/google/uuid"
 )
 
-// Common cache errors
-var (
-	ErrCacheMiss = errors.New("cache miss")
-	ErrCacheSet  = errors.New("cache set failed")
-)
+// ErrCacheMiss re-exported from generic cache package
+var ErrCacheMiss = genericcache.ErrCacheMiss
 
 // Cache provides caching operations for organizations domain.
 type Cache interface {
@@ -26,27 +24,55 @@ type Cache interface {
 	FlushAll(ctx context.Context) error
 }
 
-// NoOpCache is a no-op cache implementation that always returns cache misses.
-type NoOpCache struct{}
-
-// NewNoOpCache creates a new no-op cache.
+// NewNoOpCache creates a no-op cache using the generic NoOpCache with the adapter
 func NewNoOpCache() Cache {
-	return &NoOpCache{}
+	return NewCacheAdapter(genericcache.NewNoOpCache[Organization]())
 }
 
-// Organization no-op operations
-func (c *NoOpCache) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
-	return nil, ErrCacheMiss
+// CacheAdapter adapts generic cache implementations to the domain Cache interface
+type CacheAdapter struct {
+	organizationCache genericcache.Cache[Organization]
 }
 
-func (c *NoOpCache) SetOrganization(ctx context.Context, entity *Organization, ttl time.Duration) error {
+// NewCacheAdapter creates a new cache adapter using generic caches
+func NewCacheAdapter(organizationCache genericcache.Cache[Organization]) Cache {
+	return &CacheAdapter{
+		organizationCache: organizationCache,
+	}
+}
+
+// GetOrganization retrieves organization from cache by ID
+func (a *CacheAdapter) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
+	entity, err := a.organizationCache.Get(ctx, id.String())
+	if err != nil {
+		return nil, err
+	}
+	if entity == nil {
+		return nil, ErrCacheMiss
+	}
+	return entity, nil
+}
+
+// SetOrganization stores organization in cache with TTL
+func (a *CacheAdapter) SetOrganization(ctx context.Context, entity *Organization, ttl time.Duration) error {
+	if entity == nil {
+		return nil
+	}
+	return a.organizationCache.Set(ctx, entity.Id.String(), entity, ttl)
+}
+
+// DeleteOrganization removes organization from cache
+func (a *CacheAdapter) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
+	return a.organizationCache.Delete(ctx, id.String())
+}
+
+// FlushAll clears all cached data
+func (a *CacheAdapter) FlushAll(ctx context.Context) error {
+	if err := a.organizationCache.Clear(ctx); err != nil {
+		return err
+	}
 	return nil
 }
 
-func (c *NoOpCache) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
-	return nil
-}
-
-func (c *NoOpCache) FlushAll(ctx context.Context) error {
-	return nil
-}
+// Ensure CacheAdapter implements Cache interface
+var _ Cache = (*CacheAdapter)(nil)
