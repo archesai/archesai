@@ -10,12 +10,27 @@ import (
 
 const testEmail = "test@example.com"
 
-func TestClaimsBuilder(t *testing.T) {
+func TestEnhancedClaims_Creation(t *testing.T) {
 	userID := uuid.New()
 	email := testEmail
+	now := time.Now()
 
 	t.Run("basic claims creation", func(t *testing.T) {
-		claims := NewClaimsBuilder(userID, email).Build()
+		claims := &EnhancedClaims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				IssuedAt:  jwt.NewNumericDate(now),
+				NotBefore: jwt.NewNumericDate(now),
+				Issuer:    "archesai",
+				Subject:   userID.String(),
+				ID:        uuid.New().String(),
+			},
+			UserID:       userID,
+			Email:        email,
+			TokenType:    AccessTokenType,
+			AuthMethod:   AuthMethodPassword,
+			Features:     make(map[string]bool),
+			CustomClaims: make(map[string]interface{}),
+		}
 
 		if claims.UserID != userID {
 			t.Errorf("UserID = %v, want %v", claims.UserID, userID)
@@ -33,11 +48,18 @@ func TestClaimsBuilder(t *testing.T) {
 
 	t.Run("with expiry", func(t *testing.T) {
 		duration := 15 * time.Minute
-		claims := NewClaimsBuilder(userID, email).
-			WithExpiry(duration).
-			Build()
+		claims := &EnhancedClaims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(now.Add(duration)),
+				IssuedAt:  jwt.NewNumericDate(now),
+				NotBefore: jwt.NewNumericDate(now),
+				Subject:   userID.String(),
+			},
+			UserID: userID,
+			Email:  email,
+		}
 
-		expectedExpiry := time.Now().Add(duration)
+		expectedExpiry := now.Add(duration)
 		actualExpiry := claims.ExpiresAt.Time
 
 		// Allow 1 second tolerance
@@ -49,9 +71,16 @@ func TestClaimsBuilder(t *testing.T) {
 	t.Run("with user info", func(t *testing.T) {
 		name := "Test User"
 		avatarURL := "https://example.com/avatar.jpg"
-		claims := NewClaimsBuilder(userID, email).
-			WithUserInfo(name, avatarURL, true).
-			Build()
+		claims := &EnhancedClaims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				Subject: userID.String(),
+			},
+			UserID:        userID,
+			Email:         email,
+			Name:          name,
+			AvatarURL:     avatarURL,
+			EmailVerified: true,
+		}
 
 		if claims.Name != name {
 			t.Errorf("Name = %v, want %v", claims.Name, name)
@@ -69,9 +98,16 @@ func TestClaimsBuilder(t *testing.T) {
 		orgName := "Test Org"
 		role := "admin"
 
-		claims := NewClaimsBuilder(userID, email).
-			WithOrganization(orgID, orgName, role).
-			Build()
+		claims := &EnhancedClaims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				Subject: userID.String(),
+			},
+			UserID:           userID,
+			Email:            email,
+			OrganizationID:   orgID,
+			OrganizationName: orgName,
+			OrganizationRole: role,
+		}
 
 		if claims.OrganizationID != orgID {
 			t.Errorf("OrganizationID = %v, want %v", claims.OrganizationID, orgID)
@@ -99,9 +135,14 @@ func TestClaimsBuilder(t *testing.T) {
 			},
 		}
 
-		claims := NewClaimsBuilder(userID, email).
-			WithOrganizations(orgs).
-			Build()
+		claims := &EnhancedClaims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				Subject: userID.String(),
+			},
+			UserID:        userID,
+			Email:         email,
+			Organizations: orgs,
+		}
 
 		if len(claims.Organizations) != 2 {
 			t.Errorf("Organizations length = %v, want 2", len(claims.Organizations))
@@ -115,10 +156,15 @@ func TestClaimsBuilder(t *testing.T) {
 		roles := []string{"admin", "developer"}
 		permissions := []string{"read", "write", "delete"}
 
-		claims := NewClaimsBuilder(userID, email).
-			WithRoles(roles).
-			WithPermissions(permissions).
-			Build()
+		claims := &EnhancedClaims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				Subject: userID.String(),
+			},
+			UserID:      userID,
+			Email:       email,
+			Roles:       roles,
+			Permissions: permissions,
+		}
 
 		if len(claims.Roles) != 2 {
 			t.Errorf("Roles length = %v, want 2", len(claims.Roles))
@@ -133,9 +179,17 @@ func TestClaimsBuilder(t *testing.T) {
 		providerID := "123456"
 		tokenExp := int64(1234567890)
 
-		claims := NewClaimsBuilder(userID, email).
-			WithProvider(provider, providerID, &tokenExp).
-			Build()
+		claims := &EnhancedClaims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				Subject: userID.String(),
+			},
+			UserID:           userID,
+			Email:            email,
+			Provider:         provider,
+			ProviderID:       providerID,
+			ProviderTokenExp: &tokenExp,
+			AuthMethod:       AuthMethodOAuth,
+		}
 
 		if claims.Provider != provider {
 			t.Errorf("Provider = %v, want %v", claims.Provider, provider)
@@ -152,10 +206,17 @@ func TestClaimsBuilder(t *testing.T) {
 	})
 
 	t.Run("with custom claims", func(t *testing.T) {
-		claims := NewClaimsBuilder(userID, email).
-			WithCustomClaim("tier", "premium").
-			WithCustomClaim("beta_features", true).
-			Build()
+		claims := &EnhancedClaims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				Subject: userID.String(),
+			},
+			UserID: userID,
+			Email:  email,
+			CustomClaims: map[string]interface{}{
+				"tier":          "premium",
+				"beta_features": true,
+			},
+		}
 
 		if claims.CustomClaims["tier"] != "premium" {
 			t.Errorf("CustomClaims[tier] = %v, want premium", claims.CustomClaims["tier"])

@@ -11,19 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// Claims represents JWT token claims (legacy - use EnhancedClaims instead)
-type Claims struct {
-	UserID uuid.UUID `json:"user_id"`
-	Email  string    `json:"email"`
-	jwt.RegisteredClaims
-}
-
-// TokenResponseWithExpiry extends the generated TokenResponse with ExpiresAt
-type TokenResponseWithExpiry struct {
-	TokenResponse
-	ExpiresAt time.Time `json:"expires_at"`
-}
-
 // ValidateToken validates and parses a JWT token using enhanced claims
 func (s *Service) ValidateToken(tokenString string) (*EnhancedClaims, error) {
 	// Remove Bearer prefix if present
@@ -51,30 +38,6 @@ func (s *Service) ValidateToken(tokenString string) (*EnhancedClaims, error) {
 	// Additional validation for token type
 	if claims.TokenType != AccessTokenType {
 		return nil, fmt.Errorf("invalid token type: expected access token")
-	}
-
-	return claims, nil
-}
-
-// ValidateLegacyToken validates and parses a JWT token using legacy claims
-// Deprecated: Use ValidateToken instead
-func (s *Service) ValidateLegacyToken(tokenString string) (*Claims, error) {
-	// Parse and validate the token
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		// Validate the signing method
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return s.jwtSecret, nil
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	claims, ok := token.Claims.(*Claims)
-	if !ok || !token.Valid {
-		return nil, ErrInvalidToken
 	}
 
 	return claims, nil

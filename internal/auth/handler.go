@@ -251,7 +251,7 @@ func (h *Handler) ConfirmEmailChange(_ context.Context, _ ConfirmEmailChangeRequ
 // RequestEmailVerification handles email verification requests
 func (h *Handler) RequestEmailVerification(ctx context.Context, _ RequestEmailVerificationRequestObject) (RequestEmailVerificationResponseObject, error) {
 	// Get the authenticated user from context
-	userClaims, ok := ctx.Value(ClaimsContextKey).(*EnhancedClaims)
+	userClaims, ok := ctx.Value(AuthClaimsContextKey).(*EnhancedClaims)
 	if !ok || userClaims == nil {
 		// If no user in context, return unauthorized
 		return RequestEmailVerification401ApplicationProblemPlusJSONResponse{

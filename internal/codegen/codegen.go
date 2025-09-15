@@ -11,8 +11,6 @@
 //   - Configuration defaults
 //
 // All generated files follow the pattern *.gen.go and should not be edited manually.
-//
-//go:generate go tool oapi-codegen --config=../../types.codegen.yaml --package codegen --generate skip-prune,models ../../api/components/schemas/XCodegenWrapper.yaml
 package codegen
 
 import (
