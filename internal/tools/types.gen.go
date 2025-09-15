@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -32,6 +32,18 @@ const (
 	Asc  ListToolsParamsSortOrder = "asc"
 	Desc ListToolsParamsSortOrder = "desc"
 )
+
+// Base defines model for Base.
+type Base struct {
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+}
 
 // FilterNode A recursive filter node that can be a condition or group
 type FilterNode = interface{}
@@ -63,32 +75,33 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// Tool Schema for Tool entity
+// Tool defines model for Tool.
 type Tool struct {
-	// CreatedAt The date this item was created
+	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Description The tool description
 	Description string `json:"description" yaml:"description"`
 
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
 
 	// InputMimeType The MIME type of the input for the tool, e.g. text/plain
 	InputMimeType string `json:"inputMimeType" yaml:"inputMimeType"`
 
 	// Name The name of the tool
-	Name string `json:"name" yaml:"name"`
-
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
+	Name           string `json:"name" yaml:"name"`
+	OrganizationId UUID   `json:"organizationId" yaml:"organizationId"`
 
 	// OutputMimeType The MIME type of the output for the tool, e.g. text/plain
 	OutputMimeType string `json:"outputMimeType" yaml:"outputMimeType"`
 
-	// UpdatedAt The date this item was last updated
+	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
+
+// UUID Universally Unique Identifier
+type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
 type ValidationError struct {

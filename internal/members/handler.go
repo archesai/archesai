@@ -89,8 +89,7 @@ func (h *Handler) GetOneMember(ctx context.Context, request GetOneMemberRequestO
 	}
 
 	// Parse organization ID from member to verify
-	memberOrgID, err := uuid.Parse(member.OrganizationId)
-	if err != nil || memberOrgID != organizationID {
+	if member.OrganizationId != organizationID {
 		return GetOneMember404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 				Type:   "not_found",
@@ -186,8 +185,7 @@ func (h *Handler) UpdateMember(ctx context.Context, request UpdateMemberRequestO
 	}
 
 	// Parse organization ID from member to verify
-	memberOrgID, err := uuid.Parse(member.OrganizationId)
-	if err != nil || memberOrgID != organizationID {
+	if member.OrganizationId != organizationID {
 		return UpdateMember404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 				Type:   "not_found",
@@ -250,8 +248,7 @@ func (h *Handler) DeleteMember(ctx context.Context, request DeleteMemberRequestO
 	}
 
 	// Parse organization ID from member to verify
-	memberOrgID, err := uuid.Parse(member.OrganizationId)
-	if err != nil || memberOrgID != organizationID {
+	if member.OrganizationId != organizationID {
 		return DeleteMember404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 				Type:   "not_found",

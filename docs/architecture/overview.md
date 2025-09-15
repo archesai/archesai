@@ -136,7 +136,12 @@ Generates:
 ```sql
 -- Define in internal/database/queries/
 -- name: GetOrganization :one
-SELECT * FROM organizations WHERE id = $1;
+SELECT
+  *
+FROM
+  organizations
+WHERE
+  id = $1;
 ```
 
 Generates:

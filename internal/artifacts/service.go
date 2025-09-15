@@ -13,18 +13,12 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	// MaxArtifactSize is the maximum size for an artifact in bytes (10MB)
-	MaxArtifactSize = 10 * 1024 * 1024
-)
-
 // Service provides artifact business logic
 type Service struct {
-	repo         Repository
-	labelRepo    labels.Repository // For label operations
-	logger       *slog.Logger
-	maxSize      int // Max artifact size in bytes
-	cacheEnabled bool
+	repo      Repository
+	labelRepo labels.Repository // For label operations
+	logger    *slog.Logger
+	maxSize   int // Max artifact size in bytes
 }
 
 // ServiceConfig contains configuration for the artifacts service
@@ -39,46 +33,20 @@ func NewArtifactsService(repo Repository, labelRepo labels.Repository, logger *s
 		repo:      repo,
 		labelRepo: labelRepo,
 		logger:    logger,
-		maxSize:   MaxArtifactSize,
-	}
-}
-
-// NewArtifactsServiceWithConfig creates a new artifacts service with custom configuration
-func NewArtifactsServiceWithConfig(repo Repository, labelRepo labels.Repository, config ServiceConfig, logger *slog.Logger) *Service {
-	maxSize := config.MaxArtifactSize
-	if maxSize <= 0 {
-		maxSize = MaxArtifactSize
-	}
-
-	return &Service{
-		repo:         repo,
-		labelRepo:    labelRepo,
-		logger:       logger,
-		maxSize:      maxSize,
-		cacheEnabled: config.CacheEnabled,
+		maxSize:   10 * 1024 * 1024,
 	}
 }
 
 // Create creates a new artifact with validation and processing
-func (s *Service) Create(ctx context.Context, req *CreateArtifactJSONRequestBody, orgID, producerID string) (*Artifact, error) {
+func (s *Service) Create(ctx context.Context, req *CreateArtifactJSONRequestBody, orgID, producerID UUID) (*Artifact, error) {
 	s.logger.Debug("creating artifact",
-		slog.String("org", orgID),
-		slog.String("producer", producerID),
+		slog.String("org", orgID.String()),
+		slog.String("producer", producerID.String()),
 		slog.String("name", req.Name))
 
 	// Validate inputs
 	if err := s.validateCreateRequest(req); err != nil {
 		return nil, fmt.Errorf("validation failed: %w", err)
-	}
-
-	// Validate organization ID
-	if orgID == "" {
-		return nil, errors.New("organization ID is required")
-	}
-
-	// Validate producer ID
-	if producerID == "" {
-		return nil, errors.New("producer ID is required")
 	}
 
 	// Prepare artifact
@@ -98,7 +66,7 @@ func (s *Service) Create(ctx context.Context, req *CreateArtifactJSONRequestBody
 	if err != nil {
 		s.logger.Error("failed to create artifact",
 			slog.String("error", err.Error()),
-			slog.String("org", orgID))
+			slog.String("org", orgID.String()))
 		return nil, fmt.Errorf("failed to create artifact: %w", err)
 	}
 
@@ -108,7 +76,7 @@ func (s *Service) Create(ctx context.Context, req *CreateArtifactJSONRequestBody
 	s.logger.Info("artifact created successfully",
 		slog.String("id", createdArtifact.Id.String()),
 		slog.String("name", createdArtifact.Name),
-		slog.String("org", orgID))
+		slog.String("org", orgID.String()))
 
 	return createdArtifact, nil
 }
@@ -216,11 +184,11 @@ func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {
 // List retrieves artifacts with pagination and filtering
 func (s *Service) List(ctx context.Context, limit, offset int) ([]*Artifact, int64, error) {
 	// For now, list without organization filtering
-	return s.ListByOrganization(ctx, "", limit, offset)
+	return s.ListByOrganization(ctx, uuid.Nil, limit, offset)
 }
 
 // ListByOrganization retrieves artifacts for a specific organization
-func (s *Service) ListByOrganization(ctx context.Context, orgID string, limit, offset int) ([]*Artifact, int64, error) {
+func (s *Service) ListByOrganization(ctx context.Context, orgID UUID, limit, offset int) ([]*Artifact, int64, error) {
 	// Validate pagination parameters
 	if limit <= 0 {
 		limit = 50 // Default limit
@@ -243,7 +211,7 @@ func (s *Service) ListByOrganization(ctx context.Context, orgID string, limit, o
 	artifacts, total, err := s.repo.List(ctx, params)
 	if err != nil {
 		s.logger.Error("failed to list artifacts",
-			slog.String("org", orgID),
+			slog.String("org", orgID.String()),
 			slog.String("error", err.Error()))
 		return nil, 0, fmt.Errorf("failed to list artifacts: %w", err)
 	}
@@ -261,7 +229,7 @@ func (s *Service) ListByOrganization(ctx context.Context, orgID string, limit, o
 }
 
 // Search performs full-text search on artifacts
-func (s *Service) Search(ctx context.Context, orgID, query string, limit, offset int) ([]*Artifact, int, error) {
+func (s *Service) Search(ctx context.Context, orgID UUID, query string, limit, offset int) ([]*Artifact, int, error) {
 	if query == "" {
 		artifacts, total, err := s.ListByOrganization(ctx, orgID, limit, offset)
 		return artifacts, int(total), err
@@ -437,7 +405,7 @@ func (s *Service) calculateCredits(text string) float64 {
 }
 
 // BulkCreateArtifacts creates multiple artifacts in a single operation
-func (s *Service) BulkCreateArtifacts(ctx context.Context, artifacts []*CreateArtifactJSONRequestBody, orgID, producerID string) ([]*Artifact, error) {
+func (s *Service) BulkCreateArtifacts(ctx context.Context, artifacts []*CreateArtifactJSONRequestBody, orgID, producerID UUID) ([]*Artifact, error) {
 	if len(artifacts) == 0 {
 		return nil, errors.New("no artifacts to create")
 	}
@@ -467,7 +435,7 @@ func (s *Service) BulkCreateArtifacts(ctx context.Context, artifacts []*CreateAr
 }
 
 // GetArtifactStats returns statistics for artifacts in an organization
-func (s *Service) GetArtifactStats(ctx context.Context, orgID string) (map[string]interface{}, error) {
+func (s *Service) GetArtifactStats(ctx context.Context, orgID UUID) (map[string]interface{}, error) {
 	// Get total count
 	_, total, err := s.ListByOrganization(ctx, orgID, 1, 0)
 	if err != nil {

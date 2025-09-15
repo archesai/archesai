@@ -109,10 +109,10 @@ For detailed installation and setup instructions, see
 ### Essential Commands
 
 ```bash
-make generate         # Run after API/SQL changes
-make lint            # Check code quality
-make dev             # Start backend server
-pnpm dev:platform    # Start frontend
+make generate     # Run after API/SQL changes
+make lint         # Check code quality
+make dev          # Start backend server
+pnpm dev:platform # Start frontend
 ```
 
 For detailed development instructions, see [Development Guide](docs/guides/development.md).

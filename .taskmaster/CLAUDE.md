@@ -331,8 +331,8 @@ git worktree add ../project-auth feature/auth-system
 git worktree add ../project-api feature/api-refactor
 
 # Run Claude Code in each worktree
-cd ../project-auth && claude    # Terminal 1: Auth work
-cd ../project-api && claude     # Terminal 2: API work
+cd ../project-auth && claude # Terminal 1: Auth work
+cd ../project-api && claude  # Terminal 2: API work
 ```
 
 ## Troubleshooting
@@ -341,7 +341,7 @@ cd ../project-api && claude     # Terminal 2: API work
 
 ```bash
 # Check API keys are configured
-cat .env                           # For CLI usage
+cat .env # For CLI usage
 
 # Verify model configuration
 task-master models

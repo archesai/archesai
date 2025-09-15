@@ -51,7 +51,7 @@ func NewService(repo Repository, logger *slog.Logger) *Service {
 // Create creates a new invitation
 func (s *Service) Create(ctx context.Context, invitation *Invitation) (*Invitation, error) {
 	// Check if invitation already exists for this email in the organization
-	existing, err := s.repo.GetByEmail(ctx, invitation.Email, invitation.OrganizationId)
+	existing, err := s.repo.GetByEmail(ctx, invitation.Email, invitation.OrganizationId.String())
 	if err == nil && existing != nil {
 		if existing.Status == StatusPending {
 			return nil, ErrInvitationAlreadyExists

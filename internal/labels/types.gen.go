@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -30,24 +30,34 @@ const (
 	Desc ListLabelsParamsSortOrder = "desc"
 )
 
+// Base defines model for Base.
+type Base struct {
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+}
+
 // FilterNode A recursive filter node that can be a condition or group
 type FilterNode = interface{}
 
-// Label Schema for Label entity
+// Label defines model for Label.
 type Label struct {
-	// CreatedAt The date this item was created
+	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
 
 	// Name The name of the label
-	Name string `json:"name" yaml:"name"`
+	Name           string `json:"name" yaml:"name"`
+	OrganizationId UUID   `json:"organizationId" yaml:"organizationId"`
 
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
-
-	// UpdatedAt The date this item was last updated
+	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
@@ -77,6 +87,9 @@ type Problem struct {
 	// Type URI identifying the problem type
 	Type string `json:"type" yaml:"type"`
 }
+
+// UUID Universally Unique Identifier
+type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
 type ValidationError struct {

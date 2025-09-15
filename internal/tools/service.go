@@ -40,7 +40,7 @@ func (s *Service) List(ctx context.Context, _ string, limit, offset int) ([]*Too
 }
 
 // Create creates a new tool
-func (s *Service) Create(ctx context.Context, req *CreateToolJSONRequestBody, orgID string) (*Tool, error) {
+func (s *Service) Create(ctx context.Context, req *CreateToolJSONRequestBody, orgID UUID) (*Tool, error) {
 	tool := &Tool{
 		Id:             uuid.New(),
 		OrganizationId: orgID,

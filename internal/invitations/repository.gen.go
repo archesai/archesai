@@ -3,7 +3,6 @@ package invitations
 
 import (
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 )
 
@@ -19,26 +18,4 @@ type Repository interface {
 	ListByOrganization(ctx context.Context, organizationId string) ([]*Invitation, error)
 	GetByEmail(ctx context.Context, email string, organizationId string) (*Invitation, error)
 	ListByInviter(ctx context.Context, inviterId string) ([]*Invitation, error)
-}
-
-// RepositoryError represents a repository error.
-type RepositoryError struct {
-	Operation string
-	Err       error
-}
-
-func (e *RepositoryError) Error() string {
-	return fmt.Sprintf("repository %s: %v", e.Operation, e.Err)
-}
-
-func (e *RepositoryError) Unwrap() error {
-	return e.Err
-}
-
-// NewRepositoryError creates a new repository error.
-func NewRepositoryError(operation string, err error) *RepositoryError {
-	return &RepositoryError{
-		Operation: operation,
-		Err:       err,
-	}
 }

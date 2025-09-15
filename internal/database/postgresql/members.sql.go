@@ -12,15 +12,12 @@ import (
 )
 
 const createMember = `-- name: CreateMember :one
-INSERT INTO member (
-    id,
-    user_id,
-    organization_id,
-    role
-) VALUES (
-    $1, $2, $3, $4
-)
-RETURNING id, created_at, updated_at, organization_id, role, user_id
+INSERT INTO
+  member (id, user_id, organization_id, role)
+VALUES
+  ($1, $2, $3, $4)
+RETURNING
+  id, created_at, updated_at, organization_id, role, user_id
 `
 
 type CreateMemberParams struct {
@@ -51,7 +48,8 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Mem
 
 const deleteMember = `-- name: DeleteMember :exec
 DELETE FROM member
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteMember(ctx context.Context, id uuid.UUID) error {
@@ -61,7 +59,8 @@ func (q *Queries) DeleteMember(ctx context.Context, id uuid.UUID) error {
 
 const deleteMembersByOrganization = `-- name: DeleteMembersByOrganization :exec
 DELETE FROM member
-WHERE organization_id = $1
+WHERE
+  organization_id = $1
 `
 
 func (q *Queries) DeleteMembersByOrganization(ctx context.Context, organizationID uuid.UUID) error {
@@ -70,8 +69,14 @@ func (q *Queries) DeleteMembersByOrganization(ctx context.Context, organizationI
 }
 
 const getMember = `-- name: GetMember :one
-SELECT id, created_at, updated_at, organization_id, role, user_id FROM member
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, organization_id, role, user_id
+FROM
+  member
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetMember(ctx context.Context, id uuid.UUID) (Member, error) {
@@ -89,8 +94,15 @@ func (q *Queries) GetMember(ctx context.Context, id uuid.UUID) (Member, error) {
 }
 
 const getMemberByUserAndOrg = `-- name: GetMemberByUserAndOrg :one
-SELECT id, created_at, updated_at, organization_id, role, user_id FROM member
-WHERE user_id = $1 AND organization_id = $2 LIMIT 1
+SELECT
+  id, created_at, updated_at, organization_id, role, user_id
+FROM
+  member
+WHERE
+  user_id = $1
+  AND organization_id = $2
+LIMIT
+  1
 `
 
 type GetMemberByUserAndOrgParams struct {
@@ -113,9 +125,16 @@ func (q *Queries) GetMemberByUserAndOrg(ctx context.Context, arg GetMemberByUser
 }
 
 const listMembers = `-- name: ListMembers :many
-SELECT id, created_at, updated_at, organization_id, role, user_id FROM member
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, organization_id, role, user_id
+FROM
+  member
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListMembersParams struct {
@@ -151,10 +170,18 @@ func (q *Queries) ListMembers(ctx context.Context, arg ListMembersParams) ([]Mem
 }
 
 const listMembersByOrganization = `-- name: ListMembersByOrganization :many
-SELECT id, created_at, updated_at, organization_id, role, user_id FROM member
-WHERE organization_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, organization_id, role, user_id
+FROM
+  member
+WHERE
+  organization_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListMembersByOrganizationParams struct {
@@ -191,10 +218,18 @@ func (q *Queries) ListMembersByOrganization(ctx context.Context, arg ListMembers
 }
 
 const listMembersByUser = `-- name: ListMembersByUser :many
-SELECT id, created_at, updated_at, organization_id, role, user_id FROM member
-WHERE user_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, organization_id, role, user_id
+FROM
+  member
+WHERE
+  user_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListMembersByUserParams struct {
@@ -232,11 +267,12 @@ func (q *Queries) ListMembersByUser(ctx context.Context, arg ListMembersByUserPa
 
 const updateMember = `-- name: UpdateMember :one
 UPDATE member
-SET 
-    role = COALESCE($2, role),
-    updated_at = NOW()
-WHERE id = $1
-RETURNING id, created_at, updated_at, organization_id, role, user_id
+SET role = COALESCE($2, role),
+updated_at = NOW()
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, organization_id, role, user_id
 `
 
 type UpdateMemberParams struct {

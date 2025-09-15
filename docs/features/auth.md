@@ -229,29 +229,29 @@ go test -tags=integration ./internal/auth/...
 ```sql
 -- Users table
 CREATE TABLE users (
-    id UUID PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    email_verified BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+  id UUID PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  email_verified BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
 );
 
 -- Sessions table
 CREATE TABLE sessions (
-    id UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id),
-    token_hash VARCHAR(255) NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP NOT NULL
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users (id),
+  token_hash VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL
 );
 
 -- Roles table
 CREATE TABLE user_roles (
-    user_id UUID REFERENCES users(id),
-    organization_id UUID REFERENCES organizations(id),
-    role VARCHAR(50) NOT NULL,
-    PRIMARY KEY (user_id, organization_id)
+  user_id UUID REFERENCES users (id),
+  organization_id UUID REFERENCES organizations (id),
+  role VARCHAR(50) NOT NULL,
+  PRIMARY KEY (user_id, organization_id)
 );
 ```
 

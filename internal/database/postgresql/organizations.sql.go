@@ -12,7 +12,8 @@ import (
 )
 
 const createOrganization = `-- name: CreateOrganization :one
-INSERT INTO organization (
+INSERT INTO
+  organization (
     id,
     name,
     billing_email,
@@ -21,10 +22,11 @@ INSERT INTO organization (
     logo,
     metadata,
     stripe_customer_id
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8
-)
-RETURNING id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
+  )
+VALUES
+  ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING
+  id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
 `
 
 type CreateOrganizationParams struct {
@@ -67,7 +69,8 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 
 const deleteOrganization = `-- name: DeleteOrganization :exec
 DELETE FROM organization
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
@@ -76,8 +79,14 @@ func (q *Queries) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
 }
 
 const getOrganization = `-- name: GetOrganization :one
-SELECT id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id FROM organization
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
+FROM
+  organization
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetOrganization(ctx context.Context, id uuid.UUID) (Organization, error) {
@@ -99,9 +108,16 @@ func (q *Queries) GetOrganization(ctx context.Context, id uuid.UUID) (Organizati
 }
 
 const listOrganizations = `-- name: ListOrganizations :many
-SELECT id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id FROM organization
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
+FROM
+  organization
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListOrganizationsParams struct {
@@ -142,16 +158,21 @@ func (q *Queries) ListOrganizations(ctx context.Context, arg ListOrganizationsPa
 
 const updateOrganization = `-- name: UpdateOrganization :one
 UPDATE organization
-SET 
-    name = COALESCE($2, name),
-    billing_email = COALESCE($3, billing_email),
-    plan = COALESCE($4, plan),
-    credits = COALESCE($5, credits),
-    logo = COALESCE($6, logo),
-    metadata = COALESCE($7, metadata),
-    stripe_customer_id = COALESCE($8, stripe_customer_id)
-WHERE id = $1
-RETURNING id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
+SET
+  name = COALESCE($2, name),
+  billing_email = COALESCE($3, billing_email),
+  plan = COALESCE($4, plan),
+  credits = COALESCE($5, credits),
+  logo = COALESCE($6, logo),
+  metadata = COALESCE($7, metadata),
+  stripe_customer_id = COALESCE(
+    $8,
+    stripe_customer_id
+  )
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
 `
 
 type UpdateOrganizationParams struct {

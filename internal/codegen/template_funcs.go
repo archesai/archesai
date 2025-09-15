@@ -346,13 +346,25 @@ func ParamType(paramName string) string {
 	case "id", "userId":
 		return "uuid.UUID"
 	case "organizationId", "name", "email", "token", "provider", "providerAccountId", "slug", "stripeCustomerId", "pipelineId", "inviterId", "toolId":
-		return "string"
+		return "string" //nolint:goconst // Go type
 	default:
-		return "string"
+		return "string" //nolint:goconst // Go type
 	}
 }
 
 // IsUUIDParam checks if a parameter should be treated as a UUID type.
 func IsUUIDParam(paramName string) bool {
 	return paramName == "id" || paramName == "userId"
+}
+
+// ToSnakeCase converts camelCase to snake_case
+func ToSnakeCase(s string) string {
+	var result strings.Builder
+	for i, r := range s {
+		if i > 0 && r >= 'A' && r <= 'Z' {
+			result.WriteRune('_')
+		}
+		result.WriteRune(r)
+	}
+	return strings.ToLower(result.String())
 }

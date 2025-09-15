@@ -38,33 +38,33 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Label) (*Label,
 	// }
 	// dbLabel, err := r.queries.CreateLabel(ctx, params)
 	// if err != nil {
-	//     return nil, NewRepositoryError("create", err)
+	//     return nil, err
 	// }
 	// return mapLabelToDomain(&dbLabel), nil
 
-	return nil, NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Label, error) {
 	// Try to call SQLC GetLabel if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Label) (*Label, error) {
 	// Update operations are often custom and may not have SQLC queries
-	return nil, NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteLabel if it exists
 	// For now, return not implemented
-	return NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+	return errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) List(ctx context.Context, params ListLabelsParams) ([]*Label, int64, error) {
 	// List operations need both List and Count queries from SQLC
-	return nil, 0, NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
+	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
 
 // ListByOrganization retrieves multiple labels by organizationId
@@ -72,7 +72,7 @@ func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizatio
 
 	// Try to call SQLC ListByOrganization if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("listbyorganization", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 
 }
 
@@ -81,7 +81,7 @@ func (r *PostgresRepository) GetByName(ctx context.Context, name string, organiz
 
 	// Try to call SQLC GetByName if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("getbyname", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 
 }
 

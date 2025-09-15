@@ -1,7 +1,6 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for Account entity (authentication provider account)
 x-codegen:
-  # yaml-language-server: $schema=./XCodegen.yaml
   repository:
     operations: [create, read, update, delete, list]
     indices: [userId, accountId]
@@ -23,6 +22,32 @@ x-codegen:
     - deleted
     - linked
     - unlinked
+  # database:
+  #   table: accounts
+  #   indices:
+  #     - fields: [user_id]
+  #       name: idx_account_user_id
+  #     - fields: [provider_id, account_id]
+  #       name: idx_account_provider_account
+  #       unique: true
+  #     - fields: [created_at]
+  #       name: idx_account_created_at
+  #   relations:
+  #     - field: userId
+  #       references: users.id
+  #       onDelete: CASCADE
+  #   queries:
+  #     - name: GetAccountByUser
+  #       type: one
+  #       sql: |
+  #         SELECT * FROM accounts
+  #         WHERE user_id = $1 AND provider_id = $2
+  #         LIMIT 1
+  #     - name: DeleteAccountsByUser
+  #       type: exec
+  #       sql: |
+  #         DELETE FROM accounts
+  #         WHERE user_id = $1
 allOf:
   - $ref: ./Base.yaml
   - type: object

@@ -11,7 +11,6 @@ import (
 	"go/token"
 	"os"
 	"reflect"
-	"sort"
 	"strings"
 	"text/template"
 )
@@ -46,17 +45,6 @@ func ParseTemplate(name string) (*template.Template, error) {
 	}
 
 	return tmpl, nil
-}
-
-// GetSortedPropertyKeys returns sorted property names from a map of properties.
-// This ensures consistent ordering when iterating over schema properties.
-func GetSortedPropertyKeys(properties map[string]Property) []string {
-	keys := make([]string, 0, len(properties))
-	for k := range properties {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	return keys
 }
 
 // AddYamlTags adds YAML tags to Go struct fields that have JSON tags but no YAML tags.

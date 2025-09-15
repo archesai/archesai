@@ -11,40 +11,19 @@ x-codegen:
       - name: GetByName
         params: [name, organizationId]
         returns: single
-type: object
-properties:
-  createdAt:
-    description: The date this item was created
-    type: string
-    format: date-time
-    example: '2024-01-15T09:30:00Z'
-    minLength: 1
-  id:
-    description: The ID of the item
-    type: string
-    format: uuid
-    example: 550e8400-e29b-41d4-a716-446655440000
-    minLength: 36
-  updatedAt:
-    description: The date this item was last updated
-    type: string
-    format: date-time
-    example: '2024-01-15T09:30:00Z'
-    minLength: 1
-  name:
-    description: The name of the label
-    type: string
-    minLength: 1
-    example: Example Name
-  organizationId:
-    description: The organization name
-    type: string
-    minLength: 1
-    example: example-id-123
-required:
-  - createdAt
-  - id
-  - updatedAt
-  - name
-  - organizationId
-additionalProperties: false
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      name:
+        description: The name of the label
+        type: string
+        minLength: 1
+        example: Example Name
+      organizationId:
+        allOf:
+          - $ref: ./UUID.yaml
+    required:
+      - name
+      - organizationId
+    additionalProperties: false

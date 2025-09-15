@@ -38,33 +38,33 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Pipeline) (*Pip
 	// }
 	// dbPipeline, err := r.queries.CreatePipeline(ctx, params)
 	// if err != nil {
-	//     return nil, NewRepositoryError("create", err)
+	//     return nil, err
 	// }
 	// return mapPipelineToDomain(&dbPipeline), nil
 
-	return nil, NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Pipeline, error) {
 	// Try to call SQLC GetPipeline if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Pipeline) (*Pipeline, error) {
 	// Update operations are often custom and may not have SQLC queries
-	return nil, NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeletePipeline if it exists
 	// For now, return not implemented
-	return NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+	return errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) List(ctx context.Context, params ListPipelinesParams) ([]*Pipeline, int64, error) {
 	// List operations need both List and Count queries from SQLC
-	return nil, 0, NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
+	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
 
 // ListByOrganization retrieves multiple pipelines by organizationId
@@ -72,7 +72,7 @@ func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizatio
 
 	// Try to call SQLC ListByOrganization if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("listbyorganization", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 
 }
 

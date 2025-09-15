@@ -5,6 +5,8 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // Handler handles HTTP requests for labels
@@ -36,7 +38,7 @@ func (h *Handler) ListLabels(ctx context.Context, request ListLabelsRequestObjec
 
 	// For now, use a placeholder organization ID
 	// TODO: Get from auth context
-	orgID := "default-org"
+	orgID := uuid.New()
 
 	labels, total, err := h.service.List(ctx, orgID, limit, offset)
 	if err != nil {
@@ -91,7 +93,7 @@ func (h *Handler) GetLabel(ctx context.Context, request GetLabelRequestObject) (
 func (h *Handler) CreateLabel(ctx context.Context, request CreateLabelRequestObject) (CreateLabelResponseObject, error) {
 	// For now, use a placeholder organization ID
 	// TODO: Get from auth context
-	orgID := "default-org"
+	orgID := uuid.New()
 
 	createdLabel, err := h.service.Create(ctx, request.Body, orgID)
 	if err != nil {

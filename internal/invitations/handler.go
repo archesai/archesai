@@ -103,8 +103,8 @@ func (h *Handler) CreateInvitation(c echo.Context, organizationID openapi_types.
 		Id:             uuid.New(),
 		Email:          req.Email,
 		Role:           InvitationRole(req.Role),
-		OrganizationId: organizationID.String(),
-		InviterId:      "", // This should come from auth context
+		OrganizationId: organizationID,
+		InviterId:      uuid.New(), // This should come from auth context
 	}
 
 	created, err := h.service.Create(ctx, invitation)
@@ -155,7 +155,7 @@ func (h *Handler) GetInvitation(c echo.Context, organizationID openapi_types.UUI
 	}
 
 	// Verify invitation belongs to the organization
-	if invitation.OrganizationId != organizationID.String() {
+	if invitation.OrganizationId != organizationID {
 		return c.JSON(http.StatusNotFound, Problem{
 			Title:  "Not Found",
 			Detail: "Invitation not found",
@@ -204,7 +204,7 @@ func (h *Handler) UpdateInvitation(c echo.Context, organizationID openapi_types.
 	}
 
 	// Verify invitation belongs to the organization
-	if existing.OrganizationId != organizationID.String() {
+	if existing.OrganizationId != organizationID {
 		return c.JSON(http.StatusNotFound, Problem{
 			Title:  "Not Found",
 			Detail: "Invitation not found",
@@ -278,7 +278,7 @@ func (h *Handler) DeleteInvitation(c echo.Context, organizationID openapi_types.
 	}
 
 	// Verify invitation belongs to the organization
-	if invitation.OrganizationId != organizationID.String() {
+	if invitation.OrganizationId != organizationID {
 		return c.JSON(http.StatusNotFound, Problem{
 			Title:  "Not Found",
 			Detail: "Invitation not found",

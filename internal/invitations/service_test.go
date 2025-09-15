@@ -14,8 +14,8 @@ import (
 
 func TestService_Create(t *testing.T) {
 	ctx := context.Background()
-	orgID := uuid.New().String()
-	inviterID := uuid.New().String()
+	orgID := uuid.New()
+	inviterID := uuid.New()
 
 	tests := []struct {
 		name       string
@@ -33,7 +33,7 @@ func TestService_Create(t *testing.T) {
 				InviterId:      inviterID,
 			},
 			setupMock: func(repo *MockRepository) {
-				repo.EXPECT().GetByEmail(mock.Anything, "test@example.com", orgID).
+				repo.EXPECT().GetByEmail(mock.Anything, "test@example.com", orgID.String()).
 					Return(nil, errors.New("not found"))
 				repo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*invitations.Invitation")).
 					Return(&Invitation{
@@ -58,7 +58,7 @@ func TestService_Create(t *testing.T) {
 				InviterId:      inviterID,
 			},
 			setupMock: func(repo *MockRepository) {
-				repo.EXPECT().GetByEmail(mock.Anything, "existing@example.com", orgID).
+				repo.EXPECT().GetByEmail(mock.Anything, "existing@example.com", orgID.String()).
 					Return(&Invitation{
 						Id:     uuid.New(),
 						Email:  "existing@example.com",
@@ -76,7 +76,7 @@ func TestService_Create(t *testing.T) {
 				InviterId:      inviterID,
 			},
 			setupMock: func(repo *MockRepository) {
-				repo.EXPECT().GetByEmail(mock.Anything, "error@example.com", orgID).
+				repo.EXPECT().GetByEmail(mock.Anything, "error@example.com", orgID.String()).
 					Return(nil, errors.New("not found"))
 				repo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*invitations.Invitation")).
 					Return(nil, errors.New("database error"))
@@ -621,12 +621,12 @@ func TestService_Resend(t *testing.T) {
 
 func TestService_GetByEmail(t *testing.T) {
 	ctx := context.Background()
-	orgID := uuid.New().String()
+	orgID := uuid.New()
 
 	tests := []struct {
 		name      string
 		email     string
-		orgID     string
+		orgID     UUID
 		setupMock func(*MockRepository)
 		wantErr   error
 	}{
@@ -635,7 +635,7 @@ func TestService_GetByEmail(t *testing.T) {
 			email: "test@example.com",
 			orgID: orgID,
 			setupMock: func(repo *MockRepository) {
-				repo.EXPECT().GetByEmail(mock.Anything, "test@example.com", orgID).
+				repo.EXPECT().GetByEmail(mock.Anything, "test@example.com", orgID.String()).
 					Return(&Invitation{
 						Email:          "test@example.com",
 						OrganizationId: orgID,
@@ -648,7 +648,7 @@ func TestService_GetByEmail(t *testing.T) {
 			email: "notfound@example.com",
 			orgID: orgID,
 			setupMock: func(repo *MockRepository) {
-				repo.EXPECT().GetByEmail(mock.Anything, "notfound@example.com", orgID).
+				repo.EXPECT().GetByEmail(mock.Anything, "notfound@example.com", orgID.String()).
 					Return(nil, errors.New("not found"))
 			},
 			wantErr: ErrInvitationNotFound,
@@ -661,7 +661,7 @@ func TestService_GetByEmail(t *testing.T) {
 			tt.setupMock(mockRepo)
 
 			service := NewService(mockRepo, slog.Default())
-			result, err := service.GetByEmail(ctx, tt.email, tt.orgID)
+			result, err := service.GetByEmail(ctx, tt.email, tt.orgID.String())
 
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)
@@ -678,11 +678,11 @@ func TestService_GetByEmail(t *testing.T) {
 
 func TestService_ListByInviter(t *testing.T) {
 	ctx := context.Background()
-	inviterID := uuid.New().String()
+	inviterID := uuid.New()
 
 	tests := []struct {
 		name      string
-		inviterID string
+		inviterID uuid.UUID
 		setupMock func(*MockRepository)
 		wantCount int
 		wantErr   bool
@@ -691,7 +691,7 @@ func TestService_ListByInviter(t *testing.T) {
 			name:      "successful list",
 			inviterID: inviterID,
 			setupMock: func(repo *MockRepository) {
-				repo.EXPECT().ListByInviter(mock.Anything, inviterID).
+				repo.EXPECT().ListByInviter(mock.Anything, inviterID.String()).
 					Return([]*Invitation{
 						{Id: uuid.New(), InviterId: inviterID},
 						{Id: uuid.New(), InviterId: inviterID},
@@ -705,7 +705,7 @@ func TestService_ListByInviter(t *testing.T) {
 			name:      "empty list",
 			inviterID: inviterID,
 			setupMock: func(repo *MockRepository) {
-				repo.EXPECT().ListByInviter(mock.Anything, inviterID).
+				repo.EXPECT().ListByInviter(mock.Anything, inviterID.String()).
 					Return([]*Invitation{}, nil)
 			},
 			wantCount: 0,
@@ -715,7 +715,7 @@ func TestService_ListByInviter(t *testing.T) {
 			name:      "repository error",
 			inviterID: inviterID,
 			setupMock: func(repo *MockRepository) {
-				repo.EXPECT().ListByInviter(mock.Anything, inviterID).
+				repo.EXPECT().ListByInviter(mock.Anything, inviterID.String()).
 					Return(nil, errors.New("database error"))
 			},
 			wantCount: 0,
@@ -729,7 +729,7 @@ func TestService_ListByInviter(t *testing.T) {
 			tt.setupMock(mockRepo)
 
 			service := NewService(mockRepo, slog.Default())
-			result, err := service.ListByInviter(ctx, tt.inviterID)
+			result, err := service.ListByInviter(ctx, tt.inviterID.String())
 
 			if tt.wantErr {
 				assert.Error(t, err)

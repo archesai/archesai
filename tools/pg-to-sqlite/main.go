@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -47,6 +48,12 @@ func main() {
 		if err := os.WriteFile(sqlitePath, []byte(sqliteContent), 0644); err != nil {
 			log.Printf("Error writing %s: %v", sqlitePath, err)
 			continue
+		}
+
+		// Run prettier on the generated file (if prettier is installed)
+		cmd := exec.Command("pnpm", "prettier", "--write", sqlitePath)
+		if err := cmd.Run(); err != nil {
+			log.Printf("Error running prettier on %s: %v", sqlitePath, err)
 		}
 
 		fmt.Printf("Converted: %s -> %s\n", file.Name(), file.Name())

@@ -3,12 +3,12 @@
 ## Essential Commands
 
 ```bash
-make generate         # Run after API/SQL changes
-make lint            # Check code quality
-make dev             # Start backend server
-pnpm dev:platform    # Start frontend
-make format          # Format code
-make help           # See all make commands
+make generate     # Run after API/SQL changes
+make lint         # Check code quality
+make dev          # Start backend server
+pnpm dev:platform # Start frontend
+make format       # Format code
+make help         # See all make commands
 ```
 
 ## Project Conventions
@@ -28,15 +28,15 @@ After modifying:
 ## Testing
 
 ```bash
-make test              # Run all tests
-go test ./internal/auth/...  # Test specific domain
+make test                   # Run all tests
+go test ./internal/auth/... # Test specific domain
 ```
 
 ## Database
 
 ```bash
-make db-migrate-up        # Apply migrations
-make db-migrate-create name=feature  # New migration
+make db-migrate-up                  # Apply migrations
+make db-migrate-create name=feature # New migration
 ```
 
 ## Quick Fixes

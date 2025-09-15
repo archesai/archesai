@@ -11,10 +11,8 @@ post:
           type: object
           properties:
             pipelineId:
-              description: The pipeline ID associated with the run
-              type: string
-              example: example-id-123
-              minLength: 1
+              allOf:
+                - $ref: ../components/schemas/UUID.yaml
           required:
             - pipelineId
     required: true

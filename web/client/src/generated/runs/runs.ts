@@ -38,7 +38,8 @@ import type {
   NotFoundResponse,
   UnauthorizedResponse,
   UpdateRun200,
-  UpdateRunBody
+  UpdateRunBody,
+  Uuid
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -287,7 +288,7 @@ export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>
  * Delete a run
  * @summary Delete a run
  */
-export const getDeleteRunUrl = (id: string | undefined | null,) => {
+export const getDeleteRunUrl = (id: Uuid | undefined | null,) => {
 
 
   
@@ -295,7 +296,7 @@ export const getDeleteRunUrl = (id: string | undefined | null,) => {
   return `/runs/${id}`
 }
 
-export const deleteRun = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteRun200> => {
+export const deleteRun = async (id: Uuid | undefined | null, options?: RequestInit): Promise<DeleteRun200> => {
   
   return customFetch<DeleteRun200>(getDeleteRunUrl(id),
   {      
@@ -310,8 +311,8 @@ export const deleteRun = async (id: string | undefined | null, options?: Request
 
 
 export const getDeleteRunMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: string | undefined | null}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: Uuid | undefined | null}, TContext> => {
 
 const mutationKey = ['deleteRun'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -323,7 +324,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRun>>, {id: string | undefined | null}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRun>>, {id: Uuid | undefined | null}> = (props) => {
           const {id} = props ?? {};
 
           return  deleteRun(id,requestOptions)
@@ -342,11 +343,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Delete a run
  */
 export const useDeleteRun = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteRun>>,
         TError,
-        {id: string | undefined | null},
+        {id: Uuid | undefined | null},
         TContext
       > => {
 
@@ -358,7 +359,7 @@ export const useDeleteRun = <TError = NotFoundResponse,
  * Find a run
  * @summary Find a run
  */
-export const getGetRunUrl = (id: string | undefined | null,) => {
+export const getGetRunUrl = (id: Uuid | undefined | null,) => {
 
 
   
@@ -366,7 +367,7 @@ export const getGetRunUrl = (id: string | undefined | null,) => {
   return `/runs/${id}`
 }
 
-export const getRun = async (id: string | undefined | null, options?: RequestInit): Promise<GetRun200> => {
+export const getRun = async (id: Uuid | undefined | null, options?: RequestInit): Promise<GetRun200> => {
   
   return customFetch<GetRun200>(getGetRunUrl(id),
   {      
@@ -379,12 +380,12 @@ export const getRun = async (id: string | undefined | null, options?: RequestIni
 
 
 
-export const getGetRunQueryKey = (id?: string | undefined | null,) => {
+export const getGetRunQueryKey = (id?: Uuid | undefined | null,) => {
     return [`/runs/${id}`] as const;
     }
 
     
-export const getGetRunQueryOptions = <TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetRunQueryOptions = <TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -407,7 +408,7 @@ export type GetRunQueryError = NotFoundResponse
 
 
 export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>> & Pick<
+ id: Uuid | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRun>>,
           TError,
@@ -417,7 +418,7 @@ export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = N
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>> & Pick<
+ id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRun>>,
           TError,
@@ -427,7 +428,7 @@ export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = N
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -435,7 +436,7 @@ export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = N
  */
 
 export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -450,7 +451,7 @@ export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = N
 
 
 
-export const getGetRunSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetRunSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -473,15 +474,15 @@ export type GetRunSuspenseQueryError = NotFoundResponse
 
 
 export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: Uuid | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -489,7 +490,7 @@ export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TE
  */
 
 export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 

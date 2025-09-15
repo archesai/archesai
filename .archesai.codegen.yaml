@@ -6,6 +6,12 @@ output: internal
 # Following hexagonal architecture - these are infrastructure adapters
 # Paths are relative to the domain directory (e.g., internal/auth/adapters/)
 generators:
+  # SQL generation - Generate SQL schemas and queries from OpenAPI
+  sql:
+    schema_dir: 'internal/database/schema' # SQL schema files (CREATE TABLE, etc.)
+    query_dir: 'internal/database/queries' # SQLC query files
+    dialect: 'postgresql' # or 'sqlite'
+
   # Repository pattern - Generate interfaces and implementations
   repository:
     interface: 'repository.gen.go' # Domain interfaces (ports)

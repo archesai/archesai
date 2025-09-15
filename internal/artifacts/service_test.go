@@ -24,8 +24,8 @@ func createTestArtifactsService(t *testing.T) (*Service, *MockRepository) {
 
 // TestArtifactsService_Create tests creating an artifact
 func TestArtifactsService_Create(t *testing.T) {
-	orgID := uuid.New().String()
-	producerID := uuid.New().String()
+	orgID := uuid.New()
+	producerID := uuid.New()
 
 	t.Run("successful creation", func(t *testing.T) {
 		service, mockRepo := createTestArtifactsService(t)
@@ -61,8 +61,9 @@ func TestArtifactsService_Create(t *testing.T) {
 	t.Run("artifact too large", func(t *testing.T) {
 		service, _ := createTestArtifactsService(t)
 
-		// Create a request with text larger than MaxArtifactSize
-		largeText := make([]byte, MaxArtifactSize+1)
+		// Create a request with text larger than max size (10MB + 1)
+		maxSize := 10 * 1024 * 1024 // 10MB like in service
+		largeText := make([]byte, maxSize+1)
 		for i := range largeText {
 			largeText[i] = 'a'
 		}
@@ -85,10 +86,10 @@ func TestArtifactsService_Get(t *testing.T) {
 	artifactID := uuid.New()
 	artifact := &Artifact{
 		Id:             artifactID,
-		OrganizationId: uuid.New().String(),
+		OrganizationId: uuid.New(),
 		Name:           "Test Artifact",
 		Text:           "Test content",
-		ProducerId:     uuid.New().String(),
+		ProducerId:     uuid.New(),
 		Credits:        10.0,
 		MimeType:       "text/plain",
 		CreatedAt:      time.Now(),
@@ -134,7 +135,7 @@ func TestArtifactsService_Update(t *testing.T) {
 
 		expectedArtifact := &Artifact{
 			Id:             artifactID,
-			OrganizationId: uuid.New().String(),
+			OrganizationId: uuid.New(),
 			Name:           "Updated Artifact",
 			Text:           "Updated content",
 			MimeType:       "",
@@ -145,7 +146,7 @@ func TestArtifactsService_Update(t *testing.T) {
 		// First get the artifact, then update it
 		existingArtifact := &Artifact{
 			Id:             artifactID,
-			OrganizationId: uuid.New().String(),
+			OrganizationId: uuid.New(),
 			Name:           "Old Artifact",
 			Text:           "Old content",
 			MimeType:       "",
@@ -186,7 +187,7 @@ func TestArtifactsService_Delete(t *testing.T) {
 
 		existingArtifact := &Artifact{
 			Id:             artifactID,
-			OrganizationId: uuid.New().String(),
+			OrganizationId: uuid.New(),
 			Name:           "Test Artifact",
 			Text:           "Test content",
 		}
@@ -217,7 +218,7 @@ func TestArtifactsService_List(t *testing.T) {
 	t.Run("successful list", func(t *testing.T) {
 		service, mockRepo := createTestArtifactsService(t)
 
-		orgID := uuid.New().String()
+		orgID := uuid.New()
 		limit := 10
 		offset := 0
 

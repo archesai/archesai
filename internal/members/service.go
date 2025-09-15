@@ -40,9 +40,8 @@ func (s *Service) ListOrganizationMembers(ctx context.Context, organizationID uu
 
 	// Filter members by organization ID
 	var members []*Member
-	orgIDStr := organizationID.String()
 	for _, member := range allMembers {
-		if member.OrganizationId == orgIDStr {
+		if member.OrganizationId == organizationID {
 			members = append(members, member)
 		}
 	}
@@ -65,8 +64,8 @@ func (s *Service) GetMember(ctx context.Context, memberID uuid.UUID) (*Member, e
 func (s *Service) CreateMember(ctx context.Context, organizationID uuid.UUID, userID uuid.UUID, role MemberRole) (*Member, error) {
 	member := &Member{
 		Id:             uuid.New(),
-		OrganizationId: organizationID.String(),
-		UserId:         userID.String(),
+		OrganizationId: organizationID,
+		UserId:         userID,
 		Role:           role,
 	}
 
@@ -123,10 +122,8 @@ func (s *Service) GetMemberByUserAndOrganization(ctx context.Context, userID uui
 		return nil, fmt.Errorf("failed to get member: %w", err)
 	}
 
-	userIDStr := userID.String()
-	orgIDStr := organizationID.String()
 	for _, member := range allMembers {
-		if member.UserId == userIDStr && member.OrganizationId == orgIDStr {
+		if member.UserId == userID && member.OrganizationId == organizationID {
 			return member, nil
 		}
 	}

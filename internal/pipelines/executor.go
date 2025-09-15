@@ -90,7 +90,7 @@ func (we *WorkflowExecutor) ExecutePipeline(ctx context.Context, pipelineID uuid
 	// Create run record
 	run := &runs.Run{
 		Id:         uuid.New(),
-		PipelineId: pipeline.Id.String(),
+		PipelineId: pipeline.Id,
 		Status:     runs.QUEUED,
 		Progress:   0,
 		CreatedAt:  time.Now(),
@@ -146,15 +146,8 @@ func (we *WorkflowExecutor) executeRun(ctx context.Context, runID uuid.UUID) {
 		return
 	}
 
-	// Parse pipeline ID from string
-	pipelineID, err := uuid.Parse(run.PipelineId)
-	if err != nil {
-		we.logger.Error("Invalid pipeline ID", "error", err, "pipelineId", run.PipelineId)
-		return
-	}
-
 	// Build DAG from pipeline steps
-	dag, err := we.buildDAG(ctx, pipelineID)
+	dag, err := we.buildDAG(ctx, run.PipelineId)
 	if err != nil {
 		we.handleRunFailure(ctx, run, err)
 		return
@@ -163,7 +156,7 @@ func (we *WorkflowExecutor) executeRun(ctx context.Context, runID uuid.UUID) {
 	// Create execution context
 	execCtx := &ExecutionContext{
 		RunID:      runID,
-		PipelineID: pipelineID,
+		PipelineID: run.PipelineId,
 		DAG:        dag,
 		StartTime:  time.Now(),
 		Status:     runs.PROCESSING,

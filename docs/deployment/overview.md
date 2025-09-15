@@ -24,9 +24,9 @@ for development to a full Kubernetes cluster for enterprise production.
 
 ```bash
 # Using Make commands
-make dev              # Start all services locally
-make run-server       # Run API server only
-make run-web         # Run frontend only
+make dev        # Start all services locally
+make run-server # Run API server only
+make run-web    # Run frontend only
 
 # Using Docker Compose
 docker-compose -f deployments/docker/docker-compose.dev.yml up

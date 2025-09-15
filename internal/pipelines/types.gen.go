@@ -108,10 +108,8 @@ type PipelineStep struct {
 	Id UUID `json:"id" yaml:"id"`
 
 	// Name Name of the step
-	Name string `json:"name" yaml:"name"`
-
-	// PipelineId The ID of the pipeline this step belongs to
-	PipelineId openapi_types.UUID `json:"pipelineId" yaml:"pipelineId"`
+	Name       string `json:"name" yaml:"name"`
+	PipelineId UUID   `json:"pipelineId" yaml:"pipelineId"`
 
 	// Position Position in the pipeline for ordering
 	Position int `json:"position,omitempty,omitzero" yaml:"position,omitempty"`
@@ -123,10 +121,8 @@ type PipelineStep struct {
 	Status PipelineStepStatus `json:"status,omitempty,omitzero" yaml:"status,omitempty"`
 
 	// Timeout Timeout in seconds
-	Timeout int `json:"timeout,omitempty,omitzero" yaml:"timeout,omitempty"`
-
-	// ToolId The ID of the tool to execute
-	ToolId openapi_types.UUID `json:"toolId" yaml:"toolId"`
+	Timeout int  `json:"timeout,omitempty,omitzero" yaml:"timeout,omitempty"`
+	ToolId  UUID `json:"toolId" yaml:"toolId"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -258,10 +254,8 @@ type CreatePipelineStepJSONBody struct {
 	Name string `json:"name" yaml:"name"`
 
 	// Position Position in the pipeline (for ordering)
-	Position int `json:"position,omitempty,omitzero" yaml:"position,omitempty"`
-
-	// ToolId The ID of the tool to use
-	ToolId openapi_types.UUID `json:"toolId" yaml:"toolId"`
+	Position int  `json:"position,omitempty,omitzero" yaml:"position,omitempty"`
+	ToolId   UUID `json:"toolId" yaml:"toolId"`
 }
 
 // CreatePipelineJSONRequestBody defines body for CreatePipeline for application/json ContentType.

@@ -12,14 +12,12 @@ import (
 )
 
 const createLabel = `-- name: CreateLabel :one
-INSERT INTO label (
-    id,
-    organization_id,
-    name
-) VALUES (
-    $1, $2, $3
-)
-RETURNING id, created_at, updated_at, name, organization_id
+INSERT INTO
+  label (id, organization_id, name)
+VALUES
+  ($1, $2, $3)
+RETURNING
+  id, created_at, updated_at, name, organization_id
 `
 
 type CreateLabelParams struct {
@@ -43,7 +41,8 @@ func (q *Queries) CreateLabel(ctx context.Context, arg CreateLabelParams) (Label
 
 const deleteLabel = `-- name: DeleteLabel :exec
 DELETE FROM label
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteLabel(ctx context.Context, id uuid.UUID) error {
@@ -53,7 +52,8 @@ func (q *Queries) DeleteLabel(ctx context.Context, id uuid.UUID) error {
 
 const deleteLabelsByOrganization = `-- name: DeleteLabelsByOrganization :exec
 DELETE FROM label
-WHERE organization_id = $1
+WHERE
+  organization_id = $1
 `
 
 func (q *Queries) DeleteLabelsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
@@ -62,8 +62,14 @@ func (q *Queries) DeleteLabelsByOrganization(ctx context.Context, organizationID
 }
 
 const getLabel = `-- name: GetLabel :one
-SELECT id, created_at, updated_at, name, organization_id FROM label
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, name, organization_id
+FROM
+  label
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetLabel(ctx context.Context, id uuid.UUID) (Label, error) {
@@ -80,8 +86,15 @@ func (q *Queries) GetLabel(ctx context.Context, id uuid.UUID) (Label, error) {
 }
 
 const getLabelByName = `-- name: GetLabelByName :one
-SELECT id, created_at, updated_at, name, organization_id FROM label
-WHERE organization_id = $1 AND name = $2 LIMIT 1
+SELECT
+  id, created_at, updated_at, name, organization_id
+FROM
+  label
+WHERE
+  organization_id = $1
+  AND name = $2
+LIMIT
+  1
 `
 
 type GetLabelByNameParams struct {
@@ -103,9 +116,16 @@ func (q *Queries) GetLabelByName(ctx context.Context, arg GetLabelByNameParams) 
 }
 
 const listLabels = `-- name: ListLabels :many
-SELECT id, created_at, updated_at, name, organization_id FROM label
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, name, organization_id
+FROM
+  label
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListLabelsParams struct {
@@ -140,10 +160,18 @@ func (q *Queries) ListLabels(ctx context.Context, arg ListLabelsParams) ([]Label
 }
 
 const listLabelsByOrganization = `-- name: ListLabelsByOrganization :many
-SELECT id, created_at, updated_at, name, organization_id FROM label
-WHERE organization_id = $1
-ORDER BY name ASC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, name, organization_id
+FROM
+  label
+WHERE
+  organization_id = $1
+ORDER BY
+  name ASC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListLabelsByOrganizationParams struct {
@@ -180,10 +208,12 @@ func (q *Queries) ListLabelsByOrganization(ctx context.Context, arg ListLabelsBy
 
 const updateLabel = `-- name: UpdateLabel :one
 UPDATE label
-SET 
-    name = COALESCE($2, name)
-WHERE id = $1
-RETURNING id, created_at, updated_at, name, organization_id
+SET
+  name = COALESCE($2, name)
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, name, organization_id
 `
 
 type UpdateLabelParams struct {

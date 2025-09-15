@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -37,9 +37,9 @@ const (
 	Desc ListArtifactsParamsSortOrder = "desc"
 )
 
-// Artifact Schema for Artifact entity
+// Artifact defines model for Artifact.
 type Artifact struct {
-	// CreatedAt The date this item was created
+	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Credits The number of credits required to access this artifact. This is used for metering and billing purposes.
@@ -48,28 +48,36 @@ type Artifact struct {
 	// Description The artifact's description
 	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
 
 	// MimeType The MIME type of the artifact, e.g. image/png
 	MimeType string `json:"mimeType" yaml:"mimeType"`
 
 	// Name The name of the artifact, used for display purposes
-	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
-
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
+	Name           string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
+	OrganizationId UUID   `json:"organizationId" yaml:"organizationId"`
 
 	// PreviewImage The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
 	PreviewImage string `json:"previewImage,omitempty,omitzero" yaml:"previewImage,omitempty"`
-
-	// ProducerId The ID of the run that produced this artifact, if applicable
-	ProducerId string `json:"producerId,omitempty,omitzero" yaml:"producerId,omitempty"`
+	ProducerId   UUID   `json:"producerId,omitempty,omitzero" yaml:"producerId,omitempty"`
 
 	// Text The artifact text
 	Text string `json:"text" yaml:"text"`
 
-	// UpdatedAt The date this item was last updated
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+}
+
+// Base defines model for Base.
+type Base struct {
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
+
+	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
@@ -102,6 +110,9 @@ type Problem struct {
 	// Type URI identifying the problem type
 	Type string `json:"type" yaml:"type"`
 }
+
+// UUID Universally Unique Identifier
+type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
 type ValidationError struct {

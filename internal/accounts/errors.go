@@ -18,12 +18,6 @@ var (
 	ErrDuplicateAccount = errors.New("account already exists")
 )
 
-// Authentication errors
-var (
-	// ErrTooManyAttempts is returned when too many failed login attempts
-	ErrTooManyAttempts = errors.New("too many failed login attempts, try again later")
-)
-
 // Password errors
 var (
 	// ErrInvalidPassword is returned for invalid passwords

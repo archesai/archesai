@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -55,12 +55,24 @@ const (
 	Owner  UpdateInvitationJSONBodyRole = "owner"
 )
 
+// Base defines model for Base.
+type Base struct {
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+}
+
 // FilterNode A recursive filter node that can be a condition or group
 type FilterNode = interface{}
 
-// Invitation Schema for Invitation entity
+// Invitation defines model for Invitation.
 type Invitation struct {
-	// CreatedAt The date this item was created
+	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Email The email of the invitated user
@@ -69,14 +81,10 @@ type Invitation struct {
 	// ExpiresAt The date and time when the invitation expires
 	ExpiresAt string `json:"expiresAt" yaml:"expiresAt"`
 
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// InviterId The user id of the inviter
-	InviterId string `json:"inviterId" yaml:"inviterId"`
-
-	// OrganizationId The name of the organization the token belongs to
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
+	// Id Universally Unique Identifier
+	Id             UUID `json:"id" yaml:"id"`
+	InviterId      UUID `json:"inviterId" yaml:"inviterId"`
+	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
 
 	// Role The role of the invitation
 	Role InvitationRole `json:"role" yaml:"role"`
@@ -84,7 +92,7 @@ type Invitation struct {
 	// Status The status of the invitation, e.g., pending, accepted, declined
 	Status string `json:"status" yaml:"status"`
 
-	// UpdatedAt The date this item was last updated
+	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
@@ -117,6 +125,9 @@ type Problem struct {
 	// Type URI identifying the problem type
 	Type string `json:"type" yaml:"type"`
 }
+
+// UUID Universally Unique Identifier
+type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
 type ValidationError struct {

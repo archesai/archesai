@@ -93,7 +93,7 @@ Use descriptive branch names:
 3. **Generate code if needed**:
 
    ```bash
-   make generate  # After API or database changes
+   make generate # After API or database changes
    ```
 
 4. **Run tests**:
@@ -264,9 +264,12 @@ select
   email_verified,
   created_at,
   updated_at
-from users
-where email = $1
-limit 1;
+from
+  users
+where
+  email = $1
+limit
+  1;
 ```
 
 ### API Design

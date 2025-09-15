@@ -4,6 +4,8 @@ package tools
 import (
 	"context"
 	"log/slog"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -65,7 +67,7 @@ func (h *Handler) ListTools(ctx context.Context, req ListToolsRequestObject) (Li
 // CreateTool creates a new tool (implements StrictServerInterface)
 func (h *Handler) CreateTool(ctx context.Context, req CreateToolRequestObject) (CreateToolResponseObject, error) {
 	// TODO: Get organization ID from context
-	orgID := orgPlaceholder
+	orgID := uuid.Nil
 
 	tool, err := h.service.Create(ctx, req.Body, orgID)
 	if err != nil {

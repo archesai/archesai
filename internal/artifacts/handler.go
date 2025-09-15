@@ -5,6 +5,8 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // Handler handles HTTP requests for artifacts
@@ -87,8 +89,8 @@ func (h *Handler) GetArtifact(ctx context.Context, request GetArtifactRequestObj
 func (h *Handler) CreateArtifact(ctx context.Context, request CreateArtifactRequestObject) (CreateArtifactResponseObject, error) {
 	// For now, use placeholder organization and producer IDs
 	// TODO: Get these from auth context
-	orgID := "default-org"
-	producerID := "default-producer"
+	orgID := uuid.New()
+	producerID := uuid.New()
 
 	createdArtifact, err := h.service.Create(ctx, request.Body, orgID, producerID)
 	if err != nil {

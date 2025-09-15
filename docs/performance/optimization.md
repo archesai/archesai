@@ -25,24 +25,41 @@ database:
 
 ```sql
 -- Essential indexes for performance
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_organizations_slug ON organizations(slug);
-CREATE INDEX idx_members_org_user ON organization_members(organization_id, user_id);
-CREATE INDEX idx_content_org_created ON content(organization_id, created_at DESC);
-CREATE INDEX idx_workflows_org_status ON workflows(organization_id, status);
+CREATE INDEX idx_users_email ON users (email);
+
+CREATE INDEX idx_organizations_slug ON organizations (slug);
+
+CREATE INDEX idx_members_org_user ON organization_members (organization_id, user_id);
+
+CREATE INDEX idx_content_org_created ON content (organization_id, created_at DESC);
+
+CREATE INDEX idx_workflows_org_status ON workflows (organization_id, status);
 ```
 
 #### Query Analysis
 
 ```sql
 -- Analyze query performance
-EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'user@example.com';
+EXPLAIN
+ANALYZE
+SELECT
+  *
+FROM
+  users
+WHERE
+  email = 'user@example.com';
 
 -- Find slow queries
-SELECT query, mean_exec_time, calls
-FROM pg_stat_statements
-WHERE mean_exec_time > 100
-ORDER BY mean_exec_time DESC;
+SELECT
+  query,
+  mean_exec_time,
+  calls
+FROM
+  pg_stat_statements
+WHERE
+  mean_exec_time > 100
+ORDER BY
+  mean_exec_time DESC;
 ```
 
 ### PostgreSQL Tuning
@@ -66,14 +83,20 @@ huge_pages = try
 ```sql
 -- Optimize vector search performance
 CREATE INDEX ON content USING ivfflat (embedding vector_cosine_ops)
-WITH (lists = 100);
+WITH
+  (lists = 100);
 
 -- Tune for accuracy vs speed
-SET ivfflat.probes = 10;  -- Increase for better accuracy
+SET
+  ivfflat.probes = 10;
 
+-- Increase for better accuracy
 -- Parallel vector search
-SET max_parallel_workers_per_gather = 4;
-SET max_parallel_workers = 8;
+SET
+  max_parallel_workers_per_gather = 4;
+
+SET
+  max_parallel_workers = 8;
 ```
 
 ## Application Performance

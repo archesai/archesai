@@ -13,17 +13,19 @@ import (
 )
 
 const createRun = `-- name: CreateRun :one
-INSERT INTO run (
+INSERT INTO
+  run (
     id,
     organization_id,
     pipeline_id,
     tool_id,
     status,
     progress
-) VALUES (
-    $1, $2, $3, $4, $5, $6
-)
-RETURNING id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
+  )
+VALUES
+  ($1, $2, $3, $4, $5, $6)
+RETURNING
+  id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
 `
 
 type CreateRunParams struct {
@@ -63,7 +65,8 @@ func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) (Run, erro
 
 const deleteRun = `-- name: DeleteRun :exec
 DELETE FROM run
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteRun(ctx context.Context, id uuid.UUID) error {
@@ -73,7 +76,8 @@ func (q *Queries) DeleteRun(ctx context.Context, id uuid.UUID) error {
 
 const deleteRunsByPipeline = `-- name: DeleteRunsByPipeline :exec
 DELETE FROM run
-WHERE pipeline_id = $1
+WHERE
+  pipeline_id = $1
 `
 
 func (q *Queries) DeleteRunsByPipeline(ctx context.Context, pipelineID *uuid.UUID) error {
@@ -82,8 +86,14 @@ func (q *Queries) DeleteRunsByPipeline(ctx context.Context, pipelineID *uuid.UUI
 }
 
 const getRun = `-- name: GetRun :one
-SELECT id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id FROM run
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
+FROM
+  run
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetRun(ctx context.Context, id uuid.UUID) (Run, error) {
@@ -106,9 +116,16 @@ func (q *Queries) GetRun(ctx context.Context, id uuid.UUID) (Run, error) {
 }
 
 const listRuns = `-- name: ListRuns :many
-SELECT id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id FROM run
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
+FROM
+  run
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListRunsParams struct {
@@ -149,10 +166,18 @@ func (q *Queries) ListRuns(ctx context.Context, arg ListRunsParams) ([]Run, erro
 }
 
 const listRunsByOrganization = `-- name: ListRunsByOrganization :many
-SELECT id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id FROM run
-WHERE organization_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
+FROM
+  run
+WHERE
+  organization_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListRunsByOrganizationParams struct {
@@ -194,10 +219,18 @@ func (q *Queries) ListRunsByOrganization(ctx context.Context, arg ListRunsByOrga
 }
 
 const listRunsByPipeline = `-- name: ListRunsByPipeline :many
-SELECT id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id FROM run
-WHERE pipeline_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
+FROM
+  run
+WHERE
+  pipeline_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListRunsByPipelineParams struct {
@@ -239,10 +272,18 @@ func (q *Queries) ListRunsByPipeline(ctx context.Context, arg ListRunsByPipeline
 }
 
 const listRunsByTool = `-- name: ListRunsByTool :many
-SELECT id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id FROM run
-WHERE tool_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
+FROM
+  run
+WHERE
+  tool_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListRunsByToolParams struct {
@@ -285,17 +326,19 @@ func (q *Queries) ListRunsByTool(ctx context.Context, arg ListRunsByToolParams) 
 
 const updateRun = `-- name: UpdateRun :one
 UPDATE run
-SET 
-    pipeline_id = COALESCE($2, pipeline_id),
-    tool_id = COALESCE($3, tool_id),
-    status = COALESCE($4, status),
-    progress = COALESCE($5, progress),
-    error = COALESCE($6, error),
-    started_at = COALESCE($7, started_at),
-    completed_at = COALESCE($8, completed_at),
-    updated_at = NOW()
-WHERE id = $1
-RETURNING id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
+SET
+  pipeline_id = COALESCE($2, pipeline_id),
+  tool_id = COALESCE($3, tool_id),
+  status = COALESCE($4, status),
+  progress = COALESCE($5, progress),
+  error = COALESCE($6, error),
+  started_at = COALESCE($7, started_at),
+  completed_at = COALESCE($8, completed_at),
+  updated_at = NOW()
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, completed_at, error, organization_id, pipeline_id, progress, started_at, status, tool_id
 `
 
 type UpdateRunParams struct {

@@ -363,18 +363,27 @@ workflow_errors_total{workflow="document_processing", error_type="timeout"} 12
 ```sql
 -- Query run history
 SELECT
-    wr.id,
-    w.name as workflow_name,
-    wr.status,
-    wr.started_at,
-    wr.duration,
-    COUNT(CASE WHEN ns.status = 'failed' THEN 1 END) as failed_nodes
-FROM workflow_runs wr
-JOIN workflows w ON wr.workflow_id = w.id
-JOIN node_states ns ON ns.run_id = wr.id
-WHERE wr.started_at > NOW() - INTERVAL '24 hours'
-GROUP BY wr.id, w.name
-ORDER BY wr.started_at DESC;
+  wr.id,
+  w.name as workflow_name,
+  wr.status,
+  wr.started_at,
+  wr.duration,
+  COUNT(
+    CASE
+      WHEN ns.status = 'failed' THEN 1
+    END
+  ) as failed_nodes
+FROM
+  workflow_runs wr
+  JOIN workflows w ON wr.workflow_id = w.id
+  JOIN node_states ns ON ns.run_id = wr.id
+WHERE
+  wr.started_at > NOW() - INTERVAL '24 hours'
+GROUP BY
+  wr.id,
+  w.name
+ORDER BY
+  wr.started_at DESC;
 ```
 
 ### Real-time Monitoring

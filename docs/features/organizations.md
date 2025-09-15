@@ -218,34 +218,34 @@ interface UsageMetrics {
 ```sql
 -- Organizations table
 CREATE TABLE organizations (
-    id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) UNIQUE NOT NULL,
-    billing_email VARCHAR(255) NOT NULL,
-    plan VARCHAR(50) DEFAULT 'free',
-    settings JSONB,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+  id UUID PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  billing_email VARCHAR(255) NOT NULL,
+  plan VARCHAR(50) DEFAULT 'free',
+  settings JSONB,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
 );
 
 -- Organization members
 CREATE TABLE organization_members (
-    organization_id UUID REFERENCES organizations(id),
-    user_id UUID REFERENCES users(id),
-    role VARCHAR(50) NOT NULL,
-    joined_at TIMESTAMP NOT NULL,
-    PRIMARY KEY (organization_id, user_id)
+  organization_id UUID REFERENCES organizations (id),
+  user_id UUID REFERENCES users (id),
+  role VARCHAR(50) NOT NULL,
+  joined_at TIMESTAMP NOT NULL,
+  PRIMARY KEY (organization_id, user_id)
 );
 
 -- Invitations
 CREATE TABLE organization_invitations (
-    id UUID PRIMARY KEY,
-    organization_id UUID REFERENCES organizations(id),
-    email VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL,
-    token VARCHAR(255) UNIQUE NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP NOT NULL
+  id UUID PRIMARY KEY,
+  organization_id UUID REFERENCES organizations (id),
+  email VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  token VARCHAR(255) UNIQUE NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL
 );
 ```
 

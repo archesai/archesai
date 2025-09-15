@@ -170,30 +170,8 @@ export interface TokenResponse {
   expires_in: number;
 }
 
-/**
- * Schema for Session entity
- */
-export interface Session {
-  /**
-   * The date this item was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The ID of the item
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date this item was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-  /**
-   * The active organization ID
-   * @minLength 36
-   */
-  activeOrganizationId: string;
+export type SessionAllOf = {
+  activeOrganizationId: Uuid;
   /**
    * The expiration date of the session
    * @minLength 1
@@ -214,12 +192,13 @@ export interface Session {
    * @minLength 1
    */
   userAgent: string;
-  /**
-   * The ID of the user associated with the session
-   * @minLength 36
-   */
-  userId: string;
-}
+  userId: Uuid;
+};
+
+/**
+ * Schema for Session entity
+ */
+export type Session = Base & SessionAllOf;
 
 /**
  * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
@@ -246,19 +225,9 @@ export type UserAllOf = {
  */
 export type User = Base & UserAllOf;
 
-export interface ApiKey {
-  /** @minLength 1 */
-  id: string;
-  /**
-   * ID of the user who owns this API key
-   * @minLength 1
-   */
-  userId?: string;
-  /**
-   * ID of the organization this API key belongs to
-   * @minLength 1
-   */
-  organizationId?: string;
+export type ApiKeyAllOf = {
+  userId?: Uuid;
+  organizationId?: Uuid;
   /**
    * Hashed version of the API key for secure storage
    * @minLength 1
@@ -281,21 +250,14 @@ export interface ApiKey {
    * @minLength 1
    */
   expiresAt: string;
-  /**
-   * When this API key was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * When this API key was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-}
+};
 
-export interface ApiKeyResponse {
-  /** @minLength 1 */
-  id: string;
+/**
+ * Schema for API Key entity
+ */
+export type ApiKey = Base & ApiKeyAllOf;
+
+export type ApiKeyResponseAllOf = {
   /** @minLength 1 */
   name: string;
   /**
@@ -313,12 +275,12 @@ export interface ApiKeyResponse {
    * @minLength 1
    */
   expiresAt: string;
-  /**
-   * When this API key was created
-   * @minLength 1
-   */
-  createdAt: string;
-}
+};
+
+/**
+ * Response schema for API Key creation
+ */
+export type ApiKeyResponse = Base & ApiKeyResponseAllOf;
 
 /**
  * The current subscription plan
@@ -384,85 +346,46 @@ export type Organization = Base & OrganizationAllOf;
  * The role of the member
  * @minLength 1
  */
-export type MemberRole = typeof MemberRole[keyof typeof MemberRole];
+export type MemberAllOfRole = typeof MemberAllOfRole[keyof typeof MemberAllOfRole];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MemberRole = {
+export const MemberAllOfRole = {
   admin: 'admin',
   owner: 'owner',
   member: 'member',
 } as const;
 
-/**
- * Schema for Member entity
- */
-export interface Member {
-  /**
-   * The date this item was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The ID of the item
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date this item was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-  /**
-   * The organization name
-   * @minLength 1
-   */
-  organizationId: string;
+export type MemberAllOf = {
+  organizationId: Uuid;
   /**
    * The role of the member
    * @minLength 1
    */
-  role: MemberRole;
-  /**
-   * The user id
-   * @minLength 1
-   */
-  userId: string;
-}
+  role: MemberAllOfRole;
+  userId: Uuid;
+};
+
+/**
+ * Schema for Member entity
+ */
+export type Member = Base & MemberAllOf;
 
 /**
  * The role of the invitation
  * @minLength 1
  */
-export type InvitationRole = typeof InvitationRole[keyof typeof InvitationRole];
+export type InvitationAllOfRole = typeof InvitationAllOfRole[keyof typeof InvitationAllOfRole];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationRole = {
+export const InvitationAllOfRole = {
   admin: 'admin',
   owner: 'owner',
   member: 'member',
 } as const;
 
-/**
- * Schema for Invitation entity
- */
-export interface Invitation {
-  /**
-   * The date this item was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The ID of the item
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date this item was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
+export type InvitationAllOf = {
   /**
    * The email of the invitated user
    * @minLength 1
@@ -473,27 +396,24 @@ export interface Invitation {
    * @minLength 1
    */
   expiresAt: string;
-  /**
-   * The user id of the inviter
-   * @minLength 1
-   */
-  inviterId: string;
-  /**
-   * The name of the organization the token belongs to
-   * @minLength 1
-   */
-  organizationId: string;
+  inviterId: Uuid;
+  organizationId: Uuid;
   /**
    * The role of the invitation
    * @minLength 1
    */
-  role: InvitationRole;
+  role: InvitationAllOfRole;
   /**
    * The status of the invitation, e.g., pending, accepted, declined
    * @minLength 1
    */
   status: string;
-}
+};
+
+/**
+ * Schema for Invitation entity
+ */
+export type Invitation = Base & InvitationAllOf;
 
 export interface OrganizationReference {
   /** The organization identifier */
@@ -541,16 +461,8 @@ export const PipelineStepAllOfStatus = {
 } as const;
 
 export type PipelineStepAllOf = {
-  /**
-   * The ID of the pipeline this step belongs to
-   * @minLength 1
-   */
-  pipelineId: string;
-  /**
-   * The ID of the tool to execute
-   * @minLength 1
-   */
-  toolId: string;
+  pipelineId: Uuid;
+  toolId: Uuid;
   /**
    * Name of the step
    * @minLength 1
@@ -595,36 +507,18 @@ export type PipelineStep = Base & PipelineStepAllOf;
 /**
  * @minLength 1
  */
-export type RunStatus = typeof RunStatus[keyof typeof RunStatus];
+export type RunAllOfStatus = typeof RunAllOfStatus[keyof typeof RunAllOfStatus];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunStatus = {
+export const RunAllOfStatus = {
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
   PROCESSING: 'PROCESSING',
   QUEUED: 'QUEUED',
 } as const;
 
-/**
- * Schema for Run entity
- */
-export interface Run {
-  /**
-   * The date this item was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The ID of the item
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date this item was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
+export type RunAllOf = {
   /**
    * The timestamp when the run completed
    * @minLength 1
@@ -635,16 +529,8 @@ export interface Run {
    * @minLength 1
    */
   error?: string;
-  /**
-   * The organization name
-   * @minLength 1
-   */
-  organizationId: string;
-  /**
-   * The pipeline ID associated with the run
-   * @minLength 1
-   */
-  pipelineId: string;
+  organizationId: Uuid;
+  pipelineId: Uuid;
   /** The percent progress of the run */
   progress: number;
   /**
@@ -653,33 +539,16 @@ export interface Run {
    */
   startedAt?: string;
   /** @minLength 1 */
-  status: RunStatus;
-  /**
-   * The tool ID associated with the run
-   * @minLength 1
-   */
-  toolId: string;
-}
+  status: RunAllOfStatus;
+  toolId: Uuid;
+};
 
 /**
- * Schema for Tool entity
+ * Schema for Run entity
  */
-export interface Tool {
-  /**
-   * The date this item was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The ID of the item
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date this item was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
+export type Run = Base & RunAllOf;
+
+export type ToolAllOf = {
   /**
    * The tool description
    * @minLength 1
@@ -695,37 +564,20 @@ export interface Tool {
    * @minLength 1
    */
   name: string;
-  /**
-   * The organization name
-   * @minLength 1
-   */
-  organizationId: string;
+  organizationId: Uuid;
   /**
    * The MIME type of the output for the tool, e.g. text/plain
    * @minLength 1
    */
   outputMimeType: string;
-}
+};
 
 /**
- * Schema for Artifact entity
+ * Schema for Tool entity
  */
-export interface Artifact {
-  /**
-   * The date this item was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The ID of the item
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date this item was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
+export type Tool = Base & ToolAllOf;
+
+export type ArtifactAllOf = {
   /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
   credits: number;
   /**
@@ -743,58 +595,38 @@ export interface Artifact {
    * @minLength 1
    */
   name?: string;
-  /**
-   * The organization name
-   * @minLength 1
-   */
-  organizationId: string;
+  organizationId: Uuid;
   /**
    * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
    * @minLength 1
    */
   previewImage?: string;
-  /**
-   * The ID of the run that produced this artifact, if applicable
-   * @minLength 1
-   */
-  producerId?: string;
+  producerId?: Uuid;
   /**
    * The artifact text
    * @minLength 1
    */
   text: string;
-}
+};
 
 /**
- * Schema for Label entity
+ * Schema for Artifact entity
  */
-export interface Label {
-  /**
-   * The date this item was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The ID of the item
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date this item was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
+export type Artifact = Base & ArtifactAllOf;
+
+export type LabelAllOf = {
   /**
    * The name of the label
    * @minLength 1
    */
   name: string;
-  /**
-   * The organization name
-   * @minLength 1
-   */
-  organizationId: string;
-}
+  organizationId: Uuid;
+};
+
+/**
+ * Schema for Label entity
+ */
+export type Label = Base & LabelAllOf;
 
 /**
  * CORS configuration for the API server
@@ -2743,11 +2575,7 @@ export type GetPipelineSteps200 = {
 export type CreatePipelineStepBodyConfig = { [key: string]: unknown };
 
 export type CreatePipelineStepBody = {
-  /**
-   * The ID of the tool to use
-   * @minLength 1
-   */
-  toolId: string;
+  toolId: Uuid;
   /**
    * Name of the step
    * @minLength 1
@@ -2808,11 +2636,7 @@ export type ValidatePipelineExecutionPlan200 = {
 };
 
 export type CreateRunBody = {
-  /**
-   * The pipeline ID associated with the run
-   * @minLength 1
-   */
-  pipelineId: string;
+  pipelineId: Uuid;
 };
 
 export type CreateRun201 = {
@@ -2853,8 +2677,7 @@ export type GetRun200 = {
 };
 
 export type UpdateRunBody = {
-  /** The pipeline ID associated with the run */
-  pipelineId?: string;
+  pipelineId?: Uuid;
 };
 
 export type UpdateRun200 = {

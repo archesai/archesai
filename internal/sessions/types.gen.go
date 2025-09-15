@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -34,6 +35,18 @@ const (
 	Asc  ListSessionsParamsSortOrder = "asc"
 	Desc ListSessionsParamsSortOrder = "desc"
 )
+
+// Base defines model for Base.
+type Base struct {
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+}
 
 // FilterNode A recursive filter node that can be a condition or group
 type FilterNode = interface{}
@@ -65,19 +78,18 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// Session Schema for Session entity
+// Session defines model for Session.
 type Session struct {
-	// ActiveOrganizationId The active organization ID
-	ActiveOrganizationId openapi_types.UUID `json:"activeOrganizationId" yaml:"activeOrganizationId"`
+	ActiveOrganizationId UUID `json:"activeOrganizationId" yaml:"activeOrganizationId"`
 
-	// CreatedAt The date this item was created
+	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// ExpiresAt The expiration date of the session
 	ExpiresAt string `json:"expiresAt" yaml:"expiresAt"`
 
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
 
 	// IpAddress The IP address of the session
 	IpAddress string `json:"ipAddress" yaml:"ipAddress"`
@@ -85,14 +97,12 @@ type Session struct {
 	// Token The session token
 	Token string `json:"token" yaml:"token"`
 
-	// UpdatedAt The date this item was last updated
+	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 
 	// UserAgent The user agent of the session
 	UserAgent string `json:"userAgent" yaml:"userAgent"`
-
-	// UserId The ID of the user associated with the session
-	UserId openapi_types.UUID `json:"userId" yaml:"userId"`
+	UserId    UUID   `json:"userId" yaml:"userId"`
 }
 
 // TokenResponse defines model for TokenResponse.
@@ -109,6 +119,9 @@ type TokenResponse struct {
 	// TokenType Type of token (always "Bearer")
 	TokenType string `json:"token_type" yaml:"token_type"`
 }
+
+// UUID Universally Unique Identifier
+type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
 type ValidationError struct {

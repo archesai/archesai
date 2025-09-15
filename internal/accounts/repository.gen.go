@@ -3,7 +3,6 @@ package accounts
 
 import (
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 )
 
@@ -18,26 +17,4 @@ type Repository interface {
 	// Additional operations
 	GetByProviderId(ctx context.Context, provider string, providerAccountId string) (*Account, error)
 	ListByUserId(ctx context.Context, userId uuid.UUID) ([]*Account, error)
-}
-
-// RepositoryError represents a repository error.
-type RepositoryError struct {
-	Operation string
-	Err       error
-}
-
-func (e *RepositoryError) Error() string {
-	return fmt.Sprintf("repository %s: %v", e.Operation, e.Err)
-}
-
-func (e *RepositoryError) Unwrap() error {
-	return e.Err
-}
-
-// NewRepositoryError creates a new repository error.
-func NewRepositoryError(operation string, err error) *RepositoryError {
-	return &RepositoryError{
-		Operation: operation,
-		Err:       err,
-	}
 }

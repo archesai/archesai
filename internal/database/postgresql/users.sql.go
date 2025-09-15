@@ -12,7 +12,10 @@ import (
 )
 
 const countUsers = `-- name: CountUsers :one
-SELECT COUNT(*) FROM "user"
+SELECT
+  COUNT(*)
+FROM
+  "user"
 `
 
 func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
@@ -23,16 +26,18 @@ func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO "user" (
-    id,
-    email,
-    name,
-    email_verified,
-    image
-) VALUES (
-    $1, $2, $3, COALESCE($4, false), $5
-)
-RETURNING id, created_at, updated_at, email, email_verified, image, name
+INSERT INTO
+  "user" (id, email, name, email_verified, image)
+VALUES
+  (
+    $1,
+    $2,
+    $3,
+    COALESCE($4, false),
+    $5
+  )
+RETURNING
+  id, created_at, updated_at, email, email_verified, image, name
 `
 
 type CreateUserParams struct {
@@ -66,7 +71,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM "user"
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
@@ -75,8 +81,14 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, created_at, updated_at, email, email_verified, image, name FROM "user"
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, email, email_verified, image, name
+FROM
+  "user"
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
@@ -95,8 +107,14 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, created_at, updated_at, email, email_verified, image, name FROM "user"
-WHERE email = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, email, email_verified, image, name
+FROM
+  "user"
+WHERE
+  email = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -115,9 +133,16 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, created_at, updated_at, email, email_verified, image, name FROM "user"
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, email, email_verified, image, name
+FROM
+  "user"
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListUsersParams struct {
@@ -155,13 +180,15 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE "user"
-SET 
-    name = COALESCE($2, name),
-    email = COALESCE($3, email),
-    email_verified = COALESCE($4, email_verified),
-    image = COALESCE($5, image)
-WHERE id = $1
-RETURNING id, created_at, updated_at, email, email_verified, image, name
+SET
+  name = COALESCE($2, name),
+  email = COALESCE($3, email),
+  email_verified = COALESCE($4, email_verified),
+  image = COALESCE($5, image)
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, email, email_verified, image, name
 `
 
 type UpdateUserParams struct {

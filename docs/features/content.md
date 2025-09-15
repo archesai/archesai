@@ -181,13 +181,17 @@ func GenerateEmbedding(content Content) ([]float32, error) {
 ```sql
 -- Find similar content using pgvector
 SELECT
-    id,
-    title,
-    1 - (embedding <=> $1) as similarity
-FROM content
-WHERE 1 - (embedding <=> $1) > $2
-ORDER BY embedding <=> $1
-LIMIT $3;
+  id,
+  title,
+  1 - (embedding <=> $1) as similarity
+FROM
+  content
+WHERE
+  1 - (embedding <=> $1) > $2
+ORDER BY
+  embedding <=> $1
+LIMIT
+  $3;
 ```
 
 ### Embedding Models
@@ -362,17 +366,17 @@ func CacheSearchResults(query string, results []Content) {
 
 ```sql
 -- Vector similarity index
-CREATE INDEX content_embedding_idx ON content
-USING ivfflat (embedding vector_cosine_ops)
-WITH (lists = 100);
+CREATE INDEX content_embedding_idx ON content USING ivfflat (embedding vector_cosine_ops)
+WITH
+  (lists = 100);
 
 -- Full-text search index
-CREATE INDEX content_search_idx ON content
-USING gin(to_tsvector('english', title || ' ' || description));
+CREATE INDEX content_search_idx ON content USING gin (
+  to_tsvector('english', title || ' ' || description)
+);
 
 -- Metadata JSONB index
-CREATE INDEX content_metadata_idx ON content
-USING gin(metadata);
+CREATE INDEX content_metadata_idx ON content USING gin (metadata);
 ```
 
 ### Processing Optimization

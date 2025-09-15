@@ -42,14 +42,14 @@ func TestHandler_ListInvitations(t *testing.T) {
 							Email:          "test1@example.com",
 							Role:           InvitationRoleAdmin,
 							Status:         StatusPending,
-							OrganizationId: organizationID.String(),
+							OrganizationId: organizationID,
 						},
 						{
 							Id:             uuid.New(),
 							Email:          "test2@example.com",
 							Role:           InvitationRoleMember,
 							Status:         StatusAccepted,
-							OrganizationId: organizationID.String(),
+							OrganizationId: organizationID,
 						},
 					}, nil)
 			},
@@ -147,7 +147,7 @@ func TestHandler_CreateInvitation(t *testing.T) {
 						Email:          "new@example.com",
 						Role:           InvitationRoleAdmin,
 						Status:         StatusPending,
-						OrganizationId: organizationID.String(),
+						OrganizationId: organizationID,
 					}, nil)
 			},
 			expectedCode: http.StatusCreated,
@@ -245,7 +245,7 @@ func TestHandler_GetInvitation(t *testing.T) {
 						Email:          "test@example.com",
 						Role:           InvitationRoleAdmin,
 						Status:         StatusPending,
-						OrganizationId: organizationID.String(),
+						OrganizationId: organizationID,
 					}, nil)
 			},
 			expectedCode: http.StatusOK,
@@ -277,7 +277,7 @@ func TestHandler_GetInvitation(t *testing.T) {
 				s.On("Get", mock.Anything, invitationID).
 					Return(&Invitation{
 						Id:             invitationID,
-						OrganizationId: uuid.New().String(),
+						OrganizationId: uuid.New(),
 					}, nil)
 			},
 			expectedCode: http.StatusNotFound,
@@ -340,7 +340,7 @@ func TestHandler_UpdateInvitation(t *testing.T) {
 						Email:          "test@example.com",
 						Role:           InvitationRoleMember,
 						Status:         StatusPending,
-						OrganizationId: organizationID.String(),
+						OrganizationId: organizationID,
 					}, nil)
 				s.On("Update", mock.Anything, invitationID, mock.AnythingOfType("*invitations.Invitation")).
 					Return(&Invitation{
@@ -348,7 +348,7 @@ func TestHandler_UpdateInvitation(t *testing.T) {
 						Email:          "test@example.com",
 						Role:           InvitationRoleOwner,
 						Status:         StatusPending,
-						OrganizationId: organizationID.String(),
+						OrganizationId: organizationID,
 					}, nil)
 			},
 			expectedCode: http.StatusOK,
@@ -368,7 +368,7 @@ func TestHandler_UpdateInvitation(t *testing.T) {
 				s.On("Get", mock.Anything, invitationID).
 					Return(&Invitation{
 						Id:             invitationID,
-						OrganizationId: organizationID.String(),
+						OrganizationId: organizationID,
 					}, nil)
 				s.On("Update", mock.Anything, invitationID, mock.AnythingOfType("*invitations.Invitation")).
 					Return(nil, ErrInvitationExpired)
@@ -390,7 +390,7 @@ func TestHandler_UpdateInvitation(t *testing.T) {
 				s.On("Get", mock.Anything, invitationID).
 					Return(&Invitation{
 						Id:             invitationID,
-						OrganizationId: organizationID.String(),
+						OrganizationId: organizationID,
 					}, nil)
 				s.On("Update", mock.Anything, invitationID, mock.AnythingOfType("*invitations.Invitation")).
 					Return(nil, ErrInvitationAlreadyAccepted)
@@ -451,7 +451,7 @@ func TestHandler_DeleteInvitation(t *testing.T) {
 					Return(&Invitation{
 						Id:             invitationID,
 						Status:         StatusPending,
-						OrganizationId: organizationID.String(),
+						OrganizationId: organizationID,
 					}, nil)
 				s.On("Delete", mock.Anything, invitationID).Return(nil)
 			},
@@ -475,7 +475,7 @@ func TestHandler_DeleteInvitation(t *testing.T) {
 				s.On("Get", mock.Anything, invitationID).
 					Return(&Invitation{
 						Id:             invitationID,
-						OrganizationId: uuid.New().String(),
+						OrganizationId: uuid.New(),
 					}, nil)
 			},
 			expectedCode: http.StatusNotFound,
@@ -488,7 +488,7 @@ func TestHandler_DeleteInvitation(t *testing.T) {
 				s.On("Get", mock.Anything, invitationID).
 					Return(&Invitation{
 						Id:             invitationID,
-						OrganizationId: organizationID.String(),
+						OrganizationId: organizationID,
 					}, nil)
 				s.On("Delete", mock.Anything, invitationID).
 					Return(errors.New("database error"))

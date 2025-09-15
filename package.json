@@ -7,9 +7,10 @@
     "@biomejs/biome": "catalog:",
     "@redocly/cli": "catalog:",
     "markdownlint-cli": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-sql": "catalog:",
     "task-master-ai": "catalog:",
-    "typescript": "catalog:",
-    "prettier": "catalog:"
+    "typescript": "catalog:"
   },
   "packageManager": "pnpm@10.16.1",
   "engines": {

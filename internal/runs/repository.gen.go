@@ -3,7 +3,6 @@ package runs
 
 import (
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 )
 
@@ -19,26 +18,4 @@ type Repository interface {
 	ListByPipeline(ctx context.Context, pipelineId string) ([]*Run, error)
 	ListByOrganization(ctx context.Context, organizationId string) ([]*Run, error)
 	ListByTool(ctx context.Context, toolId string) ([]*Run, error)
-}
-
-// RepositoryError represents a repository error.
-type RepositoryError struct {
-	Operation string
-	Err       error
-}
-
-func (e *RepositoryError) Error() string {
-	return fmt.Sprintf("repository %s: %v", e.Operation, e.Err)
-}
-
-func (e *RepositoryError) Unwrap() error {
-	return e.Err
-}
-
-// NewRepositoryError creates a new repository error.
-func NewRepositoryError(operation string, err error) *RepositoryError {
-	return &RepositoryError{
-		Operation: operation,
-		Err:       err,
-	}
 }

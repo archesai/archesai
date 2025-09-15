@@ -28,66 +28,41 @@ x-codegen:
     - refreshed
     - expired
     - deleted
-type: object
-properties:
-  createdAt:
-    description: The date this item was created
-    type: string
-    format: date-time
-    example: '2024-01-15T09:30:00Z'
-    minLength: 1
-  id:
-    description: The ID of the item
-    type: string
-    format: uuid
-    example: 550e8400-e29b-41d4-a716-446655440000
-    minLength: 36
-  updatedAt:
-    description: The date this item was last updated
-    type: string
-    format: date-time
-    example: '2024-01-15T09:30:00Z'
-    minLength: 1
-  activeOrganizationId:
-    description: The active organization ID
-    type: string
-    format: uuid
-    example: 550e8400-e29b-41d4-a716-446655440000
-    minLength: 36
-  expiresAt:
-    description: The expiration date of the session
-    type: string
-    minLength: 1
-    example: example-string
-  ipAddress:
-    description: The IP address of the session
-    type: string
-    example: example-string
-    minLength: 1
-  token:
-    description: The session token
-    type: string
-    minLength: 1
-    example: example-string
-  userAgent:
-    description: The user agent of the session
-    type: string
-    example: example-string
-    minLength: 1
-  userId:
-    description: The ID of the user associated with the session
-    type: string
-    minLength: 36
-    format: uuid
-    example: 550e8400-e29b-41d4-a716-446655440000
-required:
-  - createdAt
-  - id
-  - updatedAt
-  - activeOrganizationId
-  - expiresAt
-  - ipAddress
-  - token
-  - userAgent
-  - userId
-additionalProperties: false
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      activeOrganizationId:
+        allOf:
+          - $ref: ./UUID.yaml
+      expiresAt:
+        description: The expiration date of the session
+        type: string
+        minLength: 1
+        example: example-string
+      ipAddress:
+        description: The IP address of the session
+        type: string
+        example: example-string
+        minLength: 1
+      token:
+        description: The session token
+        type: string
+        minLength: 1
+        example: example-string
+      userAgent:
+        description: The user agent of the session
+        type: string
+        example: example-string
+        minLength: 1
+      userId:
+        allOf:
+          - $ref: ./UUID.yaml
+    required:
+      - activeOrganizationId
+      - expiresAt
+      - ipAddress
+      - token
+      - userAgent
+      - userId
+    additionalProperties: false

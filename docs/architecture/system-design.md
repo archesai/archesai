@@ -276,67 +276,67 @@ sequenceDiagram
 ```sql
 -- Multi-tenant foundation
 CREATE TABLE organizations (
-    id UUID PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    plan VARCHAR(50) DEFAULT 'free',
-    credits INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  plan VARCHAR(50) DEFAULT 'free',
+  credits INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- User management
 CREATE TABLE users (
-    id UUID PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    password_hash VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Organization membership
 CREATE TABLE members (
-    id UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id),
-    organization_id UUID REFERENCES organizations(id),
-    role VARCHAR(50) NOT NULL,
-    UNIQUE(user_id, organization_id)
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users (id),
+  organization_id UUID REFERENCES organizations (id),
+  role VARCHAR(50) NOT NULL,
+  UNIQUE (user_id, organization_id)
 );
 
 -- Session management
 CREATE TABLE sessions (
-    token VARCHAR(255) PRIMARY KEY,
-    user_id UUID REFERENCES users(id),
-    expires_at TIMESTAMP NOT NULL,
-    active_organization_id UUID REFERENCES organizations(id)
+  token VARCHAR(255) PRIMARY KEY,
+  user_id UUID REFERENCES users (id),
+  expires_at TIMESTAMP NOT NULL,
+  active_organization_id UUID REFERENCES organizations (id)
 );
 
 -- Content storage with vectors
 CREATE TABLE artifacts (
-    id UUID PRIMARY KEY,
-    organization_id UUID REFERENCES organizations(id),
-    name VARCHAR(255) NOT NULL,
-    content TEXT,
-    embedding vector(1536),  -- pgvector for similarity search
-    metadata JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY,
+  organization_id UUID REFERENCES organizations (id),
+  name VARCHAR(255) NOT NULL,
+  content TEXT,
+  embedding vector (1536), -- pgvector for similarity search
+  metadata JSONB,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Workflow definitions
 CREATE TABLE pipelines (
-    id UUID PRIMARY KEY,
-    organization_id UUID REFERENCES organizations(id),
-    name VARCHAR(255) NOT NULL,
-    definition JSONB NOT NULL,  -- DAG structure
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id UUID PRIMARY KEY,
+  organization_id UUID REFERENCES organizations (id),
+  name VARCHAR(255) NOT NULL,
+  definition JSONB NOT NULL, -- DAG structure
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Workflow executions
 CREATE TABLE runs (
-    id UUID PRIMARY KEY,
-    pipeline_id UUID REFERENCES pipelines(id),
-    status VARCHAR(50) NOT NULL,
-    progress DECIMAL(5,2) DEFAULT 0,
-    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    completed_at TIMESTAMP
+  id UUID PRIMARY KEY,
+  pipeline_id UUID REFERENCES pipelines (id),
+  status VARCHAR(50) NOT NULL,
+  progress DECIMAL(5, 2) DEFAULT 0,
+  started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  completed_at TIMESTAMP
 );
 ```
 
@@ -344,19 +344,26 @@ CREATE TABLE runs (
 
 ```sql
 -- Performance indexes
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_sessions_token ON sessions(token);
-CREATE INDEX idx_sessions_user_id ON sessions(user_id);
-CREATE INDEX idx_members_user_org ON members(user_id, organization_id);
-CREATE INDEX idx_artifacts_org ON artifacts(organization_id);
-CREATE INDEX idx_pipelines_org ON pipelines(organization_id);
-CREATE INDEX idx_runs_pipeline ON runs(pipeline_id);
-CREATE INDEX idx_runs_status ON runs(status);
+CREATE INDEX idx_users_email ON users (email);
+
+CREATE INDEX idx_sessions_token ON sessions (token);
+
+CREATE INDEX idx_sessions_user_id ON sessions (user_id);
+
+CREATE INDEX idx_members_user_org ON members (user_id, organization_id);
+
+CREATE INDEX idx_artifacts_org ON artifacts (organization_id);
+
+CREATE INDEX idx_pipelines_org ON pipelines (organization_id);
+
+CREATE INDEX idx_runs_pipeline ON runs (pipeline_id);
+
+CREATE INDEX idx_runs_status ON runs (status);
 
 -- Vector similarity search
-CREATE INDEX idx_artifacts_embedding ON artifacts
-USING ivfflat (embedding vector_cosine_ops)
-WITH (lists = 100);
+CREATE INDEX idx_artifacts_embedding ON artifacts USING ivfflat (embedding vector_cosine_ops)
+WITH
+  (lists = 100);
 ```
 
 ## Caching Architecture

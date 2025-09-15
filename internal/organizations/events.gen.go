@@ -15,7 +15,7 @@ const (
 	EventOrganizationCredits_updated = "organization.credits-updated"
 )
 
-// OrganizationCreatedEvent represents a created event event for Organization.
+// OrganizationCreatedEvent represents a created event for Organization.
 type OrganizationCreatedEvent struct {
 	events.BaseEvent
 	Organization *Organization `json:"organization"`
@@ -44,7 +44,7 @@ func (e *OrganizationCreatedEvent) EventData() interface{} {
 	return e.Organization
 }
 
-// OrganizationUpdatedEvent represents a updated event event for Organization.
+// OrganizationUpdatedEvent represents a updated event for Organization.
 type OrganizationUpdatedEvent struct {
 	events.BaseEvent
 	Organization *Organization `json:"organization"`
@@ -73,7 +73,7 @@ func (e *OrganizationUpdatedEvent) EventData() interface{} {
 	return e.Organization
 }
 
-// OrganizationDeletedEvent represents a deleted event event for Organization.
+// OrganizationDeletedEvent represents a deleted event for Organization.
 type OrganizationDeletedEvent struct {
 	events.BaseEvent
 	Organization *Organization `json:"organization"`
@@ -102,7 +102,7 @@ func (e *OrganizationDeletedEvent) EventData() interface{} {
 	return e.Organization
 }
 
-// OrganizationPlan_changedEvent represents a plan_changed event event for Organization.
+// OrganizationPlan_changedEvent represents a plan_changed event for Organization.
 type OrganizationPlan_changedEvent struct {
 	events.BaseEvent
 	Organization *Organization `json:"organization"`
@@ -131,7 +131,7 @@ func (e *OrganizationPlan_changedEvent) EventData() interface{} {
 	return e.Organization
 }
 
-// OrganizationCredits_updatedEvent represents a credits_updated event event for Organization.
+// OrganizationCredits_updatedEvent represents a credits_updated event for Organization.
 type OrganizationCredits_updatedEvent struct {
 	events.BaseEvent
 	Organization *Organization `json:"organization"`
@@ -181,31 +181,31 @@ func NewEventPublisher(publisher events.Publisher) EventPublisher {
 	}
 }
 
-// PublishOrganizationCreated publishes a created event event for Organization.
+// PublishOrganizationCreated publishes a created event for Organization.
 func (p *eventPublisher) PublishOrganizationCreated(ctx context.Context, entity *Organization) error {
 	event := NewOrganizationCreatedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishOrganizationUpdated publishes a updated event event for Organization.
+// PublishOrganizationUpdated publishes a updated event for Organization.
 func (p *eventPublisher) PublishOrganizationUpdated(ctx context.Context, entity *Organization) error {
 	event := NewOrganizationUpdatedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishOrganizationDeleted publishes a deleted event event for Organization.
+// PublishOrganizationDeleted publishes a deleted event for Organization.
 func (p *eventPublisher) PublishOrganizationDeleted(ctx context.Context, entity *Organization) error {
 	event := NewOrganizationDeletedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishOrganizationPlan_changed publishes a plan_changed event event for Organization.
+// PublishOrganizationPlan_changed publishes a plan_changed event for Organization.
 func (p *eventPublisher) PublishOrganizationPlan_changed(ctx context.Context, entity *Organization) error {
 	event := NewOrganizationPlan_changedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishOrganizationCredits_updated publishes a credits_updated event event for Organization.
+// PublishOrganizationCredits_updated publishes a credits_updated event for Organization.
 func (p *eventPublisher) PublishOrganizationCredits_updated(ctx context.Context, entity *Organization) error {
 	event := NewOrganizationCredits_updatedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)

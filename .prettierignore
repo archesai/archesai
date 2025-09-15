@@ -9,6 +9,8 @@
 !**/*.mdx
 !**/*.yml
 !**/*.yaml
+!**/*.sql
 
 **/templates
+
 pnpm-lock.yaml

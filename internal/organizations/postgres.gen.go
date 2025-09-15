@@ -38,33 +38,33 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Organization) (
 	// }
 	// dbOrganization, err := r.queries.CreateOrganization(ctx, params)
 	// if err != nil {
-	//     return nil, NewRepositoryError("create", err)
+	//     return nil, err
 	// }
 	// return mapOrganizationToDomain(&dbOrganization), nil
 
-	return nil, NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Organization, error) {
 	// Try to call SQLC GetOrganization if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error) {
 	// Update operations are often custom and may not have SQLC queries
-	return nil, NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteOrganization if it exists
 	// For now, return not implemented
-	return NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+	return errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) List(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error) {
 	// List operations need both List and Count queries from SQLC
-	return nil, 0, NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
+	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
 
 // GetBySlug retrieves organization by slug
@@ -72,7 +72,7 @@ func (r *PostgresRepository) GetBySlug(ctx context.Context, slug string) (*Organ
 
 	// Try to call SQLC GetBySlug if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("getbyslug", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 
 }
 
@@ -81,7 +81,7 @@ func (r *PostgresRepository) GetByStripeCustomerId(ctx context.Context, stripeCu
 
 	// Try to call SQLC GetByStripeCustomerId if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("getbystripecustomerid", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 
 }
 

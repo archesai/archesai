@@ -25,10 +25,10 @@ type ServerInterface interface {
 	CreateRun(ctx echo.Context) error
 	// Delete a run
 	// (DELETE /runs/{id})
-	DeleteRun(ctx echo.Context, id openapi_types.UUID) error
+	DeleteRun(ctx echo.Context, id UUID) error
 	// Find a run
 	// (GET /runs/{id})
-	GetRun(ctx echo.Context, id openapi_types.UUID) error
+	GetRun(ctx echo.Context, id UUID) error
 	// Update a run
 	// (PATCH /runs/{id})
 	UpdateRun(ctx echo.Context, id openapi_types.UUID) error
@@ -88,7 +88,7 @@ func (w *ServerInterfaceWrapper) CreateRun(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteRun(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id openapi_types.UUID
+	var id UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -106,7 +106,7 @@ func (w *ServerInterfaceWrapper) DeleteRun(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetRun(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id openapi_types.UUID
+	var id UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -268,7 +268,7 @@ func (response CreateRun401ApplicationProblemPlusJSONResponse) VisitCreateRunRes
 }
 
 type DeleteRunRequestObject struct {
-	Id openapi_types.UUID `json:"id"`
+	Id UUID `json:"id"`
 }
 
 type DeleteRunResponseObject interface {
@@ -299,7 +299,7 @@ func (response DeleteRun404ApplicationProblemPlusJSONResponse) VisitDeleteRunRes
 }
 
 type GetRunRequestObject struct {
-	Id openapi_types.UUID `json:"id"`
+	Id UUID `json:"id"`
 }
 
 type GetRunResponseObject interface {
@@ -447,7 +447,7 @@ func (sh *strictHandler) CreateRun(ctx echo.Context) error {
 }
 
 // DeleteRun operation middleware
-func (sh *strictHandler) DeleteRun(ctx echo.Context, id openapi_types.UUID) error {
+func (sh *strictHandler) DeleteRun(ctx echo.Context, id UUID) error {
 	var request DeleteRunRequestObject
 
 	request.Id = id
@@ -472,7 +472,7 @@ func (sh *strictHandler) DeleteRun(ctx echo.Context, id openapi_types.UUID) erro
 }
 
 // GetRun operation middleware
-func (sh *strictHandler) GetRun(ctx echo.Context, id openapi_types.UUID) error {
+func (sh *strictHandler) GetRun(ctx echo.Context, id UUID) error {
 	var request GetRunRequestObject
 
 	request.Id = id

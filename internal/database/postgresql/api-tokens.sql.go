@@ -13,7 +13,8 @@ import (
 )
 
 const createApiToken = `-- name: CreateApiToken :one
-INSERT INTO api_token (
+INSERT INTO
+  api_token (
     id,
     user_id,
     organization_id,
@@ -23,10 +24,11 @@ INSERT INTO api_token (
     scopes,
     rate_limit,
     expires_at
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9
-)
-RETURNING id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+  )
+VALUES
+  ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+RETURNING
+  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 `
 
 type CreateApiTokenParams struct {
@@ -73,7 +75,8 @@ func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) 
 
 const deleteApiToken = `-- name: DeleteApiToken :exec
 DELETE FROM api_token
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteApiToken(ctx context.Context, id uuid.UUID) error {
@@ -83,7 +86,8 @@ func (q *Queries) DeleteApiToken(ctx context.Context, id uuid.UUID) error {
 
 const deleteApiTokensByUser = `-- name: DeleteApiTokensByUser :exec
 DELETE FROM api_token
-WHERE user_id = $1
+WHERE
+  user_id = $1
 `
 
 func (q *Queries) DeleteApiTokensByUser(ctx context.Context, userID uuid.UUID) error {
@@ -93,7 +97,9 @@ func (q *Queries) DeleteApiTokensByUser(ctx context.Context, userID uuid.UUID) e
 
 const deleteExpiredApiTokens = `-- name: DeleteExpiredApiTokens :exec
 DELETE FROM api_token
-WHERE expires_at IS NOT NULL AND expires_at < CURRENT_TIMESTAMP
+WHERE
+  expires_at IS NOT NULL
+  AND expires_at < CURRENT_TIMESTAMP
 `
 
 func (q *Queries) DeleteExpiredApiTokens(ctx context.Context) error {
@@ -102,8 +108,14 @@ func (q *Queries) DeleteExpiredApiTokens(ctx context.Context) error {
 }
 
 const getApiToken = `-- name: GetApiToken :one
-SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+FROM
+  api_token
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetApiToken(ctx context.Context, id uuid.UUID) (ApiToken, error) {
@@ -127,8 +139,14 @@ func (q *Queries) GetApiToken(ctx context.Context, id uuid.UUID) (ApiToken, erro
 }
 
 const getApiTokenByKeyHash = `-- name: GetApiTokenByKeyHash :one
-SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
-WHERE key_hash = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+FROM
+  api_token
+WHERE
+  key_hash = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetApiTokenByKeyHash(ctx context.Context, keyHash string) (ApiToken, error) {
@@ -152,9 +170,16 @@ func (q *Queries) GetApiTokenByKeyHash(ctx context.Context, keyHash string) (Api
 }
 
 const listApiTokens = `-- name: ListApiTokens :many
-SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+FROM
+  api_token
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListApiTokensParams struct {
@@ -196,10 +221,18 @@ func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([
 }
 
 const listApiTokensByOrganization = `-- name: ListApiTokensByOrganization :many
-SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
-WHERE organization_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+FROM
+  api_token
+WHERE
+  organization_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListApiTokensByOrganizationParams struct {
@@ -242,10 +275,18 @@ func (q *Queries) ListApiTokensByOrganization(ctx context.Context, arg ListApiTo
 }
 
 const listApiTokensByUser = `-- name: ListApiTokensByUser :many
-SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
-WHERE user_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+FROM
+  api_token
+WHERE
+  user_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListApiTokensByUserParams struct {
@@ -290,13 +331,15 @@ func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUs
 const updateApiToken = `-- name: UpdateApiToken :one
 UPDATE api_token
 SET
-    name = COALESCE($1, name),
-    scopes = COALESCE($2, scopes),
-    rate_limit = COALESCE($3, rate_limit),
-    expires_at = COALESCE($4, expires_at),
-    updated_at = CURRENT_TIMESTAMP
-WHERE id = $5
-RETURNING id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+  name = COALESCE($1, name),
+  scopes = COALESCE($2, scopes),
+  rate_limit = COALESCE($3, rate_limit),
+  expires_at = COALESCE($4, expires_at),
+  updated_at = CURRENT_TIMESTAMP
+WHERE
+  id = $5
+RETURNING
+  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 `
 
 type UpdateApiTokenParams struct {
@@ -335,8 +378,10 @@ func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) 
 
 const updateApiTokenLastUsed = `-- name: UpdateApiTokenLastUsed :exec
 UPDATE api_token
-SET last_used_at = CURRENT_TIMESTAMP
-WHERE id = $1
+SET
+  last_used_at = CURRENT_TIMESTAMP
+WHERE
+  id = $1
 `
 
 func (q *Queries) UpdateApiTokenLastUsed(ctx context.Context, id uuid.UUID) error {

@@ -22,7 +22,7 @@ Flexible natural language:
 ### 1. Create New Subtask
 
 ```bash
-task-master add-subtask --parent=<id> --title="<title>" --description="<desc>"
+task-master add-subtask --parent= --description="<desc>" < id > --title="<title>"
 ```
 
 ### 2. Convert Existing Task

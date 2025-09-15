@@ -100,10 +100,9 @@ func RequirePermission(resource, action string) gin.HandlerFunc {
 
 ```sql
 -- Row-level security in PostgreSQL
-CREATE POLICY organization_isolation ON content
-    FOR ALL
-    TO application_user
-    USING (organization_id = current_setting('app.current_org_id')::uuid);
+CREATE POLICY organization_isolation ON content FOR ALL TO application_user USING (
+  organization_id = current_setting('app.current_org_id')::uuid
+);
 
 ALTER TABLE content ENABLE ROW LEVEL SECURITY;
 ```
@@ -353,8 +352,8 @@ RUN apk add --no-cache ca-certificates
 
 # Build with security flags
 RUN CGO_ENABLED=0 GOOS=linux go build \
-    -ldflags='-w -s -extldflags "-static"' \
-    -a -installsuffix cgo -o app .
+  -ldflags='-w -s -extldflags "-static"' \
+  -a -installsuffix cgo -o app .
 
 # Minimal runtime image
 FROM scratch
@@ -370,21 +369,31 @@ ENTRYPOINT ["/app"]
 
 ```sql
 -- Least privilege principle
-CREATE USER app_user WITH PASSWORD 'secure_password';
+CREATE USER app_user
+WITH
+  PASSWORD 'secure_password';
+
 GRANT CONNECT ON DATABASE archesai TO app_user;
+
 GRANT USAGE ON SCHEMA public TO app_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_user;
+
+GRANT
+SELECT
+,
+  INSERT,
+UPDATE,
+DELETE ON ALL TABLES IN SCHEMA public TO app_user;
 
 -- Audit logging
 CREATE TABLE audit_log (
-    id SERIAL PRIMARY KEY,
-    user_id UUID,
-    action VARCHAR(50),
-    resource VARCHAR(100),
-    resource_id UUID,
-    ip_address INET,
-    user_agent TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
+  id SERIAL PRIMARY KEY,
+  user_id UUID,
+  action VARCHAR(50),
+  resource VARCHAR(100),
+  resource_id UUID,
+  ip_address INET,
+  user_agent TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -560,11 +569,11 @@ yarn audit
 ```bash
 # OWASP ZAP scanning
 docker run -t owasp/zap2docker-stable zap-baseline.py \
-    -t https://app.archesai.com
+  -t https://app.archesai.com
 
 # SQLMap for SQL injection testing
 sqlmap -u "https://api.archesai.com/users?id=1" \
-    --batch --random-agent
+  --batch --random-agent
 ```
 
 ## Related Documentation

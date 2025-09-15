@@ -26,7 +26,7 @@ task-master remove-subtask --id=<parentId.subtaskId>
 ### 2. Convert to Standalone
 
 ```bash
-task-master remove-subtask --id=<parentId.subtaskId> --convert
+task-master remove-subtask --id= < parentId.subtaskId > --convert
 ```
 
 ## Pre-Removal Checks

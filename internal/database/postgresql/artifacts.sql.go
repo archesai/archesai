@@ -12,7 +12,8 @@ import (
 )
 
 const createArtifact = `-- name: CreateArtifact :one
-INSERT INTO artifact (
+INSERT INTO
+  artifact (
     id,
     organization_id,
     name,
@@ -23,10 +24,11 @@ INSERT INTO artifact (
     preview_image,
     producer_id,
     text
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
-)
-RETURNING id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+  )
+VALUES
+  ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
 `
 
 type CreateArtifactParams struct {
@@ -76,7 +78,8 @@ func (q *Queries) CreateArtifact(ctx context.Context, arg CreateArtifactParams) 
 
 const deleteArtifact = `-- name: DeleteArtifact :exec
 DELETE FROM artifact
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteArtifact(ctx context.Context, id uuid.UUID) error {
@@ -86,7 +89,8 @@ func (q *Queries) DeleteArtifact(ctx context.Context, id uuid.UUID) error {
 
 const deleteArtifactsByOrganization = `-- name: DeleteArtifactsByOrganization :exec
 DELETE FROM artifact
-WHERE organization_id = $1
+WHERE
+  organization_id = $1
 `
 
 func (q *Queries) DeleteArtifactsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
@@ -95,8 +99,14 @@ func (q *Queries) DeleteArtifactsByOrganization(ctx context.Context, organizatio
 }
 
 const getArtifact = `-- name: GetArtifact :one
-SELECT id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding FROM artifact
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+FROM
+  artifact
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, error) {
@@ -121,9 +131,16 @@ func (q *Queries) GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, erro
 }
 
 const listArtifacts = `-- name: ListArtifacts :many
-SELECT id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding FROM artifact
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+FROM
+  artifact
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListArtifactsParams struct {
@@ -166,10 +183,18 @@ func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([
 }
 
 const listArtifactsByOrganization = `-- name: ListArtifactsByOrganization :many
-SELECT id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding FROM artifact
-WHERE organization_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+FROM
+  artifact
+WHERE
+  organization_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListArtifactsByOrganizationParams struct {
@@ -213,10 +238,18 @@ func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtif
 }
 
 const listArtifactsByProducer = `-- name: ListArtifactsByProducer :many
-SELECT id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding FROM artifact
-WHERE producer_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+FROM
+  artifact
+WHERE
+  producer_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListArtifactsByProducerParams struct {
@@ -261,16 +294,18 @@ func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifacts
 
 const updateArtifact = `-- name: UpdateArtifact :one
 UPDATE artifact
-SET 
-    name = COALESCE($2, name),
-    description = COALESCE($3, description),
-    mime_type = COALESCE($4, mime_type),
-    url = COALESCE($5, url),
-    credits = COALESCE($6, credits),
-    preview_image = COALESCE($7, preview_image),
-    text = COALESCE($8, text)
-WHERE id = $1
-RETURNING id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+SET
+  name = COALESCE($2, name),
+  description = COALESCE($3, description),
+  mime_type = COALESCE($4, mime_type),
+  url = COALESCE($5, url),
+  credits = COALESCE($6, credits),
+  preview_image = COALESCE($7, preview_image),
+  text = COALESCE($8, text)
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
 `
 
 type UpdateArtifactParams struct {

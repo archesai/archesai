@@ -42,11 +42,11 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *{{.Type}}) (*{{
 	// }
 	// db{{.Name}}, err := r.queries.Create{{.Name}}(ctx, params)
 	// if err != nil {
-	//     return nil, NewRepositoryError("create", err)
+	//     return nil, err
 	// }
 	// return map{{.Name}}ToDomain(&db{{.Name}}), nil
 
-	return nil, NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 {{end}}
 
@@ -54,14 +54,14 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *{{.Type}}) (*{{
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*{{.Type}}, error) {
 	// Try to call SQLC Get{{.Name}} if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 {{end}}
 
 {{if contains .Operations "update"}}
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *{{.Type}}) (*{{.Type}}, error) {
 	// Update operations are often custom and may not have SQLC queries
-	return nil, NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 {{end}}
 
@@ -69,14 +69,14 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *{
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC Delete{{.Name}} if it exists
 	// For now, return not implemented
-	return NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+	return errors.New("not implemented - SQLC query not found")
 }
 {{end}}
 
 {{if contains .Operations "list"}}
 func (r *PostgresRepository) List(ctx context.Context, params List{{.Name}}sParams) ([]*{{.Type}}, int64, error) {
 	// List operations need both List and Count queries from SQLC
-	return nil, 0, NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
+	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
 {{end}}
 
@@ -87,18 +87,18 @@ func (r *PostgresRepository) {{.Name}}(ctx context.Context{{range $i, $param := 
 	{{if eq .Returns "single"}}
 	// Try to call SQLC {{.Name}} if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("{{.Name | lower}}", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 	{{else if eq .Returns "multiple"}}
 	// Try to call SQLC {{.Name}} if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("{{.Name | lower}}", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 	{{else if eq .Returns "void"}}
 	// Try to call SQLC {{.Name}} if it exists
 	// For now, return not implemented
-	return NewRepositoryError("{{.Name | lower}}", errors.New("not implemented - SQLC query not found"))
+	return errors.New("not implemented - SQLC query not found")
 	{{else}}
 	// Unknown return type
-	return NewRepositoryError("{{.Name | lower}}", errors.New("not implemented - unknown return type"))
+	return errors.New("not implemented - unknown return type")
 	{{end}}
 }
 {{end}}{{end}}

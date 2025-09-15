@@ -24,7 +24,7 @@ func createTestLabelsService(t *testing.T) (*Service, *MockRepository) {
 
 // TestLabelsService_Create tests creating a label
 func TestLabelsService_Create(t *testing.T) {
-	orgID := uuid.New().String()
+	orgID := uuid.New()
 
 	t.Run("successful creation", func(t *testing.T) {
 		service, mockRepo := createTestLabelsService(t)
@@ -74,7 +74,7 @@ func TestLabelsService_Create(t *testing.T) {
 			Name: "Test Label",
 		}
 
-		result, err := service.Create(context.Background(), req, "")
+		result, err := service.Create(context.Background(), req, uuid.Nil)
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -87,7 +87,7 @@ func TestLabelsService_Get(t *testing.T) {
 	labelID := uuid.New()
 	label := &Label{
 		Id:             labelID,
-		OrganizationId: uuid.New().String(),
+		OrganizationId: uuid.New(),
 		Name:           "Test Label",
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
@@ -132,7 +132,7 @@ func TestLabelsService_Update(t *testing.T) {
 
 		existingLabel := &Label{
 			Id:             labelID,
-			OrganizationId: uuid.New().String(),
+			OrganizationId: uuid.New(),
 			Name:           "Old Label",
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
@@ -182,7 +182,7 @@ func TestLabelsService_Delete(t *testing.T) {
 
 		existingLabel := &Label{
 			Id:             labelID,
-			OrganizationId: uuid.New().String(),
+			OrganizationId: uuid.New(),
 			Name:           "Test Label",
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
@@ -213,7 +213,7 @@ func TestLabelsService_List(t *testing.T) {
 	t.Run("successful list", func(t *testing.T) {
 		service, mockRepo := createTestLabelsService(t)
 
-		orgID := uuid.New().String()
+		orgID := uuid.New()
 		limit := 10
 		offset := 0
 

@@ -27,17 +27,18 @@ func NewService(repo Repository, logger *slog.Logger) *Service {
 }
 
 // Create creates a new label for an organization
-func (s *Service) Create(ctx context.Context, req *CreateLabelJSONRequestBody, orgID string) (*Label, error) {
+func (s *Service) Create(ctx context.Context, req *CreateLabelJSONRequestBody, orgID UUID) (*Label, error) {
 	s.logger.Debug("creating label",
 		slog.String("name", req.Name),
-		slog.String("org", orgID))
+		slog.String("org", orgID.String()))
 
 	// Validate inputs
 	if err := s.validateCreateRequest(req); err != nil {
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
-	if orgID == "" {
+	// Validate organization ID
+	if orgID == uuid.Nil {
 		return nil, errors.New("organization ID is required")
 	}
 
@@ -69,7 +70,7 @@ func (s *Service) Create(ctx context.Context, req *CreateLabelJSONRequestBody, o
 	s.logger.Info("label created successfully",
 		slog.String("id", createdLabel.Id.String()),
 		slog.String("name", createdLabel.Name),
-		slog.String("org", orgID))
+		slog.String("org", orgID.String()))
 
 	return createdLabel, nil
 }
@@ -169,7 +170,7 @@ func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 // List retrieves labels for an organization with pagination
-func (s *Service) List(ctx context.Context, orgID string, limit, offset int) ([]*Label, int, error) {
+func (s *Service) List(ctx context.Context, orgID UUID, limit, offset int) ([]*Label, int, error) {
 	// Validate pagination parameters
 	if limit <= 0 {
 		limit = 50 // Default limit
@@ -192,13 +193,11 @@ func (s *Service) List(ctx context.Context, orgID string, limit, offset int) ([]
 	labels, total, err := s.repo.List(ctx, params)
 	if err != nil {
 		s.logger.Error("failed to list labels",
-			slog.String("org", orgID),
+			slog.String("org", orgID.String()),
 			slog.String("error", err.Error()))
 		return nil, 0, fmt.Errorf("failed to list labels: %w", err)
 	}
 
-	// Filter by organization if not handled by repository
-	// This is temporary until repository layer supports filtering
 	filtered := make([]*Label, 0, len(labels))
 	for _, label := range labels {
 		if label.OrganizationId == orgID {
@@ -210,12 +209,9 @@ func (s *Service) List(ctx context.Context, orgID string, limit, offset int) ([]
 }
 
 // GetLabelByName retrieves a label by name within an organization
-func (s *Service) GetLabelByName(ctx context.Context, name, orgID string) (*Label, error) {
+func (s *Service) GetLabelByName(ctx context.Context, name string, orgID UUID) (*Label, error) {
 	if name == "" {
 		return nil, errors.New("label name is required")
-	}
-	if orgID == "" {
-		return nil, errors.New("organization ID is required")
 	}
 
 	// TODO: Implement when repository supports GetLabelByName
@@ -248,7 +244,7 @@ func (s *Service) GetLabelsByArtifact(_ context.Context, artifactID uuid.UUID) (
 }
 
 // GetLabelStats returns statistics for labels in an organization
-func (s *Service) GetLabelStats(ctx context.Context, orgID string) (map[string]interface{}, error) {
+func (s *Service) GetLabelStats(ctx context.Context, orgID UUID) (map[string]interface{}, error) {
 	// Get total count
 	_, total, err := s.List(ctx, orgID, 1, 0)
 	if err != nil {
@@ -323,7 +319,7 @@ func (s *Service) isValidColor(color string) bool {
 }
 
 // BulkCreateLabels creates multiple labels in a single operation
-func (s *Service) BulkCreateLabels(ctx context.Context, labels []*CreateLabelJSONRequestBody, orgID string) ([]*Label, error) {
+func (s *Service) BulkCreateLabels(ctx context.Context, labels []*CreateLabelJSONRequestBody, orgID UUID) ([]*Label, error) {
 	if len(labels) == 0 {
 		return nil, errors.New("no labels to create")
 	}

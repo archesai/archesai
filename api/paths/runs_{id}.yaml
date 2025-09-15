@@ -6,9 +6,8 @@ delete:
   description: Delete a run
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -38,9 +37,8 @@ get:
   description: Find a run
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -75,9 +73,8 @@ patch:
           type: object
           properties:
             pipelineId:
-              description: The pipeline ID associated with the run
-              type: string
-              example: example-id-123
+              allOf:
+                - $ref: ../components/schemas/UUID.yaml
   parameters:
     - schema:
         type: string

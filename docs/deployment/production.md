@@ -544,15 +544,18 @@ func AuditLog() fiber.Handler {
 ```sql
 -- Data retention policy
 DELETE FROM user_sessions
-WHERE created_at < NOW() - INTERVAL '90 days';
+WHERE
+  created_at < NOW() - INTERVAL '90 days';
 
 -- Data anonymization
 UPDATE users
-SET email = CONCAT('deleted-', id, '@example.com'),
-    name = 'Deleted User',
-    phone = NULL
-WHERE deleted_at IS NOT NULL
-AND deleted_at < NOW() - INTERVAL '30 days';
+SET
+  email = CONCAT('deleted-', id, '@example.com'),
+  name = 'Deleted User',
+  phone = NULL
+WHERE
+  deleted_at IS NOT NULL
+  AND deleted_at < NOW() - INTERVAL '30 days';
 ```
 
 ## Troubleshooting Production Issues

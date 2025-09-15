@@ -14,7 +14,7 @@ const (
 	EventSessionDeleted   = "session.deleted"
 )
 
-// SessionCreatedEvent represents a created event event for Session.
+// SessionCreatedEvent represents a created event for Session.
 type SessionCreatedEvent struct {
 	events.BaseEvent
 	Session *Session `json:"session"`
@@ -43,7 +43,7 @@ func (e *SessionCreatedEvent) EventData() interface{} {
 	return e.Session
 }
 
-// SessionRefreshedEvent represents a refreshed event event for Session.
+// SessionRefreshedEvent represents a refreshed event for Session.
 type SessionRefreshedEvent struct {
 	events.BaseEvent
 	Session *Session `json:"session"`
@@ -72,7 +72,7 @@ func (e *SessionRefreshedEvent) EventData() interface{} {
 	return e.Session
 }
 
-// SessionExpiredEvent represents a expired event event for Session.
+// SessionExpiredEvent represents a expired event for Session.
 type SessionExpiredEvent struct {
 	events.BaseEvent
 	Session *Session `json:"session"`
@@ -101,7 +101,7 @@ func (e *SessionExpiredEvent) EventData() interface{} {
 	return e.Session
 }
 
-// SessionDeletedEvent represents a deleted event event for Session.
+// SessionDeletedEvent represents a deleted event for Session.
 type SessionDeletedEvent struct {
 	events.BaseEvent
 	Session *Session `json:"session"`
@@ -150,25 +150,25 @@ func NewEventPublisher(publisher events.Publisher) EventPublisher {
 	}
 }
 
-// PublishSessionCreated publishes a created event event for Session.
+// PublishSessionCreated publishes a created event for Session.
 func (p *eventPublisher) PublishSessionCreated(ctx context.Context, entity *Session) error {
 	event := NewSessionCreatedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishSessionRefreshed publishes a refreshed event event for Session.
+// PublishSessionRefreshed publishes a refreshed event for Session.
 func (p *eventPublisher) PublishSessionRefreshed(ctx context.Context, entity *Session) error {
 	event := NewSessionRefreshedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishSessionExpired publishes a expired event event for Session.
+// PublishSessionExpired publishes a expired event for Session.
 func (p *eventPublisher) PublishSessionExpired(ctx context.Context, entity *Session) error {
 	event := NewSessionExpiredEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishSessionDeleted publishes a deleted event event for Session.
+// PublishSessionDeleted publishes a deleted event for Session.
 func (p *eventPublisher) PublishSessionDeleted(ctx context.Context, entity *Session) error {
 	event := NewSessionDeletedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)

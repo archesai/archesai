@@ -12,15 +12,12 @@ import (
 )
 
 const createPipeline = `-- name: CreatePipeline :one
-INSERT INTO pipeline (
-    id,
-    organization_id,
-    name,
-    description
-) VALUES (
-    $1, $2, $3, $4
-)
-RETURNING id, created_at, updated_at, description, name, organization_id
+INSERT INTO
+  pipeline (id, organization_id, name, description)
+VALUES
+  ($1, $2, $3, $4)
+RETURNING
+  id, created_at, updated_at, description, name, organization_id
 `
 
 type CreatePipelineParams struct {
@@ -51,7 +48,8 @@ func (q *Queries) CreatePipeline(ctx context.Context, arg CreatePipelineParams) 
 
 const deletePipeline = `-- name: DeletePipeline :exec
 DELETE FROM pipeline
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeletePipeline(ctx context.Context, id uuid.UUID) error {
@@ -61,7 +59,8 @@ func (q *Queries) DeletePipeline(ctx context.Context, id uuid.UUID) error {
 
 const deletePipelinesByOrganization = `-- name: DeletePipelinesByOrganization :exec
 DELETE FROM pipeline
-WHERE organization_id = $1
+WHERE
+  organization_id = $1
 `
 
 func (q *Queries) DeletePipelinesByOrganization(ctx context.Context, organizationID uuid.UUID) error {
@@ -70,8 +69,14 @@ func (q *Queries) DeletePipelinesByOrganization(ctx context.Context, organizatio
 }
 
 const getPipeline = `-- name: GetPipeline :one
-SELECT id, created_at, updated_at, description, name, organization_id FROM pipeline
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, description, name, organization_id
+FROM
+  pipeline
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetPipeline(ctx context.Context, id uuid.UUID) (Pipeline, error) {
@@ -89,9 +94,16 @@ func (q *Queries) GetPipeline(ctx context.Context, id uuid.UUID) (Pipeline, erro
 }
 
 const listPipelines = `-- name: ListPipelines :many
-SELECT id, created_at, updated_at, description, name, organization_id FROM pipeline
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, description, name, organization_id
+FROM
+  pipeline
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListPipelinesParams struct {
@@ -127,10 +139,18 @@ func (q *Queries) ListPipelines(ctx context.Context, arg ListPipelinesParams) ([
 }
 
 const listPipelinesByOrganization = `-- name: ListPipelinesByOrganization :many
-SELECT id, created_at, updated_at, description, name, organization_id FROM pipeline
-WHERE organization_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, description, name, organization_id
+FROM
+  pipeline
+WHERE
+  organization_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListPipelinesByOrganizationParams struct {
@@ -168,11 +188,13 @@ func (q *Queries) ListPipelinesByOrganization(ctx context.Context, arg ListPipel
 
 const updatePipeline = `-- name: UpdatePipeline :one
 UPDATE pipeline
-SET 
-    name = COALESCE($2, name),
-    description = COALESCE($3, description)
-WHERE id = $1
-RETURNING id, created_at, updated_at, description, name, organization_id
+SET
+  name = COALESCE($2, name),
+  description = COALESCE($3, description)
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, description, name, organization_id
 `
 
 type UpdatePipelineParams struct {

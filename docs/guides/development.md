@@ -48,12 +48,12 @@ up your development environment and contribute to the project.
 ## Essential Commands
 
 ```bash
-make generate         # Run after API/SQL changes
-make lint            # Check code quality
-make dev             # Start backend server
-pnpm dev:platform    # Start frontend
-make format          # Format code
-make test            # Run tests
+make generate     # Run after API/SQL changes
+make lint         # Check code quality
+make dev          # Start backend server
+pnpm dev:platform # Start frontend
+make format       # Format code
+make test         # Run tests
 ```
 
 For a complete list of commands, see [Makefile Commands](makefile-commands.md).

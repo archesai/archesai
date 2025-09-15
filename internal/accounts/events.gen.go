@@ -15,7 +15,7 @@ const (
 	EventAccountUnlinked = "account.unlinked"
 )
 
-// AccountCreatedEvent represents a created event event for Account.
+// AccountCreatedEvent represents a created event for Account.
 type AccountCreatedEvent struct {
 	events.BaseEvent
 	Account *Account `json:"account"`
@@ -44,7 +44,7 @@ func (e *AccountCreatedEvent) EventData() interface{} {
 	return e.Account
 }
 
-// AccountUpdatedEvent represents a updated event event for Account.
+// AccountUpdatedEvent represents a updated event for Account.
 type AccountUpdatedEvent struct {
 	events.BaseEvent
 	Account *Account `json:"account"`
@@ -73,7 +73,7 @@ func (e *AccountUpdatedEvent) EventData() interface{} {
 	return e.Account
 }
 
-// AccountDeletedEvent represents a deleted event event for Account.
+// AccountDeletedEvent represents a deleted event for Account.
 type AccountDeletedEvent struct {
 	events.BaseEvent
 	Account *Account `json:"account"`
@@ -102,7 +102,7 @@ func (e *AccountDeletedEvent) EventData() interface{} {
 	return e.Account
 }
 
-// AccountLinkedEvent represents a linked event event for Account.
+// AccountLinkedEvent represents a linked event for Account.
 type AccountLinkedEvent struct {
 	events.BaseEvent
 	Account *Account `json:"account"`
@@ -131,7 +131,7 @@ func (e *AccountLinkedEvent) EventData() interface{} {
 	return e.Account
 }
 
-// AccountUnlinkedEvent represents a unlinked event event for Account.
+// AccountUnlinkedEvent represents a unlinked event for Account.
 type AccountUnlinkedEvent struct {
 	events.BaseEvent
 	Account *Account `json:"account"`
@@ -181,31 +181,31 @@ func NewEventPublisher(publisher events.Publisher) EventPublisher {
 	}
 }
 
-// PublishAccountCreated publishes a created event event for Account.
+// PublishAccountCreated publishes a created event for Account.
 func (p *eventPublisher) PublishAccountCreated(ctx context.Context, entity *Account) error {
 	event := NewAccountCreatedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishAccountUpdated publishes a updated event event for Account.
+// PublishAccountUpdated publishes a updated event for Account.
 func (p *eventPublisher) PublishAccountUpdated(ctx context.Context, entity *Account) error {
 	event := NewAccountUpdatedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishAccountDeleted publishes a deleted event event for Account.
+// PublishAccountDeleted publishes a deleted event for Account.
 func (p *eventPublisher) PublishAccountDeleted(ctx context.Context, entity *Account) error {
 	event := NewAccountDeletedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishAccountLinked publishes a linked event event for Account.
+// PublishAccountLinked publishes a linked event for Account.
 func (p *eventPublisher) PublishAccountLinked(ctx context.Context, entity *Account) error {
 	event := NewAccountLinkedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishAccountUnlinked publishes a unlinked event event for Account.
+// PublishAccountUnlinked publishes a unlinked event for Account.
 func (p *eventPublisher) PublishAccountUnlinked(ctx context.Context, entity *Account) error {
 	event := NewAccountUnlinkedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)

@@ -13,7 +13,8 @@ import (
 )
 
 const createAccount = `-- name: CreateAccount :one
-INSERT INTO account (
+INSERT INTO
+  account (
     id,
     user_id,
     provider_id,
@@ -25,12 +26,23 @@ INSERT INTO account (
     scope,
     id_token,
     password
-) VALUES (
-    $1, $2, $3, $4, $5, $6, 
-    $7, $8, 
-    $9, $10, $11
-)
-RETURNING id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+  )
+VALUES
+  (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11
+  )
+RETURNING
+  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
 `
 
 type CreateAccountParams struct {
@@ -82,7 +94,8 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 
 const deleteAccount = `-- name: DeleteAccount :exec
 DELETE FROM account
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteAccount(ctx context.Context, id uuid.UUID) error {
@@ -92,7 +105,8 @@ func (q *Queries) DeleteAccount(ctx context.Context, id uuid.UUID) error {
 
 const deleteAccountsByUser = `-- name: DeleteAccountsByUser :exec
 DELETE FROM account
-WHERE user_id = $1
+WHERE
+  user_id = $1
 `
 
 func (q *Queries) DeleteAccountsByUser(ctx context.Context, userID uuid.UUID) error {
@@ -101,8 +115,14 @@ func (q *Queries) DeleteAccountsByUser(ctx context.Context, userID uuid.UUID) er
 }
 
 const getAccount = `-- name: GetAccount :one
-SELECT id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id FROM account
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+FROM
+  account
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetAccount(ctx context.Context, id uuid.UUID) (Account, error) {
@@ -127,9 +147,15 @@ func (q *Queries) GetAccount(ctx context.Context, id uuid.UUID) (Account, error)
 }
 
 const getAccountByUser = `-- name: GetAccountByUser :one
-SELECT id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id FROM account
-WHERE user_id = $1 AND provider_id = $2
-LIMIT 1
+SELECT
+  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+FROM
+  account
+WHERE
+  user_id = $1
+  AND provider_id = $2
+LIMIT
+  1
 `
 
 type GetAccountByUserParams struct {
@@ -159,9 +185,16 @@ func (q *Queries) GetAccountByUser(ctx context.Context, arg GetAccountByUserPara
 }
 
 const listAccounts = `-- name: ListAccounts :many
-SELECT id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id FROM account
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+FROM
+  account
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListAccountsParams struct {
@@ -204,9 +237,14 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]A
 }
 
 const listAccountsByUser = `-- name: ListAccountsByUser :many
-SELECT id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id FROM account
-WHERE user_id = $1
-ORDER BY created_at DESC
+SELECT
+  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+FROM
+  account
+WHERE
+  user_id = $1
+ORDER BY
+  created_at DESC
 `
 
 func (q *Queries) ListAccountsByUser(ctx context.Context, userID uuid.UUID) ([]Account, error) {
@@ -245,17 +283,25 @@ func (q *Queries) ListAccountsByUser(ctx context.Context, userID uuid.UUID) ([]A
 
 const updateAccount = `-- name: UpdateAccount :one
 UPDATE account
-SET 
-    access_token = COALESCE($2, access_token),
-    refresh_token = COALESCE($3, refresh_token),
-    access_token_expires_at = COALESCE($4, access_token_expires_at),
-    refresh_token_expires_at = COALESCE($5, refresh_token_expires_at),
-    scope = COALESCE($6, scope),
-    id_token = COALESCE($7, id_token),
-    password = COALESCE($8, password),
-    updated_at = NOW()
-WHERE id = $1
-RETURNING id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+SET
+  access_token = COALESCE($2, access_token),
+  refresh_token = COALESCE($3, refresh_token),
+  access_token_expires_at = COALESCE(
+    $4,
+    access_token_expires_at
+  ),
+  refresh_token_expires_at = COALESCE(
+    $5,
+    refresh_token_expires_at
+  ),
+  scope = COALESCE($6, scope),
+  id_token = COALESCE($7, id_token),
+  password = COALESCE($8, password),
+  updated_at = NOW()
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
 `
 
 type UpdateAccountParams struct {

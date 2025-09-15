@@ -18,7 +18,7 @@ using API keys.
 
 ```bash
 curl -H "Authorization: Bearer YOUR_API_KEY" \
-     https://api.archesai.com/v1/organizations
+  https://api.archesai.com/v1/organizations
 ```
 
 ## API Domains

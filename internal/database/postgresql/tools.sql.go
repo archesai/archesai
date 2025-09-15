@@ -12,17 +12,19 @@ import (
 )
 
 const createTool = `-- name: CreateTool :one
-INSERT INTO tool (
+INSERT INTO
+  tool (
     id,
     organization_id,
     name,
     description,
     input_mime_type,
     output_mime_type
-) VALUES (
-    $1, $2, $3, $4, $5, $6
-)
-RETURNING id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
+  )
+VALUES
+  ($1, $2, $3, $4, $5, $6)
+RETURNING
+  id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
 `
 
 type CreateToolParams struct {
@@ -59,7 +61,8 @@ func (q *Queries) CreateTool(ctx context.Context, arg CreateToolParams) (Tool, e
 
 const deleteTool = `-- name: DeleteTool :exec
 DELETE FROM tool
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteTool(ctx context.Context, id uuid.UUID) error {
@@ -69,7 +72,8 @@ func (q *Queries) DeleteTool(ctx context.Context, id uuid.UUID) error {
 
 const deleteToolsByOrganization = `-- name: DeleteToolsByOrganization :exec
 DELETE FROM tool
-WHERE organization_id = $1
+WHERE
+  organization_id = $1
 `
 
 func (q *Queries) DeleteToolsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
@@ -78,8 +82,14 @@ func (q *Queries) DeleteToolsByOrganization(ctx context.Context, organizationID 
 }
 
 const getTool = `-- name: GetTool :one
-SELECT id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type FROM tool
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
+FROM
+  tool
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetTool(ctx context.Context, id uuid.UUID) (Tool, error) {
@@ -99,9 +109,16 @@ func (q *Queries) GetTool(ctx context.Context, id uuid.UUID) (Tool, error) {
 }
 
 const listTools = `-- name: ListTools :many
-SELECT id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type FROM tool
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
+FROM
+  tool
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListToolsParams struct {
@@ -139,10 +156,18 @@ func (q *Queries) ListTools(ctx context.Context, arg ListToolsParams) ([]Tool, e
 }
 
 const listToolsByOrganization = `-- name: ListToolsByOrganization :many
-SELECT id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type FROM tool
-WHERE organization_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
+FROM
+  tool
+WHERE
+  organization_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListToolsByOrganizationParams struct {
@@ -182,13 +207,15 @@ func (q *Queries) ListToolsByOrganization(ctx context.Context, arg ListToolsByOr
 
 const updateTool = `-- name: UpdateTool :one
 UPDATE tool
-SET 
-    name = COALESCE($2, name),
-    description = COALESCE($3, description),
-    input_mime_type = COALESCE($4, input_mime_type),
-    output_mime_type = COALESCE($5, output_mime_type)
-WHERE id = $1
-RETURNING id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
+SET
+  name = COALESCE($2, name),
+  description = COALESCE($3, description),
+  input_mime_type = COALESCE($4, input_mime_type),
+  output_mime_type = COALESCE($5, output_mime_type)
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, description, input_mime_type, name, organization_id, output_mime_type
 `
 
 type UpdateToolParams struct {

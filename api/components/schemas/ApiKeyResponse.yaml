@@ -1,50 +1,41 @@
-type: object
-properties:
-  id:
-    type: string
-    format: uuid
-    minLength: 1
-    example: 550e8400-e29b-41d4-a716-446655440000
-  name:
-    type: string
-    minLength: 1
-    example: Production API Key
-  key:
-    type: string
-    minLength: 1
-    example: sk_live_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-    description: The actual API key (only returned once on creation)
-  prefix:
-    type: string
-    minLength: 1
-    example: sk_live_
-  scopes:
-    type: array
-    items:
-      type: string
-    example: ['read:users', 'write:workflows']
-  rateLimit:
-    type: integer
-    example: 1000
-    description: Requests per minute allowed for this API key
-  expiresAt:
-    type: string
-    format: date-time
-    minLength: 1
-    example: '2025-01-15T09:30:00Z'
-    description: When this API key expires
-  createdAt:
-    type: string
-    format: date-time
-    minLength: 1
-    example: '2024-01-15T09:30:00Z'
-    description: When this API key was created
-required:
-  - id
-  - name
-  - key
-  - prefix
-  - scopes
-  - rateLimit
-  - expiresAt
-  - createdAt
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Response schema for API Key creation
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      name:
+        type: string
+        minLength: 1
+        example: Production API Key
+      key:
+        type: string
+        minLength: 1
+        example: sk_live_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+        description: The actual API key (only returned once on creation)
+      prefix:
+        type: string
+        minLength: 1
+        example: sk_live_
+      scopes:
+        type: array
+        items:
+          type: string
+        example: ['read:users', 'write:workflows']
+      rateLimit:
+        type: integer
+        example: 1000
+        description: Requests per minute allowed for this API key
+      expiresAt:
+        type: string
+        format: date-time
+        minLength: 1
+        example: '2025-01-15T09:30:00Z'
+        description: When this API key expires
+    required:
+      - name
+      - key
+      - prefix
+      - scopes
+      - rateLimit
+      - expiresAt

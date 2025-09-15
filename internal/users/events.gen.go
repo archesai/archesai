@@ -14,7 +14,7 @@ const (
 	EventUserEmail_verified = "user.email-verified"
 )
 
-// UserCreatedEvent represents a created event event for User.
+// UserCreatedEvent represents a created event for User.
 type UserCreatedEvent struct {
 	events.BaseEvent
 	User *User `json:"user"`
@@ -43,7 +43,7 @@ func (e *UserCreatedEvent) EventData() interface{} {
 	return e.User
 }
 
-// UserUpdatedEvent represents a updated event event for User.
+// UserUpdatedEvent represents a updated event for User.
 type UserUpdatedEvent struct {
 	events.BaseEvent
 	User *User `json:"user"`
@@ -72,7 +72,7 @@ func (e *UserUpdatedEvent) EventData() interface{} {
 	return e.User
 }
 
-// UserDeletedEvent represents a deleted event event for User.
+// UserDeletedEvent represents a deleted event for User.
 type UserDeletedEvent struct {
 	events.BaseEvent
 	User *User `json:"user"`
@@ -101,7 +101,7 @@ func (e *UserDeletedEvent) EventData() interface{} {
 	return e.User
 }
 
-// UserEmail_verifiedEvent represents a email_verified event event for User.
+// UserEmail_verifiedEvent represents a email_verified event for User.
 type UserEmail_verifiedEvent struct {
 	events.BaseEvent
 	User *User `json:"user"`
@@ -150,25 +150,25 @@ func NewEventPublisher(publisher events.Publisher) EventPublisher {
 	}
 }
 
-// PublishUserCreated publishes a created event event for User.
+// PublishUserCreated publishes a created event for User.
 func (p *eventPublisher) PublishUserCreated(ctx context.Context, entity *User) error {
 	event := NewUserCreatedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishUserUpdated publishes a updated event event for User.
+// PublishUserUpdated publishes a updated event for User.
 func (p *eventPublisher) PublishUserUpdated(ctx context.Context, entity *User) error {
 	event := NewUserUpdatedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishUserDeleted publishes a deleted event event for User.
+// PublishUserDeleted publishes a deleted event for User.
 func (p *eventPublisher) PublishUserDeleted(ctx context.Context, entity *User) error {
 	event := NewUserDeletedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)
 }
 
-// PublishUserEmail_verified publishes a email_verified event event for User.
+// PublishUserEmail_verified publishes a email_verified event for User.
 func (p *eventPublisher) PublishUserEmail_verified(ctx context.Context, entity *User) error {
 	event := NewUserEmail_verifiedEvent(entity)
 	return events.PublishDomainEvent(ctx, p.publisher, event)

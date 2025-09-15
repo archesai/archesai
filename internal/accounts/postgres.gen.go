@@ -38,33 +38,33 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Account) (*Acco
 	// }
 	// dbAccount, err := r.queries.CreateAccount(ctx, params)
 	// if err != nil {
-	//     return nil, NewRepositoryError("create", err)
+	//     return nil, err
 	// }
 	// return mapAccountToDomain(&dbAccount), nil
 
-	return nil, NewRepositoryError("create", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Account, error) {
 	// Try to call SQLC GetAccount if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("get", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Account) (*Account, error) {
 	// Update operations are often custom and may not have SQLC queries
-	return nil, NewRepositoryError("update", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteAccount if it exists
 	// For now, return not implemented
-	return NewRepositoryError("delete", errors.New("not implemented - SQLC query not found"))
+	return errors.New("not implemented - SQLC query not found")
 }
 
 func (r *PostgresRepository) List(ctx context.Context, params ListAccountsParams) ([]*Account, int64, error) {
 	// List operations need both List and Count queries from SQLC
-	return nil, 0, NewRepositoryError("list", errors.New("not implemented - SQLC query not found"))
+	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
 
 // GetByProviderId retrieves account by providerproviderAccountId
@@ -72,7 +72,7 @@ func (r *PostgresRepository) GetByProviderId(ctx context.Context, provider strin
 
 	// Try to call SQLC GetByProviderId if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("getbyproviderid", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 
 }
 
@@ -81,7 +81,7 @@ func (r *PostgresRepository) ListByUserId(ctx context.Context, userId uuid.UUID)
 
 	// Try to call SQLC ListByUserId if it exists
 	// For now, return not implemented
-	return nil, NewRepositoryError("listbyuserid", errors.New("not implemented - SQLC query not found"))
+	return nil, errors.New("not implemented - SQLC query not found")
 
 }
 

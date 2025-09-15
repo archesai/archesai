@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -17,43 +17,43 @@ const (
 
 // ApiKey defines model for ApiKey.
 type ApiKey struct {
-	// CreatedAt When this API key was created
+	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// ExpiresAt When this API key expires
-	ExpiresAt time.Time          `json:"expiresAt" yaml:"expiresAt"`
-	Id        openapi_types.UUID `json:"id" yaml:"id"`
+	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
 
 	// KeyHash Hashed version of the API key for secure storage
 	KeyHash string `json:"keyHash,omitempty,omitzero" yaml:"keyHash,omitempty"`
 
 	// LastUsedAt When this API key was last used
-	LastUsedAt time.Time `json:"lastUsedAt,omitempty,omitzero" yaml:"lastUsedAt,omitempty"`
-	Name       string    `json:"name" yaml:"name"`
-
-	// OrganizationId ID of the organization this API key belongs to
-	OrganizationId openapi_types.UUID `json:"organizationId,omitempty,omitzero" yaml:"organizationId,omitempty"`
-	Prefix         string             `json:"prefix" yaml:"prefix"`
+	LastUsedAt     time.Time `json:"lastUsedAt,omitempty,omitzero" yaml:"lastUsedAt,omitempty"`
+	Name           string    `json:"name" yaml:"name"`
+	OrganizationId UUID      `json:"organizationId,omitempty,omitzero" yaml:"organizationId,omitempty"`
+	Prefix         string    `json:"prefix" yaml:"prefix"`
 
 	// RateLimit Requests per minute allowed for this API key
 	RateLimit int      `json:"rateLimit" yaml:"rateLimit"`
 	Scopes    []string `json:"scopes" yaml:"scopes"`
 
-	// UpdatedAt When this API key was last updated
+	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-
-	// UserId ID of the user who owns this API key
-	UserId openapi_types.UUID `json:"userId,omitempty,omitzero" yaml:"userId,omitempty"`
+	UserId    UUID      `json:"userId,omitempty,omitzero" yaml:"userId,omitempty"`
 }
 
 // ApiKeyResponse defines model for ApiKeyResponse.
 type ApiKeyResponse struct {
-	// CreatedAt When this API key was created
+	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// ExpiresAt When this API key expires
-	ExpiresAt time.Time          `json:"expiresAt" yaml:"expiresAt"`
-	Id        openapi_types.UUID `json:"id" yaml:"id"`
+	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
 
 	// Key The actual API key (only returned once on creation)
 	Key    string `json:"key" yaml:"key"`
@@ -63,6 +63,21 @@ type ApiKeyResponse struct {
 	// RateLimit Requests per minute allowed for this API key
 	RateLimit int      `json:"rateLimit" yaml:"rateLimit"`
 	Scopes    []string `json:"scopes" yaml:"scopes"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+}
+
+// Base defines model for Base.
+type Base struct {
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // Problem RFC 7807 (Problem Details) compliant error response
@@ -85,6 +100,9 @@ type Problem struct {
 	// Type URI identifying the problem type
 	Type string `json:"type" yaml:"type"`
 }
+
+// UUID Universally Unique Identifier
+type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
 type ValidationError struct {

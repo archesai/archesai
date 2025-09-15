@@ -41,9 +41,15 @@ func (s *Service) List(ctx context.Context, _ string, limit, offset int) ([]*Run
 
 // Create creates a new run
 func (s *Service) Create(ctx context.Context, req *CreateRunJSONRequestBody, orgID string) (*Run, error) {
+	orgUUID, err := uuid.Parse(orgID)
+	if err != nil {
+		s.logger.Error("invalid organization ID", "orgID", orgID, "error", err)
+		return nil, err
+	}
+
 	run := &Run{
 		Id:             uuid.New(),
-		OrganizationId: orgID,
+		OrganizationId: orgUUID,
 		PipelineId:     req.PipelineId,
 		Status:         QUEUED,
 		Progress:       0,
@@ -78,7 +84,7 @@ func (s *Service) Update(ctx context.Context, id uuid.UUID, req *UpdateRunJSONRe
 	}
 
 	// Update fields if provided
-	if req.PipelineId != "" {
+	if req.PipelineId != uuid.Nil {
 		run.PipelineId = req.PipelineId
 	}
 

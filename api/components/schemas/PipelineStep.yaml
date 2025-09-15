@@ -5,17 +5,11 @@ allOf:
   - type: object
     properties:
       pipelineId:
-        description: The ID of the pipeline this step belongs to
-        type: string
-        format: uuid
-        minLength: 1
-        example: '123e4567-e89b-12d3-a456-426614174000'
+        allOf:
+          - $ref: ./UUID.yaml
       toolId:
-        description: The ID of the tool to execute
-        type: string
-        format: uuid
-        minLength: 1
-        example: '987fcdeb-51a2-43d1-9876-543210fedcba'
+        allOf:
+          - $ref: ./UUID.yaml
       name:
         description: Name of the step
         type: string

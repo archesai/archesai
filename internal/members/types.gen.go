@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -52,28 +52,36 @@ const (
 	UpdateMemberJSONBodyRoleOwner  UpdateMemberJSONBodyRole = "owner"
 )
 
+// Base defines model for Base.
+type Base struct {
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+}
+
 // FilterNode A recursive filter node that can be a condition or group
 type FilterNode = interface{}
 
-// Member Schema for Member entity
+// Member defines model for Member.
 type Member struct {
-	// CreatedAt The date this item was created
+	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
+	// Id Universally Unique Identifier
+	Id             UUID `json:"id" yaml:"id"`
+	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
 
 	// Role The role of the member
 	Role MemberRole `json:"role" yaml:"role"`
 
-	// UpdatedAt The date this item was last updated
+	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-
-	// UserId The user id
-	UserId string `json:"userId" yaml:"userId"`
+	UserId    UUID      `json:"userId" yaml:"userId"`
 }
 
 // MemberRole The role of the member
@@ -105,6 +113,9 @@ type Problem struct {
 	// Type URI identifying the problem type
 	Type string `json:"type" yaml:"type"`
 }
+
+// UUID Universally Unique Identifier
+type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
 type ValidationError struct {

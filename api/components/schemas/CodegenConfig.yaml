@@ -13,6 +13,38 @@ properties:
     default: 'internal'
     example: 'internal'
 
+  domains:
+    type: object
+    description: Domains to generate
+    additionalProperties:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: string
+        schemas:
+          type: array
+          items:
+            type: string
+
+  settings:
+    type: object
+    description: Global generation settings
+    properties:
+      overwrite:
+        type: boolean
+        description: Whether to overwrite existing files
+        default: false
+      generate_tests:
+        type: boolean
+        description: Whether to generate test files
+        default: false
+      header:
+        type: string
+        description: File header comment
+    additionalProperties: false
+
   generators:
     type: object
     description: Generator configuration with output paths
@@ -67,6 +99,24 @@ properties:
             type: string
             description: Path for NATS event publisher
             example: 'events_nats.gen.go'
+        additionalProperties: false
+      sql:
+        type: object
+        description: SQL generation configuration
+        properties:
+          schema_dir:
+            type: string
+            description: Directory for SQL schema files
+            example: 'internal/database/schema'
+          query_dir:
+            type: string
+            description: Directory for SQL query files
+            example: 'internal/database/queries'
+          dialect:
+            type: string
+            description: SQL dialect to use
+            enum: ['postgresql', 'sqlite', 'mysql']
+            default: 'postgresql'
         additionalProperties: false
       handlers:
         type: string

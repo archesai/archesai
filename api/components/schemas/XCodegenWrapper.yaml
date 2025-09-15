@@ -2,17 +2,5 @@ components:
   schemas:
     XCodegen:
       $ref: ./XCodegen.yaml
-    XCodegenRepository:
-      $ref: ./XCodegenRepository.yaml
-    XCodegenRepositoryMethod:
-      $ref: ./XCodegenRepositoryMethod.yaml
-    XCodegenCache:
-      $ref: ./XCodegenCache.yaml
-    XCodegenHandler:
-      $ref: ./XCodegenHandler.yaml
-    XCodegenAdapter:
-      $ref: ./XCodegenAdapter.yaml
-    XCodegenConfig:
-      $ref: ./XCodegenConfig.yaml
-    XCodegenService:
-      $ref: ./XCodegenService.yaml
+    CodegenConfig:
+      $ref: ./CodegenConfig.yaml

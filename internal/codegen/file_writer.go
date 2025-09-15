@@ -13,13 +13,8 @@ import (
 
 // FileWriter handles writing generated files with proper formatting and headers.
 type FileWriter struct {
-	// Header to prepend to all generated files
-	header string
-
-	// Whether to overwrite existing files
-	overwrite bool
-
-	// Whether to format Go code
+	header     string
+	overwrite  bool
 	formatCode bool
 }
 

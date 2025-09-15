@@ -13,15 +13,12 @@ import (
 )
 
 const createVerificationToken = `-- name: CreateVerificationToken :one
-INSERT INTO verification_token (
-    id,
-    identifier,
-    value,
-    expires_at
-) VALUES (
-    $1, $2, $3, $4
-)
-RETURNING id, created_at, updated_at, expires_at, identifier, value
+INSERT INTO
+  verification_token (id, identifier, value, expires_at)
+VALUES
+  ($1, $2, $3, $4)
+RETURNING
+  id, created_at, updated_at, expires_at, identifier, value
 `
 
 type CreateVerificationTokenParams struct {
@@ -52,7 +49,8 @@ func (q *Queries) CreateVerificationToken(ctx context.Context, arg CreateVerific
 
 const deleteVerificationToken = `-- name: DeleteVerificationToken :exec
 DELETE FROM verification_token
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteVerificationToken(ctx context.Context, id uuid.UUID) error {
@@ -62,7 +60,8 @@ func (q *Queries) DeleteVerificationToken(ctx context.Context, id uuid.UUID) err
 
 const deleteVerificationTokensByIdentifier = `-- name: DeleteVerificationTokensByIdentifier :exec
 DELETE FROM verification_token
-WHERE identifier = $1
+WHERE
+  identifier = $1
 `
 
 func (q *Queries) DeleteVerificationTokensByIdentifier(ctx context.Context, identifier string) error {
@@ -71,8 +70,14 @@ func (q *Queries) DeleteVerificationTokensByIdentifier(ctx context.Context, iden
 }
 
 const getVerificationToken = `-- name: GetVerificationToken :one
-SELECT id, created_at, updated_at, expires_at, identifier, value FROM verification_token
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, expires_at, identifier, value
+FROM
+  verification_token
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetVerificationToken(ctx context.Context, id uuid.UUID) (VerificationToken, error) {
@@ -90,8 +95,15 @@ func (q *Queries) GetVerificationToken(ctx context.Context, id uuid.UUID) (Verif
 }
 
 const getVerificationTokenByValue = `-- name: GetVerificationTokenByValue :one
-SELECT id, created_at, updated_at, expires_at, identifier, value FROM verification_token
-WHERE identifier = $1 AND value = $2 LIMIT 1
+SELECT
+  id, created_at, updated_at, expires_at, identifier, value
+FROM
+  verification_token
+WHERE
+  identifier = $1
+  AND value = $2
+LIMIT
+  1
 `
 
 type GetVerificationTokenByValueParams struct {
@@ -114,9 +126,16 @@ func (q *Queries) GetVerificationTokenByValue(ctx context.Context, arg GetVerifi
 }
 
 const listVerificationTokens = `-- name: ListVerificationTokens :many
-SELECT id, created_at, updated_at, expires_at, identifier, value FROM verification_token
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, expires_at, identifier, value
+FROM
+  verification_token
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListVerificationTokensParams struct {
@@ -152,10 +171,18 @@ func (q *Queries) ListVerificationTokens(ctx context.Context, arg ListVerificati
 }
 
 const listVerificationTokensByIdentifier = `-- name: ListVerificationTokensByIdentifier :many
-SELECT id, created_at, updated_at, expires_at, identifier, value FROM verification_token
-WHERE identifier = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, expires_at, identifier, value
+FROM
+  verification_token
+WHERE
+  identifier = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListVerificationTokensByIdentifierParams struct {
@@ -193,12 +220,14 @@ func (q *Queries) ListVerificationTokensByIdentifier(ctx context.Context, arg Li
 
 const updateVerificationToken = `-- name: UpdateVerificationToken :one
 UPDATE verification_token
-SET 
-    value = COALESCE($2, value),
-    expires_at = COALESCE($3, expires_at),
-    updated_at = NOW()
-WHERE id = $1
-RETURNING id, created_at, updated_at, expires_at, identifier, value
+SET
+  value = COALESCE($2, value),
+  expires_at = COALESCE($3, expires_at),
+  updated_at = NOW()
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, expires_at, identifier, value
 `
 
 type UpdateVerificationTokenParams struct {

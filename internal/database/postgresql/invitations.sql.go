@@ -13,7 +13,8 @@ import (
 )
 
 const createInvitation = `-- name: CreateInvitation :one
-INSERT INTO invitation (
+INSERT INTO
+  invitation (
     id,
     organization_id,
     inviter_id,
@@ -21,10 +22,11 @@ INSERT INTO invitation (
     role,
     expires_at,
     status
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $7
-)
-RETURNING id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
+  )
+VALUES
+  ($1, $2, $3, $4, $5, $6, $7)
+RETURNING
+  id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
 `
 
 type CreateInvitationParams struct {
@@ -64,7 +66,8 @@ func (q *Queries) CreateInvitation(ctx context.Context, arg CreateInvitationPara
 
 const deleteInvitation = `-- name: DeleteInvitation :exec
 DELETE FROM invitation
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeleteInvitation(ctx context.Context, id uuid.UUID) error {
@@ -74,7 +77,8 @@ func (q *Queries) DeleteInvitation(ctx context.Context, id uuid.UUID) error {
 
 const deleteInvitationsByOrganization = `-- name: DeleteInvitationsByOrganization :exec
 DELETE FROM invitation
-WHERE organization_id = $1
+WHERE
+  organization_id = $1
 `
 
 func (q *Queries) DeleteInvitationsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
@@ -83,8 +87,14 @@ func (q *Queries) DeleteInvitationsByOrganization(ctx context.Context, organizat
 }
 
 const getInvitation = `-- name: GetInvitation :one
-SELECT id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status FROM invitation
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
+FROM
+  invitation
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetInvitation(ctx context.Context, id uuid.UUID) (Invitation, error) {
@@ -105,8 +115,15 @@ func (q *Queries) GetInvitation(ctx context.Context, id uuid.UUID) (Invitation, 
 }
 
 const getInvitationByEmail = `-- name: GetInvitationByEmail :one
-SELECT id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status FROM invitation
-WHERE organization_id = $1 AND email = $2 LIMIT 1
+SELECT
+  id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
+FROM
+  invitation
+WHERE
+  organization_id = $1
+  AND email = $2
+LIMIT
+  1
 `
 
 type GetInvitationByEmailParams struct {
@@ -132,9 +149,16 @@ func (q *Queries) GetInvitationByEmail(ctx context.Context, arg GetInvitationByE
 }
 
 const listInvitations = `-- name: ListInvitations :many
-SELECT id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status FROM invitation
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
+FROM
+  invitation
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListInvitationsParams struct {
@@ -173,10 +197,18 @@ func (q *Queries) ListInvitations(ctx context.Context, arg ListInvitationsParams
 }
 
 const listInvitationsByInviter = `-- name: ListInvitationsByInviter :many
-SELECT id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status FROM invitation
-WHERE inviter_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
+FROM
+  invitation
+WHERE
+  inviter_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListInvitationsByInviterParams struct {
@@ -216,10 +248,18 @@ func (q *Queries) ListInvitationsByInviter(ctx context.Context, arg ListInvitati
 }
 
 const listInvitationsByOrganization = `-- name: ListInvitationsByOrganization :many
-SELECT id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status FROM invitation
-WHERE organization_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
+FROM
+  invitation
+WHERE
+  organization_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListInvitationsByOrganizationParams struct {
@@ -260,14 +300,16 @@ func (q *Queries) ListInvitationsByOrganization(ctx context.Context, arg ListInv
 
 const updateInvitation = `-- name: UpdateInvitation :one
 UPDATE invitation
-SET 
-    email = COALESCE($2, email),
-    role = COALESCE($3, role),
-    expires_at = COALESCE($4, expires_at),
-    status = COALESCE($5, status),
-    updated_at = NOW()
-WHERE id = $1
-RETURNING id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
+SET
+  email = COALESCE($2, email),
+  role = COALESCE($3, role),
+  expires_at = COALESCE($4, expires_at),
+  status = COALESCE($5, status),
+  updated_at = NOW()
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, email, expires_at, inviter_id, organization_id, role, status
 `
 
 type UpdateInvitationParams struct {

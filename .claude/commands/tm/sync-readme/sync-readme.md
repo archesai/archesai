@@ -20,7 +20,7 @@ Optional filters:
 ## Execution
 
 ```bash
-task-master sync-readme [--with-subtasks] [--status=<status>]
+task-master sync-readme [--with-subtasks] [--status= < status > ]
 ```
 
 ## README Generation

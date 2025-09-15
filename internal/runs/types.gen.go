@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -44,6 +44,18 @@ const (
 	Desc ListRunsParamsSortOrder = "desc"
 )
 
+// Base defines model for Base.
+type Base struct {
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Id Universally Unique Identifier
+	Id UUID `json:"id" yaml:"id"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+}
+
 // FilterNode A recursive filter node that can be a condition or group
 type FilterNode = interface{}
 
@@ -74,25 +86,21 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// Run Schema for Run entity
+// Run defines model for Run.
 type Run struct {
 	// CompletedAt The timestamp when the run completed
 	CompletedAt time.Time `json:"completedAt,omitempty,omitzero" yaml:"completedAt,omitempty"`
 
-	// CreatedAt The date this item was created
+	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Error The error message
 	Error string `json:"error,omitempty,omitzero" yaml:"error,omitempty"`
 
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
-
-	// PipelineId The pipeline ID associated with the run
-	PipelineId string `json:"pipelineId" yaml:"pipelineId"`
+	// Id Universally Unique Identifier
+	Id             UUID `json:"id" yaml:"id"`
+	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
+	PipelineId     UUID `json:"pipelineId" yaml:"pipelineId"`
 
 	// Progress The percent progress of the run
 	Progress float32 `json:"progress" yaml:"progress"`
@@ -100,16 +108,17 @@ type Run struct {
 	// StartedAt The timestamp when the run started
 	StartedAt time.Time `json:"startedAt,omitempty,omitzero" yaml:"startedAt,omitempty"`
 	Status    RunStatus `json:"status" yaml:"status"`
+	ToolId    UUID      `json:"toolId" yaml:"toolId"`
 
-	// ToolId The tool ID associated with the run
-	ToolId string `json:"toolId" yaml:"toolId"`
-
-	// UpdatedAt The date this item was last updated
+	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // RunStatus defines model for Run.Status.
 type RunStatus string
+
+// UUID Universally Unique Identifier
+type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
 type ValidationError struct {
@@ -180,14 +189,12 @@ type ListRunsParamsSortOrder string
 
 // CreateRunJSONBody defines parameters for CreateRun.
 type CreateRunJSONBody struct {
-	// PipelineId The pipeline ID associated with the run
-	PipelineId string `json:"pipelineId" yaml:"pipelineId"`
+	PipelineId UUID `json:"pipelineId" yaml:"pipelineId"`
 }
 
 // UpdateRunJSONBody defines parameters for UpdateRun.
 type UpdateRunJSONBody struct {
-	// PipelineId The pipeline ID associated with the run
-	PipelineId string `json:"pipelineId,omitempty,omitzero" yaml:"pipelineId,omitempty"`
+	PipelineId UUID `json:"pipelineId,omitempty,omitzero" yaml:"pipelineId,omitempty"`
 }
 
 // CreateRunJSONRequestBody defines body for CreateRun for application/json ContentType.

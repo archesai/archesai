@@ -14,8 +14,8 @@ func main() {
 	var configPath string
 	var verbose bool
 
-	flag.StringVar(&configPath, "config", "archesai.codegen.yaml", "Config file path")
-	flag.StringVar(&configPath, "c", "archesai.codegen.yaml", "Config file path (shorthand)")
+	flag.StringVar(&configPath, "config", ".archesai.codegen.yaml", "Config file path")
+	flag.StringVar(&configPath, "c", ".archesai.codegen.yaml", "Config file path (shorthand)")
 	flag.BoolVar(&verbose, "verbose", false, "Verbose output")
 	flag.BoolVar(&verbose, "v", false, "Verbose output (shorthand)")
 	flag.Parse()

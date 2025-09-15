@@ -12,12 +12,16 @@ import (
 )
 
 const checkDirectCircularDependency = `-- name: CheckDirectCircularDependency :one
-SELECT EXISTS (
-    SELECT 1 
-    FROM pipeline_step_to_dependency 
-    WHERE pipeline_step_id = $2 
-    AND prerequisite_id = $1
-) as would_create_cycle
+SELECT
+  EXISTS (
+    SELECT
+      1
+    FROM
+      pipeline_step_to_dependency
+    WHERE
+      pipeline_step_id = $2
+      AND prerequisite_id = $1
+  ) as would_create_cycle
 `
 
 type CheckDirectCircularDependencyParams struct {
@@ -34,12 +38,10 @@ func (q *Queries) CheckDirectCircularDependency(ctx context.Context, arg CheckDi
 }
 
 const createPipelineStepDependency = `-- name: CreatePipelineStepDependency :exec
-INSERT INTO pipeline_step_to_dependency (
-    pipeline_step_id,
-    prerequisite_id
-) VALUES (
-    $1, $2
-)
+INSERT INTO
+  pipeline_step_to_dependency (pipeline_step_id, prerequisite_id)
+VALUES
+  ($1, $2)
 `
 
 type CreatePipelineStepDependencyParams struct {
@@ -54,7 +56,9 @@ func (q *Queries) CreatePipelineStepDependency(ctx context.Context, arg CreatePi
 
 const deleteAllStepDependencies = `-- name: DeleteAllStepDependencies :exec
 DELETE FROM pipeline_step_to_dependency
-WHERE pipeline_step_id = $1 OR prerequisite_id = $1
+WHERE
+  pipeline_step_id = $1
+  OR prerequisite_id = $1
 `
 
 func (q *Queries) DeleteAllStepDependencies(ctx context.Context, pipelineStepID uuid.UUID) error {
@@ -64,7 +68,9 @@ func (q *Queries) DeleteAllStepDependencies(ctx context.Context, pipelineStepID 
 
 const deletePipelineStepDependency = `-- name: DeletePipelineStepDependency :exec
 DELETE FROM pipeline_step_to_dependency
-WHERE pipeline_step_id = $1 AND prerequisite_id = $2
+WHERE
+  pipeline_step_id = $1
+  AND prerequisite_id = $2
 `
 
 type DeletePipelineStepDependencyParams struct {
@@ -78,13 +84,15 @@ func (q *Queries) DeletePipelineStepDependency(ctx context.Context, arg DeletePi
 }
 
 const getPipelineStepDependencies = `-- name: GetPipelineStepDependencies :many
-SELECT 
-    psd.pipeline_step_id,
-    psd.prerequisite_id,
-    ps.pipeline_id
-FROM pipeline_step_to_dependency psd
-JOIN pipeline_step ps ON ps.id = psd.pipeline_step_id
-WHERE ps.pipeline_id = $1
+SELECT
+  psd.pipeline_step_id,
+  psd.prerequisite_id,
+  ps.pipeline_id
+FROM
+  pipeline_step_to_dependency psd
+  JOIN pipeline_step ps ON ps.id = psd.pipeline_step_id
+WHERE
+  ps.pipeline_id = $1
 `
 
 type GetPipelineStepDependenciesRow struct {
@@ -114,9 +122,12 @@ func (q *Queries) GetPipelineStepDependencies(ctx context.Context, pipelineID uu
 }
 
 const getStepDependencies = `-- name: GetStepDependencies :many
-SELECT prerequisite_id
-FROM pipeline_step_to_dependency
-WHERE pipeline_step_id = $1
+SELECT
+  prerequisite_id
+FROM
+  pipeline_step_to_dependency
+WHERE
+  pipeline_step_id = $1
 `
 
 func (q *Queries) GetStepDependencies(ctx context.Context, pipelineStepID uuid.UUID) ([]uuid.UUID, error) {
@@ -140,9 +151,12 @@ func (q *Queries) GetStepDependencies(ctx context.Context, pipelineStepID uuid.U
 }
 
 const getStepDependents = `-- name: GetStepDependents :many
-SELECT pipeline_step_id
-FROM pipeline_step_to_dependency
-WHERE prerequisite_id = $1
+SELECT
+  pipeline_step_id
+FROM
+  pipeline_step_to_dependency
+WHERE
+  prerequisite_id = $1
 `
 
 func (q *Queries) GetStepDependents(ctx context.Context, prerequisiteID uuid.UUID) ([]uuid.UUID, error) {

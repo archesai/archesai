@@ -13,9 +13,12 @@ import (
 )
 
 const countPipelineSteps = `-- name: CountPipelineSteps :one
-SELECT COUNT(*) as count
-FROM pipeline_step
-WHERE pipeline_id = $1
+SELECT
+  COUNT(*) as count
+FROM
+  pipeline_step
+WHERE
+  pipeline_id = $1
 `
 
 func (q *Queries) CountPipelineSteps(ctx context.Context, pipelineID uuid.UUID) (int64, error) {
@@ -26,14 +29,12 @@ func (q *Queries) CountPipelineSteps(ctx context.Context, pipelineID uuid.UUID) 
 }
 
 const createPipelineStep = `-- name: CreatePipelineStep :one
-INSERT INTO pipeline_step (
-    id,
-    pipeline_id,
-    tool_id
-) VALUES (
-    $1, $2, $3
-)
-RETURNING id, created_at, updated_at, pipeline_id, tool_id
+INSERT INTO
+  pipeline_step (id, pipeline_id, tool_id)
+VALUES
+  ($1, $2, $3)
+RETURNING
+  id, created_at, updated_at, pipeline_id, tool_id
 `
 
 type CreatePipelineStepParams struct {
@@ -57,7 +58,8 @@ func (q *Queries) CreatePipelineStep(ctx context.Context, arg CreatePipelineStep
 
 const deletePipelineStep = `-- name: DeletePipelineStep :exec
 DELETE FROM pipeline_step
-WHERE id = $1
+WHERE
+  id = $1
 `
 
 func (q *Queries) DeletePipelineStep(ctx context.Context, id uuid.UUID) error {
@@ -67,7 +69,8 @@ func (q *Queries) DeletePipelineStep(ctx context.Context, id uuid.UUID) error {
 
 const deletePipelineStepsByPipeline = `-- name: DeletePipelineStepsByPipeline :exec
 DELETE FROM pipeline_step
-WHERE pipeline_id = $1
+WHERE
+  pipeline_id = $1
 `
 
 func (q *Queries) DeletePipelineStepsByPipeline(ctx context.Context, pipelineID uuid.UUID) error {
@@ -76,8 +79,14 @@ func (q *Queries) DeletePipelineStepsByPipeline(ctx context.Context, pipelineID 
 }
 
 const getPipelineStep = `-- name: GetPipelineStep :one
-SELECT id, created_at, updated_at, pipeline_id, tool_id FROM pipeline_step
-WHERE id = $1 LIMIT 1
+SELECT
+  id, created_at, updated_at, pipeline_id, tool_id
+FROM
+  pipeline_step
+WHERE
+  id = $1
+LIMIT
+  1
 `
 
 func (q *Queries) GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineStep, error) {
@@ -94,23 +103,32 @@ func (q *Queries) GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineSt
 }
 
 const getPipelineStepsWithDependencies = `-- name: GetPipelineStepsWithDependencies :many
-SELECT 
-    ps.id,
-    ps.pipeline_id,
-    ps.tool_id,
-    ps.created_at,
-    ps.updated_at,
-    COALESCE(
-        ARRAY_AGG(
-            DISTINCT psd.prerequisite_id
-        ) FILTER (WHERE psd.prerequisite_id IS NOT NULL),
-        ARRAY[]::UUID[]
-    ) as dependencies
-FROM pipeline_step ps
-LEFT JOIN pipeline_step_to_dependency psd ON ps.id = psd.pipeline_step_id
-WHERE ps.pipeline_id = $1
-GROUP BY ps.id, ps.pipeline_id, ps.tool_id, ps.created_at, ps.updated_at
-ORDER BY ps.created_at ASC
+SELECT
+  ps.id,
+  ps.pipeline_id,
+  ps.tool_id,
+  ps.created_at,
+  ps.updated_at,
+  COALESCE(
+    ARRAY_AGG(DISTINCT psd.prerequisite_id) FILTER (
+      WHERE
+        psd.prerequisite_id IS NOT NULL
+    ),
+    ARRAY[]::UUID[]
+  ) as dependencies
+FROM
+  pipeline_step ps
+  LEFT JOIN pipeline_step_to_dependency psd ON ps.id = psd.pipeline_step_id
+WHERE
+  ps.pipeline_id = $1
+GROUP BY
+  ps.id,
+  ps.pipeline_id,
+  ps.tool_id,
+  ps.created_at,
+  ps.updated_at
+ORDER BY
+  ps.created_at ASC
 `
 
 type GetPipelineStepsWithDependenciesRow struct {
@@ -150,9 +168,16 @@ func (q *Queries) GetPipelineStepsWithDependencies(ctx context.Context, pipeline
 }
 
 const listPipelineSteps = `-- name: ListPipelineSteps :many
-SELECT id, created_at, updated_at, pipeline_id, tool_id FROM pipeline_step
-ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+SELECT
+  id, created_at, updated_at, pipeline_id, tool_id
+FROM
+  pipeline_step
+ORDER BY
+  created_at DESC
+LIMIT
+  $1
+OFFSET
+  $2
 `
 
 type ListPipelineStepsParams struct {
@@ -187,10 +212,18 @@ func (q *Queries) ListPipelineSteps(ctx context.Context, arg ListPipelineStepsPa
 }
 
 const listPipelineStepsByPipeline = `-- name: ListPipelineStepsByPipeline :many
-SELECT id, created_at, updated_at, pipeline_id, tool_id FROM pipeline_step
-WHERE pipeline_id = $1
-ORDER BY created_at ASC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, pipeline_id, tool_id
+FROM
+  pipeline_step
+WHERE
+  pipeline_id = $1
+ORDER BY
+  created_at ASC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListPipelineStepsByPipelineParams struct {
@@ -226,10 +259,18 @@ func (q *Queries) ListPipelineStepsByPipeline(ctx context.Context, arg ListPipel
 }
 
 const listPipelineStepsByTool = `-- name: ListPipelineStepsByTool :many
-SELECT id, created_at, updated_at, pipeline_id, tool_id FROM pipeline_step
-WHERE tool_id = $1
-ORDER BY created_at DESC
-LIMIT $2 OFFSET $3
+SELECT
+  id, created_at, updated_at, pipeline_id, tool_id
+FROM
+  pipeline_step
+WHERE
+  tool_id = $1
+ORDER BY
+  created_at DESC
+LIMIT
+  $2
+OFFSET
+  $3
 `
 
 type ListPipelineStepsByToolParams struct {
@@ -266,10 +307,12 @@ func (q *Queries) ListPipelineStepsByTool(ctx context.Context, arg ListPipelineS
 
 const updatePipelineStep = `-- name: UpdatePipelineStep :one
 UPDATE pipeline_step
-SET 
-    tool_id = COALESCE($2, tool_id)
-WHERE id = $1
-RETURNING id, created_at, updated_at, pipeline_id, tool_id
+SET
+  tool_id = COALESCE($2, tool_id)
+WHERE
+  id = $1
+RETURNING
+  id, created_at, updated_at, pipeline_id, tool_id
 `
 
 type UpdatePipelineStepParams struct {
