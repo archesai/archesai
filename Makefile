@@ -281,15 +281,15 @@ clean-ts: ## Clean distribution builds
 .PHONY: clean-go
 clean-go: ## Clean Go build artifacts
 	@echo -e "$(YELLOW)▶ Cleaning Go build artifacts...$(NC)"
-	@rm -rf bin
+	@rm -rf ./bin
 	@echo -e "$(GREEN)✓ Go build artifacts cleaned!$(NC)"
 
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
 	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
 	@find . -type f -name "*.gen.go" -exec rm -f {} +
-	@rm -rf web/client/src/generated
-	@rm -f api/openapi.bundled.yaml
+	@rm -rf ./web/client/src/generated
+	@rm -f ./api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ Generated code cleaned!$(NC)"
 
 .PHONY: clean-test
