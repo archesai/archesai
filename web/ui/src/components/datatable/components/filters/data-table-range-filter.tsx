@@ -10,9 +10,9 @@ interface DataTableRangeFilterProps<TData extends BaseEntity>
   extends React.ComponentProps<"div"> {
   column: Column<TData>;
   filter: FilterCondition & { id: string };
-  inputId: string;
+  inputID: string;
   onFilterUpdate: (
-    filterId: string,
+    filterID: string,
     updates: Partial<Omit<FilterCondition, "type">>,
   ) => void;
 }
@@ -21,7 +21,7 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
   className,
   column,
   filter,
-  inputId,
+  inputID,
   onFilterUpdate,
   ...props
 }: DataTableRangeFilterProps<TData>): JSX.Element {
@@ -93,7 +93,7 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
         className="h-8 w-full rounded"
         data-slot="range-min"
         defaultValue={value[0]}
-        id={`${inputId}-min`}
+        id={`${inputID}-min`}
         inputMode="numeric"
         max={max}
         min={min}
@@ -111,7 +111,7 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
         className="h-8 w-full rounded"
         data-slot="range-max"
         defaultValue={value[1]}
-        id={`${inputId}-max`}
+        id={`${inputID}-max`}
         inputMode="numeric"
         max={max}
         min={min}

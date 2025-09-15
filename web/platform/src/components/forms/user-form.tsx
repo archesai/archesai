@@ -14,7 +14,7 @@ export default function UserForm(): JSX.Element {
   const { mutateAsync: updateUser } = useUpdateUser();
   const { data: sessionData } = useGetSessionSuspense("current");
   const { data: userData } = useGetUserSuspense(
-    sessionData.data.userId || "current",
+    sessionData.data.userID || "current",
   );
 
   const formFields: FormFieldConfig<UpdateUserBody>[] = [

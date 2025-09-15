@@ -40,7 +40,7 @@ export function DefaultCatchBoundary({
             variant={"ghost"}
           >
             <Link
-              onClick={(e) => {
+              onClick={(e: { preventDefault: () => void }) => {
                 e.preventDefault();
                 window.history.back();
               }}

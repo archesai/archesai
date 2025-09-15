@@ -26,6 +26,7 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Organization operations
 
+// Create creates a new organization
 func (r *PostgresRepository) Create(ctx context.Context, entity *Organization) (*Organization, error) {
 	// Check if SQLC has the CreateOrganization method
 	// For now, we'll generate a stub but with proper error handling
@@ -33,7 +34,7 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Organization) (
 
 	// Example of what it should look like when SQLC query exists:
 	// params := postgresql.CreateOrganizationParams{
-	//     Id: entity.Id,
+	//     ID: entity.ID,
 	//     // ... map other fields
 	// }
 	// dbOrganization, err := r.queries.CreateOrganization(ctx, params)
@@ -45,23 +46,27 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Organization) (
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Get retrieves a organization by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Organization, error) {
 	// Try to call SQLC GetOrganization if it exists
 	// For now, return not implemented
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Update updates an existing organization
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error) {
 	// Update operations are often custom and may not have SQLC queries
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Delete removes a organization
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteOrganization if it exists
 	// For now, return not implemented
 	return errors.New("not implemented - SQLC query not found")
 }
 
+// List returns a paginated list of organizations
 func (r *PostgresRepository) List(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error) {
 	// List operations need both List and Count queries from SQLC
 	return nil, 0, errors.New("not implemented - SQLC query not found")
@@ -76,10 +81,10 @@ func (r *PostgresRepository) GetBySlug(ctx context.Context, slug string) (*Organ
 
 }
 
-// GetByStripeCustomerId retrieves organization by stripeCustomerId
-func (r *PostgresRepository) GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error) {
+// GetByStripeCustomerID retrieves organization by stripeCustomerID
+func (r *PostgresRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*Organization, error) {
 
-	// Try to call SQLC GetByStripeCustomerId if it exists
+	// Try to call SQLC GetByStripeCustomerID if it exists
 	// For now, return not implemented
 	return nil, errors.New("not implemented - SQLC query not found")
 
@@ -98,7 +103,7 @@ func mapOrganizationToDomain(db *postgresql.Organization) *Organization {
 	// For example:
 	// - OpenAPI might use string, database uses *string
 	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (Id vs ID)
+	// - Field names might differ (ID vs ID)
 
 	result := &Organization{
 		// TODO: Map fields properly based on actual type definitions
@@ -106,7 +111,7 @@ func mapOrganizationToDomain(db *postgresql.Organization) *Organization {
 	}
 
 	// Basic field mapping - customize based on your entity structure
-	// result.Id = db.Id
+	// result.ID = db.ID
 	// result.CreatedAt = db.CreatedAt
 	// result.UpdatedAt = db.UpdatedAt
 	// Add specific field mappings as needed

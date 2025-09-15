@@ -62,10 +62,10 @@ func runAPI(cmd *cobra.Command, _ []string) error {
 
 	// Override with command line flags
 	if cmd.Flags().Changed("host") {
-		cfg.Api.Host = viper.GetString("server.host")
+		cfg.API.Host = viper.GetString("server.host")
 	}
 	if cmd.Flags().Changed("port") {
-		cfg.Api.Port = float32(viper.GetInt("server.port"))
+		cfg.API.Port = float32(viper.GetInt("server.port"))
 	}
 
 	// Create application container
@@ -85,7 +85,7 @@ func runAPI(cmd *cobra.Command, _ []string) error {
 
 	// Run server in goroutine
 	go func() {
-		log.Printf("🚀 API server starting on %s:%d", cfg.Api.Host, int(cfg.Api.Port))
+		log.Printf("🚀 API server starting on %s:%d", cfg.API.Host, int(cfg.API.Port))
 		if err := appContainer.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Failed to start server: %v", err)
 		}

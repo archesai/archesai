@@ -22,7 +22,7 @@ RETURNING
 `
 
 type CreateVerificationTokenParams struct {
-	Id         uuid.UUID
+	ID         uuid.UUID
 	Identifier string
 	Value      string
 	ExpiresAt  time.Time
@@ -30,14 +30,14 @@ type CreateVerificationTokenParams struct {
 
 func (q *Queries) CreateVerificationToken(ctx context.Context, arg CreateVerificationTokenParams) (VerificationToken, error) {
 	row := q.db.QueryRow(ctx, createVerificationToken,
-		arg.Id,
+		arg.ID,
 		arg.Identifier,
 		arg.Value,
 		arg.ExpiresAt,
 	)
 	var i VerificationToken
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
@@ -84,7 +84,7 @@ func (q *Queries) GetVerificationToken(ctx context.Context, id uuid.UUID) (Verif
 	row := q.db.QueryRow(ctx, getVerificationToken, id)
 	var i VerificationToken
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
@@ -115,7 +115,7 @@ func (q *Queries) GetVerificationTokenByValue(ctx context.Context, arg GetVerifi
 	row := q.db.QueryRow(ctx, getVerificationTokenByValue, arg.Identifier, arg.Value)
 	var i VerificationToken
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
@@ -153,7 +153,7 @@ func (q *Queries) ListVerificationTokens(ctx context.Context, arg ListVerificati
 	for rows.Next() {
 		var i VerificationToken
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ExpiresAt,
@@ -201,7 +201,7 @@ func (q *Queries) ListVerificationTokensByIdentifier(ctx context.Context, arg Li
 	for rows.Next() {
 		var i VerificationToken
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ExpiresAt,
@@ -231,16 +231,16 @@ RETURNING
 `
 
 type UpdateVerificationTokenParams struct {
-	Id        uuid.UUID
+	ID        uuid.UUID
 	Value     *string
 	ExpiresAt *time.Time
 }
 
 func (q *Queries) UpdateVerificationToken(ctx context.Context, arg UpdateVerificationTokenParams) (VerificationToken, error) {
-	row := q.db.QueryRow(ctx, updateVerificationToken, arg.Id, arg.Value, arg.ExpiresAt)
+	row := q.db.QueryRow(ctx, updateVerificationToken, arg.ID, arg.Value, arg.ExpiresAt)
 	var i VerificationToken
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,

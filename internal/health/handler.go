@@ -28,7 +28,17 @@ func NewHandler(service *Service, logger *slog.Logger) *Handler {
 func (h *Handler) GetHealth(ctx context.Context, _ GetHealthRequestObject) (GetHealthResponseObject, error) {
 	h.logger.Debug("health check requested")
 
-	status := h.service.CheckHealth(ctx)
+	status, err := h.service.CheckHealth(ctx)
+	if err != nil {
+		h.logger.Error("health check failed", "error", err)
+		return GetHealth400ApplicationProblemPlusJSONResponse{
+			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
+				Type:   "about:blank",
+				Title:  "Internal Server Error",
+				Status: 500,
+			},
+		}, nil
+	}
 
 	response := HealthResponse{
 		Services: struct {
@@ -36,9 +46,9 @@ func (h *Handler) GetHealth(ctx context.Context, _ GetHealthRequestObject) (GetH
 			Email    string `json:"email" yaml:"email"`
 			Redis    string `json:"redis" yaml:"redis"`
 		}{
-			Database: status.Database,
-			Email:    status.Email,
-			Redis:    status.Redis,
+			Database: status.Services.Database,
+			Email:    status.Services.Email,
+			Redis:    status.Services.Redis,
 		},
 		Timestamp: time.Now().Format(time.RFC3339),
 		Uptime:    float32(status.Uptime),

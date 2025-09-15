@@ -71,7 +71,7 @@ export default function ImportCard(): JSX.Element {
   //   writeUrl: string
   // ): Promise<ArtifactEntity> => {
   //   return new Promise((resolve, reject) => {
-  //     // Create a new XMLHttpRequest
+  //     // Create a XMLHttpRequest
   //     const xhr = new XMLHttpRequest()
 
   //     // Add progress event listener

@@ -241,3 +241,22 @@ func NeedsEvents(schema *ParsedSchema) bool {
 	}
 	return len(schema.XCodegen.Events) > 0
 }
+
+// NeedsService checks if a schema needs service generation.
+func NeedsService(schema *ParsedSchema) bool {
+	if schema == nil || schema.XCodegen == nil {
+		return false
+	}
+	// Generate service for any schema with repository operations
+	return len(schema.XCodegen.Repository.Operations) > 0
+}
+
+// NeedsHandler checks if a schema needs handler generation.
+func NeedsHandler(schema *ParsedSchema) bool {
+	if schema == nil || schema.XCodegen == nil {
+		return false
+	}
+	// Generate handlers for schemas that have repository operations
+	// This means they're entities that need HTTP endpoints
+	return len(schema.XCodegen.Repository.Operations) > 0
+}

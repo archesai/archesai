@@ -82,7 +82,7 @@ Use descriptive branch names:
 
 ### Making Changes
 
-1. **Create a new branch**:
+1. **Create a branch**:
 
    ```bash
    git checkout -b feature/your-feature-name

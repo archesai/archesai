@@ -24,7 +24,7 @@ schema:
           - name
           - plan
           - slug
-          - stripeCustomerId
+          - stripeCustomerID
         example: createdAt
         minLength: 1
       order:

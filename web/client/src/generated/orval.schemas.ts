@@ -27,7 +27,7 @@ export interface Page {
 }
 
 /**
- * Universally Unique Identifier
+ * Universally Unique IDentifier
  * @minLength 36
  */
 export type Uuid = string;
@@ -50,11 +50,11 @@ export interface Base {
  * The authentication provider identifier
  * @minLength 1
  */
-export type AccountAllOfProviderId = typeof AccountAllOfProviderId[keyof typeof AccountAllOfProviderId];
+export type AccountAllOfProviderID = typeof AccountAllOfProviderID[keyof typeof AccountAllOfProviderID];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountAllOfProviderId = {
+export const AccountAllOfProviderID = {
   local: 'local',
   google: 'google',
   github: 'github',
@@ -67,14 +67,14 @@ export type AccountAllOf = {
    * The unique identifier for the account from the provider
    * @minLength 1
    */
-  accountId: string;
+  accountID: string;
   /** The user ID this account belongs to */
-  userId: Uuid;
+  userID: Uuid;
   /**
    * The authentication provider identifier
    * @minLength 1
    */
-  providerId: AccountAllOfProviderId;
+  providerID: AccountAllOfProviderID;
   /** The OAuth access token */
   accessToken?: string;
   /** The access token expiration timestamp */
@@ -171,7 +171,7 @@ export interface TokenResponse {
 }
 
 export type SessionAllOf = {
-  activeOrganizationId: Uuid;
+  activeOrganizationID: Uuid;
   /**
    * The expiration date of the session
    * @minLength 1
@@ -192,7 +192,7 @@ export type SessionAllOf = {
    * @minLength 1
    */
   userAgent: string;
-  userId: Uuid;
+  userID: Uuid;
 };
 
 /**
@@ -226,8 +226,8 @@ export type UserAllOf = {
 export type User = Base & UserAllOf;
 
 export type ApiKeyAllOf = {
-  userId?: Uuid;
-  organizationId?: Uuid;
+  userID?: Uuid;
+  organizationID?: Uuid;
   /**
    * Hashed version of the API key for secure storage
    * @minLength 1
@@ -334,7 +334,7 @@ export type OrganizationAllOf = {
   /** Custom metadata in JSON format */
   metadata: OrganizationAllOfMetadata;
   /** Stripe customer identifier */
-  stripeCustomerId?: string;
+  stripeCustomerID?: string;
 };
 
 /**
@@ -357,13 +357,13 @@ export const MemberAllOfRole = {
 } as const;
 
 export type MemberAllOf = {
-  organizationId: Uuid;
+  organizationID: Uuid;
   /**
    * The role of the member
    * @minLength 1
    */
   role: MemberAllOfRole;
-  userId: Uuid;
+  userID: Uuid;
 };
 
 /**
@@ -396,8 +396,8 @@ export type InvitationAllOf = {
    * @minLength 1
    */
   expiresAt: string;
-  inviterId: Uuid;
-  organizationId: Uuid;
+  inviterID: Uuid;
+  organizationID: Uuid;
   /**
    * The role of the invitation
    * @minLength 1
@@ -417,7 +417,7 @@ export type Invitation = Base & InvitationAllOf;
 
 export interface OrganizationReference {
   /** The organization identifier */
-  organizationId: Uuid;
+  organizationID: Uuid;
 }
 
 export type PipelineAllOf = {
@@ -461,8 +461,8 @@ export const PipelineStepAllOfStatus = {
 } as const;
 
 export type PipelineStepAllOf = {
-  pipelineId: Uuid;
-  toolId: Uuid;
+  pipelineID: Uuid;
+  toolID: Uuid;
   /**
    * Name of the step
    * @minLength 1
@@ -494,7 +494,7 @@ export type PipelineStepAllOf = {
    */
   timeout?: number;
   /** IDs of steps this step depends on */
-  dependencies?: string[];
+  dependencies?: Uuid[];
   /** Current status of the step */
   status?: PipelineStepAllOfStatus;
 };
@@ -529,8 +529,8 @@ export type RunAllOf = {
    * @minLength 1
    */
   error?: string;
-  organizationId: Uuid;
-  pipelineId: Uuid;
+  organizationID: Uuid;
+  pipelineID: Uuid;
   /** The percent progress of the run */
   progress: number;
   /**
@@ -540,7 +540,7 @@ export type RunAllOf = {
   startedAt?: string;
   /** @minLength 1 */
   status: RunAllOfStatus;
-  toolId: Uuid;
+  toolID: Uuid;
 };
 
 /**
@@ -564,7 +564,7 @@ export type ToolAllOf = {
    * @minLength 1
    */
   name: string;
-  organizationId: Uuid;
+  organizationID: Uuid;
   /**
    * The MIME type of the output for the tool, e.g. text/plain
    * @minLength 1
@@ -595,13 +595,13 @@ export type ArtifactAllOf = {
    * @minLength 1
    */
   name?: string;
-  organizationId: Uuid;
+  organizationID: Uuid;
   /**
    * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
    * @minLength 1
    */
   previewImage?: string;
-  producerId?: Uuid;
+  producerID?: Uuid;
   /**
    * The artifact text
    * @minLength 1
@@ -620,7 +620,7 @@ export type LabelAllOf = {
    * @minLength 1
    */
   name: string;
-  organizationId: Uuid;
+  organizationID: Uuid;
 };
 
 /**
@@ -781,7 +781,7 @@ export interface FirebaseAuth {
    * Firebase project ID for authentication
    * @minLength 1
    */
-  projectId?: string;
+  projectID?: string;
 }
 
 /**
@@ -919,7 +919,7 @@ export interface DatabaseConfig {
    * Database connection URL/string
    * @minLength 1
    */
-  url: string;
+  URL: string;
   /** Database type (postgresql or sqlite) */
   type?: DatabaseConfigType;
   /**
@@ -1425,14 +1425,14 @@ export const AccountsSortParameterItemField = {
   updatedAt: 'updatedAt',
   accessToken: 'accessToken',
   accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountId: 'accountId',
+  accountID: 'accountID',
   idToken: 'idToken',
   password: 'password',
-  providerId: 'providerId',
+  providerID: 'providerID',
   refreshToken: 'refreshToken',
   refreshTokenExpiresAt: 'refreshTokenExpiresAt',
   scope: 'scope',
-  userId: 'userId',
+  userID: 'userID',
 } as const;
 
 /**
@@ -1475,12 +1475,12 @@ export const SessionsSortParameterItemField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId',
+  activeOrganizationID: 'activeOrganizationID',
   expiresAt: 'expiresAt',
   ipAddress: 'ipAddress',
   token: 'token',
   userAgent: 'userAgent',
-  userId: 'userId',
+  userID: 'userID',
 } as const;
 
 /**
@@ -1576,7 +1576,7 @@ export const OrganizationsSortParameterItemField = {
   name: 'name',
   plan: 'plan',
   slug: 'slug',
-  stripeCustomerId: 'stripeCustomerId',
+  stripeCustomerID: 'stripeCustomerID',
 } as const;
 
 /**
@@ -1619,9 +1619,9 @@ export const MembersSortParameterItemField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  organizationId: 'organizationId',
+  organizationID: 'organizationID',
   role: 'role',
-  userId: 'userId',
+  userID: 'userID',
 } as const;
 
 /**
@@ -1666,8 +1666,8 @@ export const InvitationsSortParameterItemField = {
   updatedAt: 'updatedAt',
   email: 'email',
   expiresAt: 'expiresAt',
-  inviterId: 'inviterId',
-  organizationId: 'organizationId',
+  inviterID: 'inviterID',
+  organizationID: 'organizationID',
   role: 'role',
   status: 'status',
 } as const;
@@ -1714,7 +1714,7 @@ export const PipelinesSortParameterItemField = {
   updatedAt: 'updatedAt',
   description: 'description',
   name: 'name',
-  organizationId: 'organizationId',
+  organizationID: 'organizationID',
 } as const;
 
 /**
@@ -1759,12 +1759,12 @@ export const RunsSortParameterItemField = {
   updatedAt: 'updatedAt',
   completedAt: 'completedAt',
   error: 'error',
-  organizationId: 'organizationId',
-  pipelineId: 'pipelineId',
+  organizationID: 'organizationID',
+  pipelineID: 'pipelineID',
   progress: 'progress',
   startedAt: 'startedAt',
   status: 'status',
-  toolId: 'toolId',
+  toolID: 'toolID',
 } as const;
 
 /**
@@ -1810,7 +1810,7 @@ export const ToolsSortParameterItemField = {
   description: 'description',
   inputMimeType: 'inputMimeType',
   name: 'name',
-  organizationId: 'organizationId',
+  organizationID: 'organizationID',
   outputMimeType: 'outputMimeType',
 } as const;
 
@@ -1858,9 +1858,9 @@ export const ArtifactsSortParameterItemField = {
   description: 'description',
   mimeType: 'mimeType',
   name: 'name',
-  organizationId: 'organizationId',
+  organizationID: 'organizationID',
   previewImage: 'previewImage',
-  producerId: 'producerId',
+  producerID: 'producerID',
   text: 'text',
   url: 'url',
 } as const;
@@ -1906,7 +1906,7 @@ export const LabelsSortParameterItemField = {
   id: 'id',
   updatedAt: 'updatedAt',
   name: 'name',
-  organizationId: 'organizationId',
+  organizationID: 'organizationID',
 } as const;
 
 /**
@@ -1980,6 +1980,19 @@ export type GetAccount200 = {
   data: Account;
 };
 
+export type UpdateAccountBody = {
+  /** The account provider */
+  provider?: string;
+  /** The provider account ID */
+  providerAccountID?: string;
+  /** The account type */
+  type?: string;
+};
+
+export type UpdateAccount200 = {
+  data: Account;
+};
+
 export type DeleteAccount200 = {
   data: Account;
 };
@@ -2048,7 +2061,7 @@ export type RequestEmailChangeBody = {
    * The user ID of the user requesting the email change
    * @minLength 36
    */
-  userId: string;
+  userID: string;
 };
 
 export type ConfirmEmailChangeBody = {
@@ -2067,7 +2080,7 @@ export type ConfirmEmailChangeBody = {
    * The user ID of the user requesting the email change
    * @minLength 36
    */
-  userId: string;
+  userID: string;
 };
 
 export type ListSessionsParams = {
@@ -2111,6 +2124,10 @@ export type CreateSessionBody = {
   rememberMe?: boolean;
 };
 
+export type DeleteSession200 = {
+  data: Session;
+};
+
 export type GetSession200 = {
   data: Session;
 };
@@ -2120,7 +2137,7 @@ export type UpdateSessionBody = {
    * The active organization ID
    * @minLength 1
    */
-  activeOrganizationId: string;
+  activeOrganizationID: string;
 };
 
 export type UpdateSession200 = {
@@ -2280,11 +2297,7 @@ export type CreateOrganizationBody = {
    * @minLength 1
    */
   billingEmail: string;
-  /**
-   * The ID of the item
-   * @minLength 36
-   */
-  organizationId: string;
+  organizationID: Uuid;
 };
 
 export type CreateOrganization201 = {
@@ -2320,15 +2333,14 @@ export type DeleteOrganization200 = {
   data: Organization;
 };
 
-export type GetOneOrganization200 = {
+export type GetOrganization200 = {
   data: Organization;
 };
 
 export type UpdateOrganizationBody = {
   /** The billing email to use for the organization */
   billingEmail?: string;
-  /** The ID of the item */
-  organizationId?: string;
+  organizationID?: Uuid;
 };
 
 export type UpdateOrganization200 = {
@@ -2390,7 +2402,7 @@ export type DeleteMember200 = {
   data: Member;
 };
 
-export type GetOneMember200 = {
+export type GetMember200 = {
   data: Member;
 };
 
@@ -2575,7 +2587,7 @@ export type GetPipelineSteps200 = {
 export type CreatePipelineStepBodyConfig = { [key: string]: unknown };
 
 export type CreatePipelineStepBody = {
-  toolId: Uuid;
+  toolID: Uuid;
   /**
    * Name of the step
    * @minLength 1
@@ -2595,7 +2607,7 @@ export type CreatePipelineStepBody = {
    */
   position?: number;
   /** IDs of steps this step depends on */
-  dependencies?: string[];
+  dependencies?: Uuid[];
 };
 
 export type CreatePipelineStep201 = {
@@ -2606,12 +2618,11 @@ export type GetPipelineExecutionPlan200DataLevelsItem = {
   /** Execution level (0-based) */
   level: number;
   /** Step IDs that can run in parallel at this level */
-  steps: string[];
+  steps: Uuid[];
 };
 
 export type GetPipelineExecutionPlan200Data = {
-  /** @minLength 1 */
-  pipelineId: string;
+  pipelineID: Uuid;
   levels: GetPipelineExecutionPlan200DataLevelsItem[];
   /** Total number of steps in the pipeline */
   totalSteps: number;
@@ -2636,7 +2647,7 @@ export type ValidatePipelineExecutionPlan200 = {
 };
 
 export type CreateRunBody = {
-  pipelineId: Uuid;
+  pipelineID: Uuid;
 };
 
 export type CreateRun201 = {
@@ -2677,7 +2688,7 @@ export type GetRun200 = {
 };
 
 export type UpdateRunBody = {
-  pipelineId?: Uuid;
+  pipelineID?: Uuid;
 };
 
 export type UpdateRun200 = {

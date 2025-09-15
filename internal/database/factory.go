@@ -30,7 +30,7 @@ func (f *Factory) Create(cfg *config.DatabaseConfig) (Database, error) {
 	if cfg.Type != "" {
 		dbType = ParseTypeFromString(string(cfg.Type))
 	} else {
-		dbType = DetectTypeFromURL(cfg.Url)
+		dbType = DetectTypeFromURL(cfg.URL)
 	}
 
 	switch dbType {
@@ -49,7 +49,7 @@ func (f *Factory) CreateFromURL(url string) (Database, error) {
 	dbType := DetectTypeFromURL(url)
 	cfg := &config.DatabaseConfig{
 		Enabled: true,
-		Url:     url,
+		URL:     url,
 		Type:    config.DatabaseConfigType(dbType),
 	}
 	return f.Create(cfg)

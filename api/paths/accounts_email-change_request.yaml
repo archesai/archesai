@@ -18,7 +18,7 @@ post:
                 ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
               example: user@example.com
               minLength: 1
-            userId:
+            userID:
               description: The user ID of the user requesting the email change
               type: string
               format: uuid
@@ -26,7 +26,7 @@ post:
               minLength: 36
           required:
             - newEmail
-            - userId
+            - userID
     required: true
   responses:
     '204':

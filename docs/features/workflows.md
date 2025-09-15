@@ -17,7 +17,7 @@ interface Workflow {
   id: string;
   name: string;
   description: string;
-  organizationId: string;
+  organizationID: string;
   dag: DirectedAcyclicGraph;
   tools: Tool[];
   triggers: Trigger[];

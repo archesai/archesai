@@ -52,16 +52,16 @@ type App struct {
 	HealthService        *health.Service
 
 	// HTTP handlers
-	AccountsHandler      *accounts.Handler
-	UsersHandler         *users.Handler
-	OrganizationsHandler *organizations.Handler
-	InvitationsHandler   *invitations.Handler
-	ArtifactsHandler     *artifacts.Handler
-	LabelsHandler        *labels.Handler
-	MembersHandler       *members.Handler
-	PipelinesHandler     *pipelines.Handler
-	RunsHandler          *runs.Handler
-	ToolsHandler         *tools.Handler
+	AccountsHandler      accounts.StrictServerInterface
+	UsersHandler         users.StrictServerInterface
+	OrganizationsHandler organizations.StrictServerInterface
+	InvitationsHandler   invitations.StrictServerInterface
+	ArtifactsHandler     artifacts.StrictServerInterface
+	LabelsHandler        labels.StrictServerInterface
+	MembersHandler       members.StrictServerInterface
+	PipelinesHandler     pipelines.StrictServerInterface
+	RunsHandler          runs.StrictServerInterface
+	ToolsHandler         tools.StrictServerInterface
 	HealthHandler        *health.Handler
 	// ConfigHandler        *config.Handler
 }
@@ -81,7 +81,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	if cfg.Database.RunMigrations {
 		if err := migrations.RunMigrations(db, log); err != nil {
 			log.Error("failed to run migrations", "error", err)
-			isProduction := cfg.Api.Environment == "production"
+			isProduction := cfg.API.Environment == "production"
 			if isProduction {
 				return nil, fmt.Errorf("failed to run migrations: %w", err)
 			}
@@ -98,49 +98,50 @@ func NewApp(cfg *config.Config) (*App, error) {
 	authMiddleware := middleware.NewAuthMiddleware(cfg.GetJWTSecret(), log)
 
 	// Initialize accounts domain
-	accountsEvents := accounts.NewEventPublisher(infra.EventPublisher)
-	accountsService := accounts.NewService(repos.Accounts, nil, accountsEvents, log)
-	accountsHandler := accounts.NewHandler(accountsService, log)
+	// accountsEvents := accounts.NewEventPublisher(infra.EventPublisher)
+	accountsService := accounts.NewService(repos.Accounts, nil, log)
+	accountsHandler := accounts.NewStrictServer(accountsService, log)
 
 	// Initialize users domain
-	usersEvents := users.NewEventPublisher(infra.EventPublisher)
-	usersService := users.NewService(repos.Users, infra.UsersCache, usersEvents, log)
-	usersHandler := users.NewHandler(usersService, log)
+	// usersEvents := users.NewEventPublisher(infra.EventPublisher)
+	usersService := users.NewService(repos.Users, nil, log)
+	usersHandler := users.NewStrictServer(usersService, log)
 
 	// Initialize organizations domain
-	organizationsService := organizations.NewService(repos.Organizations, log)
-	organizationsHandler := organizations.NewHandler(organizationsService, log)
+	// organizationsEvents := organizations.NewEventPublisher(infra.EventPublisher)
+	organizationsService := organizations.NewService(repos.Organizations, nil, log)
+	organizationsHandler := organizations.NewStrictServer(organizationsService, log)
 
 	// Initialize pipelines domain
-	pipelinesService := pipelines.NewService(repos.Pipelines, log)
+	pipelinesService := pipelines.NewService(repos.Pipelines, nil, log)
 	pipelinesHandler := pipelines.NewHandler(pipelinesService, log)
 
 	// Initialize runs domain
-	runsService := runs.NewService(repos.Runs, log)
-	runsHandler := runs.NewHandler(runsService, log)
+	runsService := runs.NewService(repos.Runs, nil, log)
+	runsHandler := runs.NewStrictServer(runsService, log)
 
 	// Initialize tools domain
-	toolsService := tools.NewService(repos.Tools, log)
-	toolsHandler := tools.NewHandler(toolsService, log)
+	toolsService := tools.NewService(repos.Tools, nil, log)
+	toolsHandler := tools.NewStrictServer(toolsService, log)
 
 	// Initialize artifacts domain
-	artifactsService := artifacts.NewArtifactsService(repos.Artifacts, repos.Labels, log)
-	artifactsHandler := artifacts.NewHandler(artifactsService, log)
+	artifactsService := artifacts.NewService(repos.Artifacts, nil, log)
+	artifactsHandler := artifacts.NewStrictServer(artifactsService, log)
 
 	// Initialize labels domain
-	labelsService := labels.NewService(repos.Labels, log)
-	labelsHandler := labels.NewHandler(labelsService, log)
+	labelsService := labels.NewService(repos.Labels, nil, log)
+	labelsHandler := labels.NewStrictServer(labelsService, log)
 
 	// Initialize members domain
-	membersService := members.NewService(repos.Members, log)
-	membersHandler := members.NewHandler(membersService, log)
+	membersService := members.NewService(repos.Members, nil, log)
+	membersHandler := members.NewStrictServer(membersService, log)
 
 	// Initialize invitations domain
-	invitationsService := invitations.NewService(repos.Invitations, log)
-	invitationsHandler := invitations.NewHandler(invitationsService, log)
+	invitationsService := invitations.NewService(repos.Invitations, nil, log)
+	invitationsHandler := invitations.NewStrictServer(invitationsService, log)
 
 	// Initialize health domain
-	healthService := health.NewService(log)
+	healthService := health.NewService(&infra.Database, infra.Logger)
 	healthHandler := health.NewHandler(healthService, log)
 
 	// Initialize config handler
@@ -148,7 +149,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// configHandler := config.NewHandler(cfg, log)
 
 	// Create the HTTP server
-	httpServer := server.NewServer(&cfg.Api, log)
+	httpServer := server.NewServer(&cfg.API, log)
 
 	// Create app with all dependencies
 	app := &App{
@@ -213,7 +214,7 @@ func (a *App) registerRoutes() {
 	a.Server.SetReadinessCheck(a.readinessCheck)
 
 	// Setup API documentation if enabled
-	if a.Config.Api.Docs {
+	if a.Config.API.Docs {
 		if err := a.Server.SetupDocs(); err != nil {
 			a.Logger.Error("failed to setup API docs", "error", err)
 		}

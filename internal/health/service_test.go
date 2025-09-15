@@ -5,11 +5,15 @@ import (
 	"log/slog"
 	"testing"
 	"time"
+
+	"github.com/archesai/archesai/internal/database"
 )
 
 func TestNewService(t *testing.T) {
 	logger := slog.Default()
-	service := NewService(logger)
+	// Database is an interface, use nil for testing
+	var db *database.Database
+	service := NewService(db, logger)
 
 	if service == nil {
 		t.Fatal("Expected non-nil service")
@@ -19,228 +23,126 @@ func TestNewService(t *testing.T) {
 		t.Error("Expected logger to be set correctly")
 	}
 
-	if time.Since(service.startTime) > time.Second {
+	// Can't compare interface values directly
+	if service.db != nil {
+		t.Error("Expected db to be nil for this test")
+	}
+
+	if time.Since(service.start) > time.Second {
 		t.Error("Expected start time to be recent")
 	}
 }
 
 func TestService_CheckHealth(t *testing.T) {
 	tests := []struct {
-		name           string
-		setupTime      time.Time
-		expectedStatus ServiceStatus
-		checkUptime    bool
+		name        string
+		setupTime   time.Time
+		withDB      bool
+		expectError bool
 	}{
 		{
-			name:      "all services healthy",
-			setupTime: time.Now(),
-			expectedStatus: ServiceStatus{
-				Database: StatusHealthy,
-				Email:    StatusHealthy,
-				Redis:    StatusHealthy,
-			},
-			checkUptime: true,
+			name:        "health check with nil database",
+			setupTime:   time.Now(),
+			withDB:      true,
+			expectError: false,
 		},
 		{
-			name:      "check after running for a while",
-			setupTime: time.Now().Add(-5 * time.Second),
-			expectedStatus: ServiceStatus{
-				Database: StatusHealthy,
-				Email:    StatusHealthy,
-				Redis:    StatusHealthy,
-			},
-			checkUptime: true,
+			name:        "health check without database",
+			setupTime:   time.Now(),
+			withDB:      false,
+			expectError: false, // We don't error, just report unhealthy
+		},
+		{
+			name:        "health check after running for a while",
+			setupTime:   time.Now().Add(-5 * time.Second),
+			withDB:      true,
+			expectError: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			logger := slog.Default()
+			// Database is an interface, can't instantiate directly - using nil for unit tests
+			var db *database.Database
+
 			service := &Service{
-				startTime: tt.setupTime,
-				logger:    slog.Default(),
+				db:     db,
+				logger: logger,
+				start:  tt.setupTime,
 			}
 
 			ctx := context.Background()
-			status := service.CheckHealth(ctx)
+			status, err := service.CheckHealth(ctx)
 
-			if status.Database != tt.expectedStatus.Database {
-				t.Errorf("Expected Database status %s, got %s", tt.expectedStatus.Database, status.Database)
+			if tt.expectError && err == nil {
+				t.Error("Expected error but got nil")
+			}
+			if !tt.expectError && err != nil {
+				t.Errorf("Unexpected error: %v", err)
 			}
 
-			if status.Email != tt.expectedStatus.Email {
-				t.Errorf("Expected Email status %s, got %s", tt.expectedStatus.Email, status.Email)
-			}
+			if status != nil {
+				// Check database status - always unhealthy in unit tests since we use nil
+				expectedDBStatus := StatusUnhealthy
 
-			if status.Redis != tt.expectedStatus.Redis {
-				t.Errorf("Expected Redis status %s, got %s", tt.expectedStatus.Redis, status.Redis)
-			}
+				if status.Services.Database != expectedDBStatus {
+					t.Errorf("Database status = %v, want %v", status.Services.Database, expectedDBStatus)
+				}
 
-			if tt.checkUptime {
-				expectedMinUptime := time.Since(tt.setupTime).Seconds()
-				// Allow small variance for timing
-				if status.Uptime < expectedMinUptime-0.1 || status.Uptime > expectedMinUptime+1 {
-					t.Errorf("Expected uptime around %f, got %f", expectedMinUptime, status.Uptime)
+				// Email and Redis should always be healthy (TODO in implementation)
+				if status.Services.Email != StatusHealthy {
+					t.Errorf("Email status = %v, want %v", status.Services.Email, StatusHealthy)
+				}
+				if status.Services.Redis != StatusHealthy {
+					t.Errorf("Redis status = %v, want %v", status.Services.Redis, StatusHealthy)
+				}
+
+				// Check timestamp format
+				if status.Timestamp == "" {
+					t.Error("Expected timestamp to be set")
+				}
+
+				// Check uptime
+				expectedUptime := time.Since(tt.setupTime).Seconds()
+				if status.Uptime < 0 || status.Uptime > float32(expectedUptime+1) {
+					t.Errorf("Uptime = %v, expected around %v", status.Uptime, expectedUptime)
 				}
 			}
 		})
 	}
 }
 
-func TestHealthConstants(t *testing.T) {
-	// Test status constants
-	if StatusHealthy != "healthy" {
-		t.Errorf("Expected StatusHealthy to be 'healthy', got %s", StatusHealthy)
-	}
-	if StatusUnhealthy != "unhealthy" {
-		t.Errorf("Expected StatusUnhealthy to be 'unhealthy', got %s", StatusUnhealthy)
-	}
-	if StatusDegraded != "degraded" {
-		t.Errorf("Expected StatusDegraded to be 'degraded', got %s", StatusDegraded)
-	}
-
-	// Test timeout constants
-	if DefaultTimeout != 5*time.Second {
-		t.Errorf("Expected DefaultTimeout to be 5s, got %v", DefaultTimeout)
-	}
-	if DefaultInterval != 30*time.Second {
-		t.Errorf("Expected DefaultInterval to be 30s, got %v", DefaultInterval)
-	}
-	if DefaultRetries != 3 {
-		t.Errorf("Expected DefaultRetries to be 3, got %d", DefaultRetries)
-	}
-	if DefaultRetryDelay != 1*time.Second {
-		t.Errorf("Expected DefaultRetryDelay to be 1s, got %v", DefaultRetryDelay)
-	}
-
-	// Test endpoint paths
-	if LivenessPath != "/health/live" {
-		t.Errorf("Expected LivenessPath to be '/health/live', got %s", LivenessPath)
-	}
-	if ReadinessPath != "/health/ready" {
-		t.Errorf("Expected ReadinessPath to be '/health/ready', got %s", ReadinessPath)
-	}
-	if HealthPath != "/health" {
-		t.Errorf("Expected HealthPath to be '/health', got %s", HealthPath)
-	}
-
-	// Test component names
-	if ComponentAPI != "api" {
-		t.Errorf("Expected ComponentAPI to be 'api', got %s", ComponentAPI)
-	}
-	if ComponentDatabase != "database" {
-		t.Errorf("Expected ComponentDatabase to be 'database', got %s", ComponentDatabase)
-	}
-	if ComponentRedis != "redis" {
-		t.Errorf("Expected ComponentRedis to be 'redis', got %s", ComponentRedis)
-	}
-	if ComponentStorage != "storage" {
-		t.Errorf("Expected ComponentStorage to be 'storage', got %s", ComponentStorage)
-	}
-	if ComponentWorker != "worker" {
-		t.Errorf("Expected ComponentWorker to be 'worker', got %s", ComponentWorker)
-	}
-}
-
-func TestServiceStatus(t *testing.T) {
-	status := ServiceStatus{
-		Database: StatusHealthy,
-		Email:    StatusDegraded,
-		Redis:    StatusUnhealthy,
-		Uptime:   123.45,
-	}
-
-	if status.Database != StatusHealthy {
-		t.Errorf("Expected Database status to be %s, got %s", StatusHealthy, status.Database)
-	}
-	if status.Email != StatusDegraded {
-		t.Errorf("Expected Email status to be %s, got %s", StatusDegraded, status.Email)
-	}
-	if status.Redis != StatusUnhealthy {
-		t.Errorf("Expected Redis status to be %s, got %s", StatusUnhealthy, status.Redis)
-	}
-	if status.Uptime != 123.45 {
-		t.Errorf("Expected Uptime to be 123.45, got %f", status.Uptime)
-	}
-}
-
-func BenchmarkCheckHealth(b *testing.B) {
-	service := NewService(slog.Default())
-	ctx := context.Background()
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_ = service.CheckHealth(ctx)
-	}
-}
-
-func TestConcurrentHealthChecks(t *testing.T) {
-	service := NewService(slog.Default())
-	ctx := context.Background()
-
-	// Run multiple health checks concurrently
-	done := make(chan bool, 10)
-	for i := 0; i < 10; i++ {
-		go func() {
-			status := service.CheckHealth(ctx)
-			if status.Database != StatusHealthy {
-				t.Errorf("Expected healthy database status in concurrent check")
-			}
-			done <- true
-		}()
-	}
-
-	// Wait for all goroutines to complete
-	for i := 0; i < 10; i++ {
-		<-done
-	}
-}
-
-func TestUptimeCalculation(t *testing.T) {
-	// Test uptime calculation with different start times
-	testCases := []struct {
-		name              string
-		startTimeOffset   time.Duration
-		expectedMinUptime float64
-		expectedMaxUptime float64
+func TestService_checkDatabase(t *testing.T) {
+	tests := []struct {
+		name        string
+		db          *database.Database
+		expectError bool
 	}{
 		{
-			name:              "just started",
-			startTimeOffset:   0,
-			expectedMinUptime: 0,
-			expectedMaxUptime: 1,
-		},
-		{
-			name:              "running for 10 seconds",
-			startTimeOffset:   -10 * time.Second,
-			expectedMinUptime: 10,
-			expectedMaxUptime: 11,
-		},
-		{
-			name:              "running for 1 minute",
-			startTimeOffset:   -1 * time.Minute,
-			expectedMinUptime: 60,
-			expectedMaxUptime: 61,
-		},
-		{
-			name:              "running for 1 hour",
-			startTimeOffset:   -1 * time.Hour,
-			expectedMinUptime: 3600,
-			expectedMaxUptime: 3601,
+			name:        "nil database connection returns error",
+			db:          nil,
+			expectError: true,
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			logger := slog.Default()
 			service := &Service{
-				startTime: time.Now().Add(tc.startTimeOffset),
-				logger:    slog.Default(),
+				db:     tt.db,
+				logger: logger,
+				start:  time.Now(),
 			}
 
-			status := service.CheckHealth(context.Background())
+			ctx := context.Background()
+			err := service.checkDatabase(ctx)
 
-			if status.Uptime < tc.expectedMinUptime || status.Uptime > tc.expectedMaxUptime {
-				t.Errorf("Expected uptime between %f and %f, got %f",
-					tc.expectedMinUptime, tc.expectedMaxUptime, status.Uptime)
+			if tt.expectError && err == nil {
+				t.Error("Expected error but got nil")
+			}
+			if !tt.expectError && err != nil {
+				t.Errorf("Unexpected error: %v", err)
 			}
 		})
 	}

@@ -49,7 +49,7 @@ package pipelines
 // 			setup: func(repo *MockRepository, queue *MockQueueService) {
 // 				pipelineID := uuid.MustParse("00000000-0000-0000-0000-000000000001")
 // 				pipeline := &Pipeline{
-// 					Id:          pipelineID,
+// 					ID:          pipelineID,
 // 					Name:        "Test Pipeline",
 // 					Description: "Test",
 // 				}
@@ -60,8 +60,8 @@ package pipelines
 // 				repo.EXPECT().CreateRun(mock.Anything, mock.MatchedBy(func(run *Run) bool {
 // 					return run.PipelineId == pipelineID.String() && run.Status == QUEUED
 // 				})).Return(&Run{
-// 					Id:         runID,
-// 					PipelineId: pipelineID.String(),
+// 					ID:         runID,
+// 					PipelineID: pipelineID.String(),
 // 					Status:     QUEUED,
 // 					CreatedAt:  time.Now(),
 // 				}, nil)
@@ -91,7 +91,7 @@ package pipelines
 // 			setup: func(repo *MockRepository, _ *MockQueueService) {
 // 				pipelineID := uuid.MustParse("00000000-0000-0000-0000-000000000003")
 // 				pipeline := &Pipeline{
-// 					Id:   pipelineID,
+// 					ID:   pipelineID,
 // 					Name: "Test Pipeline",
 // 				}
 

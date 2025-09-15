@@ -21,9 +21,9 @@ schema:
           - description
           - mimeType
           - name
-          - organizationId
+          - organizationID
           - previewImage
-          - producerId
+          - producerID
           - text
           - url
         example: createdAt

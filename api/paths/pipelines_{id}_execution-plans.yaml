@@ -10,8 +10,8 @@ get:
       required: true
       description: Pipeline ID
       schema:
-        type: string
-        format: uuid
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
   security:
     - bearerAuth: []
   responses:
@@ -25,11 +25,9 @@ get:
               data:
                 type: object
                 properties:
-                  pipelineId:
-                    type: string
-                    format: uuid
-                    minLength: 1
-                    example: '123e4567-e89b-12d3-a456-426614174000'
+                  pipelineID:
+                    allOf:
+                      - $ref: ../components/schemas/UUID.yaml
                   levels:
                     type: array
                     items:
@@ -42,8 +40,8 @@ get:
                         steps:
                           type: array
                           items:
-                            type: string
-                            format: uuid
+                            allOf:
+                              - $ref: ../components/schemas/UUID.yaml
                           description: Step IDs that can run in parallel at this level
                       required:
                         - level
@@ -61,7 +59,7 @@ get:
                     description: Estimated execution time in seconds
                     example: 3600
                 required:
-                  - pipelineId
+                  - pipelineID
                   - levels
                   - totalSteps
                   - isValid
@@ -87,8 +85,8 @@ post:
       required: true
       description: Pipeline ID
       schema:
-        type: string
-        format: uuid
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
   security:
     - bearerAuth: []
   responses:

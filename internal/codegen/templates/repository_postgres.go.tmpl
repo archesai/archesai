@@ -29,7 +29,7 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 {{range .Entities}}{{$entity := .}}
 // {{.Name}} operations
 
-{{if contains .Operations "create"}}
+// Create creates a new {{lower .Name}}
 func (r *PostgresRepository) Create(ctx context.Context, entity *{{.Type}}) (*{{.Type}}, error) {
 	// Check if SQLC has the Create{{.Name}} method
 	// For now, we'll generate a stub but with proper error handling
@@ -37,7 +37,7 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *{{.Type}}) (*{{
 
 	// Example of what it should look like when SQLC query exists:
 	// params := postgresql.Create{{.Name}}Params{
-	//     Id: entity.Id,
+	//     ID: entity.ID,
 	//     // ... map other fields
 	// }
 	// db{{.Name}}, err := r.queries.Create{{.Name}}(ctx, params)
@@ -48,37 +48,32 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *{{.Type}}) (*{{
 
 	return nil, errors.New("not implemented - SQLC query not found")
 }
-{{end}}
 
-{{if contains .Operations "read"}}
+// Get retrieves a {{lower .Name}} by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*{{.Type}}, error) {
 	// Try to call SQLC Get{{.Name}} if it exists
 	// For now, return not implemented
 	return nil, errors.New("not implemented - SQLC query not found")
 }
-{{end}}
 
-{{if contains .Operations "update"}}
+// Update updates an existing {{lower .Name}}
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *{{.Type}}) (*{{.Type}}, error) {
 	// Update operations are often custom and may not have SQLC queries
 	return nil, errors.New("not implemented - SQLC query not found")
 }
-{{end}}
 
-{{if contains .Operations "delete"}}
+// Delete removes a {{lower .Name}}
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC Delete{{.Name}} if it exists
 	// For now, return not implemented
 	return errors.New("not implemented - SQLC query not found")
 }
-{{end}}
 
-{{if contains .Operations "list"}}
+// List returns a paginated list of {{lower .Name}}s
 func (r *PostgresRepository) List(ctx context.Context, params List{{.Name}}sParams) ([]*{{.Type}}, int64, error) {
 	// List operations need both List and Count queries from SQLC
 	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
-{{end}}
 
 {{/* Generate additional methods dynamically */}}
 {{if .AdditionalMethods}}{{range .AdditionalMethods}}
@@ -118,7 +113,7 @@ func map{{.Name}}ToDomain(db *postgresql.{{.Name}}) *{{.Type}} {
 	// For example:
 	// - OpenAPI might use string, database uses *string
 	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (Id vs ID)
+	// - Field names might differ (ID vs ID)
 
 	result := &{{.Type}}{
 		// TODO: Map fields properly based on actual type definitions
@@ -126,7 +121,7 @@ func map{{.Name}}ToDomain(db *postgresql.{{.Name}}) *{{.Type}} {
 	}
 
 	// Basic field mapping - customize based on your entity structure
-	// result.Id = db.Id
+	// result.ID = db.ID
 	// result.CreatedAt = db.CreatedAt
 	// result.UpdatedAt = db.UpdatedAt
 	// Add specific field mappings as needed

@@ -26,46 +26,51 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Label operations
 
+// Create creates a new label
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Label) (*Label, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateLabel not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a label by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Label, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetLabel not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing label
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Label) (*Label, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateLabel not yet implemented - requires custom mapping")
 }
 
+// Delete removes a label
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteLabel not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of labels
 func (r *SQLiteRepository) List(ctx context.Context, params ListLabelsParams) ([]*Label, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListLabels not yet implemented - requires custom mapping")
 }
 
-// ListByOrganization retrieves multiple labels by organizationId
-func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Label, error) {
+// ListByOrganization retrieves multiple labels by organizationID
+func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Label, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }
 
-// GetByName retrieves label by nameorganizationId
-func (r *SQLiteRepository) GetByName(ctx context.Context, name string, organizationId string) (*Label, error) {
+// GetByName retrieves label by nameorganizationID
+func (r *SQLiteRepository) GetByName(ctx context.Context, name string, organizationID uuid.UUID) (*Label, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("GetByName not yet implemented - requires custom mapping")

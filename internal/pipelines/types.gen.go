@@ -9,7 +9,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -30,9 +29,9 @@ const (
 const (
 	CreatedAt      ListPipelinesParamsSortField = "createdAt"
 	Description    ListPipelinesParamsSortField = "description"
-	Id             ListPipelinesParamsSortField = "id"
+	ID             ListPipelinesParamsSortField = "id"
 	Name           ListPipelinesParamsSortField = "name"
-	OrganizationId ListPipelinesParamsSortField = "organizationId"
+	OrganizationID ListPipelinesParamsSortField = "organizationID"
 	UpdatedAt      ListPipelinesParamsSortField = "updatedAt"
 )
 
@@ -47,8 +46,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -59,8 +58,8 @@ type FilterNode = interface{}
 
 // OrganizationReference defines model for OrganizationReference.
 type OrganizationReference struct {
-	// OrganizationId Universally Unique Identifier
-	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
+	// OrganizationID Universally Unique IDentifier
+	OrganizationID UUID `json:"organizationID" yaml:"organizationID"`
 }
 
 // Page Pagination (page number & size)
@@ -77,14 +76,14 @@ type Pipeline struct {
 	// Description Detailed description of the pipeline's purpose
 	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// Name The pipeline's display name
 	Name string `json:"name" yaml:"name"`
 
-	// OrganizationId Universally Unique Identifier
-	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
+	// OrganizationID Universally Unique IDentifier
+	OrganizationID UUID `json:"organizationID" yaml:"organizationID"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -99,17 +98,17 @@ type PipelineStep struct {
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Dependencies IDs of steps this step depends on
-	Dependencies []openapi_types.UUID `json:"dependencies,omitempty,omitzero" yaml:"dependencies,omitempty"`
+	Dependencies []UUID `json:"dependencies,omitempty,omitzero" yaml:"dependencies,omitempty"`
 
 	// Description Description of what this step does
 	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// Name Name of the step
 	Name       string `json:"name" yaml:"name"`
-	PipelineId UUID   `json:"pipelineId" yaml:"pipelineId"`
+	PipelineID UUID   `json:"pipelineID" yaml:"pipelineID"`
 
 	// Position Position in the pipeline for ordering
 	Position int `json:"position,omitempty,omitzero" yaml:"position,omitempty"`
@@ -122,7 +121,7 @@ type PipelineStep struct {
 
 	// Timeout Timeout in seconds
 	Timeout int  `json:"timeout,omitempty,omitzero" yaml:"timeout,omitempty"`
-	ToolId  UUID `json:"toolId" yaml:"toolId"`
+	ToolID  UUID `json:"toolID" yaml:"toolID"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -152,7 +151,7 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
@@ -205,7 +204,7 @@ type Unauthorized = Problem
 // ListPipelinesParams defines parameters for ListPipelines.
 type ListPipelinesParams struct {
 	// Filter Filter pipelines by field values. Supported fields:
-	// - createdAt, id, updatedAt, description, name, organizationId
+	// - createdAt, id, updatedAt, description, name, organizationID
 	Filter PipelinesFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
@@ -245,7 +244,7 @@ type CreatePipelineStepJSONBody struct {
 	Config map[string]interface{} `json:"config,omitempty,omitzero" yaml:"config,omitempty"`
 
 	// Dependencies IDs of steps this step depends on
-	Dependencies []openapi_types.UUID `json:"dependencies,omitempty,omitzero" yaml:"dependencies,omitempty"`
+	Dependencies []UUID `json:"dependencies,omitempty,omitzero" yaml:"dependencies,omitempty"`
 
 	// Description Description of what this step does
 	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
@@ -255,7 +254,7 @@ type CreatePipelineStepJSONBody struct {
 
 	// Position Position in the pipeline (for ordering)
 	Position int  `json:"position,omitempty,omitzero" yaml:"position,omitempty"`
-	ToolId   UUID `json:"toolId" yaml:"toolId"`
+	ToolID   UUID `json:"toolID" yaml:"toolID"`
 }
 
 // CreatePipelineJSONRequestBody defines body for CreatePipeline for application/json ContentType.

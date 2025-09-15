@@ -16,7 +16,7 @@ properties:
     type: string
     minLength: 1
     example: example-string
-  projectId:
+  projectID:
     description: Firebase project ID for authentication
     type: string
     minLength: 1

@@ -21,27 +21,27 @@ RETURNING
 `
 
 type CreatePipelineParams struct {
-	Id             uuid.UUID
-	OrganizationId uuid.UUID
+	ID             uuid.UUID
+	OrganizationID uuid.UUID
 	Name           *string
 	Description    *string
 }
 
 func (q *Queries) CreatePipeline(ctx context.Context, arg CreatePipelineParams) (Pipeline, error) {
 	row := q.db.QueryRow(ctx, createPipeline,
-		arg.Id,
-		arg.OrganizationId,
+		arg.ID,
+		arg.OrganizationID,
 		arg.Name,
 		arg.Description,
 	)
 	var i Pipeline
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Description,
 		&i.Name,
-		&i.OrganizationId,
+		&i.OrganizationID,
 	)
 	return i, err
 }
@@ -83,12 +83,12 @@ func (q *Queries) GetPipeline(ctx context.Context, id uuid.UUID) (Pipeline, erro
 	row := q.db.QueryRow(ctx, getPipeline, id)
 	var i Pipeline
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Description,
 		&i.Name,
-		&i.OrganizationId,
+		&i.OrganizationID,
 	)
 	return i, err
 }
@@ -121,12 +121,12 @@ func (q *Queries) ListPipelines(ctx context.Context, arg ListPipelinesParams) ([
 	for rows.Next() {
 		var i Pipeline
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Description,
 			&i.Name,
-			&i.OrganizationId,
+			&i.OrganizationID,
 		); err != nil {
 			return nil, err
 		}
@@ -154,13 +154,13 @@ OFFSET
 `
 
 type ListPipelinesByOrganizationParams struct {
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 	Limit          int32
 	Offset         int32
 }
 
 func (q *Queries) ListPipelinesByOrganization(ctx context.Context, arg ListPipelinesByOrganizationParams) ([]Pipeline, error) {
-	rows, err := q.db.Query(ctx, listPipelinesByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listPipelinesByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -169,12 +169,12 @@ func (q *Queries) ListPipelinesByOrganization(ctx context.Context, arg ListPipel
 	for rows.Next() {
 		var i Pipeline
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Description,
 			&i.Name,
-			&i.OrganizationId,
+			&i.OrganizationID,
 		); err != nil {
 			return nil, err
 		}
@@ -198,21 +198,21 @@ RETURNING
 `
 
 type UpdatePipelineParams struct {
-	Id          uuid.UUID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 }
 
 func (q *Queries) UpdatePipeline(ctx context.Context, arg UpdatePipelineParams) (Pipeline, error) {
-	row := q.db.QueryRow(ctx, updatePipeline, arg.Id, arg.Name, arg.Description)
+	row := q.db.QueryRow(ctx, updatePipeline, arg.ID, arg.Name, arg.Description)
 	var i Pipeline
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Description,
 		&i.Name,
-		&i.OrganizationId,
+		&i.OrganizationID,
 	)
 	return i, err
 }

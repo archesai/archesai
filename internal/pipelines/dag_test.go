@@ -21,9 +21,9 @@ func TestNewDAG(t *testing.T) {
 		{
 			name: "simple linear pipeline",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -35,10 +35,10 @@ func TestNewDAG(t *testing.T) {
 		{
 			name: "diamond pattern",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Start"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Parallel1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Parallel2"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "End"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Start"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Parallel1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Parallel2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "End"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -54,9 +54,9 @@ func TestNewDAG(t *testing.T) {
 		{
 			name: "multiple roots",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Root1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Root2"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Child"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Root1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Root2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Child"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
@@ -70,8 +70,8 @@ func TestNewDAG(t *testing.T) {
 		{
 			name: "simple cycle",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000001"): {uuid.MustParse("00000000-0000-0000-0000-000000000002")},
@@ -83,7 +83,7 @@ func TestNewDAG(t *testing.T) {
 		{
 			name: "self-referencing cycle",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000001"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -101,7 +101,7 @@ func TestNewDAG(t *testing.T) {
 		{
 			name: "dependency to non-existent step",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000001"): {uuid.MustParse("00000000-0000-0000-0000-000000000999")},
@@ -141,9 +141,9 @@ func TestDAG_TopologicalSort(t *testing.T) {
 		{
 			name: "linear dependencies",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -159,9 +159,9 @@ func TestDAG_TopologicalSort(t *testing.T) {
 		{
 			name: "parallel branches",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Root"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Branch1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Branch2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Root"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Branch1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Branch2"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -201,9 +201,9 @@ func TestDAG_ExecutionPlanLevels(t *testing.T) {
 		{
 			name: "linear pipeline",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -214,10 +214,10 @@ func TestDAG_ExecutionPlanLevels(t *testing.T) {
 		{
 			name: "diamond pattern",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Start"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Parallel1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Parallel2"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "End"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Start"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Parallel1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Parallel2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "End"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -232,11 +232,11 @@ func TestDAG_ExecutionPlanLevels(t *testing.T) {
 		{
 			name: "complex parallel",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "A"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "B"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "C"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "D"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000005"), Name: "E"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "A"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "B"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "C"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "D"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000005"), Name: "E"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -252,10 +252,10 @@ func TestDAG_ExecutionPlanLevels(t *testing.T) {
 		{
 			name: "multiple independent roots",
 			steps: []PipelineStep{
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Root1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Root2"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Child1"},
-				{Id: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "Child2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Root1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Root2"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Child1"},
+				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "Child2"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
 				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -284,9 +284,9 @@ func TestDAG_ExecutionPlanLevels(t *testing.T) {
 func TestDAG_GetExecutionPlan(t *testing.T) {
 	t.Run("linear execution plan", func(t *testing.T) {
 		steps := []PipelineStep{
-			{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
-			{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
-			{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
+			{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
+			{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
+			{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
 		}
 		dependencies := map[uuid.UUID][]uuid.UUID{
 			uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
@@ -308,10 +308,10 @@ func TestDAG_GetExecutionPlan(t *testing.T) {
 
 	t.Run("parallel execution plan", func(t *testing.T) {
 		steps := []PipelineStep{
-			{Id: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Start"},
-			{Id: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Parallel1"},
-			{Id: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Parallel2"},
-			{Id: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "End"},
+			{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Start"},
+			{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Parallel1"},
+			{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Parallel2"},
+			{ID: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "End"},
 		}
 		dependencies := map[uuid.UUID][]uuid.UUID{
 			uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},

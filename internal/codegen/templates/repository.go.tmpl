@@ -10,11 +10,12 @@ import (
 {{range .Entities}}{{$entity := .}}
 // Repository handles {{lower .Name}} persistence
 type Repository interface {
-	{{if contains .Operations "create"}}Create(ctx context.Context, entity *{{.Type}}) (*{{.Type}}, error){{end}}
-	{{if contains .Operations "read"}}Get(ctx context.Context, id uuid.UUID) (*{{.Type}}, error){{end}}
-	{{if contains .Operations "update"}}Update(ctx context.Context, id uuid.UUID, entity *{{.Type}}) (*{{.Type}}, error){{end}}
-	{{if contains .Operations "delete"}}Delete(ctx context.Context, id uuid.UUID) error{{end}}
-	{{if contains .Operations "list"}}List(ctx context.Context, params List{{.Name}}sParams) ([]*{{.Type}}, int64, error){{end}}
+	// Basic CRUD operations (always included)
+	Create(ctx context.Context, entity *{{.Type}}) (*{{.Type}}, error)
+	Get(ctx context.Context, id uuid.UUID) (*{{.Type}}, error)
+	Update(ctx context.Context, id uuid.UUID, entity *{{.Type}}) (*{{.Type}}, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	List(ctx context.Context, params List{{.Name}}sParams) ([]*{{.Type}}, int64, error)
 {{if .AdditionalMethods}}
 	// Additional operations
 {{range .AdditionalMethods}}	{{.Name}}(ctx context.Context{{range $i, $param := .Params}}, {{$param}} {{paramType $param}}{{end}}) {{if eq .Returns "single"}}(*{{$entity.Type}}, error){{else if eq .Returns "multiple"}}([]*{{$entity.Type}}, error){{else if eq .Returns "exists"}}(bool, error){{else if eq .Returns "count"}}(int, error){{else if eq .Returns "void"}}error{{else}}error{{end}}

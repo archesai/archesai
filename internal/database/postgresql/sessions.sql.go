@@ -38,36 +38,36 @@ RETURNING
 `
 
 type CreateSessionParams struct {
-	Id                   uuid.UUID
-	UserId               uuid.UUID
+	ID                   uuid.UUID
+	UserID               uuid.UUID
 	Token                string
 	ExpiresAt            time.Time
-	ActiveOrganizationId *uuid.UUID
+	ActiveOrganizationID *uuid.UUID
 	IpAddress            *string
 	UserAgent            *string
 }
 
 func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
 	row := q.db.QueryRow(ctx, createSession,
-		arg.Id,
-		arg.UserId,
+		arg.ID,
+		arg.UserID,
 		arg.Token,
 		arg.ExpiresAt,
-		arg.ActiveOrganizationId,
+		arg.ActiveOrganizationID,
 		arg.IpAddress,
 		arg.UserAgent,
 	)
 	var i Session
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationId,
+		&i.ActiveOrganizationID,
 		&i.ExpiresAt,
 		&i.IpAddress,
 		&i.Token,
 		&i.UserAgent,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -109,15 +109,15 @@ func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	row := q.db.QueryRow(ctx, getSession, id)
 	var i Session
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationId,
+		&i.ActiveOrganizationID,
 		&i.ExpiresAt,
 		&i.IpAddress,
 		&i.Token,
 		&i.UserAgent,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -137,15 +137,15 @@ func (q *Queries) GetSessionByToken(ctx context.Context, token string) (Session,
 	row := q.db.QueryRow(ctx, getSessionByToken, token)
 	var i Session
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationId,
+		&i.ActiveOrganizationID,
 		&i.ExpiresAt,
 		&i.IpAddress,
 		&i.Token,
 		&i.UserAgent,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -178,15 +178,15 @@ func (q *Queries) ListSessions(ctx context.Context, arg ListSessionsParams) ([]S
 	for rows.Next() {
 		var i Session
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.ActiveOrganizationId,
+			&i.ActiveOrganizationID,
 			&i.ExpiresAt,
 			&i.IpAddress,
 			&i.Token,
 			&i.UserAgent,
-			&i.UserId,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -214,13 +214,13 @@ OFFSET
 `
 
 type ListSessionsByUserParams struct {
-	UserId uuid.UUID
+	UserID uuid.UUID
 	Limit  int32
 	Offset int32
 }
 
 func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUserParams) ([]Session, error) {
-	rows, err := q.db.Query(ctx, listSessionsByUser, arg.UserId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listSessionsByUser, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -229,15 +229,15 @@ func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUser
 	for rows.Next() {
 		var i Session
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.ActiveOrganizationId,
+			&i.ActiveOrganizationID,
 			&i.ExpiresAt,
 			&i.IpAddress,
 			&i.Token,
 			&i.UserAgent,
-			&i.UserId,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -264,24 +264,24 @@ RETURNING
 `
 
 type UpdateSessionParams struct {
-	Id                   uuid.UUID
+	ID                   uuid.UUID
 	ExpiresAt            *time.Time
-	ActiveOrganizationId *uuid.UUID
+	ActiveOrganizationID *uuid.UUID
 }
 
 func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error) {
-	row := q.db.QueryRow(ctx, updateSession, arg.Id, arg.ExpiresAt, arg.ActiveOrganizationId)
+	row := q.db.QueryRow(ctx, updateSession, arg.ID, arg.ExpiresAt, arg.ActiveOrganizationID)
 	var i Session
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationId,
+		&i.ActiveOrganizationID,
 		&i.ExpiresAt,
 		&i.IpAddress,
 		&i.Token,
 		&i.UserAgent,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }

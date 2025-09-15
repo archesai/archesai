@@ -92,8 +92,8 @@ type APIConfigEnvironment string
 
 // ArchesConfig Arches AI configuration schema
 type ArchesConfig struct {
-	// Api Configuration schema for the API server
-	Api APIConfig `json:"api" yaml:"api"`
+	// API Configuration schema for the API server
+	API APIConfig `json:"api" yaml:"api"`
 
 	// Auth Authentication configuration for the API server
 	Auth AuthConfig `json:"auth" yaml:"auth"`
@@ -170,6 +170,9 @@ type DatabaseAuth struct {
 
 // DatabaseConfig Database configuration for PostgreSQL
 type DatabaseConfig struct {
+	// URL Database connection URL/string
+	URL string `json:"URL" yaml:"URL"`
+
 	// Auth Database authentication credentials
 	Auth DatabaseAuth `json:"auth,omitempty,omitzero" yaml:"auth,omitempty"`
 
@@ -208,9 +211,6 @@ type DatabaseConfig struct {
 
 	// Type Database type (postgresql or sqlite)
 	Type DatabaseConfigType `json:"type,omitempty,omitzero" yaml:"type,omitempty"`
-
-	// Url Database connection URL/string
-	Url string `json:"url" yaml:"url"`
 }
 
 // DatabaseConfigType Database type (postgresql or sqlite)
@@ -227,8 +227,8 @@ type DevServiceConfig struct {
 
 // DevelopmentConfig Development environment configuration
 type DevelopmentConfig struct {
-	// Api Development service port forwarding configuration
-	Api DevServiceConfig `json:"api" yaml:"api"`
+	// API Development service port forwarding configuration
+	API DevServiceConfig `json:"api" yaml:"api"`
 
 	// HostIP Host IP address for dev port forwarding
 	HostIP string `json:"hostIP" yaml:"hostIP"`
@@ -281,8 +281,8 @@ type FirebaseAuth struct {
 	// PrivateKey Firebase service account private key (PEM format)
 	PrivateKey string `json:"privateKey,omitempty,omitzero" yaml:"privateKey,omitempty"`
 
-	// ProjectId Firebase project ID for authentication
-	ProjectId string `json:"projectId,omitempty,omitzero" yaml:"projectId,omitempty"`
+	// ProjectID Firebase project ID for authentication
+	ProjectID string `json:"projectID,omitempty,omitzero" yaml:"projectID,omitempty"`
 }
 
 // GrafanaConfig Grafana monitoring dashboard configuration
@@ -350,8 +350,8 @@ type IngressConfig struct {
 	// Enabled Enable ingress
 	Enabled bool `json:"enabled" yaml:"enabled"`
 
-	// Tls TLS configuration
-	Tls TLSConfig `json:"tls,omitempty,omitzero" yaml:"tls,omitempty"`
+	// TLS TLS configuration
+	TLS TLSConfig `json:"tls,omitempty,omitzero" yaml:"tls,omitempty"`
 }
 
 // IntelligenceConfig Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
@@ -392,8 +392,8 @@ type LLMConfigType string
 
 // LocalAuth Local username/password authentication
 type LocalAuth struct {
-	// AccessTokenTtl Access token time-to-live duration (e.g., "15m", "1h")
-	AccessTokenTtl string `json:"accessTokenTtl" yaml:"accessTokenTtl"`
+	// AccessTokenTTL Access token time-to-live duration (e.g., "15m", "1h")
+	AccessTokenTTL string `json:"accessTokenTtl" yaml:"accessTokenTtl"`
 
 	// Enabled Enable local authentication
 	Enabled bool `json:"enabled" yaml:"enabled"`
@@ -401,8 +401,8 @@ type LocalAuth struct {
 	// JwtSecret Secret key for JWT token signing
 	JwtSecret string `json:"jwtSecret" yaml:"jwtSecret"`
 
-	// RefreshTokenTtl Refresh token time-to-live duration (e.g., "7d", "168h")
-	RefreshTokenTtl string `json:"refreshTokenTtl" yaml:"refreshTokenTtl"`
+	// RefreshTokenTTL Refresh token time-to-live duration (e.g., "7d", "168h")
+	RefreshTokenTTL string `json:"refreshTokenTtl" yaml:"refreshTokenTtl"`
 }
 
 // LoggingConfig Logging configuration
@@ -539,8 +539,8 @@ type ResourceConfig struct {
 
 // ResourceLimits Resource limits
 type ResourceLimits struct {
-	// Cpu Maximum CPU allocation
-	Cpu string `json:"cpu" yaml:"cpu"`
+	// CPU Maximum CPU allocation
+	CPU string `json:"cpu" yaml:"cpu"`
 
 	// Memory Maximum memory allocation
 	Memory string `json:"memory" yaml:"memory"`
@@ -548,8 +548,8 @@ type ResourceLimits struct {
 
 // ResourceRequests Resource requests
 type ResourceRequests struct {
-	// Cpu Requested CPU allocation
-	Cpu string `json:"cpu" yaml:"cpu"`
+	// CPU Requested CPU allocation
+	CPU string `json:"cpu" yaml:"cpu"`
 
 	// Memory Requested memory allocation
 	Memory string `json:"memory" yaml:"memory"`

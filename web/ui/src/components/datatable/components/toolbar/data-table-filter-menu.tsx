@@ -57,10 +57,10 @@ const REMOVE_FILTER_SHORTCUTS = ["backspace", "delete"];
 interface DataTableFilterItemProps<TData extends BaseEntity> {
   columns: Column<TData>[];
   filter: FilterCondition & { id: string };
-  filterItemId: string;
-  onFilterRemove: (filterId: string) => void;
+  filterItemID: string;
+  onFilterRemove: (filterID: string) => void;
   onFilterUpdate: (
-    filterId: string,
+    filterID: string,
     updates: Partial<Omit<FilterCondition, "type">>,
   ) => void;
 }
@@ -184,8 +184,8 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
 
   // Remove filter by field name
   const onFilterRemove = React.useCallback(
-    (filterId: string) => {
-      const filterToRemove = filters.find((f) => f.id === filterId);
+    (filterID: string) => {
+      const filterToRemove = filters.find((f) => f.id === filterID);
       if (filterToRemove) {
         removeCondition(filterToRemove.field as keyof TData);
       }
@@ -198,10 +198,10 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
 
   // Update filter condition
   const onFilterUpdate = (
-    filterId: string,
+    filterID: string,
     updates: Partial<Omit<FilterCondition, "type">>,
   ) => {
-    const filterToUpdate = filters.find((f) => f.id === filterId);
+    const filterToUpdate = filters.find((f) => f.id === filterID);
     if (
       filterToUpdate &&
       updates.field &&
@@ -271,7 +271,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
         <DataTableFilterItem
           columns={columns}
           filter={filter}
-          filterItemId={`${id}-filter-${filter.id}`}
+          filterItemID={`${id}-filter-${filter.id}`}
           key={filter.id}
           onFilterRemove={onFilterRemove}
           onFilterUpdate={onFilterUpdate}
@@ -377,7 +377,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
 function DataTableFilterItem<TData extends BaseEntity>({
   columns,
   filter,
-  filterItemId,
+  filterItemID,
   onFilterRemove,
   onFilterUpdate,
 }: DataTableFilterItemProps<TData>) {
@@ -387,8 +387,8 @@ function DataTableFilterItem<TData extends BaseEntity>({
 
   const column = columns.find((column) => column.id === filter.field);
 
-  const operatorListboxId = `${filterItemId}-operator-listbox`;
-  const inputId = `${filterItemId}-input`;
+  const operatorListboxID = `${filterItemID}-operator-listbox`;
+  const inputID = `${filterItemID}-input`;
 
   const columnMeta = column?.columnDef.meta;
   const filterOperators = getFilterOperators(
@@ -427,7 +427,7 @@ function DataTableFilterItem<TData extends BaseEntity>({
   return (
     <div
       className="flex h-8 items-center rounded-md bg-background"
-      id={filterItemId}
+      id={filterItemID}
       key={filter.id}
       onKeyDown={onItemKeyDown}
       role="toolbar"
@@ -507,14 +507,14 @@ function DataTableFilterItem<TData extends BaseEntity>({
         value={filter.operator}
       >
         <SelectTrigger
-          aria-controls={operatorListboxId}
+          aria-controls={operatorListboxID}
           className="h-8 rounded-none border-r-0 px-2.5 lowercase [&_svg]:hidden [&[data-size]]:h-8"
         >
           <SelectValue placeholder={filter.operator} />
         </SelectTrigger>
         <SelectContent
           className="origin-[var(--radix-select-content-transform-origin)]"
-          id={operatorListboxId}
+          id={operatorListboxID}
         >
           {filterOperators.map((operator) => (
             <SelectItem
@@ -530,13 +530,13 @@ function DataTableFilterItem<TData extends BaseEntity>({
       {onFilterInputRender({
         column,
         filter,
-        inputId,
+        inputID,
         onFilterUpdate,
         setShowValueSelector,
         showValueSelector,
       })}
       <Button
-        aria-controls={filterItemId}
+        aria-controls={filterItemID}
         className="h-full rounded-none rounded-r-md border border-l-0 px-1.5 font-normal dark:bg-input/30"
         onClick={() => {
           onFilterRemove(filter.id);
@@ -649,16 +649,16 @@ function FilterValueSelector<TData>({
 function onFilterInputRender<TData extends BaseEntity>({
   column,
   filter,
-  inputId,
+  inputID,
   onFilterUpdate,
   setShowValueSelector,
   showValueSelector,
 }: {
   column: Column<TData>;
   filter: FilterCondition & { id: string };
-  inputId: string;
+  inputID: string;
   onFilterUpdate: (
-    filterId: string,
+    filterID: string,
     updates: Partial<Omit<FilterCondition, "type">>,
   ) => void;
   setShowValueSelector: (value: boolean) => void;
@@ -669,7 +669,7 @@ function onFilterInputRender<TData extends BaseEntity>({
       <div
         aria-live="polite"
         className="h-full w-16 rounded-none border bg-transparent px-1.5 py-0.5 text-muted-foreground dark:bg-input/30"
-        id={inputId}
+        id={inputID}
       >
         <span className="sr-only">
           {`${column.columnDef.meta?.label ?? ""} filter is ${
@@ -683,7 +683,7 @@ function onFilterInputRender<TData extends BaseEntity>({
   const variant = column.columnDef.meta?.filterVariant ?? "text";
   switch (variant) {
     case "boolean": {
-      const inputListboxId = `${inputId}-listbox`;
+      const inputListboxID = `${inputID}-listbox`;
 
       return (
         <Select
@@ -695,13 +695,13 @@ function onFilterInputRender<TData extends BaseEntity>({
           value={typeof filter.value === "string" ? filter.value : "true"}
         >
           <SelectTrigger
-            aria-controls={inputListboxId}
+            aria-controls={inputListboxID}
             className="rounded-none bg-transparent px-1.5 py-0.5 [&_svg]:hidden"
-            id={inputId}
+            id={inputID}
           >
             <SelectValue placeholder={filter.value ? "True" : "False"} />
           </SelectTrigger>
-          <SelectContent id={inputListboxId}>
+          <SelectContent id={inputListboxID}>
             <SelectItem value="true">True</SelectItem>
             <SelectItem value="false">False</SelectItem>
           </SelectContent>
@@ -711,7 +711,7 @@ function onFilterInputRender<TData extends BaseEntity>({
 
     case "date":
     case "dateRange": {
-      const inputListboxId = `${inputId}-listbox`;
+      const inputListboxID = `${inputID}-listbox`;
 
       const dateValue = Array.isArray(filter.value)
         ? filter.value.filter(Boolean)
@@ -733,12 +733,12 @@ function onFilterInputRender<TData extends BaseEntity>({
         >
           <PopoverTrigger asChild>
             <Button
-              aria-controls={inputListboxId}
+              aria-controls={inputListboxID}
               className={cn(
                 "h-full rounded-none border px-1.5 font-normal dark:bg-input/30",
                 !filter.value && "text-muted-foreground",
               )}
-              id={inputId}
+              id={inputID}
               size="sm"
               variant="ghost"
             >
@@ -749,7 +749,7 @@ function onFilterInputRender<TData extends BaseEntity>({
           <PopoverContent
             align="start"
             className="w-auto origin-[var(--radix-popover-content-transform-origin)] p-0"
-            id={inputListboxId}
+            id={inputListboxID}
           >
             {filter.operator === "isBetween" ? (
               <Calendar
@@ -798,7 +798,7 @@ function onFilterInputRender<TData extends BaseEntity>({
 
     case "multiSelect":
     case "select": {
-      const inputListboxId = `${inputId}-listbox`;
+      const inputListboxID = `${inputID}-listbox`;
 
       const options = column.columnDef.meta?.options ?? [];
       const selectedValues = Array.isArray(filter.value)
@@ -816,9 +816,9 @@ function onFilterInputRender<TData extends BaseEntity>({
         >
           <PopoverTrigger asChild>
             <Button
-              aria-controls={inputListboxId}
+              aria-controls={inputListboxID}
               className="h-full min-w-16 rounded-none border px-1.5 font-normal dark:bg-input/30"
-              id={inputId}
+              id={inputID}
               size="sm"
               variant="ghost"
             >
@@ -854,7 +854,7 @@ function onFilterInputRender<TData extends BaseEntity>({
           <PopoverContent
             align="start"
             className="w-48 origin-[var(--radix-popover-content-transform-origin)] p-0"
-            id={inputListboxId}
+            id={inputListboxID}
           >
             <Command>
               <CommandInput placeholder="Search options..." />
@@ -910,7 +910,7 @@ function onFilterInputRender<TData extends BaseEntity>({
             className="size-full max-w-28 gap-0 [&_[data-slot='range-min']]:border-r-0 [&_input]:rounded-none [&_input]:px-1.5"
             column={column}
             filter={filter}
-            inputId={inputId}
+            inputID={inputID}
             onFilterUpdate={onFilterUpdate}
           />
         );
@@ -922,7 +922,7 @@ function onFilterInputRender<TData extends BaseEntity>({
         <Input
           className="h-full w-24 rounded-none px-1.5"
           defaultValue={typeof filter.value === "string" ? filter.value : ""}
-          id={inputId}
+          id={inputID}
           inputMode={isNumber ? "numeric" : undefined}
           onChange={(event) => {
             onFilterUpdate(filter.id, { value: event.target.value });

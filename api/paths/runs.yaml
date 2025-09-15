@@ -1,20 +1,20 @@
 post:
   operationId: createRun
-  summary: Create a new run
+  summary: Create a run
   tags:
     - Runs
-  description: Create a new run
+  description: Create a run
   requestBody:
     content:
       application/json:
         schema:
           type: object
           properties:
-            pipelineId:
+            pipelineID:
               allOf:
                 - $ref: ../components/schemas/UUID.yaml
           required:
-            - pipelineId
+            - pipelineID
     required: true
   security:
     - bearerAuth: []
@@ -37,10 +37,10 @@ post:
       $ref: ../components/responses/Unauthorized.yaml
 get:
   operationId: listRuns
-  summary: Find many runs
+  summary: List runs
   tags:
     - Runs
-  description: Find many runs
+  description: List runs
   parameters:
     - $ref: ../components/parameters/RunsFilter.yaml
     - $ref: ../components/parameters/PageQuery.yaml

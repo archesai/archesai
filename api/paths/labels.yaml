@@ -1,9 +1,9 @@
 post:
   operationId: createLabel
-  summary: Create a new label
+  summary: Create a label
   tags:
     - Labels
-  description: Create a new label
+  description: Create a label
   requestBody:
     content:
       application/json:
@@ -39,10 +39,10 @@ post:
       $ref: ../components/responses/Unauthorized.yaml
 get:
   operationId: listLabels
-  summary: Find many labels
+  summary: List labels
   tags:
     - Labels
-  description: Find many labels
+  description: List labels
   parameters:
     - $ref: ../components/parameters/LabelsFilter.yaml
     - $ref: ../components/parameters/PageQuery.yaml

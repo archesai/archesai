@@ -4,39 +4,59 @@ import (
 	"context"
 	"log/slog"
 	"time"
+
+	"github.com/archesai/archesai/internal/database"
 )
 
-// Service handles health check operations
+// Service handles health check business logic
 type Service struct {
-	startTime time.Time
-	logger    *slog.Logger
+	db     *database.Database
+	logger *slog.Logger
+	start  time.Time
 }
 
 // NewService creates a new health service
-func NewService(logger *slog.Logger) *Service {
+func NewService(db *database.Database, logger *slog.Logger) *Service {
 	return &Service{
-		startTime: time.Now(),
-		logger:    logger,
+		db:     db,
+		logger: logger,
+		start:  time.Now(),
 	}
 }
 
-// ServiceStatus represents the status of a service
-type ServiceStatus struct {
-	Database string
-	Email    string
-	Redis    string
-	Uptime   float64
+// CheckHealth performs health checks on all services
+func (s *Service) CheckHealth(ctx context.Context) (*HealthResponse, error) {
+	// Check database
+	dbStatus := StatusHealthy
+	if err := s.checkDatabase(ctx); err != nil {
+		s.logger.Error("database health check failed", "error", err)
+		dbStatus = StatusUnhealthy
+	}
+
+	// Build response
+	response := &HealthResponse{
+		Services: struct {
+			Database string `json:"database" yaml:"database"`
+			Email    string `json:"email" yaml:"email"`
+			Redis    string `json:"redis" yaml:"redis"`
+		}{
+			Database: dbStatus,
+			Email:    StatusHealthy, // TODO: Implement email check
+			Redis:    StatusHealthy, // TODO: Implement redis check
+		},
+		Timestamp: time.Now().Format(time.RFC3339),
+		Uptime:    float32(time.Since(s.start).Seconds()),
+	}
+
+	return response, nil
 }
 
-// CheckHealth checks the health of all services
-func (s *Service) CheckHealth(_ context.Context) ServiceStatus {
-	uptime := time.Since(s.startTime).Seconds()
-
-	// TODO: Implement actual health checks
-	return ServiceStatus{
-		Database: StatusHealthy,
-		Email:    StatusHealthy,
-		Redis:    StatusHealthy,
-		Uptime:   uptime,
+// checkDatabase verifies database connectivity
+func (s *Service) checkDatabase(_ context.Context) error {
+	// Simple ping check - could be enhanced with actual query
+	// For now, if we have a db connection, we consider it healthy
+	if s.db == nil {
+		return ErrDatabaseUnavailable
 	}
+	return nil
 }

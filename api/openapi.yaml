@@ -97,11 +97,11 @@ paths:
     $ref: paths/organizations_{id}.yaml
   /organizations/{id}/members:
     $ref: paths/members.yaml
-  /organizations/{id}/members/{memberId}:
+  /organizations/{id}/members/{memberID}:
     $ref: paths/members_{id}.yaml
   /organizations/{id}/invitations:
     $ref: paths/invitations.yaml
-  /organizations/{id}/invitations/{invitationId}:
+  /organizations/{id}/invitations/{invitationID}:
     $ref: paths/invitations_{id}.yaml
   # Pipelines domain
   /pipelines:

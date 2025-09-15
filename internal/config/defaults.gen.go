@@ -6,7 +6,7 @@ package config
 // GetDefaultConfig returns a complete default configuration with all values from OpenAPI schemas.
 func GetDefaultConfig() *ArchesConfig {
 	return &ArchesConfig{
-		Api: APIConfig{
+		API: APIConfig{
 			Cors: CORSConfig{
 				Origins: "https://platform.archesai.dev",
 			},
@@ -33,13 +33,13 @@ func GetDefaultConfig() *ArchesConfig {
 			Stripe:  StripeConfig{},
 		},
 		Database: DatabaseConfig{
+			URL:           "postgresql://admin:password@127.0.0.1:5432/archesai",
 			Enabled:       true,
 			Managed:       false,
 			MaxConns:      25,
 			MinConns:      5,
 			RunMigrations: false,
 			Type:          Postgresql,
-			Url:           "postgresql://admin:password@127.0.0.1:5432/archesai",
 		},
 		Infrastructure: InfrastructureConfig{
 			Namespace: "arches-system",

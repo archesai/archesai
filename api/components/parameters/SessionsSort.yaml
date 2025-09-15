@@ -17,12 +17,12 @@ schema:
           - createdAt
           - id
           - updatedAt
-          - activeOrganizationId
+          - activeOrganizationID
           - expiresAt
           - ipAddress
           - token
           - userAgent
-          - userId
+          - userID
         example: createdAt
         minLength: 1
       order:

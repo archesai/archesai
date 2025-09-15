@@ -6,9 +6,8 @@ delete:
   description: Delete a specific session (logout from that session)
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -16,8 +15,18 @@ delete:
   security:
     - bearerAuth: []
   responses:
-    '204':
-      $ref: ../components/responses/NoContent.yaml
+    '200':
+      description: Session deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Session.yaml
+            required:
+              - data
+            additionalProperties: false
     '404':
       $ref: ../components/responses/NotFound.yaml
     '401':
@@ -30,9 +39,8 @@ get:
   description: Find a session
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -66,19 +74,18 @@ patch:
         schema:
           type: object
           properties:
-            activeOrganizationId:
+            activeOrganizationID:
               description: The active organization ID
               type: string
               example: example-id-123
               minLength: 1
           required:
-            - activeOrganizationId
+            - activeOrganizationID
     required: true
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -96,5 +103,7 @@ patch:
             required:
               - data
             additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml

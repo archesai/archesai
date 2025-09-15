@@ -8,6 +8,7 @@ import (
 
 // Repository handles member persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Member) (*Member, error)
 	Get(ctx context.Context, id uuid.UUID) (*Member, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Member) (*Member, error)
@@ -15,7 +16,7 @@ type Repository interface {
 	List(ctx context.Context, params ListMembersParams) ([]*Member, int64, error)
 
 	// Additional operations
-	ListByOrganization(ctx context.Context, organizationId string) ([]*Member, error)
-	ListByUser(ctx context.Context, userId uuid.UUID) ([]*Member, error)
-	GetByUserAndOrganization(ctx context.Context, userId uuid.UUID, organizationId string) (*Member, error)
+	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Member, error)
+	ListByUser(ctx context.Context, userID uuid.UUID) ([]*Member, error)
+	GetByUserAndOrganization(ctx context.Context, userID uuid.UUID, organizationID uuid.UUID) (*Member, error)
 }

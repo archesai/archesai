@@ -26,30 +26,35 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Organization operations
 
+// Create creates a new organization
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Organization) (*Organization, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateOrganization not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a organization by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Organization, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetOrganization not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing organization
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateOrganization not yet implemented - requires custom mapping")
 }
 
+// Delete removes a organization
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteOrganization not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of organizations
 func (r *SQLiteRepository) List(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
@@ -64,10 +69,10 @@ func (r *SQLiteRepository) GetBySlug(ctx context.Context, slug string) (*Organiz
 
 }
 
-// GetByStripeCustomerId retrieves organization by stripeCustomerId
-func (r *SQLiteRepository) GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error) {
+// GetByStripeCustomerID retrieves organization by stripeCustomerID
+func (r *SQLiteRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*Organization, error) {
 
 	// For now, return a basic implementation
-	return nil, fmt.Errorf("GetByStripeCustomerId not yet implemented - requires custom mapping")
+	return nil, fmt.Errorf("GetByStripeCustomerID not yet implemented - requires custom mapping")
 
 }

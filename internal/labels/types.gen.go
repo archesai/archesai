@@ -18,9 +18,9 @@ const (
 // Defines values for ListLabelsParamsSortField.
 const (
 	CreatedAt      ListLabelsParamsSortField = "createdAt"
-	Id             ListLabelsParamsSortField = "id"
+	ID             ListLabelsParamsSortField = "id"
 	Name           ListLabelsParamsSortField = "name"
-	OrganizationId ListLabelsParamsSortField = "organizationId"
+	OrganizationID ListLabelsParamsSortField = "organizationID"
 	UpdatedAt      ListLabelsParamsSortField = "updatedAt"
 )
 
@@ -35,8 +35,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -50,12 +50,12 @@ type Label struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// Name The name of the label
 	Name           string `json:"name" yaml:"name"`
-	OrganizationId UUID   `json:"organizationId" yaml:"organizationId"`
+	OrganizationID UUID   `json:"organizationID" yaml:"organizationID"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -88,7 +88,7 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
@@ -141,7 +141,7 @@ type Unauthorized = Problem
 // ListLabelsParams defines parameters for ListLabels.
 type ListLabelsParams struct {
 	// Filter Filter labels by field values. Supported fields:
-	// - createdAt, id, updatedAt, name, organizationId
+	// - createdAt, id, updatedAt, name, organizationID
 	Filter LabelsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter

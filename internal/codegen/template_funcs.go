@@ -343,9 +343,9 @@ func isVowel(b byte) bool {
 // ParamType returns the Go type for a parameter name based on naming conventions.
 func ParamType(paramName string) string {
 	switch paramName {
-	case "id", "userId":
+	case "id", "ID", "userID", "organizationID", "pipelineID", "runId", "runID", "toolID", "invitationId", "invitationID", "artifactID":
 		return "uuid.UUID"
-	case "organizationId", "name", "email", "token", "provider", "providerAccountId", "slug", "stripeCustomerId", "pipelineId", "inviterId", "toolId":
+	case "name", "email", "token", "provider", "providerAccountId", "slug", "stripeCustomerId", "inviterId":
 		return "string" //nolint:goconst // Go type
 	default:
 		return "string" //nolint:goconst // Go type
@@ -354,7 +354,7 @@ func ParamType(paramName string) string {
 
 // IsUUIDParam checks if a parameter should be treated as a UUID type.
 func IsUUIDParam(paramName string) bool {
-	return paramName == "id" || paramName == "userId"
+	return paramName == "id" || paramName == "userID"
 }
 
 // ToSnakeCase converts camelCase to snake_case

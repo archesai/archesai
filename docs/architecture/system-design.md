@@ -202,7 +202,7 @@ type PostgresRepository struct {
 
 func (r *PostgresRepository) CreateUser(ctx context.Context, user *User) error {
     _, err := r.queries.CreateUser(ctx, postgresql.CreateUserParams{
-        Id:           user.ID.String(),
+        ID:           user.ID.String(),
         Email:        user.Email,
         Name:         user.Name,
         PasswordHash: user.PasswordHash,

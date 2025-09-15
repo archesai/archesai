@@ -3,13 +3,13 @@ description: Schema for Account entity (authentication provider account)
 x-codegen:
   repository:
     operations: [create, read, update, delete, list]
-    indices: [userId, accountId]
+    indices: [userID, accountID]
     additional_methods:
-      - name: GetByProviderId
-        params: [provider, providerAccountId]
+      - name: GetByProviderID
+        params: [provider, providerAccountID]
         returns: single
-      - name: ListByUserId
-        params: [userId]
+      - name: ListByUserID
+        params: [userID]
         returns: multiple
   cache:
     enabled: true
@@ -33,7 +33,7 @@ x-codegen:
   #     - fields: [created_at]
   #       name: idx_account_created_at
   #   relations:
-  #     - field: userId
+  #     - field: userID
   #       references: users.id
   #       onDelete: CASCADE
   #   queries:
@@ -52,16 +52,16 @@ allOf:
   - $ref: ./Base.yaml
   - type: object
     properties:
-      accountId:
+      accountID:
         description: The unique identifier for the account from the provider
         type: string
         example: google_123456789
         minLength: 1
-      userId:
+      userID:
         description: The user ID this account belongs to
         allOf:
           - $ref: ./UUID.yaml
-      providerId:
+      providerID:
         description: The authentication provider identifier
         type: string
         enum:
@@ -107,7 +107,7 @@ allOf:
         type: string
         example: 'openid profile email'
     required:
-      - accountId
-      - userId
-      - providerId
+      - accountID
+      - userID
+      - providerID
     additionalProperties: false

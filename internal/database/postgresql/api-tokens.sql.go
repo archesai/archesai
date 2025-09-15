@@ -32,9 +32,9 @@ RETURNING
 `
 
 type CreateApiTokenParams struct {
-	Id             uuid.UUID
-	UserId         uuid.UUID
-	OrganizationId uuid.UUID
+	ID             uuid.UUID
+	UserID         uuid.UUID
+	OrganizationID uuid.UUID
 	Name           *string
 	KeyHash        string
 	Prefix         *string
@@ -45,9 +45,9 @@ type CreateApiTokenParams struct {
 
 func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (ApiToken, error) {
 	row := q.db.QueryRow(ctx, createApiToken,
-		arg.Id,
-		arg.UserId,
-		arg.OrganizationId,
+		arg.ID,
+		arg.UserID,
+		arg.OrganizationID,
 		arg.Name,
 		arg.KeyHash,
 		arg.Prefix,
@@ -57,15 +57,15 @@ func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) 
 	)
 	var i ApiToken
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
 		&i.KeyHash,
 		&i.Name,
 		&i.Prefix,
-		&i.UserId,
-		&i.OrganizationId,
+		&i.UserID,
+		&i.OrganizationID,
 		&i.Scopes,
 		&i.RateLimit,
 		&i.LastUsedAt,
@@ -122,15 +122,15 @@ func (q *Queries) GetApiToken(ctx context.Context, id uuid.UUID) (ApiToken, erro
 	row := q.db.QueryRow(ctx, getApiToken, id)
 	var i ApiToken
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
 		&i.KeyHash,
 		&i.Name,
 		&i.Prefix,
-		&i.UserId,
-		&i.OrganizationId,
+		&i.UserID,
+		&i.OrganizationID,
 		&i.Scopes,
 		&i.RateLimit,
 		&i.LastUsedAt,
@@ -153,15 +153,15 @@ func (q *Queries) GetApiTokenByKeyHash(ctx context.Context, keyHash string) (Api
 	row := q.db.QueryRow(ctx, getApiTokenByKeyHash, keyHash)
 	var i ApiToken
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
 		&i.KeyHash,
 		&i.Name,
 		&i.Prefix,
-		&i.UserId,
-		&i.OrganizationId,
+		&i.UserID,
+		&i.OrganizationID,
 		&i.Scopes,
 		&i.RateLimit,
 		&i.LastUsedAt,
@@ -197,15 +197,15 @@ func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([
 	for rows.Next() {
 		var i ApiToken
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ExpiresAt,
 			&i.KeyHash,
 			&i.Name,
 			&i.Prefix,
-			&i.UserId,
-			&i.OrganizationId,
+			&i.UserID,
+			&i.OrganizationID,
 			&i.Scopes,
 			&i.RateLimit,
 			&i.LastUsedAt,
@@ -236,13 +236,13 @@ OFFSET
 `
 
 type ListApiTokensByOrganizationParams struct {
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 	Limit          int32
 	Offset         int32
 }
 
 func (q *Queries) ListApiTokensByOrganization(ctx context.Context, arg ListApiTokensByOrganizationParams) ([]ApiToken, error) {
-	rows, err := q.db.Query(ctx, listApiTokensByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listApiTokensByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -251,15 +251,15 @@ func (q *Queries) ListApiTokensByOrganization(ctx context.Context, arg ListApiTo
 	for rows.Next() {
 		var i ApiToken
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ExpiresAt,
 			&i.KeyHash,
 			&i.Name,
 			&i.Prefix,
-			&i.UserId,
-			&i.OrganizationId,
+			&i.UserID,
+			&i.OrganizationID,
 			&i.Scopes,
 			&i.RateLimit,
 			&i.LastUsedAt,
@@ -290,13 +290,13 @@ OFFSET
 `
 
 type ListApiTokensByUserParams struct {
-	UserId uuid.UUID
+	UserID uuid.UUID
 	Limit  int32
 	Offset int32
 }
 
 func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]ApiToken, error) {
-	rows, err := q.db.Query(ctx, listApiTokensByUser, arg.UserId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listApiTokensByUser, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -305,15 +305,15 @@ func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUs
 	for rows.Next() {
 		var i ApiToken
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ExpiresAt,
 			&i.KeyHash,
 			&i.Name,
 			&i.Prefix,
-			&i.UserId,
-			&i.OrganizationId,
+			&i.UserID,
+			&i.OrganizationID,
 			&i.Scopes,
 			&i.RateLimit,
 			&i.LastUsedAt,
@@ -347,7 +347,7 @@ type UpdateApiTokenParams struct {
 	Scopes    []string
 	RateLimit *int32
 	ExpiresAt *time.Time
-	Id        uuid.UUID
+	ID        uuid.UUID
 }
 
 func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (ApiToken, error) {
@@ -356,19 +356,19 @@ func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) 
 		arg.Scopes,
 		arg.RateLimit,
 		arg.ExpiresAt,
-		arg.Id,
+		arg.ID,
 	)
 	var i ApiToken
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
 		&i.KeyHash,
 		&i.Name,
 		&i.Prefix,
-		&i.UserId,
-		&i.OrganizationId,
+		&i.UserID,
+		&i.OrganizationID,
 		&i.Scopes,
 		&i.RateLimit,
 		&i.LastUsedAt,

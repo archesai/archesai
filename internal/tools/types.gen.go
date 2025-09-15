@@ -19,10 +19,10 @@ const (
 const (
 	CreatedAt      ListToolsParamsSortField = "createdAt"
 	Description    ListToolsParamsSortField = "description"
-	Id             ListToolsParamsSortField = "id"
+	ID             ListToolsParamsSortField = "id"
 	InputMimeType  ListToolsParamsSortField = "inputMimeType"
 	Name           ListToolsParamsSortField = "name"
-	OrganizationId ListToolsParamsSortField = "organizationId"
+	OrganizationID ListToolsParamsSortField = "organizationID"
 	OutputMimeType ListToolsParamsSortField = "outputMimeType"
 	UpdatedAt      ListToolsParamsSortField = "updatedAt"
 )
@@ -38,8 +38,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -83,15 +83,15 @@ type Tool struct {
 	// Description The tool description
 	Description string `json:"description" yaml:"description"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// InputMimeType The MIME type of the input for the tool, e.g. text/plain
 	InputMimeType string `json:"inputMimeType" yaml:"inputMimeType"`
 
 	// Name The name of the tool
 	Name           string `json:"name" yaml:"name"`
-	OrganizationId UUID   `json:"organizationId" yaml:"organizationId"`
+	OrganizationID UUID   `json:"organizationID" yaml:"organizationID"`
 
 	// OutputMimeType The MIME type of the output for the tool, e.g. text/plain
 	OutputMimeType string `json:"outputMimeType" yaml:"outputMimeType"`
@@ -100,7 +100,7 @@ type Tool struct {
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
@@ -154,7 +154,7 @@ type Unauthorized = Problem
 type ListToolsParams struct {
 	// Filter Filter tools by field values. Supported fields:
 	// - createdAt, id, updatedAt, description, inputMimeType
-	// - name, organizationId, outputMimeType
+	// - name, organizationID, outputMimeType
 	Filter ToolsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter

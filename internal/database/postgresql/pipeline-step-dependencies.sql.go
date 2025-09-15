@@ -25,13 +25,13 @@ SELECT
 `
 
 type CheckDirectCircularDependencyParams struct {
-	PrerequisiteId uuid.UUID
-	PipelineStepId uuid.UUID
+	PrerequisiteID uuid.UUID
+	PipelineStepID uuid.UUID
 }
 
 // Check if adding this dependency would create a direct cycle
 func (q *Queries) CheckDirectCircularDependency(ctx context.Context, arg CheckDirectCircularDependencyParams) (bool, error) {
-	row := q.db.QueryRow(ctx, checkDirectCircularDependency, arg.PrerequisiteId, arg.PipelineStepId)
+	row := q.db.QueryRow(ctx, checkDirectCircularDependency, arg.PrerequisiteID, arg.PipelineStepID)
 	var would_create_cycle bool
 	err := row.Scan(&would_create_cycle)
 	return would_create_cycle, err
@@ -45,12 +45,12 @@ VALUES
 `
 
 type CreatePipelineStepDependencyParams struct {
-	PipelineStepId uuid.UUID
-	PrerequisiteId uuid.UUID
+	PipelineStepID uuid.UUID
+	PrerequisiteID uuid.UUID
 }
 
 func (q *Queries) CreatePipelineStepDependency(ctx context.Context, arg CreatePipelineStepDependencyParams) error {
-	_, err := q.db.Exec(ctx, createPipelineStepDependency, arg.PipelineStepId, arg.PrerequisiteId)
+	_, err := q.db.Exec(ctx, createPipelineStepDependency, arg.PipelineStepID, arg.PrerequisiteID)
 	return err
 }
 
@@ -74,12 +74,12 @@ WHERE
 `
 
 type DeletePipelineStepDependencyParams struct {
-	PipelineStepId uuid.UUID
-	PrerequisiteId uuid.UUID
+	PipelineStepID uuid.UUID
+	PrerequisiteID uuid.UUID
 }
 
 func (q *Queries) DeletePipelineStepDependency(ctx context.Context, arg DeletePipelineStepDependencyParams) error {
-	_, err := q.db.Exec(ctx, deletePipelineStepDependency, arg.PipelineStepId, arg.PrerequisiteId)
+	_, err := q.db.Exec(ctx, deletePipelineStepDependency, arg.PipelineStepID, arg.PrerequisiteID)
 	return err
 }
 
@@ -96,9 +96,9 @@ WHERE
 `
 
 type GetPipelineStepDependenciesRow struct {
-	PipelineStepId uuid.UUID
-	PrerequisiteId uuid.UUID
-	PipelineId     uuid.UUID
+	PipelineStepID uuid.UUID
+	PrerequisiteID uuid.UUID
+	PipelineID     uuid.UUID
 }
 
 func (q *Queries) GetPipelineStepDependencies(ctx context.Context, pipelineID uuid.UUID) ([]GetPipelineStepDependenciesRow, error) {
@@ -110,7 +110,7 @@ func (q *Queries) GetPipelineStepDependencies(ctx context.Context, pipelineID uu
 	var items []GetPipelineStepDependenciesRow
 	for rows.Next() {
 		var i GetPipelineStepDependenciesRow
-		if err := rows.Scan(&i.PipelineStepId, &i.PrerequisiteId, &i.PipelineId); err != nil {
+		if err := rows.Scan(&i.PipelineStepID, &i.PrerequisiteID, &i.PipelineID); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

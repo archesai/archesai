@@ -165,7 +165,7 @@ func getConfigTypeName(key string) string {
 }
 
 var pascalCaseMap = map[string]string{
-	"api":            "Api",
+	"api":            "API",
 	"cors":           "Cors",
 	"auth":           "Auth",
 	"database":       "Database",

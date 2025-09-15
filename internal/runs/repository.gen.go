@@ -8,6 +8,7 @@ import (
 
 // Repository handles run persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Run) (*Run, error)
 	Get(ctx context.Context, id uuid.UUID) (*Run, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Run) (*Run, error)
@@ -15,7 +16,7 @@ type Repository interface {
 	List(ctx context.Context, params ListRunsParams) ([]*Run, int64, error)
 
 	// Additional operations
-	ListByPipeline(ctx context.Context, pipelineId string) ([]*Run, error)
-	ListByOrganization(ctx context.Context, organizationId string) ([]*Run, error)
-	ListByTool(ctx context.Context, toolId string) ([]*Run, error)
+	ListByPipeline(ctx context.Context, pipelineID uuid.UUID) ([]*Run, error)
+	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Run, error)
+	ListByTool(ctx context.Context, toolID uuid.UUID) ([]*Run, error)
 }

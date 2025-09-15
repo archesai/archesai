@@ -16,7 +16,7 @@ export interface ArtifactEntity extends BaseEntity {
   /** Artifact name */
   name?: string;
   /** Organization ID that owns this artifact */
-  organizationId?: Uuid;
+  organizationID?: Uuid;
   /** Artifact size in bytes */
   size?: number;
   /** Artifact text content or URL */
@@ -75,7 +75,7 @@ export interface InvitationEntity extends BaseEntity {
   /** Invitation metadata */
   metadata?: Record<string, unknown>;
   /** The organization ID */
-  organizationId: Uuid;
+  organizationID: Uuid;
   /** The role assigned to the invitation */
   role: string;
   /** Invitation status */
@@ -95,7 +95,7 @@ export interface LabelEntity extends BaseEntity {
   /** Label name */
   name: string;
   /** Organization ID that owns this label */
-  organizationId: Uuid;
+  organizationID: Uuid;
 }
 
 /**
@@ -105,11 +105,11 @@ export interface MemberEntity extends BaseEntity {
   /** Member metadata */
   metadata?: Record<string, unknown>;
   /** The organization ID */
-  organizationId: Uuid;
+  organizationID: Uuid;
   /** The member's role */
   role: string;
   /** The user ID */
-  userId: Uuid;
+  userID: Uuid;
 }
 
 /**
@@ -141,7 +141,7 @@ export interface PipelineEntity extends BaseEntity {
   /** Pipeline name */
   name: string;
   /** Organization ID that owns this pipeline */
-  organizationId: Uuid;
+  organizationID: Uuid;
   /** Pipeline status */
   status: "active" | "archived" | "inactive";
 }
@@ -159,7 +159,7 @@ export interface RunEntity extends BaseEntity {
   /** Run name */
   name?: string;
   /** Pipeline ID this run belongs to */
-  pipelineId: Uuid;
+  pipelineID: Uuid;
   /** Run result data */
   result?: Record<string, unknown>;
   /** Run started timestamp */

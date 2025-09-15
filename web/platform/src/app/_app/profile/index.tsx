@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_app/profile/")({
 
 export default function ProfileSecuritySettingsPage(): JSX.Element {
   const { data: sessionData } = useGetSessionSuspense("current");
-  const { data: userData } = useGetUserSuspense(sessionData.data.userId);
+  const { data: userData } = useGetUserSuspense(sessionData.data.userID);
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
     useDeleteUser();
   const {

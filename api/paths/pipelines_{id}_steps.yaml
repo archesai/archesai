@@ -10,8 +10,8 @@ get:
       required: true
       description: Pipeline ID
       schema:
-        type: string
-        format: uuid
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
   security:
     - bearerAuth: []
   responses:
@@ -39,22 +39,22 @@ post:
   summary: Add a step to a pipeline
   tags:
     - Pipelines
-  description: Create a new step in the pipeline
+  description: Create a step in the pipeline
   parameters:
     - name: id
       in: path
       required: true
       description: Pipeline ID
       schema:
-        type: string
-        format: uuid
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
   requestBody:
     content:
       application/json:
         schema:
           type: object
           properties:
-            toolId:
+            toolID:
               allOf:
                 - $ref: ../components/schemas/UUID.yaml
             name:
@@ -81,10 +81,10 @@ post:
               description: IDs of steps this step depends on
               type: array
               items:
-                type: string
-                format: uuid
+                allOf:
+                  - $ref: ../components/schemas/UUID.yaml
           required:
-            - toolId
+            - toolID
             - name
     required: true
   security:

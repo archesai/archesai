@@ -8,4 +8,4 @@ schema:
 description: |
   Filter tools by field values. Supported fields:
   - createdAt, id, updatedAt, description, inputMimeType
-  - name, organizationId, outputMimeType
+  - name, organizationID, outputMimeType

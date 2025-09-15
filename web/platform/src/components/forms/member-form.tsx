@@ -2,7 +2,7 @@ import type { CreateMemberBody, UpdateMemberBody } from "@archesai/client";
 import {
   createMember,
   updateMember,
-  useGetOneMemberSuspense,
+  useGetMemberSuspense,
   useGetSessionSuspense,
 } from "@archesai/client";
 import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
@@ -21,8 +21,8 @@ import type { JSX } from "react";
 
 export default function MemberForm({ id }: { id?: string }): JSX.Element {
   const { data: sessionData } = useGetSessionSuspense("current");
-  const memberQuery = useGetOneMemberSuspense(
-    sessionData.data.activeOrganizationId,
+  const memberQuery = useGetMemberSuspense(
+    sessionData.data.activeOrganizationID,
     id,
   );
 
@@ -30,10 +30,10 @@ export default function MemberForm({ id }: { id?: string }): JSX.Element {
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: member?.userId,
+      defaultValue: member?.userID,
       description: "This is the email that will be used for this member.",
       label: "User ID",
-      name: "userId",
+      name: "userID",
       renderControl: (field) => (
         <Input
           {...field}
@@ -91,13 +91,13 @@ export default function MemberForm({ id }: { id?: string }): JSX.Element {
       isUpdateForm={!!id}
       onSubmitCreate={async (createMemberDto) => {
         await createMember(
-          sessionData.data.activeOrganizationId,
+          sessionData.data.activeOrganizationID,
           createMemberDto,
         );
       }}
       onSubmitUpdate={async (data) => {
         if (id) {
-          await updateMember(sessionData.data.activeOrganizationId, id, data);
+          await updateMember(sessionData.data.activeOrganizationID, id, data);
         }
       }}
       title="Configuration"

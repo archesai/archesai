@@ -37,8 +37,8 @@ export default function PipelineDataTable(): JSX.Element {
               <div className="flex gap-2">
                 <Link
                   className="max-w-[200px] shrink truncate font-medium text-blue-500"
-                  params={{ pipelineId: row.original.id }}
-                  to={`/pipelines/$pipelineId`}
+                  params={{ pipelineID: row.original.id }}
+                  to={`/pipelines/$pipelineID`}
                 >
                   {row.original.name}
                 </Link>
@@ -71,9 +71,9 @@ export default function PipelineDataTable(): JSX.Element {
       handleSelect={async (pipeline) => {
         await navigate({
           params: {
-            pipelineId: pipeline.id,
+            pipelineID: pipeline.id,
           },
-          to: `/pipelines/$pipelineId`,
+          to: `/pipelines/$pipelineID`,
         });
       }}
       icon={<WorkflowIcon />}

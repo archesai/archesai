@@ -50,8 +50,8 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Create a new run
- * @summary Create a new run
+ * Create a run
+ * @summary Create a run
  */
 export const getCreateRunUrl = () => {
 
@@ -106,7 +106,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CreateRunMutationError = BadRequestResponse | UnauthorizedResponse
 
     /**
- * @summary Create a new run
+ * @summary Create a run
  */
 export const useCreateRun = <TError = BadRequestResponse | UnauthorizedResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createRun>>, TError,{data: CreateRunBody}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -122,8 +122,8 @@ export const useCreateRun = <TError = BadRequestResponse | UnauthorizedResponse,
       return useMutation(mutationOptions , queryClient);
     }
     /**
- * Find many runs
- * @summary Find many runs
+ * List runs
+ * @summary List runs
  */
 export const getListRunsUrl = (params?: ListRunsParams,) => {
   const normalizedParams = new URLSearchParams();
@@ -211,7 +211,7 @@ export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many runs
+ * @summary List runs
  */
 
 export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse>(
@@ -265,7 +265,7 @@ export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many runs
+ * @summary List runs
  */
 
 export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse>(
@@ -509,7 +509,7 @@ export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TE
  * Update a run
  * @summary Update a run
  */
-export const getUpdateRunUrl = (id: string | undefined | null,) => {
+export const getUpdateRunUrl = (id: Uuid | undefined | null,) => {
 
 
   
@@ -517,7 +517,7 @@ export const getUpdateRunUrl = (id: string | undefined | null,) => {
   return `/runs/${id}`
 }
 
-export const updateRun = async (id: string | undefined | null,
+export const updateRun = async (id: Uuid | undefined | null,
     updateRunBody: UpdateRunBody, options?: RequestInit): Promise<UpdateRun200> => {
   
   return customFetch<UpdateRun200>(getUpdateRunUrl(id),
@@ -534,8 +534,8 @@ export const updateRun = async (id: string | undefined | null,
 
 
 export const getUpdateRunMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRun>>, TError,{id: string | undefined | null;data: UpdateRunBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateRun>>, TError,{id: string | undefined | null;data: UpdateRunBody}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRun>>, TError,{id: Uuid | undefined | null;data: UpdateRunBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateRun>>, TError,{id: Uuid | undefined | null;data: UpdateRunBody}, TContext> => {
 
 const mutationKey = ['updateRun'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -547,7 +547,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateRun>>, {id: string | undefined | null;data: UpdateRunBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateRun>>, {id: Uuid | undefined | null;data: UpdateRunBody}> = (props) => {
           const {id,data} = props ?? {};
 
           return  updateRun(id,data,requestOptions)
@@ -566,11 +566,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Update a run
  */
 export const useUpdateRun = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRun>>, TError,{id: string | undefined | null;data: UpdateRunBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRun>>, TError,{id: Uuid | undefined | null;data: UpdateRunBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateRun>>,
         TError,
-        {id: string | undefined | null;data: UpdateRunBody},
+        {id: Uuid | undefined | null;data: UpdateRunBody},
         TContext
       > => {
 

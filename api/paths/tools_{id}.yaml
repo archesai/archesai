@@ -6,9 +6,8 @@ delete:
   description: Delete a tool
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -38,9 +37,8 @@ get:
   description: Find a tool
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -86,9 +84,8 @@ patch:
               example: Example Name
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true

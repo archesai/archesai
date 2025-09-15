@@ -7,4 +7,4 @@ schema:
   $ref: ../schemas/FilterNode.yaml
 description: |
   Filter members by field values. Supported fields:
-  - createdAt, id, updatedAt, organizationId, role, userId
+  - createdAt, id, updatedAt, organizationID, role, userID

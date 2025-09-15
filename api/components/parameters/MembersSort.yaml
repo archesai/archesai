@@ -17,9 +17,9 @@ schema:
           - createdAt
           - id
           - updatedAt
-          - organizationId
+          - organizationID
           - role
-          - userId
+          - userID
         example: createdAt
         minLength: 1
       order:

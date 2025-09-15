@@ -26,30 +26,35 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // User operations
 
+// Create creates a new user
 func (r *SQLiteRepository) Create(ctx context.Context, entity *User) (*User, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateUser not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a user by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*User, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetUser not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing user
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *User) (*User, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateUser not yet implemented - requires custom mapping")
 }
 
+// Delete removes a user
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteUser not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of users
 func (r *SQLiteRepository) List(ctx context.Context, params ListUsersParams) ([]*User, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity

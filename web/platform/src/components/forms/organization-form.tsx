@@ -4,7 +4,7 @@ import type {
 } from "@archesai/client";
 import {
   useCreateOrganization,
-  useGetOneOrganizationSuspense,
+  useGetOrganizationSuspense,
   useGetSessionSuspense,
   useUpdateOrganization,
 } from "@archesai/client";
@@ -22,7 +22,7 @@ export default function OrganizationForm(): JSX.Element {
   const { mutateAsync: updateOrganization } = useUpdateOrganization();
   const {
     data: { data: organization },
-  } = useGetOneOrganizationSuspense(session.activeOrganizationId);
+  } = useGetOrganizationSuspense(session.activeOrganizationID);
 
   const formFields: FormFieldConfig[] = [
     {
@@ -69,7 +69,7 @@ export default function OrganizationForm(): JSX.Element {
       ) => {
         await updateOrganization({
           data: updateOrganizationDto,
-          id: session.activeOrganizationId,
+          id: session.activeOrganizationID,
         });
       }}
       showCard={true}

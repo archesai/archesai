@@ -119,12 +119,11 @@ generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 .PHONY: generate-oapi
 generate-oapi: generate-codegen-types ## Generate OpenAPI server code
 	@echo -e "$(YELLOW)▶ Generating OpenAPI server code...$(NC)"
-	@for dir in internal/*/generate.go; do \
-		if [ -f "$$dir" ]; then \
-			domain=$$(dirname $$dir | xargs basename); \
-			cd internal/$$domain && \
-			{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
-			cd - > /dev/null; \
+	@for dir in internal/*; do \
+		if [ -d "$$dir" ]; then \
+			if ls "$$dir"/*.go > /dev/null 2>&1 && grep -q "go:generate" "$$dir"/*.go 2>/dev/null; then \
+				cd "$$dir" && go generate 2>/dev/null && cd - > /dev/null; \
+			fi \
 		fi \
 	done
 	@echo -e "$(GREEN)✓ OpenAPI generation complete!$(NC)"

@@ -19,12 +19,12 @@ schema:
           - updatedAt
           - completedAt
           - error
-          - organizationId
-          - pipelineId
+          - organizationID
+          - pipelineID
           - progress
           - startedAt
           - status
-          - toolId
+          - toolID
         example: createdAt
         minLength: 1
       order:

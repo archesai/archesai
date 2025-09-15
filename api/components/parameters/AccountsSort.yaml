@@ -19,14 +19,14 @@ schema:
           - updatedAt
           - accessToken
           - accessTokenExpiresAt
-          - accountId
+          - accountID
           - idToken
           - password
-          - providerId
+          - providerID
           - refreshToken
           - refreshTokenExpiresAt
           - scope
-          - userId
+          - userID
         example: createdAt
         minLength: 1
       order:

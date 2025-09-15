@@ -9,11 +9,11 @@ import (
 	"github.com/oapi-codegen/runtime"
 )
 
-// Defines values for CodegenConfigGeneratorsSqlDialect.
+// Defines values for CodegenConfigGeneratorsSQLDialect.
 const (
-	Mysql      CodegenConfigGeneratorsSqlDialect = "mysql"
-	Postgresql CodegenConfigGeneratorsSqlDialect = "postgresql"
-	Sqlite     CodegenConfigGeneratorsSqlDialect = "sqlite"
+	Mysql      CodegenConfigGeneratorsSQLDialect = "mysql"
+	Postgresql CodegenConfigGeneratorsSQLDialect = "postgresql"
+	Sqlite     CodegenConfigGeneratorsSQLDialect = "sqlite"
 )
 
 // Defines values for XCodegenCacheInvalidateOn.
@@ -161,10 +161,19 @@ type CodegenConfig struct {
 			Sqlite string `json:"sqlite,omitempty,omitzero" yaml:"sqlite,omitempty"`
 		} `json:"repository,omitempty,omitzero" yaml:"repository,omitempty"`
 
-		// Sql SQL generation configuration
-		Sql struct {
+		// Service Service generation paths
+		Service struct {
+			// Implementation Path for service implementation
+			Implementation string `json:"implementation,omitempty,omitzero" yaml:"implementation,omitempty"`
+
+			// Interface Path for service interface
+			Interface string `json:"interface,omitempty,omitzero" yaml:"interface,omitempty"`
+		} `json:"service,omitempty,omitzero" yaml:"service,omitempty"`
+
+		// SQL SQL generation configuration
+		SQL struct {
 			// Dialect SQL dialect to use
-			Dialect CodegenConfigGeneratorsSqlDialect `json:"dialect,omitempty,omitzero" yaml:"dialect,omitempty"`
+			Dialect CodegenConfigGeneratorsSQLDialect `json:"dialect,omitempty,omitzero" yaml:"dialect,omitempty"`
 
 			// QueryDir Directory for SQL query files
 			QueryDir string `json:"query_dir,omitempty,omitzero" yaml:"query_dir,omitempty"`
@@ -194,8 +203,8 @@ type CodegenConfig struct {
 	} `json:"settings,omitempty,omitzero" yaml:"settings,omitempty"`
 }
 
-// CodegenConfigGeneratorsSqlDialect SQL dialect to use
-type CodegenConfigGeneratorsSqlDialect string
+// CodegenConfigGeneratorsSQLDialect SQL dialect to use
+type CodegenConfigGeneratorsSQLDialect string
 
 // CodegenConfigGeneratorsTests0 Enable/disable test generation with default paths
 type CodegenConfigGeneratorsTests0 = bool
@@ -254,8 +263,8 @@ type XCodegen struct {
 			Prefix string `json:"prefix,omitempty,omitzero" yaml:"prefix,omitempty"`
 		} `json:"redis,omitempty,omitzero" yaml:"redis,omitempty"`
 
-		// Ttl Time-to-live in seconds
-		Ttl int `json:"ttl,omitempty,omitzero" yaml:"ttl,omitempty"`
+		// TTL Time-to-live in seconds
+		TTL int `json:"ttl,omitempty,omitzero" yaml:"ttl,omitempty"`
 
 		// WarmOnStartup Pre-warm cache on application startup
 		WarmOnStartup bool `json:"warm_on_startup,omitempty,omitzero" yaml:"warm_on_startup,omitempty"`
@@ -289,8 +298,8 @@ type XCodegen struct {
 			// Name Query name for SQLC
 			Name string `json:"name" yaml:"name"`
 
-			// Sql SQL query
-			Sql string `json:"sql" yaml:"sql"`
+			// SQL SQL query
+			SQL string `json:"sql" yaml:"sql"`
 
 			// Type Query type for SQLC
 			Type XCodegenDatabaseQueriesType `json:"type" yaml:"type"`

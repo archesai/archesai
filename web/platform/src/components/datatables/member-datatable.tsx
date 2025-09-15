@@ -21,10 +21,10 @@ import MemberForm from "#components/forms/member-form";
 
 export default function MemberDataTable(): JSX.Element {
   const { data: sessionData } = useGetSessionSuspense("current");
-  const organizationId = sessionData.data.activeOrganizationId;
+  const organizationID = sessionData.data.activeOrganizationID;
 
   const getQueryOptions = (query: SearchQuery) => {
-    return getListMembersSuspenseQueryOptions(organizationId, {
+    return getListMembersSuspenseQueryOptions(organizationID, {
       filter: query.filter as unknown as MembersFilterParameter,
       page: query.page as PageQueryParameter,
       sort: query.sort as MembersSortParameter,
@@ -46,11 +46,11 @@ export default function MemberDataTable(): JSX.Element {
           id: "role",
         },
         {
-          accessorKey: "userId",
+          accessorKey: "userID",
           cell: ({ row }) => {
-            return row.original.userId;
+            return row.original.userID;
           },
-          id: "userId",
+          id: "userID",
         },
         {
           accessorKey: "createdAt",
@@ -62,7 +62,7 @@ export default function MemberDataTable(): JSX.Element {
       ]}
       createForm={MemberForm}
       deleteItem={async (id) => {
-        await deleteMember(organizationId, id);
+        await deleteMember(organizationID, id);
       }}
       entityKey={MEMBER_ENTITY_KEY}
       // biome-ignore lint/suspicious/noExplicitAny: FIXME

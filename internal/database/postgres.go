@@ -26,7 +26,7 @@ func NewPostgreSQL(cfg *config.DatabaseConfig, logger *slog.Logger) (Database, e
 	ctx := context.Background()
 
 	// Parse the connection string
-	poolConfig, err := pgxpool.ParseConfig(cfg.Url)
+	poolConfig, err := pgxpool.ParseConfig(cfg.URL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse database URL: %w", err)
 	}
@@ -78,7 +78,7 @@ func NewPostgreSQL(cfg *config.DatabaseConfig, logger *slog.Logger) (Database, e
 	}
 
 	// Create stdlib connection for compatibility
-	sqlDB, err := sql.Open("pgx", cfg.Url)
+	sqlDB, err := sql.Open("pgx", cfg.URL)
 	if err != nil {
 		pool.Close()
 		return nil, fmt.Errorf("failed to create stdlib connection: %w", err)

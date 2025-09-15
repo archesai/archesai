@@ -20,7 +20,7 @@ type Cache interface {
 	Set(ctx context.Context, entity *Account, ttl time.Duration) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	GetByProviderId(ctx context.Context, provider string, providerAccountId string) (*Account, error)
-	ListByUserId(ctx context.Context, userId uuid.UUID) ([]*Account, error)
+	ListByUserId(ctx context.Context, userID uuid.UUID) ([]*Account, error)
 
 	// Batch operations
 	FlushAll(ctx context.Context) error
@@ -60,7 +60,7 @@ func (a *CacheAdapter) Set(ctx context.Context, entity *Account, ttl time.Durati
 	if entity == nil {
 		return nil
 	}
-	return a.accountCache.Set(ctx, entity.Id.String(), entity, ttl)
+	return a.accountCache.Set(ctx, entity.ID.String(), entity, ttl)
 }
 
 // Delete removes account from cache
@@ -81,8 +81,8 @@ func (a *CacheAdapter) GetByProviderId(ctx context.Context, provider string, pro
 	return entity, nil
 }
 
-// ListByUserId retrieves multiple accounts from cache by userId
-func (a *CacheAdapter) ListByUserId(ctx context.Context, userId uuid.UUID) ([]*Account, error) {
+// ListByUserId retrieves multiple accounts from cache by userID
+func (a *CacheAdapter) ListByUserId(ctx context.Context, userID uuid.UUID) ([]*Account, error) {
 	// List operations typically aren't cached as they're dynamic
 	// Return cache miss to fall back to database
 	return nil, ErrCacheMiss

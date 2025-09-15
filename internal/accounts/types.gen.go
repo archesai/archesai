@@ -17,30 +17,30 @@ const (
 	SessionCookieScopes = "sessionCookie.Scopes"
 )
 
-// Defines values for AccountProviderId.
+// Defines values for AccountProviderID.
 const (
-	Apple     AccountProviderId = "apple"
-	Github    AccountProviderId = "github"
-	Google    AccountProviderId = "google"
-	Local     AccountProviderId = "local"
-	Microsoft AccountProviderId = "microsoft"
+	Apple     AccountProviderID = "apple"
+	Github    AccountProviderID = "github"
+	Google    AccountProviderID = "google"
+	Local     AccountProviderID = "local"
+	Microsoft AccountProviderID = "microsoft"
 )
 
 // Defines values for ListAccountsParamsSortField.
 const (
 	AccessToken           ListAccountsParamsSortField = "accessToken"
 	AccessTokenExpiresAt  ListAccountsParamsSortField = "accessTokenExpiresAt"
-	AccountId             ListAccountsParamsSortField = "accountId"
+	AccountID             ListAccountsParamsSortField = "accountID"
 	CreatedAt             ListAccountsParamsSortField = "createdAt"
-	Id                    ListAccountsParamsSortField = "id"
-	IdToken               ListAccountsParamsSortField = "idToken"
+	ID                    ListAccountsParamsSortField = "id"
+	IDToken               ListAccountsParamsSortField = "idToken"
 	Password              ListAccountsParamsSortField = "password"
-	ProviderId            ListAccountsParamsSortField = "providerId"
+	ProviderID            ListAccountsParamsSortField = "providerID"
 	RefreshToken          ListAccountsParamsSortField = "refreshToken"
 	RefreshTokenExpiresAt ListAccountsParamsSortField = "refreshTokenExpiresAt"
 	Scope                 ListAccountsParamsSortField = "scope"
 	UpdatedAt             ListAccountsParamsSortField = "updatedAt"
-	UserId                ListAccountsParamsSortField = "userId"
+	UserID                ListAccountsParamsSortField = "userID"
 )
 
 // Defines values for ListAccountsParamsSortOrder.
@@ -57,23 +57,23 @@ type Account struct {
 	// AccessTokenExpiresAt The access token expiration timestamp
 	AccessTokenExpiresAt time.Time `json:"accessTokenExpiresAt,omitempty,omitzero" yaml:"accessTokenExpiresAt,omitempty"`
 
-	// AccountId The unique identifier for the account from the provider
-	AccountId string `json:"accountId" yaml:"accountId"`
+	// AccountID The unique identifier for the account from the provider
+	AccountID string `json:"accountID" yaml:"accountID"`
 
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
-	// IdToken The OpenID Connect ID token
-	IdToken string `json:"idToken,omitempty,omitzero" yaml:"idToken,omitempty"`
+	// IDToken The OpenID Connect ID token
+	IDToken string `json:"idToken,omitempty,omitzero" yaml:"idToken,omitempty"`
 
 	// Password The hashed password (only for local authentication)
 	Password string `json:"password,omitempty,omitzero" yaml:"password,omitempty"`
 
-	// ProviderId The authentication provider identifier
-	ProviderId AccountProviderId `json:"providerId" yaml:"providerId"`
+	// ProviderID The authentication provider identifier
+	ProviderID AccountProviderID `json:"providerID" yaml:"providerID"`
 
 	// RefreshToken The OAuth refresh token
 	RefreshToken string `json:"refreshToken,omitempty,omitzero" yaml:"refreshToken,omitempty"`
@@ -87,20 +87,20 @@ type Account struct {
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 
-	// UserId The user ID this account belongs to
-	UserId UUID `json:"userId" yaml:"userId"`
+	// UserID The user ID this account belongs to
+	UserID UUID `json:"userID" yaml:"userID"`
 }
 
-// AccountProviderId The authentication provider identifier
-type AccountProviderId string
+// AccountProviderID The authentication provider identifier
+type AccountProviderID string
 
 // Base defines model for Base.
 type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -151,7 +151,7 @@ type TokenResponse struct {
 	TokenType string `json:"token_type" yaml:"token_type"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
@@ -205,8 +205,8 @@ type Unauthorized = Problem
 type ListAccountsParams struct {
 	// Filter Filter accounts by field values. Supported fields:
 	// - createdAt, id, updatedAt, accessToken, accessTokenExpiresAt
-	// - accountId, idToken, password, providerId, refreshToken
-	// - refreshTokenExpiresAt, scope, userId
+	// - accountID, idToken, password, providerID, refreshToken
+	// - refreshTokenExpiresAt, scope, userID
 	Filter AccountsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
@@ -234,8 +234,23 @@ type CreateAccountJSONBody struct {
 	Password string `json:"password" yaml:"password"`
 }
 
+// UpdateAccountJSONBody defines parameters for UpdateAccount.
+type UpdateAccountJSONBody struct {
+	// Provider The account provider
+	Provider string `json:"provider,omitempty,omitzero" yaml:"provider,omitempty"`
+
+	// ProviderAccountID The provider account ID
+	ProviderAccountID string `json:"providerAccountID,omitempty,omitzero" yaml:"providerAccountID,omitempty"`
+
+	// Type The account type
+	Type string `json:"type,omitempty,omitzero" yaml:"type,omitempty"`
+}
+
 // CreateAccountJSONRequestBody defines body for CreateAccount for application/json ContentType.
 type CreateAccountJSONRequestBody CreateAccountJSONBody
+
+// UpdateAccountJSONRequestBody defines body for UpdateAccount for application/json ContentType.
+type UpdateAccountJSONRequestBody UpdateAccountJSONBody
 
 // AsValidationErrorValue0 returns the union data inside the ValidationError_Value as a ValidationErrorValue0
 func (t ValidationError_Value) AsValidationErrorValue0() (ValidationErrorValue0, error) {

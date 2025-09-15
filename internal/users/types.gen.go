@@ -21,7 +21,7 @@ const (
 	ListUsersParamsSortFieldCreatedAt     ListUsersParamsSortField = "createdAt"
 	ListUsersParamsSortFieldEmail         ListUsersParamsSortField = "email"
 	ListUsersParamsSortFieldEmailVerified ListUsersParamsSortField = "emailVerified"
-	ListUsersParamsSortFieldId            ListUsersParamsSortField = "id"
+	ListUsersParamsSortFieldID            ListUsersParamsSortField = "id"
 	ListUsersParamsSortFieldImage         ListUsersParamsSortField = "image"
 	ListUsersParamsSortFieldName          ListUsersParamsSortField = "name"
 	ListUsersParamsSortFieldUpdatedAt     ListUsersParamsSortField = "updatedAt"
@@ -38,8 +38,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -78,7 +78,7 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // User defines model for User.
@@ -92,8 +92,8 @@ type User struct {
 	// EmailVerified Whether the user's email has been verified
 	EmailVerified bool `json:"emailVerified" yaml:"emailVerified"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// Image The user's avatar image URL
 	Image string `json:"image,omitempty,omitzero" yaml:"image,omitempty"`

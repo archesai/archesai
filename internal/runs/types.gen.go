@@ -28,13 +28,13 @@ const (
 	CompletedAt    ListRunsParamsSortField = "completedAt"
 	CreatedAt      ListRunsParamsSortField = "createdAt"
 	Error          ListRunsParamsSortField = "error"
-	Id             ListRunsParamsSortField = "id"
-	OrganizationId ListRunsParamsSortField = "organizationId"
-	PipelineId     ListRunsParamsSortField = "pipelineId"
+	ID             ListRunsParamsSortField = "id"
+	OrganizationID ListRunsParamsSortField = "organizationID"
+	PipelineID     ListRunsParamsSortField = "pipelineID"
 	Progress       ListRunsParamsSortField = "progress"
 	StartedAt      ListRunsParamsSortField = "startedAt"
 	Status         ListRunsParamsSortField = "status"
-	ToolId         ListRunsParamsSortField = "toolId"
+	ToolID         ListRunsParamsSortField = "toolID"
 	UpdatedAt      ListRunsParamsSortField = "updatedAt"
 )
 
@@ -49,8 +49,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -97,10 +97,10 @@ type Run struct {
 	// Error The error message
 	Error string `json:"error,omitempty,omitzero" yaml:"error,omitempty"`
 
-	// Id Universally Unique Identifier
-	Id             UUID `json:"id" yaml:"id"`
-	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
-	PipelineId     UUID `json:"pipelineId" yaml:"pipelineId"`
+	// ID Universally Unique IDentifier
+	ID             UUID `json:"id" yaml:"id"`
+	OrganizationID UUID `json:"organizationID" yaml:"organizationID"`
+	PipelineID     UUID `json:"pipelineID" yaml:"pipelineID"`
 
 	// Progress The percent progress of the run
 	Progress float32 `json:"progress" yaml:"progress"`
@@ -108,7 +108,7 @@ type Run struct {
 	// StartedAt The timestamp when the run started
 	StartedAt time.Time `json:"startedAt,omitempty,omitzero" yaml:"startedAt,omitempty"`
 	Status    RunStatus `json:"status" yaml:"status"`
-	ToolId    UUID      `json:"toolId" yaml:"toolId"`
+	ToolID    UUID      `json:"toolID" yaml:"toolID"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -117,7 +117,7 @@ type Run struct {
 // RunStatus defines model for Run.Status.
 type RunStatus string
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
@@ -170,8 +170,8 @@ type Unauthorized = Problem
 // ListRunsParams defines parameters for ListRuns.
 type ListRunsParams struct {
 	// Filter Filter runs by field values. Supported fields:
-	// - createdAt, id, updatedAt, completedAt, error, organizationId
-	// - pipelineId, progress, startedAt, status, toolId
+	// - createdAt, id, updatedAt, completedAt, error, organizationID
+	// - pipelineID, progress, startedAt, status, toolID
 	Filter RunsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
@@ -189,12 +189,12 @@ type ListRunsParamsSortOrder string
 
 // CreateRunJSONBody defines parameters for CreateRun.
 type CreateRunJSONBody struct {
-	PipelineId UUID `json:"pipelineId" yaml:"pipelineId"`
+	PipelineID UUID `json:"pipelineID" yaml:"pipelineID"`
 }
 
 // UpdateRunJSONBody defines parameters for UpdateRun.
 type UpdateRunJSONBody struct {
-	PipelineId UUID `json:"pipelineId,omitempty,omitzero" yaml:"pipelineId,omitempty"`
+	PipelineID UUID `json:"pipelineID,omitempty,omitzero" yaml:"pipelineID,omitempty"`
 }
 
 // CreateRunJSONRequestBody defines body for CreateRun for application/json ContentType.

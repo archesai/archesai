@@ -26,38 +26,43 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Pipeline operations
 
+// Create creates a new pipeline
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Pipeline) (*Pipeline, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreatePipeline not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a pipeline by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Pipeline, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetPipeline not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing pipeline
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Pipeline) (*Pipeline, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdatePipeline not yet implemented - requires custom mapping")
 }
 
+// Delete removes a pipeline
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeletePipeline not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of pipelines
 func (r *SQLiteRepository) List(ctx context.Context, params ListPipelinesParams) ([]*Pipeline, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListPipelines not yet implemented - requires custom mapping")
 }
 
-// ListByOrganization retrieves multiple pipelines by organizationId
-func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Pipeline, error) {
+// ListByOrganization retrieves multiple pipelines by organizationID
+func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Pipeline, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")

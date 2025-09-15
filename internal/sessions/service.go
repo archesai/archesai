@@ -2,57 +2,81 @@ package sessions
 
 import (
 	"context"
-	"log/slog"
+	"time"
 
 	"github.com/google/uuid"
 )
 
-// Service provides session business logic
-type Service struct {
-	repo           Repository
-	cache          Cache
-	sessionManager *SessionManager
-	logger         *slog.Logger
-}
-
-// NewService creates a new session service
-func NewService(repo Repository, cache Cache, logger *slog.Logger) *Service {
-	sessionManager := NewSessionManager(repo, cache, 0) // Use default TTL
-	return &Service{
-		repo:           repo,
-		cache:          cache,
-		sessionManager: sessionManager,
-		logger:         logger,
-	}
-}
-
-// CreateSession creates a new user session
-func (s *Service) CreateSession(ctx context.Context, userID uuid.UUID, organizationID uuid.UUID, ipAddress, userAgent string, _ bool) (*Session, string, error) {
-	session, err := s.sessionManager.Create(ctx, userID, organizationID, ipAddress, userAgent)
+// Validate validates a session token and returns the session if valid
+func (s *Service) Validate(ctx context.Context, token string) (*Session, error) {
+	// Get session by token
+	session, err := s.repo.GetByToken(ctx, token)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
-	return session, session.Token, nil
+
+	// Check if session is expired
+	expiresAt, err := time.Parse(time.RFC3339, session.ExpiresAt)
+	if err != nil {
+		return nil, ErrInvalidToken
+	}
+
+	if time.Now().After(expiresAt) {
+		// Clean up expired session
+		_ = s.repo.Delete(ctx, session.ID)
+		return nil, ErrSessionExpired
+	}
+
+	// Update last activity timestamp
+	session.UpdatedAt = time.Now()
+	updated, err := s.repo.Update(ctx, session.ID, session)
+	if err != nil {
+		return nil, err
+	}
+
+	return updated, nil
 }
 
-// DeleteSession deletes a session
-func (s *Service) DeleteSession(ctx context.Context, sessionID uuid.UUID) error {
-	return s.sessionManager.Delete(ctx, sessionID)
-}
-
-// List finds sessions for a user with pagination
-func (s *Service) List(ctx context.Context, _ uuid.UUID, limit, offset int) ([]*Session, int64, error) {
+// ListByUser lists all sessions for a specific user
+func (s *Service) ListByUser(ctx context.Context, _ uuid.UUID) ([]*Session, error) {
 	params := ListSessionsParams{
 		Page: PageQuery{
-			Number: offset/limit + 1,
-			Size:   limit,
+			Number: 1,
+			Size:   100,
 		},
 	}
-	// TODO: Add userId filtering when FilterNode structure is properly defined
-	return s.repo.List(ctx, params)
+
+	sessions, _, err := s.repo.List(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return sessions, nil
 }
 
-// FindSessionByID finds a session by ID
-func (s *Service) FindSessionByID(ctx context.Context, sessionID uuid.UUID) (*Session, error) {
-	return s.sessionManager.Get(ctx, sessionID)
+// RevokeSession revokes a session by ID
+func (s *Service) RevokeSession(ctx context.Context, sessionID uuid.UUID) error {
+	// Check if entity exists first
+	_, err := s.repo.Get(ctx, sessionID)
+	if err != nil {
+		return err
+	}
+
+	// Delete the entity
+	err = s.repo.Delete(ctx, sessionID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CleanupExpiredSessions removes all expired sessions from the repository
+func (s *Service) CleanupExpiredSessions(ctx context.Context) error {
+	err := s.repo.DeleteExpired(ctx)
+	if err != nil {
+		s.logger.Error("Failed to clean up expired sessions", "error", err)
+		return err
+	}
+	return nil
 }

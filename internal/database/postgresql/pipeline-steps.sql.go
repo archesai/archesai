@@ -38,20 +38,20 @@ RETURNING
 `
 
 type CreatePipelineStepParams struct {
-	Id         uuid.UUID
-	PipelineId uuid.UUID
-	ToolId     uuid.UUID
+	ID         uuid.UUID
+	PipelineID uuid.UUID
+	ToolID     uuid.UUID
 }
 
 func (q *Queries) CreatePipelineStep(ctx context.Context, arg CreatePipelineStepParams) (PipelineStep, error) {
-	row := q.db.QueryRow(ctx, createPipelineStep, arg.Id, arg.PipelineId, arg.ToolId)
+	row := q.db.QueryRow(ctx, createPipelineStep, arg.ID, arg.PipelineID, arg.ToolID)
 	var i PipelineStep
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.PipelineId,
-		&i.ToolId,
+		&i.PipelineID,
+		&i.ToolID,
 	)
 	return i, err
 }
@@ -93,11 +93,11 @@ func (q *Queries) GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineSt
 	row := q.db.QueryRow(ctx, getPipelineStep, id)
 	var i PipelineStep
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.PipelineId,
-		&i.ToolId,
+		&i.PipelineID,
+		&i.ToolID,
 	)
 	return i, err
 }
@@ -132,9 +132,9 @@ ORDER BY
 `
 
 type GetPipelineStepsWithDependenciesRow struct {
-	Id           uuid.UUID
-	PipelineId   uuid.UUID
-	ToolId       uuid.UUID
+	ID           uuid.UUID
+	PipelineID   uuid.UUID
+	ToolID       uuid.UUID
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	Dependencies interface{}
@@ -150,9 +150,9 @@ func (q *Queries) GetPipelineStepsWithDependencies(ctx context.Context, pipeline
 	for rows.Next() {
 		var i GetPipelineStepsWithDependenciesRow
 		if err := rows.Scan(
-			&i.Id,
-			&i.PipelineId,
-			&i.ToolId,
+			&i.ID,
+			&i.PipelineID,
+			&i.ToolID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Dependencies,
@@ -195,11 +195,11 @@ func (q *Queries) ListPipelineSteps(ctx context.Context, arg ListPipelineStepsPa
 	for rows.Next() {
 		var i PipelineStep
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.PipelineId,
-			&i.ToolId,
+			&i.PipelineID,
+			&i.ToolID,
 		); err != nil {
 			return nil, err
 		}
@@ -227,13 +227,13 @@ OFFSET
 `
 
 type ListPipelineStepsByPipelineParams struct {
-	PipelineId uuid.UUID
+	PipelineID uuid.UUID
 	Limit      int32
 	Offset     int32
 }
 
 func (q *Queries) ListPipelineStepsByPipeline(ctx context.Context, arg ListPipelineStepsByPipelineParams) ([]PipelineStep, error) {
-	rows, err := q.db.Query(ctx, listPipelineStepsByPipeline, arg.PipelineId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listPipelineStepsByPipeline, arg.PipelineID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -242,11 +242,11 @@ func (q *Queries) ListPipelineStepsByPipeline(ctx context.Context, arg ListPipel
 	for rows.Next() {
 		var i PipelineStep
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.PipelineId,
-			&i.ToolId,
+			&i.PipelineID,
+			&i.ToolID,
 		); err != nil {
 			return nil, err
 		}
@@ -274,13 +274,13 @@ OFFSET
 `
 
 type ListPipelineStepsByToolParams struct {
-	ToolId uuid.UUID
+	ToolID uuid.UUID
 	Limit  int32
 	Offset int32
 }
 
 func (q *Queries) ListPipelineStepsByTool(ctx context.Context, arg ListPipelineStepsByToolParams) ([]PipelineStep, error) {
-	rows, err := q.db.Query(ctx, listPipelineStepsByTool, arg.ToolId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listPipelineStepsByTool, arg.ToolID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -289,11 +289,11 @@ func (q *Queries) ListPipelineStepsByTool(ctx context.Context, arg ListPipelineS
 	for rows.Next() {
 		var i PipelineStep
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.PipelineId,
-			&i.ToolId,
+			&i.PipelineID,
+			&i.ToolID,
 		); err != nil {
 			return nil, err
 		}
@@ -316,19 +316,19 @@ RETURNING
 `
 
 type UpdatePipelineStepParams struct {
-	Id     uuid.UUID
-	ToolId *uuid.UUID
+	ID     uuid.UUID
+	ToolID *uuid.UUID
 }
 
 func (q *Queries) UpdatePipelineStep(ctx context.Context, arg UpdatePipelineStepParams) (PipelineStep, error) {
-	row := q.db.QueryRow(ctx, updatePipelineStep, arg.Id, arg.ToolId)
+	row := q.db.QueryRow(ctx, updatePipelineStep, arg.ID, arg.ToolID)
 	var i PipelineStep
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.PipelineId,
-		&i.ToolId,
+		&i.PipelineID,
+		&i.ToolID,
 	)
 	return i, err
 }

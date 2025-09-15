@@ -23,7 +23,7 @@ import { useCallback, useMemo } from "react";
 interface PipelineStepEntity {
   id: string;
   prerequisites: string[];
-  toolId: string;
+  toolID: string;
 }
 
 export default function CreatePipelinePage(): JSX.Element {
@@ -36,7 +36,7 @@ function RunFormNode({ data }: { data: PipelineStepEntity }) {
       {/* Include your RunForm component */}
       {/* <RunForm /> */}
       <Card className="flex items-center justify-center px-2 py-1">
-        {data.toolId}
+        {data.toolID}
       </Card>
       {/* Add handles for connecting nodes */}
       <Handle
@@ -79,7 +79,7 @@ export const CreatePipelineContent = (): JSX.Element => {
   //       step.prerequisites.forEach((prereq) => {
   //         onConnect({
   //           animated: true,
-  //           id: `${prereq.pipelineStepId}-${step.id}`,
+  //           id: `${prereq.pipelineStepID}-${step.id}`,
   //           label: 'depends on',
   //           source: step.id.toString(),
   //           target: step.id,

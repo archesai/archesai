@@ -26,6 +26,7 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Run operations
 
+// Create creates a new run
 func (r *PostgresRepository) Create(ctx context.Context, entity *Run) (*Run, error) {
 	// Check if SQLC has the CreateRun method
 	// For now, we'll generate a stub but with proper error handling
@@ -33,7 +34,7 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Run) (*Run, err
 
 	// Example of what it should look like when SQLC query exists:
 	// params := postgresql.CreateRunParams{
-	//     Id: entity.Id,
+	//     ID: entity.ID,
 	//     // ... map other fields
 	// }
 	// dbRun, err := r.queries.CreateRun(ctx, params)
@@ -45,30 +46,34 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Run) (*Run, err
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Get retrieves a run by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Run, error) {
 	// Try to call SQLC GetRun if it exists
 	// For now, return not implemented
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Update updates an existing run
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Run) (*Run, error) {
 	// Update operations are often custom and may not have SQLC queries
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Delete removes a run
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteRun if it exists
 	// For now, return not implemented
 	return errors.New("not implemented - SQLC query not found")
 }
 
+// List returns a paginated list of runs
 func (r *PostgresRepository) List(ctx context.Context, params ListRunsParams) ([]*Run, int64, error) {
 	// List operations need both List and Count queries from SQLC
 	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
 
-// ListByPipeline retrieves multiple runs by pipelineId
-func (r *PostgresRepository) ListByPipeline(ctx context.Context, pipelineId string) ([]*Run, error) {
+// ListByPipeline retrieves multiple runs by pipelineID
+func (r *PostgresRepository) ListByPipeline(ctx context.Context, pipelineID uuid.UUID) ([]*Run, error) {
 
 	// Try to call SQLC ListByPipeline if it exists
 	// For now, return not implemented
@@ -76,8 +81,8 @@ func (r *PostgresRepository) ListByPipeline(ctx context.Context, pipelineId stri
 
 }
 
-// ListByOrganization retrieves multiple runs by organizationId
-func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Run, error) {
+// ListByOrganization retrieves multiple runs by organizationID
+func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Run, error) {
 
 	// Try to call SQLC ListByOrganization if it exists
 	// For now, return not implemented
@@ -85,8 +90,8 @@ func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizatio
 
 }
 
-// ListByTool retrieves multiple runs by toolId
-func (r *PostgresRepository) ListByTool(ctx context.Context, toolId string) ([]*Run, error) {
+// ListByTool retrieves multiple runs by toolID
+func (r *PostgresRepository) ListByTool(ctx context.Context, toolID uuid.UUID) ([]*Run, error) {
 
 	// Try to call SQLC ListByTool if it exists
 	// For now, return not implemented
@@ -107,7 +112,7 @@ func mapRunToDomain(db *postgresql.Run) *Run {
 	// For example:
 	// - OpenAPI might use string, database uses *string
 	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (Id vs ID)
+	// - Field names might differ (ID vs ID)
 
 	result := &Run{
 		// TODO: Map fields properly based on actual type definitions
@@ -115,7 +120,7 @@ func mapRunToDomain(db *postgresql.Run) *Run {
 	}
 
 	// Basic field mapping - customize based on your entity structure
-	// result.Id = db.Id
+	// result.ID = db.ID
 	// result.CreatedAt = db.CreatedAt
 	// result.UpdatedAt = db.UpdatedAt
 	// Add specific field mappings as needed

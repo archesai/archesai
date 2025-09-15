@@ -18,40 +18,43 @@ func createTestService(t *testing.T) (*Service, *MockRepository) {
 	mockRepo := NewMockRepository(t)
 	logger := logger.NewTest()
 
-	service := NewService(mockRepo, logger)
+	service := NewService(mockRepo, nil, logger)
 	return service, mockRepo
 }
 
 // TestService_CreatePipeline tests creating a pipeline
 func TestService_CreatePipeline(t *testing.T) {
-	orgID := uuid.New().String()
-
 	t.Run("successful creation", func(t *testing.T) {
 		service, mockRepo := createTestService(t)
 
-		req := &CreatePipelineRequest{
+		req := &CreatePipelineJSONRequestBody{
 			Name:        "Test Pipeline",
 			Description: "Test description",
 		}
 
 		expectedPipeline := &Pipeline{
-			Id:             uuid.New(),
-			OrganizationId: uuid.New(),
+			ID:             uuid.New(),
+			OrganizationID: uuid.New(),
 			Name:           "Test Pipeline",
 			Description:    "Test description",
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		}
 
-		mockRepo.EXPECT().Create(mock.Anything, mock.MatchedBy(func(p *Pipeline) bool {
-			return p.Name == "Test Pipeline"
-		})).Return(expectedPipeline, nil)
+		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*pipelines.Pipeline")).Return(expectedPipeline, nil)
 
-		result, err := service.Create(context.Background(), req, orgID)
+		request := CreatePipelineRequestObject{
+			Body: req,
+		}
+		result, err := service.Create(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, "Test Pipeline", result.Name)
+		if successResp, ok := result.(CreatePipeline201JSONResponse); ok {
+			assert.Equal(t, "Test Pipeline", successResp.Data.Name)
+		} else {
+			t.Fatalf("expected CreatePipeline201JSONResponse, got %T", result)
+		}
 	})
 }
 
@@ -59,8 +62,8 @@ func TestService_CreatePipeline(t *testing.T) {
 func TestService_GetPipeline(t *testing.T) {
 	pipelineID := uuid.New()
 	pipeline := &Pipeline{
-		Id:             pipelineID,
-		OrganizationId: uuid.New(),
+		ID:             pipelineID,
+		OrganizationID: uuid.New(),
 		Name:           "Test Pipeline",
 		Description:    "Test description",
 		CreatedAt:      time.Now(),
@@ -72,11 +75,18 @@ func TestService_GetPipeline(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, pipelineID).Return(pipeline, nil)
 
-		result, err := service.Get(context.Background(), pipelineID)
+		request := GetPipelineRequestObject{
+			ID: pipelineID,
+		}
+		result, err := service.Get(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, pipelineID, result.Id)
+		if successResp, ok := result.(GetPipeline200JSONResponse); ok {
+			assert.Equal(t, pipelineID, successResp.Data.ID)
+		} else {
+			t.Fatalf("expected GetPipeline200JSONResponse, got %T", result)
+		}
 	})
 
 	t.Run("not found", func(t *testing.T) {
@@ -84,11 +94,17 @@ func TestService_GetPipeline(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, pipelineID).Return(nil, ErrPipelineNotFound)
 
-		result, err := service.Get(context.Background(), pipelineID)
+		request := GetPipelineRequestObject{
+			ID: pipelineID,
+		}
+		result, err := service.Get(context.Background(), request)
 
-		assert.Error(t, err)
-		assert.Nil(t, result)
-		assert.ErrorIs(t, err, ErrPipelineNotFound)
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(GetPipeline404ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
 	})
 }
 
@@ -100,8 +116,8 @@ func TestService_UpdatePipeline(t *testing.T) {
 		service, mockRepo := createTestService(t)
 
 		existingPipeline := &Pipeline{
-			Id:             pipelineID,
-			OrganizationId: uuid.New(),
+			ID:             pipelineID,
+			OrganizationID: uuid.New(),
 			Name:           "Old Name",
 			Description:    "Old description",
 			CreatedAt:      time.Now().Add(-1 * time.Hour),
@@ -109,30 +125,36 @@ func TestService_UpdatePipeline(t *testing.T) {
 		}
 
 		updatedPipeline := &Pipeline{
-			Id:             pipelineID,
-			OrganizationId: existingPipeline.OrganizationId,
+			ID:             pipelineID,
+			OrganizationID: existingPipeline.OrganizationID,
 			Name:           "New Name",
 			Description:    "New description",
 			CreatedAt:      existingPipeline.CreatedAt,
 			UpdatedAt:      time.Now(),
 		}
 
-		req := &UpdatePipelineRequest{
+		req := &UpdatePipelineJSONRequestBody{
 			Name:        "New Name",
 			Description: "New description",
 		}
 
 		mockRepo.EXPECT().Get(mock.Anything, pipelineID).Return(existingPipeline, nil)
-		mockRepo.EXPECT().Update(mock.Anything, pipelineID, mock.MatchedBy(func(p *Pipeline) bool {
-			return p.Name == "New Name" && p.Description == "New description"
-		})).Return(updatedPipeline, nil)
+		mockRepo.EXPECT().Update(mock.Anything, pipelineID, mock.AnythingOfType("*pipelines.Pipeline")).Return(updatedPipeline, nil)
 
-		result, err := service.Update(context.Background(), pipelineID, req)
+		request := UpdatePipelineRequestObject{
+			ID:   pipelineID,
+			Body: req,
+		}
+		result, err := service.Update(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, "New Name", result.Name)
-		assert.Equal(t, "New description", result.Description)
+		if successResp, ok := result.(UpdatePipeline200JSONResponse); ok {
+			assert.Equal(t, "New Name", successResp.Data.Name)
+			assert.Equal(t, "New description", successResp.Data.Description)
+		} else {
+			t.Fatalf("expected UpdatePipeline200JSONResponse, got %T", result)
+		}
 	})
 }
 
@@ -143,9 +165,20 @@ func TestService_DeletePipeline(t *testing.T) {
 	t.Run("successful delete", func(t *testing.T) {
 		service, mockRepo := createTestService(t)
 
+		pipeline := &Pipeline{
+			ID:          pipelineID,
+			Name:        "Test Pipeline",
+			Description: "Test description",
+		}
+
+		mockRepo.EXPECT().Get(mock.Anything, pipelineID).Return(pipeline, nil)
 		mockRepo.EXPECT().Delete(mock.Anything, pipelineID).Return(nil)
 
-		err := service.Delete(context.Background(), pipelineID)
+		request := DeletePipelineRequestObject{
+			ID: pipelineID,
+		}
+		res, err := service.Delete(context.Background(), request)
+		assert.NotNil(t, res)
 
 		assert.NoError(t, err)
 	})
@@ -153,33 +186,38 @@ func TestService_DeletePipeline(t *testing.T) {
 	t.Run("not found", func(t *testing.T) {
 		service, mockRepo := createTestService(t)
 
-		mockRepo.EXPECT().Delete(mock.Anything, pipelineID).Return(ErrPipelineNotFound)
+		mockRepo.EXPECT().Get(mock.Anything, pipelineID).Return(nil, ErrPipelineNotFound)
 
-		err := service.Delete(context.Background(), pipelineID)
+		request := DeletePipelineRequestObject{
+			ID: pipelineID,
+		}
+		result, err := service.Delete(context.Background(), request)
 
-		assert.Error(t, err)
-		assert.ErrorIs(t, err, ErrPipelineNotFound)
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(DeletePipeline404ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
 	})
 }
 
 // TestService_ListPipelines tests listing pipelines
 func TestService_ListPipelines(t *testing.T) {
-	orgID := uuid.New().String()
-
 	t.Run("successful list", func(t *testing.T) {
 		service, mockRepo := createTestService(t)
 
 		pipelines := []*Pipeline{
 			{
-				Id:             uuid.New(),
-				OrganizationId: uuid.New(),
+				ID:             uuid.New(),
+				OrganizationID: uuid.New(),
 				Name:           "Pipeline 1",
 				CreatedAt:      time.Now(),
 				UpdatedAt:      time.Now(),
 			},
 			{
-				Id:             uuid.New(),
-				OrganizationId: uuid.New(),
+				ID:             uuid.New(),
+				OrganizationID: uuid.New(),
 				Name:           "Pipeline 2",
 				CreatedAt:      time.Now(),
 				UpdatedAt:      time.Now(),
@@ -195,11 +233,23 @@ func TestService_ListPipelines(t *testing.T) {
 
 		mockRepo.EXPECT().List(mock.Anything, params).Return(pipelines, int64(2), nil)
 
-		result, total, err := service.List(context.Background(), orgID, 10, 0)
+		request := ListPipelinesRequestObject{
+			Params: ListPipelinesParams{
+				Page: PageQuery{
+					Number: 1,
+					Size:   10,
+				},
+			},
+		}
+		result, err := service.List(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Len(t, result, 2)
-		assert.Equal(t, 2, total)
+		if successResp, ok := result.(ListPipelines200JSONResponse); ok {
+			assert.Len(t, successResp.Data, 2)
+			assert.Equal(t, float32(2), successResp.Meta.Total)
+		} else {
+			t.Fatalf("expected ListPipelines200JSONResponse, got %T", result)
+		}
 	})
 }

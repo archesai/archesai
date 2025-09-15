@@ -8,6 +8,7 @@ import (
 
 // Repository handles tool persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Tool) (*Tool, error)
 	Get(ctx context.Context, id uuid.UUID) (*Tool, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Tool) (*Tool, error)
@@ -15,5 +16,5 @@ type Repository interface {
 	List(ctx context.Context, params ListToolsParams) ([]*Tool, int64, error)
 
 	// Additional operations
-	ListByOrganization(ctx context.Context, organizationId string) ([]*Tool, error)
+	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Tool, error)
 }

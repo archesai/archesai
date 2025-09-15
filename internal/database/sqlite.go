@@ -22,7 +22,7 @@ func NewSQLite(cfg *config.DatabaseConfig, logger *slog.Logger) (Database, error
 	ctx := context.Background()
 
 	// Parse connection URL
-	connStr := cfg.Url
+	connStr := cfg.URL
 	if connStr == "" {
 		connStr = ":memory:" // Default to in-memory database
 	}

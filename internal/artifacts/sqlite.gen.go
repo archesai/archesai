@@ -26,46 +26,51 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Artifact operations
 
+// Create creates a new artifact
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Artifact) (*Artifact, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateArtifact not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a artifact by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Artifact, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetArtifact not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing artifact
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Artifact) (*Artifact, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateArtifact not yet implemented - requires custom mapping")
 }
 
+// Delete removes a artifact
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteArtifact not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of artifacts
 func (r *SQLiteRepository) List(ctx context.Context, params ListArtifactsParams) ([]*Artifact, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListArtifacts not yet implemented - requires custom mapping")
 }
 
-// ListByOrganization retrieves multiple artifacts by organizationId
-func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Artifact, error) {
+// ListByOrganization retrieves multiple artifacts by organizationID
+func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Artifact, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }
 
-// ListByProducer retrieves multiple artifacts by producerId
-func (r *SQLiteRepository) ListByProducer(ctx context.Context, producerId string) ([]*Artifact, error) {
+// ListByProducer retrieves multiple artifacts by producerID
+func (r *SQLiteRepository) ListByProducer(ctx context.Context, producerID string) ([]*Artifact, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByProducer not yet implemented - requires custom mapping")

@@ -20,15 +20,15 @@ const (
 	CreatedAt      ListArtifactsParamsSortField = "createdAt"
 	Credits        ListArtifactsParamsSortField = "credits"
 	Description    ListArtifactsParamsSortField = "description"
-	Id             ListArtifactsParamsSortField = "id"
+	ID             ListArtifactsParamsSortField = "id"
 	MimeType       ListArtifactsParamsSortField = "mimeType"
 	Name           ListArtifactsParamsSortField = "name"
-	OrganizationId ListArtifactsParamsSortField = "organizationId"
+	OrganizationID ListArtifactsParamsSortField = "organizationID"
 	PreviewImage   ListArtifactsParamsSortField = "previewImage"
-	ProducerId     ListArtifactsParamsSortField = "producerId"
+	ProducerID     ListArtifactsParamsSortField = "producerID"
 	Text           ListArtifactsParamsSortField = "text"
+	URL            ListArtifactsParamsSortField = "url"
 	UpdatedAt      ListArtifactsParamsSortField = "updatedAt"
-	Url            ListArtifactsParamsSortField = "url"
 )
 
 // Defines values for ListArtifactsParamsSortOrder.
@@ -48,19 +48,19 @@ type Artifact struct {
 	// Description The artifact's description
 	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// MimeType The MIME type of the artifact, e.g. image/png
 	MimeType string `json:"mimeType" yaml:"mimeType"`
 
 	// Name The name of the artifact, used for display purposes
 	Name           string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
-	OrganizationId UUID   `json:"organizationId" yaml:"organizationId"`
+	OrganizationID UUID   `json:"organizationID" yaml:"organizationID"`
 
 	// PreviewImage The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
 	PreviewImage string `json:"previewImage,omitempty,omitzero" yaml:"previewImage,omitempty"`
-	ProducerId   UUID   `json:"producerId,omitempty,omitzero" yaml:"producerId,omitempty"`
+	ProducerID   UUID   `json:"producerID,omitempty,omitzero" yaml:"producerID,omitempty"`
 
 	// Text The artifact text
 	Text string `json:"text" yaml:"text"`
@@ -74,8 +74,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -111,7 +111,7 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
@@ -165,7 +165,7 @@ type Unauthorized = Problem
 type ListArtifactsParams struct {
 	// Filter Filter artifacts by field values. Supported fields:
 	// - createdAt, id, updatedAt, credits, description, mimeType
-	// - name, organizationId, previewImage, producerId, text, url
+	// - name, organizationID, previewImage, producerID, text, url
 	Filter ArtifactsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
@@ -198,8 +198,8 @@ type UpdateArtifactJSONBody struct {
 	// Text The artifact text
 	Text string `json:"text,omitempty,omitzero" yaml:"text,omitempty"`
 
-	// Url The artifact URL
-	Url string `json:"url,omitempty,omitzero" yaml:"url,omitempty"`
+	// URL The artifact URL
+	URL string `json:"url,omitempty,omitzero" yaml:"url,omitempty"`
 }
 
 // CreateArtifactJSONRequestBody defines body for CreateArtifact for application/json ContentType.

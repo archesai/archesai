@@ -21,7 +21,7 @@ type Cache interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 	GetByToken(ctx context.Context, token string) (*Session, error)
 	DeleteByToken(ctx context.Context, token string) error
-	DeleteByUser(ctx context.Context, userId uuid.UUID) error
+	DeleteByUser(ctx context.Context, userID uuid.UUID) error
 	DeleteExpired(ctx context.Context) error
 
 	// Batch operations
@@ -62,7 +62,7 @@ func (a *CacheAdapter) Set(ctx context.Context, entity *Session, ttl time.Durati
 	if entity == nil {
 		return nil
 	}
-	return a.sessionCache.Set(ctx, entity.Id.String(), entity, ttl)
+	return a.sessionCache.Set(ctx, entity.ID.String(), entity, ttl)
 }
 
 // Delete removes session from cache
@@ -89,9 +89,9 @@ func (a *CacheAdapter) DeleteByToken(ctx context.Context, token string) error {
 	return a.sessionCache.Delete(ctx, key)
 }
 
-// DeleteByUser removes cache entries by userId
-func (a *CacheAdapter) DeleteByUser(ctx context.Context, userId uuid.UUID) error {
-	key := "userId:" + userId.String()
+// DeleteByUser removes cache entries by userID
+func (a *CacheAdapter) DeleteByUser(ctx context.Context, userID uuid.UUID) error {
+	key := "userID:" + userID.String()
 	return a.sessionCache.Delete(ctx, key)
 }
 

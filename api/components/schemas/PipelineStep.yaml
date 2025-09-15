@@ -4,10 +4,10 @@ allOf:
   - $ref: ./Base.yaml
   - type: object
     properties:
-      pipelineId:
+      pipelineID:
         allOf:
           - $ref: ./UUID.yaml
-      toolId:
+      toolID:
         allOf:
           - $ref: ./UUID.yaml
       name:
@@ -52,8 +52,8 @@ allOf:
         description: IDs of steps this step depends on
         type: array
         items:
-          type: string
-          format: uuid
+          allOf:
+            - $ref: ./UUID.yaml
         example: ['123e4567-e89b-12d3-a456-426614174000']
       status:
         description: Current status of the step
@@ -68,7 +68,7 @@ allOf:
         default: pending
         example: pending
     required:
-      - pipelineId
-      - toolId
+      - pipelineID
+      - toolID
       - name
     additionalProperties: false

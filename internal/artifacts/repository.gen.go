@@ -8,6 +8,7 @@ import (
 
 // Repository handles artifact persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Artifact) (*Artifact, error)
 	Get(ctx context.Context, id uuid.UUID) (*Artifact, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Artifact) (*Artifact, error)
@@ -15,6 +16,6 @@ type Repository interface {
 	List(ctx context.Context, params ListArtifactsParams) ([]*Artifact, int64, error)
 
 	// Additional operations
-	ListByOrganization(ctx context.Context, organizationId string) ([]*Artifact, error)
-	ListByProducer(ctx context.Context, producerId string) ([]*Artifact, error)
+	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Artifact, error)
+	ListByProducer(ctx context.Context, producerID string) ([]*Artifact, error)
 }

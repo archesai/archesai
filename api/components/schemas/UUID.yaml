@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
-description: Universally Unique Identifier
+description: Universally Unique IDentifier
 type: string
 format: uuid
 example: 550e8400-e29b-41d4-a716-446655440000

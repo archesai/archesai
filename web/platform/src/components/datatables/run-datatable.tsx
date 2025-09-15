@@ -35,9 +35,9 @@ export default function RunDataTable(): JSX.Element {
               <Link
                 className="max-w-[200px] shrink truncate font-medium"
                 params={{
-                  runId: row.original.id,
+                  runID: row.original.id,
                 }}
-                to={`/runs/$runId`}
+                to={`/runs/$runID`}
               >
                 {row.original.id}
               </Link>
@@ -103,7 +103,7 @@ export default function RunDataTable(): JSX.Element {
       // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={async (run) => {
-        await navigate({ params: { runId: run.id }, to: `/runs/$runId` });
+        await navigate({ params: { runID: run.id }, to: `/runs/$runID` });
       }}
       icon={<PackageCheckIcon />}
     />

@@ -3,16 +3,16 @@ description: Schema for Invitation entity
 x-codegen:
   repository:
     operations: [create, read, update, delete, list]
-    indices: [organizationId, email, inviterId]
+    indices: [organizationID, email, inviterID]
     additional_methods:
       - name: ListByOrganization
-        params: [organizationId]
+        params: [organizationID]
         returns: multiple
       - name: GetByEmail
-        params: [email, organizationId]
+        params: [email, organizationID]
         returns: single
       - name: ListByInviter
-        params: [inviterId]
+        params: [inviterID]
         returns: multiple
 allOf:
   - $ref: ./Base.yaml
@@ -28,10 +28,10 @@ allOf:
         type: string
         minLength: 1
         example: example-string
-      inviterId:
+      inviterID:
         allOf:
           - $ref: ./UUID.yaml
-      organizationId:
+      organizationID:
         allOf:
           - $ref: ./UUID.yaml
       role:
@@ -51,8 +51,8 @@ allOf:
     required:
       - email
       - expiresAt
-      - inviterId
-      - organizationId
+      - inviterID
+      - organizationID
       - role
       - status
     additionalProperties: false

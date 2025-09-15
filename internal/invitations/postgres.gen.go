@@ -26,6 +26,7 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Invitation operations
 
+// Create creates a new invitation
 func (r *PostgresRepository) Create(ctx context.Context, entity *Invitation) (*Invitation, error) {
 	// Check if SQLC has the CreateInvitation method
 	// For now, we'll generate a stub but with proper error handling
@@ -33,7 +34,7 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Invitation) (*I
 
 	// Example of what it should look like when SQLC query exists:
 	// params := postgresql.CreateInvitationParams{
-	//     Id: entity.Id,
+	//     ID: entity.ID,
 	//     // ... map other fields
 	// }
 	// dbInvitation, err := r.queries.CreateInvitation(ctx, params)
@@ -45,30 +46,34 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Invitation) (*I
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Get retrieves a invitation by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Invitation, error) {
 	// Try to call SQLC GetInvitation if it exists
 	// For now, return not implemented
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Update updates an existing invitation
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Invitation) (*Invitation, error) {
 	// Update operations are often custom and may not have SQLC queries
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Delete removes a invitation
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteInvitation if it exists
 	// For now, return not implemented
 	return errors.New("not implemented - SQLC query not found")
 }
 
+// List returns a paginated list of invitations
 func (r *PostgresRepository) List(ctx context.Context, params ListInvitationsParams) ([]*Invitation, int64, error) {
 	// List operations need both List and Count queries from SQLC
 	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
 
-// ListByOrganization retrieves multiple invitations by organizationId
-func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Invitation, error) {
+// ListByOrganization retrieves multiple invitations by organizationID
+func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Invitation, error) {
 
 	// Try to call SQLC ListByOrganization if it exists
 	// For now, return not implemented
@@ -76,8 +81,8 @@ func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizatio
 
 }
 
-// GetByEmail retrieves invitation by emailorganizationId
-func (r *PostgresRepository) GetByEmail(ctx context.Context, email string, organizationId string) (*Invitation, error) {
+// GetByEmail retrieves invitation by emailorganizationID
+func (r *PostgresRepository) GetByEmail(ctx context.Context, email string, organizationID uuid.UUID) (*Invitation, error) {
 
 	// Try to call SQLC GetByEmail if it exists
 	// For now, return not implemented
@@ -85,8 +90,8 @@ func (r *PostgresRepository) GetByEmail(ctx context.Context, email string, organ
 
 }
 
-// ListByInviter retrieves multiple invitations by inviterId
-func (r *PostgresRepository) ListByInviter(ctx context.Context, inviterId string) ([]*Invitation, error) {
+// ListByInviter retrieves multiple invitations by inviterID
+func (r *PostgresRepository) ListByInviter(ctx context.Context, inviterID string) ([]*Invitation, error) {
 
 	// Try to call SQLC ListByInviter if it exists
 	// For now, return not implemented
@@ -107,7 +112,7 @@ func mapInvitationToDomain(db *postgresql.Invitation) *Invitation {
 	// For example:
 	// - OpenAPI might use string, database uses *string
 	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (Id vs ID)
+	// - Field names might differ (ID vs ID)
 
 	result := &Invitation{
 		// TODO: Map fields properly based on actual type definitions
@@ -115,7 +120,7 @@ func mapInvitationToDomain(db *postgresql.Invitation) *Invitation {
 	}
 
 	// Basic field mapping - customize based on your entity structure
-	// result.Id = db.Id
+	// result.ID = db.ID
 	// result.CreatedAt = db.CreatedAt
 	// result.UpdatedAt = db.UpdatedAt
 	// Add specific field mappings as needed

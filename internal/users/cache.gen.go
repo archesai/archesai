@@ -59,7 +59,7 @@ func (a *CacheAdapter) Set(ctx context.Context, entity *User, ttl time.Duration)
 	if entity == nil {
 		return nil
 	}
-	return a.userCache.Set(ctx, entity.Id.String(), entity, ttl)
+	return a.userCache.Set(ctx, entity.ID.String(), entity, ttl)
 }
 
 // Delete removes user from cache

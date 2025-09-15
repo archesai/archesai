@@ -13,6 +13,8 @@
 // All generated files follow the pattern *.gen.go and should not be edited manually.
 package codegen
 
+//go:generate go tool oapi-codegen --config=../../.types.codegen.yaml --package codegen --generate skip-prune,models ../../api/components/schemas/XCodegenWrapper.yaml
+
 import (
 	"fmt"
 	"log/slog"
@@ -79,7 +81,7 @@ func RunWithConfig(config *CodegenConfig) error {
 	log.Debug("Filtered schemas with x-codegen", slog.Int("count", len(filteredSchemas)))
 
 	// Run each enabled generator based on path configuration
-	if config.Generators.Sql.SchemaDir != "" || config.Generators.Sql.QueryDir != "" {
+	if config.Generators.SQL.SchemaDir != "" || config.Generators.SQL.QueryDir != "" {
 		if err := generateSQL(config, filteredSchemas, fileWriter, log); err != nil {
 			return fmt.Errorf("SQL generator failed: %w", err)
 		}
@@ -107,11 +109,11 @@ func RunWithConfig(config *CodegenConfig) error {
 		log.Debug("events generator completed")
 	}
 
-	if config.Generators.Handlers != "" {
-		if err := generateHandlers(config, filteredSchemas, templates, fileWriter, log); err != nil {
-			return fmt.Errorf("handlers generator failed: %w", err)
+	if config.Generators.Service.Interface != "" || config.Generators.Service.Implementation != "" {
+		if err := generateService(config, filteredSchemas, templates, fileWriter, log); err != nil {
+			return fmt.Errorf("service generator failed: %w", err)
 		}
-		log.Debug("handlers generator completed")
+		log.Debug("service generator completed")
 	}
 
 	if config.Generators.Defaults != "" {
@@ -162,7 +164,10 @@ func loadTemplates() (map[string]*template.Template, error) {
 		"events.go.tmpl",
 		"events_nats.go.tmpl",
 		"events_redis.go.tmpl",
+		"service.go.tmpl",
+		"service_impl.go.tmpl",
 		"config.go.tmpl",
+		"handler.go.tmpl",
 	}
 
 	for _, file := range templateFiles {
@@ -273,110 +278,25 @@ func runGeneratorWithPaths(generatorType string, config *Config, schemas map[str
 	log.Debug("Running generator", slog.String("type", generatorType))
 
 	// Group schemas by domain
-	domainSchemas := make(map[string][]*ParsedSchema)
-	for _, s := range schemas {
-		if filterFunc(s) {
-			domainSchemas[s.Domain] = append(domainSchemas[s.Domain], s)
-		}
-	}
+	domainSchemas := groupSchemasByDomain(schemas, filterFunc)
 
 	// Sort domains for consistent output
-	domains := make([]string, 0, len(domainSchemas))
-	for domain := range domainSchemas {
-		domains = append(domains, domain)
-	}
-	sort.Strings(domains)
+	domains := getSortedDomains(domainSchemas)
 
 	// Generate for each domain
 	for _, domain := range domains {
 		schemas := domainSchemas[domain]
-
-		// Sort schemas by name for consistent output
-		sort.Slice(schemas, func(i, j int) bool {
-			return schemas[i].Name < schemas[j].Name
-		})
+		sortSchemasByName(schemas)
 
 		log.Debug("Generating for domain",
 			slog.String("generator", generatorType),
 			slog.String("domain", domain),
 			slog.Int("entities", len(schemas)))
 
-		// Prepare template data and output files based on generator type and config
-		var templateData interface{}
-		var outputFiles []struct{ path, template string }
-
-		switch generatorType {
-		case "repository":
-			if config.Generators.Repository.Interface == "" && config.Generators.Repository.Postgres == "" && config.Generators.Repository.Sqlite == "" {
-				continue
-			}
-			templateData = prepareRepositoryData(domain, schemas)
-			outputFiles = []struct{ path, template string }{}
-			if config.Generators.Repository.Interface != "" {
-				outputFiles = append(outputFiles, struct{ path, template string }{
-					filepath.Join(config.Output, domain, config.Generators.Repository.Interface), "repository.go.tmpl",
-				})
-			}
-			if config.Generators.Repository.Postgres != "" {
-				outputFiles = append(outputFiles, struct{ path, template string }{
-					filepath.Join(config.Output, domain, config.Generators.Repository.Postgres), "repository_postgres.go.tmpl",
-				})
-			}
-			if config.Generators.Repository.Sqlite != "" {
-				outputFiles = append(outputFiles, struct{ path, template string }{
-					filepath.Join(config.Output, domain, config.Generators.Repository.Sqlite), "repository_sqlite.go.tmpl",
-				})
-			}
-		case "cache":
-			if config.Generators.Cache.Interface == "" && config.Generators.Cache.Memory == "" && config.Generators.Cache.Redis == "" {
-				continue
-			}
-			templateData = prepareCacheData(domain, schemas)
-			outputFiles = []struct{ path, template string }{}
-			if config.Generators.Cache.Interface != "" {
-				outputFiles = append(outputFiles, struct{ path, template string }{
-					filepath.Join(config.Output, domain, config.Generators.Cache.Interface), "cache.go.tmpl",
-				})
-			}
-			if config.Generators.Cache.Memory != "" {
-				outputFiles = append(outputFiles, struct{ path, template string }{
-					filepath.Join(config.Output, domain, config.Generators.Cache.Memory), "cache_memory.go.tmpl",
-				})
-			}
-			if config.Generators.Cache.Redis != "" {
-				outputFiles = append(outputFiles, struct{ path, template string }{
-					filepath.Join(config.Output, domain, config.Generators.Cache.Redis), "cache_redis.go.tmpl",
-				})
-			}
-		case "events":
-			if config.Generators.Events.Interface == "" && config.Generators.Events.Redis == "" && config.Generators.Events.Nats == "" {
-				continue
-			}
-			templateData = prepareEventsData(domain, schemas)
-			outputFiles = []struct{ path, template string }{}
-			if config.Generators.Events.Interface != "" {
-				outputFiles = append(outputFiles, struct{ path, template string }{
-					filepath.Join(config.Output, domain, config.Generators.Events.Interface), "events.go.tmpl",
-				})
-			}
-			if config.Generators.Events.Redis != "" {
-				outputFiles = append(outputFiles, struct{ path, template string }{
-					filepath.Join(config.Output, domain, config.Generators.Events.Redis), "events_redis.go.tmpl",
-				})
-			}
-			if config.Generators.Events.Nats != "" {
-				outputFiles = append(outputFiles, struct{ path, template string }{
-					filepath.Join(config.Output, domain, config.Generators.Events.Nats), "events_nats.go.tmpl",
-				})
-			}
-		case "handlers":
-			if config.Generators.Handlers == "" {
-				continue
-			}
-			templateData = prepareHandlersData(domain, schemas)
-			outputFiles = []struct{ path, template string }{
-				{filepath.Join(config.Output, domain, config.Generators.Handlers), "handlers.go.tmpl"},
-			}
+		// Get template data and output files for the generator type
+		templateData, outputFiles := getGeneratorConfig(generatorType, config, domain, schemas)
+		if templateData == nil {
+			continue
 		}
 
 		// Write all template files
@@ -388,6 +308,181 @@ func runGeneratorWithPaths(generatorType string, config *Config, schemas map[str
 	}
 
 	return nil
+}
+
+// groupSchemasByDomain groups schemas by their domain
+func groupSchemasByDomain(schemas map[string]*ParsedSchema, filterFunc func(*ParsedSchema) bool) map[string][]*ParsedSchema {
+	domainSchemas := make(map[string][]*ParsedSchema)
+	for _, s := range schemas {
+		if filterFunc(s) {
+			domainSchemas[s.Domain] = append(domainSchemas[s.Domain], s)
+		}
+	}
+	return domainSchemas
+}
+
+// getSortedDomains returns sorted domain names
+func getSortedDomains(domainSchemas map[string][]*ParsedSchema) []string {
+	domains := make([]string, 0, len(domainSchemas))
+	for domain := range domainSchemas {
+		domains = append(domains, domain)
+	}
+	sort.Strings(domains)
+	return domains
+}
+
+// sortSchemasByName sorts schemas by name
+func sortSchemasByName(schemas []*ParsedSchema) {
+	sort.Slice(schemas, func(i, j int) bool {
+		return schemas[i].Name < schemas[j].Name
+	})
+}
+
+// getGeneratorConfig returns template data and output files for a generator type
+func getGeneratorConfig(generatorType string, config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+	switch generatorType {
+	case "repository":
+		return getRepositoryConfig(config, domain, schemas)
+	case "cache":
+		return getCacheConfig(config, domain, schemas)
+	case "events":
+		return getEventsConfig(config, domain, schemas)
+	case "service":
+		return nil, nil
+	case "handler":
+		return getHandlerConfig(config, domain, schemas)
+	default:
+		return nil, nil
+	}
+}
+
+// getRepositoryConfig returns repository generator configuration
+func getRepositoryConfig(config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+	if config.Generators.Repository.Interface == "" && config.Generators.Repository.Postgres == "" && config.Generators.Repository.Sqlite == "" {
+		return nil, nil
+	}
+	templateData := prepareRepositoryData(domain, schemas)
+	var outputFiles []struct{ path, template string }
+	if config.Generators.Repository.Interface != "" {
+		outputFiles = append(outputFiles, struct{ path, template string }{
+			filepath.Join(config.Output, domain, config.Generators.Repository.Interface), "repository.go.tmpl",
+		})
+	}
+	if config.Generators.Repository.Postgres != "" {
+		outputFiles = append(outputFiles, struct{ path, template string }{
+			filepath.Join(config.Output, domain, config.Generators.Repository.Postgres), "repository_postgres.go.tmpl",
+		})
+	}
+	if config.Generators.Repository.Sqlite != "" {
+		outputFiles = append(outputFiles, struct{ path, template string }{
+			filepath.Join(config.Output, domain, config.Generators.Repository.Sqlite), "repository_sqlite.go.tmpl",
+		})
+	}
+	return templateData, outputFiles
+}
+
+// getCacheConfig returns cache generator configuration
+func getCacheConfig(config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+	if config.Generators.Cache.Interface == "" && config.Generators.Cache.Memory == "" && config.Generators.Cache.Redis == "" {
+		return nil, nil
+	}
+	templateData := prepareCacheData(domain, schemas)
+	var outputFiles []struct{ path, template string }
+	if config.Generators.Cache.Interface != "" {
+		outputFiles = append(outputFiles, struct{ path, template string }{
+			filepath.Join(config.Output, domain, config.Generators.Cache.Interface), "cache.go.tmpl",
+		})
+	}
+	if config.Generators.Cache.Memory != "" {
+		outputFiles = append(outputFiles, struct{ path, template string }{
+			filepath.Join(config.Output, domain, config.Generators.Cache.Memory), "cache_memory.go.tmpl",
+		})
+	}
+	if config.Generators.Cache.Redis != "" {
+		outputFiles = append(outputFiles, struct{ path, template string }{
+			filepath.Join(config.Output, domain, config.Generators.Cache.Redis), "cache_redis.go.tmpl",
+		})
+	}
+	return templateData, outputFiles
+}
+
+// getEventsConfig returns events generator configuration
+func getEventsConfig(config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+	if config.Generators.Events.Interface == "" && config.Generators.Events.Redis == "" && config.Generators.Events.Nats == "" {
+		return nil, nil
+	}
+	templateData := prepareEventsData(domain, schemas)
+	var outputFiles []struct{ path, template string }
+	if config.Generators.Events.Interface != "" {
+		outputFiles = append(outputFiles, struct{ path, template string }{
+			filepath.Join(config.Output, domain, config.Generators.Events.Interface), "events.go.tmpl",
+		})
+	}
+	if config.Generators.Events.Redis != "" {
+		outputFiles = append(outputFiles, struct{ path, template string }{
+			filepath.Join(config.Output, domain, config.Generators.Events.Redis), "events_redis.go.tmpl",
+		})
+	}
+	if config.Generators.Events.Nats != "" {
+		outputFiles = append(outputFiles, struct{ path, template string }{
+			filepath.Join(config.Output, domain, config.Generators.Events.Nats), "events_nats.go.tmpl",
+		})
+	}
+	return templateData, outputFiles
+}
+
+// getHandlerConfig returns handler generator configuration (new OpenAPI-style)
+func getHandlerConfig(config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+	// Check if handler generation is configured
+	if config.Generators.Handlers == "" {
+		return nil, nil
+	}
+
+	// For handler generation, we generate one handler per domain with all schemas
+	if len(schemas) == 0 {
+		return nil, nil
+	}
+
+	// Generate a single handler file for all schemas in the domain
+	templateData := struct {
+		Package string
+		Imports []string
+		Schemas []*ParsedSchema
+		Domain  string
+	}{
+		Package: domain,
+		Imports: []string{
+			"context",
+			"log/slog",
+		},
+		Schemas: schemas,
+		Domain:  domain,
+	}
+
+	// Use the configured handlers output path
+	outputFiles := []struct{ path, template string }{
+		{filepath.Join(config.Output, domain, "server.impl.gen.go"), "handler.go.tmpl"},
+	}
+	return templateData, outputFiles
+}
+
+// prepareIndividualServiceData prepares template data for a single schema
+func prepareIndividualServiceData(schema *ParsedSchema) interface{} {
+	return struct {
+		Package         string
+		Name            string
+		NameLower       string
+		NamePlural      string
+		NamePluralLower string
+		XCodegen        *XCodegen
+	}{
+		Package:         schema.Domain,
+		Name:            schema.Name,
+		NameLower:       strings.ToLower(schema.Name),
+		NamePlural:      Pluralize(schema.Name),
+		NamePluralLower: strings.ToLower(Pluralize(schema.Name)),
+		XCodegen:        schema.XCodegen,
+	}
 }
 
 // Helper functions to prepare data for each generator type
@@ -521,27 +616,13 @@ func prepareEventsData(domain string, schemas []*ParsedSchema) interface{} {
 	}
 }
 
-func prepareHandlersData(domain string, schemas []*ParsedSchema) interface{} {
-	return struct {
-		Domain   string
-		Package  string
-		Entities []*ParsedSchema
-		Imports  []string
-	}{
-		Domain:   domain,
-		Package:  domain,
-		Entities: schemas,
-		Imports:  []string{"github.com/google/uuid", "github.com/labstack/echo/v4"},
-	}
-}
-
 // generateSQL generates SQL schema and query files from OpenAPI schemas.
 func generateSQL(config *Config, schemas map[string]*ParsedSchema, fileWriter *FileWriter, log *slog.Logger) error {
-	if config.Generators.Sql.SchemaDir == "" && config.Generators.Sql.QueryDir == "" {
+	if config.Generators.SQL.SchemaDir == "" && config.Generators.SQL.QueryDir == "" {
 		return nil
 	}
 
-	sqlConfig := config.Generators.Sql
+	sqlConfig := config.Generators.SQL
 	dialect := string(sqlConfig.Dialect)
 	if dialect == "" {
 		dialect = "postgresql" // Default to PostgreSQL
@@ -626,12 +707,53 @@ func generateEvents(config *Config, schemas map[string]*ParsedSchema, templates 
 	return runGeneratorWithPaths("events", config, schemas, templates, fileWriter, NeedsEvents, log)
 }
 
-// generateHandlers generates HTTP handler stubs.
-func generateHandlers(_ *Config, _ map[string]*ParsedSchema, _ map[string]*template.Template, _ *FileWriter, log *slog.Logger) error {
-	// For now, return without generating since handlers are complex
-	// and typically generated by oapi-codegen
-	log.Debug("Running handlers generator")
-	log.Debug("Handler generation delegated to oapi-codegen")
+// generateService generates service interfaces and implementations.
+func generateService(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+	log.Debug("Running service generator")
+
+	// Generate individual service files per schema
+	for _, schema := range schemas {
+		if !NeedsService(schema) {
+			continue
+		}
+
+		// Check if a manual service.go file exists
+		manualServicePath := filepath.Join(config.Output, schema.Domain, "service.go")
+		if _, err := os.Stat(manualServicePath); err == nil {
+			log.Debug("Skipping service generation - manual service.go exists",
+				slog.String("domain", schema.Domain),
+				slog.String("path", manualServicePath))
+			continue
+		}
+
+		log.Debug("Generating service",
+			slog.String("domain", schema.Domain),
+			slog.String("entity", schema.Name))
+
+		// Prepare template data for this specific schema
+		templateData := prepareIndividualServiceData(schema)
+
+		// Generate service.gen.go
+		servicePath := filepath.Join(config.Output, schema.Domain, "service.gen.go")
+		if err := fileWriter.WriteTemplate(servicePath, templates["service.go.tmpl"], templateData); err != nil {
+			return fmt.Errorf("failed to write service for %s: %w", schema.Name, err)
+		}
+
+		// Check if a manual handler.go file exists
+		manualHandlerPath := filepath.Join(config.Output, schema.Domain, "handler.go")
+		if _, err := os.Stat(manualHandlerPath); err == nil {
+			log.Debug("Skipping handler generation - manual handler.go exists",
+				slog.String("domain", schema.Domain),
+				slog.String("path", manualHandlerPath))
+		} else {
+			// Generate server.gen.go
+			handlerPath := filepath.Join(config.Output, schema.Domain, "server.gen.go")
+			if err := fileWriter.WriteTemplate(handlerPath, templates["handler.go.tmpl"], templateData); err != nil {
+				return fmt.Errorf("failed to write handler for %s: %w", schema.Name, err)
+			}
+		}
+	}
+
 	return nil
 }
 

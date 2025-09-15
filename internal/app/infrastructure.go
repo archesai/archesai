@@ -126,7 +126,7 @@ func NewRepositories(db database.Database, cfg *config.Config) (*Repositories, e
 	if cfg.Database.Type != "" {
 		dbType = database.ParseTypeFromString(string(cfg.Database.Type))
 	} else {
-		dbType = database.DetectTypeFromURL(cfg.Database.Url)
+		dbType = database.DetectTypeFromURL(cfg.Database.URL)
 	}
 
 	repos := &Repositories{}
@@ -196,7 +196,7 @@ func GetQueries(db database.Database, cfg *config.Config) (pgQueries *postgresql
 	if cfg.Database.Type != "" {
 		dbType = database.ParseTypeFromString(string(cfg.Database.Type))
 	} else {
-		dbType = database.DetectTypeFromURL(cfg.Database.Url)
+		dbType = database.DetectTypeFromURL(cfg.Database.URL)
 	}
 
 	switch dbType {

@@ -30,13 +30,13 @@ const (
 	BillingEmail     ListOrganizationsParamsSortField = "billingEmail"
 	CreatedAt        ListOrganizationsParamsSortField = "createdAt"
 	Credits          ListOrganizationsParamsSortField = "credits"
-	Id               ListOrganizationsParamsSortField = "id"
+	ID               ListOrganizationsParamsSortField = "id"
 	Logo             ListOrganizationsParamsSortField = "logo"
 	Metadata         ListOrganizationsParamsSortField = "metadata"
 	Name             ListOrganizationsParamsSortField = "name"
 	Plan             ListOrganizationsParamsSortField = "plan"
 	Slug             ListOrganizationsParamsSortField = "slug"
-	StripeCustomerId ListOrganizationsParamsSortField = "stripeCustomerId"
+	StripeCustomerID ListOrganizationsParamsSortField = "stripeCustomerID"
 	UpdatedAt        ListOrganizationsParamsSortField = "updatedAt"
 )
 
@@ -51,8 +51,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -72,8 +72,8 @@ type Organization struct {
 	// Credits Available credits for this organization
 	Credits float32 `json:"credits" yaml:"credits"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// Logo The organization's logo URL
 	Logo string `json:"logo,omitempty,omitzero" yaml:"logo,omitempty"`
@@ -90,8 +90,8 @@ type Organization struct {
 	// Slug URL-friendly unique identifier for the organization
 	Slug string `json:"slug" yaml:"slug"`
 
-	// StripeCustomerId Stripe customer identifier
-	StripeCustomerId string `json:"stripeCustomerId,omitempty,omitzero" yaml:"stripeCustomerId,omitempty"`
+	// StripeCustomerID Stripe customer identifier
+	StripeCustomerID string `json:"stripeCustomerID,omitempty,omitzero" yaml:"stripeCustomerID,omitempty"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -127,7 +127,7 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
@@ -181,7 +181,7 @@ type Unauthorized = Problem
 type ListOrganizationsParams struct {
 	// Filter Filter organizations by field values. Supported fields:
 	// - createdAt, id, updatedAt, billingEmail, credits, logo
-	// - metadata, name, plan, slug, stripeCustomerId
+	// - metadata, name, plan, slug, stripeCustomerID
 	Filter OrganizationsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
@@ -200,19 +200,15 @@ type ListOrganizationsParamsSortOrder string
 // CreateOrganizationJSONBody defines parameters for CreateOrganization.
 type CreateOrganizationJSONBody struct {
 	// BillingEmail The billing email to use for the organization
-	BillingEmail string `json:"billingEmail" yaml:"billingEmail"`
-
-	// OrganizationId The ID of the item
-	OrganizationId openapi_types.UUID `json:"organizationId" yaml:"organizationId"`
+	BillingEmail   openapi_types.Email `json:"billingEmail" yaml:"billingEmail"`
+	OrganizationID UUID                `json:"organizationID" yaml:"organizationID"`
 }
 
 // UpdateOrganizationJSONBody defines parameters for UpdateOrganization.
 type UpdateOrganizationJSONBody struct {
 	// BillingEmail The billing email to use for the organization
-	BillingEmail string `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
-
-	// OrganizationId The ID of the item
-	OrganizationId openapi_types.UUID `json:"organizationId,omitempty,omitzero" yaml:"organizationId,omitempty"`
+	BillingEmail   openapi_types.Email `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
+	OrganizationID UUID                `json:"organizationID,omitempty,omitzero" yaml:"organizationID,omitempty"`
 }
 
 // CreateOrganizationJSONRequestBody defines body for CreateOrganization for application/json ContentType.

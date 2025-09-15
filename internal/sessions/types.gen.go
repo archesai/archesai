@@ -19,15 +19,15 @@ const (
 
 // Defines values for ListSessionsParamsSortField.
 const (
-	ActiveOrganizationId ListSessionsParamsSortField = "activeOrganizationId"
+	ActiveOrganizationID ListSessionsParamsSortField = "activeOrganizationID"
 	CreatedAt            ListSessionsParamsSortField = "createdAt"
 	ExpiresAt            ListSessionsParamsSortField = "expiresAt"
-	Id                   ListSessionsParamsSortField = "id"
-	IpAddress            ListSessionsParamsSortField = "ipAddress"
+	ID                   ListSessionsParamsSortField = "id"
+	IPAddress            ListSessionsParamsSortField = "ipAddress"
 	Token                ListSessionsParamsSortField = "token"
 	UpdatedAt            ListSessionsParamsSortField = "updatedAt"
 	UserAgent            ListSessionsParamsSortField = "userAgent"
-	UserId               ListSessionsParamsSortField = "userId"
+	UserID               ListSessionsParamsSortField = "userID"
 )
 
 // Defines values for ListSessionsParamsSortOrder.
@@ -41,8 +41,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -80,7 +80,7 @@ type Problem struct {
 
 // Session defines model for Session.
 type Session struct {
-	ActiveOrganizationId UUID `json:"activeOrganizationId" yaml:"activeOrganizationId"`
+	ActiveOrganizationID UUID `json:"activeOrganizationID" yaml:"activeOrganizationID"`
 
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
@@ -88,11 +88,11 @@ type Session struct {
 	// ExpiresAt The expiration date of the session
 	ExpiresAt string `json:"expiresAt" yaml:"expiresAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
-	// IpAddress The IP address of the session
-	IpAddress string `json:"ipAddress" yaml:"ipAddress"`
+	// IPAddress The IP address of the session
+	IPAddress string `json:"ipAddress" yaml:"ipAddress"`
 
 	// Token The session token
 	Token string `json:"token" yaml:"token"`
@@ -102,7 +102,7 @@ type Session struct {
 
 	// UserAgent The user agent of the session
 	UserAgent string `json:"userAgent" yaml:"userAgent"`
-	UserId    UUID   `json:"userId" yaml:"userId"`
+	UserID    UUID   `json:"userID" yaml:"userID"`
 }
 
 // TokenResponse defines model for TokenResponse.
@@ -120,7 +120,7 @@ type TokenResponse struct {
 	TokenType string `json:"token_type" yaml:"token_type"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
@@ -173,8 +173,8 @@ type Unauthorized = Problem
 // ListSessionsParams defines parameters for ListSessions.
 type ListSessionsParams struct {
 	// Filter Filter sessions by field values. Supported fields:
-	// - createdAt, id, updatedAt, activeOrganizationId, expiresAt
-	// - ipAddress, token, userAgent, userId
+	// - createdAt, id, updatedAt, activeOrganizationID, expiresAt
+	// - ipAddress, token, userAgent, userID
 	Filter SessionsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
@@ -204,8 +204,8 @@ type CreateSessionJSONBody struct {
 
 // UpdateSessionJSONBody defines parameters for UpdateSession.
 type UpdateSessionJSONBody struct {
-	// ActiveOrganizationId The active organization ID
-	ActiveOrganizationId string `json:"activeOrganizationId" yaml:"activeOrganizationId"`
+	// ActiveOrganizationID The active organization ID
+	ActiveOrganizationID string `json:"activeOrganizationID" yaml:"activeOrganizationID"`
 }
 
 // CreateSessionJSONRequestBody defines body for CreateSession for application/json ContentType.

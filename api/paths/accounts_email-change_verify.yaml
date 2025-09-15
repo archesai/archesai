@@ -23,7 +23,7 @@ post:
               type: string
               minLength: 1
               example: example-string
-            userId:
+            userID:
               description: The user ID of the user requesting the email change
               type: string
               format: uuid
@@ -32,7 +32,7 @@ post:
           required:
             - newEmail
             - token
-            - userId
+            - userID
     required: true
   responses:
     '204':

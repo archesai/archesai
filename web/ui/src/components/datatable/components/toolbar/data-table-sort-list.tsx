@@ -55,10 +55,10 @@ const REMOVE_SORT_SHORTCUTS = ["backspace", "delete"];
 interface DataTableSortItemProps {
   columnLabels: Map<string, string>;
   columns: { id: string; label: string }[];
-  onSortRemove: (sortId: string) => void;
-  onSortUpdate: (sortId: string, updates: Partial<ColumnSort>) => void;
+  onSortRemove: (sortID: string) => void;
+  onSortUpdate: (sortID: string, updates: Partial<ColumnSort>) => void;
   sort: ColumnSort;
-  sortItemId: string;
+  sortItemID: string;
 }
 
 interface DataTableSortListProps<TData>
@@ -71,8 +71,8 @@ export function DataTableSortList<TData>({
   ...props
 }: DataTableSortListProps<TData>): JSX.Element {
   const id = useId();
-  const labelId = useId();
-  const descriptionId = useId();
+  const labelID = useId();
+  const descriptionID = useId();
   const [open, setOpen] = useState(false);
   const addButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -81,7 +81,7 @@ export function DataTableSortList<TData>({
 
   const { columnLabels, columns } = useMemo(() => {
     const labels = new Map<string, string>();
-    const sortingIds = new Set(sorting.map((s) => s.id));
+    const sortingIDs = new Set(sorting.map((s) => s.id));
     const availableColumns: { id: string; label: string }[] = [];
 
     for (const column of table.getAllColumns()) {
@@ -90,7 +90,7 @@ export function DataTableSortList<TData>({
       const label = column.columnDef.meta?.label ?? column.id;
       labels.set(column.id, label);
 
-      if (!sortingIds.has(column.id)) {
+      if (!sortingIDs.has(column.id)) {
         availableColumns.push({ id: column.id, label });
       }
     }
@@ -112,11 +112,11 @@ export function DataTableSortList<TData>({
   }, [columns, onSortingChange]);
 
   const onSortUpdate = useCallback(
-    (sortId: string, updates: Partial<ColumnSort>) => {
+    (sortID: string, updates: Partial<ColumnSort>) => {
       onSortingChange((prevSorting) => {
         if (!prevSorting[0]) return prevSorting;
         return prevSorting.map((sort) =>
-          sort.id === sortId ? { ...sort, ...updates } : sort,
+          sort.id === sortID ? { ...sort, ...updates } : sort,
         );
       });
     },
@@ -124,9 +124,9 @@ export function DataTableSortList<TData>({
   );
 
   const onSortRemove = useCallback(
-    (sortId: string) => {
+    (sortID: string) => {
       onSortingChange((prevSorting) =>
-        prevSorting.filter((item) => item.id !== sortId),
+        prevSorting.filter((item) => item.id !== sortID),
       );
     },
     [onSortingChange],
@@ -213,15 +213,15 @@ export function DataTableSortList<TData>({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          aria-describedby={descriptionId}
-          aria-labelledby={labelId}
+          aria-describedby={descriptionID}
+          aria-labelledby={labelID}
           className="flex w-full max-w-[var(--radix-popover-content-available-width)] origin-[var(--radix-popover-content-transform-origin)] flex-col gap-3.5 p-4 sm:min-w-[380px]"
           {...props}
         >
           <div className="flex flex-col gap-1">
             <h4
               className="leading-none font-medium"
-              id={labelId}
+              id={labelID}
             >
               {sorting.length > 0 ? "Sort by" : "No sorting applied"}
             </h4>
@@ -230,7 +230,7 @@ export function DataTableSortList<TData>({
                 "text-sm text-muted-foreground",
                 sorting.length > 0 && "sr-only",
               )}
-              id={descriptionId}
+              id={descriptionID}
             >
               {sorting.length > 0
                 ? "Modify sorting to organize your rows."
@@ -248,7 +248,7 @@ export function DataTableSortList<TData>({
                     onSortRemove={onSortRemove}
                     onSortUpdate={onSortUpdate}
                     sort={sort}
-                    sortItemId={`${id}-sort-${sort.id}`}
+                    sortItemID={`${id}-sort-${sort.id}`}
                   />
                 ))}
               </ul>
@@ -295,11 +295,11 @@ function DataTableSortItem({
   onSortRemove,
   onSortUpdate,
   sort,
-  sortItemId,
+  sortItemID,
 }: DataTableSortItemProps) {
-  const fieldListboxId = `${sortItemId}-field-listbox`;
-  const fieldTriggerId = `${sortItemId}-field-trigger`;
-  const directionListboxId = `${sortItemId}-direction-listbox`;
+  const fieldListboxID = `${sortItemID}-field-listbox`;
+  const fieldTriggerID = `${sortItemID}-field-trigger`;
+  const directionListboxID = `${sortItemID}-direction-listbox`;
 
   const [showFieldSelector, setShowFieldSelector] = useState(false);
   const [showDirectionSelector, setShowDirectionSelector] = useState(false);
@@ -332,7 +332,7 @@ function DataTableSortItem({
     >
       <li
         className="flex items-center gap-2"
-        id={sortItemId}
+        id={sortItemID}
         onKeyDown={onItemKeyDown}
         tabIndex={-1}
       >
@@ -342,9 +342,9 @@ function DataTableSortItem({
         >
           <PopoverTrigger asChild>
             <Button
-              aria-controls={fieldListboxId}
+              aria-controls={fieldListboxID}
               className="w-44 justify-between rounded font-normal"
-              id={fieldTriggerId}
+              id={fieldTriggerID}
               size="sm"
               variant="ghost"
             >
@@ -354,7 +354,7 @@ function DataTableSortItem({
           </PopoverTrigger>
           <PopoverContent
             className="w-[var(--radix-popover-trigger-width)] origin-[var(--radix-popover-content-transform-origin)] p-0"
-            id={fieldListboxId}
+            id={fieldListboxID}
           >
             <Command>
               <CommandInput placeholder="Search fields..." />
@@ -386,14 +386,14 @@ function DataTableSortItem({
           value={sort.desc ? "desc" : "asc"}
         >
           <SelectTrigger
-            aria-controls={directionListboxId}
+            aria-controls={directionListboxID}
             className="h-8 w-24 rounded [&[data-size]]:h-8"
           >
             <SelectValue />
           </SelectTrigger>
           <SelectContent
             className="min-w-[var(--radix-select-trigger-width)] origin-[var(--radix-select-content-transform-origin)]"
-            id={directionListboxId}
+            id={directionListboxID}
           >
             {[
               { label: "Asc", value: "asc" as const },
@@ -409,7 +409,7 @@ function DataTableSortItem({
           </SelectContent>
         </Select>
         <Button
-          aria-controls={sortItemId}
+          aria-controls={sortItemID}
           className="size-8 shrink-0 rounded"
           onClick={() => {
             onSortRemove(sort.id);

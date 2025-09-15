@@ -3,7 +3,7 @@ description: Schema for User entity
 x-codegen:
   # yaml-language-server: $schema=./XCodegen.yaml
   repository:
-    operations: [create, read, update, delete, list]
+    operations: [read, update, delete, list]
     indices: [email]
     additional_methods:
       - name: GetByEmail

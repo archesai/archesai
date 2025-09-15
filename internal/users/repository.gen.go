@@ -8,6 +8,7 @@ import (
 
 // Repository handles user persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *User) (*User, error)
 	Get(ctx context.Context, id uuid.UUID) (*User, error)
 	Update(ctx context.Context, id uuid.UUID, entity *User) (*User, error)

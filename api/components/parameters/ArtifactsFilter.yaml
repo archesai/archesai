@@ -8,4 +8,4 @@ schema:
 description: |
   Filter artifacts by field values. Supported fields:
   - createdAt, id, updatedAt, credits, description, mimeType
-  - name, organizationId, previewImage, producerId, text, url
+  - name, organizationID, previewImage, producerID, text, url

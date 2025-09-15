@@ -26,30 +26,35 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Session operations
 
+// Create creates a new session
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Session) (*Session, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateSession not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a session by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Session, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetSession not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing session
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Session) (*Session, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateSession not yet implemented - requires custom mapping")
 }
 
+// Delete removes a session
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteSession not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of sessions
 func (r *SQLiteRepository) List(ctx context.Context, params ListSessionsParams) ([]*Session, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
@@ -72,8 +77,8 @@ func (r *SQLiteRepository) DeleteByToken(ctx context.Context, token string) erro
 
 }
 
-// DeleteByUser deletes session by userId
-func (r *SQLiteRepository) DeleteByUser(ctx context.Context, userId uuid.UUID) error {
+// DeleteByUser deletes session by userID
+func (r *SQLiteRepository) DeleteByUser(ctx context.Context, userID uuid.UUID) error {
 
 	// For now, return a basic implementation
 	return fmt.Errorf("DeleteByUser not yet implemented - requires custom mapping")

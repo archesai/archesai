@@ -85,13 +85,13 @@ GET /api/v1/organizations/:id/invitations
 GET /api/v1/organizations/:id/members
 
 // Update member role
-PUT /api/v1/organizations/:id/members/:userId
+PUT /api/v1/organizations/:id/members/:userID
 {
   "role": "admin"
 }
 
 // Remove member
-DELETE /api/v1/organizations/:id/members/:userId
+DELETE /api/v1/organizations/:id/members/:userID
 ```
 
 ## Billing Integration
@@ -202,8 +202,8 @@ interface UsageMetrics {
 
 - `GET /api/v1/organizations/:id/members` - List members
 - `POST /api/v1/organizations/:id/invitations` - Invite member
-- `PUT /api/v1/organizations/:id/members/:userId` - Update member role
-- `DELETE /api/v1/organizations/:id/members/:userId` - Remove member
+- `PUT /api/v1/organizations/:id/members/:userID` - Update member role
+- `DELETE /api/v1/organizations/:id/members/:userID` - Remove member
 
 ### Settings
 

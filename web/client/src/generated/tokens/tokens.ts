@@ -36,7 +36,8 @@ import type {
   ListTokens200,
   ListTokensParams,
   NotFoundResponse,
-  UnauthorizedResponse
+  UnauthorizedResponse,
+  Uuid
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -279,7 +280,7 @@ export const useCreateToken = <TError = BadRequestResponse | UnauthorizedRespons
  * Get details of a specific API key (without the actual key value)
  * @summary Get API key details
  */
-export const getApikeysFindByIdUrl = (id: string | undefined | null,) => {
+export const getApikeysFindByIDUrl = (id: Uuid | undefined | null,) => {
 
 
   
@@ -287,9 +288,9 @@ export const getApikeysFindByIdUrl = (id: string | undefined | null,) => {
   return `/tokens/${id}`
 }
 
-export const apikeysFindById = async (id: string | undefined | null, options?: RequestInit): Promise<ApiKey> => {
+export const apikeysFindByID = async (id: Uuid | undefined | null, options?: RequestInit): Promise<ApiKey> => {
   
-  return customFetch<ApiKey>(getApikeysFindByIdUrl(id),
+  return customFetch<ApiKey>(getApikeysFindByIDUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -300,67 +301,67 @@ export const apikeysFindById = async (id: string | undefined | null, options?: R
 
 
 
-export const getApikeysFindByIdQueryKey = (id?: string | undefined | null,) => {
+export const getApikeysFindByIDQueryKey = (id?: Uuid | undefined | null,) => {
     return [`/tokens/${id}`] as const;
     }
 
     
-export const getApikeysFindByIdQueryOptions = <TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getApikeysFindByIDQueryOptions = <TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getApikeysFindByIdQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getApikeysFindByIDQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apikeysFindById>>> = ({ signal }) => apikeysFindById(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apikeysFindByID>>> = ({ signal }) => apikeysFindByID(id, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ApikeysFindByIdQueryResult = NonNullable<Awaited<ReturnType<typeof apikeysFindById>>>
-export type ApikeysFindByIdQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse
+export type ApikeysFindByIDQueryResult = NonNullable<Awaited<ReturnType<typeof apikeysFindByID>>>
+export type ApikeysFindByIDQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse
 
 
-export function useApikeysFindById<TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>> & Pick<
+export function useApikeysFindByID<TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: Uuid | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apikeysFindById>>,
+          Awaited<ReturnType<typeof apikeysFindByID>>,
           TError,
-          Awaited<ReturnType<typeof apikeysFindById>>
+          Awaited<ReturnType<typeof apikeysFindByID>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApikeysFindById<TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>> & Pick<
+export function useApikeysFindByID<TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apikeysFindById>>,
+          Awaited<ReturnType<typeof apikeysFindByID>>,
           TError,
-          Awaited<ReturnType<typeof apikeysFindById>>
+          Awaited<ReturnType<typeof apikeysFindByID>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApikeysFindById<TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useApikeysFindByID<TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get API key details
  */
 
-export function useApikeysFindById<TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useApikeysFindByID<TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getApikeysFindByIdQueryOptions(id,options)
+  const queryOptions = getApikeysFindByIDQueryOptions(id,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -371,50 +372,50 @@ export function useApikeysFindById<TData = Awaited<ReturnType<typeof apikeysFind
 
 
 
-export const getApikeysFindByIdSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getApikeysFindByIDSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getApikeysFindByIdQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getApikeysFindByIDQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apikeysFindById>>> = ({ signal }) => apikeysFindById(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apikeysFindByID>>> = ({ signal }) => apikeysFindByID(id, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ApikeysFindByIdSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof apikeysFindById>>>
-export type ApikeysFindByIdSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse
+export type ApikeysFindByIDSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof apikeysFindByID>>>
+export type ApikeysFindByIDSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse
 
 
-export function useApikeysFindByIdSuspense<TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useApikeysFindByIDSuspense<TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: Uuid | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApikeysFindByIdSuspense<TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useApikeysFindByIDSuspense<TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApikeysFindByIdSuspense<TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useApikeysFindByIDSuspense<TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get API key details
  */
 
-export function useApikeysFindByIdSuspense<TData = Awaited<ReturnType<typeof apikeysFindById>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindById>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useApikeysFindByIDSuspense<TData = Awaited<ReturnType<typeof apikeysFindByID>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof apikeysFindByID>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getApikeysFindByIdSuspenseQueryOptions(id,options)
+  const queryOptions = getApikeysFindByIDSuspenseQueryOptions(id,options)
 
   const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -429,7 +430,7 @@ export function useApikeysFindByIdSuspense<TData = Awaited<ReturnType<typeof api
  * Update an API key's name, scopes, or rate limit
  * @summary Update API key
  */
-export const getApikeysUpdateUrl = (id: string | undefined | null,) => {
+export const getApikeysUpdateUrl = (id: Uuid | undefined | null,) => {
 
 
   
@@ -437,7 +438,7 @@ export const getApikeysUpdateUrl = (id: string | undefined | null,) => {
   return `/tokens/${id}`
 }
 
-export const apikeysUpdate = async (id: string | undefined | null,
+export const apikeysUpdate = async (id: Uuid | undefined | null,
     apikeysUpdateBody: ApikeysUpdateBody, options?: RequestInit): Promise<ApiKey> => {
   
   return customFetch<ApiKey>(getApikeysUpdateUrl(id),
@@ -454,8 +455,8 @@ export const apikeysUpdate = async (id: string | undefined | null,
 
 
 export const getApikeysUpdateMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apikeysUpdate>>, TError,{id: string | undefined | null;data: ApikeysUpdateBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof apikeysUpdate>>, TError,{id: string | undefined | null;data: ApikeysUpdateBody}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apikeysUpdate>>, TError,{id: Uuid | undefined | null;data: ApikeysUpdateBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof apikeysUpdate>>, TError,{id: Uuid | undefined | null;data: ApikeysUpdateBody}, TContext> => {
 
 const mutationKey = ['apikeysUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -467,7 +468,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apikeysUpdate>>, {id: string | undefined | null;data: ApikeysUpdateBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apikeysUpdate>>, {id: Uuid | undefined | null;data: ApikeysUpdateBody}> = (props) => {
           const {id,data} = props ?? {};
 
           return  apikeysUpdate(id,data,requestOptions)
@@ -486,11 +487,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Update API key
  */
 export const useApikeysUpdate = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apikeysUpdate>>, TError,{id: string | undefined | null;data: ApikeysUpdateBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apikeysUpdate>>, TError,{id: Uuid | undefined | null;data: ApikeysUpdateBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof apikeysUpdate>>,
         TError,
-        {id: string | undefined | null;data: ApikeysUpdateBody},
+        {id: Uuid | undefined | null;data: ApikeysUpdateBody},
         TContext
       > => {
 
@@ -502,7 +503,7 @@ export const useApikeysUpdate = <TError = BadRequestResponse | UnauthorizedRespo
  * Delete an API key permanently. This action cannot be undone.
  * @summary Delete API key
  */
-export const getApikeysDeleteUrl = (id: string | undefined | null,) => {
+export const getApikeysDeleteUrl = (id: Uuid | undefined | null,) => {
 
 
   
@@ -510,7 +511,7 @@ export const getApikeysDeleteUrl = (id: string | undefined | null,) => {
   return `/tokens/${id}`
 }
 
-export const apikeysDelete = async (id: string | undefined | null, options?: RequestInit): Promise<null> => {
+export const apikeysDelete = async (id: Uuid | undefined | null, options?: RequestInit): Promise<null> => {
   
   return customFetch<null>(getApikeysDeleteUrl(id),
   {      
@@ -525,8 +526,8 @@ export const apikeysDelete = async (id: string | undefined | null, options?: Req
 
 
 export const getApikeysDeleteMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apikeysDelete>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof apikeysDelete>>, TError,{id: string | undefined | null}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apikeysDelete>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof apikeysDelete>>, TError,{id: Uuid | undefined | null}, TContext> => {
 
 const mutationKey = ['apikeysDelete'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -538,7 +539,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apikeysDelete>>, {id: string | undefined | null}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apikeysDelete>>, {id: Uuid | undefined | null}> = (props) => {
           const {id} = props ?? {};
 
           return  apikeysDelete(id,requestOptions)
@@ -557,11 +558,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Delete API key
  */
 export const useApikeysDelete = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apikeysDelete>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apikeysDelete>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof apikeysDelete>>,
         TError,
-        {id: string | undefined | null},
+        {id: Uuid | undefined | null},
         TContext
       > => {
 

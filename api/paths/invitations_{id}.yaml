@@ -6,19 +6,17 @@ delete:
   description: Delete an invitation
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
       description: The unique identifier of the organization.
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
-      name: invitationId
+      name: invitationID
       required: true
       description: The unique identifier of the invitation.
   security:
@@ -46,19 +44,17 @@ get:
   description: Get an invitation
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
       description: The unique identifier of the organization.
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
-      name: invitationId
+      name: invitationID
       required: true
       description: The unique identifier of the invitation.
   security:
@@ -104,19 +100,17 @@ patch:
               example: admin
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
       description: The unique identifier of the organization.
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
-      name: invitationId
+      name: invitationID
       required: true
       description: The unique identifier of the invitation.
   security:

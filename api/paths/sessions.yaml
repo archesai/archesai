@@ -1,6 +1,6 @@
 get:
   operationId: listSessions
-  summary: Find many sessions
+  summary: List sessions
   tags:
     - Sessions
   description: List user sessions
@@ -46,7 +46,7 @@ post:
   summary: Create session (Login)
   tags:
     - Sessions
-  description: Authenticate user and create a new session
+  description: Authenticate user and Create a session
   requestBody:
     content:
       application/json:

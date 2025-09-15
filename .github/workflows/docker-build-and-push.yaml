@@ -29,7 +29,7 @@ jobs:
         id: auth
         with:
           token_format: access_token
-          workload_identity_provider: projects/1080946766516/locations/global/workloadIdentityPools/github/providers/my-repo
+          workload_identity_provider: projects/1080946766516/locations/global/workloadIDentityPools/github/providers/my-repo
           project_id: ${{ env.GCP_PROJECT_ID }}
           service_account: github-actions-artifact-regist@archesai.iam.gserviceaccount.com
 

@@ -7,4 +7,4 @@ schema:
   $ref: ../schemas/FilterNode.yaml
 description: |
   Filter labels by field values. Supported fields:
-  - createdAt, id, updatedAt, name, organizationId
+  - createdAt, id, updatedAt, name, organizationID

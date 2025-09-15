@@ -62,7 +62,7 @@ func (a *CacheAdapter) Set(ctx context.Context, entity *{{.Type}}, ttl time.Dura
 	if entity == nil {
 		return nil
 	}
-	return a.{{.Name | lower}}Cache.Set(ctx, entity.Id.String(), entity, ttl)
+	return a.{{.Name | lower}}Cache.Set(ctx, entity.ID.String(), entity, ttl)
 }
 
 // Delete removes {{.Name | lower}} from cache

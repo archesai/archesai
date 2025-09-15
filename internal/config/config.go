@@ -7,6 +7,9 @@
 // 3. Default values from OpenAPI specification
 package config
 
+//go:generate go tool oapi-codegen --config=../../.types.codegen.yaml --package config --include-tags Config ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../.server.codegen.yaml --package config --include-tags Config ../../api/openapi.bundled.yaml
+
 // Configuration constants
 const (
 	// DefaultConfigName is the default config file name
@@ -17,12 +20,6 @@ const (
 
 	// EnvPrefix is the environment variable prefix
 	EnvPrefix = "ARCHESAI"
-
-	// DefaultPort is the default API server port
-	DefaultPort = 3001
-
-	// DefaultHost is the default API server host
-	DefaultHost = "0.0.0.0"
 )
 
 // ConfigPaths defines the search paths for configuration files

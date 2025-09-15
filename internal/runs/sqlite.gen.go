@@ -26,54 +26,59 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Run operations
 
+// Create creates a new run
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Run) (*Run, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateRun not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a run by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Run, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetRun not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing run
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Run) (*Run, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateRun not yet implemented - requires custom mapping")
 }
 
+// Delete removes a run
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteRun not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of runs
 func (r *SQLiteRepository) List(ctx context.Context, params ListRunsParams) ([]*Run, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListRuns not yet implemented - requires custom mapping")
 }
 
-// ListByPipeline retrieves multiple runs by pipelineId
-func (r *SQLiteRepository) ListByPipeline(ctx context.Context, pipelineId string) ([]*Run, error) {
+// ListByPipeline retrieves multiple runs by pipelineID
+func (r *SQLiteRepository) ListByPipeline(ctx context.Context, pipelineID uuid.UUID) ([]*Run, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByPipeline not yet implemented - requires custom mapping")
 
 }
 
-// ListByOrganization retrieves multiple runs by organizationId
-func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Run, error) {
+// ListByOrganization retrieves multiple runs by organizationID
+func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Run, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }
 
-// ListByTool retrieves multiple runs by toolId
-func (r *SQLiteRepository) ListByTool(ctx context.Context, toolId string) ([]*Run, error) {
+// ListByTool retrieves multiple runs by toolID
+func (r *SQLiteRepository) ListByTool(ctx context.Context, toolID uuid.UUID) ([]*Run, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByTool not yet implemented - requires custom mapping")

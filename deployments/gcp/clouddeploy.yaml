@@ -6,10 +6,10 @@ metadata:
 description: Arches AI Deployment Pipeline
 serialPipeline:
   stages:
-    - targetId: staging
+    - targetID: staging
       profiles:
         - staging
-    - targetId: production
+    - targetID: production
       profiles:
         - production
 ---

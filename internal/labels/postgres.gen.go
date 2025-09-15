@@ -26,6 +26,7 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Label operations
 
+// Create creates a new label
 func (r *PostgresRepository) Create(ctx context.Context, entity *Label) (*Label, error) {
 	// Check if SQLC has the CreateLabel method
 	// For now, we'll generate a stub but with proper error handling
@@ -33,7 +34,7 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Label) (*Label,
 
 	// Example of what it should look like when SQLC query exists:
 	// params := postgresql.CreateLabelParams{
-	//     Id: entity.Id,
+	//     ID: entity.ID,
 	//     // ... map other fields
 	// }
 	// dbLabel, err := r.queries.CreateLabel(ctx, params)
@@ -45,30 +46,34 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Label) (*Label,
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Get retrieves a label by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Label, error) {
 	// Try to call SQLC GetLabel if it exists
 	// For now, return not implemented
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Update updates an existing label
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Label) (*Label, error) {
 	// Update operations are often custom and may not have SQLC queries
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Delete removes a label
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteLabel if it exists
 	// For now, return not implemented
 	return errors.New("not implemented - SQLC query not found")
 }
 
+// List returns a paginated list of labels
 func (r *PostgresRepository) List(ctx context.Context, params ListLabelsParams) ([]*Label, int64, error) {
 	// List operations need both List and Count queries from SQLC
 	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
 
-// ListByOrganization retrieves multiple labels by organizationId
-func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Label, error) {
+// ListByOrganization retrieves multiple labels by organizationID
+func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Label, error) {
 
 	// Try to call SQLC ListByOrganization if it exists
 	// For now, return not implemented
@@ -76,8 +81,8 @@ func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizatio
 
 }
 
-// GetByName retrieves label by nameorganizationId
-func (r *PostgresRepository) GetByName(ctx context.Context, name string, organizationId string) (*Label, error) {
+// GetByName retrieves label by nameorganizationID
+func (r *PostgresRepository) GetByName(ctx context.Context, name string, organizationID uuid.UUID) (*Label, error) {
 
 	// Try to call SQLC GetByName if it exists
 	// For now, return not implemented
@@ -98,7 +103,7 @@ func mapLabelToDomain(db *postgresql.Label) *Label {
 	// For example:
 	// - OpenAPI might use string, database uses *string
 	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (Id vs ID)
+	// - Field names might differ (ID vs ID)
 
 	result := &Label{
 		// TODO: Map fields properly based on actual type definitions
@@ -106,7 +111,7 @@ func mapLabelToDomain(db *postgresql.Label) *Label {
 	}
 
 	// Basic field mapping - customize based on your entity structure
-	// result.Id = db.Id
+	// result.ID = db.ID
 	// result.CreatedAt = db.CreatedAt
 	// result.UpdatedAt = db.UpdatedAt
 	// Add specific field mappings as needed

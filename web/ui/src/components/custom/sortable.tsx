@@ -78,13 +78,13 @@ const ITEM_HANDLE_NAME = "SortableItemHandle";
 const OVERLAY_NAME = "SortableOverlay";
 
 interface SortableRootContextValue<T> {
-  activeId: null | UniqueIdentifier;
+  activeID: null | UniqueIdentifier;
   flatCursor: boolean;
   getItemValue: (item: T) => UniqueIdentifier;
   id: string;
   items: UniqueIdentifier[];
   modifiers: DndContextProps["modifiers"];
-  setActiveId: (id: null | UniqueIdentifier) => void;
+  setActiveID: (id: null | UniqueIdentifier) => void;
   strategy: SortableContextProps["strategy"];
 }
 
@@ -128,7 +128,7 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
   } = props;
 
   const id = useId();
-  const [activeId, setActiveId] = useState<null | UniqueIdentifier>(null);
+  const [activeID, setActiveID] = useState<null | UniqueIdentifier>(null);
 
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -161,7 +161,7 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
 
       if (event.activatorEvent.defaultPrevented) return;
 
-      setActiveId(event.active.id);
+      setActiveID(event.active.id);
     },
     [sortableProps],
   );
@@ -187,7 +187,7 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
           onValueChange?.(arrayMove(value, activeIndex, overIndex));
         }
       }
-      setActiveId(null);
+      setActiveID(null);
     },
     [value, onValueChange, onMove, getItemValue, sortableProps],
   );
@@ -198,7 +198,7 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
 
       if (event.activatorEvent.defaultPrevented) return;
 
-      setActiveId(null);
+      setActiveID(null);
     },
     [sortableProps],
   );
@@ -281,13 +281,13 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
 
   const contextValue = useMemo(
     () => ({
-      activeId,
+      activeID,
       flatCursor,
       getItemValue,
       id,
       items,
       modifiers: modifiers ?? config.modifiers,
-      setActiveId,
+      setActiveID,
       strategy: strategy ?? config.strategy,
     }),
     [
@@ -297,7 +297,7 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
       strategy,
       config.modifiers,
       config.strategy,
-      activeId,
+      activeID,
       getItemValue,
       flatCursor,
     ],
@@ -603,9 +603,9 @@ function SortableOverlay(props: SortableOverlayProps): JSX.Element | null {
       {...overlayProps}
     >
       <SortableOverlayContext.Provider value={true}>
-        {context.activeId
+        {context.activeID
           ? typeof children === "function"
-            ? children({ value: context.activeId })
+            ? children({ value: context.activeID })
             : children
           : null}
       </SortableOverlayContext.Provider>

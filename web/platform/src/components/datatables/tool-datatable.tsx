@@ -39,9 +39,9 @@ export default function ToolDataTable(): JSX.Element {
               <Link
                 className="shrink truncate text-wrap text-blue-500 hover:underline md:text-sm"
                 params={{
-                  artifactId: row.original.id,
+                  artifactID: row.original.id,
                 }}
-                to={`/artifacts/$artifactId`}
+                to={`/artifacts/$artifactID`}
               >
                 {row.original.name}
               </Link>
@@ -119,7 +119,7 @@ export default function ToolDataTable(): JSX.Element {
       // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={async (tool) => {
-        await navigate({ to: `/tool/single?toolId=${tool.id}` });
+        await navigate({ to: `/tool/single?toolID=${tool.id}` });
       }}
       icon={<PackageCheckIcon />}
     />

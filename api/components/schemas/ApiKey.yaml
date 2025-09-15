@@ -4,10 +4,10 @@ allOf:
   - $ref: ./Base.yaml
   - type: object
     properties:
-      userId:
+      userID:
         allOf:
           - $ref: ./UUID.yaml
-      organizationId:
+      organizationID:
         allOf:
           - $ref: ./UUID.yaml
       keyHash:

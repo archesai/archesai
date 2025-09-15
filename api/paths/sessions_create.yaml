@@ -14,8 +14,6 @@ post:
               description: The email address associated with the account
               type: string
               format: email
-              pattern: >-
-                ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
               example: user@example.com
               minLength: 1
             password:

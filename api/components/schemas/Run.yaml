@@ -3,16 +3,16 @@ description: Schema for Run entity
 x-codegen:
   repository:
     operations: [create, read, update, delete, list]
-    indices: [pipelineId, organizationId, toolId]
+    indices: [pipelineID, organizationID, toolID]
     additional_methods:
       - name: ListByPipeline
-        params: [pipelineId]
+        params: [pipelineID]
         returns: multiple
       - name: ListByOrganization
-        params: [organizationId]
+        params: [organizationID]
         returns: multiple
       - name: ListByTool
-        params: [toolId]
+        params: [toolID]
         returns: multiple
 allOf:
   - $ref: ./Base.yaml
@@ -29,10 +29,10 @@ allOf:
         type: string
         example: example-string
         minLength: 1
-      organizationId:
+      organizationID:
         allOf:
           - $ref: ./UUID.yaml
-      pipelineId:
+      pipelineID:
         allOf:
           - $ref: ./UUID.yaml
       progress:
@@ -54,13 +54,13 @@ allOf:
           - QUEUED
         example: COMPLETED
         minLength: 1
-      toolId:
+      toolID:
         allOf:
           - $ref: ./UUID.yaml
     required:
-      - organizationId
-      - pipelineId
+      - organizationID
+      - pipelineID
       - progress
       - status
-      - toolId
+      - toolID
     additionalProperties: false

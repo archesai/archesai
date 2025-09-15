@@ -42,9 +42,9 @@ export default function ArtifactDataTable(): JSX.Element {
                 <Link
                   className="text-blue-500 hover:underline"
                   params={{
-                    artifactId: row.original.id,
+                    artifactID: row.original.id,
                   }}
-                  to={`/artifacts/$artifactId`}
+                  to={`/artifacts/$artifactID`}
                 >
                   {row.original.name}
                 </Link>
@@ -82,18 +82,18 @@ export default function ArtifactDataTable(): JSX.Element {
         {
           accessorKey: "producer",
           cell: ({ row }) => {
-            return row.original.producerId ? (
+            return row.original.producerID ? (
               <Link
                 className="text-blue-500 hover:underline"
                 params={{
-                  artifactId: row.original.id,
+                  artifactID: row.original.id,
                 }}
                 search={{
-                  selectedRunId: row.original.producerId,
+                  selectedRunID: row.original.producerID,
                 }}
-                to={`/artifacts/$artifactId`}
+                to={`/artifacts/$artifactID`}
               >
-                {row.original.producerId}
+                {row.original.producerID}
               </Link>
             ) : (
               <div className="text-muted-foreground">None</div>
@@ -141,8 +141,8 @@ export default function ArtifactDataTable(): JSX.Element {
       }}
       handleSelect={async (artifact) => {
         await navigate({
-          params: { artifactId: artifact.id },
-          to: `/artifacts/$artifactId`,
+          params: { artifactID: artifact.id },
+          to: `/artifacts/$artifactID`,
         });
       }}
       icon={<FileIcon size={24} />}

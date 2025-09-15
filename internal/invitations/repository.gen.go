@@ -8,6 +8,7 @@ import (
 
 // Repository handles invitation persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Invitation) (*Invitation, error)
 	Get(ctx context.Context, id uuid.UUID) (*Invitation, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Invitation) (*Invitation, error)
@@ -15,7 +16,7 @@ type Repository interface {
 	List(ctx context.Context, params ListInvitationsParams) ([]*Invitation, int64, error)
 
 	// Additional operations
-	ListByOrganization(ctx context.Context, organizationId string) ([]*Invitation, error)
-	GetByEmail(ctx context.Context, email string, organizationId string) (*Invitation, error)
-	ListByInviter(ctx context.Context, inviterId string) ([]*Invitation, error)
+	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Invitation, error)
+	GetByEmail(ctx context.Context, email string, organizationID uuid.UUID) (*Invitation, error)
+	ListByInviter(ctx context.Context, inviterID string) ([]*Invitation, error)
 }

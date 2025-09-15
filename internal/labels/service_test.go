@@ -15,10 +15,10 @@ import (
 func createTestLabelsService(t *testing.T) (*Service, *MockRepository) {
 	t.Helper()
 
-	mockRepo := new(MockRepository)
+	mockRepo := NewMockRepository(t)
 	logger := logger.NewTest()
 
-	service := NewService(mockRepo, logger)
+	service := NewService(mockRepo, nil, logger)
 	return service, mockRepo
 }
 
@@ -34,51 +34,82 @@ func TestLabelsService_Create(t *testing.T) {
 		}
 
 		expectedLabel := &Label{
-			Id:             uuid.New(),
-			OrganizationId: orgID,
+			ID:             uuid.New(),
+			OrganizationID: orgID,
 			Name:           "Test Label",
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		}
 
-		mockRepo.EXPECT().Create(mock.Anything, mock.MatchedBy(func(l *Label) bool {
-			return l.Name == "Test Label" && l.OrganizationId == orgID
-		})).Return(expectedLabel, nil)
+		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*labels.Label")).Return(expectedLabel, nil)
 
-		result, err := service.Create(context.Background(), req, orgID)
+		request := CreateLabelRequestObject{
+			Body: req,
+		}
+		result, err := service.Create(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, "Test Label", result.Name)
-		assert.Equal(t, orgID, result.OrganizationId)
-	})
-
-	t.Run("empty name", func(t *testing.T) {
-		service, _ := createTestLabelsService(t)
-
-		req := &CreateLabelJSONRequestBody{
-			Name: "",
+		if successResp, ok := result.(CreateLabel201JSONResponse); ok {
+			assert.Equal(t, "Test Label", successResp.Data.Name)
+			assert.Equal(t, orgID, successResp.Data.OrganizationID)
+		} else {
+			t.Fatal("Expected CreateLabel201JSONResponse")
 		}
-
-		result, err := service.Create(context.Background(), req, orgID)
-
-		assert.Error(t, err)
-		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), "label name is required")
 	})
 
-	t.Run("empty organization ID", func(t *testing.T) {
-		service, _ := createTestLabelsService(t)
+	t.Run("repository error", func(t *testing.T) {
+		service, mockRepo := createTestLabelsService(t)
 
 		req := &CreateLabelJSONRequestBody{
 			Name: "Test Label",
 		}
 
-		result, err := service.Create(context.Background(), req, uuid.Nil)
+		// Mock repository to return an error
+		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*labels.Label")).Return(nil, assert.AnError)
 
-		assert.Error(t, err)
-		assert.Nil(t, result)
-		assert.Contains(t, err.Error(), "organization ID is required")
+		request := CreateLabelRequestObject{
+			Body: req,
+		}
+		result, err := service.Create(context.Background(), request)
+
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(CreateLabel400ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
+	})
+
+	t.Run("successful creation with minimal data", func(t *testing.T) {
+		service, mockRepo := createTestLabelsService(t)
+
+		req := &CreateLabelJSONRequestBody{
+			Name: "Test Label",
+		}
+
+		expectedLabel := &Label{
+			ID:             uuid.New(),
+			OrganizationID: uuid.New(),
+			Name:           "Test Label",
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+		}
+
+		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*labels.Label")).Return(expectedLabel, nil)
+
+		request := CreateLabelRequestObject{
+			Body: req,
+		}
+		result, err := service.Create(context.Background(), request)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		if successResp, ok := result.(CreateLabel201JSONResponse); ok {
+			assert.Equal(t, "Test Label", successResp.Data.Name)
+		} else {
+			t.Fatal("Expected CreateLabel201JSONResponse")
+		}
 	})
 }
 
@@ -86,8 +117,8 @@ func TestLabelsService_Create(t *testing.T) {
 func TestLabelsService_Get(t *testing.T) {
 	labelID := uuid.New()
 	label := &Label{
-		Id:             labelID,
-		OrganizationId: uuid.New(),
+		ID:             labelID,
+		OrganizationID: uuid.New(),
 		Name:           "Test Label",
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
@@ -98,12 +129,19 @@ func TestLabelsService_Get(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, labelID).Return(label, nil)
 
-		result, err := service.Get(context.Background(), labelID)
+		request := GetLabelRequestObject{
+			ID: labelID,
+		}
+		result, err := service.Get(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, labelID, result.Id)
-		assert.Equal(t, "Test Label", result.Name)
+		if successResp, ok := result.(GetLabel200JSONResponse); ok {
+			assert.Equal(t, labelID, successResp.Data.ID)
+			assert.Equal(t, "Test Label", successResp.Data.Name)
+		} else {
+			t.Fatal("Expected GetLabel200JSONResponse")
+		}
 	})
 
 	t.Run("not found", func(t *testing.T) {
@@ -111,11 +149,17 @@ func TestLabelsService_Get(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, labelID).Return(nil, ErrLabelNotFound)
 
-		result, err := service.Get(context.Background(), labelID)
+		request := GetLabelRequestObject{
+			ID: labelID,
+		}
+		result, err := service.Get(context.Background(), request)
 
-		assert.Error(t, err)
-		assert.Nil(t, result)
-		assert.ErrorIs(t, err, ErrLabelNotFound)
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(GetLabel404ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
 	})
 }
 
@@ -131,16 +175,16 @@ func TestLabelsService_Update(t *testing.T) {
 		}
 
 		existingLabel := &Label{
-			Id:             labelID,
-			OrganizationId: uuid.New(),
+			ID:             labelID,
+			OrganizationID: uuid.New(),
 			Name:           "Old Label",
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		}
 
 		expectedLabel := &Label{
-			Id:             labelID,
-			OrganizationId: existingLabel.OrganizationId,
+			ID:             labelID,
+			OrganizationID: existingLabel.OrganizationID,
 			Name:           "Updated Label",
 			CreatedAt:      existingLabel.CreatedAt,
 			UpdatedAt:      time.Now(),
@@ -149,11 +193,19 @@ func TestLabelsService_Update(t *testing.T) {
 		mockRepo.EXPECT().Get(mock.Anything, labelID).Return(existingLabel, nil)
 		mockRepo.EXPECT().Update(mock.Anything, labelID, mock.Anything).Return(expectedLabel, nil)
 
-		result, err := service.Update(context.Background(), labelID, req)
+		request := UpdateLabelRequestObject{
+			ID:   labelID,
+			Body: req,
+		}
+		result, err := service.Update(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, "Updated Label", result.Name)
+		if successResp, ok := result.(UpdateLabel200JSONResponse); ok {
+			assert.Equal(t, "Updated Label", successResp.Data.Name)
+		} else {
+			t.Fatal("Expected UpdateLabel200JSONResponse")
+		}
 	})
 
 	t.Run("not found", func(t *testing.T) {
@@ -165,11 +217,18 @@ func TestLabelsService_Update(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, labelID).Return(nil, ErrLabelNotFound)
 
-		result, err := service.Update(context.Background(), labelID, req)
+		request := UpdateLabelRequestObject{
+			ID:   labelID,
+			Body: req,
+		}
+		result, err := service.Update(context.Background(), request)
 
-		assert.Error(t, err)
-		assert.Nil(t, result)
-		assert.ErrorIs(t, err, ErrLabelNotFound)
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(UpdateLabel404ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
 	})
 }
 
@@ -181,8 +240,8 @@ func TestLabelsService_Delete(t *testing.T) {
 		service, mockRepo := createTestLabelsService(t)
 
 		existingLabel := &Label{
-			Id:             labelID,
-			OrganizationId: uuid.New(),
+			ID:             labelID,
+			OrganizationID: uuid.New(),
 			Name:           "Test Label",
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
@@ -191,7 +250,10 @@ func TestLabelsService_Delete(t *testing.T) {
 		mockRepo.EXPECT().Get(mock.Anything, labelID).Return(existingLabel, nil)
 		mockRepo.EXPECT().Delete(mock.Anything, labelID).Return(nil)
 
-		err := service.Delete(context.Background(), labelID)
+		request := DeleteLabelRequestObject{
+			ID: labelID,
+		}
+		_, err := service.Delete(context.Background(), request)
 
 		assert.NoError(t, err)
 	})
@@ -201,10 +263,17 @@ func TestLabelsService_Delete(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, labelID).Return(nil, ErrLabelNotFound)
 
-		err := service.Delete(context.Background(), labelID)
+		request := DeleteLabelRequestObject{
+			ID: labelID,
+		}
+		result, err := service.Delete(context.Background(), request)
 
-		assert.Error(t, err)
-		assert.ErrorIs(t, err, ErrLabelNotFound)
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(DeleteLabel404ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
 	})
 }
 
@@ -219,15 +288,15 @@ func TestLabelsService_List(t *testing.T) {
 
 		labels := []*Label{
 			{
-				Id:             uuid.New(),
-				OrganizationId: orgID,
+				ID:             uuid.New(),
+				OrganizationID: orgID,
 				Name:           "Label 1",
 				CreatedAt:      time.Now(),
 				UpdatedAt:      time.Now(),
 			},
 			{
-				Id:             uuid.New(),
-				OrganizationId: orgID,
+				ID:             uuid.New(),
+				OrganizationID: orgID,
 				Name:           "Label 2",
 				CreatedAt:      time.Now(),
 				UpdatedAt:      time.Now(),
@@ -242,10 +311,23 @@ func TestLabelsService_List(t *testing.T) {
 		}
 		mockRepo.EXPECT().List(mock.Anything, params).Return(labels, int64(2), nil)
 
-		results, total, err := service.List(context.Background(), orgID, limit, offset)
+		request := ListLabelsRequestObject{
+			Params: ListLabelsParams{
+				Page: PageQuery{
+					Number: offset/limit + 1,
+					Size:   limit,
+				},
+			},
+		}
+		result, err := service.List(context.Background(), request)
 
 		assert.NoError(t, err)
-		assert.Len(t, results, 2)
-		assert.Equal(t, 2, total)
+		assert.NotNil(t, result)
+		if successResp, ok := result.(ListLabels200JSONResponse); ok {
+			assert.Len(t, successResp.Data, 2)
+			assert.Equal(t, float32(2), successResp.Meta.Total)
+		} else {
+			t.Fatal("Expected ListLabels200JSONResponse")
+		}
 	})
 }

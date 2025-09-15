@@ -8,9 +8,8 @@ get:
       name: id
       required: true
       schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       description: The unique identifier of the resource
   security:
     - bearerAuth: []
@@ -30,6 +29,57 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
   description: Get an account
+patch:
+  operationId: updateAccount
+  summary: Update an account
+  tags:
+    - Accounts
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
+      description: The unique identifier of the resource
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          additionalProperties: false
+          properties:
+            provider:
+              type: string
+              description: The account provider
+              example: 'google'
+            providerAccountID:
+              type: string
+              description: The provider account ID
+              example: '1234567890'
+            type:
+              type: string
+              description: The account type
+              example: 'oauth'
+  responses:
+    '200':
+      description: Updated account
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - data
+            properties:
+              data:
+                $ref: ../components/schemas/Account.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+  description: Update an account
 delete:
   operationId: deleteAccount
   summary: Delete an account
@@ -40,9 +90,8 @@ delete:
       name: id
       required: true
       schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       description: The unique identifier of the resource
   security:
     - bearerAuth: []

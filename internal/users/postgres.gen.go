@@ -26,6 +26,7 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // User operations
 
+// Create creates a new user
 func (r *PostgresRepository) Create(ctx context.Context, entity *User) (*User, error) {
 	// Check if SQLC has the CreateUser method
 	// For now, we'll generate a stub but with proper error handling
@@ -33,7 +34,7 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *User) (*User, e
 
 	// Example of what it should look like when SQLC query exists:
 	// params := postgresql.CreateUserParams{
-	//     Id: entity.Id,
+	//     ID: entity.ID,
 	//     // ... map other fields
 	// }
 	// dbUser, err := r.queries.CreateUser(ctx, params)
@@ -45,23 +46,27 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *User) (*User, e
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Get retrieves a user by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*User, error) {
 	// Try to call SQLC GetUser if it exists
 	// For now, return not implemented
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Update updates an existing user
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *User) (*User, error) {
 	// Update operations are often custom and may not have SQLC queries
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Delete removes a user
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteUser if it exists
 	// For now, return not implemented
 	return errors.New("not implemented - SQLC query not found")
 }
 
+// List returns a paginated list of users
 func (r *PostgresRepository) List(ctx context.Context, params ListUsersParams) ([]*User, int64, error) {
 	// List operations need both List and Count queries from SQLC
 	return nil, 0, errors.New("not implemented - SQLC query not found")
@@ -89,7 +94,7 @@ func mapUserToDomain(db *postgresql.User) *User {
 	// For example:
 	// - OpenAPI might use string, database uses *string
 	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (Id vs ID)
+	// - Field names might differ (ID vs ID)
 
 	result := &User{
 		// TODO: Map fields properly based on actual type definitions
@@ -97,7 +102,7 @@ func mapUserToDomain(db *postgresql.User) *User {
 	}
 
 	// Basic field mapping - customize based on your entity structure
-	// result.Id = db.Id
+	// result.ID = db.ID
 	// result.CreatedAt = db.CreatedAt
 	// result.UpdatedAt = db.UpdatedAt
 	// Add specific field mappings as needed

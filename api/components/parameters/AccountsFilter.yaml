@@ -8,5 +8,5 @@ schema:
 description: |
   Filter accounts by field values. Supported fields:
   - createdAt, id, updatedAt, accessToken, accessTokenExpiresAt
-  - accountId, idToken, password, providerId, refreshToken
-  - refreshTokenExpiresAt, scope, userId
+  - accountID, idToken, password, providerID, refreshToken
+  - refreshTokenExpiresAt, scope, userID

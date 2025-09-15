@@ -98,8 +98,8 @@ type Unauthorized = Problem
 
 // OauthAuthorizeParams defines parameters for OauthAuthorize.
 type OauthAuthorizeParams struct {
-	// RedirectUri Where to redirect after authorization (optional, uses default if not provided)
-	RedirectUri string `form:"redirect_uri,omitempty" json:"redirect_uri,omitempty,omitzero" yaml:"redirect_uri,omitempty"`
+	// RedirectURI Where to redirect after authorization (optional, uses default if not provided)
+	RedirectURI string `form:"redirect_uri,omitempty" json:"redirect_uri,omitempty,omitzero" yaml:"redirect_uri,omitempty"`
 
 	// Scope OAuth scopes to request (optional, uses default if not provided)
 	Scope string `form:"scope,omitempty" json:"scope,omitempty,omitzero" yaml:"scope,omitempty"`

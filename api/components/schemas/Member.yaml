@@ -3,22 +3,22 @@ description: Schema for Member entity
 x-codegen:
   repository:
     operations: [create, read, update, delete, list]
-    indices: [organizationId, userId]
+    indices: [organizationID, userID]
     additional_methods:
       - name: ListByOrganization
-        params: [organizationId]
+        params: [organizationID]
         returns: multiple
       - name: ListByUser
-        params: [userId]
+        params: [userID]
         returns: multiple
       - name: GetByUserAndOrganization
-        params: [userId, organizationId]
+        params: [userID, organizationID]
         returns: single
 allOf:
   - $ref: ./Base.yaml
   - type: object
     properties:
-      organizationId:
+      organizationID:
         allOf:
           - $ref: ./UUID.yaml
       role:
@@ -30,11 +30,11 @@ allOf:
           - member
         example: admin
         minLength: 1
-      userId:
+      userID:
         allOf:
           - $ref: ./UUID.yaml
     required:
-      - organizationId
+      - organizationID
       - role
-      - userId
+      - userID
     additionalProperties: false

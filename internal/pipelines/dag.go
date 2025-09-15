@@ -51,13 +51,13 @@ func NewDAG(steps []PipelineStep, dependencies map[uuid.UUID][]uuid.UUID) (*DAG,
 	for i := range steps {
 		step := &steps[i]
 		node := &DAGNode{
-			ID:           step.Id,
+			ID:           step.ID,
 			Step:         step,
 			Dependencies: []*DAGNode{},
 			Dependents:   []*DAGNode{},
 			Status:       NodeStatusPending,
 		}
-		dag.Nodes[step.Id] = node
+		dag.Nodes[step.ID] = node
 	}
 
 	// Build edges
@@ -400,13 +400,13 @@ func (e *DAGExecutor) executeStep(_ context.Context, step *PipelineStep, inputs 
 	_ = inputs // will be used in actual implementation
 
 	// Placeholder: in real implementation, this could return an error
-	if step.ToolId == uuid.Nil {
+	if step.ToolID == uuid.Nil {
 		return nil, fmt.Errorf("invalid tool ID")
 	}
 
 	return map[string]interface{}{
-		"stepId": step.Id,
-		"toolId": step.ToolId,
+		"stepID": step.ID,
+		"toolID": step.ToolID,
 		"status": "completed",
 	}, nil
 }

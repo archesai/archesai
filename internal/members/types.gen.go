@@ -25,11 +25,11 @@ const (
 // Defines values for ListMembersParamsSortField.
 const (
 	CreatedAt      ListMembersParamsSortField = "createdAt"
-	Id             ListMembersParamsSortField = "id"
-	OrganizationId ListMembersParamsSortField = "organizationId"
+	ID             ListMembersParamsSortField = "id"
+	OrganizationID ListMembersParamsSortField = "organizationID"
 	Role           ListMembersParamsSortField = "role"
 	UpdatedAt      ListMembersParamsSortField = "updatedAt"
-	UserId         ListMembersParamsSortField = "userId"
+	UserID         ListMembersParamsSortField = "userID"
 )
 
 // Defines values for ListMembersParamsSortOrder.
@@ -57,8 +57,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -72,16 +72,16 @@ type Member struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id             UUID `json:"id" yaml:"id"`
-	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
+	// ID Universally Unique IDentifier
+	ID             UUID `json:"id" yaml:"id"`
+	OrganizationID UUID `json:"organizationID" yaml:"organizationID"`
 
 	// Role The role of the member
 	Role MemberRole `json:"role" yaml:"role"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-	UserId    UUID      `json:"userId" yaml:"userId"`
+	UserID    UUID      `json:"userID" yaml:"userID"`
 }
 
 // MemberRole The role of the member
@@ -114,7 +114,7 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error
@@ -167,7 +167,7 @@ type Unauthorized = Problem
 // ListMembersParams defines parameters for ListMembers.
 type ListMembersParams struct {
 	// Filter Filter members by field values. Supported fields:
-	// - createdAt, id, updatedAt, organizationId, role, userId
+	// - createdAt, id, updatedAt, organizationID, role, userID
 	Filter MembersFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter

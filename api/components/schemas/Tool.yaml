@@ -3,10 +3,10 @@ description: Schema for Tool entity
 x-codegen:
   repository:
     operations: [create, read, update, delete, list]
-    indices: [organizationId]
+    indices: [organizationID]
     additional_methods:
       - name: ListByOrganization
-        params: [organizationId]
+        params: [organizationID]
         returns: multiple
 allOf:
   - $ref: ./Base.yaml
@@ -27,7 +27,7 @@ allOf:
         type: string
         minLength: 1
         example: Example Name
-      organizationId:
+      organizationID:
         allOf:
           - $ref: ./UUID.yaml
       outputMimeType:
@@ -39,6 +39,6 @@ allOf:
       - description
       - inputMimeType
       - name
-      - organizationId
+      - organizationID
       - outputMimeType
     additionalProperties: false

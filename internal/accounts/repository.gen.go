@@ -8,6 +8,7 @@ import (
 
 // Repository handles account persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Account) (*Account, error)
 	Get(ctx context.Context, id uuid.UUID) (*Account, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Account) (*Account, error)
@@ -15,6 +16,6 @@ type Repository interface {
 	List(ctx context.Context, params ListAccountsParams) ([]*Account, int64, error)
 
 	// Additional operations
-	GetByProviderId(ctx context.Context, provider string, providerAccountId string) (*Account, error)
-	ListByUserId(ctx context.Context, userId uuid.UUID) ([]*Account, error)
+	GetByProviderID(ctx context.Context, provider string, providerAccountID string) (*Account, error)
+	ListByUserID(ctx context.Context, userID uuid.UUID) ([]*Account, error)
 }

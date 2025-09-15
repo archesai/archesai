@@ -4,7 +4,7 @@ x-codegen:
   # yaml-language-server: $schema=./XCodegen.yaml
   repository:
     operations: [create, read, update, delete, list]
-    indices: [userId, token]
+    indices: [userID, token]
     additional_methods:
       - name: GetByToken
         params: [token]
@@ -13,7 +13,7 @@ x-codegen:
         params: [token]
         returns: void
       - name: DeleteByUser
-        params: [userId]
+        params: [userID]
         returns: void
       - name: DeleteExpired
         params: []
@@ -32,7 +32,7 @@ allOf:
   - $ref: ./Base.yaml
   - type: object
     properties:
-      activeOrganizationId:
+      activeOrganizationID:
         allOf:
           - $ref: ./UUID.yaml
       expiresAt:
@@ -55,14 +55,14 @@ allOf:
         type: string
         example: example-string
         minLength: 1
-      userId:
+      userID:
         allOf:
           - $ref: ./UUID.yaml
     required:
-      - activeOrganizationId
+      - activeOrganizationID
       - expiresAt
       - ipAddress
       - token
       - userAgent
-      - userId
+      - userID
     additionalProperties: false

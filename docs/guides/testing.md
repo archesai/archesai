@@ -184,8 +184,8 @@ go test -race ./...
    - Request/Response types use generated structs
 
 2. **UUID Handling**:
-   - User `Id` field is `uuid.UUID`, not `ID`
-   - Some fields like `OrganizationId` may be strings in certain contexts
+   - User `ID` field is `uuid.UUID`, not `ID`
+   - Some fields like `OrganizationID` may be strings in certain contexts
 
 3. **Context Keys**:
    - Auth middleware uses `AuthUserContextKey` and `AuthClaimsContextKey`
@@ -216,7 +216,7 @@ Common test data patterns:
 ```go
 // User fixture
 user := &User{
-    Id:            uuid.New(),
+    ID:            uuid.New(),
     Email:         "test@example.com",
     Name:          "Test User",
     EmailVerified: false,
@@ -226,7 +226,7 @@ user := &User{
 
 // Organization fixture
 org := &Organization{
-    Id:           uuid.New(),
+    ID:           uuid.New(),
     Name:         "Test Org",
     BillingEmail: "billing@example.com",
     Plan:         OrganizationPlan(DefaultPlan),

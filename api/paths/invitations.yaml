@@ -6,9 +6,8 @@ post:
   description: Create an invitation
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -64,9 +63,8 @@ get:
   description: List invitations
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true

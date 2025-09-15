@@ -38,7 +38,7 @@ interface UserButtonProps {
   memberships?: {
     data: {
       id: string;
-      organizationId: string;
+      organizationID: string;
     }[];
   };
   onLogout?: () => Promise<void>;
@@ -53,7 +53,7 @@ interface UserButtonProps {
   ) => Promise<void>;
   sessionData?: {
     session: {
-      activeOrganizationId?: null | string;
+      activeOrganizationID?: null | string;
     };
     user: {
       email: string;
@@ -199,7 +199,7 @@ export function UserButton({
                               onSuccess: () => {
                                 toast("Organization changed", {
                                   description: `You have
-                              switched to ${membership.organizationId}`,
+                              switched to ${membership.organizationID}`,
                                 });
                               },
                             },
@@ -207,8 +207,8 @@ export function UserButton({
                         }
                       }}
                     >
-                      {membership.organizationId}
-                      {defaultOrgname === membership.organizationId && (
+                      {membership.organizationID}
+                      {defaultOrgname === membership.organizationID && (
                         <Badge>Current</Badge>
                       )}
                     </DropdownMenuItem>

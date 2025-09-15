@@ -89,8 +89,8 @@ func (we *WorkflowExecutor) ExecutePipeline(ctx context.Context, pipelineID uuid
 
 	// Create run record
 	run := &runs.Run{
-		Id:         uuid.New(),
-		PipelineId: pipeline.Id,
+		ID:         uuid.New(),
+		PipelineID: pipeline.ID,
 		Status:     runs.QUEUED,
 		Progress:   0,
 		CreatedAt:  time.Now(),
@@ -115,13 +115,13 @@ func (we *WorkflowExecutor) ExecutePipeline(ctx context.Context, pipelineID uuid
 	}
 
 	// Queue the execution
-	err = we.queue.EnqueueRun(ctx, createdRun.Id)
+	err = we.queue.EnqueueRun(ctx, createdRun.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to queue run: %w", err)
 	}
 
 	// Start execution in background
-	go we.executeRun(context.Background(), createdRun.Id)
+	go we.executeRun(context.Background(), createdRun.ID)
 
 	return createdRun, nil
 }
@@ -140,14 +140,14 @@ func (we *WorkflowExecutor) executeRun(ctx context.Context, runID uuid.UUID) {
 	// Update run status to processing
 	run.Status = runs.PROCESSING
 	run.StartedAt = time.Now()
-	_, err = we.runRepo.Update(ctx, run.Id, run)
+	_, err = we.runRepo.Update(ctx, run.ID, run)
 	if err != nil {
 		we.logger.Error("Failed to update run status", "error", err, "runId", runID)
 		return
 	}
 
 	// Build DAG from pipeline steps
-	dag, err := we.buildDAG(ctx, run.PipelineId)
+	dag, err := we.buildDAG(ctx, run.PipelineID)
 	if err != nil {
 		we.handleRunFailure(ctx, run, err)
 		return
@@ -156,7 +156,7 @@ func (we *WorkflowExecutor) executeRun(ctx context.Context, runID uuid.UUID) {
 	// Create execution context
 	execCtx := &ExecutionContext{
 		RunID:      runID,
-		PipelineID: run.PipelineId,
+		PipelineID: run.PipelineID,
 		DAG:        dag,
 		StartTime:  time.Now(),
 		Status:     runs.PROCESSING,
@@ -188,7 +188,7 @@ func (we *WorkflowExecutor) executeRun(ctx context.Context, runID uuid.UUID) {
 
 // buildDAG creates a DAG from pipeline steps
 func (we *WorkflowExecutor) buildDAG(ctx context.Context, pipelineID uuid.UUID) (*DAG, error) {
-	we.logger.Info("Building DAG for pipeline", "pipelineId", pipelineID)
+	we.logger.Info("Building DAG for pipeline", "pipelineID", pipelineID)
 
 	// Use the pipeline manager to get DAG structure
 	steps, dependencies, err := we.pipelineManager.GetPipelineDAG(ctx, pipelineID)
@@ -201,7 +201,7 @@ func (we *WorkflowExecutor) buildDAG(ctx context.Context, pipelineID uuid.UUID) 
 
 // handleRunFailure updates the run status to failed
 func (we *WorkflowExecutor) handleRunFailure(ctx context.Context, run *runs.Run, err error) {
-	we.logger.Error("Pipeline execution failed", "error", err, "runId", run.Id)
+	we.logger.Error("Pipeline execution failed", "error", err, "runId", run.ID)
 
 	run.Status = runs.FAILED
 	run.CompletedAt = time.Now()
@@ -209,23 +209,23 @@ func (we *WorkflowExecutor) handleRunFailure(ctx context.Context, run *runs.Run,
 	// Store error message
 	run.Error = err.Error()
 
-	_, updateErr := we.runRepo.Update(ctx, run.Id, run)
+	_, updateErr := we.runRepo.Update(ctx, run.ID, run)
 	if updateErr != nil {
-		we.logger.Error("Failed to update failed run", "error", updateErr, "runId", run.Id)
+		we.logger.Error("Failed to update failed run", "error", updateErr, "runId", run.ID)
 	}
 }
 
 // handleRunSuccess updates the run status to completed
 func (we *WorkflowExecutor) handleRunSuccess(ctx context.Context, run *runs.Run) {
-	we.logger.Info("Pipeline execution completed", "runId", run.Id)
+	we.logger.Info("Pipeline execution completed", "runId", run.ID)
 
 	run.Status = runs.COMPLETED
 	run.CompletedAt = time.Now()
 	run.Progress = 100
 
-	_, err := we.runRepo.Update(ctx, run.Id, run)
+	_, err := we.runRepo.Update(ctx, run.ID, run)
 	if err != nil {
-		we.logger.Error("Failed to update completed run", "error", err, "runId", run.Id)
+		we.logger.Error("Failed to update completed run", "error", err, "runId", run.ID)
 	}
 }
 
@@ -265,7 +265,7 @@ func (dte *dagToolExecutor) Execute(ctx context.Context, tool *tools.Tool, input
 	// Store result in execution context
 	execCtx.mu.Lock()
 	// Store by tool ID for now - you might want to use step ID instead
-	execCtx.Results[tool.Id] = result
+	execCtx.Results[tool.ID] = result
 	execCtx.mu.Unlock()
 
 	return result, nil
@@ -287,7 +287,7 @@ func NewContainerToolRunner(logger *slog.Logger) *ContainerToolRunner {
 func (ctr *ContainerToolRunner) Run(_ context.Context, tool *tools.Tool, config map[string]interface{}, input interface{}) (interface{}, error) {
 	_ = input // will be used in actual implementation
 	ctr.logger.Info("Executing tool in container",
-		"toolId", tool.Id,
+		"toolID", tool.ID,
 		"toolName", tool.Name,
 		"config", config,
 	)
@@ -302,7 +302,7 @@ func (ctr *ContainerToolRunner) Run(_ context.Context, tool *tools.Tool, config 
 
 	// For now, return a mock result
 	return map[string]interface{}{
-		"toolId":     tool.Id,
+		"toolID":     tool.ID,
 		"toolName":   tool.Name,
 		"executedAt": time.Now(),
 		"status":     "success",
@@ -326,7 +326,7 @@ func NewHTTPToolRunner(logger *slog.Logger) *HTTPToolRunner {
 func (htr *HTTPToolRunner) Run(_ context.Context, tool *tools.Tool, config map[string]interface{}, input interface{}) (interface{}, error) {
 	_ = input // will be used in actual implementation
 	htr.logger.Info("Executing tool via HTTP",
-		"toolId", tool.Id,
+		"toolID", tool.ID,
 		"toolName", tool.Name,
 		"config", config,
 	)
@@ -340,7 +340,7 @@ func (htr *HTTPToolRunner) Run(_ context.Context, tool *tools.Tool, config map[s
 	// 5. Parse response
 
 	return map[string]interface{}{
-		"toolId":     tool.Id,
+		"toolID":     tool.ID,
 		"toolName":   tool.Name,
 		"executedAt": time.Now(),
 		"status":     "success",

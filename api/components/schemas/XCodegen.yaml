@@ -311,7 +311,7 @@ properties:
             field:
               description: Field name in this table
               type: string
-              example: userId
+              example: userID
             references:
               description: Reference in format "table.column"
               type: string

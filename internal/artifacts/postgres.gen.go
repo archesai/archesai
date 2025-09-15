@@ -26,6 +26,7 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Artifact operations
 
+// Create creates a new artifact
 func (r *PostgresRepository) Create(ctx context.Context, entity *Artifact) (*Artifact, error) {
 	// Check if SQLC has the CreateArtifact method
 	// For now, we'll generate a stub but with proper error handling
@@ -33,7 +34,7 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Artifact) (*Art
 
 	// Example of what it should look like when SQLC query exists:
 	// params := postgresql.CreateArtifactParams{
-	//     Id: entity.Id,
+	//     ID: entity.ID,
 	//     // ... map other fields
 	// }
 	// dbArtifact, err := r.queries.CreateArtifact(ctx, params)
@@ -45,30 +46,34 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Artifact) (*Art
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Get retrieves a artifact by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Artifact, error) {
 	// Try to call SQLC GetArtifact if it exists
 	// For now, return not implemented
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Update updates an existing artifact
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Artifact) (*Artifact, error) {
 	// Update operations are often custom and may not have SQLC queries
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Delete removes a artifact
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteArtifact if it exists
 	// For now, return not implemented
 	return errors.New("not implemented - SQLC query not found")
 }
 
+// List returns a paginated list of artifacts
 func (r *PostgresRepository) List(ctx context.Context, params ListArtifactsParams) ([]*Artifact, int64, error) {
 	// List operations need both List and Count queries from SQLC
 	return nil, 0, errors.New("not implemented - SQLC query not found")
 }
 
-// ListByOrganization retrieves multiple artifacts by organizationId
-func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Artifact, error) {
+// ListByOrganization retrieves multiple artifacts by organizationID
+func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Artifact, error) {
 
 	// Try to call SQLC ListByOrganization if it exists
 	// For now, return not implemented
@@ -76,8 +81,8 @@ func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizatio
 
 }
 
-// ListByProducer retrieves multiple artifacts by producerId
-func (r *PostgresRepository) ListByProducer(ctx context.Context, producerId string) ([]*Artifact, error) {
+// ListByProducer retrieves multiple artifacts by producerID
+func (r *PostgresRepository) ListByProducer(ctx context.Context, producerID string) ([]*Artifact, error) {
 
 	// Try to call SQLC ListByProducer if it exists
 	// For now, return not implemented
@@ -98,7 +103,7 @@ func mapArtifactToDomain(db *postgresql.Artifact) *Artifact {
 	// For example:
 	// - OpenAPI might use string, database uses *string
 	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (Id vs ID)
+	// - Field names might differ (ID vs ID)
 
 	result := &Artifact{
 		// TODO: Map fields properly based on actual type definitions
@@ -106,7 +111,7 @@ func mapArtifactToDomain(db *postgresql.Artifact) *Artifact {
 	}
 
 	// Basic field mapping - customize based on your entity structure
-	// result.Id = db.Id
+	// result.ID = db.ID
 	// result.CreatedAt = db.CreatedAt
 	// result.UpdatedAt = db.UpdatedAt
 	// Add specific field mappings as needed

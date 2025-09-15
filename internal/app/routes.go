@@ -25,7 +25,8 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 
 	// Account routes - public endpoints
 	// These endpoints handle registration, password reset, email verification, etc.
-	accounts.RegisterHandlers(v1, a.AccountsHandler)
+	strictAccountsHandler := accounts.NewStrictHandler(a.AccountsHandler, nil)
+	accounts.RegisterHandlers(v1, strictAccountsHandler)
 
 	// Health routes - public endpoints for monitoring
 	strictHealthHandler := health.NewStrictHandler(a.HealthHandler, nil)
@@ -40,7 +41,7 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	protected.Use(a.AuthMiddleware.RequireAuth())
 
 	// Users routes - require authentication
-	strictUsersHandler := users.NewUserStrictHandler(a.UsersHandler)
+	strictUsersHandler := users.NewStrictHandler(a.UsersHandler, nil)
 	users.RegisterHandlers(protected, strictUsersHandler)
 
 	// Organizations routes - require authentication and organization membership

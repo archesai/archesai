@@ -26,6 +26,7 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Session operations
 
+// Create creates a new session
 func (r *PostgresRepository) Create(ctx context.Context, entity *Session) (*Session, error) {
 	// Check if SQLC has the CreateSession method
 	// For now, we'll generate a stub but with proper error handling
@@ -33,7 +34,7 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Session) (*Sess
 
 	// Example of what it should look like when SQLC query exists:
 	// params := postgresql.CreateSessionParams{
-	//     Id: entity.Id,
+	//     ID: entity.ID,
 	//     // ... map other fields
 	// }
 	// dbSession, err := r.queries.CreateSession(ctx, params)
@@ -45,23 +46,27 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Session) (*Sess
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Get retrieves a session by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Session, error) {
 	// Try to call SQLC GetSession if it exists
 	// For now, return not implemented
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Update updates an existing session
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Session) (*Session, error) {
 	// Update operations are often custom and may not have SQLC queries
 	return nil, errors.New("not implemented - SQLC query not found")
 }
 
+// Delete removes a session
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// Try to call SQLC DeleteSession if it exists
 	// For now, return not implemented
 	return errors.New("not implemented - SQLC query not found")
 }
 
+// List returns a paginated list of sessions
 func (r *PostgresRepository) List(ctx context.Context, params ListSessionsParams) ([]*Session, int64, error) {
 	// List operations need both List and Count queries from SQLC
 	return nil, 0, errors.New("not implemented - SQLC query not found")
@@ -85,8 +90,8 @@ func (r *PostgresRepository) DeleteByToken(ctx context.Context, token string) er
 
 }
 
-// DeleteByUser deletes session by userId
-func (r *PostgresRepository) DeleteByUser(ctx context.Context, userId uuid.UUID) error {
+// DeleteByUser deletes session by userID
+func (r *PostgresRepository) DeleteByUser(ctx context.Context, userID uuid.UUID) error {
 
 	// Try to call SQLC DeleteByUser if it exists
 	// For now, return not implemented
@@ -116,7 +121,7 @@ func mapSessionToDomain(db *postgresql.Session) *Session {
 	// For example:
 	// - OpenAPI might use string, database uses *string
 	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (Id vs ID)
+	// - Field names might differ (ID vs ID)
 
 	result := &Session{
 		// TODO: Map fields properly based on actual type definitions
@@ -124,7 +129,7 @@ func mapSessionToDomain(db *postgresql.Session) *Session {
 	}
 
 	// Basic field mapping - customize based on your entity structure
-	// result.Id = db.Id
+	// result.ID = db.ID
 	// result.CreatedAt = db.CreatedAt
 	// result.UpdatedAt = db.UpdatedAt
 	// Add specific field mappings as needed

@@ -60,7 +60,7 @@ func (a *CacheAdapter) Set(ctx context.Context, entity *Organization, ttl time.D
 	if entity == nil {
 		return nil
 	}
-	return a.organizationCache.Set(ctx, entity.Id.String(), entity, ttl)
+	return a.organizationCache.Set(ctx, entity.ID.String(), entity, ttl)
 }
 
 // Delete removes organization from cache
@@ -83,7 +83,7 @@ func (a *CacheAdapter) GetBySlug(ctx context.Context, slug string) (*Organizatio
 
 // GetByStripeCustomerId retrieves organization from cache by stripeCustomerId
 func (a *CacheAdapter) GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error) {
-	key := "stripeCustomerId:" + stripeCustomerId
+	key := "stripeCustomerID:" + stripeCustomerId
 	entity, err := a.organizationCache.Get(ctx, key)
 	if err != nil {
 		return nil, err

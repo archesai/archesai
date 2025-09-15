@@ -27,45 +27,40 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 {{range .Entities}}{{$entity := .}}
 // {{.Name}} operations
 
-{{if contains .Operations "create"}}
+// Create creates a new {{lower .Name}}
 func (r *SQLiteRepository) Create(ctx context.Context, entity *{{.Type}}) (*{{.Type}}, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("Create{{.Name}} not yet implemented - requires custom mapping")
 }
-{{end}}
 
-{{if contains .Operations "read"}}
+// Get retrieves a {{lower .Name}} by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*{{.Type}}, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("Get{{.Name}} not yet implemented - requires custom mapping")
 }
-{{end}}
 
-{{if contains .Operations "update"}}
+// Update updates an existing {{lower .Name}}
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *{{.Type}}) (*{{.Type}}, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("Update{{.Name}} not yet implemented - requires custom mapping")
 }
-{{end}}
 
-{{if contains .Operations "delete"}}
+// Delete removes a {{lower .Name}}
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("Delete{{.Name}} not yet implemented - requires custom mapping")
 }
-{{end}}
 
-{{if contains .Operations "list"}}
+// List returns a paginated list of {{lower .Name}}s
 func (r *SQLiteRepository) List(ctx context.Context, params List{{.Name}}sParams) ([]*{{.Type}}, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("List{{.Name}}s not yet implemented - requires custom mapping")
 }
-{{end}}
 
 {{/* Generate additional methods dynamically */}}
 {{if .AdditionalMethods}}{{range .AdditionalMethods}}

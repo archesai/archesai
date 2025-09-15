@@ -26,54 +26,59 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Member operations
 
+// Create creates a new member
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Member) (*Member, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateMember not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a member by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Member, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetMember not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing member
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Member) (*Member, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateMember not yet implemented - requires custom mapping")
 }
 
+// Delete removes a member
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteMember not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of members
 func (r *SQLiteRepository) List(ctx context.Context, params ListMembersParams) ([]*Member, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListMembers not yet implemented - requires custom mapping")
 }
 
-// ListByOrganization retrieves multiple members by organizationId
-func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Member, error) {
+// ListByOrganization retrieves multiple members by organizationID
+func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Member, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }
 
-// ListByUser retrieves multiple members by userId
-func (r *SQLiteRepository) ListByUser(ctx context.Context, userId uuid.UUID) ([]*Member, error) {
+// ListByUser retrieves multiple members by userID
+func (r *SQLiteRepository) ListByUser(ctx context.Context, userID uuid.UUID) ([]*Member, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByUser not yet implemented - requires custom mapping")
 
 }
 
-// GetByUserAndOrganization retrieves member by userIdorganizationId
-func (r *SQLiteRepository) GetByUserAndOrganization(ctx context.Context, userId uuid.UUID, organizationId string) (*Member, error) {
+// GetByUserAndOrganization retrieves member by userIDorganizationID
+func (r *SQLiteRepository) GetByUserAndOrganization(ctx context.Context, userID uuid.UUID, organizationID uuid.UUID) (*Member, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("GetByUserAndOrganization not yet implemented - requires custom mapping")

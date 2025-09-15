@@ -12,88 +12,88 @@ import (
 )
 
 type Account struct {
-	Id                    uuid.UUID
+	ID                    uuid.UUID
 	CreatedAt             time.Time
 	UpdatedAt             time.Time
 	AccessToken           *string
 	AccessTokenExpiresAt  *time.Time
-	AccountId             string
-	IdToken               *string
+	AccountID             string
+	IDToken               *string
 	Password              *string
-	ProviderId            string
+	ProviderID            string
 	RefreshToken          *string
 	RefreshTokenExpiresAt *time.Time
 	Scope                 *string
-	UserId                uuid.UUID
+	UserID                uuid.UUID
 }
 
 type ApiToken struct {
-	Id             uuid.UUID
+	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	ExpiresAt      *time.Time
 	KeyHash        string
 	Name           *string
 	Prefix         *string
-	UserId         uuid.UUID
-	OrganizationId uuid.UUID
+	UserID         uuid.UUID
+	OrganizationID uuid.UUID
 	Scopes         []string
 	RateLimit      int32
 	LastUsedAt     *time.Time
 }
 
 type Artifact struct {
-	Id             uuid.UUID
+	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	Credits        int32
 	Description    *string
 	MimeType       string
 	Name           *string
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 	PreviewImage   *string
-	ProducerId     *uuid.UUID
+	ProducerID     *uuid.UUID
 	Text           *string
 	Url            *string
 	Embedding      *pgvector.Vector
 }
 
 type Invitation struct {
-	Id             uuid.UUID
+	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	Email          string
 	ExpiresAt      time.Time
-	InviterId      uuid.UUID
-	OrganizationId uuid.UUID
+	InviterID      uuid.UUID
+	OrganizationID uuid.UUID
 	Role           string
 	Status         string
 }
 
 type Label struct {
-	Id             uuid.UUID
+	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	Name           string
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 }
 
 type LabelToArtifact struct {
-	LabelId    uuid.UUID
-	ArtifactId uuid.UUID
+	LabelID    uuid.UUID
+	ArtifactID uuid.UUID
 }
 
 type Member struct {
-	Id             uuid.UUID
+	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 	Role           string
-	UserId         uuid.UUID
+	UserID         uuid.UUID
 }
 
 type Organization struct {
-	Id               uuid.UUID
+	ID               uuid.UUID
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	BillingEmail     *string
@@ -102,75 +102,75 @@ type Organization struct {
 	Metadata         *string
 	Name             string
 	Plan             string
-	StripeCustomerId *string
+	StripeCustomerID *string
 }
 
 type Pipeline struct {
-	Id             uuid.UUID
+	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	Description    *string
 	Name           *string
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 }
 
 type PipelineStep struct {
-	Id         uuid.UUID
+	ID         uuid.UUID
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
-	PipelineId uuid.UUID
-	ToolId     uuid.UUID
+	PipelineID uuid.UUID
+	ToolID     uuid.UUID
 }
 
 type PipelineStepToDependency struct {
-	PipelineStepId uuid.UUID
-	PrerequisiteId uuid.UUID
+	PipelineStepID uuid.UUID
+	PrerequisiteID uuid.UUID
 }
 
 type Run struct {
-	Id             uuid.UUID
+	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	CompletedAt    *time.Time
 	Error          *string
-	OrganizationId uuid.UUID
-	PipelineId     *uuid.UUID
+	OrganizationID uuid.UUID
+	PipelineID     *uuid.UUID
 	Progress       float64
 	StartedAt      *time.Time
 	Status         string
-	ToolId         *uuid.UUID
+	ToolID         *uuid.UUID
 }
 
 type RunToArtifact struct {
-	RunId      uuid.UUID
-	ArtifactId uuid.UUID
+	RunID      uuid.UUID
+	ArtifactID uuid.UUID
 }
 
 type Session struct {
-	Id                   uuid.UUID
+	ID                   uuid.UUID
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
-	ActiveOrganizationId *uuid.UUID
+	ActiveOrganizationID *uuid.UUID
 	ExpiresAt            time.Time
 	IpAddress            *string
 	Token                string
 	UserAgent            *string
-	UserId               uuid.UUID
+	UserID               uuid.UUID
 }
 
 type Tool struct {
-	Id             uuid.UUID
+	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	Description    string
 	InputMimeType  string
 	Name           string
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 	OutputMimeType string
 }
 
 type User struct {
-	Id            uuid.UUID
+	ID            uuid.UUID
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	Email         string
@@ -180,7 +180,7 @@ type User struct {
 }
 
 type VerificationToken struct {
-	Id         uuid.UUID
+	ID         uuid.UUID
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	ExpiresAt  time.Time

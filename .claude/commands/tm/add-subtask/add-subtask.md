@@ -2,7 +2,7 @@ Add a subtask to a parent task.
 
 Arguments: $ARGUMENTS
 
-Parse arguments to create a new subtask or convert existing task.
+Parse arguments to Create a subtask or convert existing task.
 
 ## Adding Subtasks
 

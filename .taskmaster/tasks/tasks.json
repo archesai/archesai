@@ -1902,7 +1902,7 @@
             "title": "Resolve auth domain type mismatches and assertions",
             "description": "Fix type assertion issues and mismatches in auth service tests to ensure proper type compatibility with generated types",
             "dependencies": ["27.1"],
-            "details": "Audit all auth domain test assertions to ensure they match actual service method signatures. Update test data structures to use correct generated types from types.gen.go (e.g., openapi_types.Email instead of string). Fix any UUID handling issues where Id vs ID naming conventions cause problems. Ensure context keys match those defined in the actual middleware (AuthUserContextKey, AuthClaimsContextKey).",
+            "details": "Audit all auth domain test assertions to ensure they match actual service method signatures. Update test data structures to use correct generated types from types.gen.go (e.g., openapi_types.Email instead of string). Fix any UUID handling issues where ID vs ID naming conventions cause problems. Ensure context keys match those defined in the actual middleware (AuthUserContextKey, AuthClaimsContextKey).",
             "status": "pending",
             "testStrategy": ""
           },

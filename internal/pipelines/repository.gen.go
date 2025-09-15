@@ -8,6 +8,7 @@ import (
 
 // Repository handles pipeline persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Pipeline) (*Pipeline, error)
 	Get(ctx context.Context, id uuid.UUID) (*Pipeline, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Pipeline) (*Pipeline, error)
@@ -15,5 +16,5 @@ type Repository interface {
 	List(ctx context.Context, params ListPipelinesParams) ([]*Pipeline, int64, error)
 
 	// Additional operations
-	ListByOrganization(ctx context.Context, organizationId string) ([]*Pipeline, error)
+	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Pipeline, error)
 }

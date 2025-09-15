@@ -39,12 +39,12 @@ func (sm *SessionManager) Create(ctx context.Context, userID, orgID uuid.UUID, i
 
 	// Create session entity
 	session := &Session{
-		Id:                   uuid.New(),
-		UserId:               userID,
+		ID:                   uuid.New(),
+		UserID:               userID,
 		Token:                token,
-		ActiveOrganizationId: orgID,
+		ActiveOrganizationID: orgID,
 		ExpiresAt:            time.Now().Add(sm.ttl).Format(time.RFC3339),
-		IpAddress:            ipAddress,
+		IPAddress:            ipAddress,
 		UserAgent:            userAgent,
 		CreatedAt:            time.Now(),
 		UpdatedAt:            time.Now(),
@@ -64,8 +64,8 @@ func (sm *SessionManager) Create(ctx context.Context, userID, orgID uuid.UUID, i
 		// Note: Token-based cache lookup not supported by current cache interface
 
 		// Store user session index for listing
-		userSessionKey := fmt.Sprintf("user:%s:session:%s", userID.String(), created.Id.String())
-		_ = sm.storeUserSessionIndex(ctx, userSessionKey, created.Id, sm.ttl)
+		userSessionKey := fmt.Sprintf("user:%s:session:%s", userID.String(), created.ID.String())
+		_ = sm.storeUserSessionIndex(ctx, userSessionKey, created.ID, sm.ttl)
 	}
 
 	return created, nil
@@ -118,7 +118,7 @@ func (sm *SessionManager) GetSessionByToken(ctx context.Context, token string) (
 	// Validate expiry
 	if sm.isSessionExpired(session) {
 		// Clean up expired session
-		_ = sm.repo.Delete(ctx, session.Id)
+		_ = sm.repo.Delete(ctx, session.ID)
 		return nil, ErrSessionExpired
 	}
 
@@ -161,7 +161,7 @@ func (sm *SessionManager) Delete(ctx context.Context, sessionID uuid.UUID) error
 		_ = sm.cache.Delete(ctx, sessionID)
 		if session != nil {
 			// Remove from user session index
-			userSessionKey := fmt.Sprintf("user:%s:session:%s", session.UserId.String(), sessionID.String())
+			userSessionKey := fmt.Sprintf("user:%s:session:%s", session.UserID.String(), sessionID.String())
 			_ = sm.removeUserSessionIndex(ctx, userSessionKey)
 		}
 	}
@@ -178,7 +178,7 @@ func (sm *SessionManager) DeleteSessionByToken(ctx context.Context, token string
 	}
 
 	// Delete by ID
-	return sm.Delete(ctx, session.Id)
+	return sm.Delete(ctx, session.ID)
 }
 
 // DeleteByUser removes all sessions for a user
@@ -196,8 +196,8 @@ func (sm *SessionManager) DeleteByUser(ctx context.Context, userID uuid.UUID) er
 	return nil
 }
 
-// ListUserSessions returns all active sessions for a user
-func (sm *SessionManager) ListUserSessions(ctx context.Context, _ uuid.UUID) ([]*Session, error) {
+// ListByUser returns all active sessions for a user
+func (sm *SessionManager) ListByUser(ctx context.Context, _ uuid.UUID) ([]*Session, error) {
 	// For now, use database directly
 	// In a future enhancement, we could maintain a session index in Redis
 	params := ListSessionsParams{
@@ -206,7 +206,7 @@ func (sm *SessionManager) ListUserSessions(ctx context.Context, _ uuid.UUID) ([]
 			Size:   100,
 		},
 	}
-	// TODO: Add userId filtering when FilterNode structure is properly defined
+	// TODO: Add userID filtering when FilterNode structure is properly defined
 	sessions, _, err := sm.repo.List(ctx, params)
 	if err != nil {
 		return nil, err
@@ -254,21 +254,21 @@ func (sm *SessionManager) CleanupExpiredSessions(ctx context.Context) error {
 	return sm.repo.DeleteExpired(ctx)
 }
 
-// ValidateSession checks if a session is valid and not expired
-func (sm *SessionManager) ValidateSession(ctx context.Context, token string) (*Session, error) {
+// Validate checks if a session is valid and not expired
+func (sm *SessionManager) Validate(ctx context.Context, token string) (*Session, error) {
 	session, err := sm.GetSessionByToken(ctx, token)
 	if err != nil {
 		return nil, err
 	}
 
 	if sm.isSessionExpired(session) {
-		_ = sm.Delete(ctx, session.Id)
+		_ = sm.Delete(ctx, session.ID)
 		return nil, ErrSessionExpired
 	}
 
 	// Update last activity by updating the UpdatedAt field
 	session.UpdatedAt = time.Now()
-	updated, err := sm.Update(ctx, session.Id, session)
+	updated, err := sm.Update(ctx, session.ID, session)
 	if err != nil {
 		// Log error but don't fail validation
 		return session, nil

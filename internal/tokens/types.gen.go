@@ -15,16 +15,16 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
-// ApiKey defines model for ApiKey.
-type ApiKey struct {
+// APIKey defines model for ApiKey.
+type APIKey struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// ExpiresAt When this API key expires
 	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// KeyHash Hashed version of the API key for secure storage
 	KeyHash string `json:"keyHash,omitempty,omitzero" yaml:"keyHash,omitempty"`
@@ -32,7 +32,7 @@ type ApiKey struct {
 	// LastUsedAt When this API key was last used
 	LastUsedAt     time.Time `json:"lastUsedAt,omitempty,omitzero" yaml:"lastUsedAt,omitempty"`
 	Name           string    `json:"name" yaml:"name"`
-	OrganizationId UUID      `json:"organizationId,omitempty,omitzero" yaml:"organizationId,omitempty"`
+	OrganizationID UUID      `json:"organizationID,omitempty,omitzero" yaml:"organizationID,omitempty"`
 	Prefix         string    `json:"prefix" yaml:"prefix"`
 
 	// RateLimit Requests per minute allowed for this API key
@@ -41,19 +41,19 @@ type ApiKey struct {
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-	UserId    UUID      `json:"userId,omitempty,omitzero" yaml:"userId,omitempty"`
+	UserID    UUID      `json:"userID,omitempty,omitzero" yaml:"userID,omitempty"`
 }
 
-// ApiKeyResponse defines model for ApiKeyResponse.
-type ApiKeyResponse struct {
+// APIKeyResponse defines model for ApiKeyResponse.
+type APIKeyResponse struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// ExpiresAt When this API key expires
 	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// Key The actual API key (only returned once on creation)
 	Key    string `json:"key" yaml:"key"`
@@ -73,8 +73,8 @@ type Base struct {
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
+	// ID Universally Unique IDentifier
+	ID UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -101,7 +101,7 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
-// UUID Universally Unique Identifier
+// UUID Universally Unique IDentifier
 type UUID = uuid.UUID
 
 // ValidationError Individual field validation error

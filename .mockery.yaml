@@ -2,17 +2,16 @@ template: 'testify'
 dir: '{{.InterfaceDir}}'
 include-auto-generated: true
 recursive: true
+filename: mocks_test.gen.go
 packages:
   github.com/archesai/archesai/internal/users:
     interfaces:
       Repository:
       Cache:
-      EventPublisher:
   github.com/archesai/archesai/internal/organizations:
     interfaces:
       Repository:
       Cache:
-      EventPublisher:
   github.com/archesai/archesai/internal/artifacts:
     interfaces:
       Repository:
@@ -25,7 +24,6 @@ packages:
   github.com/archesai/archesai/internal/invitations:
     interfaces:
       Repository:
-      InvitationService:
   github.com/archesai/archesai/internal/pipelines:
     interfaces:
       Repository:
@@ -39,11 +37,8 @@ packages:
     interfaces:
       Repository:
       Cache:
-      EventPublisher:
-      AccountService:
   github.com/archesai/archesai/internal/sessions:
     interfaces:
       Repository:
       Cache:
-      EventPublisher:
 log-level: warn

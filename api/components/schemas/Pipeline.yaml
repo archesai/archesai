@@ -3,10 +3,10 @@ description: Schema for Pipeline entity
 x-codegen:
   repository:
     operations: [create, read, update, delete, list]
-    indices: [organizationId]
+    indices: [organizationID]
     additional_methods:
       - name: ListByOrganization
-        params: [organizationId]
+        params: [organizationID]
         returns: multiple
 allOf:
   - $ref: ./Base.yaml

@@ -8,6 +8,7 @@ import (
 
 // Repository handles session persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Session) (*Session, error)
 	Get(ctx context.Context, id uuid.UUID) (*Session, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Session) (*Session, error)
@@ -17,6 +18,6 @@ type Repository interface {
 	// Additional operations
 	GetByToken(ctx context.Context, token string) (*Session, error)
 	DeleteByToken(ctx context.Context, token string) error
-	DeleteByUser(ctx context.Context, userId uuid.UUID) error
+	DeleteByUser(ctx context.Context, userID uuid.UUID) error
 	DeleteExpired(ctx context.Context) error
 }

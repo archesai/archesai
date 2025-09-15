@@ -26,48 +26,53 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Account operations
 
+// Create creates a new account
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Account) (*Account, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateAccount not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a account by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Account, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetAccount not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing account
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Account) (*Account, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateAccount not yet implemented - requires custom mapping")
 }
 
+// Delete removes a account
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteAccount not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of accounts
 func (r *SQLiteRepository) List(ctx context.Context, params ListAccountsParams) ([]*Account, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListAccounts not yet implemented - requires custom mapping")
 }
 
-// GetByProviderId retrieves account by providerproviderAccountId
-func (r *SQLiteRepository) GetByProviderId(ctx context.Context, provider string, providerAccountId string) (*Account, error) {
+// GetByProviderID retrieves account by providerproviderAccountID
+func (r *SQLiteRepository) GetByProviderID(ctx context.Context, provider string, providerAccountID string) (*Account, error) {
 
 	// For now, return a basic implementation
-	return nil, fmt.Errorf("GetByProviderId not yet implemented - requires custom mapping")
+	return nil, fmt.Errorf("GetByProviderID not yet implemented - requires custom mapping")
 
 }
 
-// ListByUserId retrieves multiple accounts by userId
-func (r *SQLiteRepository) ListByUserId(ctx context.Context, userId uuid.UUID) ([]*Account, error) {
+// ListByUserID retrieves multiple accounts by userID
+func (r *SQLiteRepository) ListByUserID(ctx context.Context, userID uuid.UUID) ([]*Account, error) {
 
 	// For now, return a basic implementation
-	return nil, fmt.Errorf("ListByUserId not yet implemented - requires custom mapping")
+	return nil, fmt.Errorf("ListByUserID not yet implemented - requires custom mapping")
 
 }

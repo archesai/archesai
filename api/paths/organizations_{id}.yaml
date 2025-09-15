@@ -6,9 +6,8 @@ delete:
   description: Delete an organization
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -31,16 +30,15 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getOneOrganization
-  summary: Find an organization
+  operationId: getOrganization
+  summary: Get an organization
   tags:
     - Organizations
-  description: Find an organization
+  description: Get an organization
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
@@ -77,17 +75,15 @@ patch:
             billingEmail:
               description: The billing email to use for the organization
               type: string
-              example: example-string
-            organizationId:
-              description: The ID of the item
-              type: string
-              format: uuid
-              example: 550e8400-e29b-41d4-a716-446655440000
+              example: example@archesai.com
+              format: email
+            organizationID:
+              allOf:
+                - $ref: ../components/schemas/UUID.yaml
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true

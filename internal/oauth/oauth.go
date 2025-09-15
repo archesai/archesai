@@ -1,4 +1,8 @@
+// Package oauth provides OAuth2 authentication services.
 package oauth
+
+//go:generate go tool oapi-codegen --config=../../.types.codegen.yaml --package oauth --include-tags OAuth ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../.server.codegen.yaml --package oauth --include-tags OAuth ../../api/openapi.bundled.yaml
 
 import (
 	"context"
@@ -98,7 +102,7 @@ func (s *Service) HandleCallback(ctx context.Context, providerID, code, state, s
 	}
 
 	// Check if user already exists
-	account, err := s.repo.GetByProviderId(ctx, providerID, userInfo.ProviderAccountID)
+	account, err := s.repo.GetByProviderID(ctx, providerID, userInfo.ProviderAccountID)
 	var user *users.User
 
 	if err != nil {
@@ -109,7 +113,7 @@ func (s *Service) HandleCallback(ctx context.Context, providerID, code, state, s
 		}
 	} else {
 		// Account exists, get the user from users repository
-		usersUser, err := s.usersRepo.Get(ctx, account.UserId)
+		usersUser, err := s.usersRepo.Get(ctx, account.UserID)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to get user: %w", err)
 		}
@@ -121,7 +125,7 @@ func (s *Service) HandleCallback(ctx context.Context, providerID, code, state, s
 		if tokens.RefreshToken != "" && tokens.RefreshToken != account.RefreshToken {
 			account.RefreshToken = tokens.RefreshToken
 			account.UpdatedAt = time.Now()
-			if _, err := s.repo.Update(ctx, account.Id, account); err != nil {
+			if _, err := s.repo.Update(ctx, account.ID, account); err != nil {
 				s.logger.Warn("failed to update refresh token", "error", err)
 			}
 		}
@@ -130,7 +134,7 @@ func (s *Service) HandleCallback(ctx context.Context, providerID, code, state, s
 	// Create a session for the authenticated user
 	// Note: This assumes the user has a default organization
 	// In a real implementation, you'd need to determine the appropriate organization
-	session, err := s.sessionManager.Create(ctx, user.Id, uuid.New(), "", "")
+	session, err := s.sessionManager.Create(ctx, user.ID, uuid.New(), "", "")
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create session: %w", err)
 	}
@@ -155,7 +159,7 @@ func (s *Service) createOAuthUser(ctx context.Context, providerID string, userIn
 
 	// Create user entity
 	userEntity := &users.User{
-		Id:            uuid.New(),
+		ID:            uuid.New(),
 		Email:         users.Email(userInfo.Email),
 		Name:          userInfo.Name,
 		Image:         userInfo.Picture,
@@ -172,18 +176,18 @@ func (s *Service) createOAuthUser(ctx context.Context, providerID string, userIn
 
 	// Create OAuth account
 	account := &accounts.Account{
-		Id:           uuid.New(),
-		UserId:       createdUser.Id,
-		ProviderId:   accounts.AccountProviderId(providerID),
-		AccountId:    userInfo.ProviderAccountID,
+		ID:           uuid.New(),
+		UserID:       createdUser.ID,
+		ProviderID:   accounts.AccountProviderID(providerID),
+		AccountID:    userInfo.ProviderAccountID,
 		RefreshToken: tokens.RefreshToken,
 		CreatedAt:    now,
 		UpdatedAt:    now,
 	}
 
-	if _, err = s.repo.Create(ctx, account); err != nil {
+	if _, err := s.repo.Create(ctx, account); err != nil {
 		// Rollback user creation
-		_ = s.usersRepo.Delete(ctx, createdUser.Id)
+		_ = s.usersRepo.Delete(ctx, createdUser.ID)
 		return nil, fmt.Errorf("failed to create account: %w", err)
 	}
 
@@ -224,7 +228,7 @@ func (s *Service) RefreshOAuthToken(ctx context.Context, _ uuid.UUID, providerID
 	account.RefreshToken = tokens.RefreshToken
 	account.UpdatedAt = time.Now()
 
-	if _, err := s.repo.Update(ctx, account.Id, account); err != nil {
+	if _, err := s.repo.Update(ctx, account.ID, account); err != nil {
 		s.logger.Warn("failed to update account tokens", "error", err)
 	}
 

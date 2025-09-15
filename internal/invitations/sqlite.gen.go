@@ -26,54 +26,59 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Invitation operations
 
+// Create creates a new invitation
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Invitation) (*Invitation, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateInvitation not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a invitation by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Invitation, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetInvitation not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing invitation
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Invitation) (*Invitation, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateInvitation not yet implemented - requires custom mapping")
 }
 
+// Delete removes a invitation
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteInvitation not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of invitations
 func (r *SQLiteRepository) List(ctx context.Context, params ListInvitationsParams) ([]*Invitation, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListInvitations not yet implemented - requires custom mapping")
 }
 
-// ListByOrganization retrieves multiple invitations by organizationId
-func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Invitation, error) {
+// ListByOrganization retrieves multiple invitations by organizationID
+func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Invitation, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }
 
-// GetByEmail retrieves invitation by emailorganizationId
-func (r *SQLiteRepository) GetByEmail(ctx context.Context, email string, organizationId string) (*Invitation, error) {
+// GetByEmail retrieves invitation by emailorganizationID
+func (r *SQLiteRepository) GetByEmail(ctx context.Context, email string, organizationID uuid.UUID) (*Invitation, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("GetByEmail not yet implemented - requires custom mapping")
 
 }
 
-// ListByInviter retrieves multiple invitations by inviterId
-func (r *SQLiteRepository) ListByInviter(ctx context.Context, inviterId string) ([]*Invitation, error) {
+// ListByInviter retrieves multiple invitations by inviterID
+func (r *SQLiteRepository) ListByInviter(ctx context.Context, inviterID string) ([]*Invitation, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByInviter not yet implemented - requires custom mapping")

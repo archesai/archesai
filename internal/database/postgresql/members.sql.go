@@ -21,27 +21,27 @@ RETURNING
 `
 
 type CreateMemberParams struct {
-	Id             uuid.UUID
-	UserId         uuid.UUID
-	OrganizationId uuid.UUID
+	ID             uuid.UUID
+	UserID         uuid.UUID
+	OrganizationID uuid.UUID
 	Role           string
 }
 
 func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Member, error) {
 	row := q.db.QueryRow(ctx, createMember,
-		arg.Id,
-		arg.UserId,
-		arg.OrganizationId,
+		arg.ID,
+		arg.UserID,
+		arg.OrganizationID,
 		arg.Role,
 	)
 	var i Member
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationId,
+		&i.OrganizationID,
 		&i.Role,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -83,12 +83,12 @@ func (q *Queries) GetMember(ctx context.Context, id uuid.UUID) (Member, error) {
 	row := q.db.QueryRow(ctx, getMember, id)
 	var i Member
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationId,
+		&i.OrganizationID,
 		&i.Role,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -106,20 +106,20 @@ LIMIT
 `
 
 type GetMemberByUserAndOrgParams struct {
-	UserId         uuid.UUID
-	OrganizationId uuid.UUID
+	UserID         uuid.UUID
+	OrganizationID uuid.UUID
 }
 
 func (q *Queries) GetMemberByUserAndOrg(ctx context.Context, arg GetMemberByUserAndOrgParams) (Member, error) {
-	row := q.db.QueryRow(ctx, getMemberByUserAndOrg, arg.UserId, arg.OrganizationId)
+	row := q.db.QueryRow(ctx, getMemberByUserAndOrg, arg.UserID, arg.OrganizationID)
 	var i Member
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationId,
+		&i.OrganizationID,
 		&i.Role,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -152,12 +152,12 @@ func (q *Queries) ListMembers(ctx context.Context, arg ListMembersParams) ([]Mem
 	for rows.Next() {
 		var i Member
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.OrganizationId,
+			&i.OrganizationID,
 			&i.Role,
-			&i.UserId,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -185,13 +185,13 @@ OFFSET
 `
 
 type ListMembersByOrganizationParams struct {
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 	Limit          int32
 	Offset         int32
 }
 
 func (q *Queries) ListMembersByOrganization(ctx context.Context, arg ListMembersByOrganizationParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, listMembersByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listMembersByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -200,12 +200,12 @@ func (q *Queries) ListMembersByOrganization(ctx context.Context, arg ListMembers
 	for rows.Next() {
 		var i Member
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.OrganizationId,
+			&i.OrganizationID,
 			&i.Role,
-			&i.UserId,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -233,13 +233,13 @@ OFFSET
 `
 
 type ListMembersByUserParams struct {
-	UserId uuid.UUID
+	UserID uuid.UUID
 	Limit  int32
 	Offset int32
 }
 
 func (q *Queries) ListMembersByUser(ctx context.Context, arg ListMembersByUserParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, listMembersByUser, arg.UserId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listMembersByUser, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -248,12 +248,12 @@ func (q *Queries) ListMembersByUser(ctx context.Context, arg ListMembersByUserPa
 	for rows.Next() {
 		var i Member
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.OrganizationId,
+			&i.OrganizationID,
 			&i.Role,
-			&i.UserId,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -276,20 +276,20 @@ RETURNING
 `
 
 type UpdateMemberParams struct {
-	Id   uuid.UUID
+	ID   uuid.UUID
 	Role *string
 }
 
 func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error) {
-	row := q.db.QueryRow(ctx, updateMember, arg.Id, arg.Role)
+	row := q.db.QueryRow(ctx, updateMember, arg.ID, arg.Role)
 	var i Member
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationId,
+		&i.OrganizationID,
 		&i.Role,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }

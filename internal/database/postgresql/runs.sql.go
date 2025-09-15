@@ -29,36 +29,36 @@ RETURNING
 `
 
 type CreateRunParams struct {
-	Id             uuid.UUID
-	OrganizationId uuid.UUID
-	PipelineId     *uuid.UUID
-	ToolId         *uuid.UUID
+	ID             uuid.UUID
+	OrganizationID uuid.UUID
+	PipelineID     *uuid.UUID
+	ToolID         *uuid.UUID
 	Status         string
 	Progress       float64
 }
 
 func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) (Run, error) {
 	row := q.db.QueryRow(ctx, createRun,
-		arg.Id,
-		arg.OrganizationId,
-		arg.PipelineId,
-		arg.ToolId,
+		arg.ID,
+		arg.OrganizationID,
+		arg.PipelineID,
+		arg.ToolID,
 		arg.Status,
 		arg.Progress,
 	)
 	var i Run
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.CompletedAt,
 		&i.Error,
-		&i.OrganizationId,
-		&i.PipelineId,
+		&i.OrganizationID,
+		&i.PipelineID,
 		&i.Progress,
 		&i.StartedAt,
 		&i.Status,
-		&i.ToolId,
+		&i.ToolID,
 	)
 	return i, err
 }
@@ -100,17 +100,17 @@ func (q *Queries) GetRun(ctx context.Context, id uuid.UUID) (Run, error) {
 	row := q.db.QueryRow(ctx, getRun, id)
 	var i Run
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.CompletedAt,
 		&i.Error,
-		&i.OrganizationId,
-		&i.PipelineId,
+		&i.OrganizationID,
+		&i.PipelineID,
 		&i.Progress,
 		&i.StartedAt,
 		&i.Status,
-		&i.ToolId,
+		&i.ToolID,
 	)
 	return i, err
 }
@@ -143,17 +143,17 @@ func (q *Queries) ListRuns(ctx context.Context, arg ListRunsParams) ([]Run, erro
 	for rows.Next() {
 		var i Run
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.CompletedAt,
 			&i.Error,
-			&i.OrganizationId,
-			&i.PipelineId,
+			&i.OrganizationID,
+			&i.PipelineID,
 			&i.Progress,
 			&i.StartedAt,
 			&i.Status,
-			&i.ToolId,
+			&i.ToolID,
 		); err != nil {
 			return nil, err
 		}
@@ -181,13 +181,13 @@ OFFSET
 `
 
 type ListRunsByOrganizationParams struct {
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 	Limit          int32
 	Offset         int32
 }
 
 func (q *Queries) ListRunsByOrganization(ctx context.Context, arg ListRunsByOrganizationParams) ([]Run, error) {
-	rows, err := q.db.Query(ctx, listRunsByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listRunsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -196,17 +196,17 @@ func (q *Queries) ListRunsByOrganization(ctx context.Context, arg ListRunsByOrga
 	for rows.Next() {
 		var i Run
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.CompletedAt,
 			&i.Error,
-			&i.OrganizationId,
-			&i.PipelineId,
+			&i.OrganizationID,
+			&i.PipelineID,
 			&i.Progress,
 			&i.StartedAt,
 			&i.Status,
-			&i.ToolId,
+			&i.ToolID,
 		); err != nil {
 			return nil, err
 		}
@@ -234,13 +234,13 @@ OFFSET
 `
 
 type ListRunsByPipelineParams struct {
-	PipelineId *uuid.UUID
+	PipelineID *uuid.UUID
 	Limit      int32
 	Offset     int32
 }
 
 func (q *Queries) ListRunsByPipeline(ctx context.Context, arg ListRunsByPipelineParams) ([]Run, error) {
-	rows, err := q.db.Query(ctx, listRunsByPipeline, arg.PipelineId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listRunsByPipeline, arg.PipelineID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -249,17 +249,17 @@ func (q *Queries) ListRunsByPipeline(ctx context.Context, arg ListRunsByPipeline
 	for rows.Next() {
 		var i Run
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.CompletedAt,
 			&i.Error,
-			&i.OrganizationId,
-			&i.PipelineId,
+			&i.OrganizationID,
+			&i.PipelineID,
 			&i.Progress,
 			&i.StartedAt,
 			&i.Status,
-			&i.ToolId,
+			&i.ToolID,
 		); err != nil {
 			return nil, err
 		}
@@ -287,13 +287,13 @@ OFFSET
 `
 
 type ListRunsByToolParams struct {
-	ToolId *uuid.UUID
+	ToolID *uuid.UUID
 	Limit  int32
 	Offset int32
 }
 
 func (q *Queries) ListRunsByTool(ctx context.Context, arg ListRunsByToolParams) ([]Run, error) {
-	rows, err := q.db.Query(ctx, listRunsByTool, arg.ToolId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listRunsByTool, arg.ToolID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -302,17 +302,17 @@ func (q *Queries) ListRunsByTool(ctx context.Context, arg ListRunsByToolParams) 
 	for rows.Next() {
 		var i Run
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.CompletedAt,
 			&i.Error,
-			&i.OrganizationId,
-			&i.PipelineId,
+			&i.OrganizationID,
+			&i.PipelineID,
 			&i.Progress,
 			&i.StartedAt,
 			&i.Status,
-			&i.ToolId,
+			&i.ToolID,
 		); err != nil {
 			return nil, err
 		}
@@ -342,9 +342,9 @@ RETURNING
 `
 
 type UpdateRunParams struct {
-	Id          uuid.UUID
-	PipelineId  *uuid.UUID
-	ToolId      *uuid.UUID
+	ID          uuid.UUID
+	PipelineID  *uuid.UUID
+	ToolID      *uuid.UUID
 	Status      *string
 	Progress    *float64
 	Error       *string
@@ -354,9 +354,9 @@ type UpdateRunParams struct {
 
 func (q *Queries) UpdateRun(ctx context.Context, arg UpdateRunParams) (Run, error) {
 	row := q.db.QueryRow(ctx, updateRun,
-		arg.Id,
-		arg.PipelineId,
-		arg.ToolId,
+		arg.ID,
+		arg.PipelineID,
+		arg.ToolID,
 		arg.Status,
 		arg.Progress,
 		arg.Error,
@@ -365,17 +365,17 @@ func (q *Queries) UpdateRun(ctx context.Context, arg UpdateRunParams) (Run, erro
 	)
 	var i Run
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.CompletedAt,
 		&i.Error,
-		&i.OrganizationId,
-		&i.PipelineId,
+		&i.OrganizationID,
+		&i.PipelineID,
 		&i.Progress,
 		&i.StartedAt,
 		&i.Status,
-		&i.ToolId,
+		&i.ToolID,
 	)
 	return i, err
 }

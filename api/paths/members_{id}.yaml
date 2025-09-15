@@ -6,19 +6,17 @@ delete:
   description: Delete a member
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
       description: The unique identifier of the organization.
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
-      name: memberId
+      name: memberID
       required: true
       description: The unique identifier of the member.
   security:
@@ -39,26 +37,24 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getOneMember
-  summary: Find a member
+  operationId: getMember
+  summary: Get a member
   tags:
     - Members
-  description: Find a member
+  description: Get a member
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
       description: The unique identifier of the organization.
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
-      name: memberId
+      name: memberID
       required: true
       description: The unique identifier of the member.
   security:
@@ -100,19 +96,17 @@ patch:
               example: admin
   parameters:
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
       name: id
       required: true
       description: The unique identifier of the organization.
     - schema:
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
+        allOf:
+          - $ref: ../components/schemas/UUID.yaml
       in: path
-      name: memberId
+      name: memberID
       required: true
       description: The unique identifier of the member.
   security:

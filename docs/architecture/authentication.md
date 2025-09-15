@@ -370,7 +370,7 @@ Authorization: Bearer <access_token>
 Content-Type: application/json
 
 {
-  "organizationId": "org-uuid"
+  "organizationID": "org-uuid"
 }
 ```
 

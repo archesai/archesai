@@ -26,38 +26,43 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 
 // Tool operations
 
+// Create creates a new tool
 func (r *SQLiteRepository) Create(ctx context.Context, entity *Tool) (*Tool, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateTool not yet implemented - requires custom mapping")
 }
 
+// Get retrieves a tool by ID
 func (r *SQLiteRepository) Get(ctx context.Context, id uuid.UUID) (*Tool, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetTool not yet implemented - requires custom mapping")
 }
 
+// Update updates an existing tool
 func (r *SQLiteRepository) Update(ctx context.Context, id uuid.UUID, entity *Tool) (*Tool, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateTool not yet implemented - requires custom mapping")
 }
 
+// Delete removes a tool
 func (r *SQLiteRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return fmt.Errorf("DeleteTool not yet implemented - requires custom mapping")
 }
 
+// List returns a paginated list of tools
 func (r *SQLiteRepository) List(ctx context.Context, params ListToolsParams) ([]*Tool, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListTools not yet implemented - requires custom mapping")
 }
 
-// ListByOrganization retrieves multiple tools by organizationId
-func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationId string) ([]*Tool, error) {
+// ListByOrganization retrieves multiple tools by organizationID
+func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Tool, error) {
 
 	// For now, return a basic implementation
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")

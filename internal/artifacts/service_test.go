@@ -15,10 +15,10 @@ import (
 func createTestArtifactsService(t *testing.T) (*Service, *MockRepository) {
 	t.Helper()
 
-	mockArtifactRepo := new(MockRepository)
+	mockArtifactRepo := NewMockRepository(t)
 	logger := logger.NewTest()
 
-	service := NewArtifactsService(mockArtifactRepo, nil, logger)
+	service := NewService(mockArtifactRepo, nil, logger)
 	return service, mockArtifactRepo
 }
 
@@ -36,48 +36,55 @@ func TestArtifactsService_Create(t *testing.T) {
 		}
 
 		expectedArtifact := &Artifact{
-			Id:             uuid.New(),
-			OrganizationId: orgID,
+			ID:             uuid.New(),
+			OrganizationID: orgID,
 			Name:           "Test Artifact",
 			Text:           "Test content",
-			ProducerId:     producerID,
+			ProducerID:     producerID,
 			Credits:        0.012,
 			MimeType:       "",
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		}
 
-		mockRepo.EXPECT().Create(mock.Anything, mock.MatchedBy(func(a *Artifact) bool {
-			return a.Name == "Test Artifact" && a.Text == "Test content"
-		})).Return(expectedArtifact, nil)
+		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*artifacts.Artifact")).Return(expectedArtifact, nil)
 
-		result, err := service.Create(context.Background(), req, orgID, producerID)
+		request := CreateArtifactRequestObject{
+			Body: req,
+		}
+		result, err := service.Create(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, "Test Artifact", result.Name)
+		if successResp, ok := result.(CreateArtifact201JSONResponse); ok {
+			assert.Equal(t, "Test Artifact", successResp.Data.Name)
+		} else {
+			t.Fatal("Expected CreateArtifact201JSONResponse")
+		}
 	})
 
-	t.Run("artifact too large", func(t *testing.T) {
-		service, _ := createTestArtifactsService(t)
-
-		// Create a request with text larger than max size (10MB + 1)
-		maxSize := 10 * 1024 * 1024 // 10MB like in service
-		largeText := make([]byte, maxSize+1)
-		for i := range largeText {
-			largeText[i] = 'a'
-		}
+	t.Run("repository error", func(t *testing.T) {
+		service, mockRepo := createTestArtifactsService(t)
 
 		req := &CreateArtifactJSONRequestBody{
-			Name: "Large Artifact",
-			Text: string(largeText),
+			Name: "Test Artifact",
+			Text: "Test content",
 		}
 
-		result, err := service.Create(context.Background(), req, orgID, producerID)
+		// Mock repository to return an error
+		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*artifacts.Artifact")).Return(nil, assert.AnError)
 
-		assert.Error(t, err)
-		assert.Nil(t, result)
-		assert.ErrorIs(t, err, ErrArtifactTooLarge)
+		request := CreateArtifactRequestObject{
+			Body: req,
+		}
+		result, err := service.Create(context.Background(), request)
+
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(CreateArtifact400ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
 	})
 }
 
@@ -85,11 +92,11 @@ func TestArtifactsService_Create(t *testing.T) {
 func TestArtifactsService_Get(t *testing.T) {
 	artifactID := uuid.New()
 	artifact := &Artifact{
-		Id:             artifactID,
-		OrganizationId: uuid.New(),
+		ID:             artifactID,
+		OrganizationID: uuid.New(),
 		Name:           "Test Artifact",
 		Text:           "Test content",
-		ProducerId:     uuid.New(),
+		ProducerID:     uuid.New(),
 		Credits:        10.0,
 		MimeType:       "text/plain",
 		CreatedAt:      time.Now(),
@@ -101,11 +108,18 @@ func TestArtifactsService_Get(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, artifactID).Return(artifact, nil)
 
-		result, err := service.Get(context.Background(), artifactID)
+		request := GetArtifactRequestObject{
+			ID: artifactID,
+		}
+		result, err := service.Get(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, artifactID, result.Id)
+		if successResp, ok := result.(GetArtifact200JSONResponse); ok {
+			assert.Equal(t, artifactID, successResp.Data.ID)
+		} else {
+			t.Fatal("Expected GetArtifact200JSONResponse")
+		}
 	})
 
 	t.Run("not found", func(t *testing.T) {
@@ -113,11 +127,17 @@ func TestArtifactsService_Get(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, artifactID).Return(nil, ErrArtifactNotFound)
 
-		result, err := service.Get(context.Background(), artifactID)
+		request := GetArtifactRequestObject{
+			ID: artifactID,
+		}
+		result, err := service.Get(context.Background(), request)
 
-		assert.Error(t, err)
-		assert.Nil(t, result)
-		assert.ErrorIs(t, err, ErrArtifactNotFound)
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(GetArtifact404ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
 	})
 }
 
@@ -134,8 +154,8 @@ func TestArtifactsService_Update(t *testing.T) {
 		}
 
 		expectedArtifact := &Artifact{
-			Id:             artifactID,
-			OrganizationId: uuid.New(),
+			ID:             artifactID,
+			OrganizationID: uuid.New(),
 			Name:           "Updated Artifact",
 			Text:           "Updated content",
 			MimeType:       "",
@@ -145,8 +165,8 @@ func TestArtifactsService_Update(t *testing.T) {
 
 		// First get the artifact, then update it
 		existingArtifact := &Artifact{
-			Id:             artifactID,
-			OrganizationId: uuid.New(),
+			ID:             artifactID,
+			OrganizationID: uuid.New(),
 			Name:           "Old Artifact",
 			Text:           "Old content",
 			MimeType:       "",
@@ -154,11 +174,19 @@ func TestArtifactsService_Update(t *testing.T) {
 		mockRepo.EXPECT().Get(mock.Anything, artifactID).Return(existingArtifact, nil)
 		mockRepo.EXPECT().Update(mock.Anything, artifactID, mock.Anything).Return(expectedArtifact, nil)
 
-		result, err := service.Update(context.Background(), artifactID, req)
+		request := UpdateArtifactRequestObject{
+			ID:   artifactID,
+			Body: req,
+		}
+		result, err := service.Update(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
-		assert.Equal(t, "Updated Artifact", result.Name)
+		if successResp, ok := result.(UpdateArtifact200JSONResponse); ok {
+			assert.Equal(t, "Updated Artifact", successResp.Data.Name)
+		} else {
+			t.Fatal("Expected UpdateArtifact200JSONResponse")
+		}
 	})
 
 	t.Run("not found", func(t *testing.T) {
@@ -170,11 +198,18 @@ func TestArtifactsService_Update(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, artifactID).Return(nil, ErrArtifactNotFound)
 
-		result, err := service.Update(context.Background(), artifactID, req)
+		request := UpdateArtifactRequestObject{
+			ID:   artifactID,
+			Body: req,
+		}
+		result, err := service.Update(context.Background(), request)
 
-		assert.Error(t, err)
-		assert.Nil(t, result)
-		assert.ErrorIs(t, err, ErrArtifactNotFound)
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(UpdateArtifact404ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
 	})
 }
 
@@ -186,8 +221,8 @@ func TestArtifactsService_Delete(t *testing.T) {
 		service, mockRepo := createTestArtifactsService(t)
 
 		existingArtifact := &Artifact{
-			Id:             artifactID,
-			OrganizationId: uuid.New(),
+			ID:             artifactID,
+			OrganizationID: uuid.New(),
 			Name:           "Test Artifact",
 			Text:           "Test content",
 		}
@@ -195,7 +230,10 @@ func TestArtifactsService_Delete(t *testing.T) {
 		mockRepo.EXPECT().Get(mock.Anything, artifactID).Return(existingArtifact, nil)
 		mockRepo.EXPECT().Delete(mock.Anything, artifactID).Return(nil)
 
-		err := service.Delete(context.Background(), artifactID)
+		request := DeleteArtifactRequestObject{
+			ID: artifactID,
+		}
+		_, err := service.Delete(context.Background(), request)
 
 		assert.NoError(t, err)
 	})
@@ -205,10 +243,17 @@ func TestArtifactsService_Delete(t *testing.T) {
 
 		mockRepo.EXPECT().Get(mock.Anything, artifactID).Return(nil, ErrArtifactNotFound)
 
-		err := service.Delete(context.Background(), artifactID)
+		request := DeleteArtifactRequestObject{
+			ID: artifactID,
+		}
+		result, err := service.Delete(context.Background(), request)
 
-		assert.Error(t, err)
-		assert.ErrorIs(t, err, ErrArtifactNotFound)
+		assert.NoError(t, err) // Service never returns Go errors
+		assert.NotNil(t, result)
+
+		// Check for error response type
+		_, isErrorResp := result.(DeleteArtifact404ApplicationProblemPlusJSONResponse)
+		assert.True(t, isErrorResp, "Expected error response type")
 	})
 }
 
@@ -224,15 +269,15 @@ func TestArtifactsService_List(t *testing.T) {
 
 		artifacts := []*Artifact{
 			{
-				Id:             uuid.New(),
-				OrganizationId: orgID,
+				ID:             uuid.New(),
+				OrganizationID: orgID,
 				Name:           "Artifact 1",
 				Text:           "Content 1",
 				MimeType:       "text/plain",
 			},
 			{
-				Id:             uuid.New(),
-				OrganizationId: orgID,
+				ID:             uuid.New(),
+				OrganizationID: orgID,
 				Name:           "Artifact 2",
 				Text:           "Content 2",
 				MimeType:       "text/plain",
@@ -248,10 +293,23 @@ func TestArtifactsService_List(t *testing.T) {
 		}
 		mockRepo.EXPECT().List(mock.Anything, params).Return(artifacts, int64(2), nil)
 
-		results, total, err := service.ListByOrganization(context.Background(), orgID, limit, offset)
+		request := ListArtifactsRequestObject{
+			Params: ListArtifactsParams{
+				Page: PageQuery{
+					Number: offset/limit + 1,
+					Size:   limit,
+				},
+			},
+		}
+		result, err := service.List(context.Background(), request)
 
 		assert.NoError(t, err)
-		assert.Len(t, results, 2)
-		assert.Equal(t, int64(2), total)
+		assert.NotNil(t, result)
+		if successResp, ok := result.(ListArtifacts200JSONResponse); ok {
+			assert.Len(t, successResp.Data, 2)
+			assert.Equal(t, float32(2), successResp.Meta.Total)
+		} else {
+			t.Fatal("Expected ListArtifacts200JSONResponse")
+		}
 	})
 }

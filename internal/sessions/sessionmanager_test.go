@@ -29,12 +29,12 @@ func TestSessionManager_CreateSession(t *testing.T) {
 
 		// Expectations
 		mockRepo.EXPECT().Create(ctx, mock.AnythingOfType("*sessions.Session")).Return(&Session{
-			Id:                   uuid.New(),
-			UserId:               userID,
+			ID:                   uuid.New(),
+			UserID:               userID,
 			Token:                "generated-token",
-			ActiveOrganizationId: orgID,
+			ActiveOrganizationID: orgID,
 			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
-			IpAddress:            ipAddress,
+			IPAddress:            ipAddress,
 			UserAgent:            userAgent,
 			CreatedAt:            time.Now(),
 			UpdatedAt:            time.Now(),
@@ -46,9 +46,9 @@ func TestSessionManager_CreateSession(t *testing.T) {
 		// Assert
 		assert.NoError(t, err)
 		assert.NotNil(t, session)
-		assert.Equal(t, userID, session.UserId)
-		assert.Equal(t, orgID, session.ActiveOrganizationId)
-		assert.Equal(t, ipAddress, session.IpAddress)
+		assert.Equal(t, userID, session.UserID)
+		assert.Equal(t, orgID, session.ActiveOrganizationID)
+		assert.Equal(t, ipAddress, session.IPAddress)
 		assert.Equal(t, userAgent, session.UserAgent)
 		assert.NotEmpty(t, session.Token)
 	})
@@ -60,12 +60,12 @@ func TestSessionManager_CreateSession(t *testing.T) {
 
 		// Expectations
 		mockRepo.EXPECT().Create(ctx, mock.AnythingOfType("*sessions.Session")).Return(&Session{
-			Id:                   uuid.New(),
-			UserId:               userID,
+			ID:                   uuid.New(),
+			UserID:               userID,
 			Token:                "generated-token",
-			ActiveOrganizationId: orgID,
+			ActiveOrganizationID: orgID,
 			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
-			IpAddress:            ipAddress,
+			IPAddress:            ipAddress,
 			UserAgent:            userAgent,
 			CreatedAt:            time.Now(),
 			UpdatedAt:            time.Now(),
@@ -77,7 +77,7 @@ func TestSessionManager_CreateSession(t *testing.T) {
 		// Assert
 		assert.NoError(t, err)
 		assert.NotNil(t, session)
-		assert.Equal(t, userID, session.UserId)
+		assert.Equal(t, userID, session.UserID)
 	})
 }
 
@@ -87,8 +87,8 @@ func TestSessionManager_GetSession(t *testing.T) {
 	userID := uuid.New()
 
 	validSession := &Session{
-		Id:        sessionID,
-		UserId:    userID,
+		ID:        sessionID,
+		UserID:    userID,
 		Token:     testTokenConst,
 		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
 		CreatedAt: time.Now(),
@@ -96,8 +96,8 @@ func TestSessionManager_GetSession(t *testing.T) {
 	}
 
 	expiredSession := &Session{
-		Id:        sessionID,
-		UserId:    userID,
+		ID:        sessionID,
+		UserID:    userID,
 		Token:     "expired-token",
 		ExpiresAt: time.Now().Add(-time.Hour).Format(time.RFC3339),
 		CreatedAt: time.Now().Add(-2 * time.Hour),
@@ -119,8 +119,8 @@ func TestSessionManager_GetSession(t *testing.T) {
 		// Assert
 		assert.NoError(t, err)
 		assert.NotNil(t, session)
-		assert.Equal(t, sessionID, session.Id)
-		assert.Equal(t, userID, session.UserId)
+		assert.Equal(t, sessionID, session.ID)
+		assert.Equal(t, userID, session.UserID)
 	})
 
 	t.Run("cache miss falls back to database", func(t *testing.T) {
@@ -138,7 +138,7 @@ func TestSessionManager_GetSession(t *testing.T) {
 		// Assert
 		assert.NoError(t, err)
 		assert.NotNil(t, session)
-		assert.Equal(t, sessionID, session.Id)
+		assert.Equal(t, sessionID, session.ID)
 	})
 
 	t.Run("expired session in cache", func(t *testing.T) {
@@ -169,8 +169,8 @@ func TestSessionManager_GetSessionByToken(t *testing.T) {
 	userID := uuid.New()
 
 	validSession := &Session{
-		Id:        sessionID,
-		UserId:    userID,
+		ID:        sessionID,
+		UserID:    userID,
 		Token:     token,
 		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
 		CreatedAt: time.Now(),
@@ -193,7 +193,7 @@ func TestSessionManager_GetSessionByToken(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, session)
 		assert.Equal(t, token, session.Token)
-		assert.Equal(t, userID, session.UserId)
+		assert.Equal(t, userID, session.UserID)
 	})
 
 	t.Run("cache miss with database fallback", func(t *testing.T) {
@@ -221,8 +221,8 @@ func TestSessionManager_UpdateSession(t *testing.T) {
 	userID := uuid.New()
 
 	updates := &Session{
-		Id:        sessionID,
-		UserId:    userID,
+		ID:        sessionID,
+		UserID:    userID,
 		Token:     "updated-token",
 		UpdatedAt: time.Now(),
 	}
@@ -234,8 +234,8 @@ func TestSessionManager_UpdateSession(t *testing.T) {
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		updatedSession := &Session{
-			Id:        sessionID,
-			UserId:    userID,
+			ID:        sessionID,
+			UserID:    userID,
 			Token:     "updated-token",
 			ExpiresAt: time.Now().Add(24 * time.Hour).Format(time.RFC3339),
 			UpdatedAt: time.Now(),
@@ -261,8 +261,8 @@ func TestSessionManager_DeleteSession(t *testing.T) {
 	token := testTokenConst
 
 	existingSession := &Session{
-		Id:        sessionID,
-		UserId:    userID,
+		ID:        sessionID,
+		UserID:    userID,
 		Token:     token,
 		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
 	}
@@ -301,29 +301,29 @@ func TestSessionManager_DeleteSession(t *testing.T) {
 	})
 }
 
-func TestSessionManager_ListUserSessions(t *testing.T) {
+func TestSessionManager_ListByUser(t *testing.T) {
 	ctx := context.Background()
 	userID := uuid.New()
 
 	validSession1 := &Session{
-		Id:        uuid.New(),
-		UserId:    userID,
+		ID:        uuid.New(),
+		UserID:    userID,
 		Token:     "token1",
 		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
 		CreatedAt: time.Now(),
 	}
 
 	validSession2 := &Session{
-		Id:        uuid.New(),
-		UserId:    userID,
+		ID:        uuid.New(),
+		UserID:    userID,
 		Token:     "token2",
 		ExpiresAt: time.Now().Add(2 * time.Hour).Format(time.RFC3339),
 		CreatedAt: time.Now(),
 	}
 
 	expiredSession := &Session{
-		Id:        uuid.New(),
-		UserId:    userID,
+		ID:        uuid.New(),
+		UserID:    userID,
 		Token:     "expired-token",
 		ExpiresAt: time.Now().Add(-time.Hour).Format(time.RFC3339),
 		CreatedAt: time.Now().Add(-2 * time.Hour),
@@ -350,7 +350,7 @@ func TestSessionManager_ListUserSessions(t *testing.T) {
 		}, int64(3), nil)
 
 		// Execute
-		sessions, err := sm.ListUserSessions(ctx, userID)
+		sessions, err := sm.ListByUser(ctx, userID)
 
 		// Assert
 		assert.NoError(t, err)
@@ -361,15 +361,15 @@ func TestSessionManager_ListUserSessions(t *testing.T) {
 	})
 }
 
-func TestSessionManager_ValidateSession(t *testing.T) {
+func TestSessionManager_Validate(t *testing.T) {
 	ctx := context.Background()
 	token := testTokenConst
 	sessionID := uuid.New()
 	userID := uuid.New()
 
 	validSession := &Session{
-		Id:        sessionID,
-		UserId:    userID,
+		ID:        sessionID,
+		UserID:    userID,
 		Token:     token,
 		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
 		CreatedAt: time.Now(),
@@ -383,8 +383,8 @@ func TestSessionManager_ValidateSession(t *testing.T) {
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		updatedSession := &Session{
-			Id:        sessionID,
-			UserId:    userID,
+			ID:        sessionID,
+			UserID:    userID,
 			Token:     token,
 			ExpiresAt: validSession.ExpiresAt,
 			UpdatedAt: time.Now(),
@@ -395,7 +395,7 @@ func TestSessionManager_ValidateSession(t *testing.T) {
 		mockRepo.EXPECT().Update(ctx, sessionID, mock.AnythingOfType("*sessions.Session")).Return(updatedSession, nil)
 
 		// Execute
-		session, err := sm.ValidateSession(ctx, token)
+		session, err := sm.Validate(ctx, token)
 
 		// Assert
 		assert.NoError(t, err)
@@ -411,8 +411,8 @@ func TestSessionManager_ValidateSession(t *testing.T) {
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		expiredSession := &Session{
-			Id:        sessionID,
-			UserId:    userID,
+			ID:        sessionID,
+			UserID:    userID,
 			Token:     token,
 			ExpiresAt: time.Now().Add(-time.Hour).Format(time.RFC3339),
 		}
@@ -425,7 +425,7 @@ func TestSessionManager_ValidateSession(t *testing.T) {
 		mockRepo.EXPECT().Get(ctx, sessionID).Return(expiredSession, nil).Maybe()
 
 		// Execute
-		session, err := sm.ValidateSession(ctx, token)
+		session, err := sm.Validate(ctx, token)
 
 		// Assert
 		assert.Error(t, err)
@@ -441,8 +441,8 @@ func TestSessionManager_RefreshSession(t *testing.T) {
 	token := testTokenConst
 
 	validSession := &Session{
-		Id:        sessionID,
-		UserId:    userID,
+		ID:        sessionID,
+		UserID:    userID,
 		Token:     token,
 		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
 		CreatedAt: time.Now().Add(-time.Hour),
@@ -458,8 +458,8 @@ func TestSessionManager_RefreshSession(t *testing.T) {
 		// Expectations
 		mockRepo.EXPECT().Get(ctx, sessionID).Return(validSession, nil)
 		mockRepo.EXPECT().Update(ctx, sessionID, mock.AnythingOfType("*sessions.Session")).Return(&Session{
-			Id:        sessionID,
-			UserId:    userID,
+			ID:        sessionID,
+			UserID:    userID,
 			Token:     token,
 			ExpiresAt: time.Now().Add(24 * time.Hour).Format(time.RFC3339),
 			UpdatedAt: time.Now(),

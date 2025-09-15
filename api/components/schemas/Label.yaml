@@ -3,13 +3,13 @@ description: Schema for Label entity
 x-codegen:
   repository:
     operations: [create, read, update, delete, list]
-    indices: [organizationId, name]
+    indices: [organizationID, name]
     additional_methods:
       - name: ListByOrganization
-        params: [organizationId]
+        params: [organizationID]
         returns: multiple
       - name: GetByName
-        params: [name, organizationId]
+        params: [name, organizationID]
         returns: single
 allOf:
   - $ref: ./Base.yaml
@@ -20,10 +20,10 @@ allOf:
         type: string
         minLength: 1
         example: Example Name
-      organizationId:
+      organizationID:
         allOf:
           - $ref: ./UUID.yaml
     required:
       - name
-      - organizationId
+      - organizationID
     additionalProperties: false

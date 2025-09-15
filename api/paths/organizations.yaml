@@ -13,17 +13,15 @@ post:
             billingEmail:
               description: The billing email to use for the organization
               type: string
-              example: example-string
+              example: example@archesai.com
               minLength: 1
-            organizationId:
-              description: The ID of the item
-              type: string
-              format: uuid
-              example: 550e8400-e29b-41d4-a716-446655440000
-              minLength: 36
+              format: email
+            organizationID:
+              allOf:
+                - $ref: ../components/schemas/UUID.yaml
           required:
             - billingEmail
-            - organizationId
+            - organizationID
     required: true
   security:
     - bearerAuth: []

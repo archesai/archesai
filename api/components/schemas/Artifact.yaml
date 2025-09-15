@@ -3,13 +3,13 @@ description: Schema for Artifact entity
 x-codegen:
   repository:
     operations: [create, read, update, delete, list]
-    indices: [organizationId, producerId]
+    indices: [organizationID, producerID]
     additional_methods:
       - name: ListByOrganization
-        params: [organizationId]
+        params: [organizationID]
         returns: multiple
       - name: ListByProducer
-        params: [producerId]
+        params: [producerID]
         returns: multiple
 allOf:
   - $ref: ./Base.yaml
@@ -36,7 +36,7 @@ allOf:
         type: string
         example: Example Name
         minLength: 1
-      organizationId:
+      organizationID:
         allOf:
           - $ref: ./UUID.yaml
       previewImage:
@@ -46,7 +46,7 @@ allOf:
         type: string
         example: example-string
         minLength: 1
-      producerId:
+      producerID:
         allOf:
           - $ref: ./UUID.yaml
       text:
@@ -57,6 +57,6 @@ allOf:
     required:
       - credits
       - mimeType
-      - organizationId
+      - organizationID
       - text
     additionalProperties: false

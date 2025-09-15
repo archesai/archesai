@@ -8,4 +8,4 @@ schema:
 description: |
   Filter invitations by field values. Supported fields:
   - createdAt, id, updatedAt, email, expiresAt
-  - inviterId, organizationId, role, status
+  - inviterID, organizationID, role, status

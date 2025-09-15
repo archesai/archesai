@@ -30,9 +30,9 @@ RETURNING
 `
 
 type CreateInvitationParams struct {
-	Id             uuid.UUID
-	OrganizationId uuid.UUID
-	InviterId      uuid.UUID
+	ID             uuid.UUID
+	OrganizationID uuid.UUID
+	InviterID      uuid.UUID
 	Email          string
 	Role           string
 	ExpiresAt      time.Time
@@ -41,9 +41,9 @@ type CreateInvitationParams struct {
 
 func (q *Queries) CreateInvitation(ctx context.Context, arg CreateInvitationParams) (Invitation, error) {
 	row := q.db.QueryRow(ctx, createInvitation,
-		arg.Id,
-		arg.OrganizationId,
-		arg.InviterId,
+		arg.ID,
+		arg.OrganizationID,
+		arg.InviterID,
 		arg.Email,
 		arg.Role,
 		arg.ExpiresAt,
@@ -51,13 +51,13 @@ func (q *Queries) CreateInvitation(ctx context.Context, arg CreateInvitationPara
 	)
 	var i Invitation
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
 		&i.ExpiresAt,
-		&i.InviterId,
-		&i.OrganizationId,
+		&i.InviterID,
+		&i.OrganizationID,
 		&i.Role,
 		&i.Status,
 	)
@@ -101,13 +101,13 @@ func (q *Queries) GetInvitation(ctx context.Context, id uuid.UUID) (Invitation, 
 	row := q.db.QueryRow(ctx, getInvitation, id)
 	var i Invitation
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
 		&i.ExpiresAt,
-		&i.InviterId,
-		&i.OrganizationId,
+		&i.InviterID,
+		&i.OrganizationID,
 		&i.Role,
 		&i.Status,
 	)
@@ -127,21 +127,21 @@ LIMIT
 `
 
 type GetInvitationByEmailParams struct {
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 	Email          string
 }
 
 func (q *Queries) GetInvitationByEmail(ctx context.Context, arg GetInvitationByEmailParams) (Invitation, error) {
-	row := q.db.QueryRow(ctx, getInvitationByEmail, arg.OrganizationId, arg.Email)
+	row := q.db.QueryRow(ctx, getInvitationByEmail, arg.OrganizationID, arg.Email)
 	var i Invitation
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
 		&i.ExpiresAt,
-		&i.InviterId,
-		&i.OrganizationId,
+		&i.InviterID,
+		&i.OrganizationID,
 		&i.Role,
 		&i.Status,
 	)
@@ -176,13 +176,13 @@ func (q *Queries) ListInvitations(ctx context.Context, arg ListInvitationsParams
 	for rows.Next() {
 		var i Invitation
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Email,
 			&i.ExpiresAt,
-			&i.InviterId,
-			&i.OrganizationId,
+			&i.InviterID,
+			&i.OrganizationID,
 			&i.Role,
 			&i.Status,
 		); err != nil {
@@ -212,13 +212,13 @@ OFFSET
 `
 
 type ListInvitationsByInviterParams struct {
-	InviterId uuid.UUID
+	InviterID uuid.UUID
 	Limit     int32
 	Offset    int32
 }
 
 func (q *Queries) ListInvitationsByInviter(ctx context.Context, arg ListInvitationsByInviterParams) ([]Invitation, error) {
-	rows, err := q.db.Query(ctx, listInvitationsByInviter, arg.InviterId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listInvitationsByInviter, arg.InviterID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -227,13 +227,13 @@ func (q *Queries) ListInvitationsByInviter(ctx context.Context, arg ListInvitati
 	for rows.Next() {
 		var i Invitation
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Email,
 			&i.ExpiresAt,
-			&i.InviterId,
-			&i.OrganizationId,
+			&i.InviterID,
+			&i.OrganizationID,
 			&i.Role,
 			&i.Status,
 		); err != nil {
@@ -263,13 +263,13 @@ OFFSET
 `
 
 type ListInvitationsByOrganizationParams struct {
-	OrganizationId uuid.UUID
+	OrganizationID uuid.UUID
 	Limit          int32
 	Offset         int32
 }
 
 func (q *Queries) ListInvitationsByOrganization(ctx context.Context, arg ListInvitationsByOrganizationParams) ([]Invitation, error) {
-	rows, err := q.db.Query(ctx, listInvitationsByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listInvitationsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -278,13 +278,13 @@ func (q *Queries) ListInvitationsByOrganization(ctx context.Context, arg ListInv
 	for rows.Next() {
 		var i Invitation
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Email,
 			&i.ExpiresAt,
-			&i.InviterId,
-			&i.OrganizationId,
+			&i.InviterID,
+			&i.OrganizationID,
 			&i.Role,
 			&i.Status,
 		); err != nil {
@@ -313,7 +313,7 @@ RETURNING
 `
 
 type UpdateInvitationParams struct {
-	Id        uuid.UUID
+	ID        uuid.UUID
 	Email     *string
 	Role      *string
 	ExpiresAt *time.Time
@@ -322,7 +322,7 @@ type UpdateInvitationParams struct {
 
 func (q *Queries) UpdateInvitation(ctx context.Context, arg UpdateInvitationParams) (Invitation, error) {
 	row := q.db.QueryRow(ctx, updateInvitation,
-		arg.Id,
+		arg.ID,
 		arg.Email,
 		arg.Role,
 		arg.ExpiresAt,
@@ -330,13 +330,13 @@ func (q *Queries) UpdateInvitation(ctx context.Context, arg UpdateInvitationPara
 	)
 	var i Invitation
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
 		&i.ExpiresAt,
-		&i.InviterId,
-		&i.OrganizationId,
+		&i.InviterID,
+		&i.OrganizationID,
 		&i.Role,
 		&i.Status,
 	)

@@ -70,22 +70,22 @@ func applyViperOverrides(config *ArchesConfig, v *viper.Viper) {
 
 func applyAPIOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("api.host") {
-		config.Api.Host = v.GetString("api.host")
+		config.API.Host = v.GetString("api.host")
 	}
 	if v.IsSet("api.port") {
-		config.Api.Port = float32(v.GetInt("api.port"))
+		config.API.Port = float32(v.GetInt("api.port"))
 	}
 	if v.IsSet("api.docs") {
-		config.Api.Docs = v.GetBool("api.docs")
+		config.API.Docs = v.GetBool("api.docs")
 	}
 	if v.IsSet("api.validate") {
-		config.Api.Validate = v.GetBool("api.validate")
+		config.API.Validate = v.GetBool("api.validate")
 	}
 	if v.IsSet("api.environment") {
-		config.Api.Environment = APIConfigEnvironment(v.GetString("api.environment"))
+		config.API.Environment = APIConfigEnvironment(v.GetString("api.environment"))
 	}
 	if v.IsSet("api.cors.origins") {
-		config.Api.Cors.Origins = v.GetString("api.cors.origins")
+		config.API.Cors.Origins = v.GetString("api.cors.origins")
 	}
 }
 
@@ -100,10 +100,10 @@ func applyAuthOverrides(config *ArchesConfig, v *viper.Viper) {
 		config.Auth.Local.JwtSecret = v.GetString("auth.local.jwt_secret")
 	}
 	if v.IsSet("auth.local.access_token_ttl") {
-		config.Auth.Local.AccessTokenTtl = v.GetString("auth.local.access_token_ttl")
+		config.Auth.Local.AccessTokenTTL = v.GetString("auth.local.access_token_ttl")
 	}
 	if v.IsSet("auth.local.refresh_token_ttl") {
-		config.Auth.Local.RefreshTokenTtl = v.GetString("auth.local.refresh_token_ttl")
+		config.Auth.Local.RefreshTokenTTL = v.GetString("auth.local.refresh_token_ttl")
 	}
 }
 
@@ -112,7 +112,7 @@ func applyDatabaseOverrides(config *ArchesConfig, v *viper.Viper) {
 		config.Database.Enabled = v.GetBool("database.enabled")
 	}
 	if v.IsSet("database.url") {
-		config.Database.Url = v.GetString("database.url")
+		config.Database.URL = v.GetString("database.url")
 	}
 	if v.IsSet("database.type") {
 		config.Database.Type = DatabaseConfigType(v.GetString("database.type"))
@@ -243,7 +243,7 @@ func applyBillingOverrides(config *ArchesConfig, v *viper.Viper) {
 
 // GetAllowedOrigins returns CORS allowed origins as a slice
 func (c *Config) GetAllowedOrigins() []string {
-	origins := c.Api.Cors.Origins
+	origins := c.API.Cors.Origins
 	if origins == "" {
 		return []string{}
 	}
@@ -252,7 +252,7 @@ func (c *Config) GetAllowedOrigins() []string {
 
 // GetServerAddress returns the formatted server address
 func (c *Config) GetServerAddress() string {
-	return fmt.Sprintf("%s:%d", c.Api.Host, int(c.Api.Port))
+	return fmt.Sprintf("%s:%d", c.API.Host, int(c.API.Port))
 }
 
 // ParseDuration parses a duration string and returns time.Duration
@@ -267,16 +267,16 @@ func (c *Config) GetJWTSecret() string {
 
 // GetAccessTokenTTL returns the access token TTL as a Duration
 func (c *Config) GetAccessTokenTTL() (time.Duration, error) {
-	if c.Auth.Local.AccessTokenTtl != "" {
-		return ParseDuration(c.Auth.Local.AccessTokenTtl)
+	if c.Auth.Local.AccessTokenTTL != "" {
+		return ParseDuration(c.Auth.Local.AccessTokenTTL)
 	}
 	return 15 * time.Minute, nil // default
 }
 
 // GetRefreshTokenTTL returns the refresh token TTL as a Duration
 func (c *Config) GetRefreshTokenTTL() (time.Duration, error) {
-	if c.Auth.Local.RefreshTokenTtl != "" {
-		return ParseDuration(c.Auth.Local.RefreshTokenTtl)
+	if c.Auth.Local.RefreshTokenTTL != "" {
+		return ParseDuration(c.Auth.Local.RefreshTokenTTL)
 	}
 	return 168 * time.Hour, nil // default 7 days
 }

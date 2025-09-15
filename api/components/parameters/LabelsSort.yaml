@@ -18,7 +18,7 @@ schema:
           - id
           - updatedAt
           - name
-          - organizationId
+          - organizationID
         example: createdAt
         minLength: 1
       order:

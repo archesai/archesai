@@ -41,7 +41,7 @@ RETURNING
 `
 
 type CreateUserParams struct {
-	Id            uuid.UUID
+	ID            uuid.UUID
 	Email         string
 	Name          string
 	EmailVerified interface{}
@@ -50,7 +50,7 @@ type CreateUserParams struct {
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, createUser,
-		arg.Id,
+		arg.ID,
 		arg.Email,
 		arg.Name,
 		arg.EmailVerified,
@@ -58,7 +58,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	)
 	var i User
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
@@ -95,7 +95,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, id)
 	var i User
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
@@ -121,7 +121,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
@@ -160,7 +160,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 	for rows.Next() {
 		var i User
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Email,
@@ -192,7 +192,7 @@ RETURNING
 `
 
 type UpdateUserParams struct {
-	Id            uuid.UUID
+	ID            uuid.UUID
 	Name          *string
 	Email         *string
 	EmailVerified *bool
@@ -201,7 +201,7 @@ type UpdateUserParams struct {
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, updateUser,
-		arg.Id,
+		arg.ID,
 		arg.Name,
 		arg.Email,
 		arg.EmailVerified,
@@ -209,7 +209,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	)
 	var i User
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,

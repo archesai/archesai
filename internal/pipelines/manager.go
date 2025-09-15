@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/google/uuid"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // PipelineManager handles pipeline step operations with DAG support
@@ -28,9 +27,9 @@ func NewPipelineManager(pipelineRepository Repository, pipelineStepRepository Pi
 // CreatePipelineStep adds a new step to a pipeline
 func (pm *PipelineManager) CreatePipelineStep(ctx context.Context, pipelineID, toolID uuid.UUID, config map[string]interface{}) (*PipelineStep, error) {
 	step := &PipelineStep{
-		Id:         uuid.New(),
-		PipelineId: pipelineID,
-		ToolId:     toolID,
+		ID:         uuid.New(),
+		PipelineID: pipelineID,
+		ToolID:     toolID,
 		Config:     config,
 	}
 
@@ -123,25 +122,25 @@ func (pm *PipelineManager) GetExecutionPlan(ctx context.Context, pipelineID uuid
 
 // PipelineStepResponse represents the API response for a pipeline step
 type PipelineStepResponse struct {
-	ID           openapi_types.UUID     `json:"id"`
-	PipelineID   openapi_types.UUID     `json:"pipelineId"`
-	ToolID       openapi_types.UUID     `json:"toolId"`
+	ID           uuid.UUID              `json:"id"`
+	PipelineID   uuid.UUID              `json:"pipelineID"`
+	ToolID       uuid.UUID              `json:"toolID"`
 	Name         string                 `json:"name"`
 	Description  string                 `json:"description"`
 	Config       map[string]interface{} `json:"config"`
 	Position     int                    `json:"position"`
-	Dependencies []openapi_types.UUID   `json:"dependencies"`
+	Dependencies []uuid.UUID            `json:"dependencies"`
 }
 
 // ConvertStepToResponse converts a domain step to API response
 func ConvertStepToResponse(step *PipelineStep, dependencies []uuid.UUID) PipelineStepResponse {
-	deps := make([]openapi_types.UUID, len(dependencies))
+	deps := make([]uuid.UUID, len(dependencies))
 	copy(deps, dependencies)
 
 	return PipelineStepResponse{
-		ID:           step.Id,
-		PipelineID:   step.PipelineId,
-		ToolID:       step.ToolId,
+		ID:           step.ID,
+		PipelineID:   step.PipelineID,
+		ToolID:       step.ToolID,
 		Name:         step.Name,
 		Description:  step.Description,
 		Config:       step.Config,
@@ -152,16 +151,16 @@ func ConvertStepToResponse(step *PipelineStep, dependencies []uuid.UUID) Pipelin
 
 // ExecutionPlanResponse represents the execution plan for a pipeline
 type ExecutionPlanResponse struct {
-	PipelineID openapi_types.UUID `json:"pipelineId"`
-	Levels     []ExecutionLevel   `json:"levels"`
-	TotalSteps int                `json:"totalSteps"`
-	IsValid    bool               `json:"isValid"`
+	PipelineID uuid.UUID        `json:"pipelineID"`
+	Levels     []ExecutionLevel `json:"levels"`
+	TotalSteps int              `json:"totalSteps"`
+	IsValid    bool             `json:"isValid"`
 }
 
 // ExecutionLevel represents a level of parallel execution
 type ExecutionLevel struct {
-	Level int                  `json:"level"`
-	Steps []openapi_types.UUID `json:"steps"`
+	Level int         `json:"level"`
+	Steps []uuid.UUID `json:"steps"`
 }
 
 // ConvertExecutionPlan converts internal execution plan to API response
@@ -170,7 +169,7 @@ func ConvertExecutionPlan(pipelineID uuid.UUID, plan [][]uuid.UUID) ExecutionPla
 	totalSteps := 0
 
 	for i, level := range plan {
-		steps := make([]openapi_types.UUID, len(level))
+		steps := make([]uuid.UUID, len(level))
 		copy(steps, level)
 		levels[i] = ExecutionLevel{
 			Level: i,

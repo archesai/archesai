@@ -24,13 +24,13 @@ interface OrganizationButtonProps {
   memberships?: {
     data: {
       id: string;
-      organizationId: string;
+      organizationID: string;
     }[];
   };
   onUpdateSession?: (
     data: {
       data: {
-        activeOrganizationId: string;
+        activeOrganizationID: string;
       };
       id: string;
     },
@@ -39,7 +39,7 @@ interface OrganizationButtonProps {
     },
   ) => Promise<void>;
   session?: {
-    activeOrganizationId?: null | string;
+    activeOrganizationID?: null | string;
     id: string;
   };
   user?: {
@@ -90,14 +90,14 @@ export function OrganizationButton({
                     await onUpdateSession(
                       {
                         data: {
-                          activeOrganizationId: membership.organizationId,
+                          activeOrganizationID: membership.organizationID,
                         },
                         id: session.id,
                       },
                       {
                         onSuccess: () => {
                           toast.success(
-                            `Switched to organization: ${membership.organizationId}`,
+                            `Switched to organization: ${membership.organizationID}`,
                           );
                         },
                       },
@@ -105,9 +105,9 @@ export function OrganizationButton({
                   }
                 }}
               >
-                {membership.organizationId}
-                {session?.activeOrganizationId ===
-                  membership.organizationId && <Badge>Current</Badge>}
+                {membership.organizationID}
+                {session?.activeOrganizationID ===
+                  membership.organizationID && <Badge>Current</Badge>}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />

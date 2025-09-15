@@ -46,48 +46,48 @@ RETURNING
 `
 
 type CreateAccountParams struct {
-	Id                    uuid.UUID
-	UserId                uuid.UUID
-	ProviderId            string
-	AccountId             string
+	ID                    uuid.UUID
+	UserID                uuid.UUID
+	ProviderID            string
+	AccountID             string
 	AccessToken           *string
 	RefreshToken          *string
 	AccessTokenExpiresAt  *time.Time
 	RefreshTokenExpiresAt *time.Time
 	Scope                 *string
-	IdToken               *string
+	IDToken               *string
 	Password              *string
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
 	row := q.db.QueryRow(ctx, createAccount,
-		arg.Id,
-		arg.UserId,
-		arg.ProviderId,
-		arg.AccountId,
+		arg.ID,
+		arg.UserID,
+		arg.ProviderID,
+		arg.AccountID,
 		arg.AccessToken,
 		arg.RefreshToken,
 		arg.AccessTokenExpiresAt,
 		arg.RefreshTokenExpiresAt,
 		arg.Scope,
-		arg.IdToken,
+		arg.IDToken,
 		arg.Password,
 	)
 	var i Account
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountId,
-		&i.IdToken,
+		&i.AccountID,
+		&i.IDToken,
 		&i.Password,
-		&i.ProviderId,
+		&i.ProviderID,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -129,19 +129,19 @@ func (q *Queries) GetAccount(ctx context.Context, id uuid.UUID) (Account, error)
 	row := q.db.QueryRow(ctx, getAccount, id)
 	var i Account
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountId,
-		&i.IdToken,
+		&i.AccountID,
+		&i.IDToken,
 		&i.Password,
-		&i.ProviderId,
+		&i.ProviderID,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -159,27 +159,27 @@ LIMIT
 `
 
 type GetAccountByUserParams struct {
-	UserId     uuid.UUID
-	ProviderId string
+	UserID     uuid.UUID
+	ProviderID string
 }
 
 func (q *Queries) GetAccountByUser(ctx context.Context, arg GetAccountByUserParams) (Account, error) {
-	row := q.db.QueryRow(ctx, getAccountByUser, arg.UserId, arg.ProviderId)
+	row := q.db.QueryRow(ctx, getAccountByUser, arg.UserID, arg.ProviderID)
 	var i Account
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountId,
-		&i.IdToken,
+		&i.AccountID,
+		&i.IDToken,
 		&i.Password,
-		&i.ProviderId,
+		&i.ProviderID,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -212,19 +212,19 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]A
 	for rows.Next() {
 		var i Account
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.AccessToken,
 			&i.AccessTokenExpiresAt,
-			&i.AccountId,
-			&i.IdToken,
+			&i.AccountID,
+			&i.IDToken,
 			&i.Password,
-			&i.ProviderId,
+			&i.ProviderID,
 			&i.RefreshToken,
 			&i.RefreshTokenExpiresAt,
 			&i.Scope,
-			&i.UserId,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -257,19 +257,19 @@ func (q *Queries) ListAccountsByUser(ctx context.Context, userID uuid.UUID) ([]A
 	for rows.Next() {
 		var i Account
 		if err := rows.Scan(
-			&i.Id,
+			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.AccessToken,
 			&i.AccessTokenExpiresAt,
-			&i.AccountId,
-			&i.IdToken,
+			&i.AccountID,
+			&i.IDToken,
 			&i.Password,
-			&i.ProviderId,
+			&i.ProviderID,
 			&i.RefreshToken,
 			&i.RefreshTokenExpiresAt,
 			&i.Scope,
-			&i.UserId,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -305,42 +305,42 @@ RETURNING
 `
 
 type UpdateAccountParams struct {
-	Id                    uuid.UUID
+	ID                    uuid.UUID
 	AccessToken           *string
 	RefreshToken          *string
 	AccessTokenExpiresAt  *time.Time
 	RefreshTokenExpiresAt *time.Time
 	Scope                 *string
-	IdToken               *string
+	IDToken               *string
 	Password              *string
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
 	row := q.db.QueryRow(ctx, updateAccount,
-		arg.Id,
+		arg.ID,
 		arg.AccessToken,
 		arg.RefreshToken,
 		arg.AccessTokenExpiresAt,
 		arg.RefreshTokenExpiresAt,
 		arg.Scope,
-		arg.IdToken,
+		arg.IDToken,
 		arg.Password,
 	)
 	var i Account
 	err := row.Scan(
-		&i.Id,
+		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountId,
-		&i.IdToken,
+		&i.AccountID,
+		&i.IDToken,
 		&i.Password,
-		&i.ProviderId,
+		&i.ProviderID,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
-		&i.UserId,
+		&i.UserID,
 	)
 	return i, err
 }

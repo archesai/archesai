@@ -20,7 +20,7 @@ schema:
           - description
           - inputMimeType
           - name
-          - organizationId
+          - organizationID
           - outputMimeType
         example: createdAt
         minLength: 1

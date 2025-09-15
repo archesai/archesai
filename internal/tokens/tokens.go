@@ -1,6 +1,9 @@
 // Package tokens provides API token management functionality for programmatic access.
 package tokens
 
+//go:generate go tool oapi-codegen --config=../../.types.codegen.yaml --package tokens --include-tags Tokens ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../.server.codegen.yaml --package tokens --include-tags Tokens ../../api/openapi.bundled.yaml
+
 import (
 	"context"
 	"crypto/rand"
@@ -34,7 +37,7 @@ func GenerateAPIKey() (string, string, error) {
 func ParseAPIKey(authHeader string) string {
 	authHeader = strings.TrimSpace(authHeader)
 
-	// Check for "ApiKey" scheme
+	// Check for "APIKey" scheme
 	if strings.HasPrefix(strings.ToLower(authHeader), "apikey ") {
 		return strings.TrimSpace(authHeader[7:])
 	}
@@ -91,19 +94,19 @@ func HashAPIKey(key string) string {
 
 // APIKeyRepository defines the interface for API key storage operations
 type APIKeyRepository interface {
-	CreateAPIKey(ctx context.Context, apiKey *ApiKey) (*ApiKey, error)
-	GetAPIKeyByPrefix(ctx context.Context, prefix string) (*ApiKey, error)
-	GetAPIKeyByID(ctx context.Context, id uuid.UUID) (*ApiKey, error)
-	ListUserAPIKeys(ctx context.Context, userID uuid.UUID) ([]*ApiKey, error)
+	CreateAPIKey(ctx context.Context, apiKey *APIKey) (*APIKey, error)
+	GetAPIKeyByPrefix(ctx context.Context, prefix string) (*APIKey, error)
+	GetAPIKeyByID(ctx context.Context, id uuid.UUID) (*APIKey, error)
+	ListUserAPIKeys(ctx context.Context, userID uuid.UUID) ([]*APIKey, error)
 	UpdateAPIKeyLastUsed(ctx context.Context, id uuid.UUID) error
 	DeleteAPIKey(ctx context.Context, id uuid.UUID) error
-	ValidateAPIKeyHash(ctx context.Context, prefix, keyHash string) (*ApiKey, error)
+	ValidateAPIKeyHash(ctx context.Context, prefix, keyHash string) (*APIKey, error)
 }
 
 // APIKeyCache provides caching for API keys
 type APIKeyCache interface {
-	GetAPIKey(ctx context.Context, prefix string) (*ApiKey, error)
-	SetAPIKey(ctx context.Context, prefix string, apiKey *ApiKey, ttl time.Duration) error
+	GetAPIKey(ctx context.Context, prefix string) (*APIKey, error)
+	SetAPIKey(ctx context.Context, prefix string, apiKey *APIKey, ttl time.Duration) error
 	DeleteAPIKey(ctx context.Context, prefix string) error
 }
 
@@ -122,7 +125,7 @@ func NewAPIKeyService(repo APIKeyRepository, cache APIKeyCache) *APIKeyService {
 }
 
 // CreateAPIKey creates a new API key for a user
-func (s *APIKeyService) CreateAPIKey(ctx context.Context, userID, organizationID uuid.UUID, name string, scopes []string, expiresIn time.Duration) (*ApiKeyResponse, error) {
+func (s *APIKeyService) CreateAPIKey(ctx context.Context, userID, organizationID uuid.UUID, name string, scopes []string, expiresIn time.Duration) (*APIKeyResponse, error) {
 	// Generate the key
 	plainKey, prefix, err := GenerateAPIKey()
 	if err != nil {
@@ -130,10 +133,10 @@ func (s *APIKeyService) CreateAPIKey(ctx context.Context, userID, organizationID
 	}
 
 	// Create the API key entity
-	apiKey := &ApiKey{
-		Id:             uuid.New(),
-		UserId:         userID,
-		OrganizationId: organizationID,
+	apiKey := &APIKey{
+		ID:             uuid.New(),
+		UserID:         userID,
+		OrganizationID: organizationID,
 		Name:           name,
 		KeyHash:        HashAPIKey(plainKey),
 		Prefix:         prefix,
@@ -155,8 +158,8 @@ func (s *APIKeyService) CreateAPIKey(ctx context.Context, userID, organizationID
 		_ = s.cache.SetAPIKey(ctx, prefix, created, expiresIn)
 	}
 
-	return &ApiKeyResponse{
-		Id:        created.Id,
+	return &APIKeyResponse{
+		ID:        created.ID,
 		Name:      created.Name,
 		Prefix:    created.Prefix,
 		Scopes:    created.Scopes,
@@ -168,7 +171,7 @@ func (s *APIKeyService) CreateAPIKey(ctx context.Context, userID, organizationID
 }
 
 // ValidateAPIKey validates an API key and returns the associated data
-func (s *APIKeyService) ValidateAPIKey(ctx context.Context, key string) (*ApiKey, error) {
+func (s *APIKeyService) ValidateAPIKey(ctx context.Context, key string) (*APIKey, error) {
 	// Validate format
 	if !ValidateAPIKeyFormat(key) {
 		return nil, fmt.Errorf("invalid api key format")
@@ -187,7 +190,7 @@ func (s *APIKeyService) ValidateAPIKey(ctx context.Context, key string) (*ApiKey
 				if time.Now().Before(cached.ExpiresAt) {
 					// Update last used timestamp asynchronously
 					go func() {
-						_ = s.repo.UpdateAPIKeyLastUsed(context.Background(), cached.Id)
+						_ = s.repo.UpdateAPIKeyLastUsed(context.Background(), cached.ID)
 					}()
 					return cached, nil
 				}
@@ -208,7 +211,7 @@ func (s *APIKeyService) ValidateAPIKey(ctx context.Context, key string) (*ApiKey
 
 	// Update last used timestamp asynchronously
 	go func() {
-		_ = s.repo.UpdateAPIKeyLastUsed(context.Background(), apiKey.Id)
+		_ = s.repo.UpdateAPIKeyLastUsed(context.Background(), apiKey.ID)
 	}()
 
 	// Cache for future requests

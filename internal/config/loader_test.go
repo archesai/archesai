@@ -30,8 +30,8 @@ func TestLoad(t *testing.T) {
 				if c == nil {
 					return errorf("expected non-nil config")
 				}
-				if c.Api.Host != "0.0.0.0" {
-					return errorf("expected default host 0.0.0.0, got %s", c.Api.Host)
+				if c.API.Host != "0.0.0.0" {
+					return errorf("expected default host 0.0.0.0, got %s", c.API.Host)
 				}
 				return nil
 			},
@@ -52,14 +52,14 @@ func TestLoad(t *testing.T) {
 			},
 			wantErr: false,
 			check: func(c *Config) error {
-				if c.Api.Host != "127.0.0.1" {
-					return errorf("expected host 127.0.0.1, got %s", c.Api.Host)
+				if c.API.Host != "127.0.0.1" {
+					return errorf("expected host 127.0.0.1, got %s", c.API.Host)
 				}
-				if c.Api.Port != 8080 {
-					return errorf("expected port 8080, got %f", c.Api.Port)
+				if c.API.Port != 8080 {
+					return errorf("expected port 8080, got %f", c.API.Port)
 				}
-				if c.Database.Url != "postgres://test" {
-					return errorf("expected database URL postgres://test, got %s", c.Database.Url)
+				if c.Database.URL != "postgres://test" {
+					return errorf("expected database URL postgres://test, got %s", c.Database.URL)
 				}
 				if c.Auth.Enabled != false {
 					return errorf("expected auth disabled")
@@ -93,14 +93,14 @@ logging:
 			},
 			wantErr: false,
 			check: func(c *Config) error {
-				if c.Api.Host != "192.168.1.1" {
-					return errorf("expected host 192.168.1.1, got %s", c.Api.Host)
+				if c.API.Host != "192.168.1.1" {
+					return errorf("expected host 192.168.1.1, got %s", c.API.Host)
 				}
-				if c.Api.Port != 9090 {
-					return errorf("expected port 9090, got %f", c.Api.Port)
+				if c.API.Port != 9090 {
+					return errorf("expected port 9090, got %f", c.API.Port)
 				}
-				if c.Api.Environment != "production" {
-					return errorf("expected environment production, got %s", c.Api.Environment)
+				if c.API.Environment != "production" {
+					return errorf("expected environment production, got %s", c.API.Environment)
 				}
 				if c.Database.MaxConns != 50 {
 					return errorf("expected max_conns 50, got %d", c.Database.MaxConns)
@@ -161,7 +161,7 @@ func TestSetupViper(t *testing.T) {
 
 func TestApplyAPIOverrides(t *testing.T) {
 	config := &ArchesConfig{
-		Api: APIConfig{
+		API: APIConfig{
 			Host: "0.0.0.0",
 			Port: 3001,
 			Cors: CORSConfig{
@@ -180,23 +180,23 @@ func TestApplyAPIOverrides(t *testing.T) {
 
 	applyAPIOverrides(config, v)
 
-	if config.Api.Host != "localhost" {
-		t.Errorf("Expected host localhost, got %s", config.Api.Host)
+	if config.API.Host != "localhost" {
+		t.Errorf("Expected host localhost, got %s", config.API.Host)
 	}
-	if config.Api.Port != 8080 {
-		t.Errorf("Expected port 8080, got %f", config.Api.Port)
+	if config.API.Port != 8080 {
+		t.Errorf("Expected port 8080, got %f", config.API.Port)
 	}
-	if !config.Api.Docs {
+	if !config.API.Docs {
 		t.Error("Expected docs enabled")
 	}
-	if !config.Api.Validate {
+	if !config.API.Validate {
 		t.Error("Expected validate enabled")
 	}
-	if config.Api.Environment != "production" {
-		t.Errorf("Expected environment production, got %s", config.Api.Environment)
+	if config.API.Environment != "production" {
+		t.Errorf("Expected environment production, got %s", config.API.Environment)
 	}
-	if config.Api.Cors.Origins != "https://example.com" {
-		t.Errorf("Expected CORS origins https://example.com, got %s", config.Api.Cors.Origins)
+	if config.API.Cors.Origins != "https://example.com" {
+		t.Errorf("Expected CORS origins https://example.com, got %s", config.API.Cors.Origins)
 	}
 }
 
@@ -207,8 +207,8 @@ func TestApplyAuthOverrides(t *testing.T) {
 			Local: LocalAuth{
 				Enabled:         true,
 				JwtSecret:       "default-secret",
-				AccessTokenTtl:  "15m",
-				RefreshTokenTtl: "7d",
+				AccessTokenTTL:  "15m",
+				RefreshTokenTTL: "7d",
 			},
 		},
 	}
@@ -231,11 +231,11 @@ func TestApplyAuthOverrides(t *testing.T) {
 	if config.Auth.Local.JwtSecret != "new-secret" {
 		t.Errorf("Expected JWT secret new-secret, got %s", config.Auth.Local.JwtSecret)
 	}
-	if config.Auth.Local.AccessTokenTtl != "30m" {
-		t.Errorf("Expected access token TTL 30m, got %s", config.Auth.Local.AccessTokenTtl)
+	if config.Auth.Local.AccessTokenTTL != "30m" {
+		t.Errorf("Expected access token TTL 30m, got %s", config.Auth.Local.AccessTokenTTL)
 	}
-	if config.Auth.Local.RefreshTokenTtl != "14d" {
-		t.Errorf("Expected refresh token TTL 14d, got %s", config.Auth.Local.RefreshTokenTtl)
+	if config.Auth.Local.RefreshTokenTTL != "14d" {
+		t.Errorf("Expected refresh token TTL 14d, got %s", config.Auth.Local.RefreshTokenTTL)
 	}
 }
 
@@ -243,7 +243,7 @@ func TestApplyDatabaseOverrides(t *testing.T) {
 	config := &ArchesConfig{
 		Database: DatabaseConfig{
 			Enabled:           true,
-			Url:               "postgres://localhost/test",
+			URL:               "postgres://localhost/test",
 			Type:              "postgres",
 			MaxConns:          25,
 			MinConns:          5,
@@ -270,8 +270,8 @@ func TestApplyDatabaseOverrides(t *testing.T) {
 	if config.Database.Enabled != false {
 		t.Error("Expected database disabled")
 	}
-	if config.Database.Url != "postgres://remote/prod" {
-		t.Errorf("Expected URL postgres://remote/prod, got %s", config.Database.Url)
+	if config.Database.URL != "postgres://remote/prod" {
+		t.Errorf("Expected URL postgres://remote/prod, got %s", config.Database.URL)
 	}
 	if config.Database.Type != "sqlite" {
 		t.Errorf("Expected type sqlite, got %s", config.Database.Type)
@@ -328,12 +328,6 @@ func TestConfigConstants(t *testing.T) {
 	}
 	if EnvPrefix != "ARCHESAI" {
 		t.Errorf("Expected EnvPrefix to be 'ARCHESAI', got %s", EnvPrefix)
-	}
-	if DefaultPort != 3001 {
-		t.Errorf("Expected DefaultPort to be 3001, got %d", DefaultPort)
-	}
-	if DefaultHost != "0.0.0.0" {
-		t.Errorf("Expected DefaultHost to be '0.0.0.0', got %s", DefaultHost)
 	}
 }
 

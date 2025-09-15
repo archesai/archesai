@@ -19,8 +19,8 @@ schema:
           - updatedAt
           - email
           - expiresAt
-          - inviterId
-          - organizationId
+          - inviterID
+          - organizationID
           - role
           - status
         example: createdAt

@@ -7,5 +7,5 @@ schema:
   $ref: ../schemas/FilterNode.yaml
 description: |
   Filter runs by field values. Supported fields:
-  - createdAt, id, updatedAt, completedAt, error, organizationId
-  - pipelineId, progress, startedAt, status, toolId
+  - createdAt, id, updatedAt, completedAt, error, organizationID
+  - pipelineID, progress, startedAt, status, toolID

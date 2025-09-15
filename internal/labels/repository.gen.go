@@ -8,6 +8,7 @@ import (
 
 // Repository handles label persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Label) (*Label, error)
 	Get(ctx context.Context, id uuid.UUID) (*Label, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Label) (*Label, error)
@@ -15,6 +16,6 @@ type Repository interface {
 	List(ctx context.Context, params ListLabelsParams) ([]*Label, int64, error)
 
 	// Additional operations
-	ListByOrganization(ctx context.Context, organizationId string) ([]*Label, error)
-	GetByName(ctx context.Context, name string, organizationId string) (*Label, error)
+	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Label, error)
+	GetByName(ctx context.Context, name string, organizationID uuid.UUID) (*Label, error)
 }

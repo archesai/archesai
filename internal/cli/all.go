@@ -67,10 +67,10 @@ func runAll(_ *cobra.Command, _ []string) error {
 
 	// Override with viper values if set
 	if viper.IsSet("server.host") {
-		cfg.Api.Host = viper.GetString("server.host")
+		cfg.API.Host = viper.GetString("server.host")
 	}
 	if viper.IsSet("server.port") {
-		cfg.Api.Port = float32(viper.GetInt("server.port"))
+		cfg.API.Port = float32(viper.GetInt("server.port"))
 	}
 
 	// Create application container
@@ -94,7 +94,7 @@ func runAll(_ *cobra.Command, _ []string) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		log.Printf("🚀 API server starting on %s:%d", cfg.Api.Host, int(cfg.Api.Port))
+		log.Printf("🚀 API server starting on %s:%d", cfg.API.Host, int(cfg.API.Port))
 		if err := appContainer.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("api server: %w", err)
 		}

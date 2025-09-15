@@ -8,6 +8,7 @@ import (
 
 // Repository handles organization persistence
 type Repository interface {
+	// Basic CRUD operations (always included)
 	Create(ctx context.Context, entity *Organization) (*Organization, error)
 	Get(ctx context.Context, id uuid.UUID) (*Organization, error)
 	Update(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error)
@@ -16,5 +17,5 @@ type Repository interface {
 
 	// Additional operations
 	GetBySlug(ctx context.Context, slug string) (*Organization, error)
-	GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error)
+	GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*Organization, error)
 }
