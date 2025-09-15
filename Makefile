@@ -26,7 +26,10 @@ NC := \033[0m # No Color
 # ------------------------------------------
 
 .PHONY: all
-all: generate lint format ## Default: generate, lint, and format code
+all: ## Default: generate, lint, and format code
+	@make generate
+	@make lint
+	@make format
 	@echo -e "$(GREEN)✓ All tasks complete!$(NC)"
 
 .PHONY: help
@@ -98,7 +101,7 @@ run-tui: build ## Launch the TUI interface
 # ------------------------------------------
 
 .PHONY: generate
-generate: generate-sqlc generate-oapi generate-codegen-types generate-codegen generate-mocks generate-js-client ## Generate all code
+generate: generate-sqlc generate-oapi generate-codegen generate-mocks generate-js-client ## Generate all code
 	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
 .PHONY: generate-sqlc
@@ -114,10 +117,10 @@ generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 	@echo -e "$(GREEN)✓ Schema conversion complete!$(NC)"
 
 .PHONY: generate-oapi
-generate-oapi: api-bundle ## Generate OpenAPI server code
+generate-oapi: generate-codegen-types ## Generate OpenAPI server code
 	@echo -e "$(YELLOW)▶ Generating OpenAPI server code...$(NC)"
 	@echo "  Generating domain types..."
-	@for domain in auth organizations workflows content health config; do \
+	@for domain in auth content config health organizations users workflows; do \
 		cd internal/$$domain && \
 		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
 		cd - > /dev/null; \
@@ -126,7 +129,7 @@ generate-oapi: api-bundle ## Generate OpenAPI server code
 	@echo -e "$(GREEN)✓ OpenAPI generation complete!$(NC)"
 
 .PHONY: generate-codegen-types
-generate-codegen-types: ## Generate types for codegen configuration
+generate-codegen-types: api-bundle ## Generate types for codegen configuration
 	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
 	@cd internal/codegen && go generate codegen.go
 	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
@@ -138,9 +141,9 @@ generate-codegen: generate-codegen-types ## Generate codegen
 	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
 
 .PHONY: generate-mocks
-generate-mocks: ## Generate test mocks using mockery
+generate-mocks: generate-oapi ## Generate test mocks using mockery
 	@echo -e "$(YELLOW)▶ Generating test mocks...$(NC)"
-	@go tool mockery 
+	@go tool mockery
 	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"
 
 .PHONY: generate-js-client
@@ -266,9 +269,7 @@ format-ts: ## Format Node.js/TypeScript code
 # ------------------------------------------
 
 .PHONY: clean
-clean: clean-test clean-generated clean-docs clean-deps ## Clean build artifacts
-	@echo -e "$(YELLOW)▶ Cleaning build artifacts...$(NC)"
-	@rm -rf bin
+clean: clean-ts clean-go clean-generated clean-test ## Clean build artifacts
 	@echo -e "$(GREEN)✓ Clean complete!$(NC)"
 
 .PHONY: clean-ts
@@ -277,10 +278,18 @@ clean-ts: ## Clean distribution builds
 	@pnpm -r exec sh -c 'rm -rf .cache .tanstack dist .nitro .output'
 	@echo -e "$(GREEN)✓ Distribution builds cleaned!$(NC)"
 
+.PHONY: clean-go
+clean-go: ## Clean Go build artifacts
+	@echo -e "$(YELLOW)▶ Cleaning Go build artifacts...$(NC)"
+	@rm -rf bin
+	@echo -e "$(GREEN)✓ Go build artifacts cleaned!$(NC)"
+
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
 	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
 	@find . -type f -name "*.gen.go" -exec rm -f {} +
+	@rm -rf web/client/src/generated
+	@rm -f api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ Generated code cleaned!$(NC)"
 
 .PHONY: clean-test
@@ -290,12 +299,6 @@ clean-test: ## Clean test cache and coverage files
 	@rm -f coverage.out coverage.html
 	@echo -e "$(GREEN)✓ Test cache cleaned!$(NC)"
 
-.PHONY: clean-docs
-clean-docs: ## Clean documentation build
-	@echo -e "$(YELLOW)▶ Cleaning documentation build...$(NC)"
-	@rm -rf web/docs/build web/docs/.docusaurus web/docs/docs website/
-	@echo -e "$(GREEN)✓ Documentation build cleaned!$(NC)"
-
 .PHONY: clean-deps
 clean-deps: clean-ts-deps clean-go-deps ## Clean all dependencies
 	@echo -e "$(GREEN)✓ All dependencies cleaned!$(NC)"
@@ -303,7 +306,7 @@ clean-deps: clean-ts-deps clean-go-deps ## Clean all dependencies
 .PHONY: clean-ts-deps
 clean-ts-deps: ## Clean Node.js dependencies
 	@echo -e "$(YELLOW)▶ Cleaning Node.js dependencies...$(NC)"
-	@rm -rf node_modules pnpm-lock.yaml
+	@pnpm -r exec sh -c 'rm -rf node_modules pnpm-lock.yaml'
 	@echo -e "$(GREEN)✓ Node.js dependencies cleaned!$(NC)"
 
 .PHONY: clean-go-deps

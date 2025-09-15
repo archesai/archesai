@@ -49,7 +49,7 @@ make test-watch            # Watch mode (needs fswatch)
 ```bash
 make lint           # Run all linters
 make lint-go        # Go linter
-make lint-node      # Node/TypeScript
+make lint-ts      # Node/TypeScript
 make lint-openapi   # OpenAPI spec
 make lint-docs      # Markdown
 

@@ -1,7 +1,5 @@
 # Dependencies
 node_modules/
-.pnp
-.pnp.js
 
 # Build outputs
 build/
@@ -12,9 +10,7 @@ out/
 .output/
 .tanstack/
 .turbo/
-.swc/
 .cache/
-.cache-loader/
 bin/
 
 # Testing
@@ -23,64 +19,23 @@ test-output/
 
 # Logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-dev-debug.log
 logs/
 
 # Environment
 .env
 .env*.local
 
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
-expo-env.d.ts
-
-# IDE/Editor
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-jsconfig.json
-
 # Platform specific
 .DS_Store
 *.pem
 
-# Project specific
-## Expo
-.expo/
-apps/expo/.gitignore
-apps/expo/ios/
-apps/expo/android/
-
 ## Documentation
-.docusaurus/
-.hugo_build.lock
-website/public/
-website/resources/
-web/docs/pages/documentation/
-web/docs/pages/docs/
-web/ui/src/components/zudoku/
+web/docs/pages
 
 ## Config/Generated
 build.json
 .mcp.json
-**/src/metadata.ts
 **/charts/
-vite.config.*.timestamp*
-vitest.config.*.timestamp*
 
 # Temporary
-_tmp/
-tmp/
-**/tmp/
-
-# Deployment
-.vercel/
+tmp
