@@ -31,6 +31,7 @@ logs/
 
 ## Documentation
 web/docs/pages
+web/docs/apis
 
 ## Config/Generated
 build.json
