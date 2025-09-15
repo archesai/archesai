@@ -69,7 +69,7 @@ func (h *Handler) FindManyInvitations(c echo.Context, organizationID openapi_typ
 	paginatedInvitations := invitations[start:end]
 
 	// Convert to proper type
-	var responseData []Invitation
+	responseData := make([]Invitation, 0, len(paginatedInvitations))
 	for _, inv := range paginatedInvitations {
 		if inv != nil {
 			responseData = append(responseData, *inv)

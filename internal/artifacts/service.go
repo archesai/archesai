@@ -209,7 +209,13 @@ func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 // List retrieves artifacts with pagination and filtering
-func (s *Service) List(ctx context.Context, orgID string, limit, offset int) ([]*Artifact, int, error) {
+func (s *Service) List(ctx context.Context, limit, offset int) ([]*Artifact, int64, error) {
+	// For now, list without organization filtering
+	return s.ListByOrganization(ctx, "", limit, offset)
+}
+
+// ListByOrganization retrieves artifacts for a specific organization
+func (s *Service) ListByOrganization(ctx context.Context, orgID string, limit, offset int) ([]*Artifact, int64, error) {
 	// Validate pagination parameters
 	if limit <= 0 {
 		limit = 50 // Default limit
@@ -244,13 +250,14 @@ func (s *Service) List(ctx context.Context, orgID string, limit, offset int) ([]
 		}
 	}
 
-	return filtered, int(total), nil
+	return filtered, total, nil
 }
 
 // Search performs full-text search on artifacts
 func (s *Service) Search(ctx context.Context, orgID, query string, limit, offset int) ([]*Artifact, int, error) {
 	if query == "" {
-		return s.List(ctx, orgID, limit, offset)
+		artifacts, total, err := s.ListByOrganization(ctx, orgID, limit, offset)
+		return artifacts, int(total), err
 	}
 
 	// Validate pagination
@@ -265,7 +272,7 @@ func (s *Service) Search(ctx context.Context, orgID, query string, limit, offset
 	// This would typically use PostgreSQL full-text search or a dedicated search engine
 
 	// For now, do a simple in-memory filter (not efficient for production)
-	allArtifacts, _, err := s.List(ctx, orgID, 1000, 0)
+	allArtifacts, _, err := s.ListByOrganization(ctx, orgID, 1000, 0)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -455,7 +462,7 @@ func (s *Service) BulkCreateArtifacts(ctx context.Context, artifacts []*CreateAr
 // GetArtifactStats returns statistics for artifacts in an organization
 func (s *Service) GetArtifactStats(ctx context.Context, orgID string) (map[string]interface{}, error) {
 	// Get total count
-	_, total, err := s.List(ctx, orgID, 1, 0)
+	_, total, err := s.ListByOrganization(ctx, orgID, 1, 0)
 	if err != nil {
 		return nil, err
 	}

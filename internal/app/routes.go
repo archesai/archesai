@@ -1,10 +1,13 @@
 package app
 
 import (
+	"github.com/archesai/archesai/internal/artifacts"
 	"github.com/archesai/archesai/internal/auth"
+
 	// "github.com/archesai/archesai/internal/config"
-	// "github.com/archesai/archesai/internal/content"
 	"github.com/archesai/archesai/internal/health"
+	"github.com/archesai/archesai/internal/labels"
+	"github.com/archesai/archesai/internal/members"
 	"github.com/archesai/archesai/internal/organizations"
 	"github.com/archesai/archesai/internal/pipelines"
 	"github.com/archesai/archesai/internal/runs"
@@ -66,10 +69,17 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	strictToolsHandler := tools.NewStrictHandler(a.ToolsHandler, nil)
 	tools.RegisterHandlers(protected, strictToolsHandler)
 
-	// TODO: Add routes for artifacts, labels, members, invitations when implemented
-	// Content routes - require authentication
-	// strictContentHandler := content.NewContentStrictHandler(a.ContentHandler)
-	// content.RegisterHandlers(protected, strictContentHandler)
+	// Artifacts routes - require authentication
+	strictArtifactsHandler := artifacts.NewStrictHandler(a.ArtifactsHandler, nil)
+	artifacts.RegisterHandlers(protected, strictArtifactsHandler)
+
+	// Labels routes - require authentication
+	strictLabelsHandler := labels.NewStrictHandler(a.LabelsHandler, nil)
+	labels.RegisterHandlers(protected, strictLabelsHandler)
+
+	// Members routes - require authentication and organization membership
+	strictMembersHandler := members.NewStrictHandler(a.MembersHandler, nil)
+	members.RegisterHandlers(orgGroup, strictMembersHandler)
 
 	// ========================================
 	// API-ONLY ROUTES (API key authentication)

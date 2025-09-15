@@ -7,14 +7,14 @@ import (
 	"net/http"
 	"time"
 
-	// "github.com/archesai/archesai/internal/artifacts"
+	"github.com/archesai/archesai/internal/accounts"
+	"github.com/archesai/archesai/internal/artifacts"
 	"github.com/archesai/archesai/internal/auth"
 	"github.com/archesai/archesai/internal/config"
 	"github.com/archesai/archesai/internal/health"
-
-	// "github.com/archesai/archesai/internal/invitations"
-	// "github.com/archesai/archesai/internal/labels"
-	// "github.com/archesai/archesai/internal/members"
+	"github.com/archesai/archesai/internal/invitations"
+	"github.com/archesai/archesai/internal/labels"
+	"github.com/archesai/archesai/internal/members"
 	"github.com/archesai/archesai/internal/migrations"
 	"github.com/archesai/archesai/internal/organizations"
 	"github.com/archesai/archesai/internal/pipelines"
@@ -37,31 +37,31 @@ type App struct {
 
 	// Domain services (public for handler access)
 	AuthService          *auth.Service
+	AccountsService      *accounts.Service
 	UsersService         *users.Service
 	OrganizationsService *organizations.Service
-	// TODO: Implement these services
-	// ArtifactsService     *artifacts.Service
-	// LabelsService        *labels.Service
-	// MembersService       *members.Service
-	// InvitationsService   *invitations.Service
-	PipelinesService *pipelines.Service
-	RunsService      *runs.Service
-	ToolsService     *tools.Service
-	HealthService    *health.Service
+	InvitationsService   *invitations.Service
+	ArtifactsService     *artifacts.Service
+	LabelsService        *labels.Service
+	MembersService       *members.Service
+	PipelinesService     *pipelines.Service
+	RunsService          *runs.Service
+	ToolsService         *tools.Service
+	HealthService        *health.Service
 
 	// HTTP handlers
 	AuthHandler          *auth.Handler
+	AccountsHandler      *accounts.Handler
 	UsersHandler         *users.Handler
 	OrganizationsHandler *organizations.Handler
-	// TODO: Implement these handlers
-	// ArtifactsHandler     *artifacts.Handler
-	// LabelsHandler        *labels.Handler
-	// MembersHandler       *members.Handler
-	// InvitationsHandler   *invitations.Handler
-	PipelinesHandler *pipelines.Handler
-	RunsHandler      *runs.Handler
-	ToolsHandler     *tools.Handler
-	HealthHandler    *health.Handler
+	InvitationsHandler   *invitations.Handler
+	ArtifactsHandler     *artifacts.Handler
+	LabelsHandler        *labels.Handler
+	MembersHandler       *members.Handler
+	PipelinesHandler     *pipelines.Handler
+	RunsHandler          *runs.Handler
+	ToolsHandler         *tools.Handler
+	HealthHandler        *health.Handler
 }
 
 // NewApp creates and initializes all application dependencies
@@ -134,22 +134,21 @@ func NewApp(cfg *config.Config) (*App, error) {
 	toolsService := tools.NewService(repos.Tools, log)
 	toolsHandler := tools.NewHandler(toolsService, log)
 
-	// TODO: Initialize these domains when services/handlers are implemented
 	// Initialize artifacts domain
-	// artifactsService := artifacts.NewArtifactsService(repos.Artifacts, repos.Labels, log)
-	// artifactsHandler := artifacts.NewHandler(artifactsService, log)
+	artifactsService := artifacts.NewArtifactsService(repos.Artifacts, repos.Labels, log)
+	artifactsHandler := artifacts.NewHandler(artifactsService, log)
 
 	// Initialize labels domain
-	// labelsService := labels.NewService(repos.Labels, log)
-	// labelsHandler := labels.NewHandler(labelsService, log)
+	labelsService := labels.NewService(repos.Labels, log)
+	labelsHandler := labels.NewHandler(labelsService, log)
 
 	// Initialize members domain
-	// membersService := members.NewService(repos.Members, log)
-	// membersHandler := members.NewHandler(membersService, log)
+	membersService := members.NewService(repos.Members, log)
+	membersHandler := members.NewHandler(membersService, log)
 
 	// Initialize invitations domain
-	// invitationsService := invitations.NewService(repos.Invitations, log)
-	// invitationsHandler := invitations.NewHandler(invitationsService, log)
+	invitationsService := invitations.NewService(repos.Invitations, log)
+	invitationsHandler := invitations.NewHandler(invitationsService, log)
 
 	// Initialize health domain
 	healthService := health.NewService(log)
@@ -177,11 +176,11 @@ func NewApp(cfg *config.Config) (*App, error) {
 		PipelinesService:     pipelinesService,
 		RunsService:          runsService,
 		ToolsService:         toolsService,
-		// ArtifactsService:     artifactsService,
-		// LabelsService:        labelsService,
-		// MembersService:       membersService,
-		// InvitationsService:   invitationsService,
-		HealthService: healthService,
+		ArtifactsService:     artifactsService,
+		LabelsService:        labelsService,
+		MembersService:       membersService,
+		InvitationsService:   invitationsService,
+		HealthService:        healthService,
 
 		// HTTP handlers
 		AuthHandler:          authHandler,
@@ -190,11 +189,11 @@ func NewApp(cfg *config.Config) (*App, error) {
 		PipelinesHandler:     pipelinesHandler,
 		RunsHandler:          runsHandler,
 		ToolsHandler:         toolsHandler,
-		// ArtifactsHandler:     artifactsHandler,
-		// LabelsHandler:        labelsHandler,
-		// MembersHandler:       membersHandler,
-		// InvitationsHandler:   invitationsHandler,
-		HealthHandler: healthHandler,
+		ArtifactsHandler:     artifactsHandler,
+		LabelsHandler:        labelsHandler,
+		MembersHandler:       membersHandler,
+		InvitationsHandler:   invitationsHandler,
+		HealthHandler:        healthHandler,
 	}
 
 	// Register all application routes

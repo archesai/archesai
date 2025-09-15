@@ -245,10 +245,10 @@ func TestArtifactsService_List(t *testing.T) {
 		}
 		mockRepo.EXPECT().List(mock.Anything, params).Return(artifacts, int64(2), nil)
 
-		results, total, err := service.List(context.Background(), orgID, limit, offset)
+		results, total, err := service.ListByOrganization(context.Background(), orgID, limit, offset)
 
 		assert.NoError(t, err)
 		assert.Len(t, results, 2)
-		assert.Equal(t, 2, total)
+		assert.Equal(t, int64(2), total)
 	})
 }
