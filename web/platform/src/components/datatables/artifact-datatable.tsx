@@ -4,7 +4,7 @@ import type {
   ArtifactsSortParameter,
   PageQueryParameter,
 } from "@archesai/client";
-import { getFindManyArtifactsSuspenseQueryOptions } from "@archesai/client";
+import { getListArtifactsSuspenseQueryOptions } from "@archesai/client";
 import {
   CalendarIcon,
   FileIcon,
@@ -24,7 +24,7 @@ export default function ArtifactDataTable(): JSX.Element {
   const navigate = useNavigate();
 
   const getQueryOptions = (query: SearchQuery) => {
-    return getFindManyArtifactsSuspenseQueryOptions({
+    return getListArtifactsSuspenseQueryOptions({
       filter: query.filter as unknown as ArtifactsFilterParameter,
       page: query.page as PageQueryParameter,
       sort: query.sort as ArtifactsSortParameter,

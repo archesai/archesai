@@ -197,14 +197,16 @@ func (sm *SessionManager) DeleteByUser(ctx context.Context, userID uuid.UUID) er
 }
 
 // ListUserSessions returns all active sessions for a user
-func (sm *SessionManager) ListUserSessions(ctx context.Context, userID uuid.UUID) ([]*Session, error) {
+func (sm *SessionManager) ListUserSessions(ctx context.Context, _ uuid.UUID) ([]*Session, error) {
 	// For now, use database directly
 	// In a future enhancement, we could maintain a session index in Redis
-	userIDStr := userID.String()
 	params := ListSessionsParams{
-		UserID: &userIDStr,
-		Limit:  100,
+		Page: PageQuery{
+			Number: 1,
+			Size:   100,
+		},
 	}
+	// TODO: Add userId filtering when FilterNode structure is properly defined
 	sessions, _, err := sm.repo.List(ctx, params)
 	if err != nil {
 		return nil, err

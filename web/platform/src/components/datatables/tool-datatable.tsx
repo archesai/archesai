@@ -4,10 +4,7 @@ import type {
   ToolsFilterParameter,
   ToolsSortParameter,
 } from "@archesai/client";
-import {
-  deleteTool,
-  getFindManyToolsSuspenseQueryOptions,
-} from "@archesai/client";
+import { deleteTool, getListToolsSuspenseQueryOptions } from "@archesai/client";
 import {
   CalendarIcon,
   PackageCheckIcon,
@@ -25,7 +22,7 @@ export default function ToolDataTable(): JSX.Element {
   const navigate = useNavigate();
 
   const getQueryOptions = (query: SearchQuery) => {
-    return getFindManyToolsSuspenseQueryOptions({
+    return getListToolsSuspenseQueryOptions({
       filter: query.filter as unknown as ToolsFilterParameter,
       page: query.page as PageQueryParameter,
       sort: query.sort as ToolsSortParameter,

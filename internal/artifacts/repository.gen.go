@@ -20,12 +20,6 @@ type Repository interface {
 	ListByProducer(ctx context.Context, producerId string) ([]*Artifact, error)
 }
 
-// ListArtifactsParams represents parameters for listing artifacts.
-type ListArtifactsParams struct {
-	Limit  int
-	Offset int
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

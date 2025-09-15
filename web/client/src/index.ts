@@ -1,5 +1,4 @@
 export * from "./generated/accounts/accounts";
-export * from "./generated/apikeys/apikeys";
 export * from "./generated/artifacts/artifacts";
 export * from "./generated/auth/auth";
 export * from "./generated/config/config";
@@ -13,5 +12,6 @@ export * from "./generated/orval.schemas";
 export * from "./generated/pipelines/pipelines";
 export * from "./generated/runs/runs";
 export * from "./generated/sessions/sessions";
+export * from "./generated/tokens/tokens";
 export * from "./generated/tools/tools";
 export * from "./generated/users/users";

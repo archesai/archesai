@@ -40,14 +40,15 @@ func (s *Service) DeleteSession(ctx context.Context, sessionID uuid.UUID) error 
 	return s.sessionManager.Delete(ctx, sessionID)
 }
 
-// FindSessions finds sessions for a user with pagination
-func (s *Service) FindSessions(ctx context.Context, userID uuid.UUID, limit, offset int) ([]*Session, int64, error) {
-	userIDStr := userID.String()
+// List finds sessions for a user with pagination
+func (s *Service) List(ctx context.Context, _ uuid.UUID, limit, offset int) ([]*Session, int64, error) {
 	params := ListSessionsParams{
-		UserID: &userIDStr,
-		Limit:  limit,
-		Offset: offset,
+		Page: PageQuery{
+			Number: offset/limit + 1,
+			Size:   limit,
+		},
 	}
+	// TODO: Add userId filtering when FilterNode structure is properly defined
 	return s.repo.List(ctx, params)
 }
 

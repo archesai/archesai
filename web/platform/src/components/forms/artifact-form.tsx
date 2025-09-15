@@ -2,7 +2,7 @@ import type { CreateArtifactBody, UpdateArtifactBody } from "@archesai/client";
 import {
   createArtifact,
   updateArtifact,
-  useGetOneArtifactSuspense,
+  useGetArtifactSuspense,
 } from "@archesai/client";
 import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 import { GenericForm } from "@archesai/ui/components/custom/generic-form";
@@ -22,8 +22,7 @@ import { useState } from "react";
 export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
   const [tab, setTab] = useState<"file" | "text" | "url">("file");
 
-  const { data: existingContentResponse, error } =
-    useGetOneArtifactSuspense(id);
+  const { data: existingContentResponse, error } = useGetArtifactSuspense(id);
 
   if (error) {
     return <div>Content not found</div>;

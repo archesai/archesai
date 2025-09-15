@@ -25,8 +25,8 @@ func NewHandler(service *Service, logger *slog.Logger) *Handler {
 	}
 }
 
-// FindManyTools retrieves tools (implements StrictServerInterface)
-func (h *Handler) FindManyTools(ctx context.Context, req FindManyToolsRequestObject) (FindManyToolsResponseObject, error) {
+// ListTools retrieves tools (implements StrictServerInterface)
+func (h *Handler) ListTools(ctx context.Context, req ListToolsRequestObject) (ListToolsResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -52,7 +52,7 @@ func (h *Handler) FindManyTools(ctx context.Context, req FindManyToolsRequestObj
 	}
 
 	totalFloat32 := float32(total)
-	return FindManyTools200JSONResponse{
+	return ListTools200JSONResponse{
 		Data: data,
 		Meta: struct {
 			Total float32 `json:"total"`
@@ -84,12 +84,12 @@ func (h *Handler) CreateTool(ctx context.Context, req CreateToolRequestObject) (
 	}, nil
 }
 
-// GetOneTool retrieves a tool by ID (implements StrictServerInterface)
-func (h *Handler) GetOneTool(ctx context.Context, req GetOneToolRequestObject) (GetOneToolResponseObject, error) {
+// GetTool retrieves a tool by ID (implements StrictServerInterface)
+func (h *Handler) GetTool(ctx context.Context, req GetToolRequestObject) (GetToolResponseObject, error) {
 	tool, err := h.service.Get(ctx, req.Id)
 	if err != nil {
 		if err == ErrToolNotFound {
-			return GetOneTool404ApplicationProblemPlusJSONResponse{
+			return GetTool404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Tool not found",
 					Status: 404,
@@ -101,7 +101,7 @@ func (h *Handler) GetOneTool(ctx context.Context, req GetOneToolRequestObject) (
 		return nil, err
 	}
 
-	return GetOneTool200JSONResponse{
+	return GetTool200JSONResponse{
 		Data: *tool,
 	}, nil
 }

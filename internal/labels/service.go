@@ -182,8 +182,10 @@ func (s *Service) List(ctx context.Context, orgID string, limit, offset int) ([]
 	}
 
 	params := ListLabelsParams{
-		Limit:  limit,
-		Offset: offset,
+		Page: PageQuery{
+			Number: offset/limit + 1,
+			Size:   limit,
+		},
 		// TODO: Add organization filtering when repository supports it
 	}
 

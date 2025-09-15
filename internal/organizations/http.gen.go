@@ -17,10 +17,10 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Find many organizations
+	// List organizations
 	// (GET /organizations)
-	FindManyOrganizations(ctx echo.Context, params FindManyOrganizationsParams) error
-	// Create a new organization
+	ListOrganizations(ctx echo.Context, params ListOrganizationsParams) error
+	// Create an organization
 	// (POST /organizations)
 	CreateOrganization(ctx echo.Context) error
 	// Delete an organization
@@ -39,14 +39,14 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// FindManyOrganizations converts echo context to params.
-func (w *ServerInterfaceWrapper) FindManyOrganizations(ctx echo.Context) error {
+// ListOrganizations converts echo context to params.
+func (w *ServerInterfaceWrapper) ListOrganizations(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FindManyOrganizationsParams
+	var params ListOrganizationsParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -69,7 +69,7 @@ func (w *ServerInterfaceWrapper) FindManyOrganizations(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.FindManyOrganizations(ctx, params)
+	err = w.Handler.ListOrganizations(ctx, params)
 	return err
 }
 
@@ -166,7 +166,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/organizations", wrapper.FindManyOrganizations)
+	router.GET(baseURL+"/organizations", wrapper.ListOrganizations)
 	router.POST(baseURL+"/organizations", wrapper.CreateOrganization)
 	router.DELETE(baseURL+"/organizations/:id", wrapper.DeleteOrganization)
 	router.GET(baseURL+"/organizations/:id", wrapper.GetOneOrganization)
@@ -180,15 +180,15 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type FindManyOrganizationsRequestObject struct {
-	Params FindManyOrganizationsParams
+type ListOrganizationsRequestObject struct {
+	Params ListOrganizationsParams
 }
 
-type FindManyOrganizationsResponseObject interface {
-	VisitFindManyOrganizationsResponse(w http.ResponseWriter) error
+type ListOrganizationsResponseObject interface {
+	VisitListOrganizationsResponse(w http.ResponseWriter) error
 }
 
-type FindManyOrganizations200JSONResponse struct {
+type ListOrganizations200JSONResponse struct {
 	Data []Organization `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -196,29 +196,29 @@ type FindManyOrganizations200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response FindManyOrganizations200JSONResponse) VisitFindManyOrganizationsResponse(w http.ResponseWriter) error {
+func (response ListOrganizations200JSONResponse) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyOrganizations400ApplicationProblemPlusJSONResponse struct {
+type ListOrganizations400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyOrganizations400ApplicationProblemPlusJSONResponse) VisitFindManyOrganizationsResponse(w http.ResponseWriter) error {
+func (response ListOrganizations400ApplicationProblemPlusJSONResponse) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyOrganizations401ApplicationProblemPlusJSONResponse struct {
+type ListOrganizations401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyOrganizations401ApplicationProblemPlusJSONResponse) VisitFindManyOrganizationsResponse(w http.ResponseWriter) error {
+func (response ListOrganizations401ApplicationProblemPlusJSONResponse) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -363,10 +363,10 @@ func (response UpdateOrganization404ApplicationProblemPlusJSONResponse) VisitUpd
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Find many organizations
+	// List organizations
 	// (GET /organizations)
-	FindManyOrganizations(ctx context.Context, request FindManyOrganizationsRequestObject) (FindManyOrganizationsResponseObject, error)
-	// Create a new organization
+	ListOrganizations(ctx context.Context, request ListOrganizationsRequestObject) (ListOrganizationsResponseObject, error)
+	// Create an organization
 	// (POST /organizations)
 	CreateOrganization(ctx context.Context, request CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error)
 	// Delete an organization
@@ -392,25 +392,25 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// FindManyOrganizations operation middleware
-func (sh *strictHandler) FindManyOrganizations(ctx echo.Context, params FindManyOrganizationsParams) error {
-	var request FindManyOrganizationsRequestObject
+// ListOrganizations operation middleware
+func (sh *strictHandler) ListOrganizations(ctx echo.Context, params ListOrganizationsParams) error {
+	var request ListOrganizationsRequestObject
 
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.FindManyOrganizations(ctx.Request().Context(), request.(FindManyOrganizationsRequestObject))
+		return sh.ssi.ListOrganizations(ctx.Request().Context(), request.(ListOrganizationsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "FindManyOrganizations")
+		handler = middleware(handler, "ListOrganizations")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(FindManyOrganizationsResponseObject); ok {
-		return validResponse.VisitFindManyOrganizationsResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListOrganizationsResponseObject); ok {
+		return validResponse.VisitListOrganizationsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

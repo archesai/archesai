@@ -17,18 +17,18 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Find many accounts
-	// (GET /auth/accounts)
-	AccountsFindMany(ctx echo.Context, params AccountsFindManyParams) error
-	// Create account (Register)
-	// (POST /auth/accounts)
-	AccountsCreate(ctx echo.Context) error
+	// List accounts
+	// (GET /accounts)
+	ListAccounts(ctx echo.Context, params ListAccountsParams) error
+	// Create account
+	// (POST /accounts)
+	CreateAccount(ctx echo.Context) error
 	// Delete an account
-	// (DELETE /auth/accounts/{id})
-	AccountsDelete(ctx echo.Context, id openapi_types.UUID) error
+	// (DELETE /accounts/{id})
+	DeleteAccount(ctx echo.Context, id openapi_types.UUID) error
 	// Find an account
-	// (GET /auth/accounts/{id})
-	AccountsGetOne(ctx echo.Context, id openapi_types.UUID) error
+	// (GET /accounts/{id})
+	GetAccount(ctx echo.Context, id openapi_types.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -36,14 +36,14 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// AccountsFindMany converts echo context to params.
-func (w *ServerInterfaceWrapper) AccountsFindMany(ctx echo.Context) error {
+// ListAccounts converts echo context to params.
+func (w *ServerInterfaceWrapper) ListAccounts(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params AccountsFindManyParams
+	var params ListAccountsParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -66,12 +66,12 @@ func (w *ServerInterfaceWrapper) AccountsFindMany(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.AccountsFindMany(ctx, params)
+	err = w.Handler.ListAccounts(ctx, params)
 	return err
 }
 
-// AccountsCreate converts echo context to params.
-func (w *ServerInterfaceWrapper) AccountsCreate(ctx echo.Context) error {
+// CreateAccount converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateAccount(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
@@ -79,12 +79,12 @@ func (w *ServerInterfaceWrapper) AccountsCreate(ctx echo.Context) error {
 	ctx.Set(SessionCookieScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.AccountsCreate(ctx)
+	err = w.Handler.CreateAccount(ctx)
 	return err
 }
 
-// AccountsDelete converts echo context to params.
-func (w *ServerInterfaceWrapper) AccountsDelete(ctx echo.Context) error {
+// DeleteAccount converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteAccount(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -97,12 +97,12 @@ func (w *ServerInterfaceWrapper) AccountsDelete(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.AccountsDelete(ctx, id)
+	err = w.Handler.DeleteAccount(ctx, id)
 	return err
 }
 
-// AccountsGetOne converts echo context to params.
-func (w *ServerInterfaceWrapper) AccountsGetOne(ctx echo.Context) error {
+// GetAccount converts echo context to params.
+func (w *ServerInterfaceWrapper) GetAccount(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -115,7 +115,7 @@ func (w *ServerInterfaceWrapper) AccountsGetOne(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.AccountsGetOne(ctx, id)
+	err = w.Handler.GetAccount(ctx, id)
 	return err
 }
 
@@ -147,10 +147,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/auth/accounts", wrapper.AccountsFindMany)
-	router.POST(baseURL+"/auth/accounts", wrapper.AccountsCreate)
-	router.DELETE(baseURL+"/auth/accounts/:id", wrapper.AccountsDelete)
-	router.GET(baseURL+"/auth/accounts/:id", wrapper.AccountsGetOne)
+	router.GET(baseURL+"/accounts", wrapper.ListAccounts)
+	router.POST(baseURL+"/accounts", wrapper.CreateAccount)
+	router.DELETE(baseURL+"/accounts/:id", wrapper.DeleteAccount)
+	router.GET(baseURL+"/accounts/:id", wrapper.GetAccount)
 
 }
 
@@ -160,143 +160,143 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type AccountsFindManyRequestObject struct {
-	Params AccountsFindManyParams
+type ListAccountsRequestObject struct {
+	Params ListAccountsParams
 }
 
-type AccountsFindManyResponseObject interface {
-	VisitAccountsFindManyResponse(w http.ResponseWriter) error
+type ListAccountsResponseObject interface {
+	VisitListAccountsResponse(w http.ResponseWriter) error
 }
 
-type AccountsFindMany200JSONResponse struct {
+type ListAccounts200JSONResponse struct {
 	Data []Account `json:"data"`
 	Meta struct {
 		Total float32 `json:"total"`
 	} `json:"meta"`
 }
 
-func (response AccountsFindMany200JSONResponse) VisitAccountsFindManyResponse(w http.ResponseWriter) error {
+func (response ListAccounts200JSONResponse) VisitListAccountsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type AccountsFindMany400ApplicationProblemPlusJSONResponse struct {
+type ListAccounts400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response AccountsFindMany400ApplicationProblemPlusJSONResponse) VisitAccountsFindManyResponse(w http.ResponseWriter) error {
+func (response ListAccounts400ApplicationProblemPlusJSONResponse) VisitListAccountsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type AccountsFindMany401ApplicationProblemPlusJSONResponse struct {
+type ListAccounts401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response AccountsFindMany401ApplicationProblemPlusJSONResponse) VisitAccountsFindManyResponse(w http.ResponseWriter) error {
+func (response ListAccounts401ApplicationProblemPlusJSONResponse) VisitListAccountsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type AccountsCreateRequestObject struct {
-	Body *AccountsCreateJSONRequestBody
+type CreateAccountRequestObject struct {
+	Body *CreateAccountJSONRequestBody
 }
 
-type AccountsCreateResponseObject interface {
-	VisitAccountsCreateResponse(w http.ResponseWriter) error
+type CreateAccountResponseObject interface {
+	VisitCreateAccountResponse(w http.ResponseWriter) error
 }
 
-type AccountsCreate201JSONResponse TokenResponse
+type CreateAccount201JSONResponse TokenResponse
 
-func (response AccountsCreate201JSONResponse) VisitAccountsCreateResponse(w http.ResponseWriter) error {
+func (response CreateAccount201JSONResponse) VisitCreateAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type AccountsCreate400ApplicationProblemPlusJSONResponse struct {
+type CreateAccount400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response AccountsCreate400ApplicationProblemPlusJSONResponse) VisitAccountsCreateResponse(w http.ResponseWriter) error {
+func (response CreateAccount400ApplicationProblemPlusJSONResponse) VisitCreateAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type AccountsCreate409ApplicationProblemPlusJSONResponse Problem
+type CreateAccount409ApplicationProblemPlusJSONResponse Problem
 
-func (response AccountsCreate409ApplicationProblemPlusJSONResponse) VisitAccountsCreateResponse(w http.ResponseWriter) error {
+func (response CreateAccount409ApplicationProblemPlusJSONResponse) VisitCreateAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(409)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type AccountsDeleteRequestObject struct {
+type DeleteAccountRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type AccountsDeleteResponseObject interface {
-	VisitAccountsDeleteResponse(w http.ResponseWriter) error
+type DeleteAccountResponseObject interface {
+	VisitDeleteAccountResponse(w http.ResponseWriter) error
 }
 
-type AccountsDelete200JSONResponse struct {
+type DeleteAccount200JSONResponse struct {
 	// Data Schema for Account entity (authentication provider account)
 	Data Account `json:"data"`
 }
 
-func (response AccountsDelete200JSONResponse) VisitAccountsDeleteResponse(w http.ResponseWriter) error {
+func (response DeleteAccount200JSONResponse) VisitDeleteAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type AccountsDelete404ApplicationProblemPlusJSONResponse struct {
+type DeleteAccount404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response AccountsDelete404ApplicationProblemPlusJSONResponse) VisitAccountsDeleteResponse(w http.ResponseWriter) error {
+func (response DeleteAccount404ApplicationProblemPlusJSONResponse) VisitDeleteAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type AccountsGetOneRequestObject struct {
+type GetAccountRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type AccountsGetOneResponseObject interface {
-	VisitAccountsGetOneResponse(w http.ResponseWriter) error
+type GetAccountResponseObject interface {
+	VisitGetAccountResponse(w http.ResponseWriter) error
 }
 
-type AccountsGetOne200JSONResponse struct {
+type GetAccount200JSONResponse struct {
 	// Data Schema for Account entity (authentication provider account)
 	Data Account `json:"data"`
 }
 
-func (response AccountsGetOne200JSONResponse) VisitAccountsGetOneResponse(w http.ResponseWriter) error {
+func (response GetAccount200JSONResponse) VisitGetAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type AccountsGetOne404ApplicationProblemPlusJSONResponse struct {
+type GetAccount404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response AccountsGetOne404ApplicationProblemPlusJSONResponse) VisitAccountsGetOneResponse(w http.ResponseWriter) error {
+func (response GetAccount404ApplicationProblemPlusJSONResponse) VisitGetAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -305,18 +305,18 @@ func (response AccountsGetOne404ApplicationProblemPlusJSONResponse) VisitAccount
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Find many accounts
-	// (GET /auth/accounts)
-	AccountsFindMany(ctx context.Context, request AccountsFindManyRequestObject) (AccountsFindManyResponseObject, error)
-	// Create account (Register)
-	// (POST /auth/accounts)
-	AccountsCreate(ctx context.Context, request AccountsCreateRequestObject) (AccountsCreateResponseObject, error)
+	// List accounts
+	// (GET /accounts)
+	ListAccounts(ctx context.Context, request ListAccountsRequestObject) (ListAccountsResponseObject, error)
+	// Create account
+	// (POST /accounts)
+	CreateAccount(ctx context.Context, request CreateAccountRequestObject) (CreateAccountResponseObject, error)
 	// Delete an account
-	// (DELETE /auth/accounts/{id})
-	AccountsDelete(ctx context.Context, request AccountsDeleteRequestObject) (AccountsDeleteResponseObject, error)
+	// (DELETE /accounts/{id})
+	DeleteAccount(ctx context.Context, request DeleteAccountRequestObject) (DeleteAccountResponseObject, error)
 	// Find an account
-	// (GET /auth/accounts/{id})
-	AccountsGetOne(ctx context.Context, request AccountsGetOneRequestObject) (AccountsGetOneResponseObject, error)
+	// (GET /accounts/{id})
+	GetAccount(ctx context.Context, request GetAccountRequestObject) (GetAccountResponseObject, error)
 }
 
 type StrictHandlerFunc = strictecho.StrictEchoHandlerFunc
@@ -331,104 +331,104 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// AccountsFindMany operation middleware
-func (sh *strictHandler) AccountsFindMany(ctx echo.Context, params AccountsFindManyParams) error {
-	var request AccountsFindManyRequestObject
+// ListAccounts operation middleware
+func (sh *strictHandler) ListAccounts(ctx echo.Context, params ListAccountsParams) error {
+	var request ListAccountsRequestObject
 
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.AccountsFindMany(ctx.Request().Context(), request.(AccountsFindManyRequestObject))
+		return sh.ssi.ListAccounts(ctx.Request().Context(), request.(ListAccountsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "AccountsFindMany")
+		handler = middleware(handler, "ListAccounts")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(AccountsFindManyResponseObject); ok {
-		return validResponse.VisitAccountsFindManyResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListAccountsResponseObject); ok {
+		return validResponse.VisitListAccountsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// AccountsCreate operation middleware
-func (sh *strictHandler) AccountsCreate(ctx echo.Context) error {
-	var request AccountsCreateRequestObject
+// CreateAccount operation middleware
+func (sh *strictHandler) CreateAccount(ctx echo.Context) error {
+	var request CreateAccountRequestObject
 
-	var body AccountsCreateJSONRequestBody
+	var body CreateAccountJSONRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
 	request.Body = &body
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.AccountsCreate(ctx.Request().Context(), request.(AccountsCreateRequestObject))
+		return sh.ssi.CreateAccount(ctx.Request().Context(), request.(CreateAccountRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "AccountsCreate")
+		handler = middleware(handler, "CreateAccount")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(AccountsCreateResponseObject); ok {
-		return validResponse.VisitAccountsCreateResponse(ctx.Response())
+	} else if validResponse, ok := response.(CreateAccountResponseObject); ok {
+		return validResponse.VisitCreateAccountResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// AccountsDelete operation middleware
-func (sh *strictHandler) AccountsDelete(ctx echo.Context, id openapi_types.UUID) error {
-	var request AccountsDeleteRequestObject
+// DeleteAccount operation middleware
+func (sh *strictHandler) DeleteAccount(ctx echo.Context, id openapi_types.UUID) error {
+	var request DeleteAccountRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.AccountsDelete(ctx.Request().Context(), request.(AccountsDeleteRequestObject))
+		return sh.ssi.DeleteAccount(ctx.Request().Context(), request.(DeleteAccountRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "AccountsDelete")
+		handler = middleware(handler, "DeleteAccount")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(AccountsDeleteResponseObject); ok {
-		return validResponse.VisitAccountsDeleteResponse(ctx.Response())
+	} else if validResponse, ok := response.(DeleteAccountResponseObject); ok {
+		return validResponse.VisitDeleteAccountResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// AccountsGetOne operation middleware
-func (sh *strictHandler) AccountsGetOne(ctx echo.Context, id openapi_types.UUID) error {
-	var request AccountsGetOneRequestObject
+// GetAccount operation middleware
+func (sh *strictHandler) GetAccount(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetAccountRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.AccountsGetOne(ctx.Request().Context(), request.(AccountsGetOneRequestObject))
+		return sh.ssi.GetAccount(ctx.Request().Context(), request.(GetAccountRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "AccountsGetOne")
+		handler = middleware(handler, "GetAccount")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(AccountsGetOneResponseObject); ok {
-		return validResponse.VisitAccountsGetOneResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetAccountResponseObject); ok {
+		return validResponse.VisitGetAccountResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

@@ -27,8 +27,10 @@ func (s *Service) ListOrganizationMembers(ctx context.Context, organizationID uu
 	// Get all members and filter by organization
 	// TODO: Add organization filter to ListMembersParams when available
 	params := ListMembersParams{
-		Limit:  1000, // Get a reasonable number of members
-		Offset: 0,
+		Page: PageQuery{
+			Number: 1,
+			Size:   1000, // Get a reasonable number of members
+		},
 	}
 	allMembers, _, err := s.repo.List(ctx, params)
 	if err != nil {
@@ -110,8 +112,10 @@ func (s *Service) GetMemberByUserAndOrganization(ctx context.Context, userID uui
 	// List all members and find the matching one
 	// TODO: Add a specific repository method for this query
 	params := ListMembersParams{
-		Limit:  1000,
-		Offset: 0,
+		Page: PageQuery{
+			Number: 1,
+			Size:   1000,
+		},
 	}
 	allMembers, _, err := s.repo.List(ctx, params)
 	if err != nil {

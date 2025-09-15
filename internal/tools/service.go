@@ -24,8 +24,10 @@ func NewService(repo Repository, logger *slog.Logger) *Service {
 // List retrieves tools for an organization
 func (s *Service) List(ctx context.Context, _ string, limit, offset int) ([]*Tool, int64, error) {
 	params := ListToolsParams{
-		Limit:  limit,
-		Offset: offset,
+		Page: PageQuery{
+			Number: offset/limit + 1,
+			Size:   limit,
+		},
 	}
 
 	tools, total, err := s.repo.List(ctx, params)

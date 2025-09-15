@@ -1,6 +1,6 @@
 get:
   operationId: getHealth
-  summary: Health check endpoint
+  summary: Get health status
   tags:
     - Health
   description: Check the health status of the application

@@ -20,12 +20,6 @@ type Repository interface {
 	GetByStripeCustomerId(ctx context.Context, stripeCustomerId string) (*Organization, error)
 }
 
-// ListOrganizationsParams represents parameters for listing organizations.
-type ListOrganizationsParams struct {
-	Limit  int
-	Offset int
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

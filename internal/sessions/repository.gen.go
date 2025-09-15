@@ -22,14 +22,6 @@ type Repository interface {
 	DeleteExpired(ctx context.Context) error
 }
 
-// ListSessionsParams represents parameters for listing sessions.
-type ListSessionsParams struct {
-	Limit  int
-	Offset int
-
-	UserID *string
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

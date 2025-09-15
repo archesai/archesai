@@ -6,7 +6,7 @@ import type {
 } from "@archesai/client";
 import {
   deleteLabel,
-  getFindManyLabelsSuspenseQueryOptions,
+  getListLabelsSuspenseQueryOptions,
 } from "@archesai/client";
 import { ListIcon } from "@archesai/ui/components/custom/icons";
 import { Timestamp } from "@archesai/ui/components/custom/timestamp";
@@ -23,7 +23,7 @@ export default function LabelDataTable(): JSX.Element {
   const navigate = useNavigate();
 
   const getQueryOptions = (query: SearchQuery) => {
-    return getFindManyLabelsSuspenseQueryOptions({
+    return getListLabelsSuspenseQueryOptions({
       filter: query.filter as unknown as LabelsFilterParameter,
       page: query.page as PageQueryParameter,
       sort: query.sort as LabelsSortParameter,

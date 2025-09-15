@@ -4,10 +4,7 @@ import type {
   RunsFilterParameter,
   RunsSortParameter,
 } from "@archesai/client";
-import {
-  deleteRun,
-  getFindManyRunsSuspenseQueryOptions,
-} from "@archesai/client";
+import { deleteRun, getListRunsSuspenseQueryOptions } from "@archesai/client";
 import { PackageCheckIcon } from "@archesai/ui/components/custom/icons";
 import { StatusTypeEnumButton } from "@archesai/ui/components/custom/run-status-button";
 import { Timestamp } from "@archesai/ui/components/custom/timestamp";
@@ -21,7 +18,7 @@ export default function RunDataTable(): JSX.Element {
   const navigate = useNavigate();
 
   const getQueryOptions = (query: SearchQuery) => {
-    return getFindManyRunsSuspenseQueryOptions({
+    return getListRunsSuspenseQueryOptions({
       filter: query.filter as unknown as RunsFilterParameter,
       page: query.page as PageQueryParameter,
       sort: query.sort as RunsSortParameter,

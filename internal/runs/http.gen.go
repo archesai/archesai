@@ -18,19 +18,19 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Find many runs
-	// (GET /workflows/runs)
-	FindManyRuns(ctx echo.Context, params FindManyRunsParams) error
+	// (GET /runs)
+	ListRuns(ctx echo.Context, params ListRunsParams) error
 	// Create a new run
-	// (POST /workflows/runs)
+	// (POST /runs)
 	CreateRun(ctx echo.Context) error
 	// Delete a run
-	// (DELETE /workflows/runs/{id})
+	// (DELETE /runs/{id})
 	DeleteRun(ctx echo.Context, id openapi_types.UUID) error
 	// Find a run
-	// (GET /workflows/runs/{id})
-	GetOneRun(ctx echo.Context, id openapi_types.UUID) error
+	// (GET /runs/{id})
+	GetRun(ctx echo.Context, id openapi_types.UUID) error
 	// Update a run
-	// (PATCH /workflows/runs/{id})
+	// (PATCH /runs/{id})
 	UpdateRun(ctx echo.Context, id openapi_types.UUID) error
 }
 
@@ -39,14 +39,14 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// FindManyRuns converts echo context to params.
-func (w *ServerInterfaceWrapper) FindManyRuns(ctx echo.Context) error {
+// ListRuns converts echo context to params.
+func (w *ServerInterfaceWrapper) ListRuns(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FindManyRunsParams
+	var params ListRunsParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -69,7 +69,7 @@ func (w *ServerInterfaceWrapper) FindManyRuns(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.FindManyRuns(ctx, params)
+	err = w.Handler.ListRuns(ctx, params)
 	return err
 }
 
@@ -102,8 +102,8 @@ func (w *ServerInterfaceWrapper) DeleteRun(ctx echo.Context) error {
 	return err
 }
 
-// GetOneRun converts echo context to params.
-func (w *ServerInterfaceWrapper) GetOneRun(ctx echo.Context) error {
+// GetRun converts echo context to params.
+func (w *ServerInterfaceWrapper) GetRun(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -116,7 +116,7 @@ func (w *ServerInterfaceWrapper) GetOneRun(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetOneRun(ctx, id)
+	err = w.Handler.GetRun(ctx, id)
 	return err
 }
 
@@ -166,11 +166,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/workflows/runs", wrapper.FindManyRuns)
-	router.POST(baseURL+"/workflows/runs", wrapper.CreateRun)
-	router.DELETE(baseURL+"/workflows/runs/:id", wrapper.DeleteRun)
-	router.GET(baseURL+"/workflows/runs/:id", wrapper.GetOneRun)
-	router.PATCH(baseURL+"/workflows/runs/:id", wrapper.UpdateRun)
+	router.GET(baseURL+"/runs", wrapper.ListRuns)
+	router.POST(baseURL+"/runs", wrapper.CreateRun)
+	router.DELETE(baseURL+"/runs/:id", wrapper.DeleteRun)
+	router.GET(baseURL+"/runs/:id", wrapper.GetRun)
+	router.PATCH(baseURL+"/runs/:id", wrapper.UpdateRun)
 
 }
 
@@ -180,15 +180,15 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type FindManyRunsRequestObject struct {
-	Params FindManyRunsParams
+type ListRunsRequestObject struct {
+	Params ListRunsParams
 }
 
-type FindManyRunsResponseObject interface {
-	VisitFindManyRunsResponse(w http.ResponseWriter) error
+type ListRunsResponseObject interface {
+	VisitListRunsResponse(w http.ResponseWriter) error
 }
 
-type FindManyRuns200JSONResponse struct {
+type ListRuns200JSONResponse struct {
 	Data []Run `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -196,29 +196,29 @@ type FindManyRuns200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response FindManyRuns200JSONResponse) VisitFindManyRunsResponse(w http.ResponseWriter) error {
+func (response ListRuns200JSONResponse) VisitListRunsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyRuns400ApplicationProblemPlusJSONResponse struct {
+type ListRuns400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyRuns400ApplicationProblemPlusJSONResponse) VisitFindManyRunsResponse(w http.ResponseWriter) error {
+func (response ListRuns400ApplicationProblemPlusJSONResponse) VisitListRunsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyRuns401ApplicationProblemPlusJSONResponse struct {
+type ListRuns401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyRuns401ApplicationProblemPlusJSONResponse) VisitFindManyRunsResponse(w http.ResponseWriter) error {
+func (response ListRuns401ApplicationProblemPlusJSONResponse) VisitListRunsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -298,31 +298,31 @@ func (response DeleteRun404ApplicationProblemPlusJSONResponse) VisitDeleteRunRes
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneRunRequestObject struct {
+type GetRunRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type GetOneRunResponseObject interface {
-	VisitGetOneRunResponse(w http.ResponseWriter) error
+type GetRunResponseObject interface {
+	VisitGetRunResponse(w http.ResponseWriter) error
 }
 
-type GetOneRun200JSONResponse struct {
+type GetRun200JSONResponse struct {
 	// Data Schema for Run entity
 	Data Run `json:"data"`
 }
 
-func (response GetOneRun200JSONResponse) VisitGetOneRunResponse(w http.ResponseWriter) error {
+func (response GetRun200JSONResponse) VisitGetRunResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneRun404ApplicationProblemPlusJSONResponse struct {
+type GetRun404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response GetOneRun404ApplicationProblemPlusJSONResponse) VisitGetOneRunResponse(w http.ResponseWriter) error {
+func (response GetRun404ApplicationProblemPlusJSONResponse) VisitGetRunResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -364,19 +364,19 @@ func (response UpdateRun404ApplicationProblemPlusJSONResponse) VisitUpdateRunRes
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Find many runs
-	// (GET /workflows/runs)
-	FindManyRuns(ctx context.Context, request FindManyRunsRequestObject) (FindManyRunsResponseObject, error)
+	// (GET /runs)
+	ListRuns(ctx context.Context, request ListRunsRequestObject) (ListRunsResponseObject, error)
 	// Create a new run
-	// (POST /workflows/runs)
+	// (POST /runs)
 	CreateRun(ctx context.Context, request CreateRunRequestObject) (CreateRunResponseObject, error)
 	// Delete a run
-	// (DELETE /workflows/runs/{id})
+	// (DELETE /runs/{id})
 	DeleteRun(ctx context.Context, request DeleteRunRequestObject) (DeleteRunResponseObject, error)
 	// Find a run
-	// (GET /workflows/runs/{id})
-	GetOneRun(ctx context.Context, request GetOneRunRequestObject) (GetOneRunResponseObject, error)
+	// (GET /runs/{id})
+	GetRun(ctx context.Context, request GetRunRequestObject) (GetRunResponseObject, error)
 	// Update a run
-	// (PATCH /workflows/runs/{id})
+	// (PATCH /runs/{id})
 	UpdateRun(ctx context.Context, request UpdateRunRequestObject) (UpdateRunResponseObject, error)
 }
 
@@ -392,25 +392,25 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// FindManyRuns operation middleware
-func (sh *strictHandler) FindManyRuns(ctx echo.Context, params FindManyRunsParams) error {
-	var request FindManyRunsRequestObject
+// ListRuns operation middleware
+func (sh *strictHandler) ListRuns(ctx echo.Context, params ListRunsParams) error {
+	var request ListRunsRequestObject
 
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.FindManyRuns(ctx.Request().Context(), request.(FindManyRunsRequestObject))
+		return sh.ssi.ListRuns(ctx.Request().Context(), request.(ListRunsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "FindManyRuns")
+		handler = middleware(handler, "ListRuns")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(FindManyRunsResponseObject); ok {
-		return validResponse.VisitFindManyRunsResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListRunsResponseObject); ok {
+		return validResponse.VisitListRunsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
@@ -471,25 +471,25 @@ func (sh *strictHandler) DeleteRun(ctx echo.Context, id openapi_types.UUID) erro
 	return nil
 }
 
-// GetOneRun operation middleware
-func (sh *strictHandler) GetOneRun(ctx echo.Context, id openapi_types.UUID) error {
-	var request GetOneRunRequestObject
+// GetRun operation middleware
+func (sh *strictHandler) GetRun(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetRunRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetOneRun(ctx.Request().Context(), request.(GetOneRunRequestObject))
+		return sh.ssi.GetRun(ctx.Request().Context(), request.(GetRunRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetOneRun")
+		handler = middleware(handler, "GetRun")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(GetOneRunResponseObject); ok {
-		return validResponse.VisitGetOneRunResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetRunResponseObject); ok {
+		return validResponse.VisitGetRunResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

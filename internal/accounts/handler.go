@@ -39,18 +39,21 @@ func NewHandler(service AccountService, logger *slog.Logger) *Handler {
 	}
 }
 
-// AccountsFindMany handles GET /auth/accounts
-func (h *Handler) AccountsFindMany(ctx echo.Context, params AccountsFindManyParams) error {
-	// Convert AccountsFindManyParams to ListAccountsParams
-	listParams := ListAccountsParams{
-		Limit:  10,
-		Offset: 0,
+// ListAccounts handles GET /auth/accounts
+func (h *Handler) ListAccounts(ctx echo.Context, params ListAccountsParams) error {
+	// Handle pagination
+	limit := 10
+	offset := 0
+	if params.Page.Number > 0 && params.Page.Size > 0 {
+		offset = (params.Page.Number - 1) * params.Page.Size
+		limit = params.Page.Size
 	}
 
-	// Handle pagination
-	if params.Page.Number > 0 && params.Page.Size > 0 {
-		listParams.Offset = (params.Page.Number - 1) * params.Page.Size
-		listParams.Limit = params.Page.Size
+	listParams := ListAccountsParams{
+		Page: PageQuery{
+			Number: offset/limit + 1,
+			Size:   limit,
+		},
 	}
 
 	accounts, total, err := h.service.List(ctx.Request().Context(), listParams)
@@ -71,8 +74,8 @@ func (h *Handler) AccountsFindMany(ctx echo.Context, params AccountsFindManyPara
 	})
 }
 
-// AccountsGetOne handles GET /auth/accounts/{id}
-func (h *Handler) AccountsGetOne(ctx echo.Context, id uuid.UUID) error {
+// GetAccount handles GET /auth/accounts/{id}
+func (h *Handler) GetAccount(ctx echo.Context, id uuid.UUID) error {
 	account, err := h.service.Get(ctx.Request().Context(), id)
 	if err != nil {
 		if err == ErrAccountNotFound {
@@ -95,8 +98,8 @@ func (h *Handler) AccountsGetOne(ctx echo.Context, id uuid.UUID) error {
 	return ctx.JSON(http.StatusOK, account)
 }
 
-// AccountsDelete handles DELETE /auth/accounts/{id}
-func (h *Handler) AccountsDelete(ctx echo.Context, id uuid.UUID) error {
+// DeleteAccount handles DELETE /auth/accounts/{id}
+func (h *Handler) DeleteAccount(ctx echo.Context, id uuid.UUID) error {
 	err := h.service.Delete(ctx.Request().Context(), id)
 	if err != nil {
 		if err == ErrAccountNotFound {
@@ -119,9 +122,9 @@ func (h *Handler) AccountsDelete(ctx echo.Context, id uuid.UUID) error {
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-// AccountsCreate handles POST /auth/accounts (registration)
-func (h *Handler) AccountsCreate(ctx echo.Context) error {
-	var req AccountsCreateJSONRequestBody
+// CreateAccount handles POST /auth/accounts (registration)
+func (h *Handler) CreateAccount(ctx echo.Context) error {
+	var req CreateAccountJSONRequestBody
 	if err := ctx.Bind(&req); err != nil {
 		h.logger.Error("failed to bind request", "error", err)
 		return ctx.JSON(http.StatusBadRequest, Problem{

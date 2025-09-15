@@ -104,8 +104,10 @@ func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {
 // List lists users with pagination
 func (s *Service) List(ctx context.Context, limit, offset int32) ([]*User, error) {
 	params := ListUsersParams{
-		Limit:  int(limit),
-		Offset: int(offset),
+		Page: PageQuery{
+			Number: int(offset)/int(limit) + 1,
+			Size:   int(limit),
+		},
 	}
 	entities, _, err := s.repo.List(ctx, params)
 	if err != nil {

@@ -32,9 +32,9 @@ import type {
   CreateOrganization201,
   CreateOrganizationBody,
   DeleteOrganization200,
-  FindManyOrganizations200,
-  FindManyOrganizationsParams,
   GetOneOrganization200,
+  ListOrganizations200,
+  ListOrganizationsParams,
   NotFoundResponse,
   UnauthorizedResponse,
   UpdateOrganization200,
@@ -49,8 +49,8 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Create a new organization
- * @summary Create a new organization
+ * Create an organization
+ * @summary Create an organization
  */
 export const getCreateOrganizationUrl = () => {
 
@@ -105,7 +105,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CreateOrganizationMutationError = BadRequestResponse | UnauthorizedResponse
 
     /**
- * @summary Create a new organization
+ * @summary Create an organization
  */
 export const useCreateOrganization = <TError = BadRequestResponse | UnauthorizedResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createOrganization>>, TError,{data: CreateOrganizationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -121,10 +121,10 @@ export const useCreateOrganization = <TError = BadRequestResponse | Unauthorized
       return useMutation(mutationOptions , queryClient);
     }
     /**
- * Find many organizations
- * @summary Find many organizations
+ * List organizations
+ * @summary List organizations
  */
-export const getFindManyOrganizationsUrl = (params?: FindManyOrganizationsParams,) => {
+export const getListOrganizationsUrl = (params?: ListOrganizationsParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -145,9 +145,9 @@ export const getFindManyOrganizationsUrl = (params?: FindManyOrganizationsParams
   return stringifiedParams.length > 0 ? `/organizations?${stringifiedParams}` : `/organizations`
 }
 
-export const findManyOrganizations = async (params?: FindManyOrganizationsParams, options?: RequestInit): Promise<FindManyOrganizations200> => {
+export const listOrganizations = async (params?: ListOrganizationsParams, options?: RequestInit): Promise<ListOrganizations200> => {
   
-  return customFetch<FindManyOrganizations200>(getFindManyOrganizationsUrl(params),
+  return customFetch<ListOrganizations200>(getListOrganizationsUrl(params),
   {      
     ...options,
     method: 'GET'
@@ -158,67 +158,67 @@ export const findManyOrganizations = async (params?: FindManyOrganizationsParams
 
 
 
-export const getFindManyOrganizationsQueryKey = (params?: FindManyOrganizationsParams,) => {
+export const getListOrganizationsQueryKey = (params?: ListOrganizationsParams,) => {
     return [`/organizations`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getFindManyOrganizationsQueryOptions = <TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: FindManyOrganizationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListOrganizationsQueryOptions = <TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListOrganizationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFindManyOrganizationsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListOrganizationsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyOrganizations>>> = ({ signal }) => findManyOrganizations(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOrganizations>>> = ({ signal }) => listOrganizations(params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyOrganizationsQueryResult = NonNullable<Awaited<ReturnType<typeof findManyOrganizations>>>
-export type FindManyOrganizationsQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListOrganizationsQueryResult = NonNullable<Awaited<ReturnType<typeof listOrganizations>>>
+export type ListOrganizationsQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useFindManyOrganizations<TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  FindManyOrganizationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>> & Pick<
+export function useListOrganizations<TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListOrganizationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyOrganizations>>,
+          Awaited<ReturnType<typeof listOrganizations>>,
           TError,
-          Awaited<ReturnType<typeof findManyOrganizations>>
+          Awaited<ReturnType<typeof listOrganizations>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyOrganizations<TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyOrganizationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>> & Pick<
+export function useListOrganizations<TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListOrganizationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyOrganizations>>,
+          Awaited<ReturnType<typeof listOrganizations>>,
           TError,
-          Awaited<ReturnType<typeof findManyOrganizations>>
+          Awaited<ReturnType<typeof listOrganizations>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyOrganizations<TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyOrganizationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListOrganizations<TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListOrganizationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many organizations
+ * @summary List organizations
  */
 
-export function useFindManyOrganizations<TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyOrganizationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListOrganizations<TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListOrganizationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFindManyOrganizationsQueryOptions(params,options)
+  const queryOptions = getListOrganizationsQueryOptions(params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -229,50 +229,50 @@ export function useFindManyOrganizations<TData = Awaited<ReturnType<typeof findM
 
 
 
-export const getFindManyOrganizationsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: FindManyOrganizationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListOrganizationsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListOrganizationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFindManyOrganizationsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListOrganizationsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyOrganizations>>> = ({ signal }) => findManyOrganizations(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOrganizations>>> = ({ signal }) => listOrganizations(params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyOrganizationsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findManyOrganizations>>>
-export type FindManyOrganizationsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListOrganizationsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listOrganizations>>>
+export type ListOrganizationsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useFindManyOrganizationsSuspense<TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  FindManyOrganizationsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListOrganizationsSuspense<TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListOrganizationsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyOrganizationsSuspense<TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyOrganizationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListOrganizationsSuspense<TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListOrganizationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyOrganizationsSuspense<TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyOrganizationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListOrganizationsSuspense<TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListOrganizationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many organizations
+ * @summary List organizations
  */
 
-export function useFindManyOrganizationsSuspense<TData = Awaited<ReturnType<typeof findManyOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyOrganizationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListOrganizationsSuspense<TData = Awaited<ReturnType<typeof listOrganizations>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListOrganizationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listOrganizations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFindManyOrganizationsSuspenseQueryOptions(params,options)
+  const queryOptions = getListOrganizationsSuspenseQueryOptions(params,options)
 
   const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

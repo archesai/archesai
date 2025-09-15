@@ -28,8 +28,8 @@ func NewHandler(service *Service, logger *slog.Logger) *Handler {
 	}
 }
 
-// FindManyOrganizations retrieves organizations (implements StrictServerInterface)
-func (h *Handler) FindManyOrganizations(ctx context.Context, req FindManyOrganizationsRequestObject) (FindManyOrganizationsResponseObject, error) {
+// ListOrganizations retrieves organizations (implements StrictServerInterface)
+func (h *Handler) ListOrganizations(ctx context.Context, req ListOrganizationsRequestObject) (ListOrganizationsResponseObject, error) {
 	// Default pagination
 	limit := 50
 	offset := 0
@@ -53,7 +53,7 @@ func (h *Handler) FindManyOrganizations(ctx context.Context, req FindManyOrganiz
 	}
 
 	totalFloat32 := float32(total)
-	return FindManyOrganizations200JSONResponse{
+	return ListOrganizations200JSONResponse{
 		Data: data,
 		Meta: struct {
 			Total float32 `json:"total"`

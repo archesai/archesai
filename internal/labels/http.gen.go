@@ -18,19 +18,19 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Find many labels
-	// (GET /content/labels)
-	FindManyLabels(ctx echo.Context, params FindManyLabelsParams) error
+	// (GET /labels)
+	ListLabels(ctx echo.Context, params ListLabelsParams) error
 	// Create a new label
-	// (POST /content/labels)
+	// (POST /labels)
 	CreateLabel(ctx echo.Context) error
 	// Delete a label
-	// (DELETE /content/labels/{id})
+	// (DELETE /labels/{id})
 	DeleteLabel(ctx echo.Context, id openapi_types.UUID) error
 	// Find a label
-	// (GET /content/labels/{id})
-	GetOneLabel(ctx echo.Context, id openapi_types.UUID) error
+	// (GET /labels/{id})
+	GetLabel(ctx echo.Context, id openapi_types.UUID) error
 	// Update a label
-	// (PATCH /content/labels/{id})
+	// (PATCH /labels/{id})
 	UpdateLabel(ctx echo.Context, id openapi_types.UUID) error
 }
 
@@ -39,14 +39,14 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// FindManyLabels converts echo context to params.
-func (w *ServerInterfaceWrapper) FindManyLabels(ctx echo.Context) error {
+// ListLabels converts echo context to params.
+func (w *ServerInterfaceWrapper) ListLabels(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FindManyLabelsParams
+	var params ListLabelsParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -69,7 +69,7 @@ func (w *ServerInterfaceWrapper) FindManyLabels(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.FindManyLabels(ctx, params)
+	err = w.Handler.ListLabels(ctx, params)
 	return err
 }
 
@@ -102,8 +102,8 @@ func (w *ServerInterfaceWrapper) DeleteLabel(ctx echo.Context) error {
 	return err
 }
 
-// GetOneLabel converts echo context to params.
-func (w *ServerInterfaceWrapper) GetOneLabel(ctx echo.Context) error {
+// GetLabel converts echo context to params.
+func (w *ServerInterfaceWrapper) GetLabel(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -116,7 +116,7 @@ func (w *ServerInterfaceWrapper) GetOneLabel(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetOneLabel(ctx, id)
+	err = w.Handler.GetLabel(ctx, id)
 	return err
 }
 
@@ -166,11 +166,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/content/labels", wrapper.FindManyLabels)
-	router.POST(baseURL+"/content/labels", wrapper.CreateLabel)
-	router.DELETE(baseURL+"/content/labels/:id", wrapper.DeleteLabel)
-	router.GET(baseURL+"/content/labels/:id", wrapper.GetOneLabel)
-	router.PATCH(baseURL+"/content/labels/:id", wrapper.UpdateLabel)
+	router.GET(baseURL+"/labels", wrapper.ListLabels)
+	router.POST(baseURL+"/labels", wrapper.CreateLabel)
+	router.DELETE(baseURL+"/labels/:id", wrapper.DeleteLabel)
+	router.GET(baseURL+"/labels/:id", wrapper.GetLabel)
+	router.PATCH(baseURL+"/labels/:id", wrapper.UpdateLabel)
 
 }
 
@@ -180,15 +180,15 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type FindManyLabelsRequestObject struct {
-	Params FindManyLabelsParams
+type ListLabelsRequestObject struct {
+	Params ListLabelsParams
 }
 
-type FindManyLabelsResponseObject interface {
-	VisitFindManyLabelsResponse(w http.ResponseWriter) error
+type ListLabelsResponseObject interface {
+	VisitListLabelsResponse(w http.ResponseWriter) error
 }
 
-type FindManyLabels200JSONResponse struct {
+type ListLabels200JSONResponse struct {
 	Data []Label `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -196,29 +196,29 @@ type FindManyLabels200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response FindManyLabels200JSONResponse) VisitFindManyLabelsResponse(w http.ResponseWriter) error {
+func (response ListLabels200JSONResponse) VisitListLabelsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyLabels400ApplicationProblemPlusJSONResponse struct {
+type ListLabels400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyLabels400ApplicationProblemPlusJSONResponse) VisitFindManyLabelsResponse(w http.ResponseWriter) error {
+func (response ListLabels400ApplicationProblemPlusJSONResponse) VisitListLabelsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyLabels401ApplicationProblemPlusJSONResponse struct {
+type ListLabels401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyLabels401ApplicationProblemPlusJSONResponse) VisitFindManyLabelsResponse(w http.ResponseWriter) error {
+func (response ListLabels401ApplicationProblemPlusJSONResponse) VisitListLabelsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -298,31 +298,31 @@ func (response DeleteLabel404ApplicationProblemPlusJSONResponse) VisitDeleteLabe
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneLabelRequestObject struct {
+type GetLabelRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type GetOneLabelResponseObject interface {
-	VisitGetOneLabelResponse(w http.ResponseWriter) error
+type GetLabelResponseObject interface {
+	VisitGetLabelResponse(w http.ResponseWriter) error
 }
 
-type GetOneLabel200JSONResponse struct {
+type GetLabel200JSONResponse struct {
 	// Data Schema for Label entity
 	Data Label `json:"data"`
 }
 
-func (response GetOneLabel200JSONResponse) VisitGetOneLabelResponse(w http.ResponseWriter) error {
+func (response GetLabel200JSONResponse) VisitGetLabelResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneLabel404ApplicationProblemPlusJSONResponse struct {
+type GetLabel404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response GetOneLabel404ApplicationProblemPlusJSONResponse) VisitGetOneLabelResponse(w http.ResponseWriter) error {
+func (response GetLabel404ApplicationProblemPlusJSONResponse) VisitGetLabelResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -364,19 +364,19 @@ func (response UpdateLabel404ApplicationProblemPlusJSONResponse) VisitUpdateLabe
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Find many labels
-	// (GET /content/labels)
-	FindManyLabels(ctx context.Context, request FindManyLabelsRequestObject) (FindManyLabelsResponseObject, error)
+	// (GET /labels)
+	ListLabels(ctx context.Context, request ListLabelsRequestObject) (ListLabelsResponseObject, error)
 	// Create a new label
-	// (POST /content/labels)
+	// (POST /labels)
 	CreateLabel(ctx context.Context, request CreateLabelRequestObject) (CreateLabelResponseObject, error)
 	// Delete a label
-	// (DELETE /content/labels/{id})
+	// (DELETE /labels/{id})
 	DeleteLabel(ctx context.Context, request DeleteLabelRequestObject) (DeleteLabelResponseObject, error)
 	// Find a label
-	// (GET /content/labels/{id})
-	GetOneLabel(ctx context.Context, request GetOneLabelRequestObject) (GetOneLabelResponseObject, error)
+	// (GET /labels/{id})
+	GetLabel(ctx context.Context, request GetLabelRequestObject) (GetLabelResponseObject, error)
 	// Update a label
-	// (PATCH /content/labels/{id})
+	// (PATCH /labels/{id})
 	UpdateLabel(ctx context.Context, request UpdateLabelRequestObject) (UpdateLabelResponseObject, error)
 }
 
@@ -392,25 +392,25 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// FindManyLabels operation middleware
-func (sh *strictHandler) FindManyLabels(ctx echo.Context, params FindManyLabelsParams) error {
-	var request FindManyLabelsRequestObject
+// ListLabels operation middleware
+func (sh *strictHandler) ListLabels(ctx echo.Context, params ListLabelsParams) error {
+	var request ListLabelsRequestObject
 
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.FindManyLabels(ctx.Request().Context(), request.(FindManyLabelsRequestObject))
+		return sh.ssi.ListLabels(ctx.Request().Context(), request.(ListLabelsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "FindManyLabels")
+		handler = middleware(handler, "ListLabels")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(FindManyLabelsResponseObject); ok {
-		return validResponse.VisitFindManyLabelsResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListLabelsResponseObject); ok {
+		return validResponse.VisitListLabelsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
@@ -471,25 +471,25 @@ func (sh *strictHandler) DeleteLabel(ctx echo.Context, id openapi_types.UUID) er
 	return nil
 }
 
-// GetOneLabel operation middleware
-func (sh *strictHandler) GetOneLabel(ctx echo.Context, id openapi_types.UUID) error {
-	var request GetOneLabelRequestObject
+// GetLabel operation middleware
+func (sh *strictHandler) GetLabel(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetLabelRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetOneLabel(ctx.Request().Context(), request.(GetOneLabelRequestObject))
+		return sh.ssi.GetLabel(ctx.Request().Context(), request.(GetLabelRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetOneLabel")
+		handler = middleware(handler, "GetLabel")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(GetOneLabelResponseObject); ok {
-		return validResponse.VisitGetOneLabelResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetLabelResponseObject); ok {
+		return validResponse.VisitGetLabelResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

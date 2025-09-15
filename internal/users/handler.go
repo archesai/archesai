@@ -29,11 +29,11 @@ func NewUserStrictHandler(handler StrictServerInterface) ServerInterface {
 	return NewStrictHandler(handler, nil)
 }
 
-// GetOneUser handles getting a single user
-func (h *Handler) GetOneUser(ctx context.Context, req GetOneUserRequestObject) (GetOneUserResponseObject, error) {
+// GetUser handles getting a single user
+func (h *Handler) GetUser(ctx context.Context, req GetUserRequestObject) (GetUserResponseObject, error) {
 	userID, err := uuid.Parse(req.Id.String())
 	if err != nil {
-		return GetOneUser404ApplicationProblemPlusJSONResponse{
+		return GetUser404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 				Title:  "Invalid user ID",
 				Status: 400,
@@ -47,7 +47,7 @@ func (h *Handler) GetOneUser(ctx context.Context, req GetOneUserRequestObject) (
 	if err != nil {
 		switch err {
 		case ErrUserNotFound:
-			return GetOneUser404ApplicationProblemPlusJSONResponse{
+			return GetUser404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Title:  "User not found",
 					Status: 404,
@@ -57,7 +57,7 @@ func (h *Handler) GetOneUser(ctx context.Context, req GetOneUserRequestObject) (
 			}, nil
 		default:
 			h.logger.Error("failed to get user", "error", err)
-			return GetOneUser404ApplicationProblemPlusJSONResponse{
+			return GetUser404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Title:  "Internal server error",
 					Status: 500,
@@ -68,7 +68,7 @@ func (h *Handler) GetOneUser(ctx context.Context, req GetOneUserRequestObject) (
 		}
 	}
 
-	return GetOneUser200JSONResponse{
+	return GetUser200JSONResponse{
 		Data: *user,
 	}, nil
 }
@@ -181,8 +181,8 @@ func (h *Handler) DeleteUser(ctx context.Context, req DeleteUserRequestObject) (
 	}, nil
 }
 
-// FindManyUsers handles listing multiple users
-func (h *Handler) FindManyUsers(ctx context.Context, req FindManyUsersRequestObject) (FindManyUsersResponseObject, error) {
+// ListUsers handles listing multiple users
+func (h *Handler) ListUsers(ctx context.Context, req ListUsersRequestObject) (ListUsersResponseObject, error) {
 	limit := int32(50) // Default limit
 	offset := int32(0) // Default offset
 
@@ -197,7 +197,7 @@ func (h *Handler) FindManyUsers(ctx context.Context, req FindManyUsersRequestObj
 	users, err := h.service.List(ctx, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list users", "error", err)
-		return FindManyUsers400ApplicationProblemPlusJSONResponse{
+		return ListUsers400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
 				Title:  "Internal server error",
 				Status: 500,
@@ -213,7 +213,7 @@ func (h *Handler) FindManyUsers(ctx context.Context, req FindManyUsersRequestObj
 		responseUsers[i] = *user
 	}
 
-	response := FindManyUsers200JSONResponse{
+	response := ListUsers200JSONResponse{
 		Data: responseUsers,
 	}
 	response.Meta.Total = float32(len(responseUsers)) // In a real implementation, this would be the total count

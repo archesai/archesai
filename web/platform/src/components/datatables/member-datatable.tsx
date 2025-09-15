@@ -6,8 +6,8 @@ import type {
 } from "@archesai/client";
 import {
   deleteMember,
-  getFindManyMembersSuspenseQueryOptions,
-  useGetOneSessionSuspense,
+  getListMembersSuspenseQueryOptions,
+  useGetSessionSuspense,
 } from "@archesai/client";
 import { UserIcon } from "@archesai/ui/components/custom/icons";
 import { Timestamp } from "@archesai/ui/components/custom/timestamp";
@@ -20,11 +20,11 @@ import type { JSX } from "react";
 import MemberForm from "#components/forms/member-form";
 
 export default function MemberDataTable(): JSX.Element {
-  const { data: sessionData } = useGetOneSessionSuspense("current");
+  const { data: sessionData } = useGetSessionSuspense("current");
   const organizationId = sessionData.data.activeOrganizationId;
 
   const getQueryOptions = (query: SearchQuery) => {
-    return getFindManyMembersSuspenseQueryOptions(organizationId, {
+    return getListMembersSuspenseQueryOptions(organizationId, {
       filter: query.filter as unknown as MembersFilterParameter,
       page: query.page as PageQueryParameter,
       sort: query.sort as MembersSortParameter,

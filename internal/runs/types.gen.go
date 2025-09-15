@@ -23,25 +23,25 @@ const (
 	QUEUED     RunStatus = "QUEUED"
 )
 
-// Defines values for FindManyRunsParamsSortField.
+// Defines values for ListRunsParamsSortField.
 const (
-	CompletedAt    FindManyRunsParamsSortField = "completedAt"
-	CreatedAt      FindManyRunsParamsSortField = "createdAt"
-	Error          FindManyRunsParamsSortField = "error"
-	Id             FindManyRunsParamsSortField = "id"
-	OrganizationId FindManyRunsParamsSortField = "organizationId"
-	PipelineId     FindManyRunsParamsSortField = "pipelineId"
-	Progress       FindManyRunsParamsSortField = "progress"
-	StartedAt      FindManyRunsParamsSortField = "startedAt"
-	Status         FindManyRunsParamsSortField = "status"
-	ToolId         FindManyRunsParamsSortField = "toolId"
-	UpdatedAt      FindManyRunsParamsSortField = "updatedAt"
+	CompletedAt    ListRunsParamsSortField = "completedAt"
+	CreatedAt      ListRunsParamsSortField = "createdAt"
+	Error          ListRunsParamsSortField = "error"
+	Id             ListRunsParamsSortField = "id"
+	OrganizationId ListRunsParamsSortField = "organizationId"
+	PipelineId     ListRunsParamsSortField = "pipelineId"
+	Progress       ListRunsParamsSortField = "progress"
+	StartedAt      ListRunsParamsSortField = "startedAt"
+	Status         ListRunsParamsSortField = "status"
+	ToolId         ListRunsParamsSortField = "toolId"
+	UpdatedAt      ListRunsParamsSortField = "updatedAt"
 )
 
-// Defines values for FindManyRunsParamsSortOrder.
+// Defines values for ListRunsParamsSortOrder.
 const (
-	Asc  FindManyRunsParamsSortOrder = "asc"
-	Desc FindManyRunsParamsSortOrder = "desc"
+	Asc  ListRunsParamsSortOrder = "asc"
+	Desc ListRunsParamsSortOrder = "desc"
 )
 
 // FilterNode A recursive filter node that can be a condition or group
@@ -158,8 +158,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManyRunsParams defines parameters for FindManyRuns.
-type FindManyRunsParams struct {
+// ListRunsParams defines parameters for ListRuns.
+type ListRunsParams struct {
 	// Filter Filter runs by field values. Supported fields:
 	// - createdAt, id, updatedAt, completedAt, error, organizationId
 	// - pipelineId, progress, startedAt, status, toolId
@@ -172,11 +172,11 @@ type FindManyRunsParams struct {
 	Sort RunsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManyRunsParamsSortField defines parameters for FindManyRuns.
-type FindManyRunsParamsSortField string
+// ListRunsParamsSortField defines parameters for ListRuns.
+type ListRunsParamsSortField string
 
-// FindManyRunsParamsSortOrder defines parameters for FindManyRuns.
-type FindManyRunsParamsSortOrder string
+// ListRunsParamsSortOrder defines parameters for ListRuns.
+type ListRunsParamsSortOrder string
 
 // CreateRunJSONBody defines parameters for CreateRun.
 type CreateRunJSONBody struct {

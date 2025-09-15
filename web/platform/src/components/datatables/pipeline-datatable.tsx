@@ -6,7 +6,7 @@ import type {
 } from "@archesai/client";
 import {
   deletePipeline,
-  getFindManyPipelinesSuspenseQueryOptions,
+  getListPipelinesSuspenseQueryOptions,
 } from "@archesai/client";
 import { WorkflowIcon } from "@archesai/ui/components/custom/icons";
 import { Timestamp } from "@archesai/ui/components/custom/timestamp";
@@ -20,7 +20,7 @@ export default function PipelineDataTable(): JSX.Element {
   const navigate = useNavigate();
 
   const getQueryOptions = (query: SearchQuery) => {
-    return getFindManyPipelinesSuspenseQueryOptions({
+    return getListPipelinesSuspenseQueryOptions({
       filter: query.filter as unknown as PipelinesFilterParameter,
       page: query.page as PageQueryParameter,
       sort: query.sort as PipelinesSortParameter,

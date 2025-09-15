@@ -1,4 +1,4 @@
-import { useGetOneArtifactSuspense } from "@archesai/client";
+import { useGetArtifactSuspense } from "@archesai/client";
 import { ArtifactViewer } from "@archesai/ui/components/custom/artifact-viewer";
 import { Card } from "@archesai/ui/components/shadcn/card";
 import { createFileRoute } from "@tanstack/react-router";
@@ -47,7 +47,7 @@ function ArtifactViewerWrapper({
 }): JSX.Element {
   const {
     data: { data: artifact },
-  } = useGetOneArtifactSuspense(artifactId);
+  } = useGetArtifactSuspense(artifactId);
 
   return <ArtifactViewer artifact={artifact} />;
 }

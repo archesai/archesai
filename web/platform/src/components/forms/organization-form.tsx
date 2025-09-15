@@ -5,7 +5,7 @@ import type {
 import {
   useCreateOrganization,
   useGetOneOrganizationSuspense,
-  useGetOneSessionSuspense,
+  useGetSessionSuspense,
   useUpdateOrganization,
 } from "@archesai/client";
 import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
@@ -17,7 +17,7 @@ import type { JSX } from "react";
 export default function OrganizationForm(): JSX.Element {
   const {
     data: { data: session },
-  } = useGetOneSessionSuspense("current");
+  } = useGetSessionSuspense("current");
   const { mutateAsync: createOrganization } = useCreateOrganization();
   const { mutateAsync: updateOrganization } = useUpdateOrganization();
   const {

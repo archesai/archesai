@@ -1,0 +1,81 @@
+post:
+  operationId: createLabel
+  summary: Create a new label
+  tags:
+    - Labels
+  description: Create a new label
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              description: The name of the label
+              type: string
+              minLength: 1
+              example: Example Name
+          required:
+            - name
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Label.yaml
+            required:
+              - data
+            additionalProperties: false
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+get:
+  operationId: listLabels
+  summary: Find many labels
+  tags:
+    - Labels
+  description: Find many labels
+  parameters:
+    - $ref: ../components/parameters/LabelsFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/LabelsSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: ../components/schemas/Label.yaml
+              meta:
+                type: object
+                properties:
+                  total:
+                    description: Total number of items in the collection
+                    type: number
+                    example: 42
+                required:
+                  - total
+                additionalProperties: false
+            required:
+              - data
+              - meta
+            additionalProperties: false
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

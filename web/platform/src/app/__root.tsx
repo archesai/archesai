@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
-import type { GetOneSession200 } from "@archesai/client";
-import { getGetOneSessionQueryKey } from "@archesai/client";
+import type { GetSession200 } from "@archesai/client";
+import { getGetSessionQueryKey } from "@archesai/client";
 import { Toaster } from "@archesai/ui/components/shadcn/sonner";
 import { LinkProvider } from "@archesai/ui/hooks/use-link";
 import { seo } from "@archesai/ui/lib/seo";
@@ -25,12 +25,12 @@ import globalsCss from "../styles/globals.css?url";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
-  session: GetOneSession200 | null;
+  session: GetSession200 | null;
 }>()({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.fetchQuery({
       queryFn: ({ signal }) => getServerSession({ signal }),
-      queryKey: getGetOneSessionQueryKey(),
+      queryKey: getGetSessionQueryKey(),
     });
     return {
       session,

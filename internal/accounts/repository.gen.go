@@ -20,15 +20,6 @@ type Repository interface {
 	ListByUserId(ctx context.Context, userId uuid.UUID) ([]*Account, error)
 }
 
-// ListAccountsParams represents parameters for listing accounts.
-type ListAccountsParams struct {
-	Limit  int
-	Offset int
-
-	UserID     *uuid.UUID
-	ProviderID *string
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

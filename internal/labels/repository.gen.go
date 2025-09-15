@@ -20,12 +20,6 @@ type Repository interface {
 	GetByName(ctx context.Context, name string, organizationId string) (*Label, error)
 }
 
-// ListLabelsParams represents parameters for listing labels.
-type ListLabelsParams struct {
-	Limit  int
-	Offset int
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

@@ -21,8 +21,6 @@ security:
   - bearerAuth: []
   - sessionCookie: []
 tags:
-  - name: APIKeys
-    description: API key management and authentication
   - name: Accounts
     description: User account management
   - name: Artifacts
@@ -49,90 +47,91 @@ tags:
     description: Pipeline run management
   - name: Sessions
     description: User session management
+  - name: Tokens
+    description: API token management
   - name: Tools
     description: Tool management
   - name: Users
     description: User profile management
 paths:
-  /auth/accounts:
+  /accounts:
     $ref: paths/accounts.yaml
-  /auth/accounts/{id}:
+  /accounts/{id}:
     $ref: paths/accounts_{id}.yaml
-  /auth/register:
-    $ref: paths/auth_register.yaml
-  /auth/login:
-    $ref: paths/auth_login.yaml
-  /auth/logout:
-    $ref: paths/auth_logout.yaml
-  /auth/email-verification/verify:
-    $ref: paths/auth_email-verification_verify.yaml
-  /auth/email-verification/request:
-    $ref: paths/auth_email-verification_request.yaml
-  /auth/password-reset/request:
-    $ref: paths/auth_password-reset_request.yaml
-  /auth/password-reset/verify:
-    $ref: paths/auth_password-reset_verify.yaml
-  /auth/email-change/request:
-    $ref: paths/auth_email-change_request.yaml
-  /auth/email-change/verify:
-    $ref: paths/auth_email-change_verify.yaml
-  /auth/sessions:
-    $ref: paths/auth_sessions.yaml
-  /auth/sessions/{id}:
-    $ref: paths/auth_sessions_{id}.yaml
-  /auth/users:
-    $ref: paths/auth_users.yaml
-  /auth/users/{id}:
-    $ref: paths/auth_users_{id}.yaml
+  /accounts/register:
+    $ref: paths/accounts_register.yaml
+  /accounts/email-verification/verify:
+    $ref: paths/accounts_email-verification_verify.yaml
+  /accounts/email-verification/request:
+    $ref: paths/accounts_email-verification_request.yaml
+  /accounts/password-reset/request:
+    $ref: paths/accounts_password-reset_request.yaml
+  /accounts/password-reset/verify:
+    $ref: paths/accounts_password-reset_verify.yaml
+  /accounts/email-change/request:
+    $ref: paths/accounts_email-change_request.yaml
+  /accounts/email-change/verify:
+    $ref: paths/accounts_email-change_verify.yaml
+  /sessions:
+    $ref: paths/sessions.yaml
+  /sessions/{id}:
+    $ref: paths/sessions_{id}.yaml
+  /users:
+    $ref: paths/users.yaml
+  /users/{id}:
+    $ref: paths/users_{id}.yaml
   # OAuth domain
   /auth/oauth/{provider}/authorize:
     $ref: paths/oauth_authorize.yaml
   /auth/oauth/{provider}/callback:
     $ref: paths/oauth_callback.yaml
   # API Keys domain
-  /apikeys:
-    $ref: paths/apikeys.yaml
-  /apikeys/{id}:
-    $ref: paths/apikeys_{id}.yaml
+  /tokens:
+    $ref: paths/tokens.yaml
+  /tokens/{id}:
+    $ref: paths/tokens_{id}.yaml
   # Organizations domain
   /organizations:
     $ref: paths/organizations.yaml
   /organizations/{id}:
     $ref: paths/organizations_{id}.yaml
   /organizations/{id}/members:
-    $ref: paths/organizations_members.yaml
+    $ref: paths/members.yaml
   /organizations/{id}/members/{memberId}:
-    $ref: paths/organizations_members_{id}.yaml
+    $ref: paths/members_{id}.yaml
   /organizations/{id}/invitations:
-    $ref: paths/organizations_invitations.yaml
+    $ref: paths/invitations.yaml
   /organizations/{id}/invitations/{invitationId}:
-    $ref: paths/organizations_invitations_{id}.yaml
-  # Workflows domain
-  /workflows/pipelines:
-    $ref: paths/workflows_pipelines.yaml
-  /workflows/pipelines/{id}:
-    $ref: paths/workflows_pipelines_{id}.yaml
-  /workflows/pipelines/{id}/steps:
+    $ref: paths/invitations_{id}.yaml
+  # Pipelines domain
+  /pipelines:
+    $ref: paths/pipelines.yaml
+  /pipelines/{id}:
+    $ref: paths/pipelines_{id}.yaml
+  /pipelines/{id}/steps:
     $ref: paths/pipelines_{id}_steps.yaml
-  /workflows/pipelines/{id}/execution-plans:
+  /pipelines/{id}/execution-plans:
     $ref: paths/pipelines_{id}_execution-plans.yaml
-  /workflows/runs:
-    $ref: paths/workflows_runs.yaml
-  /workflows/runs/{id}:
-    $ref: paths/workflows_runs_{id}.yaml
-  /workflows/tools:
-    $ref: paths/workflows_tools.yaml
-  /workflows/tools/{id}:
-    $ref: paths/workflows_tools_{id}.yaml
-  # Content domain
-  /content/artifacts:
-    $ref: paths/content_artifacts.yaml
-  /content/artifacts/{id}:
-    $ref: paths/content_artifacts_{id}.yaml
-  /content/labels:
-    $ref: paths/content_labels.yaml
-  /content/labels/{id}:
-    $ref: paths/content_labels_{id}.yaml
+  # Runs domain
+  /runs:
+    $ref: paths/runs.yaml
+  /runs/{id}:
+    $ref: paths/runs_{id}.yaml
+  # Tools domain
+  /tools:
+    $ref: paths/tools.yaml
+  /tools/{id}:
+    $ref: paths/tools_{id}.yaml
+  # Artifacts domain
+  /artifacts:
+    $ref: paths/artifacts.yaml
+  /artifacts/{id}:
+    $ref: paths/artifacts_{id}.yaml
+  # Labels domain
+  /labels:
+    $ref: paths/labels.yaml
+  /labels/{id}:
+    $ref: paths/labels_{id}.yaml
   /config:
     $ref: paths/config.yaml
   /health:

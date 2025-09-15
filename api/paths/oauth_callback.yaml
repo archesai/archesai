@@ -1,5 +1,5 @@
 get:
-  operationId: oauth_callback
+  operationId: oauthCallback
   summary: Handle OAuth callback
   tags:
     - OAuth

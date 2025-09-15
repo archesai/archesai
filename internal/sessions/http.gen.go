@@ -18,19 +18,19 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Find many sessions
-	// (GET /auth/sessions)
-	SessionsFindMany(ctx echo.Context, params SessionsFindManyParams) error
+	// (GET /sessions)
+	ListSessions(ctx echo.Context, params ListSessionsParams) error
 	// Create session (Login)
-	// (POST /auth/sessions)
-	SessionsCreate(ctx echo.Context) error
+	// (POST /sessions)
+	CreateSession(ctx echo.Context) error
 	// Delete session (Logout)
-	// (DELETE /auth/sessions/{id})
-	SessionsDelete(ctx echo.Context, id openapi_types.UUID) error
+	// (DELETE /sessions/{id})
+	DeleteSession(ctx echo.Context, id openapi_types.UUID) error
 	// Find a session
-	// (GET /auth/sessions/{id})
-	GetOneSession(ctx echo.Context, id openapi_types.UUID) error
+	// (GET /sessions/{id})
+	GetSession(ctx echo.Context, id openapi_types.UUID) error
 	// Update Session
-	// (PATCH /auth/sessions/{id})
+	// (PATCH /sessions/{id})
 	UpdateSession(ctx echo.Context, id openapi_types.UUID) error
 }
 
@@ -39,14 +39,14 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// SessionsFindMany converts echo context to params.
-func (w *ServerInterfaceWrapper) SessionsFindMany(ctx echo.Context) error {
+// ListSessions converts echo context to params.
+func (w *ServerInterfaceWrapper) ListSessions(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params SessionsFindManyParams
+	var params ListSessionsParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -69,12 +69,12 @@ func (w *ServerInterfaceWrapper) SessionsFindMany(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.SessionsFindMany(ctx, params)
+	err = w.Handler.ListSessions(ctx, params)
 	return err
 }
 
-// SessionsCreate converts echo context to params.
-func (w *ServerInterfaceWrapper) SessionsCreate(ctx echo.Context) error {
+// CreateSession converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateSession(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
@@ -82,12 +82,12 @@ func (w *ServerInterfaceWrapper) SessionsCreate(ctx echo.Context) error {
 	ctx.Set(SessionCookieScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.SessionsCreate(ctx)
+	err = w.Handler.CreateSession(ctx)
 	return err
 }
 
-// SessionsDelete converts echo context to params.
-func (w *ServerInterfaceWrapper) SessionsDelete(ctx echo.Context) error {
+// DeleteSession converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteSession(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -100,12 +100,12 @@ func (w *ServerInterfaceWrapper) SessionsDelete(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.SessionsDelete(ctx, id)
+	err = w.Handler.DeleteSession(ctx, id)
 	return err
 }
 
-// GetOneSession converts echo context to params.
-func (w *ServerInterfaceWrapper) GetOneSession(ctx echo.Context) error {
+// GetSession converts echo context to params.
+func (w *ServerInterfaceWrapper) GetSession(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -118,7 +118,7 @@ func (w *ServerInterfaceWrapper) GetOneSession(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetOneSession(ctx, id)
+	err = w.Handler.GetSession(ctx, id)
 	return err
 }
 
@@ -170,11 +170,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/auth/sessions", wrapper.SessionsFindMany)
-	router.POST(baseURL+"/auth/sessions", wrapper.SessionsCreate)
-	router.DELETE(baseURL+"/auth/sessions/:id", wrapper.SessionsDelete)
-	router.GET(baseURL+"/auth/sessions/:id", wrapper.GetOneSession)
-	router.PATCH(baseURL+"/auth/sessions/:id", wrapper.UpdateSession)
+	router.GET(baseURL+"/sessions", wrapper.ListSessions)
+	router.POST(baseURL+"/sessions", wrapper.CreateSession)
+	router.DELETE(baseURL+"/sessions/:id", wrapper.DeleteSession)
+	router.GET(baseURL+"/sessions/:id", wrapper.GetSession)
+	router.PATCH(baseURL+"/sessions/:id", wrapper.UpdateSession)
 
 }
 
@@ -187,15 +187,15 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type SessionsFindManyRequestObject struct {
-	Params SessionsFindManyParams
+type ListSessionsRequestObject struct {
+	Params ListSessionsParams
 }
 
-type SessionsFindManyResponseObject interface {
-	VisitSessionsFindManyResponse(w http.ResponseWriter) error
+type ListSessionsResponseObject interface {
+	VisitListSessionsResponse(w http.ResponseWriter) error
 }
 
-type SessionsFindMany200JSONResponse struct {
+type ListSessions200JSONResponse struct {
 	Data []Session `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -203,136 +203,136 @@ type SessionsFindMany200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response SessionsFindMany200JSONResponse) VisitSessionsFindManyResponse(w http.ResponseWriter) error {
+func (response ListSessions200JSONResponse) VisitListSessionsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type SessionsFindMany400ApplicationProblemPlusJSONResponse struct {
+type ListSessions400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response SessionsFindMany400ApplicationProblemPlusJSONResponse) VisitSessionsFindManyResponse(w http.ResponseWriter) error {
+func (response ListSessions400ApplicationProblemPlusJSONResponse) VisitListSessionsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type SessionsFindMany401ApplicationProblemPlusJSONResponse struct {
+type ListSessions401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response SessionsFindMany401ApplicationProblemPlusJSONResponse) VisitSessionsFindManyResponse(w http.ResponseWriter) error {
+func (response ListSessions401ApplicationProblemPlusJSONResponse) VisitListSessionsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type SessionsCreateRequestObject struct {
-	Body *SessionsCreateJSONRequestBody
+type CreateSessionRequestObject struct {
+	Body *CreateSessionJSONRequestBody
 }
 
-type SessionsCreateResponseObject interface {
-	VisitSessionsCreateResponse(w http.ResponseWriter) error
+type CreateSessionResponseObject interface {
+	VisitCreateSessionResponse(w http.ResponseWriter) error
 }
 
-type SessionsCreate201JSONResponse TokenResponse
+type CreateSession201JSONResponse TokenResponse
 
-func (response SessionsCreate201JSONResponse) VisitSessionsCreateResponse(w http.ResponseWriter) error {
+func (response CreateSession201JSONResponse) VisitCreateSessionResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type SessionsCreate400ApplicationProblemPlusJSONResponse struct {
+type CreateSession400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response SessionsCreate400ApplicationProblemPlusJSONResponse) VisitSessionsCreateResponse(w http.ResponseWriter) error {
+func (response CreateSession400ApplicationProblemPlusJSONResponse) VisitCreateSessionResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type SessionsCreate401ApplicationProblemPlusJSONResponse struct {
+type CreateSession401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response SessionsCreate401ApplicationProblemPlusJSONResponse) VisitSessionsCreateResponse(w http.ResponseWriter) error {
+func (response CreateSession401ApplicationProblemPlusJSONResponse) VisitCreateSessionResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type SessionsDeleteRequestObject struct {
+type DeleteSessionRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type SessionsDeleteResponseObject interface {
-	VisitSessionsDeleteResponse(w http.ResponseWriter) error
+type DeleteSessionResponseObject interface {
+	VisitDeleteSessionResponse(w http.ResponseWriter) error
 }
 
-type SessionsDelete204Response = NoContentResponse
+type DeleteSession204Response = NoContentResponse
 
-func (response SessionsDelete204Response) VisitSessionsDeleteResponse(w http.ResponseWriter) error {
+func (response DeleteSession204Response) VisitDeleteSessionResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type SessionsDelete401ApplicationProblemPlusJSONResponse struct {
+type DeleteSession401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response SessionsDelete401ApplicationProblemPlusJSONResponse) VisitSessionsDeleteResponse(w http.ResponseWriter) error {
+func (response DeleteSession401ApplicationProblemPlusJSONResponse) VisitDeleteSessionResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type SessionsDelete404ApplicationProblemPlusJSONResponse struct {
+type DeleteSession404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response SessionsDelete404ApplicationProblemPlusJSONResponse) VisitSessionsDeleteResponse(w http.ResponseWriter) error {
+func (response DeleteSession404ApplicationProblemPlusJSONResponse) VisitDeleteSessionResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneSessionRequestObject struct {
+type GetSessionRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type GetOneSessionResponseObject interface {
-	VisitGetOneSessionResponse(w http.ResponseWriter) error
+type GetSessionResponseObject interface {
+	VisitGetSessionResponse(w http.ResponseWriter) error
 }
 
-type GetOneSession200JSONResponse struct {
+type GetSession200JSONResponse struct {
 	// Data Schema for Session entity
 	Data Session `json:"data"`
 }
 
-func (response GetOneSession200JSONResponse) VisitGetOneSessionResponse(w http.ResponseWriter) error {
+func (response GetSession200JSONResponse) VisitGetSessionResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneSession404ApplicationProblemPlusJSONResponse struct {
+type GetSession404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response GetOneSession404ApplicationProblemPlusJSONResponse) VisitGetOneSessionResponse(w http.ResponseWriter) error {
+func (response GetSession404ApplicationProblemPlusJSONResponse) VisitGetSessionResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -374,19 +374,19 @@ func (response UpdateSession401ApplicationProblemPlusJSONResponse) VisitUpdateSe
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Find many sessions
-	// (GET /auth/sessions)
-	SessionsFindMany(ctx context.Context, request SessionsFindManyRequestObject) (SessionsFindManyResponseObject, error)
+	// (GET /sessions)
+	ListSessions(ctx context.Context, request ListSessionsRequestObject) (ListSessionsResponseObject, error)
 	// Create session (Login)
-	// (POST /auth/sessions)
-	SessionsCreate(ctx context.Context, request SessionsCreateRequestObject) (SessionsCreateResponseObject, error)
+	// (POST /sessions)
+	CreateSession(ctx context.Context, request CreateSessionRequestObject) (CreateSessionResponseObject, error)
 	// Delete session (Logout)
-	// (DELETE /auth/sessions/{id})
-	SessionsDelete(ctx context.Context, request SessionsDeleteRequestObject) (SessionsDeleteResponseObject, error)
+	// (DELETE /sessions/{id})
+	DeleteSession(ctx context.Context, request DeleteSessionRequestObject) (DeleteSessionResponseObject, error)
 	// Find a session
-	// (GET /auth/sessions/{id})
-	GetOneSession(ctx context.Context, request GetOneSessionRequestObject) (GetOneSessionResponseObject, error)
+	// (GET /sessions/{id})
+	GetSession(ctx context.Context, request GetSessionRequestObject) (GetSessionResponseObject, error)
 	// Update Session
-	// (PATCH /auth/sessions/{id})
+	// (PATCH /sessions/{id})
 	UpdateSession(ctx context.Context, request UpdateSessionRequestObject) (UpdateSessionResponseObject, error)
 }
 
@@ -402,104 +402,104 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// SessionsFindMany operation middleware
-func (sh *strictHandler) SessionsFindMany(ctx echo.Context, params SessionsFindManyParams) error {
-	var request SessionsFindManyRequestObject
+// ListSessions operation middleware
+func (sh *strictHandler) ListSessions(ctx echo.Context, params ListSessionsParams) error {
+	var request ListSessionsRequestObject
 
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.SessionsFindMany(ctx.Request().Context(), request.(SessionsFindManyRequestObject))
+		return sh.ssi.ListSessions(ctx.Request().Context(), request.(ListSessionsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "SessionsFindMany")
+		handler = middleware(handler, "ListSessions")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(SessionsFindManyResponseObject); ok {
-		return validResponse.VisitSessionsFindManyResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListSessionsResponseObject); ok {
+		return validResponse.VisitListSessionsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// SessionsCreate operation middleware
-func (sh *strictHandler) SessionsCreate(ctx echo.Context) error {
-	var request SessionsCreateRequestObject
+// CreateSession operation middleware
+func (sh *strictHandler) CreateSession(ctx echo.Context) error {
+	var request CreateSessionRequestObject
 
-	var body SessionsCreateJSONRequestBody
+	var body CreateSessionJSONRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
 	request.Body = &body
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.SessionsCreate(ctx.Request().Context(), request.(SessionsCreateRequestObject))
+		return sh.ssi.CreateSession(ctx.Request().Context(), request.(CreateSessionRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "SessionsCreate")
+		handler = middleware(handler, "CreateSession")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(SessionsCreateResponseObject); ok {
-		return validResponse.VisitSessionsCreateResponse(ctx.Response())
+	} else if validResponse, ok := response.(CreateSessionResponseObject); ok {
+		return validResponse.VisitCreateSessionResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// SessionsDelete operation middleware
-func (sh *strictHandler) SessionsDelete(ctx echo.Context, id openapi_types.UUID) error {
-	var request SessionsDeleteRequestObject
+// DeleteSession operation middleware
+func (sh *strictHandler) DeleteSession(ctx echo.Context, id openapi_types.UUID) error {
+	var request DeleteSessionRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.SessionsDelete(ctx.Request().Context(), request.(SessionsDeleteRequestObject))
+		return sh.ssi.DeleteSession(ctx.Request().Context(), request.(DeleteSessionRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "SessionsDelete")
+		handler = middleware(handler, "DeleteSession")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(SessionsDeleteResponseObject); ok {
-		return validResponse.VisitSessionsDeleteResponse(ctx.Response())
+	} else if validResponse, ok := response.(DeleteSessionResponseObject); ok {
+		return validResponse.VisitDeleteSessionResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// GetOneSession operation middleware
-func (sh *strictHandler) GetOneSession(ctx echo.Context, id openapi_types.UUID) error {
-	var request GetOneSessionRequestObject
+// GetSession operation middleware
+func (sh *strictHandler) GetSession(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetSessionRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetOneSession(ctx.Request().Context(), request.(GetOneSessionRequestObject))
+		return sh.ssi.GetSession(ctx.Request().Context(), request.(GetSessionRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetOneSession")
+		handler = middleware(handler, "GetSession")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(GetOneSessionResponseObject); ok {
-		return validResponse.VisitGetOneSessionResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetSessionResponseObject); ok {
+		return validResponse.VisitGetSessionResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

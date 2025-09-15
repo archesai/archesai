@@ -1,6 +1,6 @@
 get:
-  operationId: accounts_findMany
-  summary: Find many accounts
+  operationId: listAccounts
+  summary: List accounts
   tags:
     - Accounts
   parameters:
@@ -38,11 +38,11 @@ get:
       $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
-  description: Find many accounts
+  description: List accounts
 
 post:
-  operationId: accounts_create
-  summary: Create account (Register)
+  operationId: createAccount
+  summary: Create account
   tags:
     - Accounts
   description: Register a new user account with email and password

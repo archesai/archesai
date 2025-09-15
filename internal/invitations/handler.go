@@ -27,21 +27,19 @@ func NewHandler(service InvitationService, logger *slog.Logger) *Handler {
 	}
 }
 
-// FindManyInvitations handles GET /organizations/{id}/invitations
-func (h *Handler) FindManyInvitations(c echo.Context, organizationID openapi_types.UUID, params FindManyInvitationsParams) error {
+// ListInvitations handles GET /organizations/{id}/invitations
+func (h *Handler) ListInvitations(c echo.Context, organizationID openapi_types.UUID, params ListInvitationsParams) error {
 	ctx := c.Request().Context()
 
 	// Convert pagination params
-	listParams := ListInvitationsParams{
-		Limit:  10,
-		Offset: 0,
-	}
+	limit := 10
+	offset := 0
 
 	if params.Page.Size > 0 {
-		listParams.Limit = params.Page.Size
+		limit = params.Page.Size
 	}
 	if params.Page.Number > 0 {
-		listParams.Offset = (params.Page.Number - 1) * listParams.Limit
+		offset = (params.Page.Number - 1) * limit
 	}
 
 	// Get invitations for the organization
@@ -58,8 +56,8 @@ func (h *Handler) FindManyInvitations(c echo.Context, organizationID openapi_typ
 
 	// Apply pagination
 	total := len(invitations)
-	start := listParams.Offset
-	end := start + listParams.Limit
+	start := offset
+	end := start + limit
 	if start > total {
 		start = total
 	}
@@ -76,7 +74,7 @@ func (h *Handler) FindManyInvitations(c echo.Context, organizationID openapi_typ
 		}
 	}
 
-	return c.JSON(http.StatusOK, FindManyInvitations200JSONResponse{
+	return c.JSON(http.StatusOK, ListInvitations200JSONResponse{
 		Data: responseData,
 		Meta: struct {
 			Total float32 `json:"total"`
@@ -133,8 +131,8 @@ func (h *Handler) CreateInvitation(c echo.Context, organizationID openapi_types.
 	})
 }
 
-// GetOneInvitation handles GET /organizations/{id}/invitations/{invitationId}
-func (h *Handler) GetOneInvitation(c echo.Context, organizationID openapi_types.UUID, invitationID openapi_types.UUID) error {
+// GetInvitation handles GET /organizations/{id}/invitations/{invitationId}
+func (h *Handler) GetInvitation(c echo.Context, organizationID openapi_types.UUID, invitationID openapi_types.UUID) error {
 	ctx := c.Request().Context()
 
 	invitation, err := h.service.Get(ctx, invitationID)
@@ -166,7 +164,7 @@ func (h *Handler) GetOneInvitation(c echo.Context, organizationID openapi_types.
 		})
 	}
 
-	return c.JSON(http.StatusOK, GetOneInvitation200JSONResponse{
+	return c.JSON(http.StatusOK, GetInvitation200JSONResponse{
 		Data: *invitation,
 	})
 }

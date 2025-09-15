@@ -3,7 +3,7 @@ import {
   createMember,
   updateMember,
   useGetOneMemberSuspense,
-  useGetOneSessionSuspense,
+  useGetSessionSuspense,
 } from "@archesai/client";
 import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 import { GenericForm } from "@archesai/ui/components/custom/generic-form";
@@ -20,7 +20,7 @@ import { MEMBER_ENTITY_KEY } from "@archesai/ui/lib/constants";
 import type { JSX } from "react";
 
 export default function MemberForm({ id }: { id?: string }): JSX.Element {
-  const { data: sessionData } = useGetOneSessionSuspense("current");
+  const { data: sessionData } = useGetSessionSuspense("current");
   const memberQuery = useGetOneMemberSuspense(
     sessionData.data.activeOrganizationId,
     id,

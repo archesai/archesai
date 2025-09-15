@@ -19,12 +19,6 @@ type Repository interface {
 	ListByOrganization(ctx context.Context, organizationId string) ([]*Tool, error)
 }
 
-// ListToolsParams represents parameters for listing tools.
-type ListToolsParams struct {
-	Limit  int
-	Offset int
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

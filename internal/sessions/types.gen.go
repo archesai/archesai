@@ -16,23 +16,23 @@ const (
 	SessionCookieScopes = "sessionCookie.Scopes"
 )
 
-// Defines values for SessionsFindManyParamsSortField.
+// Defines values for ListSessionsParamsSortField.
 const (
-	ActiveOrganizationId SessionsFindManyParamsSortField = "activeOrganizationId"
-	CreatedAt            SessionsFindManyParamsSortField = "createdAt"
-	ExpiresAt            SessionsFindManyParamsSortField = "expiresAt"
-	Id                   SessionsFindManyParamsSortField = "id"
-	IpAddress            SessionsFindManyParamsSortField = "ipAddress"
-	Token                SessionsFindManyParamsSortField = "token"
-	UpdatedAt            SessionsFindManyParamsSortField = "updatedAt"
-	UserAgent            SessionsFindManyParamsSortField = "userAgent"
-	UserId               SessionsFindManyParamsSortField = "userId"
+	ActiveOrganizationId ListSessionsParamsSortField = "activeOrganizationId"
+	CreatedAt            ListSessionsParamsSortField = "createdAt"
+	ExpiresAt            ListSessionsParamsSortField = "expiresAt"
+	Id                   ListSessionsParamsSortField = "id"
+	IpAddress            ListSessionsParamsSortField = "ipAddress"
+	Token                ListSessionsParamsSortField = "token"
+	UpdatedAt            ListSessionsParamsSortField = "updatedAt"
+	UserAgent            ListSessionsParamsSortField = "userAgent"
+	UserId               ListSessionsParamsSortField = "userId"
 )
 
-// Defines values for SessionsFindManyParamsSortOrder.
+// Defines values for ListSessionsParamsSortOrder.
 const (
-	Asc  SessionsFindManyParamsSortOrder = "asc"
-	Desc SessionsFindManyParamsSortOrder = "desc"
+	Asc  ListSessionsParamsSortOrder = "asc"
+	Desc ListSessionsParamsSortOrder = "desc"
 )
 
 // FilterNode A recursive filter node that can be a condition or group
@@ -157,8 +157,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// SessionsFindManyParams defines parameters for SessionsFindMany.
-type SessionsFindManyParams struct {
+// ListSessionsParams defines parameters for ListSessions.
+type ListSessionsParams struct {
 	// Filter Filter sessions by field values. Supported fields:
 	// - createdAt, id, updatedAt, activeOrganizationId, expiresAt
 	// - ipAddress, token, userAgent, userId
@@ -171,14 +171,14 @@ type SessionsFindManyParams struct {
 	Sort SessionsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// SessionsFindManyParamsSortField defines parameters for SessionsFindMany.
-type SessionsFindManyParamsSortField string
+// ListSessionsParamsSortField defines parameters for ListSessions.
+type ListSessionsParamsSortField string
 
-// SessionsFindManyParamsSortOrder defines parameters for SessionsFindMany.
-type SessionsFindManyParamsSortOrder string
+// ListSessionsParamsSortOrder defines parameters for ListSessions.
+type ListSessionsParamsSortOrder string
 
-// SessionsCreateJSONBody defines parameters for SessionsCreate.
-type SessionsCreateJSONBody struct {
+// CreateSessionJSONBody defines parameters for CreateSession.
+type CreateSessionJSONBody struct {
 	// Email The email address associated with the account
 	Email openapi_types.Email `json:"email" yaml:"email"`
 
@@ -195,8 +195,8 @@ type UpdateSessionJSONBody struct {
 	ActiveOrganizationId string `json:"activeOrganizationId" yaml:"activeOrganizationId"`
 }
 
-// SessionsCreateJSONRequestBody defines body for SessionsCreate for application/json ContentType.
-type SessionsCreateJSONRequestBody SessionsCreateJSONBody
+// CreateSessionJSONRequestBody defines body for CreateSession for application/json ContentType.
+type CreateSessionJSONRequestBody CreateSessionJSONBody
 
 // UpdateSessionJSONRequestBody defines body for UpdateSession for application/json ContentType.
 type UpdateSessionJSONRequestBody UpdateSessionJSONBody

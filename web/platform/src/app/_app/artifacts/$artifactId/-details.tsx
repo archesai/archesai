@@ -1,4 +1,4 @@
-import { useGetOneArtifactSuspense } from "@archesai/client";
+import { useGetArtifactSuspense } from "@archesai/client";
 import { Timestamp } from "@archesai/ui/components/custom/timestamp";
 import { Badge } from "@archesai/ui/components/shadcn/badge";
 import { Button } from "@archesai/ui/components/shadcn/button";
@@ -17,7 +17,7 @@ export const ArtifactDetailsHeader = ({
 }): JSX.Element => {
   const {
     data: { data: artifact },
-  } = useGetOneArtifactSuspense(artifactId);
+  } = useGetArtifactSuspense(artifactId);
 
   return (
     <CardHeader>
@@ -49,7 +49,7 @@ export const ArtifactDetailsBody = ({
 }): JSX.Element => {
   const {
     data: { data: artifact },
-  } = useGetOneArtifactSuspense(artifactId);
+  } = useGetArtifactSuspense(artifactId);
 
   return (
     <CardContent>

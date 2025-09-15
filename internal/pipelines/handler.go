@@ -39,8 +39,8 @@ func NewWorkflowStrictHandler(handler StrictServerInterface) ServerInterface {
 
 // Pipeline handlers
 
-// FindManyPipelines retrieves pipelines (implements StrictServerInterface)
-func (h *Handler) FindManyPipelines(ctx context.Context, req FindManyPipelinesRequestObject) (FindManyPipelinesResponseObject, error) {
+// ListPipelines retrieves pipelines (implements StrictServerInterface)
+func (h *Handler) ListPipelines(ctx context.Context, req ListPipelinesRequestObject) (ListPipelinesResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -66,7 +66,7 @@ func (h *Handler) FindManyPipelines(ctx context.Context, req FindManyPipelinesRe
 	}
 
 	totalFloat32 := float32(total)
-	return FindManyPipelines200JSONResponse{
+	return ListPipelines200JSONResponse{
 		Data: data,
 		Meta: struct {
 			Total float32 `json:"total"`
@@ -97,12 +97,12 @@ func (h *Handler) CreatePipeline(ctx context.Context, req CreatePipelineRequestO
 	}, nil
 }
 
-// GetOnePipeline retrieves a pipeline by ID (implements StrictServerInterface)
-func (h *Handler) GetOnePipeline(ctx context.Context, req GetOnePipelineRequestObject) (GetOnePipelineResponseObject, error) {
+// GetPipeline retrieves a pipeline by ID (implements StrictServerInterface)
+func (h *Handler) GetPipeline(ctx context.Context, req GetPipelineRequestObject) (GetPipelineResponseObject, error) {
 	pipeline, err := h.service.Get(ctx, req.Id)
 	if err != nil {
 		if err == ErrPipelineNotFound {
-			return GetOnePipeline404ApplicationProblemPlusJSONResponse{
+			return GetPipeline404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Pipeline not found",
 					Status: 404,
@@ -114,7 +114,7 @@ func (h *Handler) GetOnePipeline(ctx context.Context, req GetOnePipelineRequestO
 		return nil, err
 	}
 
-	return GetOnePipeline200JSONResponse{
+	return GetPipeline200JSONResponse{
 		Data: *pipeline,
 	}, nil
 }

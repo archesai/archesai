@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandler_AccountsFindMany(t *testing.T) {
+func TestHandler_ListAccounts(t *testing.T) {
 	tests := []struct {
 		name         string
 		queryParams  map[string]string
@@ -28,7 +28,7 @@ func TestHandler_AccountsFindMany(t *testing.T) {
 			queryParams: map[string]string{"page[number]": "1", "page[size]": "10"},
 			setupMock: func(s *MockAccountService) {
 				s.On("List", mock.Anything, mock.MatchedBy(func(params ListAccountsParams) bool {
-					return params.Limit == 10 && params.Offset == 0
+					return params.Page.Size == 10 && params.Page.Number == 1
 				})).Return([]*Account{
 					{
 						Id:         uuid.New(),
@@ -56,7 +56,7 @@ func TestHandler_AccountsFindMany(t *testing.T) {
 			queryParams: map[string]string{},
 			setupMock: func(s *MockAccountService) {
 				s.On("List", mock.Anything, mock.MatchedBy(func(params ListAccountsParams) bool {
-					return params.Limit == 10 && params.Offset == 0
+					return params.Page.Size == 10 && params.Page.Number == 1
 				})).Return([]*Account{}, int64(0), nil)
 			},
 			expectedCode: http.StatusOK,
@@ -101,7 +101,7 @@ func TestHandler_AccountsFindMany(t *testing.T) {
 			handler := NewHandler(mockService, slog.Default())
 
 			// Create params from query
-			var params AccountsFindManyParams
+			var params ListAccountsParams
 			if pageNum := c.QueryParam("page[number]"); pageNum != "" {
 				num := 1
 				params.Page.Number = num
@@ -111,7 +111,7 @@ func TestHandler_AccountsFindMany(t *testing.T) {
 				params.Page.Size = size
 			}
 
-			err := handler.AccountsFindMany(c, params)
+			err := handler.ListAccounts(c, params)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.expectedCode, rec.Code)
@@ -194,7 +194,7 @@ func TestHandler_AccountsGetOne(t *testing.T) {
 			tt.setupMock(mockService)
 
 			handler := NewHandler(mockService, slog.Default())
-			err := handler.AccountsGetOne(c, tt.id)
+			err := handler.GetAccount(c, tt.id)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.expectedCode, rec.Code)
@@ -273,7 +273,7 @@ func TestHandler_AccountsDelete(t *testing.T) {
 			tt.setupMock(mockService)
 
 			handler := NewHandler(mockService, slog.Default())
-			err := handler.AccountsDelete(c, tt.id)
+			err := handler.DeleteAccount(c, tt.id)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.expectedCode, rec.Code)
@@ -306,17 +306,17 @@ func TestHandler_EdgeCases(t *testing.T) {
 
 		mockService := NewMockAccountService(t)
 		mockService.On("List", mock.Anything, mock.MatchedBy(func(params ListAccountsParams) bool {
-			// Page 2 with size 5 means offset = (2-1)*5 = 5
-			return params.Limit == 5 && params.Offset == 5
+			// Page 2 with size 5
+			return params.Page.Size == 5 && params.Page.Number == 2
 		})).Return([]*Account{}, int64(0), nil)
 
 		handler := NewHandler(mockService, slog.Default())
 
-		var params AccountsFindManyParams
+		var params ListAccountsParams
 		params.Page.Number = 2
 		params.Page.Size = 5
 
-		err := handler.AccountsFindMany(c, params)
+		err := handler.ListAccounts(c, params)
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusOK, rec.Code)
@@ -333,7 +333,7 @@ func TestHandler_InterfaceCompliance(t *testing.T) {
 	handler := NewHandler(mockService, slog.Default())
 
 	// Verify all required methods exist
-	assert.NotNil(t, handler.AccountsFindMany)
-	assert.NotNil(t, handler.AccountsGetOne)
-	assert.NotNil(t, handler.AccountsDelete)
+	assert.NotNil(t, handler.ListAccounts)
+	assert.NotNil(t, handler.GetAccount)
+	assert.NotNil(t, handler.DeleteAccount)
 }

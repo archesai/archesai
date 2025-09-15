@@ -18,19 +18,19 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Find many artifacts
-	// (GET /content/artifacts)
-	FindManyArtifacts(ctx echo.Context, params FindManyArtifactsParams) error
+	// (GET /artifacts)
+	ListArtifacts(ctx echo.Context, params ListArtifactsParams) error
 	// Create a new artifact
-	// (POST /content/artifacts)
+	// (POST /artifacts)
 	CreateArtifact(ctx echo.Context) error
 	// Delete an artifact
-	// (DELETE /content/artifacts/{id})
+	// (DELETE /artifacts/{id})
 	DeleteArtifact(ctx echo.Context, id openapi_types.UUID) error
 	// Find an artifact
-	// (GET /content/artifacts/{id})
-	GetOneArtifact(ctx echo.Context, id openapi_types.UUID) error
+	// (GET /artifacts/{id})
+	GetArtifact(ctx echo.Context, id openapi_types.UUID) error
 	// Update an artifact
-	// (PATCH /content/artifacts/{id})
+	// (PATCH /artifacts/{id})
 	UpdateArtifact(ctx echo.Context, id openapi_types.UUID) error
 }
 
@@ -39,14 +39,14 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// FindManyArtifacts converts echo context to params.
-func (w *ServerInterfaceWrapper) FindManyArtifacts(ctx echo.Context) error {
+// ListArtifacts converts echo context to params.
+func (w *ServerInterfaceWrapper) ListArtifacts(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FindManyArtifactsParams
+	var params ListArtifactsParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -69,7 +69,7 @@ func (w *ServerInterfaceWrapper) FindManyArtifacts(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.FindManyArtifacts(ctx, params)
+	err = w.Handler.ListArtifacts(ctx, params)
 	return err
 }
 
@@ -102,8 +102,8 @@ func (w *ServerInterfaceWrapper) DeleteArtifact(ctx echo.Context) error {
 	return err
 }
 
-// GetOneArtifact converts echo context to params.
-func (w *ServerInterfaceWrapper) GetOneArtifact(ctx echo.Context) error {
+// GetArtifact converts echo context to params.
+func (w *ServerInterfaceWrapper) GetArtifact(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -116,7 +116,7 @@ func (w *ServerInterfaceWrapper) GetOneArtifact(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetOneArtifact(ctx, id)
+	err = w.Handler.GetArtifact(ctx, id)
 	return err
 }
 
@@ -166,11 +166,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/content/artifacts", wrapper.FindManyArtifacts)
-	router.POST(baseURL+"/content/artifacts", wrapper.CreateArtifact)
-	router.DELETE(baseURL+"/content/artifacts/:id", wrapper.DeleteArtifact)
-	router.GET(baseURL+"/content/artifacts/:id", wrapper.GetOneArtifact)
-	router.PATCH(baseURL+"/content/artifacts/:id", wrapper.UpdateArtifact)
+	router.GET(baseURL+"/artifacts", wrapper.ListArtifacts)
+	router.POST(baseURL+"/artifacts", wrapper.CreateArtifact)
+	router.DELETE(baseURL+"/artifacts/:id", wrapper.DeleteArtifact)
+	router.GET(baseURL+"/artifacts/:id", wrapper.GetArtifact)
+	router.PATCH(baseURL+"/artifacts/:id", wrapper.UpdateArtifact)
 
 }
 
@@ -180,15 +180,15 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type FindManyArtifactsRequestObject struct {
-	Params FindManyArtifactsParams
+type ListArtifactsRequestObject struct {
+	Params ListArtifactsParams
 }
 
-type FindManyArtifactsResponseObject interface {
-	VisitFindManyArtifactsResponse(w http.ResponseWriter) error
+type ListArtifactsResponseObject interface {
+	VisitListArtifactsResponse(w http.ResponseWriter) error
 }
 
-type FindManyArtifacts200JSONResponse struct {
+type ListArtifacts200JSONResponse struct {
 	Data []Artifact `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -196,29 +196,29 @@ type FindManyArtifacts200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response FindManyArtifacts200JSONResponse) VisitFindManyArtifactsResponse(w http.ResponseWriter) error {
+func (response ListArtifacts200JSONResponse) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyArtifacts400ApplicationProblemPlusJSONResponse struct {
+type ListArtifacts400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyArtifacts400ApplicationProblemPlusJSONResponse) VisitFindManyArtifactsResponse(w http.ResponseWriter) error {
+func (response ListArtifacts400ApplicationProblemPlusJSONResponse) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyArtifacts401ApplicationProblemPlusJSONResponse struct {
+type ListArtifacts401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyArtifacts401ApplicationProblemPlusJSONResponse) VisitFindManyArtifactsResponse(w http.ResponseWriter) error {
+func (response ListArtifacts401ApplicationProblemPlusJSONResponse) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -298,31 +298,31 @@ func (response DeleteArtifact404ApplicationProblemPlusJSONResponse) VisitDeleteA
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneArtifactRequestObject struct {
+type GetArtifactRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type GetOneArtifactResponseObject interface {
-	VisitGetOneArtifactResponse(w http.ResponseWriter) error
+type GetArtifactResponseObject interface {
+	VisitGetArtifactResponse(w http.ResponseWriter) error
 }
 
-type GetOneArtifact200JSONResponse struct {
+type GetArtifact200JSONResponse struct {
 	// Data Schema for Artifact entity
 	Data Artifact `json:"data"`
 }
 
-func (response GetOneArtifact200JSONResponse) VisitGetOneArtifactResponse(w http.ResponseWriter) error {
+func (response GetArtifact200JSONResponse) VisitGetArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneArtifact404ApplicationProblemPlusJSONResponse struct {
+type GetArtifact404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response GetOneArtifact404ApplicationProblemPlusJSONResponse) VisitGetOneArtifactResponse(w http.ResponseWriter) error {
+func (response GetArtifact404ApplicationProblemPlusJSONResponse) VisitGetArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -364,19 +364,19 @@ func (response UpdateArtifact404ApplicationProblemPlusJSONResponse) VisitUpdateA
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Find many artifacts
-	// (GET /content/artifacts)
-	FindManyArtifacts(ctx context.Context, request FindManyArtifactsRequestObject) (FindManyArtifactsResponseObject, error)
+	// (GET /artifacts)
+	ListArtifacts(ctx context.Context, request ListArtifactsRequestObject) (ListArtifactsResponseObject, error)
 	// Create a new artifact
-	// (POST /content/artifacts)
+	// (POST /artifacts)
 	CreateArtifact(ctx context.Context, request CreateArtifactRequestObject) (CreateArtifactResponseObject, error)
 	// Delete an artifact
-	// (DELETE /content/artifacts/{id})
+	// (DELETE /artifacts/{id})
 	DeleteArtifact(ctx context.Context, request DeleteArtifactRequestObject) (DeleteArtifactResponseObject, error)
 	// Find an artifact
-	// (GET /content/artifacts/{id})
-	GetOneArtifact(ctx context.Context, request GetOneArtifactRequestObject) (GetOneArtifactResponseObject, error)
+	// (GET /artifacts/{id})
+	GetArtifact(ctx context.Context, request GetArtifactRequestObject) (GetArtifactResponseObject, error)
 	// Update an artifact
-	// (PATCH /content/artifacts/{id})
+	// (PATCH /artifacts/{id})
 	UpdateArtifact(ctx context.Context, request UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error)
 }
 
@@ -392,25 +392,25 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// FindManyArtifacts operation middleware
-func (sh *strictHandler) FindManyArtifacts(ctx echo.Context, params FindManyArtifactsParams) error {
-	var request FindManyArtifactsRequestObject
+// ListArtifacts operation middleware
+func (sh *strictHandler) ListArtifacts(ctx echo.Context, params ListArtifactsParams) error {
+	var request ListArtifactsRequestObject
 
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.FindManyArtifacts(ctx.Request().Context(), request.(FindManyArtifactsRequestObject))
+		return sh.ssi.ListArtifacts(ctx.Request().Context(), request.(ListArtifactsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "FindManyArtifacts")
+		handler = middleware(handler, "ListArtifacts")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(FindManyArtifactsResponseObject); ok {
-		return validResponse.VisitFindManyArtifactsResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListArtifactsResponseObject); ok {
+		return validResponse.VisitListArtifactsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
@@ -471,25 +471,25 @@ func (sh *strictHandler) DeleteArtifact(ctx echo.Context, id openapi_types.UUID)
 	return nil
 }
 
-// GetOneArtifact operation middleware
-func (sh *strictHandler) GetOneArtifact(ctx echo.Context, id openapi_types.UUID) error {
-	var request GetOneArtifactRequestObject
+// GetArtifact operation middleware
+func (sh *strictHandler) GetArtifact(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetArtifactRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetOneArtifact(ctx.Request().Context(), request.(GetOneArtifactRequestObject))
+		return sh.ssi.GetArtifact(ctx.Request().Context(), request.(GetArtifactRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetOneArtifact")
+		handler = middleware(handler, "GetArtifact")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(GetOneArtifactResponseObject); ok {
-		return validResponse.VisitGetOneArtifactResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetArtifactResponseObject); ok {
+		return validResponse.VisitGetArtifactResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

@@ -249,6 +249,21 @@ export type User = Base & UserAllOf;
 export interface ApiKey {
   /** @minLength 1 */
   id: string;
+  /**
+   * ID of the user who owns this API key
+   * @minLength 1
+   */
+  userId?: string;
+  /**
+   * ID of the organization this API key belongs to
+   * @minLength 1
+   */
+  organizationId?: string;
+  /**
+   * Hashed version of the API key for secure storage
+   * @minLength 1
+   */
+  keyHash?: string;
   /** @minLength 1 */
   name: string;
   /** @minLength 1 */
@@ -2086,7 +2101,7 @@ export type LabelsSortParameterItem = {
  */
 export type LabelsSortParameter = LabelsSortParameterItem[];
 
-export type AccountsFindManyParams = {
+export type ListAccountsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2101,16 +2116,16 @@ page?: PageQueryParameter;
 sort?: AccountsSortParameter;
 };
 
-export type AccountsFindMany200Meta = {
+export type ListAccounts200Meta = {
   total: number;
 };
 
-export type AccountsFindMany200 = {
+export type ListAccounts200 = {
   data: Account[];
-  meta: AccountsFindMany200Meta;
+  meta: ListAccounts200Meta;
 };
 
-export type AccountsCreateBody = {
+export type CreateAccountBody = {
   /**
    * The email address associated with the account
    * @minLength 1
@@ -2129,11 +2144,11 @@ export type AccountsCreateBody = {
   password: string;
 };
 
-export type AccountsGetOne200 = {
+export type GetAccount200 = {
   data: Account;
 };
 
-export type AccountsDelete200 = {
+export type DeleteAccount200 = {
   data: Account;
 };
 
@@ -2154,22 +2169,6 @@ export type RegisterBody = {
    * @minLength 1
    */
   password: string;
-};
-
-export type LoginBody = {
-  /**
-   * The email address associated with the account
-   * @minLength 1
-   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-   */
-  email: string;
-  /**
-   * The password for the account
-   * @minLength 1
-   */
-  password: string;
-  /** Whether to create a long-lived session */
-  rememberMe?: boolean;
 };
 
 export type ConfirmEmailVerificationBody = {
@@ -2239,7 +2238,7 @@ export type ConfirmEmailChangeBody = {
   userId: string;
 };
 
-export type SessionsFindManyParams = {
+export type ListSessionsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2254,17 +2253,17 @@ page?: PageQueryParameter;
 sort?: SessionsSortParameter;
 };
 
-export type SessionsFindMany200Meta = {
+export type ListSessions200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type SessionsFindMany200 = {
+export type ListSessions200 = {
   data: Session[];
-  meta: SessionsFindMany200Meta;
+  meta: ListSessions200Meta;
 };
 
-export type SessionsCreateBody = {
+export type CreateSessionBody = {
   /**
    * The email address associated with the account
    * @minLength 1
@@ -2280,7 +2279,7 @@ export type SessionsCreateBody = {
   rememberMe?: boolean;
 };
 
-export type GetOneSession200 = {
+export type GetSession200 = {
   data: Session;
 };
 
@@ -2296,7 +2295,7 @@ export type UpdateSession200 = {
   data: Session;
 };
 
-export type FindManyUsersParams = {
+export type ListUsersParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2311,21 +2310,21 @@ page?: PageQueryParameter;
 sort?: UsersSortParameter;
 };
 
-export type FindManyUsers200Meta = {
+export type ListUsers200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManyUsers200 = {
+export type ListUsers200 = {
   data: User[];
-  meta: FindManyUsers200Meta;
+  meta: ListUsers200Meta;
 };
 
 export type DeleteUser200 = {
   data: User;
 };
 
-export type GetOneUser200 = {
+export type GetUser200 = {
   data: User;
 };
 
@@ -2385,7 +2384,7 @@ error?: string;
 error_description?: string;
 };
 
-export type ApikeysFindManyParams = {
+export type ListTokensParams = {
 /**
  * Maximum number of items to return
  * @minimum 1
@@ -2399,16 +2398,16 @@ limit?: number;
 offset?: number;
 };
 
-export type ApikeysFindMany200Meta = {
+export type ListTokens200Meta = {
   total: number;
 };
 
-export type ApikeysFindMany200 = {
+export type ListTokens200 = {
   data: ApiKey[];
-  meta: ApikeysFindMany200Meta;
+  meta: ListTokens200Meta;
 };
 
-export type ApikeysCreateBody = {
+export type CreateTokenBody = {
   /**
    * Human-readable name for the API key
    * @minLength 1
@@ -2460,7 +2459,7 @@ export type CreateOrganization201 = {
   data: Organization;
 };
 
-export type FindManyOrganizationsParams = {
+export type ListOrganizationsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2475,14 +2474,14 @@ page?: PageQueryParameter;
 sort?: OrganizationsSortParameter;
 };
 
-export type FindManyOrganizations200Meta = {
+export type ListOrganizations200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManyOrganizations200 = {
+export type ListOrganizations200 = {
   data: Organization[];
-  meta: FindManyOrganizations200Meta;
+  meta: ListOrganizations200Meta;
 };
 
 export type DeleteOrganization200 = {
@@ -2530,7 +2529,7 @@ export type CreateMember201 = {
   data: Member;
 };
 
-export type FindManyMembersParams = {
+export type ListMembersParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2545,14 +2544,14 @@ page?: PageQueryParameter;
 sort?: MembersSortParameter;
 };
 
-export type FindManyMembers200Meta = {
+export type ListMembers200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManyMembers200 = {
+export type ListMembers200 = {
   data: Member[];
-  meta: FindManyMembers200Meta;
+  meta: ListMembers200Meta;
 };
 
 export type DeleteMember200 = {
@@ -2616,7 +2615,7 @@ export type CreateInvitation201 = {
   data: Invitation;
 };
 
-export type FindManyInvitationsParams = {
+export type ListInvitationsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2631,21 +2630,21 @@ page?: PageQueryParameter;
 sort?: InvitationsSortParameter;
 };
 
-export type FindManyInvitations200Meta = {
+export type ListInvitations200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManyInvitations200 = {
+export type ListInvitations200 = {
   data: Invitation[];
-  meta: FindManyInvitations200Meta;
+  meta: ListInvitations200Meta;
 };
 
 export type DeleteInvitation200 = {
   data: Invitation;
 };
 
-export type GetOneInvitation200 = {
+export type GetInvitation200 = {
   data: Invitation;
 };
 
@@ -2690,7 +2689,7 @@ export type CreatePipeline201 = {
   data: Pipeline;
 };
 
-export type FindManyPipelinesParams = {
+export type ListPipelinesParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2705,21 +2704,21 @@ page?: PageQueryParameter;
 sort?: PipelinesSortParameter;
 };
 
-export type FindManyPipelines200Meta = {
+export type ListPipelines200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManyPipelines200 = {
+export type ListPipelines200 = {
   data: Pipeline[];
-  meta: FindManyPipelines200Meta;
+  meta: ListPipelines200Meta;
 };
 
 export type DeletePipeline200 = {
   data: Pipeline;
 };
 
-export type GetOnePipeline200 = {
+export type GetPipeline200 = {
   data: Pipeline;
 };
 
@@ -2820,7 +2819,7 @@ export type CreateRun201 = {
   data: Run;
 };
 
-export type FindManyRunsParams = {
+export type ListRunsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2835,21 +2834,21 @@ page?: PageQueryParameter;
 sort?: RunsSortParameter;
 };
 
-export type FindManyRuns200Meta = {
+export type ListRuns200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManyRuns200 = {
+export type ListRuns200 = {
   data: Run[];
-  meta: FindManyRuns200Meta;
+  meta: ListRuns200Meta;
 };
 
 export type DeleteRun200 = {
   data: Run;
 };
 
-export type GetOneRun200 = {
+export type GetRun200 = {
   data: Run;
 };
 
@@ -2879,7 +2878,7 @@ export type CreateTool201 = {
   data: Tool;
 };
 
-export type FindManyToolsParams = {
+export type ListToolsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2894,21 +2893,21 @@ page?: PageQueryParameter;
 sort?: ToolsSortParameter;
 };
 
-export type FindManyTools200Meta = {
+export type ListTools200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManyTools200 = {
+export type ListTools200 = {
   data: Tool[];
-  meta: FindManyTools200Meta;
+  meta: ListTools200Meta;
 };
 
 export type DeleteTool200 = {
   data: Tool;
 };
 
-export type GetOneTool200 = {
+export type GetTool200 = {
   data: Tool;
 };
 
@@ -2946,7 +2945,7 @@ export type CreateArtifact201 = {
   data: Artifact;
 };
 
-export type FindManyArtifactsParams = {
+export type ListArtifactsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2961,21 +2960,21 @@ page?: PageQueryParameter;
 sort?: ArtifactsSortParameter;
 };
 
-export type FindManyArtifacts200Meta = {
+export type ListArtifacts200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManyArtifacts200 = {
+export type ListArtifacts200 = {
   data: Artifact[];
-  meta: FindManyArtifacts200Meta;
+  meta: ListArtifacts200Meta;
 };
 
 export type DeleteArtifact200 = {
   data: Artifact;
 };
 
-export type GetOneArtifact200 = {
+export type GetArtifact200 = {
   data: Artifact;
 };
 
@@ -3007,7 +3006,7 @@ export type CreateLabel201 = {
   data: Label;
 };
 
-export type FindManyLabelsParams = {
+export type ListLabelsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -3022,21 +3021,21 @@ page?: PageQueryParameter;
 sort?: LabelsSortParameter;
 };
 
-export type FindManyLabels200Meta = {
+export type ListLabels200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManyLabels200 = {
+export type ListLabels200 = {
   data: Label[];
-  meta: FindManyLabels200Meta;
+  meta: ListLabels200Meta;
 };
 
 export type DeleteLabel200 = {
   data: Label;
 };
 
-export type GetOneLabel200 = {
+export type GetLabel200 = {
   data: Label;
 };
 

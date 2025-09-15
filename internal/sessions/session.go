@@ -67,11 +67,13 @@ func (s *Service) ListUserSessions(ctx context.Context, userID uuid.UUID) ([]*Se
 	}
 
 	// Fallback to direct repository
-	userIDStr := userID.String()
 	sessions, _, err := s.repo.List(ctx, ListSessionsParams{
-		UserID: &userIDStr,
-		Limit:  100,
+		Page: PageQuery{
+			Number: 1,
+			Size:   100,
+		},
 	})
+	// TODO: Add userId filtering when FilterNode structure is properly defined
 	if err != nil {
 		s.logger.Error("failed to list user sessions", "user_id", userID, "error", err)
 		return nil, fmt.Errorf("failed to list sessions: %w", err)

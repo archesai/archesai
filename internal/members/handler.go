@@ -24,12 +24,12 @@ func NewHandler(service *Service, logger *slog.Logger) *Handler {
 	}
 }
 
-// FindManyMembers handles GET /organizations/{id}/members
-func (h *Handler) FindManyMembers(ctx context.Context, request FindManyMembersRequestObject) (FindManyMembersResponseObject, error) {
+// ListMembers handles GET /organizations/{id}/members
+func (h *Handler) ListMembers(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error) {
 	// Parse organization ID
 	organizationID, err := uuid.Parse(request.Id)
 	if err != nil {
-		return FindManyMembers400ApplicationProblemPlusJSONResponse{
+		return ListMembers400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
 				Type:   "invalid_id",
 				Title:  "Invalid organization ID",
@@ -42,7 +42,7 @@ func (h *Handler) FindManyMembers(ctx context.Context, request FindManyMembersRe
 	members, err := h.service.ListOrganizationMembers(ctx, organizationID)
 	if err != nil {
 		h.logger.Error("failed to list organization members", "error", err, "organization_id", organizationID)
-		return FindManyMembers400ApplicationProblemPlusJSONResponse{
+		return ListMembers400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
 				Type:   "list_failed",
 				Title:  "Failed to list members",
@@ -61,7 +61,7 @@ func (h *Handler) FindManyMembers(ctx context.Context, request FindManyMembersRe
 	// Calculate total (for now, just the count of members)
 	total := float32(len(members))
 
-	response := FindManyMembers200JSONResponse{
+	response := ListMembers200JSONResponse{
 		Data: memberList,
 	}
 	response.Meta.Total = total

@@ -19,12 +19,6 @@ type Repository interface {
 	ListByOrganization(ctx context.Context, organizationId string) ([]*Pipeline, error)
 }
 
-// ListPipelinesParams represents parameters for listing pipelines.
-type ListPipelinesParams struct {
-	Limit  int
-	Offset int
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

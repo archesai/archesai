@@ -1,5 +1,5 @@
-import type { LoginBody } from "@archesai/client";
-import { useLogin } from "@archesai/client";
+import type { CreateSessionBody } from "@archesai/client";
+import { useCreateSession } from "@archesai/client";
 import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 import { GenericForm } from "@archesai/ui/components/custom/generic-form";
 import { Button } from "@archesai/ui/components/shadcn/button";
@@ -17,9 +17,9 @@ export const Route = createFileRoute("/auth/login/")({
 export default function LoginPage(): JSX.Element {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { mutateAsync: login } = useLogin();
+  const { mutateAsync: createSession } = useCreateSession();
 
-  const formFields: FormFieldConfig<LoginBody>[] = [
+  const formFields: FormFieldConfig<CreateSessionBody>[] = [
     {
       defaultValue: "",
       description: "Your email address",
@@ -50,13 +50,13 @@ export default function LoginPage(): JSX.Element {
 
   return (
     <>
-      <GenericForm<LoginBody, never>
+      <GenericForm<CreateSessionBody, never>
         description="Enter your email and password to login"
         entityKey="auth"
         fields={formFields}
         isUpdateForm={false}
         onSubmitCreate={async (data) => {
-          await login({
+          await createSession({
             data: {
               email: data.email,
               password: data.password,

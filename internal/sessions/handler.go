@@ -43,7 +43,7 @@ func NewHandler(sessionService SessionService, userService UserService, logger *
 
 // SessionsCreate handles POST /auth/sessions (login)
 func (h *Handler) SessionsCreate(ctx echo.Context) error {
-	var req SessionsCreateJSONRequestBody
+	var req CreateSessionJSONRequestBody
 	if err := ctx.Bind(&req); err != nil {
 		h.logger.Error("failed to bind login request", "error", err)
 		return ctx.JSON(http.StatusBadRequest, Problem{
@@ -101,8 +101,8 @@ func (h *Handler) SessionsCreate(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, tokenResponse)
 }
 
-// SessionsFindMany handles GET /auth/sessions
-func (h *Handler) SessionsFindMany(ctx echo.Context, params SessionsFindManyParams) error {
+// SessionsList handles GET /auth/sessions
+func (h *Handler) SessionsList(ctx echo.Context, params ListSessionsParams) error {
 	// TODO: Extract user ID from authentication context
 	// For now, using a placeholder
 	userID := uuid.New()

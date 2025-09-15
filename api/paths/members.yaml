@@ -1,0 +1,98 @@
+post:
+  operationId: createMember
+  summary: Create a member
+  tags:
+    - Members
+  description: Create a member
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      description: Organization ID
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            role:
+              description: The role of the member
+              type: string
+              enum:
+                - admin
+                - owner
+                - member
+              example: admin
+              minLength: 1
+          required:
+            - role
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Member.yaml
+            required:
+              - data
+            additionalProperties: false
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+get:
+  operationId: listMembers
+  summary: List members
+  tags:
+    - Members
+  description: List members
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      description: Organization ID
+    - $ref: ../components/parameters/MembersFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/MembersSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: ../components/schemas/Member.yaml
+              meta:
+                type: object
+                properties:
+                  total:
+                    description: Total number of items in the collection
+                    type: number
+                    example: 42
+                required:
+                  - total
+                additionalProperties: false
+            required:
+              - data
+              - meta
+            additionalProperties: false
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

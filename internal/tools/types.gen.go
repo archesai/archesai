@@ -15,22 +15,22 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
-// Defines values for FindManyToolsParamsSortField.
+// Defines values for ListToolsParamsSortField.
 const (
-	CreatedAt      FindManyToolsParamsSortField = "createdAt"
-	Description    FindManyToolsParamsSortField = "description"
-	Id             FindManyToolsParamsSortField = "id"
-	InputMimeType  FindManyToolsParamsSortField = "inputMimeType"
-	Name           FindManyToolsParamsSortField = "name"
-	OrganizationId FindManyToolsParamsSortField = "organizationId"
-	OutputMimeType FindManyToolsParamsSortField = "outputMimeType"
-	UpdatedAt      FindManyToolsParamsSortField = "updatedAt"
+	CreatedAt      ListToolsParamsSortField = "createdAt"
+	Description    ListToolsParamsSortField = "description"
+	Id             ListToolsParamsSortField = "id"
+	InputMimeType  ListToolsParamsSortField = "inputMimeType"
+	Name           ListToolsParamsSortField = "name"
+	OrganizationId ListToolsParamsSortField = "organizationId"
+	OutputMimeType ListToolsParamsSortField = "outputMimeType"
+	UpdatedAt      ListToolsParamsSortField = "updatedAt"
 )
 
-// Defines values for FindManyToolsParamsSortOrder.
+// Defines values for ListToolsParamsSortOrder.
 const (
-	Asc  FindManyToolsParamsSortOrder = "asc"
-	Desc FindManyToolsParamsSortOrder = "desc"
+	Asc  ListToolsParamsSortOrder = "asc"
+	Desc ListToolsParamsSortOrder = "desc"
 )
 
 // FilterNode A recursive filter node that can be a condition or group
@@ -137,8 +137,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManyToolsParams defines parameters for FindManyTools.
-type FindManyToolsParams struct {
+// ListToolsParams defines parameters for ListTools.
+type ListToolsParams struct {
 	// Filter Filter tools by field values. Supported fields:
 	// - createdAt, id, updatedAt, description, inputMimeType
 	// - name, organizationId, outputMimeType
@@ -151,11 +151,11 @@ type FindManyToolsParams struct {
 	Sort ToolsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManyToolsParamsSortField defines parameters for FindManyTools.
-type FindManyToolsParamsSortField string
+// ListToolsParamsSortField defines parameters for ListTools.
+type ListToolsParamsSortField string
 
-// FindManyToolsParamsSortOrder defines parameters for FindManyTools.
-type FindManyToolsParamsSortOrder string
+// ListToolsParamsSortOrder defines parameters for ListTools.
+type ListToolsParamsSortOrder string
 
 // CreateToolJSONBody defines parameters for CreateTool.
 type CreateToolJSONBody struct {

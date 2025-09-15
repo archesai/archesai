@@ -28,12 +28,12 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  AccountsCreateBody,
-  AccountsDelete200,
-  AccountsFindMany200,
-  AccountsFindManyParams,
-  AccountsGetOne200,
   BadRequestResponse,
+  CreateAccountBody,
+  DeleteAccount200,
+  GetAccount200,
+  ListAccounts200,
+  ListAccountsParams,
   NotFoundResponse,
   Problem,
   TokenResponse,
@@ -48,10 +48,10 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Find many accounts
- * @summary Find many accounts
+ * List accounts
+ * @summary List accounts
  */
-export const getAccountsFindManyUrl = (params?: AccountsFindManyParams,) => {
+export const getListAccountsUrl = (params?: ListAccountsParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -69,12 +69,12 @@ export const getAccountsFindManyUrl = (params?: AccountsFindManyParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/auth/accounts?${stringifiedParams}` : `/auth/accounts`
+  return stringifiedParams.length > 0 ? `/accounts?${stringifiedParams}` : `/accounts`
 }
 
-export const accountsFindMany = async (params?: AccountsFindManyParams, options?: RequestInit): Promise<AccountsFindMany200> => {
+export const listAccounts = async (params?: ListAccountsParams, options?: RequestInit): Promise<ListAccounts200> => {
   
-  return customFetch<AccountsFindMany200>(getAccountsFindManyUrl(params),
+  return customFetch<ListAccounts200>(getListAccountsUrl(params),
   {      
     ...options,
     method: 'GET'
@@ -85,67 +85,67 @@ export const accountsFindMany = async (params?: AccountsFindManyParams, options?
 
 
 
-export const getAccountsFindManyQueryKey = (params?: AccountsFindManyParams,) => {
-    return [`/auth/accounts`, ...(params ? [params]: [])] as const;
+export const getListAccountsQueryKey = (params?: ListAccountsParams,) => {
+    return [`/accounts`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getAccountsFindManyQueryOptions = <TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: AccountsFindManyParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListAccountsQueryOptions = <TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListAccountsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAccountsFindManyQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListAccountsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof accountsFindMany>>> = ({ signal }) => accountsFindMany(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAccounts>>> = ({ signal }) => listAccounts(params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AccountsFindManyQueryResult = NonNullable<Awaited<ReturnType<typeof accountsFindMany>>>
-export type AccountsFindManyQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListAccountsQueryResult = NonNullable<Awaited<ReturnType<typeof listAccounts>>>
+export type ListAccountsQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useAccountsFindMany<TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  AccountsFindManyParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>> & Pick<
+export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListAccountsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof accountsFindMany>>,
+          Awaited<ReturnType<typeof listAccounts>>,
           TError,
-          Awaited<ReturnType<typeof accountsFindMany>>
+          Awaited<ReturnType<typeof listAccounts>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAccountsFindMany<TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: AccountsFindManyParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>> & Pick<
+export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListAccountsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof accountsFindMany>>,
+          Awaited<ReturnType<typeof listAccounts>>,
           TError,
-          Awaited<ReturnType<typeof accountsFindMany>>
+          Awaited<ReturnType<typeof listAccounts>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAccountsFindMany<TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: AccountsFindManyParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListAccountsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many accounts
+ * @summary List accounts
  */
 
-export function useAccountsFindMany<TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: AccountsFindManyParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListAccountsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAccountsFindManyQueryOptions(params,options)
+  const queryOptions = getListAccountsQueryOptions(params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -156,50 +156,50 @@ export function useAccountsFindMany<TData = Awaited<ReturnType<typeof accountsFi
 
 
 
-export const getAccountsFindManySuspenseQueryOptions = <TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: AccountsFindManyParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListAccountsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListAccountsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAccountsFindManyQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListAccountsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof accountsFindMany>>> = ({ signal }) => accountsFindMany(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAccounts>>> = ({ signal }) => listAccounts(params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AccountsFindManySuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof accountsFindMany>>>
-export type AccountsFindManySuspenseQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListAccountsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listAccounts>>>
+export type ListAccountsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useAccountsFindManySuspense<TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  AccountsFindManyParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListAccountsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAccountsFindManySuspense<TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: AccountsFindManyParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListAccountsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAccountsFindManySuspense<TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: AccountsFindManyParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListAccountsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many accounts
+ * @summary List accounts
  */
 
-export function useAccountsFindManySuspense<TData = Awaited<ReturnType<typeof accountsFindMany>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: AccountsFindManyParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsFindMany>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListAccountsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAccountsFindManySuspenseQueryOptions(params,options)
+  const queryOptions = getListAccountsSuspenseQueryOptions(params,options)
 
   const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -212,36 +212,36 @@ export function useAccountsFindManySuspense<TData = Awaited<ReturnType<typeof ac
 
 /**
  * Register a new user account with email and password
- * @summary Create account (Register)
+ * @summary Create account
  */
-export const getAccountsCreateUrl = () => {
+export const getCreateAccountUrl = () => {
 
 
   
 
-  return `/auth/accounts`
+  return `/accounts`
 }
 
-export const accountsCreate = async (accountsCreateBody: AccountsCreateBody, options?: RequestInit): Promise<TokenResponse> => {
+export const createAccount = async (createAccountBody: CreateAccountBody, options?: RequestInit): Promise<TokenResponse> => {
   
-  return customFetch<TokenResponse>(getAccountsCreateUrl(),
+  return customFetch<TokenResponse>(getCreateAccountUrl(),
   {      
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      accountsCreateBody,)
+      createAccountBody,)
   }
 );}
 
 
 
 
-export const getAccountsCreateMutationOptions = <TError = BadRequestResponse | Problem,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof accountsCreate>>, TError,{data: AccountsCreateBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof accountsCreate>>, TError,{data: AccountsCreateBody}, TContext> => {
+export const getCreateAccountMutationOptions = <TError = BadRequestResponse | Problem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAccount>>, TError,{data: CreateAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createAccount>>, TError,{data: CreateAccountBody}, TContext> => {
 
-const mutationKey = ['accountsCreate'];
+const mutationKey = ['createAccount'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -251,10 +251,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof accountsCreate>>, {data: AccountsCreateBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAccount>>, {data: CreateAccountBody}> = (props) => {
           const {data} = props ?? {};
 
-          return  accountsCreate(data,requestOptions)
+          return  createAccount(data,requestOptions)
         }
 
         
@@ -262,41 +262,41 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AccountsCreateMutationResult = NonNullable<Awaited<ReturnType<typeof accountsCreate>>>
-    export type AccountsCreateMutationBody = AccountsCreateBody
-    export type AccountsCreateMutationError = BadRequestResponse | Problem
+    export type CreateAccountMutationResult = NonNullable<Awaited<ReturnType<typeof createAccount>>>
+    export type CreateAccountMutationBody = CreateAccountBody
+    export type CreateAccountMutationError = BadRequestResponse | Problem
 
     /**
- * @summary Create account (Register)
+ * @summary Create account
  */
-export const useAccountsCreate = <TError = BadRequestResponse | Problem,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof accountsCreate>>, TError,{data: AccountsCreateBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+export const useCreateAccount = <TError = BadRequestResponse | Problem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAccount>>, TError,{data: CreateAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof accountsCreate>>,
+        Awaited<ReturnType<typeof createAccount>>,
         TError,
-        {data: AccountsCreateBody},
+        {data: CreateAccountBody},
         TContext
       > => {
 
-      const mutationOptions = getAccountsCreateMutationOptions(options);
+      const mutationOptions = getCreateAccountMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
     /**
- * Find an account
+ * Get an account
  * @summary Find an account
  */
-export const getAccountsGetOneUrl = (id: string | undefined | null,) => {
+export const getGetAccountUrl = (id: string | undefined | null,) => {
 
 
   
 
-  return `/auth/accounts/${id}`
+  return `/accounts/${id}`
 }
 
-export const accountsGetOne = async (id: string | undefined | null, options?: RequestInit): Promise<AccountsGetOne200> => {
+export const getAccount = async (id: string | undefined | null, options?: RequestInit): Promise<GetAccount200> => {
   
-  return customFetch<AccountsGetOne200>(getAccountsGetOneUrl(id),
+  return customFetch<GetAccount200>(getGetAccountUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -307,67 +307,67 @@ export const accountsGetOne = async (id: string | undefined | null, options?: Re
 
 
 
-export const getAccountsGetOneQueryKey = (id?: string | undefined | null,) => {
-    return [`/auth/accounts/${id}`] as const;
+export const getGetAccountQueryKey = (id?: string | undefined | null,) => {
+    return [`/accounts/${id}`] as const;
     }
 
     
-export const getAccountsGetOneQueryOptions = <TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetAccountQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAccountsGetOneQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetAccountQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof accountsGetOne>>> = ({ signal }) => accountsGetOne(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAccount>>> = ({ signal }) => getAccount(id, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AccountsGetOneQueryResult = NonNullable<Awaited<ReturnType<typeof accountsGetOne>>>
-export type AccountsGetOneQueryError = NotFoundResponse
+export type GetAccountQueryResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
+export type GetAccountQueryError = NotFoundResponse
 
 
-export function useAccountsGetOne<TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>> & Pick<
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof accountsGetOne>>,
+          Awaited<ReturnType<typeof getAccount>>,
           TError,
-          Awaited<ReturnType<typeof accountsGetOne>>
+          Awaited<ReturnType<typeof getAccount>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAccountsGetOne<TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>> & Pick<
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof accountsGetOne>>,
+          Awaited<ReturnType<typeof getAccount>>,
           TError,
-          Awaited<ReturnType<typeof accountsGetOne>>
+          Awaited<ReturnType<typeof getAccount>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAccountsGetOne<TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find an account
  */
 
-export function useAccountsGetOne<TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAccountsGetOneQueryOptions(id,options)
+  const queryOptions = getGetAccountQueryOptions(id,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -378,50 +378,50 @@ export function useAccountsGetOne<TData = Awaited<ReturnType<typeof accountsGetO
 
 
 
-export const getAccountsGetOneSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetAccountSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAccountsGetOneQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetAccountQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof accountsGetOne>>> = ({ signal }) => accountsGetOne(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAccount>>> = ({ signal }) => getAccount(id, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type AccountsGetOneSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof accountsGetOne>>>
-export type AccountsGetOneSuspenseQueryError = NotFoundResponse
+export type GetAccountSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
+export type GetAccountSuspenseQueryError = NotFoundResponse
 
 
-export function useAccountsGetOneSuspense<TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAccountsGetOneSuspense<TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAccountsGetOneSuspense<TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find an account
  */
 
-export function useAccountsGetOneSuspense<TData = Awaited<ReturnType<typeof accountsGetOne>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAccountsGetOneSuspenseQueryOptions(id,options)
+  const queryOptions = getGetAccountSuspenseQueryOptions(id,options)
 
   const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -436,17 +436,17 @@ export function useAccountsGetOneSuspense<TData = Awaited<ReturnType<typeof acco
  * Delete an account
  * @summary Delete an account
  */
-export const getAccountsDeleteUrl = (id: string | undefined | null,) => {
+export const getDeleteAccountUrl = (id: string | undefined | null,) => {
 
 
   
 
-  return `/auth/accounts/${id}`
+  return `/accounts/${id}`
 }
 
-export const accountsDelete = async (id: string | undefined | null, options?: RequestInit): Promise<AccountsDelete200> => {
+export const deleteAccount = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteAccount200> => {
   
-  return customFetch<AccountsDelete200>(getAccountsDeleteUrl(id),
+  return customFetch<DeleteAccount200>(getDeleteAccountUrl(id),
   {      
     ...options,
     method: 'DELETE'
@@ -458,11 +458,11 @@ export const accountsDelete = async (id: string | undefined | null, options?: Re
 
 
 
-export const getAccountsDeleteMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof accountsDelete>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof accountsDelete>>, TError,{id: string | undefined | null}, TContext> => {
+export const getDeleteAccountMutationOptions = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: string | undefined | null}, TContext> => {
 
-const mutationKey = ['accountsDelete'];
+const mutationKey = ['deleteAccount'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -472,10 +472,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof accountsDelete>>, {id: string | undefined | null}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAccount>>, {id: string | undefined | null}> = (props) => {
           const {id} = props ?? {};
 
-          return  accountsDelete(id,requestOptions)
+          return  deleteAccount(id,requestOptions)
         }
 
         
@@ -483,23 +483,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type AccountsDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof accountsDelete>>>
+    export type DeleteAccountMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAccount>>>
     
-    export type AccountsDeleteMutationError = NotFoundResponse
+    export type DeleteAccountMutationError = NotFoundResponse
 
     /**
  * @summary Delete an account
  */
-export const useAccountsDelete = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof accountsDelete>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+export const useDeleteAccount = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof accountsDelete>>,
+        Awaited<ReturnType<typeof deleteAccount>>,
         TError,
         {id: string | undefined | null},
         TContext
       > => {
 
-      const mutationOptions = getAccountsDeleteMutationOptions(options);
+      const mutationOptions = getDeleteAccountMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

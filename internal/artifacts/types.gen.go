@@ -15,26 +15,26 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
-// Defines values for FindManyArtifactsParamsSortField.
+// Defines values for ListArtifactsParamsSortField.
 const (
-	CreatedAt      FindManyArtifactsParamsSortField = "createdAt"
-	Credits        FindManyArtifactsParamsSortField = "credits"
-	Description    FindManyArtifactsParamsSortField = "description"
-	Id             FindManyArtifactsParamsSortField = "id"
-	MimeType       FindManyArtifactsParamsSortField = "mimeType"
-	Name           FindManyArtifactsParamsSortField = "name"
-	OrganizationId FindManyArtifactsParamsSortField = "organizationId"
-	PreviewImage   FindManyArtifactsParamsSortField = "previewImage"
-	ProducerId     FindManyArtifactsParamsSortField = "producerId"
-	Text           FindManyArtifactsParamsSortField = "text"
-	UpdatedAt      FindManyArtifactsParamsSortField = "updatedAt"
-	Url            FindManyArtifactsParamsSortField = "url"
+	CreatedAt      ListArtifactsParamsSortField = "createdAt"
+	Credits        ListArtifactsParamsSortField = "credits"
+	Description    ListArtifactsParamsSortField = "description"
+	Id             ListArtifactsParamsSortField = "id"
+	MimeType       ListArtifactsParamsSortField = "mimeType"
+	Name           ListArtifactsParamsSortField = "name"
+	OrganizationId ListArtifactsParamsSortField = "organizationId"
+	PreviewImage   ListArtifactsParamsSortField = "previewImage"
+	ProducerId     ListArtifactsParamsSortField = "producerId"
+	Text           ListArtifactsParamsSortField = "text"
+	UpdatedAt      ListArtifactsParamsSortField = "updatedAt"
+	Url            ListArtifactsParamsSortField = "url"
 )
 
-// Defines values for FindManyArtifactsParamsSortOrder.
+// Defines values for ListArtifactsParamsSortOrder.
 const (
-	Asc  FindManyArtifactsParamsSortOrder = "asc"
-	Desc FindManyArtifactsParamsSortOrder = "desc"
+	Asc  ListArtifactsParamsSortOrder = "asc"
+	Desc ListArtifactsParamsSortOrder = "desc"
 )
 
 // Artifact Schema for Artifact entity
@@ -150,8 +150,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManyArtifactsParams defines parameters for FindManyArtifacts.
-type FindManyArtifactsParams struct {
+// ListArtifactsParams defines parameters for ListArtifacts.
+type ListArtifactsParams struct {
 	// Filter Filter artifacts by field values. Supported fields:
 	// - createdAt, id, updatedAt, credits, description, mimeType
 	// - name, organizationId, previewImage, producerId, text, url
@@ -164,11 +164,11 @@ type FindManyArtifactsParams struct {
 	Sort ArtifactsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManyArtifactsParamsSortField defines parameters for FindManyArtifacts.
-type FindManyArtifactsParamsSortField string
+// ListArtifactsParamsSortField defines parameters for ListArtifacts.
+type ListArtifactsParamsSortField string
 
-// FindManyArtifactsParamsSortOrder defines parameters for FindManyArtifacts.
-type FindManyArtifactsParamsSortOrder string
+// ListArtifactsParamsSortOrder defines parameters for ListArtifacts.
+type ListArtifactsParamsSortOrder string
 
 // CreateArtifactJSONBody defines parameters for CreateArtifact.
 type CreateArtifactJSONBody struct {

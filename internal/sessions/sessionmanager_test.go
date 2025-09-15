@@ -335,10 +335,11 @@ func TestSessionManager_ListUserSessions(t *testing.T) {
 		mockCache := NewNoOpCache()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
-		userIDStr := userID.String()
 		params := ListSessionsParams{
-			UserID: &userIDStr,
-			Limit:  100,
+			Page: PageQuery{
+				Number: 1,
+				Size:   100,
+			},
 		}
 
 		// Expectations

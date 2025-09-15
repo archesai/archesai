@@ -15,19 +15,19 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
-// Defines values for FindManyLabelsParamsSortField.
+// Defines values for ListLabelsParamsSortField.
 const (
-	CreatedAt      FindManyLabelsParamsSortField = "createdAt"
-	Id             FindManyLabelsParamsSortField = "id"
-	Name           FindManyLabelsParamsSortField = "name"
-	OrganizationId FindManyLabelsParamsSortField = "organizationId"
-	UpdatedAt      FindManyLabelsParamsSortField = "updatedAt"
+	CreatedAt      ListLabelsParamsSortField = "createdAt"
+	Id             ListLabelsParamsSortField = "id"
+	Name           ListLabelsParamsSortField = "name"
+	OrganizationId ListLabelsParamsSortField = "organizationId"
+	UpdatedAt      ListLabelsParamsSortField = "updatedAt"
 )
 
-// Defines values for FindManyLabelsParamsSortOrder.
+// Defines values for ListLabelsParamsSortOrder.
 const (
-	Asc  FindManyLabelsParamsSortOrder = "asc"
-	Desc FindManyLabelsParamsSortOrder = "desc"
+	Asc  ListLabelsParamsSortOrder = "asc"
+	Desc ListLabelsParamsSortOrder = "desc"
 )
 
 // FilterNode A recursive filter node that can be a condition or group
@@ -125,8 +125,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManyLabelsParams defines parameters for FindManyLabels.
-type FindManyLabelsParams struct {
+// ListLabelsParams defines parameters for ListLabels.
+type ListLabelsParams struct {
 	// Filter Filter labels by field values. Supported fields:
 	// - createdAt, id, updatedAt, name, organizationId
 	Filter LabelsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
@@ -138,11 +138,11 @@ type FindManyLabelsParams struct {
 	Sort LabelsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManyLabelsParamsSortField defines parameters for FindManyLabels.
-type FindManyLabelsParamsSortField string
+// ListLabelsParamsSortField defines parameters for ListLabels.
+type ListLabelsParamsSortField string
 
-// FindManyLabelsParamsSortOrder defines parameters for FindManyLabels.
-type FindManyLabelsParamsSortOrder string
+// ListLabelsParamsSortOrder defines parameters for ListLabels.
+type ListLabelsParamsSortOrder string
 
 // CreateLabelJSONBody defines parameters for CreateLabel.
 type CreateLabelJSONBody struct {

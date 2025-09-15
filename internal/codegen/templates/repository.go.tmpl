@@ -23,19 +23,6 @@ type Repository interface {
 }
 {{end}}
 
-{{range .Entities}}
-// List{{.Name}}sParams represents parameters for listing {{lower .Name}}s.
-type List{{.Name}}sParams struct {
-	Limit  int
-	Offset int
-	{{if eq .Name "User"}}Email  *string
-	Name   *string{{end}}
-	{{if eq .Name "Session"}}UserID *string{{end}}
-	{{if eq .Name "Account"}}UserID     *uuid.UUID
-	ProviderID *string{{end}}
-}
-{{end}}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

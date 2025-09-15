@@ -32,9 +32,9 @@ import type {
   CreateTool201,
   CreateToolBody,
   DeleteTool200,
-  FindManyTools200,
-  FindManyToolsParams,
-  GetOneTool200,
+  GetTool200,
+  ListTools200,
+  ListToolsParams,
   NotFoundResponse,
   UnauthorizedResponse,
   UpdateTool200,
@@ -49,15 +49,15 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Create a new tool
- * @summary Create a new tool
+ * Create a tool
+ * @summary Create a tool
  */
 export const getCreateToolUrl = () => {
 
 
   
 
-  return `/workflows/tools`
+  return `/tools`
 }
 
 export const createTool = async (createToolBody: CreateToolBody, options?: RequestInit): Promise<CreateTool201> => {
@@ -105,7 +105,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CreateToolMutationError = BadRequestResponse | UnauthorizedResponse
 
     /**
- * @summary Create a new tool
+ * @summary Create a tool
  */
 export const useCreateTool = <TError = BadRequestResponse | UnauthorizedResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createTool>>, TError,{data: CreateToolBody}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -121,10 +121,10 @@ export const useCreateTool = <TError = BadRequestResponse | UnauthorizedResponse
       return useMutation(mutationOptions , queryClient);
     }
     /**
- * Find many tools
- * @summary Find many tools
+ * List tools
+ * @summary List tools
  */
-export const getFindManyToolsUrl = (params?: FindManyToolsParams,) => {
+export const getListToolsUrl = (params?: ListToolsParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -142,12 +142,12 @@ export const getFindManyToolsUrl = (params?: FindManyToolsParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/workflows/tools?${stringifiedParams}` : `/workflows/tools`
+  return stringifiedParams.length > 0 ? `/tools?${stringifiedParams}` : `/tools`
 }
 
-export const findManyTools = async (params?: FindManyToolsParams, options?: RequestInit): Promise<FindManyTools200> => {
+export const listTools = async (params?: ListToolsParams, options?: RequestInit): Promise<ListTools200> => {
   
-  return customFetch<FindManyTools200>(getFindManyToolsUrl(params),
+  return customFetch<ListTools200>(getListToolsUrl(params),
   {      
     ...options,
     method: 'GET'
@@ -158,67 +158,67 @@ export const findManyTools = async (params?: FindManyToolsParams, options?: Requ
 
 
 
-export const getFindManyToolsQueryKey = (params?: FindManyToolsParams,) => {
-    return [`/workflows/tools`, ...(params ? [params]: [])] as const;
+export const getListToolsQueryKey = (params?: ListToolsParams,) => {
+    return [`/tools`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getFindManyToolsQueryOptions = <TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: FindManyToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListToolsQueryOptions = <TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFindManyToolsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListToolsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyTools>>> = ({ signal }) => findManyTools(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listTools>>> = ({ signal }) => listTools(params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyToolsQueryResult = NonNullable<Awaited<ReturnType<typeof findManyTools>>>
-export type FindManyToolsQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListToolsQueryResult = NonNullable<Awaited<ReturnType<typeof listTools>>>
+export type ListToolsQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useFindManyTools<TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  FindManyToolsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>> & Pick<
+export function useListTools<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListToolsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyTools>>,
+          Awaited<ReturnType<typeof listTools>>,
           TError,
-          Awaited<ReturnType<typeof findManyTools>>
+          Awaited<ReturnType<typeof listTools>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyTools<TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>> & Pick<
+export function useListTools<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyTools>>,
+          Awaited<ReturnType<typeof listTools>>,
           TError,
-          Awaited<ReturnType<typeof findManyTools>>
+          Awaited<ReturnType<typeof listTools>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyTools<TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListTools<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many tools
+ * @summary List tools
  */
 
-export function useFindManyTools<TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListTools<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFindManyToolsQueryOptions(params,options)
+  const queryOptions = getListToolsQueryOptions(params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -229,50 +229,50 @@ export function useFindManyTools<TData = Awaited<ReturnType<typeof findManyTools
 
 
 
-export const getFindManyToolsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: FindManyToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListToolsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFindManyToolsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListToolsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyTools>>> = ({ signal }) => findManyTools(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listTools>>> = ({ signal }) => listTools(params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyToolsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findManyTools>>>
-export type FindManyToolsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListToolsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listTools>>>
+export type ListToolsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useFindManyToolsSuspense<TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  FindManyToolsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListToolsSuspense<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListToolsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyToolsSuspense<TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListToolsSuspense<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyToolsSuspense<TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListToolsSuspense<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many tools
+ * @summary List tools
  */
 
-export function useFindManyToolsSuspense<TData = Awaited<ReturnType<typeof findManyTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListToolsSuspense<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFindManyToolsSuspenseQueryOptions(params,options)
+  const queryOptions = getListToolsSuspenseQueryOptions(params,options)
 
   const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -292,7 +292,7 @@ export const getDeleteToolUrl = (id: string | undefined | null,) => {
 
   
 
-  return `/workflows/tools/${id}`
+  return `/tools/${id}`
 }
 
 export const deleteTool = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteTool200> => {
@@ -358,17 +358,17 @@ export const useDeleteTool = <TError = NotFoundResponse,
  * Find a tool
  * @summary Find a tool
  */
-export const getGetOneToolUrl = (id: string | undefined | null,) => {
+export const getGetToolUrl = (id: string | undefined | null,) => {
 
 
   
 
-  return `/workflows/tools/${id}`
+  return `/tools/${id}`
 }
 
-export const getOneTool = async (id: string | undefined | null, options?: RequestInit): Promise<GetOneTool200> => {
+export const getTool = async (id: string | undefined | null, options?: RequestInit): Promise<GetTool200> => {
   
-  return customFetch<GetOneTool200>(getGetOneToolUrl(id),
+  return customFetch<GetTool200>(getGetToolUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -379,67 +379,67 @@ export const getOneTool = async (id: string | undefined | null, options?: Reques
 
 
 
-export const getGetOneToolQueryKey = (id?: string | undefined | null,) => {
-    return [`/workflows/tools/${id}`] as const;
+export const getGetToolQueryKey = (id?: string | undefined | null,) => {
+    return [`/tools/${id}`] as const;
     }
 
     
-export const getGetOneToolQueryOptions = <TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetToolQueryOptions = <TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetOneToolQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetToolQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneTool>>> = ({ signal }) => getOneTool(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTool>>> = ({ signal }) => getTool(id, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetOneToolQueryResult = NonNullable<Awaited<ReturnType<typeof getOneTool>>>
-export type GetOneToolQueryError = NotFoundResponse
+export type GetToolQueryResult = NonNullable<Awaited<ReturnType<typeof getTool>>>
+export type GetToolQueryError = NotFoundResponse
 
 
-export function useGetOneTool<TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>> & Pick<
+export function useGetTool<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getOneTool>>,
+          Awaited<ReturnType<typeof getTool>>,
           TError,
-          Awaited<ReturnType<typeof getOneTool>>
+          Awaited<ReturnType<typeof getTool>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOneTool<TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>> & Pick<
+export function useGetTool<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getOneTool>>,
+          Awaited<ReturnType<typeof getTool>>,
           TError,
-          Awaited<ReturnType<typeof getOneTool>>
+          Awaited<ReturnType<typeof getTool>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOneTool<TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetTool<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find a tool
  */
 
-export function useGetOneTool<TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetTool<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetOneToolQueryOptions(id,options)
+  const queryOptions = getGetToolQueryOptions(id,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -450,50 +450,50 @@ export function useGetOneTool<TData = Awaited<ReturnType<typeof getOneTool>>, TE
 
 
 
-export const getGetOneToolSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetToolSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetOneToolQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetToolQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneTool>>> = ({ signal }) => getOneTool(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTool>>> = ({ signal }) => getTool(id, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetOneToolSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getOneTool>>>
-export type GetOneToolSuspenseQueryError = NotFoundResponse
+export type GetToolSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getTool>>>
+export type GetToolSuspenseQueryError = NotFoundResponse
 
 
-export function useGetOneToolSuspense<TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetToolSuspense<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOneToolSuspense<TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetToolSuspense<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOneToolSuspense<TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetToolSuspense<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find a tool
  */
 
-export function useGetOneToolSuspense<TData = Awaited<ReturnType<typeof getOneTool>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetToolSuspense<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetOneToolSuspenseQueryOptions(id,options)
+  const queryOptions = getGetToolSuspenseQueryOptions(id,options)
 
   const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -513,7 +513,7 @@ export const getUpdateToolUrl = (id: string | undefined | null,) => {
 
   
 
-  return `/workflows/tools/${id}`
+  return `/tools/${id}`
 }
 
 export const updateTool = async (id: string | undefined | null,

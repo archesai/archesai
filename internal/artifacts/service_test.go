@@ -240,8 +240,10 @@ func TestArtifactsService_List(t *testing.T) {
 
 		// Mock expects the internal repository call
 		params := ListArtifactsParams{
-			Limit:  limit,
-			Offset: offset,
+			Page: PageQuery{
+				Number: offset/limit + 1,
+				Size:   limit,
+			},
 		}
 		mockRepo.EXPECT().List(mock.Anything, params).Return(artifacts, int64(2), nil)
 

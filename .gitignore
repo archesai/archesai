@@ -32,6 +32,7 @@ logs/
 ## Documentation
 web/docs/pages
 web/docs/apis
+api/openapi.bundled.yaml
 
 ## Config/Generated
 build.json

@@ -18,31 +18,31 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Find many pipelines
-	// (GET /workflows/pipelines)
-	FindManyPipelines(ctx echo.Context, params FindManyPipelinesParams) error
+	// (GET /pipelines)
+	ListPipelines(ctx echo.Context, params ListPipelinesParams) error
 	// Create a new pipeline
-	// (POST /workflows/pipelines)
+	// (POST /pipelines)
 	CreatePipeline(ctx echo.Context) error
 	// Delete a pipeline
-	// (DELETE /workflows/pipelines/{id})
+	// (DELETE /pipelines/{id})
 	DeletePipeline(ctx echo.Context, id openapi_types.UUID) error
 	// Find a pipeline
-	// (GET /workflows/pipelines/{id})
-	GetOnePipeline(ctx echo.Context, id openapi_types.UUID) error
+	// (GET /pipelines/{id})
+	GetPipeline(ctx echo.Context, id openapi_types.UUID) error
 	// Update a pipeline
-	// (PATCH /workflows/pipelines/{id})
+	// (PATCH /pipelines/{id})
 	UpdatePipeline(ctx echo.Context, id openapi_types.UUID) error
 	// Get execution plan for a pipeline
-	// (GET /workflows/pipelines/{id}/execution-plans)
+	// (GET /pipelines/{id}/execution-plans)
 	GetPipelineExecutionPlan(ctx echo.Context, id openapi_types.UUID) error
 	// Validate a pipeline configuration
-	// (POST /workflows/pipelines/{id}/execution-plans)
+	// (POST /pipelines/{id}/execution-plans)
 	ValidatePipelineExecutionPlan(ctx echo.Context, id openapi_types.UUID) error
 	// Get all steps for a pipeline
-	// (GET /workflows/pipelines/{id}/steps)
+	// (GET /pipelines/{id}/steps)
 	GetPipelineSteps(ctx echo.Context, id openapi_types.UUID) error
 	// Add a step to a pipeline
-	// (POST /workflows/pipelines/{id}/steps)
+	// (POST /pipelines/{id}/steps)
 	CreatePipelineStep(ctx echo.Context, id openapi_types.UUID) error
 }
 
@@ -51,14 +51,14 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// FindManyPipelines converts echo context to params.
-func (w *ServerInterfaceWrapper) FindManyPipelines(ctx echo.Context) error {
+// ListPipelines converts echo context to params.
+func (w *ServerInterfaceWrapper) ListPipelines(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FindManyPipelinesParams
+	var params ListPipelinesParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -81,7 +81,7 @@ func (w *ServerInterfaceWrapper) FindManyPipelines(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.FindManyPipelines(ctx, params)
+	err = w.Handler.ListPipelines(ctx, params)
 	return err
 }
 
@@ -114,8 +114,8 @@ func (w *ServerInterfaceWrapper) DeletePipeline(ctx echo.Context) error {
 	return err
 }
 
-// GetOnePipeline converts echo context to params.
-func (w *ServerInterfaceWrapper) GetOnePipeline(ctx echo.Context) error {
+// GetPipeline converts echo context to params.
+func (w *ServerInterfaceWrapper) GetPipeline(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -128,7 +128,7 @@ func (w *ServerInterfaceWrapper) GetOnePipeline(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetOnePipeline(ctx, id)
+	err = w.Handler.GetPipeline(ctx, id)
 	return err
 }
 
@@ -250,15 +250,15 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/workflows/pipelines", wrapper.FindManyPipelines)
-	router.POST(baseURL+"/workflows/pipelines", wrapper.CreatePipeline)
-	router.DELETE(baseURL+"/workflows/pipelines/:id", wrapper.DeletePipeline)
-	router.GET(baseURL+"/workflows/pipelines/:id", wrapper.GetOnePipeline)
-	router.PATCH(baseURL+"/workflows/pipelines/:id", wrapper.UpdatePipeline)
-	router.GET(baseURL+"/workflows/pipelines/:id/execution-plans", wrapper.GetPipelineExecutionPlan)
-	router.POST(baseURL+"/workflows/pipelines/:id/execution-plans", wrapper.ValidatePipelineExecutionPlan)
-	router.GET(baseURL+"/workflows/pipelines/:id/steps", wrapper.GetPipelineSteps)
-	router.POST(baseURL+"/workflows/pipelines/:id/steps", wrapper.CreatePipelineStep)
+	router.GET(baseURL+"/pipelines", wrapper.ListPipelines)
+	router.POST(baseURL+"/pipelines", wrapper.CreatePipeline)
+	router.DELETE(baseURL+"/pipelines/:id", wrapper.DeletePipeline)
+	router.GET(baseURL+"/pipelines/:id", wrapper.GetPipeline)
+	router.PATCH(baseURL+"/pipelines/:id", wrapper.UpdatePipeline)
+	router.GET(baseURL+"/pipelines/:id/execution-plans", wrapper.GetPipelineExecutionPlan)
+	router.POST(baseURL+"/pipelines/:id/execution-plans", wrapper.ValidatePipelineExecutionPlan)
+	router.GET(baseURL+"/pipelines/:id/steps", wrapper.GetPipelineSteps)
+	router.POST(baseURL+"/pipelines/:id/steps", wrapper.CreatePipelineStep)
 
 }
 
@@ -268,15 +268,15 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type FindManyPipelinesRequestObject struct {
-	Params FindManyPipelinesParams
+type ListPipelinesRequestObject struct {
+	Params ListPipelinesParams
 }
 
-type FindManyPipelinesResponseObject interface {
-	VisitFindManyPipelinesResponse(w http.ResponseWriter) error
+type ListPipelinesResponseObject interface {
+	VisitListPipelinesResponse(w http.ResponseWriter) error
 }
 
-type FindManyPipelines200JSONResponse struct {
+type ListPipelines200JSONResponse struct {
 	Data []Pipeline `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -284,29 +284,29 @@ type FindManyPipelines200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response FindManyPipelines200JSONResponse) VisitFindManyPipelinesResponse(w http.ResponseWriter) error {
+func (response ListPipelines200JSONResponse) VisitListPipelinesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyPipelines400ApplicationProblemPlusJSONResponse struct {
+type ListPipelines400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyPipelines400ApplicationProblemPlusJSONResponse) VisitFindManyPipelinesResponse(w http.ResponseWriter) error {
+func (response ListPipelines400ApplicationProblemPlusJSONResponse) VisitListPipelinesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyPipelines401ApplicationProblemPlusJSONResponse struct {
+type ListPipelines401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyPipelines401ApplicationProblemPlusJSONResponse) VisitFindManyPipelinesResponse(w http.ResponseWriter) error {
+func (response ListPipelines401ApplicationProblemPlusJSONResponse) VisitListPipelinesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -386,31 +386,31 @@ func (response DeletePipeline404ApplicationProblemPlusJSONResponse) VisitDeleteP
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOnePipelineRequestObject struct {
+type GetPipelineRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type GetOnePipelineResponseObject interface {
-	VisitGetOnePipelineResponse(w http.ResponseWriter) error
+type GetPipelineResponseObject interface {
+	VisitGetPipelineResponse(w http.ResponseWriter) error
 }
 
-type GetOnePipeline200JSONResponse struct {
+type GetPipeline200JSONResponse struct {
 	// Data Schema for Pipeline entity
 	Data Pipeline `json:"data"`
 }
 
-func (response GetOnePipeline200JSONResponse) VisitGetOnePipelineResponse(w http.ResponseWriter) error {
+func (response GetPipeline200JSONResponse) VisitGetPipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOnePipeline404ApplicationProblemPlusJSONResponse struct {
+type GetPipeline404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response GetOnePipeline404ApplicationProblemPlusJSONResponse) VisitGetOnePipelineResponse(w http.ResponseWriter) error {
+func (response GetPipeline404ApplicationProblemPlusJSONResponse) VisitGetPipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -672,31 +672,31 @@ func (response CreatePipelineStep404ApplicationProblemPlusJSONResponse) VisitCre
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// Find many pipelines
-	// (GET /workflows/pipelines)
-	FindManyPipelines(ctx context.Context, request FindManyPipelinesRequestObject) (FindManyPipelinesResponseObject, error)
+	// (GET /pipelines)
+	ListPipelines(ctx context.Context, request ListPipelinesRequestObject) (ListPipelinesResponseObject, error)
 	// Create a new pipeline
-	// (POST /workflows/pipelines)
+	// (POST /pipelines)
 	CreatePipeline(ctx context.Context, request CreatePipelineRequestObject) (CreatePipelineResponseObject, error)
 	// Delete a pipeline
-	// (DELETE /workflows/pipelines/{id})
+	// (DELETE /pipelines/{id})
 	DeletePipeline(ctx context.Context, request DeletePipelineRequestObject) (DeletePipelineResponseObject, error)
 	// Find a pipeline
-	// (GET /workflows/pipelines/{id})
-	GetOnePipeline(ctx context.Context, request GetOnePipelineRequestObject) (GetOnePipelineResponseObject, error)
+	// (GET /pipelines/{id})
+	GetPipeline(ctx context.Context, request GetPipelineRequestObject) (GetPipelineResponseObject, error)
 	// Update a pipeline
-	// (PATCH /workflows/pipelines/{id})
+	// (PATCH /pipelines/{id})
 	UpdatePipeline(ctx context.Context, request UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error)
 	// Get execution plan for a pipeline
-	// (GET /workflows/pipelines/{id}/execution-plans)
+	// (GET /pipelines/{id}/execution-plans)
 	GetPipelineExecutionPlan(ctx context.Context, request GetPipelineExecutionPlanRequestObject) (GetPipelineExecutionPlanResponseObject, error)
 	// Validate a pipeline configuration
-	// (POST /workflows/pipelines/{id}/execution-plans)
+	// (POST /pipelines/{id}/execution-plans)
 	ValidatePipelineExecutionPlan(ctx context.Context, request ValidatePipelineExecutionPlanRequestObject) (ValidatePipelineExecutionPlanResponseObject, error)
 	// Get all steps for a pipeline
-	// (GET /workflows/pipelines/{id}/steps)
+	// (GET /pipelines/{id}/steps)
 	GetPipelineSteps(ctx context.Context, request GetPipelineStepsRequestObject) (GetPipelineStepsResponseObject, error)
 	// Add a step to a pipeline
-	// (POST /workflows/pipelines/{id}/steps)
+	// (POST /pipelines/{id}/steps)
 	CreatePipelineStep(ctx context.Context, request CreatePipelineStepRequestObject) (CreatePipelineStepResponseObject, error)
 }
 
@@ -712,25 +712,25 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// FindManyPipelines operation middleware
-func (sh *strictHandler) FindManyPipelines(ctx echo.Context, params FindManyPipelinesParams) error {
-	var request FindManyPipelinesRequestObject
+// ListPipelines operation middleware
+func (sh *strictHandler) ListPipelines(ctx echo.Context, params ListPipelinesParams) error {
+	var request ListPipelinesRequestObject
 
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.FindManyPipelines(ctx.Request().Context(), request.(FindManyPipelinesRequestObject))
+		return sh.ssi.ListPipelines(ctx.Request().Context(), request.(ListPipelinesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "FindManyPipelines")
+		handler = middleware(handler, "ListPipelines")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(FindManyPipelinesResponseObject); ok {
-		return validResponse.VisitFindManyPipelinesResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListPipelinesResponseObject); ok {
+		return validResponse.VisitListPipelinesResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
@@ -791,25 +791,25 @@ func (sh *strictHandler) DeletePipeline(ctx echo.Context, id openapi_types.UUID)
 	return nil
 }
 
-// GetOnePipeline operation middleware
-func (sh *strictHandler) GetOnePipeline(ctx echo.Context, id openapi_types.UUID) error {
-	var request GetOnePipelineRequestObject
+// GetPipeline operation middleware
+func (sh *strictHandler) GetPipeline(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetPipelineRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetOnePipeline(ctx.Request().Context(), request.(GetOnePipelineRequestObject))
+		return sh.ssi.GetPipeline(ctx.Request().Context(), request.(GetPipelineRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetOnePipeline")
+		handler = middleware(handler, "GetPipeline")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(GetOnePipelineResponseObject); ok {
-		return validResponse.VisitGetOnePipelineResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetPipelineResponseObject); ok {
+		return validResponse.VisitGetPipelineResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

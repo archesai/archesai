@@ -187,8 +187,10 @@ func TestService_ListPipelines(t *testing.T) {
 		}
 
 		params := ListPipelinesParams{
-			Limit:  10,
-			Offset: 0,
+			Page: PageQuery{
+				Number: 1,
+				Size:   10,
+			},
 		}
 
 		mockRepo.EXPECT().List(mock.Anything, params).Return(pipelines, int64(2), nil)

@@ -24,8 +24,10 @@ func NewService(repo Repository, logger *slog.Logger) *Service {
 // List retrieves runs for an organization
 func (s *Service) List(ctx context.Context, _ string, limit, offset int) ([]*Run, int64, error) {
 	params := ListRunsParams{
-		Limit:  limit,
-		Offset: offset,
+		Page: PageQuery{
+			Number: offset/limit + 1,
+			Size:   limit,
+		},
 	}
 
 	runs, total, err := s.repo.List(ctx, params)

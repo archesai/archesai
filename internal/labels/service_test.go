@@ -235,8 +235,10 @@ func TestLabelsService_List(t *testing.T) {
 		}
 
 		params := ListLabelsParams{
-			Limit:  limit,
-			Offset: offset,
+			Page: PageQuery{
+				Number: offset/limit + 1,
+				Size:   limit,
+			},
 		}
 		mockRepo.EXPECT().List(mock.Anything, params).Return(labels, int64(2), nil)
 

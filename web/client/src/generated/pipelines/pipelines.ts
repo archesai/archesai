@@ -34,11 +34,11 @@ import type {
   CreatePipelineStep201,
   CreatePipelineStepBody,
   DeletePipeline200,
-  FindManyPipelines200,
-  FindManyPipelinesParams,
-  GetOnePipeline200,
+  GetPipeline200,
   GetPipelineExecutionPlan200,
   GetPipelineSteps200,
+  ListPipelines200,
+  ListPipelinesParams,
   NotFoundResponse,
   UnauthorizedResponse,
   UpdatePipeline200,
@@ -62,7 +62,7 @@ export const getCreatePipelineUrl = () => {
 
   
 
-  return `/workflows/pipelines`
+  return `/pipelines`
 }
 
 export const createPipeline = async (createPipelineBody: CreatePipelineBody, options?: RequestInit): Promise<CreatePipeline201> => {
@@ -129,7 +129,7 @@ export const useCreatePipeline = <TError = BadRequestResponse | UnauthorizedResp
  * Find many pipelines
  * @summary Find many pipelines
  */
-export const getFindManyPipelinesUrl = (params?: FindManyPipelinesParams,) => {
+export const getListPipelinesUrl = (params?: ListPipelinesParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -147,12 +147,12 @@ export const getFindManyPipelinesUrl = (params?: FindManyPipelinesParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/workflows/pipelines?${stringifiedParams}` : `/workflows/pipelines`
+  return stringifiedParams.length > 0 ? `/pipelines?${stringifiedParams}` : `/pipelines`
 }
 
-export const findManyPipelines = async (params?: FindManyPipelinesParams, options?: RequestInit): Promise<FindManyPipelines200> => {
+export const listPipelines = async (params?: ListPipelinesParams, options?: RequestInit): Promise<ListPipelines200> => {
   
-  return customFetch<FindManyPipelines200>(getFindManyPipelinesUrl(params),
+  return customFetch<ListPipelines200>(getListPipelinesUrl(params),
   {      
     ...options,
     method: 'GET'
@@ -163,67 +163,67 @@ export const findManyPipelines = async (params?: FindManyPipelinesParams, option
 
 
 
-export const getFindManyPipelinesQueryKey = (params?: FindManyPipelinesParams,) => {
-    return [`/workflows/pipelines`, ...(params ? [params]: [])] as const;
+export const getListPipelinesQueryKey = (params?: ListPipelinesParams,) => {
+    return [`/pipelines`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getFindManyPipelinesQueryOptions = <TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: FindManyPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListPipelinesQueryOptions = <TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFindManyPipelinesQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListPipelinesQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyPipelines>>> = ({ signal }) => findManyPipelines(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPipelines>>> = ({ signal }) => listPipelines(params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyPipelinesQueryResult = NonNullable<Awaited<ReturnType<typeof findManyPipelines>>>
-export type FindManyPipelinesQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListPipelinesQueryResult = NonNullable<Awaited<ReturnType<typeof listPipelines>>>
+export type ListPipelinesQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useFindManyPipelines<TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  FindManyPipelinesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>> & Pick<
+export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListPipelinesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyPipelines>>,
+          Awaited<ReturnType<typeof listPipelines>>,
           TError,
-          Awaited<ReturnType<typeof findManyPipelines>>
+          Awaited<ReturnType<typeof listPipelines>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyPipelines<TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>> & Pick<
+export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyPipelines>>,
+          Awaited<ReturnType<typeof listPipelines>>,
           TError,
-          Awaited<ReturnType<typeof findManyPipelines>>
+          Awaited<ReturnType<typeof listPipelines>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyPipelines<TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find many pipelines
  */
 
-export function useFindManyPipelines<TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFindManyPipelinesQueryOptions(params,options)
+  const queryOptions = getListPipelinesQueryOptions(params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -234,50 +234,50 @@ export function useFindManyPipelines<TData = Awaited<ReturnType<typeof findManyP
 
 
 
-export const getFindManyPipelinesSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: FindManyPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListPipelinesSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFindManyPipelinesQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListPipelinesQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyPipelines>>> = ({ signal }) => findManyPipelines(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPipelines>>> = ({ signal }) => listPipelines(params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyPipelinesSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findManyPipelines>>>
-export type FindManyPipelinesSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListPipelinesSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listPipelines>>>
+export type ListPipelinesSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useFindManyPipelinesSuspense<TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  FindManyPipelinesParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListPipelinesParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyPipelinesSuspense<TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyPipelinesSuspense<TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find many pipelines
  */
 
-export function useFindManyPipelinesSuspense<TData = Awaited<ReturnType<typeof findManyPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: FindManyPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFindManyPipelinesSuspenseQueryOptions(params,options)
+  const queryOptions = getListPipelinesSuspenseQueryOptions(params,options)
 
   const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -297,7 +297,7 @@ export const getDeletePipelineUrl = (id: string | undefined | null,) => {
 
   
 
-  return `/workflows/pipelines/${id}`
+  return `/pipelines/${id}`
 }
 
 export const deletePipeline = async (id: string | undefined | null, options?: RequestInit): Promise<DeletePipeline200> => {
@@ -363,17 +363,17 @@ export const useDeletePipeline = <TError = NotFoundResponse,
  * Find a pipeline
  * @summary Find a pipeline
  */
-export const getGetOnePipelineUrl = (id: string | undefined | null,) => {
+export const getGetPipelineUrl = (id: string | undefined | null,) => {
 
 
   
 
-  return `/workflows/pipelines/${id}`
+  return `/pipelines/${id}`
 }
 
-export const getOnePipeline = async (id: string | undefined | null, options?: RequestInit): Promise<GetOnePipeline200> => {
+export const getPipeline = async (id: string | undefined | null, options?: RequestInit): Promise<GetPipeline200> => {
   
-  return customFetch<GetOnePipeline200>(getGetOnePipelineUrl(id),
+  return customFetch<GetPipeline200>(getGetPipelineUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -384,67 +384,67 @@ export const getOnePipeline = async (id: string | undefined | null, options?: Re
 
 
 
-export const getGetOnePipelineQueryKey = (id?: string | undefined | null,) => {
-    return [`/workflows/pipelines/${id}`] as const;
+export const getGetPipelineQueryKey = (id?: string | undefined | null,) => {
+    return [`/pipelines/${id}`] as const;
     }
 
     
-export const getGetOnePipelineQueryOptions = <TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetPipelineQueryOptions = <TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetOnePipelineQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetPipelineQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOnePipeline>>> = ({ signal }) => getOnePipeline(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPipeline>>> = ({ signal }) => getPipeline(id, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetOnePipelineQueryResult = NonNullable<Awaited<ReturnType<typeof getOnePipeline>>>
-export type GetOnePipelineQueryError = NotFoundResponse
+export type GetPipelineQueryResult = NonNullable<Awaited<ReturnType<typeof getPipeline>>>
+export type GetPipelineQueryError = NotFoundResponse
 
 
-export function useGetOnePipeline<TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>> & Pick<
+export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getOnePipeline>>,
+          Awaited<ReturnType<typeof getPipeline>>,
           TError,
-          Awaited<ReturnType<typeof getOnePipeline>>
+          Awaited<ReturnType<typeof getPipeline>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOnePipeline<TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>> & Pick<
+export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getOnePipeline>>,
+          Awaited<ReturnType<typeof getPipeline>>,
           TError,
-          Awaited<ReturnType<typeof getOnePipeline>>
+          Awaited<ReturnType<typeof getPipeline>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOnePipeline<TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find a pipeline
  */
 
-export function useGetOnePipeline<TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetOnePipelineQueryOptions(id,options)
+  const queryOptions = getGetPipelineQueryOptions(id,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -455,50 +455,50 @@ export function useGetOnePipeline<TData = Awaited<ReturnType<typeof getOnePipeli
 
 
 
-export const getGetOnePipelineSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetPipelineSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetOnePipelineQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetPipelineQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOnePipeline>>> = ({ signal }) => getOnePipeline(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPipeline>>> = ({ signal }) => getPipeline(id, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetOnePipelineSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getOnePipeline>>>
-export type GetOnePipelineSuspenseQueryError = NotFoundResponse
+export type GetPipelineSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getPipeline>>>
+export type GetPipelineSuspenseQueryError = NotFoundResponse
 
 
-export function useGetOnePipelineSuspense<TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(
- id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOnePipelineSuspense<TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOnePipelineSuspense<TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find a pipeline
  */
 
-export function useGetOnePipelineSuspense<TData = Awaited<ReturnType<typeof getOnePipeline>>, TError = NotFoundResponse>(
- id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetOnePipelineSuspenseQueryOptions(id,options)
+  const queryOptions = getGetPipelineSuspenseQueryOptions(id,options)
 
   const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -518,7 +518,7 @@ export const getUpdatePipelineUrl = (id: string | undefined | null,) => {
 
   
 
-  return `/workflows/pipelines/${id}`
+  return `/pipelines/${id}`
 }
 
 export const updatePipeline = async (id: string | undefined | null,
@@ -591,7 +591,7 @@ export const getGetPipelineStepsUrl = (id: string | undefined | null,) => {
 
   
 
-  return `/workflows/pipelines/${id}/steps`
+  return `/pipelines/${id}/steps`
 }
 
 export const getPipelineSteps = async (id: string | undefined | null, options?: RequestInit): Promise<GetPipelineSteps200> => {
@@ -608,7 +608,7 @@ export const getPipelineSteps = async (id: string | undefined | null, options?: 
 
 
 export const getGetPipelineStepsQueryKey = (id?: string | undefined | null,) => {
-    return [`/workflows/pipelines/${id}/steps`] as const;
+    return [`/pipelines/${id}/steps`] as const;
     }
 
     
@@ -741,7 +741,7 @@ export const getCreatePipelineStepUrl = (id: string | undefined | null,) => {
 
   
 
-  return `/workflows/pipelines/${id}/steps`
+  return `/pipelines/${id}/steps`
 }
 
 export const createPipelineStep = async (id: string | undefined | null,
@@ -814,7 +814,7 @@ export const getGetPipelineExecutionPlanUrl = (id: string | undefined | null,) =
 
   
 
-  return `/workflows/pipelines/${id}/execution-plans`
+  return `/pipelines/${id}/execution-plans`
 }
 
 export const getPipelineExecutionPlan = async (id: string | undefined | null, options?: RequestInit): Promise<GetPipelineExecutionPlan200> => {
@@ -831,7 +831,7 @@ export const getPipelineExecutionPlan = async (id: string | undefined | null, op
 
 
 export const getGetPipelineExecutionPlanQueryKey = (id?: string | undefined | null,) => {
-    return [`/workflows/pipelines/${id}/execution-plans`] as const;
+    return [`/pipelines/${id}/execution-plans`] as const;
     }
 
     
@@ -964,7 +964,7 @@ export const getValidatePipelineExecutionPlanUrl = (id: string | undefined | nul
 
   
 
-  return `/workflows/pipelines/${id}/execution-plans`
+  return `/pipelines/${id}/execution-plans`
 }
 
 export const validatePipelineExecutionPlan = async (id: string | undefined | null, options?: RequestInit): Promise<ValidatePipelineExecutionPlan200> => {

@@ -17,20 +17,20 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Find many tools
-	// (GET /workflows/tools)
-	FindManyTools(ctx echo.Context, params FindManyToolsParams) error
-	// Create a new tool
-	// (POST /workflows/tools)
+	// List tools
+	// (GET /tools)
+	ListTools(ctx echo.Context, params ListToolsParams) error
+	// Create a tool
+	// (POST /tools)
 	CreateTool(ctx echo.Context) error
 	// Delete a tool
-	// (DELETE /workflows/tools/{id})
+	// (DELETE /tools/{id})
 	DeleteTool(ctx echo.Context, id openapi_types.UUID) error
 	// Find a tool
-	// (GET /workflows/tools/{id})
-	GetOneTool(ctx echo.Context, id openapi_types.UUID) error
+	// (GET /tools/{id})
+	GetTool(ctx echo.Context, id openapi_types.UUID) error
 	// Update a tool
-	// (PATCH /workflows/tools/{id})
+	// (PATCH /tools/{id})
 	UpdateTool(ctx echo.Context, id openapi_types.UUID) error
 }
 
@@ -39,14 +39,14 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// FindManyTools converts echo context to params.
-func (w *ServerInterfaceWrapper) FindManyTools(ctx echo.Context) error {
+// ListTools converts echo context to params.
+func (w *ServerInterfaceWrapper) ListTools(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FindManyToolsParams
+	var params ListToolsParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -69,7 +69,7 @@ func (w *ServerInterfaceWrapper) FindManyTools(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.FindManyTools(ctx, params)
+	err = w.Handler.ListTools(ctx, params)
 	return err
 }
 
@@ -102,8 +102,8 @@ func (w *ServerInterfaceWrapper) DeleteTool(ctx echo.Context) error {
 	return err
 }
 
-// GetOneTool converts echo context to params.
-func (w *ServerInterfaceWrapper) GetOneTool(ctx echo.Context) error {
+// GetTool converts echo context to params.
+func (w *ServerInterfaceWrapper) GetTool(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -116,7 +116,7 @@ func (w *ServerInterfaceWrapper) GetOneTool(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetOneTool(ctx, id)
+	err = w.Handler.GetTool(ctx, id)
 	return err
 }
 
@@ -166,11 +166,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/workflows/tools", wrapper.FindManyTools)
-	router.POST(baseURL+"/workflows/tools", wrapper.CreateTool)
-	router.DELETE(baseURL+"/workflows/tools/:id", wrapper.DeleteTool)
-	router.GET(baseURL+"/workflows/tools/:id", wrapper.GetOneTool)
-	router.PATCH(baseURL+"/workflows/tools/:id", wrapper.UpdateTool)
+	router.GET(baseURL+"/tools", wrapper.ListTools)
+	router.POST(baseURL+"/tools", wrapper.CreateTool)
+	router.DELETE(baseURL+"/tools/:id", wrapper.DeleteTool)
+	router.GET(baseURL+"/tools/:id", wrapper.GetTool)
+	router.PATCH(baseURL+"/tools/:id", wrapper.UpdateTool)
 
 }
 
@@ -180,15 +180,15 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type FindManyToolsRequestObject struct {
-	Params FindManyToolsParams
+type ListToolsRequestObject struct {
+	Params ListToolsParams
 }
 
-type FindManyToolsResponseObject interface {
-	VisitFindManyToolsResponse(w http.ResponseWriter) error
+type ListToolsResponseObject interface {
+	VisitListToolsResponse(w http.ResponseWriter) error
 }
 
-type FindManyTools200JSONResponse struct {
+type ListTools200JSONResponse struct {
 	Data []Tool `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -196,29 +196,29 @@ type FindManyTools200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response FindManyTools200JSONResponse) VisitFindManyToolsResponse(w http.ResponseWriter) error {
+func (response ListTools200JSONResponse) VisitListToolsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyTools400ApplicationProblemPlusJSONResponse struct {
+type ListTools400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyTools400ApplicationProblemPlusJSONResponse) VisitFindManyToolsResponse(w http.ResponseWriter) error {
+func (response ListTools400ApplicationProblemPlusJSONResponse) VisitListToolsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyTools401ApplicationProblemPlusJSONResponse struct {
+type ListTools401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyTools401ApplicationProblemPlusJSONResponse) VisitFindManyToolsResponse(w http.ResponseWriter) error {
+func (response ListTools401ApplicationProblemPlusJSONResponse) VisitListToolsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -298,31 +298,31 @@ func (response DeleteTool404ApplicationProblemPlusJSONResponse) VisitDeleteToolR
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneToolRequestObject struct {
+type GetToolRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type GetOneToolResponseObject interface {
-	VisitGetOneToolResponse(w http.ResponseWriter) error
+type GetToolResponseObject interface {
+	VisitGetToolResponse(w http.ResponseWriter) error
 }
 
-type GetOneTool200JSONResponse struct {
+type GetTool200JSONResponse struct {
 	// Data Schema for Tool entity
 	Data Tool `json:"data"`
 }
 
-func (response GetOneTool200JSONResponse) VisitGetOneToolResponse(w http.ResponseWriter) error {
+func (response GetTool200JSONResponse) VisitGetToolResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneTool404ApplicationProblemPlusJSONResponse struct {
+type GetTool404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response GetOneTool404ApplicationProblemPlusJSONResponse) VisitGetOneToolResponse(w http.ResponseWriter) error {
+func (response GetTool404ApplicationProblemPlusJSONResponse) VisitGetToolResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -363,20 +363,20 @@ func (response UpdateTool404ApplicationProblemPlusJSONResponse) VisitUpdateToolR
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Find many tools
-	// (GET /workflows/tools)
-	FindManyTools(ctx context.Context, request FindManyToolsRequestObject) (FindManyToolsResponseObject, error)
-	// Create a new tool
-	// (POST /workflows/tools)
+	// List tools
+	// (GET /tools)
+	ListTools(ctx context.Context, request ListToolsRequestObject) (ListToolsResponseObject, error)
+	// Create a tool
+	// (POST /tools)
 	CreateTool(ctx context.Context, request CreateToolRequestObject) (CreateToolResponseObject, error)
 	// Delete a tool
-	// (DELETE /workflows/tools/{id})
+	// (DELETE /tools/{id})
 	DeleteTool(ctx context.Context, request DeleteToolRequestObject) (DeleteToolResponseObject, error)
 	// Find a tool
-	// (GET /workflows/tools/{id})
-	GetOneTool(ctx context.Context, request GetOneToolRequestObject) (GetOneToolResponseObject, error)
+	// (GET /tools/{id})
+	GetTool(ctx context.Context, request GetToolRequestObject) (GetToolResponseObject, error)
 	// Update a tool
-	// (PATCH /workflows/tools/{id})
+	// (PATCH /tools/{id})
 	UpdateTool(ctx context.Context, request UpdateToolRequestObject) (UpdateToolResponseObject, error)
 }
 
@@ -392,25 +392,25 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// FindManyTools operation middleware
-func (sh *strictHandler) FindManyTools(ctx echo.Context, params FindManyToolsParams) error {
-	var request FindManyToolsRequestObject
+// ListTools operation middleware
+func (sh *strictHandler) ListTools(ctx echo.Context, params ListToolsParams) error {
+	var request ListToolsRequestObject
 
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.FindManyTools(ctx.Request().Context(), request.(FindManyToolsRequestObject))
+		return sh.ssi.ListTools(ctx.Request().Context(), request.(ListToolsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "FindManyTools")
+		handler = middleware(handler, "ListTools")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(FindManyToolsResponseObject); ok {
-		return validResponse.VisitFindManyToolsResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListToolsResponseObject); ok {
+		return validResponse.VisitListToolsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
@@ -471,25 +471,25 @@ func (sh *strictHandler) DeleteTool(ctx echo.Context, id openapi_types.UUID) err
 	return nil
 }
 
-// GetOneTool operation middleware
-func (sh *strictHandler) GetOneTool(ctx echo.Context, id openapi_types.UUID) error {
-	var request GetOneToolRequestObject
+// GetTool operation middleware
+func (sh *strictHandler) GetTool(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetToolRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetOneTool(ctx.Request().Context(), request.(GetOneToolRequestObject))
+		return sh.ssi.GetTool(ctx.Request().Context(), request.(GetToolRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetOneTool")
+		handler = middleware(handler, "GetTool")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(GetOneToolResponseObject); ok {
-		return validResponse.VisitGetOneToolResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetToolResponseObject); ok {
+		return validResponse.VisitGetToolResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

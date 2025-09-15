@@ -22,20 +22,20 @@ const (
 	MemberRoleOwner  MemberRole = "owner"
 )
 
-// Defines values for FindManyMembersParamsSortField.
+// Defines values for ListMembersParamsSortField.
 const (
-	CreatedAt      FindManyMembersParamsSortField = "createdAt"
-	Id             FindManyMembersParamsSortField = "id"
-	OrganizationId FindManyMembersParamsSortField = "organizationId"
-	Role           FindManyMembersParamsSortField = "role"
-	UpdatedAt      FindManyMembersParamsSortField = "updatedAt"
-	UserId         FindManyMembersParamsSortField = "userId"
+	CreatedAt      ListMembersParamsSortField = "createdAt"
+	Id             ListMembersParamsSortField = "id"
+	OrganizationId ListMembersParamsSortField = "organizationId"
+	Role           ListMembersParamsSortField = "role"
+	UpdatedAt      ListMembersParamsSortField = "updatedAt"
+	UserId         ListMembersParamsSortField = "userId"
 )
 
-// Defines values for FindManyMembersParamsSortOrder.
+// Defines values for ListMembersParamsSortOrder.
 const (
-	Asc  FindManyMembersParamsSortOrder = "asc"
-	Desc FindManyMembersParamsSortOrder = "desc"
+	Asc  ListMembersParamsSortOrder = "asc"
+	Desc ListMembersParamsSortOrder = "desc"
 )
 
 // Defines values for CreateMemberJSONBodyRole.
@@ -153,8 +153,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManyMembersParams defines parameters for FindManyMembers.
-type FindManyMembersParams struct {
+// ListMembersParams defines parameters for ListMembers.
+type ListMembersParams struct {
 	// Filter Filter members by field values. Supported fields:
 	// - createdAt, id, updatedAt, organizationId, role, userId
 	Filter MembersFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
@@ -166,11 +166,11 @@ type FindManyMembersParams struct {
 	Sort MembersSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManyMembersParamsSortField defines parameters for FindManyMembers.
-type FindManyMembersParamsSortField string
+// ListMembersParamsSortField defines parameters for ListMembers.
+type ListMembersParamsSortField string
 
-// FindManyMembersParamsSortOrder defines parameters for FindManyMembers.
-type FindManyMembersParamsSortOrder string
+// ListMembersParamsSortOrder defines parameters for ListMembers.
+type ListMembersParamsSortOrder string
 
 // CreateMemberJSONBody defines parameters for CreateMember.
 type CreateMemberJSONBody struct {

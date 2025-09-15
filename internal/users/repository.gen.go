@@ -19,14 +19,6 @@ type Repository interface {
 	GetByEmail(ctx context.Context, email string) (*User, error)
 }
 
-// ListUsersParams represents parameters for listing users.
-type ListUsersParams struct {
-	Limit  int
-	Offset int
-	Email  *string
-	Name   *string
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

@@ -233,8 +233,10 @@ func (s *Service) ListByOrganization(ctx context.Context, orgID string, limit, o
 	}
 
 	params := ListArtifactsParams{
-		Limit:  limit,
-		Offset: offset,
+		Page: PageQuery{
+			Number: offset/limit + 1,
+			Size:   limit,
+		},
 		// TODO: Add organization filtering when repository supports it
 	}
 

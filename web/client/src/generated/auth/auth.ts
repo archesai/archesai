@@ -21,7 +21,6 @@ import type {
   ConfirmEmailVerification200,
   ConfirmEmailVerificationBody,
   ConfirmPasswordResetBody,
-  LoginBody,
   NoContentResponse,
   NotFoundResponse,
   RegisterBody,
@@ -47,7 +46,7 @@ export const getRegisterUrl = () => {
 
   
 
-  return `/auth/register`
+  return `/accounts/register`
 }
 
 export const register = async (registerBody: RegisterBody, options?: RequestInit): Promise<TokenResponse> => {
@@ -111,149 +110,6 @@ export const useRegister = <TError = UnauthorizedResponse,
       return useMutation(mutationOptions , queryClient);
     }
     /**
- * This endpoint will log you in with your e-mail and password
- * @summary Login
- */
-export const getLoginUrl = () => {
-
-
-  
-
-  return `/auth/login`
-}
-
-export const login = async (loginBody: LoginBody, options?: RequestInit): Promise<TokenResponse> => {
-  
-  return customFetch<TokenResponse>(getLoginUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      loginBody,)
-  }
-);}
-
-
-
-
-export const getLoginMutationOptions = <TError = UnauthorizedResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: LoginBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: LoginBody}, TContext> => {
-
-const mutationKey = ['login'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof login>>, {data: LoginBody}> = (props) => {
-          const {data} = props ?? {};
-
-          return  login(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
-    export type LoginMutationBody = LoginBody
-    export type LoginMutationError = UnauthorizedResponse
-
-    /**
- * @summary Login
- */
-export const useLogin = <TError = UnauthorizedResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: LoginBody}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof login>>,
-        TError,
-        {data: LoginBody},
-        TContext
-      > => {
-
-      const mutationOptions = getLoginMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    /**
- * This endpoint will log you out of the current session
- * @summary Logout
- */
-export const getLogoutUrl = () => {
-
-
-  
-
-  return `/auth/logout`
-}
-
-export const logout = async ( options?: RequestInit): Promise<NoContentResponse> => {
-  
-  return customFetch<NoContentResponse>(getLogoutUrl(),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
-
-
-
-
-export const getLogoutMutationOptions = <TError = UnauthorizedResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext> => {
-
-const mutationKey = ['logout'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof logout>>, void> = () => {
-          
-
-          return  logout(requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type LogoutMutationResult = NonNullable<Awaited<ReturnType<typeof logout>>>
-    
-    export type LogoutMutationError = UnauthorizedResponse
-
-    /**
- * @summary Logout
- */
-export const useLogout = <TError = UnauthorizedResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof logout>>,
-        TError,
-        void,
-        TContext
-      > => {
-
-      const mutationOptions = getLogoutMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    /**
  * This endpoint will confirm your e-mail with a token
  * @summary Confirm e-mail verification
  */
@@ -262,7 +118,7 @@ export const getConfirmEmailVerificationUrl = () => {
 
   
 
-  return `/auth/email-verification/verify`
+  return `/accounts/email-verification/verify`
 }
 
 export const confirmEmailVerification = async (confirmEmailVerificationBody: ConfirmEmailVerificationBody, options?: RequestInit): Promise<ConfirmEmailVerification200> => {
@@ -334,7 +190,7 @@ export const getRequestEmailVerificationUrl = () => {
 
   
 
-  return `/auth/email-verification/request`
+  return `/accounts/email-verification/request`
 }
 
 export const requestEmailVerification = async ( options?: RequestInit): Promise<NoContentResponse> => {
@@ -405,7 +261,7 @@ export const getRequestPasswordResetUrl = () => {
 
   
 
-  return `/auth/password-reset/request`
+  return `/accounts/password-reset/request`
 }
 
 export const requestPasswordReset = async (requestPasswordResetBody: RequestPasswordResetBody, options?: RequestInit): Promise<NoContentResponse> => {
@@ -477,7 +333,7 @@ export const getConfirmPasswordResetUrl = () => {
 
   
 
-  return `/auth/password-reset/verify`
+  return `/accounts/password-reset/verify`
 }
 
 export const confirmPasswordReset = async (confirmPasswordResetBody: ConfirmPasswordResetBody, options?: RequestInit): Promise<NoContentResponse> => {
@@ -549,7 +405,7 @@ export const getRequestEmailChangeUrl = () => {
 
   
 
-  return `/auth/email-change/request`
+  return `/accounts/email-change/request`
 }
 
 export const requestEmailChange = async (requestEmailChangeBody: RequestEmailChangeBody, options?: RequestInit): Promise<NoContentResponse> => {
@@ -621,7 +477,7 @@ export const getConfirmEmailChangeUrl = () => {
 
   
 
-  return `/auth/email-change/verify`
+  return `/accounts/email-change/verify`
 }
 
 export const confirmEmailChange = async (confirmEmailChangeBody: ConfirmEmailChangeBody, options?: RequestInit): Promise<NotFoundResponse> => {

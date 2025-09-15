@@ -1,0 +1,86 @@
+post:
+  operationId: createArtifact
+  summary: Create a new artifact
+  tags:
+    - Artifacts
+  description: Create a new artifact
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              description: The name of the artifact
+              type: string
+              minLength: 1
+              example: Example Name
+            text:
+              description: The artifact text
+              type: string
+              example: example-string
+              minLength: 1
+          required:
+            - text
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Artifact.yaml
+            required:
+              - data
+            additionalProperties: false
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+get:
+  operationId: listArtifacts
+  summary: Find many artifacts
+  tags:
+    - Artifacts
+  description: Find many artifacts
+  parameters:
+    - $ref: ../components/parameters/ArtifactsFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/ArtifactsSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: ../components/schemas/Artifact.yaml
+              meta:
+                type: object
+                properties:
+                  total:
+                    description: Total number of items in the collection
+                    type: number
+                    example: 42
+                required:
+                  - total
+                additionalProperties: false
+            required:
+              - data
+              - meta
+            additionalProperties: false
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

@@ -1,0 +1,115 @@
+delete:
+  operationId: deleteArtifact
+  summary: Delete an artifact
+  tags:
+    - Artifacts
+  description: Delete an artifact
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Artifact.yaml
+            required:
+              - data
+            additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+get:
+  operationId: getArtifact
+  summary: Find an artifact
+  tags:
+    - Artifacts
+  description: Find an artifact
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Artifact.yaml
+            required:
+              - data
+            additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+patch:
+  operationId: updateArtifact
+  summary: Update an artifact
+  tags:
+    - Artifacts
+  description: Update an artifact
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              description: The name of the artifact
+              type: string
+              minLength: 1
+              example: Example Name
+            text:
+              description: The artifact text
+              type: string
+              example: example-string
+            url:
+              description: The artifact URL
+              type: string
+              example: example-string
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Artifact.yaml
+            required:
+              - data
+            additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml

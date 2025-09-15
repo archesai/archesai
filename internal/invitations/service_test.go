@@ -757,13 +757,11 @@ func TestService_List(t *testing.T) {
 		{
 			name: "successful list with pagination",
 			params: ListInvitationsParams{
-				Limit:  10,
-				Offset: 0,
+				Page: PageQuery{Number: 1, Size: 10},
 			},
 			setupMock: func(repo *MockRepository) {
 				repo.EXPECT().List(mock.Anything, ListInvitationsParams{
-					Limit:  10,
-					Offset: 0,
+					Page: PageQuery{Number: 1, Size: 10},
 				}).Return([]*Invitation{
 					{Id: uuid.New()},
 					{Id: uuid.New()},
@@ -776,13 +774,11 @@ func TestService_List(t *testing.T) {
 		{
 			name: "default limit applied",
 			params: ListInvitationsParams{
-				Limit:  0,
-				Offset: 0,
+				Page: PageQuery{Number: 1, Size: 0},
 			},
 			setupMock: func(repo *MockRepository) {
 				repo.EXPECT().List(mock.Anything, ListInvitationsParams{
-					Limit:  10,
-					Offset: 0,
+					Page: PageQuery{Number: 1, Size: 10},
 				}).Return([]*Invitation{}, int64(0), nil)
 			},
 			wantCount: 0,
@@ -792,13 +788,11 @@ func TestService_List(t *testing.T) {
 		{
 			name: "max limit enforced",
 			params: ListInvitationsParams{
-				Limit:  200,
-				Offset: 0,
+				Page: PageQuery{Number: 1, Size: 200},
 			},
 			setupMock: func(repo *MockRepository) {
 				repo.EXPECT().List(mock.Anything, ListInvitationsParams{
-					Limit:  100,
-					Offset: 0,
+					Page: PageQuery{Number: 1, Size: 100},
 				}).Return([]*Invitation{}, int64(0), nil)
 			},
 			wantCount: 0,
@@ -808,8 +802,7 @@ func TestService_List(t *testing.T) {
 		{
 			name: "repository error",
 			params: ListInvitationsParams{
-				Limit:  10,
-				Offset: 0,
+				Page: PageQuery{Number: 1, Size: 10},
 			},
 			setupMock: func(repo *MockRepository) {
 				repo.EXPECT().List(mock.Anything, mock.Anything).

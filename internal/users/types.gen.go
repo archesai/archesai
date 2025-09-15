@@ -16,21 +16,21 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
-// Defines values for FindManyUsersParamsSortField.
+// Defines values for ListUsersParamsSortField.
 const (
-	FindManyUsersParamsSortFieldCreatedAt     FindManyUsersParamsSortField = "createdAt"
-	FindManyUsersParamsSortFieldEmail         FindManyUsersParamsSortField = "email"
-	FindManyUsersParamsSortFieldEmailVerified FindManyUsersParamsSortField = "emailVerified"
-	FindManyUsersParamsSortFieldId            FindManyUsersParamsSortField = "id"
-	FindManyUsersParamsSortFieldImage         FindManyUsersParamsSortField = "image"
-	FindManyUsersParamsSortFieldName          FindManyUsersParamsSortField = "name"
-	FindManyUsersParamsSortFieldUpdatedAt     FindManyUsersParamsSortField = "updatedAt"
+	ListUsersParamsSortFieldCreatedAt     ListUsersParamsSortField = "createdAt"
+	ListUsersParamsSortFieldEmail         ListUsersParamsSortField = "email"
+	ListUsersParamsSortFieldEmailVerified ListUsersParamsSortField = "emailVerified"
+	ListUsersParamsSortFieldId            ListUsersParamsSortField = "id"
+	ListUsersParamsSortFieldImage         ListUsersParamsSortField = "image"
+	ListUsersParamsSortFieldName          ListUsersParamsSortField = "name"
+	ListUsersParamsSortFieldUpdatedAt     ListUsersParamsSortField = "updatedAt"
 )
 
-// Defines values for FindManyUsersParamsSortOrder.
+// Defines values for ListUsersParamsSortOrder.
 const (
-	Asc  FindManyUsersParamsSortOrder = "asc"
-	Desc FindManyUsersParamsSortOrder = "desc"
+	Asc  ListUsersParamsSortOrder = "asc"
+	Desc ListUsersParamsSortOrder = "desc"
 )
 
 // Base defines model for Base.
@@ -152,8 +152,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManyUsersParams defines parameters for FindManyUsers.
-type FindManyUsersParams struct {
+// ListUsersParams defines parameters for ListUsers.
+type ListUsersParams struct {
 	// Filter Filter users by field values. Supported fields:
 	// - createdAt, id, updatedAt, email, emailVerified, image, name
 	Filter UsersFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
@@ -165,11 +165,11 @@ type FindManyUsersParams struct {
 	Sort UsersSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManyUsersParamsSortField defines parameters for FindManyUsers.
-type FindManyUsersParamsSortField string
+// ListUsersParamsSortField defines parameters for ListUsers.
+type ListUsersParamsSortField string
 
-// FindManyUsersParamsSortOrder defines parameters for FindManyUsers.
-type FindManyUsersParamsSortOrder string
+// ListUsersParamsSortOrder defines parameters for ListUsers.
+type ListUsersParamsSortOrder string
 
 // UpdateUserJSONBody defines parameters for UpdateUser.
 type UpdateUserJSONBody struct {

@@ -134,7 +134,6 @@ func TestService_ListUserSessions_Repository(t *testing.T) {
 	t.Run("returns user sessions", func(t *testing.T) {
 		service, mockRepo := createSessionTestService(t)
 		userID := uuid.New()
-		userIDStr := userID.String()
 
 		sessions := []*Session{
 			{
@@ -152,8 +151,10 @@ func TestService_ListUserSessions_Repository(t *testing.T) {
 		}
 
 		mockRepo.EXPECT().List(mock.Anything, ListSessionsParams{
-			UserID: &userIDStr,
-			Limit:  100,
+			Page: PageQuery{
+				Number: 1,
+				Size:   100,
+			},
 		}).Return(sessions, int64(2), nil)
 
 		result, err := service.ListUserSessions(context.Background(), userID)
@@ -166,11 +167,12 @@ func TestService_ListUserSessions_Repository(t *testing.T) {
 	t.Run("returns error on repository failure", func(t *testing.T) {
 		service, mockRepo := createSessionTestService(t)
 		userID := uuid.New()
-		userIDStr := userID.String()
 
 		mockRepo.EXPECT().List(mock.Anything, ListSessionsParams{
-			UserID: &userIDStr,
-			Limit:  100,
+			Page: PageQuery{
+				Number: 1,
+				Size:   100,
+			},
 		}).Return(nil, int64(0), errors.New("db error"))
 
 		result, err := service.ListUserSessions(context.Background(), userID)
@@ -263,7 +265,6 @@ func TestService_ListUserSessions(t *testing.T) {
 	t.Run("without session manager uses repository directly", func(t *testing.T) {
 		service, mockRepo := createSessionTestService(t)
 		userID := uuid.New()
-		userIDStr := userID.String()
 
 		sessions := []*Session{
 			{
@@ -275,8 +276,10 @@ func TestService_ListUserSessions(t *testing.T) {
 		}
 
 		mockRepo.EXPECT().List(mock.Anything, ListSessionsParams{
-			UserID: &userIDStr,
-			Limit:  100,
+			Page: PageQuery{
+				Number: 1,
+				Size:   100,
+			},
 		}).Return(sessions, int64(1), nil)
 
 		result, err := service.ListUserSessions(context.Background(), userID)

@@ -21,12 +21,6 @@ type Repository interface {
 	GetByUserAndOrganization(ctx context.Context, userId uuid.UUID, organizationId string) (*Member, error)
 }
 
-// ListMembersParams represents parameters for listing members.
-type ListMembersParams struct {
-	Limit  int
-	Offset int
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

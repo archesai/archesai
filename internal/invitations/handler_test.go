@@ -17,13 +17,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandler_FindManyInvitations(t *testing.T) {
+func TestHandler_ListInvitations(t *testing.T) {
 	organizationID := uuid.New()
 
 	tests := []struct {
 		name         string
 		orgID        openapi_types.UUID
-		params       FindManyInvitationsParams
+		params       ListInvitationsParams
 		setupMock    func(*MockInvitationService)
 		expectedCode int
 		checkBody    func(*testing.T, map[string]interface{})
@@ -31,7 +31,7 @@ func TestHandler_FindManyInvitations(t *testing.T) {
 		{
 			name:  "successful list",
 			orgID: organizationID,
-			params: FindManyInvitationsParams{
+			params: ListInvitationsParams{
 				Page: Page{Number: 1, Size: 10},
 			},
 			setupMock: func(s *MockInvitationService) {
@@ -63,7 +63,7 @@ func TestHandler_FindManyInvitations(t *testing.T) {
 		{
 			name:   "empty list",
 			orgID:  organizationID,
-			params: FindManyInvitationsParams{},
+			params: ListInvitationsParams{},
 			setupMock: func(s *MockInvitationService) {
 				s.On("ListByOrganization", mock.Anything, organizationID.String()).
 					Return([]*Invitation{}, nil)
@@ -83,7 +83,7 @@ func TestHandler_FindManyInvitations(t *testing.T) {
 		{
 			name:   "service error",
 			orgID:  organizationID,
-			params: FindManyInvitationsParams{},
+			params: ListInvitationsParams{},
 			setupMock: func(s *MockInvitationService) {
 				s.On("ListByOrganization", mock.Anything, organizationID.String()).
 					Return(nil, errors.New("database error"))
@@ -107,7 +107,7 @@ func TestHandler_FindManyInvitations(t *testing.T) {
 			tt.setupMock(mockService)
 
 			handler := NewHandler(mockService, slog.Default())
-			err := handler.FindManyInvitations(c, tt.orgID, tt.params)
+			err := handler.ListInvitations(c, tt.orgID, tt.params)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.expectedCode, rec.Code)
@@ -222,7 +222,7 @@ func TestHandler_CreateInvitation(t *testing.T) {
 	}
 }
 
-func TestHandler_GetOneInvitation(t *testing.T) {
+func TestHandler_GetInvitation(t *testing.T) {
 	organizationID := uuid.New()
 	invitationID := uuid.New()
 
@@ -298,7 +298,7 @@ func TestHandler_GetOneInvitation(t *testing.T) {
 			tt.setupMock(mockService)
 
 			handler := NewHandler(mockService, slog.Default())
-			err := handler.GetOneInvitation(c, tt.orgID, tt.invID)
+			err := handler.GetInvitation(c, tt.orgID, tt.invID)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.expectedCode, rec.Code)
@@ -547,9 +547,9 @@ func TestHandler_InterfaceCompliance(t *testing.T) {
 	handler := NewHandler(mockService, slog.Default())
 
 	// Verify all required methods exist
-	assert.NotNil(t, handler.FindManyInvitations)
+	assert.NotNil(t, handler.ListInvitations)
 	assert.NotNil(t, handler.CreateInvitation)
-	assert.NotNil(t, handler.GetOneInvitation)
+	assert.NotNil(t, handler.GetInvitation)
 	assert.NotNil(t, handler.UpdateInvitation)
 	assert.NotNil(t, handler.DeleteInvitation)
 }

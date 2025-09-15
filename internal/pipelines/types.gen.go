@@ -26,20 +26,20 @@ const (
 	Skipped   PipelineStepStatus = "skipped"
 )
 
-// Defines values for FindManyPipelinesParamsSortField.
+// Defines values for ListPipelinesParamsSortField.
 const (
-	CreatedAt      FindManyPipelinesParamsSortField = "createdAt"
-	Description    FindManyPipelinesParamsSortField = "description"
-	Id             FindManyPipelinesParamsSortField = "id"
-	Name           FindManyPipelinesParamsSortField = "name"
-	OrganizationId FindManyPipelinesParamsSortField = "organizationId"
-	UpdatedAt      FindManyPipelinesParamsSortField = "updatedAt"
+	CreatedAt      ListPipelinesParamsSortField = "createdAt"
+	Description    ListPipelinesParamsSortField = "description"
+	Id             ListPipelinesParamsSortField = "id"
+	Name           ListPipelinesParamsSortField = "name"
+	OrganizationId ListPipelinesParamsSortField = "organizationId"
+	UpdatedAt      ListPipelinesParamsSortField = "updatedAt"
 )
 
-// Defines values for FindManyPipelinesParamsSortOrder.
+// Defines values for ListPipelinesParamsSortOrder.
 const (
-	Asc  FindManyPipelinesParamsSortOrder = "asc"
-	Desc FindManyPipelinesParamsSortOrder = "desc"
+	Asc  ListPipelinesParamsSortOrder = "asc"
+	Desc ListPipelinesParamsSortOrder = "desc"
 )
 
 // Base defines model for Base.
@@ -206,8 +206,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManyPipelinesParams defines parameters for FindManyPipelines.
-type FindManyPipelinesParams struct {
+// ListPipelinesParams defines parameters for ListPipelines.
+type ListPipelinesParams struct {
 	// Filter Filter pipelines by field values. Supported fields:
 	// - createdAt, id, updatedAt, description, name, organizationId
 	Filter PipelinesFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
@@ -219,11 +219,11 @@ type FindManyPipelinesParams struct {
 	Sort PipelinesSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManyPipelinesParamsSortField defines parameters for FindManyPipelines.
-type FindManyPipelinesParamsSortField string
+// ListPipelinesParamsSortField defines parameters for ListPipelines.
+type ListPipelinesParamsSortField string
 
-// FindManyPipelinesParamsSortOrder defines parameters for FindManyPipelines.
-type FindManyPipelinesParamsSortOrder string
+// ListPipelinesParamsSortOrder defines parameters for ListPipelines.
+type ListPipelinesParamsSortOrder string
 
 // CreatePipelineJSONBody defines parameters for CreatePipeline.
 type CreatePipelineJSONBody struct {

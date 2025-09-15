@@ -69,19 +69,19 @@ func (h *Handler) DeleteRun(ctx context.Context, req DeleteRunRequestObject) (De
 	return DeleteRun200JSONResponse{}, nil
 }
 
-// GetOneRun retrieves a single run (implements StrictServerInterface)
-func (h *Handler) GetOneRun(ctx context.Context, req GetOneRunRequestObject) (GetOneRunResponseObject, error) {
+// GetRun retrieves a single run (implements StrictServerInterface)
+func (h *Handler) GetRun(ctx context.Context, req GetRunRequestObject) (GetRunResponseObject, error) {
 	run, err := h.service.Get(ctx, req.Id)
 	if err != nil {
 		if err == ErrRunNotFound {
-			return GetOneRun404ApplicationProblemPlusJSONResponse{}, nil
+			return GetRun404ApplicationProblemPlusJSONResponse{}, nil
 		}
 		h.logger.Error("failed to get run", "error", err, "id", req.Id)
 		return nil, err
 	}
 
 	// Convert to API response
-	return GetOneRun200JSONResponse{
+	return GetRun200JSONResponse{
 		Data: Run{
 			Id:             run.Id,
 			PipelineId:     run.PipelineId,
@@ -123,8 +123,8 @@ func (h *Handler) UpdateRun(ctx context.Context, req UpdateRunRequestObject) (Up
 	}, nil
 }
 
-// FindManyRuns retrieves runs (implements StrictServerInterface)
-func (h *Handler) FindManyRuns(ctx context.Context, req FindManyRunsRequestObject) (FindManyRunsResponseObject, error) {
+// ListRuns retrieves runs (implements StrictServerInterface)
+func (h *Handler) ListRuns(ctx context.Context, req ListRunsRequestObject) (ListRunsResponseObject, error) {
 	limit := 50
 	offset := 0
 
@@ -151,7 +151,7 @@ func (h *Handler) FindManyRuns(ctx context.Context, req FindManyRunsRequestObjec
 	}
 
 	totalFloat32 := float32(total)
-	return FindManyRuns200JSONResponse{
+	return ListRuns200JSONResponse{
 		Data: data,
 		Meta: struct {
 			Total float32 `json:"total"`
@@ -178,11 +178,11 @@ func (h *Handler) Create(ctx context.Context, req CreateRunRequestObject) (Creat
 }
 
 // Get retrieves a run by ID (implements StrictServerInterface)
-func (h *Handler) Get(ctx context.Context, req GetOneRunRequestObject) (GetOneRunResponseObject, error) {
+func (h *Handler) Get(ctx context.Context, req GetRunRequestObject) (GetRunResponseObject, error) {
 	run, err := h.service.Get(ctx, req.Id)
 	if err != nil {
 		if err == ErrRunNotFound {
-			return GetOneRun404ApplicationProblemPlusJSONResponse{
+			return GetRun404ApplicationProblemPlusJSONResponse{
 				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 					Detail: "Run not found",
 					Status: 404,
@@ -194,7 +194,7 @@ func (h *Handler) Get(ctx context.Context, req GetOneRunRequestObject) (GetOneRu
 		return nil, err
 	}
 
-	return GetOneRun200JSONResponse{
+	return GetRun200JSONResponse{
 		Data: *run,
 	}, nil
 }

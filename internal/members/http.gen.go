@@ -17,10 +17,10 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Find many members
+	// List members
 	// (GET /organizations/{id}/members)
-	FindManyMembers(ctx echo.Context, id string, params FindManyMembersParams) error
-	// Create a new member
+	ListMembers(ctx echo.Context, id string, params ListMembersParams) error
+	// Create a member
 	// (POST /organizations/{id}/members)
 	CreateMember(ctx echo.Context, id string) error
 	// Delete a member
@@ -39,8 +39,8 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// FindManyMembers converts echo context to params.
-func (w *ServerInterfaceWrapper) FindManyMembers(ctx echo.Context) error {
+// ListMembers converts echo context to params.
+func (w *ServerInterfaceWrapper) ListMembers(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id string
@@ -53,7 +53,7 @@ func (w *ServerInterfaceWrapper) FindManyMembers(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FindManyMembersParams
+	var params ListMembersParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -76,7 +76,7 @@ func (w *ServerInterfaceWrapper) FindManyMembers(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.FindManyMembers(ctx, id, params)
+	err = w.Handler.ListMembers(ctx, id, params)
 	return err
 }
 
@@ -204,7 +204,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/organizations/:id/members", wrapper.FindManyMembers)
+	router.GET(baseURL+"/organizations/:id/members", wrapper.ListMembers)
 	router.POST(baseURL+"/organizations/:id/members", wrapper.CreateMember)
 	router.DELETE(baseURL+"/organizations/:id/members/:memberId", wrapper.DeleteMember)
 	router.GET(baseURL+"/organizations/:id/members/:memberId", wrapper.GetOneMember)
@@ -218,16 +218,16 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type FindManyMembersRequestObject struct {
+type ListMembersRequestObject struct {
 	Id     string `json:"id"`
-	Params FindManyMembersParams
+	Params ListMembersParams
 }
 
-type FindManyMembersResponseObject interface {
-	VisitFindManyMembersResponse(w http.ResponseWriter) error
+type ListMembersResponseObject interface {
+	VisitListMembersResponse(w http.ResponseWriter) error
 }
 
-type FindManyMembers200JSONResponse struct {
+type ListMembers200JSONResponse struct {
 	Data []Member `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -235,29 +235,29 @@ type FindManyMembers200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response FindManyMembers200JSONResponse) VisitFindManyMembersResponse(w http.ResponseWriter) error {
+func (response ListMembers200JSONResponse) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyMembers400ApplicationProblemPlusJSONResponse struct {
+type ListMembers400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyMembers400ApplicationProblemPlusJSONResponse) VisitFindManyMembersResponse(w http.ResponseWriter) error {
+func (response ListMembers400ApplicationProblemPlusJSONResponse) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyMembers401ApplicationProblemPlusJSONResponse struct {
+type ListMembers401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyMembers401ApplicationProblemPlusJSONResponse) VisitFindManyMembersResponse(w http.ResponseWriter) error {
+func (response ListMembers401ApplicationProblemPlusJSONResponse) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -406,10 +406,10 @@ func (response UpdateMember404ApplicationProblemPlusJSONResponse) VisitUpdateMem
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Find many members
+	// List members
 	// (GET /organizations/{id}/members)
-	FindManyMembers(ctx context.Context, request FindManyMembersRequestObject) (FindManyMembersResponseObject, error)
-	// Create a new member
+	ListMembers(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error)
+	// Create a member
 	// (POST /organizations/{id}/members)
 	CreateMember(ctx context.Context, request CreateMemberRequestObject) (CreateMemberResponseObject, error)
 	// Delete a member
@@ -435,26 +435,26 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// FindManyMembers operation middleware
-func (sh *strictHandler) FindManyMembers(ctx echo.Context, id string, params FindManyMembersParams) error {
-	var request FindManyMembersRequestObject
+// ListMembers operation middleware
+func (sh *strictHandler) ListMembers(ctx echo.Context, id string, params ListMembersParams) error {
+	var request ListMembersRequestObject
 
 	request.Id = id
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.FindManyMembers(ctx.Request().Context(), request.(FindManyMembersRequestObject))
+		return sh.ssi.ListMembers(ctx.Request().Context(), request.(ListMembersRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "FindManyMembers")
+		handler = middleware(handler, "ListMembers")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(FindManyMembersResponseObject); ok {
-		return validResponse.VisitFindManyMembersResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListMembersResponseObject); ok {
+		return validResponse.VisitListMembersResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

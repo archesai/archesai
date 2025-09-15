@@ -1,7 +1,7 @@
 import type { UpdateUserBody } from "@archesai/client";
 import {
-  useGetOneSessionSuspense,
-  useGetOneUserSuspense,
+  useGetSessionSuspense,
+  useGetUserSuspense,
   useUpdateUser,
 } from "@archesai/client";
 import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
@@ -12,8 +12,8 @@ import type { JSX } from "react";
 
 export default function UserForm(): JSX.Element {
   const { mutateAsync: updateUser } = useUpdateUser();
-  const { data: sessionData } = useGetOneSessionSuspense("current");
-  const { data: userData } = useGetOneUserSuspense(
+  const { data: sessionData } = useGetSessionSuspense("current");
+  const { data: userData } = useGetUserSuspense(
     sessionData.data.userId || "current",
   );
 

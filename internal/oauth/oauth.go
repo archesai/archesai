@@ -192,12 +192,13 @@ func (s *Service) createOAuthUser(ctx context.Context, providerID string, userIn
 }
 
 // RefreshOAuthToken refreshes an OAuth access token
-func (s *Service) RefreshOAuthToken(ctx context.Context, userID uuid.UUID, providerID string) (*Tokens, error) {
+func (s *Service) RefreshOAuthToken(ctx context.Context, _ uuid.UUID, providerID string) (*Tokens, error) {
 	// Get the user's OAuth account
 	accounts, _, err := s.repo.List(ctx, accounts.ListAccountsParams{
-		UserID:     &userID,
-		ProviderID: &providerID,
-		Limit:      1,
+		Page: accounts.PageQuery{
+			Number: 1,
+			Size:   1,
+		},
 	})
 	if err != nil || len(accounts) == 0 {
 		return nil, fmt.Errorf("OAuth account not found")

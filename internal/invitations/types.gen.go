@@ -22,23 +22,23 @@ const (
 	InvitationRoleOwner  InvitationRole = "owner"
 )
 
-// Defines values for FindManyInvitationsParamsSortField.
+// Defines values for ListInvitationsParamsSortField.
 const (
-	CreatedAt      FindManyInvitationsParamsSortField = "createdAt"
-	Email          FindManyInvitationsParamsSortField = "email"
-	ExpiresAt      FindManyInvitationsParamsSortField = "expiresAt"
-	Id             FindManyInvitationsParamsSortField = "id"
-	InviterId      FindManyInvitationsParamsSortField = "inviterId"
-	OrganizationId FindManyInvitationsParamsSortField = "organizationId"
-	Role           FindManyInvitationsParamsSortField = "role"
-	Status         FindManyInvitationsParamsSortField = "status"
-	UpdatedAt      FindManyInvitationsParamsSortField = "updatedAt"
+	CreatedAt      ListInvitationsParamsSortField = "createdAt"
+	Email          ListInvitationsParamsSortField = "email"
+	ExpiresAt      ListInvitationsParamsSortField = "expiresAt"
+	Id             ListInvitationsParamsSortField = "id"
+	InviterId      ListInvitationsParamsSortField = "inviterId"
+	OrganizationId ListInvitationsParamsSortField = "organizationId"
+	Role           ListInvitationsParamsSortField = "role"
+	Status         ListInvitationsParamsSortField = "status"
+	UpdatedAt      ListInvitationsParamsSortField = "updatedAt"
 )
 
-// Defines values for FindManyInvitationsParamsSortOrder.
+// Defines values for ListInvitationsParamsSortOrder.
 const (
-	Asc  FindManyInvitationsParamsSortOrder = "asc"
-	Desc FindManyInvitationsParamsSortOrder = "desc"
+	Asc  ListInvitationsParamsSortOrder = "asc"
+	Desc ListInvitationsParamsSortOrder = "desc"
 )
 
 // Defines values for CreateInvitationJSONBodyRole.
@@ -165,8 +165,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManyInvitationsParams defines parameters for FindManyInvitations.
-type FindManyInvitationsParams struct {
+// ListInvitationsParams defines parameters for ListInvitations.
+type ListInvitationsParams struct {
 	// Filter Filter invitations by field values. Supported fields:
 	// - createdAt, id, updatedAt, email, expiresAt
 	// - inviterId, organizationId, role, status
@@ -179,11 +179,11 @@ type FindManyInvitationsParams struct {
 	Sort InvitationsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManyInvitationsParamsSortField defines parameters for FindManyInvitations.
-type FindManyInvitationsParamsSortField string
+// ListInvitationsParamsSortField defines parameters for ListInvitations.
+type ListInvitationsParamsSortField string
 
-// FindManyInvitationsParamsSortOrder defines parameters for FindManyInvitations.
-type FindManyInvitationsParamsSortOrder string
+// ListInvitationsParamsSortOrder defines parameters for ListInvitations.
+type ListInvitationsParamsSortOrder string
 
 // CreateInvitationJSONBody defines parameters for CreateInvitation.
 type CreateInvitationJSONBody struct {

@@ -93,8 +93,10 @@ func (s *Service) List(ctx context.Context, orgID string, limit, offset int) ([]
 	// TODO: Add organization filtering to repository when available
 	_ = orgID
 	params := ListPipelinesParams{
-		Limit:  limit,
-		Offset: offset,
+		Page: PageQuery{
+			Number: offset/limit + 1,
+			Size:   limit,
+		},
 	}
 	pipelines, total, err := s.pipelineRepo.List(ctx, params)
 	if err != nil {

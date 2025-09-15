@@ -105,11 +105,11 @@ func (s *Service) GetByEmail(ctx context.Context, email string, organizationID s
 // List retrieves invitations with pagination
 func (s *Service) List(ctx context.Context, params ListInvitationsParams) ([]*Invitation, int64, error) {
 	// Set defaults
-	if params.Limit == 0 {
-		params.Limit = 10
+	if params.Page.Size == 0 {
+		params.Page.Size = 10
 	}
-	if params.Limit > 100 {
-		params.Limit = 100
+	if params.Page.Size > 100 {
+		params.Page.Size = 100
 	}
 
 	invitations, total, err := s.repo.List(ctx, params)

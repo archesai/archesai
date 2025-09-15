@@ -37,7 +37,7 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
  * Check the health status of the application
- * @summary Health check endpoint
+ * @summary Get health status
  */
 export const getGetHealthUrl = () => {
 
@@ -112,7 +112,7 @@ export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TErr
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Health check endpoint
+ * @summary Get health status
  */
 
 export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse>(
@@ -166,7 +166,7 @@ export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Health check endpoint
+ * @summary Get health status
  */
 
 export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse>(

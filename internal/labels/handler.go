@@ -21,8 +21,8 @@ func NewHandler(service *Service, logger *slog.Logger) *Handler {
 	}
 }
 
-// FindManyLabels handles GET /content/labels
-func (h *Handler) FindManyLabels(ctx context.Context, request FindManyLabelsRequestObject) (FindManyLabelsResponseObject, error) {
+// ListLabels handles GET /content/labels
+func (h *Handler) ListLabels(ctx context.Context, request ListLabelsRequestObject) (ListLabelsResponseObject, error) {
 	// Get labels with pagination
 	limit := 50
 	offset := 0
@@ -41,7 +41,7 @@ func (h *Handler) FindManyLabels(ctx context.Context, request FindManyLabelsRequ
 	labels, total, err := h.service.List(ctx, orgID, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list labels", "error", err)
-		return FindManyLabels400ApplicationProblemPlusJSONResponse{
+		return ListLabels400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
 				Type:   "list_failed",
 				Title:  "Failed to list labels",
@@ -57,7 +57,7 @@ func (h *Handler) FindManyLabels(ctx context.Context, request FindManyLabelsRequ
 		labelList[i] = *l
 	}
 
-	response := FindManyLabels200JSONResponse{
+	response := ListLabels200JSONResponse{
 		Data: labelList,
 	}
 	response.Meta.Total = float32(total)
@@ -65,14 +65,14 @@ func (h *Handler) FindManyLabels(ctx context.Context, request FindManyLabelsRequ
 	return response, nil
 }
 
-// GetOneLabel handles GET /content/labels/{id}
-func (h *Handler) GetOneLabel(ctx context.Context, request GetOneLabelRequestObject) (GetOneLabelResponseObject, error) {
+// GetLabel handles GET /content/labels/{id}
+func (h *Handler) GetLabel(ctx context.Context, request GetLabelRequestObject) (GetLabelResponseObject, error) {
 	labelID := request.Id
 
 	label, err := h.service.Get(ctx, labelID)
 	if err != nil {
 		h.logger.Error("failed to get label", "error", err, "label_id", labelID)
-		return GetOneLabel404ApplicationProblemPlusJSONResponse{
+		return GetLabel404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 				Type:   "not_found",
 				Title:  "Label not found",
@@ -82,7 +82,7 @@ func (h *Handler) GetOneLabel(ctx context.Context, request GetOneLabelRequestObj
 		}, nil
 	}
 
-	return GetOneLabel200JSONResponse{
+	return GetLabel200JSONResponse{
 		Data: *label,
 	}, nil
 }

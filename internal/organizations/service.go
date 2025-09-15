@@ -93,7 +93,12 @@ func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {
 
 // List retrieves a list of organizations
 func (s *Service) List(ctx context.Context, limit, offset int) ([]*Organization, int, error) {
-	orgs, totalInt64, err := s.repository.List(ctx, ListOrganizationsParams{Limit: limit, Offset: offset})
+	orgs, totalInt64, err := s.repository.List(ctx, ListOrganizationsParams{
+		Page: PageQuery{
+			Number: offset/limit + 1,
+			Size:   limit,
+		},
+	})
 	total := int(totalInt64)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list organizations: %w", err)

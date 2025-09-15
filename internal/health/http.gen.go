@@ -15,7 +15,7 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Health check endpoint
+	// Get health status
 	// (GET /health)
 	GetHealth(ctx echo.Context) error
 }
@@ -101,7 +101,7 @@ func (response GetHealth400ApplicationProblemPlusJSONResponse) VisitGetHealthRes
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Health check endpoint
+	// Get health status
 	// (GET /health)
 	GetHealth(ctx context.Context, request GetHealthRequestObject) (GetHealthResponseObject, error)
 }

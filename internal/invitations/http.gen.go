@@ -17,18 +17,18 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Find many invitations
+	// List invitations
 	// (GET /organizations/{id}/invitations)
-	FindManyInvitations(ctx echo.Context, id openapi_types.UUID, params FindManyInvitationsParams) error
-	// Create a new invitation
+	ListInvitations(ctx echo.Context, id openapi_types.UUID, params ListInvitationsParams) error
+	// Create an invitation
 	// (POST /organizations/{id}/invitations)
 	CreateInvitation(ctx echo.Context, id openapi_types.UUID) error
 	// Delete an invitation
 	// (DELETE /organizations/{id}/invitations/{invitationId})
 	DeleteInvitation(ctx echo.Context, id openapi_types.UUID, invitationId openapi_types.UUID) error
-	// Find an invitation
+	// Get an invitation
 	// (GET /organizations/{id}/invitations/{invitationId})
-	GetOneInvitation(ctx echo.Context, id openapi_types.UUID, invitationId openapi_types.UUID) error
+	GetInvitation(ctx echo.Context, id openapi_types.UUID, invitationId openapi_types.UUID) error
 	// Update an invitation
 	// (PATCH /organizations/{id}/invitations/{invitationId})
 	UpdateInvitation(ctx echo.Context, id openapi_types.UUID, invitationId openapi_types.UUID) error
@@ -39,8 +39,8 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// FindManyInvitations converts echo context to params.
-func (w *ServerInterfaceWrapper) FindManyInvitations(ctx echo.Context) error {
+// ListInvitations converts echo context to params.
+func (w *ServerInterfaceWrapper) ListInvitations(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -53,7 +53,7 @@ func (w *ServerInterfaceWrapper) FindManyInvitations(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FindManyInvitationsParams
+	var params ListInvitationsParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -76,7 +76,7 @@ func (w *ServerInterfaceWrapper) FindManyInvitations(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.FindManyInvitations(ctx, id, params)
+	err = w.Handler.ListInvitations(ctx, id, params)
 	return err
 }
 
@@ -124,8 +124,8 @@ func (w *ServerInterfaceWrapper) DeleteInvitation(ctx echo.Context) error {
 	return err
 }
 
-// GetOneInvitation converts echo context to params.
-func (w *ServerInterfaceWrapper) GetOneInvitation(ctx echo.Context) error {
+// GetInvitation converts echo context to params.
+func (w *ServerInterfaceWrapper) GetInvitation(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -146,7 +146,7 @@ func (w *ServerInterfaceWrapper) GetOneInvitation(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetOneInvitation(ctx, id, invitationId)
+	err = w.Handler.GetInvitation(ctx, id, invitationId)
 	return err
 }
 
@@ -204,10 +204,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/organizations/:id/invitations", wrapper.FindManyInvitations)
+	router.GET(baseURL+"/organizations/:id/invitations", wrapper.ListInvitations)
 	router.POST(baseURL+"/organizations/:id/invitations", wrapper.CreateInvitation)
 	router.DELETE(baseURL+"/organizations/:id/invitations/:invitationId", wrapper.DeleteInvitation)
-	router.GET(baseURL+"/organizations/:id/invitations/:invitationId", wrapper.GetOneInvitation)
+	router.GET(baseURL+"/organizations/:id/invitations/:invitationId", wrapper.GetInvitation)
 	router.PATCH(baseURL+"/organizations/:id/invitations/:invitationId", wrapper.UpdateInvitation)
 
 }
@@ -218,16 +218,16 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type FindManyInvitationsRequestObject struct {
+type ListInvitationsRequestObject struct {
 	Id     openapi_types.UUID `json:"id"`
-	Params FindManyInvitationsParams
+	Params ListInvitationsParams
 }
 
-type FindManyInvitationsResponseObject interface {
-	VisitFindManyInvitationsResponse(w http.ResponseWriter) error
+type ListInvitationsResponseObject interface {
+	VisitListInvitationsResponse(w http.ResponseWriter) error
 }
 
-type FindManyInvitations200JSONResponse struct {
+type ListInvitations200JSONResponse struct {
 	Data []Invitation `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -235,29 +235,29 @@ type FindManyInvitations200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response FindManyInvitations200JSONResponse) VisitFindManyInvitationsResponse(w http.ResponseWriter) error {
+func (response ListInvitations200JSONResponse) VisitListInvitationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyInvitations400ApplicationProblemPlusJSONResponse struct {
+type ListInvitations400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyInvitations400ApplicationProblemPlusJSONResponse) VisitFindManyInvitationsResponse(w http.ResponseWriter) error {
+func (response ListInvitations400ApplicationProblemPlusJSONResponse) VisitListInvitationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyInvitations401ApplicationProblemPlusJSONResponse struct {
+type ListInvitations401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyInvitations401ApplicationProblemPlusJSONResponse) VisitFindManyInvitationsResponse(w http.ResponseWriter) error {
+func (response ListInvitations401ApplicationProblemPlusJSONResponse) VisitListInvitationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -339,32 +339,32 @@ func (response DeleteInvitation404ApplicationProblemPlusJSONResponse) VisitDelet
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneInvitationRequestObject struct {
+type GetInvitationRequestObject struct {
 	Id           openapi_types.UUID `json:"id"`
 	InvitationId openapi_types.UUID `json:"invitationId"`
 }
 
-type GetOneInvitationResponseObject interface {
-	VisitGetOneInvitationResponse(w http.ResponseWriter) error
+type GetInvitationResponseObject interface {
+	VisitGetInvitationResponse(w http.ResponseWriter) error
 }
 
-type GetOneInvitation200JSONResponse struct {
+type GetInvitation200JSONResponse struct {
 	// Data Schema for Invitation entity
 	Data Invitation `json:"data"`
 }
 
-func (response GetOneInvitation200JSONResponse) VisitGetOneInvitationResponse(w http.ResponseWriter) error {
+func (response GetInvitation200JSONResponse) VisitGetInvitationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneInvitation404ApplicationProblemPlusJSONResponse struct {
+type GetInvitation404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response GetOneInvitation404ApplicationProblemPlusJSONResponse) VisitGetOneInvitationResponse(w http.ResponseWriter) error {
+func (response GetInvitation404ApplicationProblemPlusJSONResponse) VisitGetInvitationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -406,18 +406,18 @@ func (response UpdateInvitation404ApplicationProblemPlusJSONResponse) VisitUpdat
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Find many invitations
+	// List invitations
 	// (GET /organizations/{id}/invitations)
-	FindManyInvitations(ctx context.Context, request FindManyInvitationsRequestObject) (FindManyInvitationsResponseObject, error)
-	// Create a new invitation
+	ListInvitations(ctx context.Context, request ListInvitationsRequestObject) (ListInvitationsResponseObject, error)
+	// Create an invitation
 	// (POST /organizations/{id}/invitations)
 	CreateInvitation(ctx context.Context, request CreateInvitationRequestObject) (CreateInvitationResponseObject, error)
 	// Delete an invitation
 	// (DELETE /organizations/{id}/invitations/{invitationId})
 	DeleteInvitation(ctx context.Context, request DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error)
-	// Find an invitation
+	// Get an invitation
 	// (GET /organizations/{id}/invitations/{invitationId})
-	GetOneInvitation(ctx context.Context, request GetOneInvitationRequestObject) (GetOneInvitationResponseObject, error)
+	GetInvitation(ctx context.Context, request GetInvitationRequestObject) (GetInvitationResponseObject, error)
 	// Update an invitation
 	// (PATCH /organizations/{id}/invitations/{invitationId})
 	UpdateInvitation(ctx context.Context, request UpdateInvitationRequestObject) (UpdateInvitationResponseObject, error)
@@ -435,26 +435,26 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// FindManyInvitations operation middleware
-func (sh *strictHandler) FindManyInvitations(ctx echo.Context, id openapi_types.UUID, params FindManyInvitationsParams) error {
-	var request FindManyInvitationsRequestObject
+// ListInvitations operation middleware
+func (sh *strictHandler) ListInvitations(ctx echo.Context, id openapi_types.UUID, params ListInvitationsParams) error {
+	var request ListInvitationsRequestObject
 
 	request.Id = id
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.FindManyInvitations(ctx.Request().Context(), request.(FindManyInvitationsRequestObject))
+		return sh.ssi.ListInvitations(ctx.Request().Context(), request.(ListInvitationsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "FindManyInvitations")
+		handler = middleware(handler, "ListInvitations")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(FindManyInvitationsResponseObject); ok {
-		return validResponse.VisitFindManyInvitationsResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListInvitationsResponseObject); ok {
+		return validResponse.VisitListInvitationsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
@@ -518,26 +518,26 @@ func (sh *strictHandler) DeleteInvitation(ctx echo.Context, id openapi_types.UUI
 	return nil
 }
 
-// GetOneInvitation operation middleware
-func (sh *strictHandler) GetOneInvitation(ctx echo.Context, id openapi_types.UUID, invitationId openapi_types.UUID) error {
-	var request GetOneInvitationRequestObject
+// GetInvitation operation middleware
+func (sh *strictHandler) GetInvitation(ctx echo.Context, id openapi_types.UUID, invitationId openapi_types.UUID) error {
+	var request GetInvitationRequestObject
 
 	request.Id = id
 	request.InvitationId = invitationId
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetOneInvitation(ctx.Request().Context(), request.(GetOneInvitationRequestObject))
+		return sh.ssi.GetInvitation(ctx.Request().Context(), request.(GetInvitationRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetOneInvitation")
+		handler = middleware(handler, "GetInvitation")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(GetOneInvitationResponseObject); ok {
-		return validResponse.VisitGetOneInvitationResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetInvitationResponseObject); ok {
+		return validResponse.VisitGetInvitationResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

@@ -17,17 +17,17 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Find many users
-	// (GET /auth/users)
-	FindManyUsers(ctx echo.Context, params FindManyUsersParams) error
-	// Delete an user
-	// (DELETE /auth/users/{id})
+	// List users
+	// (GET /users)
+	ListUsers(ctx echo.Context, params ListUsersParams) error
+	// Delete a user
+	// (DELETE /users/{id})
 	DeleteUser(ctx echo.Context, id openapi_types.UUID) error
-	// Find an user
-	// (GET /auth/users/{id})
-	GetOneUser(ctx echo.Context, id openapi_types.UUID) error
+	// Get a user
+	// (GET /users/{id})
+	GetUser(ctx echo.Context, id openapi_types.UUID) error
 	// Update an user
-	// (PATCH /auth/users/{id})
+	// (PATCH /users/{id})
 	UpdateUser(ctx echo.Context, id openapi_types.UUID) error
 }
 
@@ -36,14 +36,14 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// FindManyUsers converts echo context to params.
-func (w *ServerInterfaceWrapper) FindManyUsers(ctx echo.Context) error {
+// ListUsers converts echo context to params.
+func (w *ServerInterfaceWrapper) ListUsers(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FindManyUsersParams
+	var params ListUsersParams
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -66,7 +66,7 @@ func (w *ServerInterfaceWrapper) FindManyUsers(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.FindManyUsers(ctx, params)
+	err = w.Handler.ListUsers(ctx, params)
 	return err
 }
 
@@ -88,8 +88,8 @@ func (w *ServerInterfaceWrapper) DeleteUser(ctx echo.Context) error {
 	return err
 }
 
-// GetOneUser converts echo context to params.
-func (w *ServerInterfaceWrapper) GetOneUser(ctx echo.Context) error {
+// GetUser converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUser(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
 	var id openapi_types.UUID
@@ -102,7 +102,7 @@ func (w *ServerInterfaceWrapper) GetOneUser(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetOneUser(ctx, id)
+	err = w.Handler.GetUser(ctx, id)
 	return err
 }
 
@@ -152,10 +152,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/auth/users", wrapper.FindManyUsers)
-	router.DELETE(baseURL+"/auth/users/:id", wrapper.DeleteUser)
-	router.GET(baseURL+"/auth/users/:id", wrapper.GetOneUser)
-	router.PATCH(baseURL+"/auth/users/:id", wrapper.UpdateUser)
+	router.GET(baseURL+"/users", wrapper.ListUsers)
+	router.DELETE(baseURL+"/users/:id", wrapper.DeleteUser)
+	router.GET(baseURL+"/users/:id", wrapper.GetUser)
+	router.PATCH(baseURL+"/users/:id", wrapper.UpdateUser)
 
 }
 
@@ -165,15 +165,15 @@ type NotFoundApplicationProblemPlusJSONResponse Problem
 
 type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
-type FindManyUsersRequestObject struct {
-	Params FindManyUsersParams
+type ListUsersRequestObject struct {
+	Params ListUsersParams
 }
 
-type FindManyUsersResponseObject interface {
-	VisitFindManyUsersResponse(w http.ResponseWriter) error
+type ListUsersResponseObject interface {
+	VisitListUsersResponse(w http.ResponseWriter) error
 }
 
-type FindManyUsers200JSONResponse struct {
+type ListUsers200JSONResponse struct {
 	Data []User `json:"data"`
 	Meta struct {
 		// Total Total number of items in the collection
@@ -181,29 +181,29 @@ type FindManyUsers200JSONResponse struct {
 	} `json:"meta"`
 }
 
-func (response FindManyUsers200JSONResponse) VisitFindManyUsersResponse(w http.ResponseWriter) error {
+func (response ListUsers200JSONResponse) VisitListUsersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyUsers400ApplicationProblemPlusJSONResponse struct {
+type ListUsers400ApplicationProblemPlusJSONResponse struct {
 	BadRequestApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyUsers400ApplicationProblemPlusJSONResponse) VisitFindManyUsersResponse(w http.ResponseWriter) error {
+func (response ListUsers400ApplicationProblemPlusJSONResponse) VisitListUsersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type FindManyUsers401ApplicationProblemPlusJSONResponse struct {
+type ListUsers401ApplicationProblemPlusJSONResponse struct {
 	UnauthorizedApplicationProblemPlusJSONResponse
 }
 
-func (response FindManyUsers401ApplicationProblemPlusJSONResponse) VisitFindManyUsersResponse(w http.ResponseWriter) error {
+func (response ListUsers401ApplicationProblemPlusJSONResponse) VisitListUsersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -241,31 +241,31 @@ func (response DeleteUser404ApplicationProblemPlusJSONResponse) VisitDeleteUserR
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneUserRequestObject struct {
+type GetUserRequestObject struct {
 	Id openapi_types.UUID `json:"id"`
 }
 
-type GetOneUserResponseObject interface {
-	VisitGetOneUserResponse(w http.ResponseWriter) error
+type GetUserResponseObject interface {
+	VisitGetUserResponse(w http.ResponseWriter) error
 }
 
-type GetOneUser200JSONResponse struct {
+type GetUser200JSONResponse struct {
 	// Data Schema for User entity
 	Data User `json:"data"`
 }
 
-func (response GetOneUser200JSONResponse) VisitGetOneUserResponse(w http.ResponseWriter) error {
+func (response GetUser200JSONResponse) VisitGetUserResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOneUser404ApplicationProblemPlusJSONResponse struct {
+type GetUser404ApplicationProblemPlusJSONResponse struct {
 	NotFoundApplicationProblemPlusJSONResponse
 }
 
-func (response GetOneUser404ApplicationProblemPlusJSONResponse) VisitGetOneUserResponse(w http.ResponseWriter) error {
+func (response GetUser404ApplicationProblemPlusJSONResponse) VisitGetUserResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -306,17 +306,17 @@ func (response UpdateUser404ApplicationProblemPlusJSONResponse) VisitUpdateUserR
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Find many users
-	// (GET /auth/users)
-	FindManyUsers(ctx context.Context, request FindManyUsersRequestObject) (FindManyUsersResponseObject, error)
-	// Delete an user
-	// (DELETE /auth/users/{id})
+	// List users
+	// (GET /users)
+	ListUsers(ctx context.Context, request ListUsersRequestObject) (ListUsersResponseObject, error)
+	// Delete a user
+	// (DELETE /users/{id})
 	DeleteUser(ctx context.Context, request DeleteUserRequestObject) (DeleteUserResponseObject, error)
-	// Find an user
-	// (GET /auth/users/{id})
-	GetOneUser(ctx context.Context, request GetOneUserRequestObject) (GetOneUserResponseObject, error)
+	// Get a user
+	// (GET /users/{id})
+	GetUser(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error)
 	// Update an user
-	// (PATCH /auth/users/{id})
+	// (PATCH /users/{id})
 	UpdateUser(ctx context.Context, request UpdateUserRequestObject) (UpdateUserResponseObject, error)
 }
 
@@ -332,25 +332,25 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// FindManyUsers operation middleware
-func (sh *strictHandler) FindManyUsers(ctx echo.Context, params FindManyUsersParams) error {
-	var request FindManyUsersRequestObject
+// ListUsers operation middleware
+func (sh *strictHandler) ListUsers(ctx echo.Context, params ListUsersParams) error {
+	var request ListUsersRequestObject
 
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.FindManyUsers(ctx.Request().Context(), request.(FindManyUsersRequestObject))
+		return sh.ssi.ListUsers(ctx.Request().Context(), request.(ListUsersRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "FindManyUsers")
+		handler = middleware(handler, "ListUsers")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(FindManyUsersResponseObject); ok {
-		return validResponse.VisitFindManyUsersResponse(ctx.Response())
+	} else if validResponse, ok := response.(ListUsersResponseObject); ok {
+		return validResponse.VisitListUsersResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
@@ -382,25 +382,25 @@ func (sh *strictHandler) DeleteUser(ctx echo.Context, id openapi_types.UUID) err
 	return nil
 }
 
-// GetOneUser operation middleware
-func (sh *strictHandler) GetOneUser(ctx echo.Context, id openapi_types.UUID) error {
-	var request GetOneUserRequestObject
+// GetUser operation middleware
+func (sh *strictHandler) GetUser(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetUserRequestObject
 
 	request.Id = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetOneUser(ctx.Request().Context(), request.(GetOneUserRequestObject))
+		return sh.ssi.GetUser(ctx.Request().Context(), request.(GetUserRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetOneUser")
+		handler = middleware(handler, "GetUser")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(GetOneUserResponseObject); ok {
-		return validResponse.VisitGetOneUserResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetUserResponseObject); ok {
+		return validResponse.VisitGetUserResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

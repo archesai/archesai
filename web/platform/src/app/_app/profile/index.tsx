@@ -1,7 +1,7 @@
 import {
   useDeleteUser,
-  useGetOneSessionSuspense,
-  useGetOneUserSuspense,
+  useGetSessionSuspense,
+  useGetUserSuspense,
   useRequestPasswordReset,
 } from "@archesai/client";
 import { Loader2Icon } from "@archesai/ui/components/custom/icons";
@@ -24,8 +24,8 @@ export const Route = createFileRoute("/_app/profile/")({
 });
 
 export default function ProfileSecuritySettingsPage(): JSX.Element {
-  const { data: sessionData } = useGetOneSessionSuspense("current");
-  const { data: userData } = useGetOneUserSuspense(sessionData.data.userId);
+  const { data: sessionData } = useGetSessionSuspense("current");
+  const { data: userData } = useGetUserSuspense(sessionData.data.userId);
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
     useDeleteUser();
   const {

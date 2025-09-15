@@ -1,0 +1,134 @@
+delete:
+  operationId: deleteMember
+  summary: Delete a member
+  tags:
+    - Members
+  description: Delete a member
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the organization.
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: memberId
+      required: true
+      description: The unique identifier of the member.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Member.yaml
+            required:
+              - data
+            additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+get:
+  operationId: getOneMember
+  summary: Find a member
+  tags:
+    - Members
+  description: Find a member
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the organization.
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: memberId
+      required: true
+      description: The unique identifier of the member.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Member.yaml
+            required:
+              - data
+            additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+patch:
+  operationId: updateMember
+  summary: Update a member
+  tags:
+    - Members
+  description: Update a member
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            role:
+              description: The role of the member
+              type: string
+              enum:
+                - admin
+                - owner
+                - member
+              example: admin
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the organization.
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: memberId
+      required: true
+      description: The unique identifier of the member.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Member.yaml
+            required:
+              - data
+            additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml

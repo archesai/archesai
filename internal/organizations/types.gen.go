@@ -25,25 +25,25 @@ const (
 	UNLIMITED OrganizationPlan = "UNLIMITED"
 )
 
-// Defines values for FindManyOrganizationsParamsSortField.
+// Defines values for ListOrganizationsParamsSortField.
 const (
-	BillingEmail     FindManyOrganizationsParamsSortField = "billingEmail"
-	CreatedAt        FindManyOrganizationsParamsSortField = "createdAt"
-	Credits          FindManyOrganizationsParamsSortField = "credits"
-	Id               FindManyOrganizationsParamsSortField = "id"
-	Logo             FindManyOrganizationsParamsSortField = "logo"
-	Metadata         FindManyOrganizationsParamsSortField = "metadata"
-	Name             FindManyOrganizationsParamsSortField = "name"
-	Plan             FindManyOrganizationsParamsSortField = "plan"
-	Slug             FindManyOrganizationsParamsSortField = "slug"
-	StripeCustomerId FindManyOrganizationsParamsSortField = "stripeCustomerId"
-	UpdatedAt        FindManyOrganizationsParamsSortField = "updatedAt"
+	BillingEmail     ListOrganizationsParamsSortField = "billingEmail"
+	CreatedAt        ListOrganizationsParamsSortField = "createdAt"
+	Credits          ListOrganizationsParamsSortField = "credits"
+	Id               ListOrganizationsParamsSortField = "id"
+	Logo             ListOrganizationsParamsSortField = "logo"
+	Metadata         ListOrganizationsParamsSortField = "metadata"
+	Name             ListOrganizationsParamsSortField = "name"
+	Plan             ListOrganizationsParamsSortField = "plan"
+	Slug             ListOrganizationsParamsSortField = "slug"
+	StripeCustomerId ListOrganizationsParamsSortField = "stripeCustomerId"
+	UpdatedAt        ListOrganizationsParamsSortField = "updatedAt"
 )
 
-// Defines values for FindManyOrganizationsParamsSortOrder.
+// Defines values for ListOrganizationsParamsSortOrder.
 const (
-	Asc  FindManyOrganizationsParamsSortOrder = "asc"
-	Desc FindManyOrganizationsParamsSortOrder = "desc"
+	Asc  ListOrganizationsParamsSortOrder = "asc"
+	Desc ListOrganizationsParamsSortOrder = "desc"
 )
 
 // Base defines model for Base.
@@ -177,8 +177,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManyOrganizationsParams defines parameters for FindManyOrganizations.
-type FindManyOrganizationsParams struct {
+// ListOrganizationsParams defines parameters for ListOrganizations.
+type ListOrganizationsParams struct {
 	// Filter Filter organizations by field values. Supported fields:
 	// - createdAt, id, updatedAt, billingEmail, credits, logo
 	// - metadata, name, plan, slug, stripeCustomerId
@@ -191,11 +191,11 @@ type FindManyOrganizationsParams struct {
 	Sort OrganizationsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManyOrganizationsParamsSortField defines parameters for FindManyOrganizations.
-type FindManyOrganizationsParamsSortField string
+// ListOrganizationsParamsSortField defines parameters for ListOrganizations.
+type ListOrganizationsParamsSortField string
 
-// FindManyOrganizationsParamsSortOrder defines parameters for FindManyOrganizations.
-type FindManyOrganizationsParamsSortOrder string
+// ListOrganizationsParamsSortOrder defines parameters for ListOrganizations.
+type ListOrganizationsParamsSortOrder string
 
 // CreateOrganizationJSONBody defines parameters for CreateOrganization.
 type CreateOrganizationJSONBody struct {

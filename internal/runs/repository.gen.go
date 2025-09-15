@@ -21,12 +21,6 @@ type Repository interface {
 	ListByTool(ctx context.Context, toolId string) ([]*Run, error)
 }
 
-// ListRunsParams represents parameters for listing runs.
-type ListRunsParams struct {
-	Limit  int
-	Offset int
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

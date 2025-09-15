@@ -328,9 +328,10 @@ func TestService_List(t *testing.T) {
 		{
 			name: "successful list",
 			params: ListAccountsParams{
-				Limit:  10,
-				Offset: 0,
-				UserID: &userID,
+				Page: PageQuery{
+					Number: 1,
+					Size:   10,
+				},
 			},
 			setupMock: func(repo *MockRepository) {
 				accounts := []*Account{
@@ -346,8 +347,10 @@ func TestService_List(t *testing.T) {
 		{
 			name: "repository error",
 			params: ListAccountsParams{
-				Limit:  10,
-				Offset: 0,
+				Page: PageQuery{
+					Number: 1,
+					Size:   10,
+				},
 			},
 			setupMock: func(repo *MockRepository) {
 				repo.EXPECT().List(mock.Anything, mock.AnythingOfType("accounts.ListAccountsParams")).

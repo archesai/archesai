@@ -21,8 +21,8 @@ func NewHandler(service *Service, logger *slog.Logger) *Handler {
 	}
 }
 
-// FindManyArtifacts handles GET /content/artifacts
-func (h *Handler) FindManyArtifacts(ctx context.Context, request FindManyArtifactsRequestObject) (FindManyArtifactsResponseObject, error) {
+// ListArtifacts handles GET /content/artifacts
+func (h *Handler) ListArtifacts(ctx context.Context, request ListArtifactsRequestObject) (ListArtifactsResponseObject, error) {
 	// Get artifacts with pagination
 	limit := 50
 	offset := 0
@@ -37,7 +37,7 @@ func (h *Handler) FindManyArtifacts(ctx context.Context, request FindManyArtifac
 	artifacts, total, err := h.service.List(ctx, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list artifacts", "error", err)
-		return FindManyArtifacts400ApplicationProblemPlusJSONResponse{
+		return ListArtifacts400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
 				Type:   "list_failed",
 				Title:  "Failed to list artifacts",
@@ -53,7 +53,7 @@ func (h *Handler) FindManyArtifacts(ctx context.Context, request FindManyArtifac
 		artifactList[i] = *a
 	}
 
-	response := FindManyArtifacts200JSONResponse{
+	response := ListArtifacts200JSONResponse{
 		Data: artifactList,
 	}
 	response.Meta.Total = float32(total)
@@ -61,14 +61,14 @@ func (h *Handler) FindManyArtifacts(ctx context.Context, request FindManyArtifac
 	return response, nil
 }
 
-// GetOneArtifact handles GET /content/artifacts/{id}
-func (h *Handler) GetOneArtifact(ctx context.Context, request GetOneArtifactRequestObject) (GetOneArtifactResponseObject, error) {
+// GetArtifact handles GET /content/artifacts/{id}
+func (h *Handler) GetArtifact(ctx context.Context, request GetArtifactRequestObject) (GetArtifactResponseObject, error) {
 	artifactID := request.Id
 
 	artifact, err := h.service.Get(ctx, artifactID)
 	if err != nil {
 		h.logger.Error("failed to get artifact", "error", err, "artifact_id", artifactID)
-		return GetOneArtifact404ApplicationProblemPlusJSONResponse{
+		return GetArtifact404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
 				Type:   "not_found",
 				Title:  "Artifact not found",
@@ -78,7 +78,7 @@ func (h *Handler) GetOneArtifact(ctx context.Context, request GetOneArtifactRequ
 		}, nil
 	}
 
-	return GetOneArtifact200JSONResponse{
+	return GetArtifact200JSONResponse{
 		Data: *artifact,
 	}, nil
 }

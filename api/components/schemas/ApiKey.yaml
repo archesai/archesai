@@ -5,6 +5,23 @@ properties:
     format: uuid
     minLength: 1
     example: 550e8400-e29b-41d4-a716-446655440000
+  userId:
+    type: string
+    format: uuid
+    minLength: 1
+    example: 550e8400-e29b-41d4-a716-446655440001
+    description: ID of the user who owns this API key
+  organizationId:
+    type: string
+    format: uuid
+    minLength: 1
+    example: 550e8400-e29b-41d4-a716-446655440002
+    description: ID of the organization this API key belongs to
+  keyHash:
+    type: string
+    minLength: 1
+    example: hashed_sk_live_abc123...
+    description: Hashed version of the API key for secure storage
   name:
     type: string
     minLength: 1

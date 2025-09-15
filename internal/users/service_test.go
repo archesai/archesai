@@ -280,8 +280,10 @@ func TestListUsers(t *testing.T) {
 			offset: 0,
 			setupMocks: func(repo *MockRepository) {
 				repo.EXPECT().List(mock.Anything, ListUsersParams{
-					Limit:  10,
-					Offset: 0,
+					Page: PageQuery{
+						Number: 1,
+						Size:   10,
+					},
 				}).Return(users, int64(2), nil)
 			},
 			wantCount: 2,
@@ -292,8 +294,10 @@ func TestListUsers(t *testing.T) {
 			offset: 0,
 			setupMocks: func(repo *MockRepository) {
 				repo.EXPECT().List(mock.Anything, ListUsersParams{
-					Limit:  1,
-					Offset: 0,
+					Page: PageQuery{
+						Number: 1,
+						Size:   1,
+					},
 				}).Return(users[:1], int64(2), nil)
 			},
 			wantCount: 1,

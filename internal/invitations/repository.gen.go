@@ -21,12 +21,6 @@ type Repository interface {
 	ListByInviter(ctx context.Context, inviterId string) ([]*Invitation, error)
 }
 
-// ListInvitationsParams represents parameters for listing invitations.
-type ListInvitationsParams struct {
-	Limit  int
-	Offset int
-}
-
 // RepositoryError represents a repository error.
 type RepositoryError struct {
 	Operation string

@@ -32,9 +32,9 @@ import type {
   CreateMember201,
   CreateMemberBody,
   DeleteMember200,
-  FindManyMembers200,
-  FindManyMembersParams,
   GetOneMember200,
+  ListMembers200,
+  ListMembersParams,
   NotFoundResponse,
   UnauthorizedResponse,
   UpdateMember200,
@@ -49,8 +49,8 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Create a new member
- * @summary Create a new member
+ * Create a member
+ * @summary Create a member
  */
 export const getCreateMemberUrl = (id: string | undefined | null,) => {
 
@@ -106,7 +106,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CreateMemberMutationError = BadRequestResponse | UnauthorizedResponse
 
     /**
- * @summary Create a new member
+ * @summary Create a member
  */
 export const useCreateMember = <TError = BadRequestResponse | UnauthorizedResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMember>>, TError,{id: string | undefined | null;data: CreateMemberBody}, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -122,11 +122,11 @@ export const useCreateMember = <TError = BadRequestResponse | UnauthorizedRespon
       return useMutation(mutationOptions , queryClient);
     }
     /**
- * Find many members
- * @summary Find many members
+ * List members
+ * @summary List members
  */
-export const getFindManyMembersUrl = (id: string | undefined | null,
-    params?: FindManyMembersParams,) => {
+export const getListMembersUrl = (id: string | undefined | null,
+    params?: ListMembersParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -147,10 +147,10 @@ export const getFindManyMembersUrl = (id: string | undefined | null,
   return stringifiedParams.length > 0 ? `/organizations/${id}/members?${stringifiedParams}` : `/organizations/${id}/members`
 }
 
-export const findManyMembers = async (id: string | undefined | null,
-    params?: FindManyMembersParams, options?: RequestInit): Promise<FindManyMembers200> => {
+export const listMembers = async (id: string | undefined | null,
+    params?: ListMembersParams, options?: RequestInit): Promise<ListMembers200> => {
   
-  return customFetch<FindManyMembers200>(getFindManyMembersUrl(id,params),
+  return customFetch<ListMembers200>(getListMembersUrl(id,params),
   {      
     ...options,
     method: 'GET'
@@ -161,73 +161,73 @@ export const findManyMembers = async (id: string | undefined | null,
 
 
 
-export const getFindManyMembersQueryKey = (id?: string | undefined | null,
-    params?: FindManyMembersParams,) => {
+export const getListMembersQueryKey = (id?: string | undefined | null,
+    params?: ListMembersParams,) => {
     return [`/organizations/${id}/members`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getFindManyMembersQueryOptions = <TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(id: string | undefined | null,
-    params?: FindManyMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListMembersQueryOptions = <TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(id: string | undefined | null,
+    params?: ListMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFindManyMembersQueryKey(id,params);
+  const queryKey =  queryOptions?.queryKey ?? getListMembersQueryKey(id,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyMembers>>> = ({ signal }) => findManyMembers(id,params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMembers>>> = ({ signal }) => listMembers(id,params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyMembersQueryResult = NonNullable<Awaited<ReturnType<typeof findManyMembers>>>
-export type FindManyMembersQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListMembersQueryResult = NonNullable<Awaited<ReturnType<typeof listMembers>>>
+export type ListMembersQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useFindManyMembers<TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
  id: string | undefined | null,
-    params: undefined |  FindManyMembersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>> & Pick<
+    params: undefined |  ListMembersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyMembers>>,
+          Awaited<ReturnType<typeof listMembers>>,
           TError,
-          Awaited<ReturnType<typeof findManyMembers>>
+          Awaited<ReturnType<typeof listMembers>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyMembers<TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
  id: string | undefined | null,
-    params?: FindManyMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>> & Pick<
+    params?: ListMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyMembers>>,
+          Awaited<ReturnType<typeof listMembers>>,
           TError,
-          Awaited<ReturnType<typeof findManyMembers>>
+          Awaited<ReturnType<typeof listMembers>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyMembers<TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
  id: string | undefined | null,
-    params?: FindManyMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+    params?: ListMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many members
+ * @summary List members
  */
 
-export function useFindManyMembers<TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
  id: string | undefined | null,
-    params?: FindManyMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+    params?: ListMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFindManyMembersQueryOptions(id,params,options)
+  const queryOptions = getListMembersQueryOptions(id,params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -238,55 +238,55 @@ export function useFindManyMembers<TData = Awaited<ReturnType<typeof findManyMem
 
 
 
-export const getFindManyMembersSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(id: string | undefined | null,
-    params?: FindManyMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListMembersSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(id: string | undefined | null,
+    params?: ListMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFindManyMembersQueryKey(id,params);
+  const queryKey =  queryOptions?.queryKey ?? getListMembersQueryKey(id,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyMembers>>> = ({ signal }) => findManyMembers(id,params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMembers>>> = ({ signal }) => listMembers(id,params, { signal, ...requestOptions });
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyMembersSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findManyMembers>>>
-export type FindManyMembersSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListMembersSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listMembers>>>
+export type ListMembersSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
 
 
-export function useFindManyMembersSuspense<TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
  id: string | undefined | null,
-    params: undefined |  FindManyMembersParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+    params: undefined |  ListMembersParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyMembersSuspense<TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
  id: string | undefined | null,
-    params?: FindManyMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+    params?: ListMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFindManyMembersSuspense<TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
  id: string | undefined | null,
-    params?: FindManyMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+    params?: ListMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Find many members
+ * @summary List members
  */
 
-export function useFindManyMembersSuspense<TData = Awaited<ReturnType<typeof findManyMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
  id: string | undefined | null,
-    params?: FindManyMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findManyMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+    params?: ListMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFindManyMembersSuspenseQueryOptions(id,params,options)
+  const queryOptions = getListMembersSuspenseQueryOptions(id,params,options)
 
   const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

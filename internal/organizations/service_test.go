@@ -234,7 +234,7 @@ func TestService_ListOrganizations(t *testing.T) {
 	t.Run("successful list", func(t *testing.T) {
 		service, mockRepo := createTestService(t)
 
-		mockRepo.EXPECT().List(mock.Anything, ListOrganizationsParams{Limit: 10, Offset: 0}).Return(orgs, int64(2), nil)
+		mockRepo.EXPECT().List(mock.Anything, ListOrganizationsParams{Page: PageQuery{Number: 1, Size: 10}}).Return(orgs, int64(2), nil)
 
 		result, total, err := service.List(context.Background(), 10, 0)
 
@@ -246,7 +246,7 @@ func TestService_ListOrganizations(t *testing.T) {
 	t.Run("empty list", func(t *testing.T) {
 		service, mockRepo := createTestService(t)
 
-		mockRepo.EXPECT().List(mock.Anything, ListOrganizationsParams{Limit: 10, Offset: 0}).Return([]*Organization{}, int64(0), nil)
+		mockRepo.EXPECT().List(mock.Anything, ListOrganizationsParams{Page: PageQuery{Number: 1, Size: 10}}).Return([]*Organization{}, int64(0), nil)
 
 		result, total, err := service.List(context.Background(), 10, 0)
 
@@ -258,7 +258,7 @@ func TestService_ListOrganizations(t *testing.T) {
 	t.Run("list fails", func(t *testing.T) {
 		service, mockRepo := createTestService(t)
 
-		mockRepo.EXPECT().List(mock.Anything, ListOrganizationsParams{Limit: 10, Offset: 0}).Return(nil, int64(0), assert.AnError)
+		mockRepo.EXPECT().List(mock.Anything, ListOrganizationsParams{Page: PageQuery{Number: 1, Size: 10}}).Return(nil, int64(0), assert.AnError)
 
 		result, total, err := service.List(context.Background(), 10, 0)
 

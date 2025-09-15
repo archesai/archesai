@@ -1,5 +1,5 @@
 get:
-  operationId: accounts_getOne
+  operationId: getAccount
   summary: Find an account
   tags:
     - Accounts
@@ -29,9 +29,9 @@ get:
                 $ref: ../components/schemas/Account.yaml
     '404':
       $ref: ../components/responses/NotFound.yaml
-  description: Find an account
+  description: Get an account
 delete:
-  operationId: accounts_delete
+  operationId: deleteAccount
   summary: Delete an account
   tags:
     - Accounts

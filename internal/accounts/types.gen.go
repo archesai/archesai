@@ -26,27 +26,27 @@ const (
 	Microsoft AccountProviderId = "microsoft"
 )
 
-// Defines values for AccountsFindManyParamsSortField.
+// Defines values for ListAccountsParamsSortField.
 const (
-	AccessToken           AccountsFindManyParamsSortField = "accessToken"
-	AccessTokenExpiresAt  AccountsFindManyParamsSortField = "accessTokenExpiresAt"
-	AccountId             AccountsFindManyParamsSortField = "accountId"
-	CreatedAt             AccountsFindManyParamsSortField = "createdAt"
-	Id                    AccountsFindManyParamsSortField = "id"
-	IdToken               AccountsFindManyParamsSortField = "idToken"
-	Password              AccountsFindManyParamsSortField = "password"
-	ProviderId            AccountsFindManyParamsSortField = "providerId"
-	RefreshToken          AccountsFindManyParamsSortField = "refreshToken"
-	RefreshTokenExpiresAt AccountsFindManyParamsSortField = "refreshTokenExpiresAt"
-	Scope                 AccountsFindManyParamsSortField = "scope"
-	UpdatedAt             AccountsFindManyParamsSortField = "updatedAt"
-	UserId                AccountsFindManyParamsSortField = "userId"
+	AccessToken           ListAccountsParamsSortField = "accessToken"
+	AccessTokenExpiresAt  ListAccountsParamsSortField = "accessTokenExpiresAt"
+	AccountId             ListAccountsParamsSortField = "accountId"
+	CreatedAt             ListAccountsParamsSortField = "createdAt"
+	Id                    ListAccountsParamsSortField = "id"
+	IdToken               ListAccountsParamsSortField = "idToken"
+	Password              ListAccountsParamsSortField = "password"
+	ProviderId            ListAccountsParamsSortField = "providerId"
+	RefreshToken          ListAccountsParamsSortField = "refreshToken"
+	RefreshTokenExpiresAt ListAccountsParamsSortField = "refreshTokenExpiresAt"
+	Scope                 ListAccountsParamsSortField = "scope"
+	UpdatedAt             ListAccountsParamsSortField = "updatedAt"
+	UserId                ListAccountsParamsSortField = "userId"
 )
 
-// Defines values for AccountsFindManyParamsSortOrder.
+// Defines values for ListAccountsParamsSortOrder.
 const (
-	Asc  AccountsFindManyParamsSortOrder = "asc"
-	Desc AccountsFindManyParamsSortOrder = "desc"
+	Asc  ListAccountsParamsSortOrder = "asc"
+	Desc ListAccountsParamsSortOrder = "desc"
 )
 
 // Account defines model for Account.
@@ -201,8 +201,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// AccountsFindManyParams defines parameters for AccountsFindMany.
-type AccountsFindManyParams struct {
+// ListAccountsParams defines parameters for ListAccounts.
+type ListAccountsParams struct {
 	// Filter Filter accounts by field values. Supported fields:
 	// - createdAt, id, updatedAt, accessToken, accessTokenExpiresAt
 	// - accountId, idToken, password, providerId, refreshToken
@@ -216,14 +216,14 @@ type AccountsFindManyParams struct {
 	Sort AccountsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// AccountsFindManyParamsSortField defines parameters for AccountsFindMany.
-type AccountsFindManyParamsSortField string
+// ListAccountsParamsSortField defines parameters for ListAccounts.
+type ListAccountsParamsSortField string
 
-// AccountsFindManyParamsSortOrder defines parameters for AccountsFindMany.
-type AccountsFindManyParamsSortOrder string
+// ListAccountsParamsSortOrder defines parameters for ListAccounts.
+type ListAccountsParamsSortOrder string
 
-// AccountsCreateJSONBody defines parameters for AccountsCreate.
-type AccountsCreateJSONBody struct {
+// CreateAccountJSONBody defines parameters for CreateAccount.
+type CreateAccountJSONBody struct {
 	// Email The email address associated with the account
 	Email openapi_types.Email `json:"email" yaml:"email"`
 
@@ -234,8 +234,8 @@ type AccountsCreateJSONBody struct {
 	Password string `json:"password" yaml:"password"`
 }
 
-// AccountsCreateJSONRequestBody defines body for AccountsCreate for application/json ContentType.
-type AccountsCreateJSONRequestBody AccountsCreateJSONBody
+// CreateAccountJSONRequestBody defines body for CreateAccount for application/json ContentType.
+type CreateAccountJSONRequestBody CreateAccountJSONBody
 
 // AsValidationErrorValue0 returns the union data inside the ValidationError_Value as a ValidationErrorValue0
 func (t ValidationError_Value) AsValidationErrorValue0() (ValidationErrorValue0, error) {
