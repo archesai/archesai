@@ -28,27 +28,18 @@ type Account struct {
 }
 
 type ApiToken struct {
-	Id                  uuid.UUID
-	CreatedAt           time.Time
-	UpdatedAt           time.Time
-	Enabled             bool
-	ExpiresAt           *time.Time
-	Key                 string
-	LastRefill          *time.Time
-	LastRequest         *time.Time
-	Metadata            *string
-	Name                *string
-	Permissions         *string
-	Prefix              *string
-	RateLimitEnabled    bool
-	RateLimitMax        *int32
-	RateLimitTimeWindow *int32
-	RefillAmount        *int32
-	RefillInterval      *int32
-	Remaining           *int32
-	RequestCount        int32
-	Start               *string
-	UserId              uuid.UUID
+	Id             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	ExpiresAt      *time.Time
+	KeyHash        string
+	Name           *string
+	Prefix         *string
+	UserId         uuid.UUID
+	OrganizationId uuid.UUID
+	Scopes         []string
+	RateLimit      int32
+	LastUsedAt     *time.Time
 }
 
 type Artifact struct {

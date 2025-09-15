@@ -1,9 +1,9 @@
 delete:
-  operationId: deleteSession
-  summary: Delete a session
+  operationId: sessions_delete
+  summary: Delete session (Logout)
   tags:
     - Sessions
-  description: Delete a session
+  description: Delete a specific session (logout from that session)
   parameters:
     - schema:
         type: string
@@ -12,24 +12,16 @@ delete:
       in: path
       name: id
       required: true
-      description: The unique identifier of the resource.
+      description: The unique identifier of the session.
   security:
     - bearerAuth: []
   responses:
-    '200':
-      description: Default Response
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                $ref: ../components/schemas/Session.yaml
-            required:
-              - data
-            additionalProperties: false
+    '204':
+      $ref: ../components/responses/NoContent.yaml
     '404':
       $ref: ../components/responses/NotFound.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
 get:
   operationId: getOneSession
   summary: Find a session

@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/archesai/archesai/internal/auth"
+	"github.com/archesai/archesai/internal/sessions"
 	"github.com/google/uuid"
 )
 
@@ -122,7 +122,7 @@ func (h *Handler) CreateMember(ctx context.Context, request CreateMemberRequestO
 	}
 
 	// Get authenticated user ID from context
-	_, userID, ok := auth.GetAuthContextFromGoContext(ctx)
+	_, userID, ok := sessions.GetAuthContextFromGoContext(ctx)
 	if !ok {
 		return CreateMember400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{

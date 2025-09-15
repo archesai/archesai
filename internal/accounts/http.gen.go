@@ -20,6 +20,9 @@ type ServerInterface interface {
 	// Find many accounts
 	// (GET /auth/accounts)
 	AccountsFindMany(ctx echo.Context, params AccountsFindManyParams) error
+	// Create account (Register)
+	// (POST /auth/accounts)
+	AccountsCreate(ctx echo.Context) error
 	// Delete an account
 	// (DELETE /auth/accounts/{id})
 	AccountsDelete(ctx echo.Context, id openapi_types.UUID) error
@@ -64,6 +67,19 @@ func (w *ServerInterfaceWrapper) AccountsFindMany(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.AccountsFindMany(ctx, params)
+	return err
+}
+
+// AccountsCreate converts echo context to params.
+func (w *ServerInterfaceWrapper) AccountsCreate(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.AccountsCreate(ctx)
 	return err
 }
 
@@ -132,6 +148,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/auth/accounts", wrapper.AccountsFindMany)
+	router.POST(baseURL+"/auth/accounts", wrapper.AccountsCreate)
 	router.DELETE(baseURL+"/auth/accounts/:id", wrapper.AccountsDelete)
 	router.GET(baseURL+"/auth/accounts/:id", wrapper.AccountsGetOne)
 
@@ -183,6 +200,43 @@ type AccountsFindMany401ApplicationProblemPlusJSONResponse struct {
 func (response AccountsFindMany401ApplicationProblemPlusJSONResponse) VisitAccountsFindManyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type AccountsCreateRequestObject struct {
+	Body *AccountsCreateJSONRequestBody
+}
+
+type AccountsCreateResponseObject interface {
+	VisitAccountsCreateResponse(w http.ResponseWriter) error
+}
+
+type AccountsCreate201JSONResponse TokenResponse
+
+func (response AccountsCreate201JSONResponse) VisitAccountsCreateResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type AccountsCreate400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response AccountsCreate400ApplicationProblemPlusJSONResponse) VisitAccountsCreateResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type AccountsCreate409ApplicationProblemPlusJSONResponse Problem
+
+func (response AccountsCreate409ApplicationProblemPlusJSONResponse) VisitAccountsCreateResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(409)
 
 	return json.NewEncoder(w).Encode(response)
 }
@@ -254,6 +308,9 @@ type StrictServerInterface interface {
 	// Find many accounts
 	// (GET /auth/accounts)
 	AccountsFindMany(ctx context.Context, request AccountsFindManyRequestObject) (AccountsFindManyResponseObject, error)
+	// Create account (Register)
+	// (POST /auth/accounts)
+	AccountsCreate(ctx context.Context, request AccountsCreateRequestObject) (AccountsCreateResponseObject, error)
 	// Delete an account
 	// (DELETE /auth/accounts/{id})
 	AccountsDelete(ctx context.Context, request AccountsDeleteRequestObject) (AccountsDeleteResponseObject, error)
@@ -293,6 +350,35 @@ func (sh *strictHandler) AccountsFindMany(ctx echo.Context, params AccountsFindM
 		return err
 	} else if validResponse, ok := response.(AccountsFindManyResponseObject); ok {
 		return validResponse.VisitAccountsFindManyResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// AccountsCreate operation middleware
+func (sh *strictHandler) AccountsCreate(ctx echo.Context) error {
+	var request AccountsCreateRequestObject
+
+	var body AccountsCreateJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.AccountsCreate(ctx.Request().Context(), request.(AccountsCreateRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccountsCreate")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(AccountsCreateResponseObject); ok {
+		return validResponse.VisitAccountsCreateResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

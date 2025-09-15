@@ -16,84 +16,57 @@ const createApiToken = `-- name: CreateApiToken :one
 INSERT INTO api_token (
     id,
     user_id,
+    organization_id,
     name,
-    key,
+    key_hash,
     prefix,
-    enabled,
-    expires_at,
-    permissions,
-    rate_limit_enabled,
-    rate_limit_max,
-    rate_limit_time_window,
-    refill_amount,
-    refill_interval,
-    remaining,
-    metadata
+    scopes,
+    rate_limit,
+    expires_at
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
+    $1, $2, $3, $4, $5, $6, $7, $8, $9
 )
-RETURNING id, created_at, updated_at, enabled, expires_at, key, last_refill, last_request, metadata, name, permissions, prefix, rate_limit_enabled, rate_limit_max, rate_limit_time_window, refill_amount, refill_interval, remaining, request_count, start, user_id
+RETURNING id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 `
 
 type CreateApiTokenParams struct {
-	Id                  uuid.UUID
-	UserId              uuid.UUID
-	Name                *string
-	Key                 string
-	Prefix              *string
-	Enabled             bool
-	ExpiresAt           *time.Time
-	Permissions         *string
-	RateLimitEnabled    bool
-	RateLimitMax        *int32
-	RateLimitTimeWindow *int32
-	RefillAmount        *int32
-	RefillInterval      *int32
-	Remaining           *int32
-	Metadata            *string
+	Id             uuid.UUID
+	UserId         uuid.UUID
+	OrganizationId uuid.UUID
+	Name           *string
+	KeyHash        string
+	Prefix         *string
+	Scopes         []string
+	RateLimit      int32
+	ExpiresAt      *time.Time
 }
 
 func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (ApiToken, error) {
 	row := q.db.QueryRow(ctx, createApiToken,
 		arg.Id,
 		arg.UserId,
+		arg.OrganizationId,
 		arg.Name,
-		arg.Key,
+		arg.KeyHash,
 		arg.Prefix,
-		arg.Enabled,
+		arg.Scopes,
+		arg.RateLimit,
 		arg.ExpiresAt,
-		arg.Permissions,
-		arg.RateLimitEnabled,
-		arg.RateLimitMax,
-		arg.RateLimitTimeWindow,
-		arg.RefillAmount,
-		arg.RefillInterval,
-		arg.Remaining,
-		arg.Metadata,
 	)
 	var i ApiToken
 	err := row.Scan(
 		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Enabled,
 		&i.ExpiresAt,
-		&i.Key,
-		&i.LastRefill,
-		&i.LastRequest,
-		&i.Metadata,
+		&i.KeyHash,
 		&i.Name,
-		&i.Permissions,
 		&i.Prefix,
-		&i.RateLimitEnabled,
-		&i.RateLimitMax,
-		&i.RateLimitTimeWindow,
-		&i.RefillAmount,
-		&i.RefillInterval,
-		&i.Remaining,
-		&i.RequestCount,
-		&i.Start,
 		&i.UserId,
+		&i.OrganizationId,
+		&i.Scopes,
+		&i.RateLimit,
+		&i.LastUsedAt,
 	)
 	return i, err
 }
@@ -118,8 +91,18 @@ func (q *Queries) DeleteApiTokensByUser(ctx context.Context, userID uuid.UUID) e
 	return err
 }
 
+const deleteExpiredApiTokens = `-- name: DeleteExpiredApiTokens :exec
+DELETE FROM api_token
+WHERE expires_at IS NOT NULL AND expires_at < CURRENT_TIMESTAMP
+`
+
+func (q *Queries) DeleteExpiredApiTokens(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteExpiredApiTokens)
+	return err
+}
+
 const getApiToken = `-- name: GetApiToken :one
-SELECT id, created_at, updated_at, enabled, expires_at, key, last_refill, last_request, metadata, name, permissions, prefix, rate_limit_enabled, rate_limit_max, rate_limit_time_window, refill_amount, refill_interval, remaining, request_count, start, user_id FROM api_token
+SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
 WHERE id = $1 LIMIT 1
 `
 
@@ -130,64 +113,46 @@ func (q *Queries) GetApiToken(ctx context.Context, id uuid.UUID) (ApiToken, erro
 		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Enabled,
 		&i.ExpiresAt,
-		&i.Key,
-		&i.LastRefill,
-		&i.LastRequest,
-		&i.Metadata,
+		&i.KeyHash,
 		&i.Name,
-		&i.Permissions,
 		&i.Prefix,
-		&i.RateLimitEnabled,
-		&i.RateLimitMax,
-		&i.RateLimitTimeWindow,
-		&i.RefillAmount,
-		&i.RefillInterval,
-		&i.Remaining,
-		&i.RequestCount,
-		&i.Start,
 		&i.UserId,
+		&i.OrganizationId,
+		&i.Scopes,
+		&i.RateLimit,
+		&i.LastUsedAt,
 	)
 	return i, err
 }
 
-const getApiTokenByKey = `-- name: GetApiTokenByKey :one
-SELECT id, created_at, updated_at, enabled, expires_at, key, last_refill, last_request, metadata, name, permissions, prefix, rate_limit_enabled, rate_limit_max, rate_limit_time_window, refill_amount, refill_interval, remaining, request_count, start, user_id FROM api_token
-WHERE key = $1 LIMIT 1
+const getApiTokenByKeyHash = `-- name: GetApiTokenByKeyHash :one
+SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
+WHERE key_hash = $1 LIMIT 1
 `
 
-func (q *Queries) GetApiTokenByKey(ctx context.Context, key string) (ApiToken, error) {
-	row := q.db.QueryRow(ctx, getApiTokenByKey, key)
+func (q *Queries) GetApiTokenByKeyHash(ctx context.Context, keyHash string) (ApiToken, error) {
+	row := q.db.QueryRow(ctx, getApiTokenByKeyHash, keyHash)
 	var i ApiToken
 	err := row.Scan(
 		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Enabled,
 		&i.ExpiresAt,
-		&i.Key,
-		&i.LastRefill,
-		&i.LastRequest,
-		&i.Metadata,
+		&i.KeyHash,
 		&i.Name,
-		&i.Permissions,
 		&i.Prefix,
-		&i.RateLimitEnabled,
-		&i.RateLimitMax,
-		&i.RateLimitTimeWindow,
-		&i.RefillAmount,
-		&i.RefillInterval,
-		&i.Remaining,
-		&i.RequestCount,
-		&i.Start,
 		&i.UserId,
+		&i.OrganizationId,
+		&i.Scopes,
+		&i.RateLimit,
+		&i.LastUsedAt,
 	)
 	return i, err
 }
 
 const listApiTokens = `-- name: ListApiTokens :many
-SELECT id, created_at, updated_at, enabled, expires_at, key, last_refill, last_request, metadata, name, permissions, prefix, rate_limit_enabled, rate_limit_max, rate_limit_time_window, refill_amount, refill_interval, remaining, request_count, start, user_id FROM api_token
+SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
 ORDER BY created_at DESC
 LIMIT $1 OFFSET $2
 `
@@ -210,24 +175,61 @@ func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([
 			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.Enabled,
 			&i.ExpiresAt,
-			&i.Key,
-			&i.LastRefill,
-			&i.LastRequest,
-			&i.Metadata,
+			&i.KeyHash,
 			&i.Name,
-			&i.Permissions,
 			&i.Prefix,
-			&i.RateLimitEnabled,
-			&i.RateLimitMax,
-			&i.RateLimitTimeWindow,
-			&i.RefillAmount,
-			&i.RefillInterval,
-			&i.Remaining,
-			&i.RequestCount,
-			&i.Start,
 			&i.UserId,
+			&i.OrganizationId,
+			&i.Scopes,
+			&i.RateLimit,
+			&i.LastUsedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listApiTokensByOrganization = `-- name: ListApiTokensByOrganization :many
+SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
+WHERE organization_id = $1
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3
+`
+
+type ListApiTokensByOrganizationParams struct {
+	OrganizationId uuid.UUID
+	Limit          int32
+	Offset         int32
+}
+
+func (q *Queries) ListApiTokensByOrganization(ctx context.Context, arg ListApiTokensByOrganizationParams) ([]ApiToken, error) {
+	rows, err := q.db.Query(ctx, listApiTokensByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ApiToken
+	for rows.Next() {
+		var i ApiToken
+		if err := rows.Scan(
+			&i.Id,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ExpiresAt,
+			&i.KeyHash,
+			&i.Name,
+			&i.Prefix,
+			&i.UserId,
+			&i.OrganizationId,
+			&i.Scopes,
+			&i.RateLimit,
+			&i.LastUsedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -240,7 +242,7 @@ func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([
 }
 
 const listApiTokensByUser = `-- name: ListApiTokensByUser :many
-SELECT id, created_at, updated_at, enabled, expires_at, key, last_refill, last_request, metadata, name, permissions, prefix, rate_limit_enabled, rate_limit_max, rate_limit_time_window, refill_amount, refill_interval, remaining, request_count, start, user_id FROM api_token
+SELECT id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at FROM api_token
 WHERE user_id = $1
 ORDER BY created_at DESC
 LIMIT $2 OFFSET $3
@@ -265,24 +267,15 @@ func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUs
 			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.Enabled,
 			&i.ExpiresAt,
-			&i.Key,
-			&i.LastRefill,
-			&i.LastRequest,
-			&i.Metadata,
+			&i.KeyHash,
 			&i.Name,
-			&i.Permissions,
 			&i.Prefix,
-			&i.RateLimitEnabled,
-			&i.RateLimitMax,
-			&i.RateLimitTimeWindow,
-			&i.RefillAmount,
-			&i.RefillInterval,
-			&i.Remaining,
-			&i.RequestCount,
-			&i.Start,
 			&i.UserId,
+			&i.OrganizationId,
+			&i.Scopes,
+			&i.RateLimit,
+			&i.LastUsedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -296,66 +289,57 @@ func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUs
 
 const updateApiToken = `-- name: UpdateApiToken :one
 UPDATE api_token
-SET 
-    name = COALESCE($2, name),
-    enabled = COALESCE($3, enabled),
+SET
+    name = COALESCE($1, name),
+    scopes = COALESCE($2, scopes),
+    rate_limit = COALESCE($3, rate_limit),
     expires_at = COALESCE($4, expires_at),
-    permissions = COALESCE($5, permissions),
-    rate_limit_enabled = COALESCE($6, rate_limit_enabled),
-    rate_limit_max = COALESCE($7, rate_limit_max),
-    rate_limit_time_window = COALESCE($8, rate_limit_time_window),
-    metadata = COALESCE($9, metadata)
-WHERE id = $1
-RETURNING id, created_at, updated_at, enabled, expires_at, key, last_refill, last_request, metadata, name, permissions, prefix, rate_limit_enabled, rate_limit_max, rate_limit_time_window, refill_amount, refill_interval, remaining, request_count, start, user_id
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = $5
+RETURNING id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 `
 
 type UpdateApiTokenParams struct {
-	Id                  uuid.UUID
-	Name                *string
-	Enabled             *bool
-	ExpiresAt           *time.Time
-	Permissions         *string
-	RateLimitEnabled    *bool
-	RateLimitMax        *int32
-	RateLimitTimeWindow *int32
-	Metadata            *string
+	Name      *string
+	Scopes    []string
+	RateLimit *int32
+	ExpiresAt *time.Time
+	Id        uuid.UUID
 }
 
 func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (ApiToken, error) {
 	row := q.db.QueryRow(ctx, updateApiToken,
-		arg.Id,
 		arg.Name,
-		arg.Enabled,
+		arg.Scopes,
+		arg.RateLimit,
 		arg.ExpiresAt,
-		arg.Permissions,
-		arg.RateLimitEnabled,
-		arg.RateLimitMax,
-		arg.RateLimitTimeWindow,
-		arg.Metadata,
+		arg.Id,
 	)
 	var i ApiToken
 	err := row.Scan(
 		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Enabled,
 		&i.ExpiresAt,
-		&i.Key,
-		&i.LastRefill,
-		&i.LastRequest,
-		&i.Metadata,
+		&i.KeyHash,
 		&i.Name,
-		&i.Permissions,
 		&i.Prefix,
-		&i.RateLimitEnabled,
-		&i.RateLimitMax,
-		&i.RateLimitTimeWindow,
-		&i.RefillAmount,
-		&i.RefillInterval,
-		&i.Remaining,
-		&i.RequestCount,
-		&i.Start,
 		&i.UserId,
+		&i.OrganizationId,
+		&i.Scopes,
+		&i.RateLimit,
+		&i.LastUsedAt,
 	)
 	return i, err
+}
+
+const updateApiTokenLastUsed = `-- name: UpdateApiTokenLastUsed :exec
+UPDATE api_token
+SET last_used_at = CURRENT_TIMESTAMP
+WHERE id = $1
+`
+
+func (q *Queries) UpdateApiTokenLastUsed(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, updateApiTokenLastUsed, id)
+	return err
 }

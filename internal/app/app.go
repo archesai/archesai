@@ -9,12 +9,12 @@ import (
 
 	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/artifacts"
-	"github.com/archesai/archesai/internal/auth"
 	"github.com/archesai/archesai/internal/config"
 	"github.com/archesai/archesai/internal/health"
 	"github.com/archesai/archesai/internal/invitations"
 	"github.com/archesai/archesai/internal/labels"
 	"github.com/archesai/archesai/internal/members"
+	"github.com/archesai/archesai/internal/middleware"
 	"github.com/archesai/archesai/internal/migrations"
 	"github.com/archesai/archesai/internal/organizations"
 	"github.com/archesai/archesai/internal/pipelines"
@@ -35,8 +35,10 @@ type App struct {
 	Config *config.Config
 	Server *server.Server
 
+	// Middleware
+	AuthMiddleware *middleware.AuthMiddleware
+
 	// Domain services (public for handler access)
-	AuthService          *auth.Service
 	AccountsService      *accounts.Service
 	UsersService         *users.Service
 	OrganizationsService *organizations.Service
@@ -50,7 +52,6 @@ type App struct {
 	HealthService        *health.Service
 
 	// HTTP handlers
-	AuthHandler          *auth.Handler
 	AccountsHandler      *accounts.Handler
 	UsersHandler         *users.Handler
 	OrganizationsHandler *organizations.Handler
@@ -62,6 +63,7 @@ type App struct {
 	RunsHandler          *runs.Handler
 	ToolsHandler         *tools.Handler
 	HealthHandler        *health.Handler
+	// ConfigHandler        *config.Handler
 }
 
 // NewApp creates and initializes all application dependencies
@@ -92,26 +94,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("failed to create repositories: %w", err)
 	}
 
-	// Initialize auth feature
-	accessTokenTTL, err := cfg.GetAccessTokenTTL()
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse access token TTL: %w", err)
-	}
-	refreshTokenTTL, err := cfg.GetRefreshTokenTTL()
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse refresh token TTL: %w", err)
-	}
+	// Initialize authentication middleware
+	authMiddleware := middleware.NewAuthMiddleware(cfg.GetJWTSecret(), log)
 
-	// Initialize auth service
-	authConfig := auth.Config{
-		JWTSecret:          cfg.GetJWTSecret(),
-		AccessTokenExpiry:  accessTokenTTL,
-		RefreshTokenExpiry: refreshTokenTTL,
-	}
-
-	// Always pass cache to auth service (infra.AuthCache is never nil)
-	authService := auth.NewService(repos.Accounts, repos.Sessions, repos.Users, infra.AuthCache, authConfig, log)
-	authHandler := auth.NewHandler(authService, log)
+	// Initialize accounts domain
+	accountsEvents := accounts.NewEventPublisher(infra.EventPublisher)
+	accountsService := accounts.NewService(repos.Accounts, nil, accountsEvents, log)
+	accountsHandler := accounts.NewHandler(accountsService, log)
 
 	// Initialize users domain
 	usersEvents := users.NewEventPublisher(infra.EventPublisher)
@@ -169,8 +158,11 @@ func NewApp(cfg *config.Config) (*App, error) {
 		Config: cfg,
 		Server: httpServer,
 
+		// Middleware
+		AuthMiddleware: authMiddleware,
+
 		// Domain services
-		AuthService:          authService,
+		AccountsService:      accountsService,
 		UsersService:         usersService,
 		OrganizationsService: organizationsService,
 		PipelinesService:     pipelinesService,
@@ -181,9 +173,10 @@ func NewApp(cfg *config.Config) (*App, error) {
 		MembersService:       membersService,
 		InvitationsService:   invitationsService,
 		HealthService:        healthService,
+		// ConfigService:     configService,
 
 		// HTTP handlers
-		AuthHandler:          authHandler,
+		AccountsHandler:      accountsHandler,
 		UsersHandler:         usersHandler,
 		OrganizationsHandler: organizationsHandler,
 		PipelinesHandler:     pipelinesHandler,
@@ -194,6 +187,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 		MembersHandler:       membersHandler,
 		InvitationsHandler:   invitationsHandler,
 		HealthHandler:        healthHandler,
+		// ConfigHandler:        configHandler,
 	}
 
 	// Register all application routes

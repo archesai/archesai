@@ -20,6 +20,8 @@ security:
   - bearerAuth: []
   - sessionCookie: []
 tags:
+  - name: APIKeys
+    description: API key management and authentication
   - name: Accounts
     description: User account management
   - name: Artifacts
@@ -36,6 +38,8 @@ tags:
     description: Content label management
   - name: Members
     description: Organization member management
+  - name: OAuth
+    description: OAuth provider integration
   - name: Organizations
     description: Organization management
   - name: Pipelines
@@ -91,6 +95,55 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
       description: Find many accounts
+    post:
+      operationId: accounts_create
+      summary: Create account (Register)
+      tags:
+        - Accounts
+      description: Register a new user account with email and password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: The email address associated with the account
+                  type: string
+                  format: email
+                  pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+                  example: user@example.com
+                  minLength: 1
+                name:
+                  description: The name of the user creating the account
+                  type: string
+                  minLength: 1
+                  example: Example Name
+                password:
+                  description: The password for the account
+                  type: string
+                  minLength: 8
+                  example: secure-password-123
+              required:
+                - email
+                - name
+                - password
+        required: true
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Account already exists
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
   /auth/accounts/{id}:
     get:
       operationId: accounts_getOne
@@ -454,11 +507,11 @@ paths:
           $ref: '#/components/responses/NotFound'
   /auth/sessions:
     get:
-      operationId: findManySessions
+      operationId: sessions_findMany
       summary: Find many sessions
       tags:
         - Sessions
-      description: Find many sessions
+      description: List user sessions
       parameters:
         - $ref: '#/components/parameters/SessionsFilter'
         - $ref: '#/components/parameters/PageQuery'
@@ -467,7 +520,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: Default Response
+          description: List of user sessions
           content:
             application/json:
               schema:
@@ -495,13 +548,57 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /auth/sessions/{id}:
-    delete:
-      operationId: deleteSession
-      summary: Delete a session
+    post:
+      operationId: sessions_create
+      summary: Create session (Login)
       tags:
         - Sessions
-      description: Delete a session
+      description: Authenticate user and create a new session
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: The email address associated with the account
+                  type: string
+                  format: email
+                  pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+                  example: user@example.com
+                  minLength: 1
+                password:
+                  description: The password for the account
+                  type: string
+                  minLength: 1
+                  example: secure-password-123
+                rememberMe:
+                  description: Whether to create a long-lived session
+                  type: boolean
+                  default: false
+                  example: true
+              required:
+                - email
+                - password
+        required: true
+      responses:
+        '201':
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/sessions/{id}:
+    delete:
+      operationId: sessions_delete
+      summary: Delete session (Logout)
+      tags:
+        - Sessions
+      description: Delete a specific session (logout from that session)
       parameters:
         - schema:
             type: string
@@ -510,22 +607,14 @@ paths:
           in: path
           name: id
           required: true
-          description: The unique identifier of the resource.
+          description: The unique identifier of the session.
       security:
         - bearerAuth: []
       responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Session'
-                required:
-                  - data
-                additionalProperties: false
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     get:
@@ -757,6 +846,376 @@ paths:
                 required:
                   - data
                 additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /auth/oauth/{provider}/authorize:
+    get:
+      operationId: oauth_authorize
+      summary: Start OAuth authorization flow
+      tags:
+        - OAuth
+      description: Redirect user to OAuth provider authorization page
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - google
+              - github
+              - microsoft
+            example: google
+          in: path
+          name: provider
+          required: true
+          description: The OAuth provider to use for authorization
+        - schema:
+            type: string
+            example: http://localhost:3000/auth/callback
+          in: query
+          name: redirect_uri
+          required: false
+          description: Where to redirect after authorization (optional, uses default if not provided)
+        - schema:
+            type: string
+            example: read:user
+          in: query
+          name: scope
+          required: false
+          description: OAuth scopes to request (optional, uses default if not provided)
+        - schema:
+            type: string
+            example: random_state_123
+          in: query
+          name: state
+          required: false
+          description: State parameter for CSRF protection
+      responses:
+        '200':
+          description: Authorization URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authorization_url:
+                    type: string
+                    minLength: 1
+                    example: https://accounts.google.com/oauth/authorize?client_id=...
+                    description: URL to redirect user for OAuth authorization
+                required:
+                  - authorization_url
+        '302':
+          description: Redirect to OAuth provider
+          headers:
+            Location:
+              description: The OAuth provider authorization URL
+              schema:
+                type: string
+                example: https://accounts.google.com/oauth/authorize?client_id=...
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: OAuth provider not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /auth/oauth/{provider}/callback:
+    get:
+      operationId: oauth_callback
+      summary: Handle OAuth callback
+      tags:
+        - OAuth
+      description: Handle the callback from OAuth provider and complete authentication
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - google
+              - github
+              - microsoft
+            example: google
+          in: path
+          name: provider
+          required: true
+          description: The OAuth provider handling the callback
+        - schema:
+            type: string
+            example: authorization_code_123
+          in: query
+          name: code
+          required: false
+          description: Authorization code from OAuth provider
+        - schema:
+            type: string
+            example: random_state_123
+          in: query
+          name: state
+          required: false
+          description: State parameter for CSRF protection
+        - schema:
+            type: string
+            example: access_denied
+          in: query
+          name: error
+          required: false
+          description: Error code if authorization failed
+        - schema:
+            type: string
+            example: The user denied the request
+          in: query
+          name: error_description
+          required: false
+          description: Human-readable error description
+      responses:
+        '200':
+          description: OAuth authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '302':
+          description: Redirect to frontend with authentication result
+          headers:
+            Location:
+              description: Redirect URL with success/error status
+              schema:
+                type: string
+                example: http://localhost:3000/auth/success?token=jwt_token_here
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: OAuth provider not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /apikeys:
+    get:
+      operationId: apikeys_findMany
+      summary: List API keys
+      tags:
+        - APIKeys
+      description: List user's API keys (without showing the actual key values)
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+            example: 10
+          in: query
+          name: limit
+          required: false
+          description: Maximum number of items to return
+        - schema:
+            type: integer
+            minimum: 0
+            default: 0
+            example: 0
+          in: query
+          name: offset
+          required: false
+          description: Number of items to skip
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of API keys
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ApiKey'
+                  meta:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - total
+                    properties:
+                      total:
+                        type: number
+                        example: 42
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: apikeys_create
+      summary: Create API key
+      tags:
+        - APIKeys
+      description: Create a new API key for authentication
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: Human-readable name for the API key
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  example: Production API Key
+                scopes:
+                  description: List of scopes/permissions for this API key
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - read:users
+                    - write:workflows
+                rateLimit:
+                  description: Requests per minute limit (default 60)
+                  type: integer
+                  minimum: 1
+                  maximum: 10000
+                  default: 60
+                  example: 1000
+                expiresAt:
+                  description: When the API key expires (optional, no expiry if omitted)
+                  type: string
+                  format: date-time
+                  example: '2025-01-15T09:30:00Z'
+              required:
+                - name
+                - scopes
+        required: true
+      responses:
+        '201':
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /apikeys/{id}:
+    get:
+      operationId: apikeys_findById
+      summary: Get API key details
+      tags:
+        - APIKeys
+      description: Get details of a specific API key (without the actual key value)
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the API key
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: API key details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: apikeys_update
+      summary: Update API key
+      tags:
+        - APIKeys
+      description: Update an API key's name, scopes, or rate limit
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the API key
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: API key update data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  example: Updated Production API Key
+                  description: Human-readable name for the API key
+                scopes:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - read:users
+                    - write:workflows
+                    - read:pipelines
+                  description: Array of permission scopes
+                rateLimit:
+                  type: integer
+                  minimum: 1
+                  maximum: 10000
+                  example: 2000
+                  description: Requests per minute allowed for this API key
+              additionalProperties: false
+      responses:
+        '200':
+          description: API key updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: apikeys_delete
+      summary: Delete API key
+      tags:
+        - APIKeys
+      description: Delete an API key permanently. This action cannot be undone.
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the API key
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: API key deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
   /organizations:
@@ -3133,6 +3592,119 @@ components:
             - emailVerified
             - name
           additionalProperties: false
+    ApiKey:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          minLength: 1
+          example: 550e8400-e29b-41d4-a716-446655440000
+        name:
+          type: string
+          minLength: 1
+          example: Production API Key
+        prefix:
+          type: string
+          minLength: 1
+          example: sk_live_
+        scopes:
+          type: array
+          items:
+            type: string
+          example:
+            - read:users
+            - write:workflows
+        rateLimit:
+          type: integer
+          example: 1000
+          description: Requests per minute allowed for this API key
+        lastUsedAt:
+          type: string
+          format: date-time
+          minLength: 1
+          example: '2024-01-15T09:30:00Z'
+          description: When this API key was last used
+        expiresAt:
+          type: string
+          format: date-time
+          minLength: 1
+          example: '2025-01-15T09:30:00Z'
+          description: When this API key expires
+        createdAt:
+          type: string
+          format: date-time
+          minLength: 1
+          example: '2024-01-15T09:30:00Z'
+          description: When this API key was created
+        updatedAt:
+          type: string
+          format: date-time
+          minLength: 1
+          example: '2024-01-15T09:30:00Z'
+          description: When this API key was last updated
+      required:
+        - id
+        - name
+        - prefix
+        - scopes
+        - rateLimit
+        - expiresAt
+        - createdAt
+        - updatedAt
+    ApiKeyResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          minLength: 1
+          example: 550e8400-e29b-41d4-a716-446655440000
+        name:
+          type: string
+          minLength: 1
+          example: Production API Key
+        key:
+          type: string
+          minLength: 1
+          example: sk_live_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+          description: The actual API key (only returned once on creation)
+        prefix:
+          type: string
+          minLength: 1
+          example: sk_live_
+        scopes:
+          type: array
+          items:
+            type: string
+          example:
+            - read:users
+            - write:workflows
+        rateLimit:
+          type: integer
+          example: 1000
+          description: Requests per minute allowed for this API key
+        expiresAt:
+          type: string
+          format: date-time
+          minLength: 1
+          example: '2025-01-15T09:30:00Z'
+          description: When this API key expires
+        createdAt:
+          type: string
+          format: date-time
+          minLength: 1
+          example: '2024-01-15T09:30:00Z'
+          description: When this API key was created
+      required:
+        - id
+        - name
+        - key
+        - prefix
+        - scopes
+        - rateLimit
+        - expiresAt
+        - createdAt
     Organization:
       description: Schema for Organization entity
       x-codegen:

@@ -118,3 +118,78 @@ func (h *Handler) AccountsDelete(ctx echo.Context, id uuid.UUID) error {
 
 	return ctx.NoContent(http.StatusNoContent)
 }
+
+// AccountsCreate handles POST /auth/accounts (registration)
+func (h *Handler) AccountsCreate(ctx echo.Context) error {
+	var req AccountsCreateJSONRequestBody
+	if err := ctx.Bind(&req); err != nil {
+		h.logger.Error("failed to bind request", "error", err)
+		return ctx.JSON(http.StatusBadRequest, Problem{
+			Type:   "validation_failed",
+			Title:  "Invalid Request",
+			Status: http.StatusBadRequest,
+			Detail: "Failed to parse request body",
+		})
+	}
+
+	// Validate password strength
+	validator := DefaultPasswordValidator()
+	if err := validator.Validate(req.Password); err != nil {
+		return ctx.JSON(http.StatusBadRequest, Problem{
+			Type:   "validation_failed",
+			Title:  "Weak Password",
+			Status: http.StatusBadRequest,
+			Detail: err.Error(),
+		})
+	}
+
+	// Hash password
+	hashedPassword, err := HashPassword(req.Password)
+	if err != nil {
+		h.logger.Error("failed to hash password", "error", err)
+		return ctx.JSON(http.StatusInternalServerError, Problem{
+			Type:   "internal_error",
+			Title:  "Internal Server Error",
+			Status: http.StatusInternalServerError,
+			Detail: "Failed to process registration",
+		})
+	}
+
+	// Create account with local provider
+	account := &Account{
+		UserId:     uuid.New(), // This should be linked to an actual user
+		ProviderId: Local,
+		AccountId:  string(req.Email), // Convert types.Email to string
+		Password:   hashedPassword,    // Use string, not pointer
+	}
+
+	_, err = h.service.Create(ctx.Request().Context(), account)
+	if err != nil {
+		if err == ErrDuplicateAccount {
+			return ctx.JSON(http.StatusConflict, Problem{
+				Type:   "account_exists",
+				Title:  "Account Already Exists",
+				Status: http.StatusConflict,
+				Detail: "An account with this email already exists",
+			})
+		}
+		h.logger.Error("failed to create account", "error", err)
+		return ctx.JSON(http.StatusInternalServerError, Problem{
+			Type:   "internal_error",
+			Title:  "Internal Server Error",
+			Status: http.StatusInternalServerError,
+			Detail: "Failed to create account",
+		})
+	}
+
+	// For registration, we should return a token response
+	// This is a placeholder - you'll need to implement JWT generation
+	tokenResponse := TokenResponse{
+		AccessToken:  "placeholder_access_token",
+		RefreshToken: "placeholder_refresh_token", // Use string, not pointer
+		TokenType:    "bearer",
+		ExpiresIn:    3600,
+	}
+
+	return ctx.JSON(http.StatusCreated, tokenResponse)
+}

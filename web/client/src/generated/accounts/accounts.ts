@@ -28,12 +28,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AccountsCreateBody,
   AccountsDelete200,
   AccountsFindMany200,
   AccountsFindManyParams,
   AccountsGetOne200,
   BadRequestResponse,
   NotFoundResponse,
+  Problem,
+  TokenResponse,
   UnauthorizedResponse
 } from '../orval.schemas';
 
@@ -208,6 +211,78 @@ export function useAccountsFindManySuspense<TData = Awaited<ReturnType<typeof ac
 
 
 /**
+ * Register a new user account with email and password
+ * @summary Create account (Register)
+ */
+export const getAccountsCreateUrl = () => {
+
+
+  
+
+  return `/auth/accounts`
+}
+
+export const accountsCreate = async (accountsCreateBody: AccountsCreateBody, options?: RequestInit): Promise<TokenResponse> => {
+  
+  return customFetch<TokenResponse>(getAccountsCreateUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      accountsCreateBody,)
+  }
+);}
+
+
+
+
+export const getAccountsCreateMutationOptions = <TError = BadRequestResponse | Problem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof accountsCreate>>, TError,{data: AccountsCreateBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof accountsCreate>>, TError,{data: AccountsCreateBody}, TContext> => {
+
+const mutationKey = ['accountsCreate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof accountsCreate>>, {data: AccountsCreateBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  accountsCreate(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AccountsCreateMutationResult = NonNullable<Awaited<ReturnType<typeof accountsCreate>>>
+    export type AccountsCreateMutationBody = AccountsCreateBody
+    export type AccountsCreateMutationError = BadRequestResponse | Problem
+
+    /**
+ * @summary Create account (Register)
+ */
+export const useAccountsCreate = <TError = BadRequestResponse | Problem,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof accountsCreate>>, TError,{data: AccountsCreateBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof accountsCreate>>,
+        TError,
+        {data: AccountsCreateBody},
+        TContext
+      > => {
+
+      const mutationOptions = getAccountsCreateMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Find an account
  * @summary Find an account
  */

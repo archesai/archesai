@@ -224,7 +224,7 @@ lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
 	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@pnpm redocly --config .redocly.yaml lint api/openapi.yaml > /dev/null 2>&1
+	@pnpm redocly --config .redocly.yaml lint api/openapi.yaml
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
 .PHONY: lint-typecheck

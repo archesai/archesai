@@ -1,10 +1,8 @@
 package app
 
 import (
+	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/artifacts"
-	"github.com/archesai/archesai/internal/auth"
-
-	// "github.com/archesai/archesai/internal/config"
 	"github.com/archesai/archesai/internal/health"
 	"github.com/archesai/archesai/internal/labels"
 	"github.com/archesai/archesai/internal/members"
@@ -13,8 +11,6 @@ import (
 	"github.com/archesai/archesai/internal/runs"
 	"github.com/archesai/archesai/internal/tools"
 	"github.com/archesai/archesai/internal/users"
-
-	// "github.com/archesai/archesai/internal/workflows"
 	"github.com/labstack/echo/v4"
 )
 
@@ -27,12 +23,9 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	// PUBLIC ROUTES (No authentication required)
 	// ========================================
 
-	// Auth routes - public endpoints with rate limiting
-	// These endpoints handle login, registration, password reset, etc.
-	strictAuthHandler := auth.NewAuthStrictHandler(a.AuthHandler)
-	publicAuthGroup := v1.Group("")
-	publicAuthGroup.Use(auth.RateLimitMiddleware(10, 60)) // 10 requests per minute
-	auth.RegisterHandlers(publicAuthGroup, strictAuthHandler)
+	// Account routes - public endpoints
+	// These endpoints handle registration, password reset, email verification, etc.
+	accounts.RegisterHandlers(v1, a.AccountsHandler)
 
 	// Health routes - public endpoints for monitoring
 	strictHealthHandler := health.NewStrictHandler(a.HealthHandler, nil)
@@ -44,7 +37,7 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 
 	// Create a protected group with authentication middleware
 	protected := v1.Group("")
-	protected.Use(auth.RequireAuth(a.AuthService, auth.MiddlewarePresets.Authenticated, a.Logger))
+	protected.Use(a.AuthMiddleware.RequireAuth())
 
 	// Users routes - require authentication
 	strictUsersHandler := users.NewUserStrictHandler(a.UsersHandler)
@@ -54,7 +47,7 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	strictOrganizationsHandler := organizations.NewStrictHandler(a.OrganizationsHandler, nil)
 	// Create a separate group for organization routes with additional checks
 	orgGroup := v1.Group("")
-	orgGroup.Use(auth.RequireAuth(a.AuthService, auth.MiddlewarePresets.OrganizationMember, a.Logger))
+	orgGroup.Use(a.AuthMiddleware.RequireAuth(), a.AuthMiddleware.RequireOrganizationMember())
 	organizations.RegisterHandlers(orgGroup, strictOrganizationsHandler)
 
 	// Pipelines routes - require authentication

@@ -1,0 +1,68 @@
+get:
+  operationId: oauth_callback
+  summary: Handle OAuth callback
+  tags:
+    - OAuth
+  description: Handle the callback from OAuth provider and complete authentication
+  parameters:
+    - schema:
+        type: string
+        enum: [google, github, microsoft]
+        example: google
+      in: path
+      name: provider
+      required: true
+      description: The OAuth provider handling the callback
+    - schema:
+        type: string
+        example: authorization_code_123
+      in: query
+      name: code
+      required: false
+      description: Authorization code from OAuth provider
+    - schema:
+        type: string
+        example: random_state_123
+      in: query
+      name: state
+      required: false
+      description: State parameter for CSRF protection
+    - schema:
+        type: string
+        example: access_denied
+      in: query
+      name: error
+      required: false
+      description: Error code if authorization failed
+    - schema:
+        type: string
+        example: The user denied the request
+      in: query
+      name: error_description
+      required: false
+      description: Human-readable error description
+  responses:
+    '200':
+      description: OAuth authentication successful
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/TokenResponse.yaml
+    '302':
+      description: Redirect to frontend with authentication result
+      headers:
+        Location:
+          description: Redirect URL with success/error status
+          schema:
+            type: string
+            example: http://localhost:3000/auth/success?token=jwt_token_here
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      description: OAuth provider not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../components/schemas/Problem.yaml

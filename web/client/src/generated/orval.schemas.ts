@@ -246,6 +246,65 @@ export type UserAllOf = {
  */
 export type User = Base & UserAllOf;
 
+export interface ApiKey {
+  /** @minLength 1 */
+  id: string;
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 1 */
+  prefix: string;
+  scopes: string[];
+  /** Requests per minute allowed for this API key */
+  rateLimit: number;
+  /**
+   * When this API key was last used
+   * @minLength 1
+   */
+  lastUsedAt?: string;
+  /**
+   * When this API key expires
+   * @minLength 1
+   */
+  expiresAt: string;
+  /**
+   * When this API key was created
+   * @minLength 1
+   */
+  createdAt: string;
+  /**
+   * When this API key was last updated
+   * @minLength 1
+   */
+  updatedAt: string;
+}
+
+export interface ApiKeyResponse {
+  /** @minLength 1 */
+  id: string;
+  /** @minLength 1 */
+  name: string;
+  /**
+   * The actual API key (only returned once on creation)
+   * @minLength 1
+   */
+  key: string;
+  /** @minLength 1 */
+  prefix: string;
+  scopes: string[];
+  /** Requests per minute allowed for this API key */
+  rateLimit: number;
+  /**
+   * When this API key expires
+   * @minLength 1
+   */
+  expiresAt: string;
+  /**
+   * When this API key was created
+   * @minLength 1
+   */
+  createdAt: string;
+}
+
 /**
  * The current subscription plan
  * @minLength 1
@@ -2051,6 +2110,25 @@ export type AccountsFindMany200 = {
   meta: AccountsFindMany200Meta;
 };
 
+export type AccountsCreateBody = {
+  /**
+   * The email address associated with the account
+   * @minLength 1
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
+  email: string;
+  /**
+   * The name of the user creating the account
+   * @minLength 1
+   */
+  name: string;
+  /**
+   * The password for the account
+   * @minLength 8
+   */
+  password: string;
+};
+
 export type AccountsGetOne200 = {
   data: Account;
 };
@@ -2161,7 +2239,7 @@ export type ConfirmEmailChangeBody = {
   userId: string;
 };
 
-export type FindManySessionsParams = {
+export type SessionsFindManyParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
@@ -2176,18 +2254,30 @@ page?: PageQueryParameter;
 sort?: SessionsSortParameter;
 };
 
-export type FindManySessions200Meta = {
+export type SessionsFindMany200Meta = {
   /** Total number of items in the collection */
   total: number;
 };
 
-export type FindManySessions200 = {
+export type SessionsFindMany200 = {
   data: Session[];
-  meta: FindManySessions200Meta;
+  meta: SessionsFindMany200Meta;
 };
 
-export type DeleteSession200 = {
-  data: Session;
+export type SessionsCreateBody = {
+  /**
+   * The email address associated with the account
+   * @minLength 1
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
+  email: string;
+  /**
+   * The password for the account
+   * @minLength 1
+   */
+  password: string;
+  /** Whether to create a long-lived session */
+  rememberMe?: boolean;
 };
 
 export type GetOneSession200 = {
@@ -2251,6 +2341,106 @@ export type UpdateUserBody = {
 
 export type UpdateUser200 = {
   data: User;
+};
+
+export type OauthAuthorizeParams = {
+/**
+ * Where to redirect after authorization (optional, uses default if not provided)
+ */
+redirect_uri?: string;
+/**
+ * OAuth scopes to request (optional, uses default if not provided)
+ */
+scope?: string;
+/**
+ * State parameter for CSRF protection
+ */
+state?: string;
+};
+
+export type OauthAuthorize200 = {
+  /**
+   * URL to redirect user for OAuth authorization
+   * @minLength 1
+   */
+  authorization_url: string;
+};
+
+export type OauthCallbackParams = {
+/**
+ * Authorization code from OAuth provider
+ */
+code?: string;
+/**
+ * State parameter for CSRF protection
+ */
+state?: string;
+/**
+ * Error code if authorization failed
+ */
+error?: string;
+/**
+ * Human-readable error description
+ */
+error_description?: string;
+};
+
+export type ApikeysFindManyParams = {
+/**
+ * Maximum number of items to return
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+/**
+ * Number of items to skip
+ * @minimum 0
+ */
+offset?: number;
+};
+
+export type ApikeysFindMany200Meta = {
+  total: number;
+};
+
+export type ApikeysFindMany200 = {
+  data: ApiKey[];
+  meta: ApikeysFindMany200Meta;
+};
+
+export type ApikeysCreateBody = {
+  /**
+   * Human-readable name for the API key
+   * @minLength 1
+   * @maxLength 255
+   */
+  name: string;
+  /** List of scopes/permissions for this API key */
+  scopes: string[];
+  /**
+   * Requests per minute limit (default 60)
+   * @minimum 1
+   * @maximum 10000
+   */
+  rateLimit?: number;
+  /** When the API key expires (optional, no expiry if omitted) */
+  expiresAt?: string;
+};
+
+export type ApikeysUpdateBody = {
+  /**
+   * Human-readable name for the API key
+   * @minLength 1
+   */
+  name?: string;
+  /** Array of permission scopes */
+  scopes?: string[];
+  /**
+   * Requests per minute allowed for this API key
+   * @minimum 1
+   * @maximum 10000
+   */
+  rateLimit?: number;
 };
 
 export type CreateOrganizationBody = {

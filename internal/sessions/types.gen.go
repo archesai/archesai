@@ -16,23 +16,23 @@ const (
 	SessionCookieScopes = "sessionCookie.Scopes"
 )
 
-// Defines values for FindManySessionsParamsSortField.
+// Defines values for SessionsFindManyParamsSortField.
 const (
-	ActiveOrganizationId FindManySessionsParamsSortField = "activeOrganizationId"
-	CreatedAt            FindManySessionsParamsSortField = "createdAt"
-	ExpiresAt            FindManySessionsParamsSortField = "expiresAt"
-	Id                   FindManySessionsParamsSortField = "id"
-	IpAddress            FindManySessionsParamsSortField = "ipAddress"
-	Token                FindManySessionsParamsSortField = "token"
-	UpdatedAt            FindManySessionsParamsSortField = "updatedAt"
-	UserAgent            FindManySessionsParamsSortField = "userAgent"
-	UserId               FindManySessionsParamsSortField = "userId"
+	ActiveOrganizationId SessionsFindManyParamsSortField = "activeOrganizationId"
+	CreatedAt            SessionsFindManyParamsSortField = "createdAt"
+	ExpiresAt            SessionsFindManyParamsSortField = "expiresAt"
+	Id                   SessionsFindManyParamsSortField = "id"
+	IpAddress            SessionsFindManyParamsSortField = "ipAddress"
+	Token                SessionsFindManyParamsSortField = "token"
+	UpdatedAt            SessionsFindManyParamsSortField = "updatedAt"
+	UserAgent            SessionsFindManyParamsSortField = "userAgent"
+	UserId               SessionsFindManyParamsSortField = "userId"
 )
 
-// Defines values for FindManySessionsParamsSortOrder.
+// Defines values for SessionsFindManyParamsSortOrder.
 const (
-	Asc  FindManySessionsParamsSortOrder = "asc"
-	Desc FindManySessionsParamsSortOrder = "desc"
+	Asc  SessionsFindManyParamsSortOrder = "asc"
+	Desc SessionsFindManyParamsSortOrder = "desc"
 )
 
 // FilterNode A recursive filter node that can be a condition or group
@@ -95,6 +95,21 @@ type Session struct {
 	UserId openapi_types.UUID `json:"userId" yaml:"userId"`
 }
 
+// TokenResponse defines model for TokenResponse.
+type TokenResponse struct {
+	// AccessToken JWT access token for API authentication
+	AccessToken string `json:"access_token" yaml:"access_token"`
+
+	// ExpiresIn Access token expiration time in seconds
+	ExpiresIn int64 `json:"expires_in" yaml:"expires_in"`
+
+	// RefreshToken Refresh token for obtaining new access tokens
+	RefreshToken string `json:"refresh_token" yaml:"refresh_token"`
+
+	// TokenType Type of token (always "Bearer")
+	TokenType string `json:"token_type" yaml:"token_type"`
+}
+
 // ValidationError Individual field validation error
 type ValidationError struct {
 	// Field The field path that failed validation
@@ -142,8 +157,8 @@ type NotFound = Problem
 // Unauthorized RFC 7807 (Problem Details) compliant error response
 type Unauthorized = Problem
 
-// FindManySessionsParams defines parameters for FindManySessions.
-type FindManySessionsParams struct {
+// SessionsFindManyParams defines parameters for SessionsFindMany.
+type SessionsFindManyParams struct {
 	// Filter Filter sessions by field values. Supported fields:
 	// - createdAt, id, updatedAt, activeOrganizationId, expiresAt
 	// - ipAddress, token, userAgent, userId
@@ -156,17 +171,32 @@ type FindManySessionsParams struct {
 	Sort SessionsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
-// FindManySessionsParamsSortField defines parameters for FindManySessions.
-type FindManySessionsParamsSortField string
+// SessionsFindManyParamsSortField defines parameters for SessionsFindMany.
+type SessionsFindManyParamsSortField string
 
-// FindManySessionsParamsSortOrder defines parameters for FindManySessions.
-type FindManySessionsParamsSortOrder string
+// SessionsFindManyParamsSortOrder defines parameters for SessionsFindMany.
+type SessionsFindManyParamsSortOrder string
+
+// SessionsCreateJSONBody defines parameters for SessionsCreate.
+type SessionsCreateJSONBody struct {
+	// Email The email address associated with the account
+	Email openapi_types.Email `json:"email" yaml:"email"`
+
+	// Password The password for the account
+	Password string `json:"password" yaml:"password"`
+
+	// RememberMe Whether to create a long-lived session
+	RememberMe bool `json:"rememberMe,omitempty,omitzero" yaml:"rememberMe,omitempty"`
+}
 
 // UpdateSessionJSONBody defines parameters for UpdateSession.
 type UpdateSessionJSONBody struct {
 	// ActiveOrganizationId The active organization ID
 	ActiveOrganizationId string `json:"activeOrganizationId" yaml:"activeOrganizationId"`
 }
+
+// SessionsCreateJSONRequestBody defines body for SessionsCreate for application/json ContentType.
+type SessionsCreateJSONRequestBody SessionsCreateJSONBody
 
 // UpdateSessionJSONRequestBody defines body for UpdateSession for application/json ContentType.
 type UpdateSessionJSONRequestBody UpdateSessionJSONBody

@@ -2,21 +2,15 @@
 INSERT INTO api_token (
     id,
     user_id,
+    organization_id,
     name,
-    key,
+    key_hash,
     prefix,
-    enabled,
-    expires_at,
-    permissions,
-    rate_limit_enabled,
-    rate_limit_max,
-    rate_limit_time_window,
-    refill_amount,
-    refill_interval,
-    remaining,
-    metadata
+    scopes,
+    rate_limit,
+    expires_at
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
+    $1, $2, $3, $4, $5, $6, $7, $8, $9
 )
 RETURNING *;
 
@@ -24,9 +18,9 @@ RETURNING *;
 SELECT * FROM api_token
 WHERE id = $1 LIMIT 1;
 
--- name: GetApiTokenByKey :one
+-- name: GetApiTokenByKeyHash :one
 SELECT * FROM api_token
-WHERE key = $1 LIMIT 1;
+WHERE key_hash = $1 LIMIT 1;
 
 -- name: ListApiTokens :many
 SELECT * FROM api_token
@@ -41,16 +35,13 @@ LIMIT $2 OFFSET $3;
 
 -- name: UpdateApiToken :one
 UPDATE api_token
-SET 
+SET
     name = COALESCE(sqlc.narg(name), name),
-    enabled = COALESCE(sqlc.narg(enabled), enabled),
+    scopes = COALESCE(sqlc.narg(scopes), scopes),
+    rate_limit = COALESCE(sqlc.narg(rate_limit), rate_limit),
     expires_at = COALESCE(sqlc.narg(expires_at), expires_at),
-    permissions = COALESCE(sqlc.narg(permissions), permissions),
-    rate_limit_enabled = COALESCE(sqlc.narg(rate_limit_enabled), rate_limit_enabled),
-    rate_limit_max = COALESCE(sqlc.narg(rate_limit_max), rate_limit_max),
-    rate_limit_time_window = COALESCE(sqlc.narg(rate_limit_time_window), rate_limit_time_window),
-    metadata = COALESCE(sqlc.narg(metadata), metadata)
-WHERE id = $1
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = sqlc.arg(id)
 RETURNING *;
 
 -- name: DeleteApiToken :exec
@@ -60,3 +51,18 @@ WHERE id = $1;
 -- name: DeleteApiTokensByUser :exec
 DELETE FROM api_token
 WHERE user_id = $1;
+
+-- name: ListApiTokensByOrganization :many
+SELECT * FROM api_token
+WHERE organization_id = $1
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3;
+
+-- name: UpdateApiTokenLastUsed :exec
+UPDATE api_token
+SET last_used_at = CURRENT_TIMESTAMP
+WHERE id = $1;
+
+-- name: DeleteExpiredApiTokens :exec
+DELETE FROM api_token
+WHERE expires_at IS NOT NULL AND expires_at < CURRENT_TIMESTAMP;

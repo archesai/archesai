@@ -37,6 +37,7 @@ type Querier interface {
 	DeleteApiTokensByUser(ctx context.Context, userID uuid.UUID) error
 	DeleteArtifact(ctx context.Context, id uuid.UUID) error
 	DeleteArtifactsByOrganization(ctx context.Context, organizationID uuid.UUID) error
+	DeleteExpiredApiTokens(ctx context.Context) error
 	DeleteInvitation(ctx context.Context, id uuid.UUID) error
 	DeleteInvitationsByOrganization(ctx context.Context, organizationID uuid.UUID) error
 	DeleteLabel(ctx context.Context, id uuid.UUID) error
@@ -61,7 +62,7 @@ type Querier interface {
 	GetAccount(ctx context.Context, id uuid.UUID) (Account, error)
 	GetAccountByUser(ctx context.Context, arg GetAccountByUserParams) (Account, error)
 	GetApiToken(ctx context.Context, id uuid.UUID) (ApiToken, error)
-	GetApiTokenByKey(ctx context.Context, key string) (ApiToken, error)
+	GetApiTokenByKeyHash(ctx context.Context, keyHash string) (ApiToken, error)
 	GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, error)
 	GetInvitation(ctx context.Context, id uuid.UUID) (Invitation, error)
 	GetInvitationByEmail(ctx context.Context, arg GetInvitationByEmailParams) (Invitation, error)
@@ -87,6 +88,7 @@ type Querier interface {
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
 	ListAccountsByUser(ctx context.Context, userID uuid.UUID) ([]Account, error)
 	ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([]ApiToken, error)
+	ListApiTokensByOrganization(ctx context.Context, arg ListApiTokensByOrganizationParams) ([]ApiToken, error)
 	ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]ApiToken, error)
 	ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([]Artifact, error)
 	ListArtifactsByOrganization(ctx context.Context, arg ListArtifactsByOrganizationParams) ([]Artifact, error)
@@ -118,6 +120,7 @@ type Querier interface {
 	ListVerificationTokensByIdentifier(ctx context.Context, arg ListVerificationTokensByIdentifierParams) ([]VerificationToken, error)
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)
 	UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (ApiToken, error)
+	UpdateApiTokenLastUsed(ctx context.Context, id uuid.UUID) error
 	UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) (Artifact, error)
 	UpdateInvitation(ctx context.Context, arg UpdateInvitationParams) (Invitation, error)
 	UpdateLabel(ctx context.Context, arg UpdateLabelParams) (Label, error)

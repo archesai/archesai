@@ -2,21 +2,11 @@ package accounts
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
-)
-
-var (
-	// ErrAccountNotFound is returned when an account is not found
-	ErrAccountNotFound = errors.New("account not found")
-	// ErrInvalidProvider is returned when an invalid provider is specified
-	ErrInvalidProvider = errors.New("invalid provider")
-	// ErrDuplicateAccount is returned when an account already exists
-	ErrDuplicateAccount = errors.New("account already exists")
 )
 
 // Service handles account business logic
@@ -252,4 +242,78 @@ func (s *Service) UnlinkAccount(ctx context.Context, userID uuid.UUID, accountID
 	}
 
 	return nil
+}
+
+// ResendVerificationEmail resends the email verification email
+func (s *Service) ResendVerificationEmail(_ context.Context, email string) error {
+	// TODO: Implement email verification resend
+	// This would:
+	// 1. Check if user exists by email
+	// 2. Generate verification token
+	// 3. Store token in database with expiry
+	// 4. Send verification email
+	s.logger.Info("verification email resend requested", "email", email)
+	return fmt.Errorf("email verification resend not yet implemented")
+}
+
+// VerifyEmail verifies a user's email address using a verification token
+func (s *Service) VerifyEmail(_ context.Context, token string) error {
+	// TODO: Implement email verification
+	// This would:
+	// 1. Validate token and check expiry
+	// 2. Find user associated with token
+	// 3. Mark user email as verified
+	// 4. Invalidate verification token
+	s.logger.Info("email verification requested", "token", token)
+	return fmt.Errorf("email verification not yet implemented")
+}
+
+// RequestPasswordReset initiates a password reset process
+func (s *Service) RequestPasswordReset(_ context.Context, email string) error {
+	// TODO: Implement password reset request
+	// This would:
+	// 1. Check if user exists by email
+	// 2. Generate reset token
+	// 3. Store token in database with expiry
+	// 4. Send password reset email
+	s.logger.Info("password reset requested", "email", email)
+	return fmt.Errorf("password reset not yet implemented")
+}
+
+// ConfirmPasswordReset completes the password reset process
+func (s *Service) ConfirmPasswordReset(_ context.Context, token, _ string) error {
+	// TODO: Implement password reset confirmation
+	// This would:
+	// 1. Validate token and check expiry
+	// 2. Validate new password strength
+	// 3. Hash new password
+	// 4. Update user password
+	// 5. Invalidate reset token
+	s.logger.Info("password reset confirmation requested", "token", token)
+	return fmt.Errorf("password reset confirmation not yet implemented")
+}
+
+// RequestEmailChange initiates an email change process
+func (s *Service) RequestEmailChange(_ context.Context, userID uuid.UUID, newEmail string) error {
+	// TODO: Implement email change request
+	// This would:
+	// 1. Validate new email format
+	// 2. Check if new email is already taken
+	// 3. Generate change token
+	// 4. Store token in database with expiry
+	// 5. Send confirmation email to new address
+	s.logger.Info("email change requested", "user_id", userID, "new_email", newEmail)
+	return fmt.Errorf("email change not yet implemented")
+}
+
+// ConfirmEmailChange completes the email change process
+func (s *Service) ConfirmEmailChange(_ context.Context, token string) error {
+	// TODO: Implement email change confirmation
+	// This would:
+	// 1. Validate token and check expiry
+	// 2. Update user email address
+	// 3. Mark new email as verified
+	// 4. Invalidate change token
+	s.logger.Info("email change confirmation requested", "token", token)
+	return fmt.Errorf("email change confirmation not yet implemented")
 }

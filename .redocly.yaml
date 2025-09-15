@@ -17,18 +17,20 @@ rules:
     severity: error
     exceptions:
       - health
+      - oauth
+      - content
       - auth
       - config
-      - login
-      - register
-      - logout
-      - intelligence
       - password-reset
       - email-verification
       - email-change
       - request
       - verify
-      - content
+      - register
+      - login
+      - logout
+      - authorize
+      - callback
   spec-strict-refs: error
   operation-4xx-problem-details-rfc7807: error
   operation-description: error

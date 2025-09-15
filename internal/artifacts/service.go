@@ -13,6 +13,11 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	// MaxArtifactSize is the maximum size for an artifact in bytes (10MB)
+	MaxArtifactSize = 10 * 1024 * 1024
+)
+
 // Service provides artifact business logic
 type Service struct {
 	repo         Repository

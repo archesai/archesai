@@ -8,12 +8,6 @@ packages:
       Repository:
       Cache:
       EventPublisher:
-  github.com/archesai/archesai/internal/auth:
-    interfaces:
-      AccountsRepository:
-      SessionsRepository:
-      SessionsCache:
-      UsersRepository:
   github.com/archesai/archesai/internal/organizations:
     interfaces:
       Repository:

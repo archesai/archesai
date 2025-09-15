@@ -1,4 +1,5 @@
 export * from "./generated/accounts/accounts";
+export * from "./generated/apikeys/apikeys";
 export * from "./generated/artifacts/artifacts";
 export * from "./generated/auth/auth";
 export * from "./generated/config/config";
@@ -6,6 +7,7 @@ export * from "./generated/health/health";
 export * from "./generated/invitations/invitations";
 export * from "./generated/labels/labels";
 export * from "./generated/members/members";
+export * from "./generated/oauth/oauth";
 export * from "./generated/organizations/organizations";
 export * from "./generated/orval.schemas";
 export * from "./generated/pipelines/pipelines";

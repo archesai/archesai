@@ -9,10 +9,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
-	BearerAuthScopes = "bearerAuth.Scopes"
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
 )
 
 // Defines values for AccountProviderId.
@@ -134,6 +136,21 @@ type Problem struct {
 	Type string `json:"type" yaml:"type"`
 }
 
+// TokenResponse defines model for TokenResponse.
+type TokenResponse struct {
+	// AccessToken JWT access token for API authentication
+	AccessToken string `json:"access_token" yaml:"access_token"`
+
+	// ExpiresIn Access token expiration time in seconds
+	ExpiresIn int64 `json:"expires_in" yaml:"expires_in"`
+
+	// RefreshToken Refresh token for obtaining new access tokens
+	RefreshToken string `json:"refresh_token" yaml:"refresh_token"`
+
+	// TokenType Type of token (always "Bearer")
+	TokenType string `json:"token_type" yaml:"token_type"`
+}
+
 // UUID Universally Unique Identifier
 type UUID = uuid.UUID
 
@@ -204,6 +221,21 @@ type AccountsFindManyParamsSortField string
 
 // AccountsFindManyParamsSortOrder defines parameters for AccountsFindMany.
 type AccountsFindManyParamsSortOrder string
+
+// AccountsCreateJSONBody defines parameters for AccountsCreate.
+type AccountsCreateJSONBody struct {
+	// Email The email address associated with the account
+	Email openapi_types.Email `json:"email" yaml:"email"`
+
+	// Name The name of the user creating the account
+	Name string `json:"name" yaml:"name"`
+
+	// Password The password for the account
+	Password string `json:"password" yaml:"password"`
+}
+
+// AccountsCreateJSONRequestBody defines body for AccountsCreate for application/json ContentType.
+type AccountsCreateJSONRequestBody AccountsCreateJSONBody
 
 // AsValidationErrorValue0 returns the union data inside the ValidationError_Value as a ValidationErrorValue0
 func (t ValidationError_Value) AsValidationErrorValue0() (ValidationErrorValue0, error) {

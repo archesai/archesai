@@ -21,6 +21,8 @@ security:
   - bearerAuth: []
   - sessionCookie: []
 tags:
+  - name: APIKeys
+    description: API key management and authentication
   - name: Accounts
     description: User account management
   - name: Artifacts
@@ -37,6 +39,8 @@ tags:
     description: Content label management
   - name: Members
     description: Organization member management
+  - name: OAuth
+    description: OAuth provider integration
   - name: Organizations
     description: Organization management
   - name: Pipelines
@@ -51,9 +55,9 @@ tags:
     description: User profile management
 paths:
   /auth/accounts:
-    $ref: paths/auth_accounts.yaml
+    $ref: paths/accounts.yaml
   /auth/accounts/{id}:
-    $ref: paths/auth_accounts_{id}.yaml
+    $ref: paths/accounts_{id}.yaml
   /auth/register:
     $ref: paths/auth_register.yaml
   /auth/login:
@@ -80,6 +84,16 @@ paths:
     $ref: paths/auth_users.yaml
   /auth/users/{id}:
     $ref: paths/auth_users_{id}.yaml
+  # OAuth domain
+  /auth/oauth/{provider}/authorize:
+    $ref: paths/oauth_authorize.yaml
+  /auth/oauth/{provider}/callback:
+    $ref: paths/oauth_callback.yaml
+  # API Keys domain
+  /apikeys:
+    $ref: paths/apikeys.yaml
+  /apikeys/{id}:
+    $ref: paths/apikeys_{id}.yaml
   # Organizations domain
   /organizations:
     $ref: paths/organizations.yaml
