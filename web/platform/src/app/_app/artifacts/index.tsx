@@ -7,6 +7,6 @@ export const Route = createFileRoute("/_app/artifacts/")({
   component: ArtifactsPage,
 });
 
-export default function ArtifactsPage(): JSX.Element {
+function ArtifactsPage(): JSX.Element {
   return <ArtifactDataTable />;
 }

@@ -1,4 +1,4 @@
-import { Button } from "@archesai/ui/components/shadcn/button";
+import { Button } from "@archesai/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { Link, rootRouteId, useMatch, useRouter } from "@tanstack/react-router";

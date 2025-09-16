@@ -59,7 +59,13 @@ const CardDescription = ({ children }: { children: React.ReactNode }) => {
 
 const CardHeader = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="h-50 relative flex w-full items-end border-b border-black bg-[url(/grid.svg)] bg-center bg-repeat p-8">
+    <div
+      className={cn(
+        "h-50 relative flex w-full items-end border-b border-black",
+        // "bg-[url(/grid.svg)]",
+        "bg-center bg-repeat p-8",
+      )}
+    >
       {children}
     </div>
   );

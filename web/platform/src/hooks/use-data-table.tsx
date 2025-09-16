@@ -1,5 +1,9 @@
-"use no memo";
-
+import { Checkbox, DataTableColumnHeader } from "@archesai/ui";
+// import { useDebouncedCallback } from '@archesai/ui/hooks/use-debounced-callback'
+import { toSentenceCase } from "@archesai/ui/lib/utils";
+import type {
+  BaseEntity, //FilterNode
+} from "@archesai/ui/types/entities";
 import type {
   AccessorKeyColumnDef,
   ColumnFiltersState,
@@ -14,14 +18,7 @@ import type {
 } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
-import { DataTableColumnHeader } from "#components/datatable/components/data-table-column-header";
-import { Checkbox } from "#components/shadcn/checkbox";
-// import { useDebouncedCallback } from '#hooks/use-debounced-callback'
 import { useFilterState } from "#hooks/use-filter-state";
-import { toSentenceCase } from "#lib/utils";
-import type {
-  BaseEntity, //FilterNode
-} from "#types/entities";
 
 const DEBOUNCE_MS = 300;
 const THROTTLE_MS = 50;

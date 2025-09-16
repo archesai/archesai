@@ -10,6 +10,6 @@ export const Route = createFileRoute("/_app/organization/")({
   component: OrganizationPage,
 });
 
-export default function OrganizationPage(): JSX.Element {
+function OrganizationPage(): JSX.Element {
   return <OrganizationForm />;
 }

@@ -1,9 +1,7 @@
 import type { CreateSessionBody } from "@archesai/client";
 import { useCreateSession } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-import { GenericForm } from "@archesai/ui/components/custom/generic-form";
-import { Button } from "@archesai/ui/components/shadcn/button";
-import { Input } from "@archesai/ui/components/shadcn/input";
+import type { FormFieldConfig } from "@archesai/ui";
+import { Button, GenericForm, Input } from "@archesai/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import type { JSX } from "react";
@@ -14,7 +12,7 @@ export const Route = createFileRoute("/auth/login/")({
   component: LoginPage,
 });
 
-export default function LoginPage(): JSX.Element {
+function LoginPage(): JSX.Element {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutateAsync: createSession } = useCreateSession();

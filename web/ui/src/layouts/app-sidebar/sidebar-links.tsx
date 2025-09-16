@@ -1,6 +1,6 @@
-import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import type { JSX } from "react";
 import { ChevronRightIcon } from "#components/custom/icons";
+import { Link } from "#components/primitives/link";
 import {
   Collapsible,
   CollapsibleContent,
@@ -17,11 +17,19 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "#components/shadcn/sidebar";
-import type { PageHeaderProps } from "#layouts/page-header/page-header";
+import type { SiteRoute } from "#lib/site-config.interface";
 
-export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
-  const router = useRouter();
-  const pathname = useLocation().pathname;
+export interface SidebarLinksProps {
+  siteRoutes: SiteRoute[];
+  currentPath?: string | undefined;
+  onNavigate?: ((href: string) => void) | undefined;
+}
+
+export function SidebarLinks({
+  siteRoutes,
+  currentPath = "",
+  onNavigate,
+}: SidebarLinksProps): JSX.Element {
   const sections = Array.from(
     new Set(siteRoutes.map((route) => route.section)),
   );
@@ -37,7 +45,7 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                   .filter((rootRoute) => rootRoute.section === section)
                   .map((rootRoute) => {
                     const isActive = rootRoute.children?.some((route) =>
-                      router.state.location.pathname.startsWith(route.href),
+                      currentPath.startsWith(route.href),
                     );
                     const children = rootRoute.children ?? [];
 
@@ -47,17 +55,21 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                           className="relative"
                           key={rootRoute.href}
                         >
-                          {rootRoute.href === pathname && (
+                          {rootRoute.href === currentPath && (
                             <div className="absolute left-0 top-0 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />
                           )}
                           <SidebarMenuButton
                             asChild
-                            isActive={rootRoute.href === pathname}
+                            isActive={rootRoute.href === currentPath}
                             tooltip={rootRoute.title}
                           >
                             <Link
                               className="text-muted-foreground flex items-center gap-2 group-data-[collapsible=icon]:gap-0"
-                              to={rootRoute.href}
+                              href={rootRoute.href}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                onNavigate?.(rootRoute.href);
+                              }}
                             >
                               <rootRoute.Icon className="group-data-[collapsible=icon]:mx-auto" />
                               <span className="group-data-[collapsible=icon]:hidden">
@@ -96,9 +108,15 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                                   <SidebarMenuSubButton
                                     asChild
                                     className="text-muted-foreground"
-                                    isActive={route.href === pathname}
+                                    isActive={route.href === currentPath}
                                   >
-                                    <Link to={route.href}>
+                                    <Link
+                                      href={route.href}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        onNavigate?.(route.href);
+                                      }}
+                                    >
                                       <span>{route.title}</span>
                                     </Link>
                                   </SidebarMenuSubButton>

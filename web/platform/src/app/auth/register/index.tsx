@@ -1,22 +1,21 @@
 import type { RegisterBody } from "@archesai/client";
 import { useRegister } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-import { GenericForm } from "@archesai/ui/components/custom/generic-form";
-import { Input } from "@archesai/ui/components/shadcn/input";
+import type { FormFieldConfig } from "@archesai/ui";
+import { GenericForm, Input } from "@archesai/ui";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import type { JSX } from "react";
 
 import { TermsIndicator } from "#components/terms-indicator";
 
-type RegisterFormData = RegisterBody & {
-  confirmPassword: string;
-};
-
 export const Route = createFileRoute("/auth/register/")({
   component: RegisterPage,
 });
 
-export default function RegisterPage(): JSX.Element {
+type RegisterFormData = RegisterBody & {
+  confirmPassword: string;
+};
+
+function RegisterPage(): JSX.Element {
   const router = useRouter();
   const { mutateAsync: register } = useRegister();
 

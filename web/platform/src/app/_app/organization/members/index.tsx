@@ -10,6 +10,6 @@ export const Route = createFileRoute("/_app/organization/members/")({
   component: MembersPage,
 });
 
-export default function MembersPage(): JSX.Element {
+function MembersPage(): JSX.Element {
   return <MemberDataTable />;
 }

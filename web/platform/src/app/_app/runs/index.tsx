@@ -10,6 +10,6 @@ export const Route = createFileRoute("/_app/runs/")({
   component: RunsPage,
 });
 
-export default function RunsPage(): JSX.Element {
+function RunsPage(): JSX.Element {
   return <RunDataTable />;
 }

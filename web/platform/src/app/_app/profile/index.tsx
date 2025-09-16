@@ -4,16 +4,16 @@ import {
   useGetUserSuspense,
   useRequestPasswordReset,
 } from "@archesai/client";
-import { Loader2Icon } from "@archesai/ui/components/custom/icons";
-import { Button } from "@archesai/ui/components/shadcn/button";
 import {
+  Button,
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@archesai/ui/components/shadcn/card";
-import { Separator } from "@archesai/ui/components/shadcn/separator";
+  Loader2Icon,
+  Separator,
+} from "@archesai/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import type { JSX } from "react";
 
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_app/profile/")({
   component: ProfileSecuritySettingsPage,
 });
 
-export default function ProfileSecuritySettingsPage(): JSX.Element {
+function ProfileSecuritySettingsPage(): JSX.Element {
   const { data: sessionData } = useGetSessionSuspense("current");
   const { data: userData } = useGetUserSuspense(sessionData.data.userID);
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =

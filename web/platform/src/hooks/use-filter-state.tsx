@@ -1,6 +1,3 @@
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import type { SortingState } from "@tanstack/react-table";
-
 import type {
   BaseEntity,
   FilterCondition,
@@ -8,8 +5,10 @@ import type {
   FilterNode,
   FilterValue,
   SearchQuery,
-} from "#types/entities";
-import type { FilterOperator } from "#types/simple-data-table";
+} from "@archesai/ui/types/entities";
+import type { FilterOperator } from "@archesai/ui/types/simple-data-table";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import type { SortingState } from "@tanstack/react-table";
 
 /**
  * Simplified filter state management that supports your complex nested filters

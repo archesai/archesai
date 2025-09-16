@@ -102,6 +102,9 @@ run-tui: build ## Launch the TUI interface
 
 .PHONY: generate
 generate: generate-sqlc generate-oapi generate-codegen generate-mocks generate-js-client ## Generate all code
+	@echo -e "$(YELLOW)▶ Adding mapstructure tags to config...$(NC)"
+	@chmod +x scripts/add-mapstructure-tags.sh 2>/dev/null || true
+	@./scripts/add-mapstructure-tags.sh
 	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
 .PHONY: generate-sqlc
@@ -261,7 +264,7 @@ format-prettier: ## Format code with Prettier
 .PHONY: format-ts
 format-ts: ## Format Node.js/TypeScript code
 	@echo -e "$(YELLOW)▶ Formatting Node.js code...$(NC)"
-	@pnpm biome check --fix
+	@pnpm biome format --fix
 	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------

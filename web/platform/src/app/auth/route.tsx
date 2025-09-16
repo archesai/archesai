@@ -1,4 +1,4 @@
-import { ArchesLogo } from "@archesai/ui/components/custom/arches-logo";
+import { ArchesLogo } from "@archesai/ui";
 
 import {
   createFileRoute,
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/auth")({
   component: AuthenticationLayout,
 });
 
-export default function AuthenticationLayout(): JSX.Element {
+function AuthenticationLayout(): JSX.Element {
   return (
     <div className="flex h-svh flex-col items-center justify-center gap-4">
       <Link to="/">

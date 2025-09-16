@@ -10,6 +10,6 @@ export const Route = createFileRoute("/_app/pipelines/")({
   component: PipelinesPage,
 });
 
-export default function PipelinesPage(): JSX.Element {
+function PipelinesPage(): JSX.Element {
   return <PipelineDataTable />;
 }

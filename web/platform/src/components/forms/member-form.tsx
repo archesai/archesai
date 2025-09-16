@@ -5,17 +5,17 @@ import {
   useGetMemberSuspense,
   useGetSessionSuspense,
 } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-import { GenericForm } from "@archesai/ui/components/custom/generic-form";
-import { FormControl } from "@archesai/ui/components/shadcn/form";
-import { Input } from "@archesai/ui/components/shadcn/input";
+import type { FormFieldConfig } from "@archesai/ui";
 import {
+  FormControl,
+  GenericForm,
+  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@archesai/ui/components/shadcn/select";
+} from "@archesai/ui";
 import { MEMBER_ENTITY_KEY } from "@archesai/ui/lib/constants";
 import type { JSX } from "react";
 

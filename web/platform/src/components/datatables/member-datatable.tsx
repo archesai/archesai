@@ -9,13 +9,11 @@ import {
   getListMembersSuspenseQueryOptions,
   useGetSessionSuspense,
 } from "@archesai/client";
-import { UserIcon } from "@archesai/ui/components/custom/icons";
-import { Timestamp } from "@archesai/ui/components/custom/timestamp";
-import { DataTable } from "@archesai/ui/components/datatable/data-table";
-import { Badge } from "@archesai/ui/components/shadcn/badge";
+import { Badge, Timestamp, UserIcon } from "@archesai/ui";
 import { MEMBER_ENTITY_KEY } from "@archesai/ui/lib/constants";
 import type { SearchQuery } from "@archesai/ui/types/entities";
 import type { JSX } from "react";
+import { DataTableContainer } from "#components/datatables/data-table-container";
 
 import MemberForm from "#components/forms/member-form";
 
@@ -32,7 +30,7 @@ export default function MemberDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<Member>
+    <DataTableContainer<Member>
       columns={[
         {
           accessorKey: "role",

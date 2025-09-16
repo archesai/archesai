@@ -8,9 +8,8 @@ import {
   useGetSessionSuspense,
   useUpdateOrganization,
 } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-import { GenericForm } from "@archesai/ui/components/custom/generic-form";
-import { Input } from "@archesai/ui/components/shadcn/input";
+import type { FormFieldConfig } from "@archesai/ui";
+import { GenericForm, Input } from "@archesai/ui";
 import { ORGANIZATION_ENTITY_KEY } from "@archesai/ui/lib/constants";
 import type { JSX } from "react";
 

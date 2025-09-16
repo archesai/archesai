@@ -36,7 +36,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#components/shadcn/select";
-import { useFilterState } from "#hooks/use-filter-state";
+// TODO: Make this component receive filter state as props
+// import { useFilterState } from "#hooks/use-filter-state";
 import { formatDate } from "#lib/format";
 import { cn } from "#lib/utils";
 import type {
@@ -71,6 +72,15 @@ interface DataTableFilterMenuProps<TData>
   shallow?: boolean;
   table: Table<TData>;
   throttleMs?: number;
+  filter?: FilterNode;
+  addCondition?: (condition: FilterCondition) => void;
+  removeCondition?: (field: keyof TData) => void;
+  resetFilters?: () => void;
+  setCondition?: (
+    field: keyof TData,
+    operator: FilterOperator,
+    value: FilterValue,
+  ) => void;
 }
 
 interface FilterValueSelectorProps<TData> {
@@ -82,6 +92,11 @@ interface FilterValueSelectorProps<TData> {
 export function DataTableFilterMenu<TData extends BaseEntity>({
   align = "start",
   table,
+  filter,
+  addCondition,
+  removeCondition,
+  resetFilters,
+  setCondition,
   ...props
 }: DataTableFilterMenuProps<TData>): JSX.Element {
   const id = React.useId();
@@ -124,9 +139,6 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
     [inputValue, selectedColumn],
   );
 
-  const { addCondition, filter, removeCondition, resetFilters, setCondition } =
-    useFilterState<TData>();
-
   // Convert FilterNode to flat array for display
   const filters = React.useMemo(() => {
     const extractConditions = (
@@ -162,15 +174,17 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
           ? [value]
           : value;
 
-      // Add condition directly
-      addCondition({
-        field: column.id,
-        operator: getDefaultFilterOperator(
-          column.columnDef.meta?.filterVariant ?? "text",
-        ),
-        type: "condition",
-        value: filterValue as FilterValue,
-      });
+      // Add condition directly if handler is provided
+      if (addCondition) {
+        addCondition({
+          field: column.id,
+          operator: getDefaultFilterOperator(
+            column.columnDef.meta?.filterVariant ?? "text",
+          ),
+          type: "condition",
+          value: filterValue as FilterValue,
+        });
+      }
 
       setOpen(false);
 
@@ -186,7 +200,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
   const onFilterRemove = React.useCallback(
     (filterID: string) => {
       const filterToRemove = filters.find((f) => f.id === filterID);
-      if (filterToRemove) {
+      if (filterToRemove && removeCondition) {
         removeCondition(filterToRemove.field as keyof TData);
       }
       requestAnimationFrame(() => {
@@ -206,7 +220,8 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
       filterToUpdate &&
       updates.field &&
       updates.operator &&
-      updates.value !== undefined
+      updates.value !== undefined &&
+      setCondition
     ) {
       setCondition(
         updates.field as keyof TData,
@@ -277,7 +292,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
           onFilterUpdate={onFilterUpdate}
         />
       ))}
-      {filters.length > 0 && (
+      {filters.length > 0 && resetFilters && (
         <Button
           aria-label="Reset all filters"
           className="size-8"

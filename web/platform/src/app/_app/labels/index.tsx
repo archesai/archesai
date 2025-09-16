@@ -10,6 +10,6 @@ export const Route = createFileRoute("/_app/labels/")({
   component: LabelsPage,
 });
 
-export default function LabelsPage(): JSX.Element {
+function LabelsPage(): JSX.Element {
   return <LabelDataTable />;
 }

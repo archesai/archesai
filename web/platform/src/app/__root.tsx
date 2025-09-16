@@ -2,24 +2,18 @@
 
 import type { GetSession200 } from "@archesai/client";
 import { getGetSessionQueryKey } from "@archesai/client";
-import { Toaster } from "@archesai/ui/components/shadcn/sonner";
-import { LinkProvider } from "@archesai/ui/hooks/use-link";
+import { ThemeProvider, Toaster } from "@archesai/ui";
 import { seo } from "@archesai/ui/lib/seo";
-import { ThemeProvider } from "@archesai/ui/providers/theme-provider";
 import type { QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import type { JSX } from "react";
-
 import { DefaultCatchBoundary } from "#components/default-catch-boundary";
 import NotFound from "#components/not-found";
-import { SmartLink } from "#components/smart-links";
 import getServerSession from "#lib/get-headers";
 import globalsCss from "../styles/globals.css?url";
 
@@ -84,7 +78,7 @@ export const Route = createRootRouteWithContext<{
   notFoundComponent: () => <NotFound />,
 });
 
-export default function RootDocument({
+function RootDocument({
   children,
 }: {
   children: React.ReactNode;
@@ -97,7 +91,7 @@ export default function RootDocument({
       <head>
         <HeadContent />
       </head>
-      <body className={`font-sans antialiased`}>
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -105,15 +99,13 @@ export default function RootDocument({
           enableColorScheme
           enableSystem
         >
-          <LinkProvider Link={SmartLink}>
-            {children}
-            <Toaster />
-          </LinkProvider>
+          {children}
+          <Toaster />
         </ThemeProvider>
         {process.env.NODE_ENV === "prod" && (
           <>
-            <TanStackRouterDevtools position="bottom-right" />
-            <ReactQueryDevtools buttonPosition="bottom-left" />
+            {/* <TanStackRouterDevtools position="bottom-right" />
+            <ReactQueryDevtools buttonPosition="bottom-left" /> */}
           </>
         )}
         <Scripts />

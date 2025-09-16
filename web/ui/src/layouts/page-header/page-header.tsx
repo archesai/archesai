@@ -1,31 +1,42 @@
-import type { JSX } from "react";
-import { UserButton } from "#components/custom/user-button";
+import type { JSX, ReactNode } from "react";
 import { Separator } from "#components/shadcn/separator";
 import { SidebarTrigger } from "#components/shadcn/sidebar";
-import { BreadCrumbs } from "#layouts/page-header/components/breadcrumbs";
-import { CommandMenu } from "#layouts/page-header/components/command-menu";
-import { ThemeToggle } from "#layouts/page-header/components/theme-toggle";
-import type { SiteRoute } from "#lib/site-config.interface";
 
 export interface PageHeaderProps {
-  siteRoutes: SiteRoute[];
+  breadcrumbs?: ReactNode;
+  commandMenu?: ReactNode;
+  themeToggle?: ReactNode;
+  userMenu?: ReactNode;
+  showSidebarTrigger?: boolean;
+  className?: string;
 }
 
-export const PageHeader = ({ siteRoutes }: PageHeaderProps): JSX.Element => {
+export const PageHeader = ({
+  breadcrumbs,
+  commandMenu,
+  themeToggle,
+  userMenu,
+  showSidebarTrigger = true,
+  className = "flex h-16 shrink-0 justify-between px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12",
+}: PageHeaderProps): JSX.Element => {
   return (
-    <header className="flex h-16 shrink-0 justify-between px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+    <header className={className}>
       <div className="flex items-center justify-start gap-2">
-        <SidebarTrigger />
-        <Separator
-          className="data-[orientation=vertical]:h-4"
-          orientation="vertical"
-        />
-        <BreadCrumbs />
+        {showSidebarTrigger && (
+          <>
+            <SidebarTrigger />
+            <Separator
+              className="data-[orientation=vertical]:h-4"
+              orientation="vertical"
+            />
+          </>
+        )}
+        {breadcrumbs}
       </div>
       <div className="flex items-center justify-end gap-2">
-        <CommandMenu siteRoutes={siteRoutes} />
-        <ThemeToggle />
-        <UserButton size={"sm"} />
+        {commandMenu}
+        {themeToggle}
+        {userMenu}
       </div>
     </header>
   );

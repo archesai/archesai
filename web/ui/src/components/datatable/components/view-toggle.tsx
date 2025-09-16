@@ -2,11 +2,14 @@ import type { JSX } from "react";
 
 import { GridIcon, ListIcon } from "#components/custom/icons";
 import { Button } from "#components/shadcn/button";
-import { useToggleView } from "#hooks/use-toggle-view";
 import { cn } from "#lib/utils";
 
-export function ViewToggle(): JSX.Element {
-  const { setView, view } = useToggleView();
+interface ViewToggleProps {
+  view: "table" | "grid";
+  onToggle: () => void;
+}
+
+export function ViewToggle({ view, onToggle }: ViewToggleProps): JSX.Element {
   return (
     <div className="flex gap-2">
       <Button
@@ -14,7 +17,7 @@ export function ViewToggle(): JSX.Element {
           view === "table" ? "text-primary hover:text-primary" : "",
         )}
         onClick={() => {
-          setView("table");
+          if (view !== "table") onToggle();
         }}
         size={"sm"}
         variant={"ghost"}
@@ -24,7 +27,7 @@ export function ViewToggle(): JSX.Element {
       <Button
         className={cn(view === "grid" ? "text-primary hover:text-primary" : "")}
         onClick={() => {
-          setView("grid");
+          if (view !== "grid") onToggle();
         }}
         size={"sm"}
         variant={"ghost"}

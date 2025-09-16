@@ -8,13 +8,13 @@ import {
   deletePipeline,
   getListPipelinesSuspenseQueryOptions,
 } from "@archesai/client";
-import { WorkflowIcon } from "@archesai/ui/components/custom/icons";
-import { Timestamp } from "@archesai/ui/components/custom/timestamp";
-import { DataTable } from "@archesai/ui/components/datatable/data-table";
+import { Timestamp, WorkflowIcon } from "@archesai/ui";
 import { PIPELINE_ENTITY_KEY } from "@archesai/ui/lib/constants";
 import type { SearchQuery } from "@archesai/ui/types/entities";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import type { JSX } from "react";
+import { DataTableContainer } from "#components/datatables/data-table-container";
+import { Link } from "#components/navigation/link";
 
 export default function PipelineDataTable(): JSX.Element {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function PipelineDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<Pipeline>
+    <DataTableContainer<Pipeline>
       columns={[
         {
           accessorKey: "name",

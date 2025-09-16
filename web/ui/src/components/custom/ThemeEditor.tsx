@@ -1,5 +1,3 @@
-import { ClientOnly } from "@tanstack/react-router";
-import { Link } from "lucide-react";
 import { useTheme } from "next-themes";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
@@ -12,6 +10,7 @@ import {
   RotateCcwIcon,
   SunIcon,
 } from "#components/custom/icons";
+import { Link } from "#components/primitives/link";
 import { Alert, AlertDescription, AlertTitle } from "#components/shadcn/alert";
 import { Button } from "#components/shadcn/button";
 import {
@@ -219,7 +218,7 @@ export const ThemeEditor = (): React.ReactElement => {
           size="sm"
           variant="link"
         >
-          <Link to="/docs/customization/colors-theme">Documentation</Link>
+          <Link href="/docs/customization/colors-theme">Documentation</Link>
         </Button>
       </div>
       <div className="border-px border-border my-2 border-b border-dashed" />
@@ -437,9 +436,7 @@ export const ThemeEditorPage = (): React.ReactElement => {
       <div className="text-4xl font-extrabold">Color in Your App.</div>
       <div>Hand-picked themes that you can copy and paste into your apps.</div>
 
-      <ClientOnly>
-        <ThemeEditor />
-      </ClientOnly>
+      <ThemeEditor />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { toast } from "@archesai/ui/components/shadcn/sonner";
+import { toast } from "@archesai/ui";
 import {
   keepPreviousData,
   MutationCache,

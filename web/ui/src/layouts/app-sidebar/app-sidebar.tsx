@@ -1,6 +1,5 @@
-import type { JSX } from "react";
+import type { JSX, ReactNode } from "react";
 import { SearchIcon } from "#components/custom/icons";
-import { UserButton } from "#components/custom/user-button";
 import { Label } from "#components/shadcn/label";
 import {
   Sidebar,
@@ -11,14 +10,27 @@ import {
   SidebarHeader,
   SidebarInput,
 } from "#components/shadcn/sidebar";
-import { OrganizationButton } from "#layouts/app-sidebar/organization-button";
 import { SidebarLinks } from "#layouts/app-sidebar/sidebar-links";
-import type { PageHeaderProps } from "#layouts/page-header/page-header";
+import type { SiteRoute } from "#lib/site-config.interface";
+
+export interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  siteRoutes: SiteRoute[];
+  currentPath?: string;
+  onNavigate?: (href: string) => void;
+  organizationSlot?: ReactNode;
+  userMenuSlot?: ReactNode;
+  onSearch?: (query: string) => void;
+}
 
 export function AppSidebar({
   siteRoutes,
+  currentPath,
+  onNavigate,
+  organizationSlot,
+  userMenuSlot,
+  onSearch,
   ...props
-}: PageHeaderProps & React.ComponentProps<typeof Sidebar>): JSX.Element {
+}: AppSidebarProps): JSX.Element {
   return (
     <Sidebar
       {...props}
@@ -26,24 +38,42 @@ export function AppSidebar({
       variant="inset"
     >
       <SidebarHeader>
-        <OrganizationButton />
-        {/* <SearchForm /> */}
+        {organizationSlot}
+        {onSearch && <SearchForm onSubmit={onSearch} />}
       </SidebarHeader>
       <SidebarContent>
-        <SidebarLinks siteRoutes={siteRoutes} />
+        <SidebarLinks
+          currentPath={currentPath}
+          onNavigate={onNavigate}
+          siteRoutes={siteRoutes}
+        />
       </SidebarContent>
-      <SidebarFooter>
-        <UserButton />
-      </SidebarFooter>
+      {userMenuSlot && <SidebarFooter>{userMenuSlot}</SidebarFooter>}
     </Sidebar>
   );
 }
 
+interface SearchFormProps
+  extends Omit<React.ComponentProps<"form">, "onSubmit"> {
+  onSubmit?: (query: string) => void;
+}
+
 export function SearchForm({
+  onSubmit,
   ...props
-}: React.ComponentProps<"form">): JSX.Element {
+}: SearchFormProps): JSX.Element {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const query = formData.get("search") as string;
+    onSubmit?.(query);
+  };
+
   return (
-    <form {...props}>
+    <form
+      {...props}
+      onSubmit={handleSubmit}
+    >
       <SidebarGroup>
         <SidebarGroupContent className="relative">
           <Label
@@ -55,6 +85,7 @@ export function SearchForm({
           <SidebarInput
             className="pl-8"
             id="search"
+            name="search"
             placeholder="Search the docs..."
           />
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />

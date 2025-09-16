@@ -3,8 +3,7 @@ import type { JSX } from "react";
 
 // import '@xyflow/react/dist/style.css'
 
-import { Button } from "@archesai/ui/components/shadcn/button";
-import { Card } from "@archesai/ui/components/shadcn/card";
+import { Button, Card } from "@archesai/ui";
 import {
   addEdge,
   Background,

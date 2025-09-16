@@ -1,13 +1,13 @@
 import { useGetArtifactSuspense } from "@archesai/client";
-import { Timestamp } from "@archesai/ui/components/custom/timestamp";
-import { Badge } from "@archesai/ui/components/shadcn/badge";
-import { Button } from "@archesai/ui/components/shadcn/button";
 import {
+  Badge,
+  Button,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@archesai/ui/components/shadcn/card";
+  Timestamp,
+} from "@archesai/ui";
 import type { JSX } from "react";
 
 export const ArtifactDetailsHeader = ({

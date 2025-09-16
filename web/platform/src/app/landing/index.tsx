@@ -1,38 +1,35 @@
-import { ArchesLogo } from "@archesai/ui/components/custom/arches-logo";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  ArchesLogo,
   ArrowRightIcon,
+  Badge,
   BarChartIcon,
+  Button,
+  Card,
+  CardContent,
   CheckCircle2Icon,
   ChevronRightIcon,
   LayersIcon,
   MenuIcon,
   ShieldIcon,
   StarIcon,
-  UsersIcon,
-  XCircleIcon,
-  ZapIcon,
-} from "@archesai/ui/components/custom/icons";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@archesai/ui/components/shadcn/accordion";
-import { Badge } from "@archesai/ui/components/shadcn/badge";
-import { Button } from "@archesai/ui/components/shadcn/button";
-import { Card, CardContent } from "@archesai/ui/components/shadcn/card";
-import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@archesai/ui/components/shadcn/tabs";
+  UsersIcon,
+  XCircleIcon,
+  ZapIcon,
+} from "@archesai/ui";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import type { JSX } from "react";
 import { useEffect, useState } from "react";
-import type { LandingContent } from "./content";
-import { defaultContent } from "./content";
+import type { LandingContent } from "./-content";
+import { defaultContent } from "./-content";
 
 export const Route = createFileRoute("/landing/")({
   component: RouteComponent,
@@ -55,7 +52,7 @@ interface LandingPageProps {
   content?: LandingContent;
 }
 
-export default function LandingPage({
+function LandingPage({
   content = defaultContent,
 }: LandingPageProps): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);

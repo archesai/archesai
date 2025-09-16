@@ -8,14 +8,12 @@ import {
   deleteLabel,
   getListLabelsSuspenseQueryOptions,
 } from "@archesai/client";
-import { ListIcon } from "@archesai/ui/components/custom/icons";
-import { Timestamp } from "@archesai/ui/components/custom/timestamp";
-import { DataTable } from "@archesai/ui/components/datatable/data-table";
-import { Badge } from "@archesai/ui/components/shadcn/badge";
+import { Badge, ListIcon, Timestamp } from "@archesai/ui";
 import { LABEL_ENTITY_KEY } from "@archesai/ui/lib/constants";
 import type { SearchQuery } from "@archesai/ui/types/entities";
 import { useNavigate } from "@tanstack/react-router";
 import type { JSX } from "react";
+import { DataTableContainer } from "#components/datatables/data-table-container";
 
 import LabelForm from "#components/forms/label-form";
 
@@ -31,7 +29,7 @@ export default function LabelDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<Label>
+    <DataTableContainer<Label>
       columns={[
         {
           accessorKey: "name",

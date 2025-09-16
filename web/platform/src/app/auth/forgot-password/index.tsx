@@ -1,8 +1,7 @@
 import type { RequestPasswordResetBody } from "@archesai/client";
 import { useRequestPasswordReset } from "@archesai/client";
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
-import { GenericForm } from "@archesai/ui/components/custom/generic-form";
-import { Input } from "@archesai/ui/components/shadcn/input";
+import type { FormFieldConfig } from "@archesai/ui";
+import { GenericForm, Input } from "@archesai/ui";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { JSX } from "react";
 
@@ -10,7 +9,7 @@ export const Route = createFileRoute("/auth/forgot-password/")({
   component: ForgotPasswordPage,
 });
 
-export default function ForgotPasswordPage(): JSX.Element {
+function ForgotPasswordPage(): JSX.Element {
   const { mutateAsync: requestPasswordReset } = useRequestPasswordReset();
 
   const formFields: FormFieldConfig<RequestPasswordResetBody>[] = [

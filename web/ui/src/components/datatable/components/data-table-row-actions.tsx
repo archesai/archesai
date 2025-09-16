@@ -1,4 +1,5 @@
-import type { Table } from "@tanstack/table-core";
+/// <reference path="../../../types/table-meta.d.ts" />
+import type { Table } from "@tanstack/react-table";
 import type { JSX } from "react";
 import { DeleteItems } from "#components/custom/delete-items";
 import { MoreHorizontalIcon } from "#components/custom/icons";

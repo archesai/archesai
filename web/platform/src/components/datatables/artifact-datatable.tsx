@@ -6,19 +6,19 @@ import type {
 } from "@archesai/client";
 import { getListArtifactsSuspenseQueryOptions } from "@archesai/client";
 import {
+  Badge,
   CalendarIcon,
   FileIcon,
   TextIcon,
-} from "@archesai/ui/components/custom/icons";
-import { Timestamp } from "@archesai/ui/components/custom/timestamp";
-import { DataTable } from "@archesai/ui/components/datatable/data-table";
-import { Badge } from "@archesai/ui/components/shadcn/badge";
+  Timestamp,
+} from "@archesai/ui";
 import { ARTIFACT_ENTITY_KEY } from "@archesai/ui/lib/constants";
 import type { SearchQuery } from "@archesai/ui/types/entities";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import type { JSX } from "react";
-
+import { DataTableContainer } from "#components/datatables/data-table-container";
 import ArtifactForm from "#components/forms/artifact-form";
+import { Link } from "#components/navigation/link";
 
 export default function ArtifactDataTable(): JSX.Element {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function ArtifactDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<Artifact>
+    <DataTableContainer<Artifact>
       columns={[
         {
           accessorKey: "name",

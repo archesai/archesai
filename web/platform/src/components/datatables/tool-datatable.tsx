@@ -6,17 +6,18 @@ import type {
 } from "@archesai/client";
 import { deleteTool, getListToolsSuspenseQueryOptions } from "@archesai/client";
 import {
+  Badge,
   CalendarIcon,
   PackageCheckIcon,
   TextIcon,
-} from "@archesai/ui/components/custom/icons";
-import { Timestamp } from "@archesai/ui/components/custom/timestamp";
-import { DataTable } from "@archesai/ui/components/datatable/data-table";
-import { Badge } from "@archesai/ui/components/shadcn/badge";
+  Timestamp,
+} from "@archesai/ui";
 import { TOOL_ENTITY_KEY } from "@archesai/ui/lib/constants";
 import type { SearchQuery } from "@archesai/ui/types/entities";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import type { JSX } from "react";
+import { DataTableContainer } from "#components/datatables/data-table-container";
+import { Link } from "#components/navigation/link";
 
 export default function ToolDataTable(): JSX.Element {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export default function ToolDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<Tool>
+    <DataTableContainer<Tool>
       columns={[
         {
           accessorKey: "name",

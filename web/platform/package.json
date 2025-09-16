@@ -3,15 +3,15 @@
     "@archesai/client": "workspace:*",
     "@archesai/ui": "workspace:*",
     "@tanstack/react-query": "catalog:tanstack",
-    "@tanstack/react-query-devtools": "catalog:tanstack",
     "@tanstack/react-router": "catalog:tanstack",
-    "@tanstack/react-router-devtools": "catalog:tanstack",
     "@tanstack/react-router-ssr-query": "catalog:tanstack",
     "@tanstack/react-start": "catalog:tanstack",
+    "@tanstack/react-table": "catalog:tanstack",
     "@xyflow/react": "catalog:",
     "motion": "catalog:ui",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19"
+    "react-dom": "catalog:react19",
+    "socket.io-client": "catalog:"
   },
   "devDependencies": {
     "@archesai/eslint": "workspace:*",

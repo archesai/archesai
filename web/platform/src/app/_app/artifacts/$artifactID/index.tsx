@@ -1,6 +1,5 @@
 import { useGetArtifactSuspense } from "@archesai/client";
-import { ArtifactViewer } from "@archesai/ui/components/custom/artifact-viewer";
-import { Card } from "@archesai/ui/components/shadcn/card";
+import { ArtifactViewer, Card } from "@archesai/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import type { JSX } from "react";
 import { Suspense } from "react";
@@ -14,7 +13,7 @@ export const Route = createFileRoute("/_app/artifacts/$artifactID/")({
   component: ArtifactDetailsPage,
 });
 
-export default function ArtifactDetailsPage(): JSX.Element {
+function ArtifactDetailsPage(): JSX.Element {
   const params = Route.useParams();
   const artifactID = params.artifactID;
 

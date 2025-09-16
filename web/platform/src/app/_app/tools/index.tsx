@@ -10,6 +10,6 @@ export const Route = createFileRoute("/_app/tools/")({
   component: ToolsPage,
 });
 
-export default function ToolsPage(): JSX.Element {
+function ToolsPage(): JSX.Element {
   return <ToolDataTable />;
 }

@@ -5,12 +5,7 @@
     "@dnd-kit/sortable": "catalog:ui",
     "@dnd-kit/utilities": "catalog:ui",
     "@radix-ui/react-slot": "catalog:ui",
-    "@tanstack/react-devtools": "0.6.7",
-    "@tanstack/react-query": "catalog:tanstack",
-    "@tanstack/react-router": "catalog:tanstack",
-    "@tanstack/react-router-devtools": "1.131.44",
     "@tanstack/react-table": "catalog:tanstack",
-    "@tanstack/router-plugin": "1.131.44",
     "class-variance-authority": "catalog:ui",
     "clsx": "catalog:ui",
     "cmdk": "catalog:ui",
@@ -26,7 +21,6 @@
     "react-dom": "catalog:react19",
     "react-hook-form": "catalog:ui",
     "react-resizable-panels": "catalog:ui",
-    "socket.io-client": "catalog:",
     "sonner": "catalog:ui",
     "tailwind-merge": "catalog:ui",
     "vaul": "catalog:ui"
@@ -54,14 +48,10 @@
     "web-vitals": "catalog:test"
   },
   "exports": {
-    "./atoms/*": "./src/atoms/*.ts",
-    "./components/*": "./src/components/*.tsx",
+    ".": "./src/index.ts",
     "./globals.css": "./src/styles/globals.css",
-    "./hooks/*": "./src/hooks/*.tsx",
-    "./layouts/*": "./src/layouts/*.tsx",
     "./lib/*": "./src/lib/*.ts",
     "./package.json": "./package.json",
-    "./providers/*": "./src/providers/*.tsx",
     "./types/*": "./src/types/*.ts"
   },
   "imports": {

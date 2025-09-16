@@ -1,31 +1,17 @@
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-// import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from "vite";
-
-// const clientViz = visualizer({
-//   brotliSize: true,
-//   emitFile: true,
-//   filename: 'stats-client.html',
-//   template: 'treemap'
-// })
-
-// const ssrViz = visualizer({
-//   brotliSize: true,
-//   emitFile: true,
-//   filename: 'stats-ssr.html',
-//   template: 'treemap'
-// })
 
 export default defineConfig({
   plugins: [
-    tailwindcss(),
     tanstackStart({
       customViteReactPlugin: true,
       tsr: {
+        autoCodeSplitting: true,
         enableRouteTreeFormatting: true,
         routesDirectory: "src/app",
+        target: "react",
       },
     }),
     viteReact({
@@ -40,16 +26,7 @@ export default defineConfig({
         ],
       },
     }),
-    // client-only visualizer
-    // {
-    //   ...clientViz,
-    //   apply: (_c, env) => env.command === 'build' && !env.isSsrBuild
-    // },
-    // ssr-only visualizer
-    // {
-    //   ...ssrViz,
-    //   apply: (_c, env) => env.command === 'build' && env.isSsrBuild === true
-    // }
+    tailwindcss(),
   ],
   server: {
     allowedHosts: ["platform.archesai.dev", "moose"],
@@ -68,3 +45,30 @@ export default defineConfig({
     watch: false,
   },
 });
+
+// const clientViz = visualizer({
+//   brotliSize: true,
+//   emitFile: true,
+//   filename: 'stats-client.html',
+//   template: 'treemap'
+// })
+
+// const ssrViz = visualizer({
+//   brotliSize: true,
+//   emitFile: true,
+//   filename: 'stats-ssr.html',
+//   template: 'treemap'
+// })
+
+// import { visualizer } from 'rollup-plugin-visualizer'
+
+// client-only visualizer
+// {
+//   ...clientViz,
+//   apply: (_c, env) => env.command === 'build' && !env.isSsrBuild
+// },
+// ssr-only visualizer
+// {
+//   ...ssrViz,
+//   apply: (_c, env) => env.command === 'build' && env.isSsrBuild === true
+// }

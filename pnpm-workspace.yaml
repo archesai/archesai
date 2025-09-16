@@ -82,7 +82,7 @@ catalogs:
     rollup-plugin-visualizer: 6.0.3
     vite: 7.1.5
 
-cleanupUnusedCatalogs: true
+# cleanupUnusedCatalogs: true
 
 disallowWorkspaceCycles: true
 

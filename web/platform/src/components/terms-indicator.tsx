@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "#components/navigation/link";
 
 export const TermsIndicator: React.FC = () => {
   return (

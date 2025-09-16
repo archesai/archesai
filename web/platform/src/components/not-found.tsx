@@ -1,13 +1,13 @@
-import { Button } from "@archesai/ui/components/shadcn/button";
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@archesai/ui/components/shadcn/card";
-import { Link } from "@tanstack/react-router";
+} from "@archesai/ui";
 import type { JSX } from "react";
+import { Link } from "#components/navigation/link";
 
 export default function NotFound({
   children,

@@ -13,7 +13,7 @@ import {
   UsersIcon,
   Volume2Icon,
   WorkflowIcon,
-} from "@archesai/ui/components/custom/icons";
+} from "@archesai/ui";
 import type { SiteRoute } from "@archesai/ui/lib/site-config.interface";
 
 export const siteRoutes: SiteRoute[] = [

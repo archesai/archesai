@@ -1,4 +1,4 @@
-import { UploadCloudIcon } from "@archesai/ui/components/custom/icons";
+import { UploadCloudIcon } from "@archesai/ui";
 import { cn } from "@archesai/ui/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 import type { DragEvent, JSX } from "react";

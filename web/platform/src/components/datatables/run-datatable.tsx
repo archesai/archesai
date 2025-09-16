@@ -5,14 +5,17 @@ import type {
   RunsSortParameter,
 } from "@archesai/client";
 import { deleteRun, getListRunsSuspenseQueryOptions } from "@archesai/client";
-import { PackageCheckIcon } from "@archesai/ui/components/custom/icons";
-import { StatusTypeEnumButton } from "@archesai/ui/components/custom/run-status-button";
-import { Timestamp } from "@archesai/ui/components/custom/timestamp";
-import { DataTable } from "@archesai/ui/components/datatable/data-table";
+import {
+  PackageCheckIcon,
+  StatusTypeEnumButton,
+  Timestamp,
+} from "@archesai/ui";
 import { RUN_ENTITY_KEY } from "@archesai/ui/lib/constants";
 import type { SearchQuery } from "@archesai/ui/types/entities";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import type { JSX } from "react";
+import { DataTableContainer } from "#components/datatables/data-table-container";
+import { Link } from "#components/navigation/link";
 
 export default function RunDataTable(): JSX.Element {
   const navigate = useNavigate();
@@ -26,7 +29,7 @@ export default function RunDataTable(): JSX.Element {
   };
 
   return (
-    <DataTable<Run>
+    <DataTableContainer<Run>
       columns={[
         {
           accessorKey: "id",

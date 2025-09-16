@@ -1,5 +1,3 @@
-import type { UseSuspenseQueryOptions } from "@tanstack/react-query";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import type { JSX } from "react";
 import { useState } from "react";
 
@@ -26,36 +24,48 @@ import {
 import { cn } from "#lib/utils";
 import type { BaseEntity } from "#types/entities";
 
-interface DataSelectorProps<TItem extends BaseEntity> {
-  getItemDetails?: (item: TItem) => React.ReactNode;
-  icons?: { color: string; Icon: LucideIcon; name: string }[];
-  isMultiSelect?: boolean;
-  itemType: string;
-  organizationID?: string;
+export interface PureDataSelectorProps<TItem extends BaseEntity> {
+  // Data
+  items: TItem[];
   selectedData: TItem | TItem[] | undefined;
-  setSelectedData: (data: TItem | TItem[] | undefined) => void;
-  useFindMany: UseSuspenseQueryOptions<{
-    data: TItem[];
-  }>;
+
+  // Config
+  itemType: string;
+  isMultiSelect?: boolean;
+  icons?: { color: string; Icon: LucideIcon; name: string }[];
+
+  // Callbacks
+  onSelect: (data: TItem | TItem[] | undefined) => void;
+  getItemDetails?: (item: TItem) => React.ReactNode;
+
+  // Optional
+  placeholder?: string;
+  className?: string;
 }
 
-export function DataSelector<TItem extends BaseEntity>({
-  getItemDetails,
-  icons,
-  isMultiSelect = false,
-  itemType,
+/**
+ * Pure presentational DataSelector component.
+ * All data fetching is handled by the container.
+ */
+export function PureDataSelector<TItem extends BaseEntity>({
+  items,
   selectedData,
-  setSelectedData,
-  useFindMany,
-}: DataSelectorProps<TItem>): JSX.Element {
-  const {
-    data: { data },
-  } = useSuspenseQuery(useFindMany);
+  itemType,
+  isMultiSelect = false,
+  icons,
+  onSelect,
+  getItemDetails,
+  placeholder,
+  className,
+}: PureDataSelectorProps<TItem>): JSX.Element {
   const [open, setOpen] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<TItem | undefined>();
   const [searchTerm, setSearchTerm] = useState("");
 
-  // item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter items based on search
+  const filteredItems = items.filter((item) =>
+    item.id.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   // Handler for selecting/deselecting items
   const handleSelect = (item: TItem) => {
@@ -67,12 +77,12 @@ export function DataSelector<TItem extends BaseEntity>({
           : [];
       const isSelected = selectedArray.some((i) => i.id === item.id);
       if (isSelected) {
-        setSelectedData(selectedArray.filter((i) => i.id !== item.id));
+        onSelect(selectedArray.filter((i) => i.id !== item.id));
       } else {
-        setSelectedData([...selectedArray, item]);
+        onSelect([...selectedArray, item]);
       }
     } else {
-      setSelectedData(item);
+      onSelect(item);
       setOpen(false); // Close popover on single select
     }
   };
@@ -80,14 +90,14 @@ export function DataSelector<TItem extends BaseEntity>({
   // Handler for removing selected item (for multi-select)
   const handleRemove = (item: TItem) => {
     if (isMultiSelect && Array.isArray(selectedData)) {
-      setSelectedData(selectedData.filter((i) => i.id !== item.id));
+      onSelect(selectedData.filter((i) => i.id !== item.id));
     } else {
-      setSelectedData(undefined);
+      onSelect(undefined);
     }
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn("flex flex-col gap-2", className)}>
       {/* Popover for Selection */}
       <Popover
         onOpenChange={setOpen}
@@ -115,30 +125,33 @@ export function DataSelector<TItem extends BaseEntity>({
                   Array.isArray(selectedData) && selectedData.length > 0 ? (
                     `${selectedData.length.toString()} selected`
                   ) : (
-                    `Select ${itemType.toLowerCase()}s...`
+                    placeholder || `Select ${itemType.toLowerCase()}s...`
                   )
                 ) : (
                   <div className="flex items-center gap-1">
-                    {icons
-                      ?.filter((x) => x.name === (selectedData as TItem).id)
-                      .map((x) => {
-                        const iconColor = x.color;
-                        return (
-                          <x.Icon
-                            className={cn(
-                              "mx-auto h-4 w-4",
-                              iconColor.startsWith("text-") ? iconColor : "",
-                            )}
-                            key={`${x.name}-${x.color}`}
-                            style={{
-                              ...(iconColor.startsWith("#")
-                                ? { color: iconColor }
-                                : {}),
-                            }}
-                          />
-                        );
-                      })}
-                    {(selectedData as TItem).id}
+                    {selectedData &&
+                      icons
+                        ?.filter((x) => x.name === (selectedData as TItem).id)
+                        .map((x) => {
+                          const iconColor = x.color;
+                          return (
+                            <x.Icon
+                              className={cn(
+                                "mx-auto h-4 w-4",
+                                iconColor.startsWith("text-") ? iconColor : "",
+                              )}
+                              key={`${x.name}-${x.color}`}
+                              style={{
+                                ...(iconColor.startsWith("#")
+                                  ? { color: iconColor }
+                                  : {}),
+                              }}
+                            />
+                          );
+                        })}
+                    {selectedData
+                      ? (selectedData as TItem).id
+                      : placeholder || `Select ${itemType.toLowerCase()}...`}
                   </div>
                 )}
               </div>
@@ -161,7 +174,7 @@ export function DataSelector<TItem extends BaseEntity>({
             />
             <CommandList className="max-h-[400px] overflow-y-auto">
               <CommandEmpty>No {itemType.toLowerCase()} found.</CommandEmpty>
-              {data.map((item) => (
+              {filteredItems.map((item) => (
                 <CommandItem
                   className={cn("flex items-center justify-between")}
                   key={item.id}
