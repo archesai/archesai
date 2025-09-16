@@ -59,8 +59,9 @@ jobs:
           git push
 
   update-docs-project-layout:
+    needs: [update-docs-makefile]
     runs-on: ubuntu-latest
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]' && always()
     permissions:
       contents: write
     steps:
@@ -68,6 +69,7 @@ jobs:
         with:
           fetch-depth: 1
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main # Always get the latest main branch
 
       - run: |
           # Generate tree structure (excluding hidden files and common build artifacts)
@@ -124,6 +126,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 2
+          ref: main # Always get the latest main branch
 
       - id: claude-docs
         uses: anthropics/claude-code-action@v1
