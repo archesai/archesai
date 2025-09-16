@@ -88,7 +88,7 @@ run-web: build-web ## Run the web UI (production build)
 	@pnpm -F @archesai/platform start
 
 .PHONY: run-docs
-run-docs: build-docs ## Run documentation site (production build)
+run-docs: prepare-docs ## Run documentation site (production build)
 	@echo -e "$(YELLOW)▶ Starting documentation server...$(NC)"
 	@pnpm -F @archesai/docs start
 
@@ -437,7 +437,6 @@ prepare-docs: ## Copy markdown docs to web/docs/docs
 	@cp ./api/openapi.bundled.yaml ./web/docs/apis/openapi.yaml
 	@cp -r ./docs/** ./web/docs/pages/documentation
 	@echo -e "$(GREEN)✓ Docs copied!$(NC)"
-
 
 # ------------------------------------------
 # Database Commands

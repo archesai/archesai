@@ -30,8 +30,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: |
-          cd web/docs
-          pnpm build
+          make build-docs
 
       - uses: actions/checkout@v5
         with:
