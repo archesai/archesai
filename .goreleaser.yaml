@@ -6,7 +6,6 @@ before:
   hooks:
     - go mod tidy
     - make generate
-    - make build-web
 
 env:
   - PACKAGE_PATH=github.com/archesai/archesai/cmd
@@ -138,25 +137,6 @@ archives:
     files:
       - README.md
       - LICENSE
-
-  # Full archive with web assets
-  - id: full
-    builds: [archesai]
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}_full
-    format_overrides:
-      - goos: windows
-        format: zip
-    files:
-      - README.md
-      - LICENSE
-      - docs/**/*
-      - web/platform/dist/**/*
 
 # Snapshots for nightly/edge builds
 snapshot:

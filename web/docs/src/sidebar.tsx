@@ -60,7 +60,6 @@ export const docs: Navigation = [
           "/documentation/deployment/docker",
           "/documentation/deployment/kubernetes",
           "/documentation/deployment/production",
-          "/documentation/deployment/site",
         ],
         label: "Deployment",
         type: "category",

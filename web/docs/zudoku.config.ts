@@ -20,7 +20,7 @@ const config: ZudokuConfig = {
       },
       toc: true,
     },
-    files: ["/pages/**/*.{md,mdx}"],
+    files: ["/pages/documentation/**/*.{md,mdx}"],
   },
   metadata: {
     defaultTitle: "Arches AI",
