@@ -1,6 +1,6 @@
 # Kubernetes Deployment
 
-This guide covers deploying ArchesAI on Kubernetes using our hybrid Kustomize + Helm approach.
+This guide covers deploying Arches on Kubernetes using our hybrid Kustomize + Helm approach.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ This guide covers deploying ArchesAI on Kubernetes using our hybrid Kustomize + 
 
 ## Architecture Overview
 
-ArchesAI uses a **hybrid Kustomize + Helm deployment system**:
+Arches uses a **hybrid Kustomize + Helm deployment system**:
 
 - **Kustomize components**: Plain YAML Kubernetes resources organized by service
 - **Helm templating**: Only templates the `kustomization.yaml` file to control component composition
@@ -493,7 +493,7 @@ spec:
 ```json
 {
   "dashboard": {
-    "title": "ArchesAI Metrics",
+    "title": "Arches Metrics",
     "panels": [
       {
         "title": "Request Rate",

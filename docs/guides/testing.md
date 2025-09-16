@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the testing strategy, patterns, and technical decisions for the ArchesAI
+This document outlines the testing strategy, patterns, and technical decisions for the Arches
 backend.
 
 ## Testing Philosophy

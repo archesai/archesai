@@ -1,6 +1,6 @@
 # Docker Deployment
 
-This guide covers deploying ArchesAI using Docker and Docker Compose.
+This guide covers deploying Arches using Docker and Docker Compose.
 
 ## Quick Start
 

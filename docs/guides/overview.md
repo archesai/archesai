@@ -1,7 +1,7 @@
 # Development Setup
 
 This section contains detailed guides for setting up your development environment and working with
-the ArchesAI codebase.
+the Arches codebase.
 
 ## Getting Started
 

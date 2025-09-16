@@ -12,7 +12,7 @@ import (
 var webCmd = &cobra.Command{
 	Use:   "web",
 	Short: "Run the web UI server",
-	Long: `Start the ArchesAI web UI server which serves the frontend
+	Long: `Start the Arches web UI server which serves the frontend
 application for the platform.
 
 This command will serve the built frontend assets and proxy API

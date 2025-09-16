@@ -2,7 +2,7 @@
 
 ## Overview
 
-ArchesAI Workflows provide a powerful DAG-based (Directed Acyclic Graph) automation system for
+Arches Workflows provide a powerful DAG-based (Directed Acyclic Graph) automation system for
 orchestrating complex data processing pipelines with AI tool integration, enabling automated,
 scalable, and intelligent data processing.
 
@@ -10,7 +10,7 @@ scalable, and intelligent data processing.
 
 ### Workflow Architecture
 
-Workflows in ArchesAI are built on a flexible, extensible architecture that supports complex processing patterns:
+Workflows in Arches are built on a flexible, extensible architecture that supports complex processing patterns:
 
 ```typescript
 interface Workflow {

@@ -23,7 +23,7 @@
     "build": "zudoku build",
     "dev": "zudoku dev",
     "lint": "eslint",
-    "preview": "zudoku preview",
+    "start": "zudoku preview",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "type": "module",

@@ -1,10 +1,10 @@
 # Performance Documentation
 
-This section covers performance optimization, monitoring, and scaling strategies for ArchesAI.
+This section covers performance optimization, monitoring, and scaling strategies for Arches.
 
 ## Performance Overview
 
-ArchesAI is designed for high performance with several optimization strategies:
+Arches is designed for high performance with several optimization strategies:
 
 - **Stateless API servers** - Horizontal scaling capability
 - **Database read replicas** - Distributed read load

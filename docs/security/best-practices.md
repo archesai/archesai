@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide outlines security best practices for ArchesAI, covering authentication, authorization,
+This guide outlines security best practices for Arches, covering authentication, authorization,
 data protection, infrastructure security, and compliance requirements.
 
 ## Authentication Security
@@ -30,7 +30,7 @@ import "github.com/pquerna/otp/totp"
 
 func GenerateTOTP(user *User) (string, error) {
     key, err := totp.Generate(totp.GenerateOpts{
-        Issuer:      "ArchesAI",
+        Issuer:      "Arches",
         AccountName: user.Email,
         Algorithm:   otp.AlgorithmSHA256,
     })

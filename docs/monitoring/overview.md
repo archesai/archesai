@@ -1,6 +1,6 @@
 # Monitoring and Observability
 
-ArchesAI deploys a comprehensive monitoring stack with Grafana and Loki, providing built-in
+Arches deploys a comprehensive monitoring stack with Grafana and Loki, providing built-in
 dashboards for immediate visibility into system health and performance.
 
 ## Stack Overview
@@ -14,7 +14,7 @@ dashboards for immediate visibility into system health and performance.
 
 ## Built-in Dashboards
 
-ArchesAI comes with pre-configured Grafana dashboards that provide immediate insights:
+Arches comes with pre-configured Grafana dashboards that provide immediate insights:
 
 ### 1. Application Overview Dashboard
 
@@ -161,7 +161,7 @@ limits_config:
 
 ### Application Instrumentation
 
-ArchesAI automatically exports metrics and logs:
+Arches automatically exports metrics and logs:
 
 ```go
 // Metrics are automatically exposed at /metrics

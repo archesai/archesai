@@ -2,7 +2,7 @@
 
 ## Overview
 
-Organizations in ArchesAI provide multi-tenancy support, enabling teams to collaborate on projects
+Organizations in Arches provide multi-tenancy support, enabling teams to collaborate on projects
 with proper isolation, member management, and billing integration.
 
 ## Core Concepts

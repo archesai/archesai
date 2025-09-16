@@ -12,7 +12,7 @@ import (
 var workerCmd = &cobra.Command{
 	Use:   "worker",
 	Short: "Run background job worker",
-	Long: `Start the ArchesAI background job worker which processes
+	Long: `Start the Arches background job worker which processes
 asynchronous tasks like email sending, webhook delivery, and
 long-running data processing jobs.`,
 	Example: `  archesai worker

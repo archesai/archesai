@@ -1,8 +1,8 @@
-# ArchesAI Terminal User Interface (TUI)
+# Arches Terminal User Interface (TUI)
 
 ## Overview
 
-The ArchesAI TUI provides an interactive terminal interface for configuration management and AI
+The Arches TUI provides an interactive terminal interface for configuration management and AI
 agent interactions.
 
 ## Features
@@ -14,7 +14,7 @@ agent interactions.
 
 ## Installation
 
-The TUI is built into the main ArchesAI binary:
+The TUI is built into the main Arches binary:
 
 ```bash
 go build -o archesai cmd/archesai/main.go

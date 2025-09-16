@@ -2,7 +2,7 @@
 
 ## Overview
 
-ArchesAI implements **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design**
+Arches implements **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design**
 principles, ensuring separation of concerns, testability, and business logic independence from
 infrastructure.
 
@@ -605,7 +605,7 @@ logger.Info("Processing request",
 
 ### Hybrid Kustomize + Helm Strategy
 
-ArchesAI uses a **hybrid deployment approach** that combines the best of both Kustomize and Helm:
+Arches uses a **hybrid deployment approach** that combines the best of both Kustomize and Helm:
 
 ```text
 ┌─────────────────────────────────────────────────┐

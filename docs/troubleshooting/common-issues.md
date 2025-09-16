@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-This section helps you diagnose and resolve common issues with ArchesAI.
+This section helps you diagnose and resolve common issues with Arches.
 
 ## Common Issues
 

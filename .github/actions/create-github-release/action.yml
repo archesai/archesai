@@ -58,14 +58,14 @@ runs:
         case "${{ inputs.release-type }}" in
           "stable")
             cat > release_notes.md << 'EOF'
-        # 🎉 ArchesAI ${{ inputs.tag-name }}
+        # 🎉 Arches ${{ inputs.tag-name }}
 
         **Release Date:** ${{ steps.commit-info.outputs.timestamp }}
         **Commit:** `${{ inputs.commit-sha }}`
 
         ## What's New
 
-        This is a stable release of ArchesAI with the latest features and bug fixes.
+        This is a stable release of Arches with the latest features and bug fixes.
 
         ## 📦 Installation
 

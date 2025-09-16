@@ -17,10 +17,10 @@ var (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "archesai",
-	Short: "ArchesAI server and utilities",
-	Long: `ArchesAI is a comprehensive data processing platform.
+	Short: "Arches server and utilities",
+	Long: `Arches is a comprehensive data processing platform.
 
-This command provides various modes to run the ArchesAI server:
+This command provides various modes to run the Arches server:
 - API server for REST endpoints
 - Web server for the UI (future)
 - Worker for background job processing

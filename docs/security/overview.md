@@ -1,11 +1,11 @@
 # Security Documentation
 
 This section covers comprehensive security architecture, best practices, and implementation
-guidelines for ArchesAI, ensuring data protection, user privacy, and system integrity.
+guidelines for Arches, ensuring data protection, user privacy, and system integrity.
 
 ## Security Philosophy
 
-ArchesAI follows a **defense-in-depth** approach with multiple security layers, assuming breach
+Arches follows a **defense-in-depth** approach with multiple security layers, assuming breach
 scenarios, and implementing zero-trust principles throughout the platform.
 
 ## Documentation Structure

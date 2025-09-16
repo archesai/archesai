@@ -1,11 +1,11 @@
 # Deployment Documentation
 
 This section provides comprehensive deployment strategies, infrastructure guidance, and production
-configuration for ArchesAI across various environments and scales.
+configuration for Arches across various environments and scales.
 
 ## Deployment Philosophy
 
-ArchesAI is designed for **cloud-native deployment** with support for containerization,
+Arches is designed for **cloud-native deployment** with support for containerization,
 orchestration, and horizontal scaling. The platform can be deployed from a single Docker container
 for development to a full Kubernetes cluster for enterprise production.
 

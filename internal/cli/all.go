@@ -24,7 +24,7 @@ var allCmd = &cobra.Command{
 	Use:     "all",
 	Aliases: []string{"dev"},
 	Short:   "Run all services (API, web, worker) for development",
-	Long: `Start all ArchesAI services in a single process for development.
+	Long: `Start all Arches services in a single process for development.
 
 This command runs the API server, web server, and background worker
 together, making it convenient for local development.

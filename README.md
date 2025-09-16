@@ -1,7 +1,7 @@
 <div align=center>
 
-<a href="https://archesai.com" alt="ArchesAI">
-  <img src="./assets/github-hero.png" width=630 alt="ArchesAI Platform">
+<a href="https://archesai.com" alt="Arches">
+  <img src="./assets/github-hero.png" width=630 alt="Arches Platform">
 </a>
 
 [![Go Version](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat&labelColor=000000)](https://go.dev/)
@@ -12,7 +12,7 @@
 
 </div>
 
-# ArchesAI
+# Arches
 
 AI-powered data processing platform with workflow automation and beautiful terminal interfaces.
 
@@ -24,7 +24,7 @@ AI-powered data processing platform with workflow automation and beautiful termi
 
 ## Introduction
 
-**ArchesAI** is a high-performance data processing platform that combines AI-powered chat
+**Arches** is a high-performance data processing platform that combines AI-powered chat
 interfaces, workflow automation, and beautiful terminal UIs to create powerful developer
 experiences.
 
@@ -36,7 +36,7 @@ development with OpenAPI<br />
 
 ## 🚀 Quick Start
 
-Get started with ArchesAI in seconds:
+Get started with Arches in seconds:
 
 ### Configuration Viewer (No API Key Needed)
 

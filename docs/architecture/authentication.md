@@ -1,10 +1,10 @@
 # Authentication System Documentation
 
-This document describes the authentication and authorization system implemented in ArchesAI.
+This document describes the authentication and authorization system implemented in Arches.
 
 ## Overview
 
-ArchesAI uses a JWT-based authentication system with refresh tokens for secure, stateless
+Arches uses a JWT-based authentication system with refresh tokens for secure, stateless
 authentication. The system supports:
 
 - User registration and login

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# ArchesAI Kustomize + Helm Deployment Script
+# Arches Kustomize + Helm Deployment Script
 # Combines Helm templating with Kustomize component composition
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -143,7 +143,7 @@ preview_deployment() {
 
 # Main deployment function
 deploy() {
-    echo_info "🚀 Deploying ArchesAI to ${ENVIRONMENT} environment"
+    echo_info "🚀 Deploying Arches to ${ENVIRONMENT} environment"
     echo_info "Namespace: ${NAMESPACE}"
     echo_info "Dry run: ${DRY_RUN}"
     echo ""
@@ -171,7 +171,7 @@ case "${1:-}" in
         preview_deployment
         ;;
     "help"|"--help"|"-h")
-        echo "ArchesAI Deployment Script"
+        echo "Arches Deployment Script"
         echo ""
         echo "Usage:"
         echo "  $0 [environment] [namespace] [dry-run]   Deploy to environment"

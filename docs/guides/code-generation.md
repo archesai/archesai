@@ -2,7 +2,7 @@
 
 ## Overview
 
-ArchesAI uses a unified code generation system that reads OpenAPI specifications with x-codegen annotations to
+Arches uses a unified code generation system that reads OpenAPI specifications with x-codegen annotations to
 automatically generate repository interfaces, database implementations, service interfaces, HTTP servers, and
 test mocks. This approach ensures type safety, reduces boilerplate, and maintains consistency across the codebase.
 

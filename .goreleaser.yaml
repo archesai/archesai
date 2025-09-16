@@ -90,9 +90,9 @@ release:
   prerelease: auto
   mode: replace
   header: |
-    ## ArchesAI {{ .Tag }}
+    ## Arches {{ .Tag }}
 
-    Welcome to this new release of ArchesAI! 🎉
+    Welcome to this new release of Arches! 🎉
   footer: |
     ## Installation
 

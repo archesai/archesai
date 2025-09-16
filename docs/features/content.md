@@ -2,7 +2,7 @@
 
 ## Overview
 
-ArchesAI's Content Management system provides comprehensive artifact storage, vector embeddings for
+Arches's Content Management system provides comprehensive artifact storage, vector embeddings for
 semantic search, and intelligent content processing pipelines.
 
 ## Core Features

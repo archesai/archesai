@@ -21,7 +21,7 @@ import (
 var apiCmd = &cobra.Command{
 	Use:   "api",
 	Short: "Run the API server",
-	Long: `Start the ArchesAI API server which provides REST endpoints
+	Long: `Start the Arches API server which provides REST endpoints
 for all platform functionality.
 
 The API server handles authentication, organizations, workflows,

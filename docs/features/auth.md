@@ -2,7 +2,7 @@
 
 ## Overview
 
-ArchesAI provides a comprehensive authentication system built on modern security standards with JWT
+Arches provides a comprehensive authentication system built on modern security standards with JWT
 tokens, session management, and role-based access control.
 
 ## Core Features

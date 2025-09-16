@@ -5,6 +5,7 @@ const config: ZudokuConfig = {
   apis: [
     {
       input: "./apis/openapi.yaml",
+      options: {},
       path: "/docs/api",
       type: "file",
     },
@@ -20,7 +21,7 @@ const config: ZudokuConfig = {
       },
       toc: true,
     },
-    files: ["/pages/documentation/**/*.{md,mdx}"],
+    files: ["/pages/**/*.{md,mdx}"],
   },
   metadata: {
     defaultTitle: "Arches AI",

@@ -1,6 +1,6 @@
 # Production Deployment Guide
 
-This guide covers best practices, security hardening, and optimization for deploying ArchesAI in
+This guide covers best practices, security hardening, and optimization for deploying Arches in
 production environments.
 
 ## Pre-Deployment Checklist

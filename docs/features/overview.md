@@ -1,6 +1,6 @@
 # Features Documentation
 
-This section provides detailed documentation for each feature domain in ArchesAI.
+This section provides detailed documentation for each feature domain in Arches.
 
 ## Core Domains
 

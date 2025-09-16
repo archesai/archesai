@@ -1,11 +1,11 @@
 # Architecture Documentation
 
 This section covers the system architecture, design patterns, and structural documentation for
-ArchesAI - a high-performance data processing platform with AI-powered capabilities.
+Arches - a high-performance data processing platform with AI-powered capabilities.
 
 ## Overview
 
-ArchesAI is built on modern cloud-native principles with a focus on scalability, maintainability,
+Arches is built on modern cloud-native principles with a focus on scalability, maintainability,
 and developer experience. The platform combines workflow automation, AI integration, and data
 processing in a cohesive architecture.
 
@@ -19,7 +19,7 @@ processing in a cohesive architecture.
 
 ### 1. Hexagonal Architecture (Ports & Adapters)
 
-ArchesAI implements **Hexagonal Architecture** to achieve true separation of concerns:
+Arches implements **Hexagonal Architecture** to achieve true separation of concerns:
 
 ```text
 ┌─────────────────────────────────────────────┐
@@ -113,7 +113,7 @@ Each domain maintains:
 
 ### 3. Code Generation Strategy
 
-ArchesAI leverages a unified code generation system to maintain consistency and reduce boilerplate:
+Arches leverages a unified code generation system to maintain consistency and reduce boilerplate:
 
 #### **OpenAPI-Driven Development**
 
@@ -265,7 +265,7 @@ To understand the architecture in practice:
 
 ## Architecture Guidelines
 
-When contributing to ArchesAI:
+When contributing to Arches:
 
 1. **Respect domain boundaries** - Don't import across domains
 2. **Define first, generate second** - Use OpenAPI/SQL before coding

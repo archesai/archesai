@@ -436,7 +436,7 @@ prepare-docs: bundle-openapi ## Copy markdown docs to web/docs/docs
 	@echo -e "$(YELLOW)▶ Copying markdown docs to web/docs...$(NC)"
 	@mkdir -p ./web/docs/apis ./web/docs/pages/documentation
 	@cp ./api/openapi.bundled.yaml ./web/docs/apis/openapi.yaml
-	@cp -r ./docs/** ./web/docs/pages/documentation
+	@cp -r ./docs/** ./web/docs/pages
 	@echo -e "$(GREEN)✓ Docs copied!$(NC)"
 
 # ------------------------------------------
@@ -724,7 +724,7 @@ release-clean: ## Clean release artifacts
 
 .PHONY: release-info
 release-info: ## Show release information and next steps
-	@echo -e "$(CYAN)━━━ ArchesAI Release Information ━━━$(NC)"
+	@echo -e "$(CYAN)━━━ Arches Release Information ━━━$(NC)"
 	@echo -e "$(BLUE)Release Types:$(NC)"
 	@echo -e "  • $(GREEN)Stable$(NC)    - Tagged releases (v1.0.0) via GitHub Actions"
 	@echo -e "  • $(YELLOW)Nightly$(NC)   - Daily builds from main branch (2 AM UTC)"

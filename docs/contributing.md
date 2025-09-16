@@ -1,6 +1,6 @@
-# Contributing to ArchesAI
+# Contributing to Arches
 
-Thank you for your interest in contributing to ArchesAI! This document provides guidelines and
+Thank you for your interest in contributing to Arches! This document provides guidelines and
 instructions for contributing to the project.
 
 ## Code of Conduct
@@ -471,4 +471,4 @@ Contributors are recognized in:
 - Contributors file
 - Project documentation
 
-Thank you for contributing to ArchesAI! Your efforts help make the project better for everyone.
+Thank you for contributing to Arches! Your efforts help make the project better for everyone.

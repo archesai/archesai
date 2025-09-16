@@ -1,4 +1,4 @@
-// Package tui provides terminal user interface components for ArchesAI.
+// Package tui provides terminal user interface components for Arches.
 package tui
 
 import (
@@ -199,7 +199,7 @@ func (m ConfigModel) View() string {
 	var sections []string
 
 	// Title - make it smaller and centered
-	title := m.styles.Title.Render("⚙️  ArchesAI Configuration Viewer")
+	title := m.styles.Title.Render("⚙️  Arches Configuration Viewer")
 	titleLine := lipgloss.PlaceHorizontal(m.width, lipgloss.Center, title)
 	sections = append(sections, titleLine)
 

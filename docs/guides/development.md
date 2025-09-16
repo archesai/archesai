@@ -1,6 +1,6 @@
 # Development Guide
 
-Welcome to the ArchesAI development guide! This document covers everything you need to know to set
+Welcome to the Arches development guide! This document covers everything you need to know to set
 up your development environment and contribute to the project.
 
 ## Prerequisites

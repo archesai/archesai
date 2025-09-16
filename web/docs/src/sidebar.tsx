@@ -10,20 +10,17 @@ export const docs: Navigation = [
     items: [
       {
         icon: "sparkles",
-        items: [
-          "/documentation/getting-started",
-          "/documentation/contributing",
-        ],
+        items: ["/getting-started", "/contributing"],
         label: "Getting Started",
         type: "category",
       },
       {
         icon: "layers",
         items: [
-          "/documentation/architecture/overview",
-          "/documentation/architecture/system-design",
-          "/documentation/architecture/project-layout",
-          "/documentation/architecture/authentication",
+          "/architecture/overview",
+          "/architecture/system-design",
+          "/architecture/project-layout",
+          "/architecture/authentication",
         ],
         label: "Architecture",
         type: "category",
@@ -31,12 +28,12 @@ export const docs: Navigation = [
       {
         icon: "package",
         items: [
-          "/documentation/features/overview",
-          "/documentation/features/auth",
-          "/documentation/features/organizations",
-          "/documentation/features/workflows",
-          "/documentation/features/content",
-          "/documentation/features/tui",
+          "/features/overview",
+          "/features/auth",
+          "/features/organizations",
+          "/features/workflows",
+          "/features/content",
+          "/features/tui",
         ],
         label: "Features",
         type: "category",
@@ -44,11 +41,11 @@ export const docs: Navigation = [
       {
         icon: "book-open",
         items: [
-          "/documentation/guides/overview",
-          "/documentation/guides/development",
-          "/documentation/guides/testing",
-          "/documentation/guides/test-coverage-report",
-          "/documentation/guides/makefile-commands",
+          "/guides/overview",
+          "/guides/development",
+          "/guides/testing",
+          "/guides/test-coverage-report",
+          "/guides/makefile-commands",
         ],
         label: "Guides",
         type: "category",
@@ -56,48 +53,42 @@ export const docs: Navigation = [
       {
         icon: "rocket",
         items: [
-          "/documentation/deployment/overview",
-          "/documentation/deployment/docker",
-          "/documentation/deployment/kubernetes",
-          "/documentation/deployment/production",
+          "/deployment/overview",
+          "/deployment/docker",
+          "/deployment/kubernetes",
+          "/deployment/production",
         ],
         label: "Deployment",
         type: "category",
       },
       {
         icon: "shield",
-        items: [
-          "/documentation/security/overview",
-          "/documentation/security/best-practices",
-        ],
+        items: ["/security/overview", "/security/best-practices"],
         label: "Security",
         type: "category",
       },
       {
         icon: "zap",
-        items: [
-          "/documentation/performance/overview",
-          "/documentation/performance/optimization",
-        ],
+        items: ["/performance/overview", "/performance/optimization"],
         label: "Performance",
         type: "category",
       },
       {
         icon: "activity",
-        items: ["/documentation/monitoring/overview"],
+        items: ["/monitoring/overview"],
         label: "Monitoring",
         type: "category",
       },
       {
         icon: "wrench",
-        items: ["/documentation/troubleshooting/common-issues"],
+        items: ["/troubleshooting/common-issues"],
         label: "Troubleshooting",
         type: "category",
       },
       {
         icon: "code",
         items: [
-          "/documentation/api-reference/overview",
+          "/api-reference/overview",
           {
             badge: {
               color: "green",

@@ -1,11 +1,11 @@
-# ArchesAI Documentation
+# Arches Documentation
 
-Welcome to the ArchesAI documentation! This guide will help you understand, develop, and deploy the
-ArchesAI platform.
+Welcome to the Arches documentation! This guide will help you understand, develop, and deploy the
+Arches platform.
 
-## What is ArchesAI?
+## What is Arches?
 
-ArchesAI is a high-performance data processing platform with AI-powered chat interface and workflow
+Arches is a high-performance data processing platform with AI-powered chat interface and workflow
 automation. It provides:
 
 - **Multi-Provider AI**: Support for OpenAI, Claude, Gemini, Ollama
@@ -45,7 +45,7 @@ This documentation is organized into several sections:
 
 ### 🏗️ [Architecture](architecture/system-design.md)
 
-Learn about the system design, patterns, and overall architecture of ArchesAI.
+Learn about the system design, patterns, and overall architecture of Arches.
 
 ### 🚀 [Development](guides/development.md)
 

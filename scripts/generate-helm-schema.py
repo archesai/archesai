@@ -82,8 +82,8 @@ def main():
 
     helm_schema = {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "title": "ArchesAI Helm Values Schema",
-        "description": "JSON Schema for ArchesAI Helm chart values",
+        "title": "Arches Helm Values Schema",
+        "description": "JSON Schema for Arches Helm chart values",
         **resolved_config
     }
 

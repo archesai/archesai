@@ -123,7 +123,7 @@ func New(chatClient llm.ChatClient, personas []*llm.ChatPersona) Model {
 func (m Model) Init() tea.Cmd {
 	return tea.Batch(
 		tea.EnterAltScreen,
-		m.addSystemMessage("Welcome to ArchesAI TUI! Press Tab to switch agents, Ctrl+C to quit."),
+		m.addSystemMessage("Welcome to Arches TUI! Press Tab to switch agents, Ctrl+C to quit."),
 	)
 }
 
@@ -175,7 +175,7 @@ func (m Model) View() string {
 	var sections []string
 
 	// Title
-	title := m.style.Title.Render("🤖 ArchesAI Agent TUI")
+	title := m.style.Title.Render("🤖 Arches Agent TUI")
 	sections = append(sections, lipgloss.PlaceHorizontal(m.width, lipgloss.Center, title))
 
 	// Current persona indicator

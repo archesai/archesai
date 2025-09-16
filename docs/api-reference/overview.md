@@ -1,11 +1,11 @@
 # API Reference
 
-Welcome to the ArchesAI API reference documentation. Our REST API is built using OpenAPI 3.0
+Welcome to the Arches API reference documentation. Our REST API is built using OpenAPI 3.0
 specifications and provides comprehensive access to all platform features.
 
 ## Overview
 
-The ArchesAI API is organized around REST principles with predictable URLs, standard HTTP response
+The Arches API is organized around REST principles with predictable URLs, standard HTTP response
 codes, and JSON request/response bodies. All API endpoints are prefixed with the API version.
 
 **Base URL**: `https://api.archesai.com/v1`

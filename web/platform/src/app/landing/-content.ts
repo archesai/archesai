@@ -187,7 +187,7 @@ export const defaultContent: LandingContent = {
     disclaimer:
       "30-day free trial. No credit card. Setup in 5 minutes. Cancel anytime.",
     subtitle:
-      "Every day without ArchesAI costs you thousands in inefficiency. Join 10,000+ companies already saving millions.",
+      "Every day without Arches costs you thousands in inefficiency. Join 10,000+ companies already saving millions.",
     title: "Stop Losing Money on Manual Processes",
   },
   faq: {
@@ -196,17 +196,17 @@ export const defaultContent: LandingContent = {
       {
         answer:
           "Most customers see immediate results. On average, companies report 50% time savings on day one, and 10x ROI within the first week. Our AI begins optimizing your workflows from the moment you connect your data, with full optimization typically achieved within 48 hours.",
-        question: "How quickly can I see results with ArchesAI?",
+        question: "How quickly can I see results with Arches?",
       },
       {
         answer:
-          "Absolutely not. ArchesAI is designed for business users, not engineers. If you can use email, you can use ArchesAI. Our AI handles all the technical complexity behind the scenes. We also provide free onboarding and training for all new customers.",
-        question: "Do I need technical expertise to use ArchesAI?",
+          "Absolutely not. Arches is designed for business users, not engineers. If you can use email, you can use Arches. Our AI handles all the technical complexity behind the scenes. We also provide free onboarding and training for all new customers.",
+        question: "Do I need technical expertise to use Arches?",
       },
       {
         answer:
-          "Building similar capabilities in-house would require a team of 10-15 engineers and cost $2-3M annually. With ArchesAI, you get enterprise-grade AI infrastructure for less than the cost of a single junior developer. Plus, you're live in 5 minutes instead of 18 months.",
-        question: "How does ArchesAI compare to building in-house?",
+          "Building similar capabilities in-house would require a team of 10-15 engineers and cost $2-3M annually. With Arches, you get enterprise-grade AI infrastructure for less than the cost of a single junior developer. Plus, you're live in 5 minutes instead of 18 months.",
+        question: "How does Arches compare to building in-house?",
       },
       {
         answer:
@@ -216,7 +216,7 @@ export const defaultContent: LandingContent = {
       {
         answer:
           "We process billions of data points daily for Fortune 500 companies. Our infrastructure auto-scales to handle any volume - from 10 to 10 billion operations. Companies like Microsoft and Amazon trust us with their mission-critical workflows.",
-        question: "Can ArchesAI handle my scale?",
+        question: "Can Arches handle my scale?",
       },
       {
         answer:
@@ -239,7 +239,7 @@ export const defaultContent: LandingContent = {
     title: "Everything You Need to Know",
   },
   features: {
-    badge: "Why ArchesAI",
+    badge: "Why Arches",
     features: [
       {
         description:
@@ -285,12 +285,12 @@ export const defaultContent: LandingContent = {
   footer: {
     company: {
       logoText: "A",
-      name: "ArchesAI",
+      name: "Arches",
       tagline:
         "The world's most advanced AI-powered data processing platform. Trusted by industry leaders to handle mission-critical workflows at scale.",
     },
     legal: {
-      copyright: `© ${new Date().getFullYear()} ArchesAI. All rights reserved.`,
+      copyright: `© ${new Date().getFullYear()} Arches. All rights reserved.`,
       links: [
         { label: "Privacy Policy", to: "/" },
         { label: "Terms of Service", to: "/" },
@@ -347,11 +347,11 @@ export const defaultContent: LandingContent = {
       },
     },
     image: {
-      alt: "ArchesAI intelligent dashboard showing real-time data processing",
+      alt: "Arches intelligent dashboard showing real-time data processing",
       src: "https://cdn.dribbble.com/userupload/12302729/file/original-fa372845e394ee85bebe0389b9d86871.png?resize=1504x1128&vertical=center",
     },
     subtitle:
-      "ArchesAI combines cutting-edge AI with powerful automation to process data 10x faster. Join industry leaders who've reduced operational costs by 40% while scaling effortlessly.",
+      "Arches combines cutting-edge AI with powerful automation to process data 10x faster. Join industry leaders who've reduced operational costs by 40% while scaling effortlessly.",
     title: "Transform Your Data Into Intelligent Workflows",
   },
   howItWorks: {
@@ -533,33 +533,33 @@ export const defaultContent: LandingContent = {
   testimonials: {
     badge: "Success Stories",
     subtitle:
-      "Join 10,000+ companies experiencing unprecedented growth with ArchesAI.",
+      "Join 10,000+ companies experiencing unprecedented growth with Arches.",
     testimonials: [
       {
         author: "Sarah Chen",
         quote:
-          "ArchesAI reduced our data processing time by 93%. What used to take our team 8 hours now completes in 30 minutes. The ROI was immediate - we saved $2M in the first quarter alone.",
+          "Arches reduced our data processing time by 93%. What used to take our team 8 hours now completes in 30 minutes. The ROI was immediate - we saved $2M in the first quarter alone.",
         rating: 5,
         role: "CTO, Fortune 500 Tech Company",
       },
       {
         author: "Marcus Williams",
         quote:
-          "The AI predictions are scary accurate. We prevented 3 major supply chain disruptions last month alone. ArchesAI paid for itself 10x over in the first week.",
+          "The AI predictions are scary accurate. We prevented 3 major supply chain disruptions last month alone. Arches paid for itself 10x over in the first week.",
         rating: 5,
         role: "VP Operations, Global E-commerce Leader",
       },
       {
         author: "Dr. Emily Thompson",
         quote:
-          "Processing genomic data that took weeks now takes hours. ArchesAI accelerated our research timeline by 18 months. This is the future of scientific computing.",
+          "Processing genomic data that took weeks now takes hours. Arches accelerated our research timeline by 18 months. This is the future of scientific computing.",
         rating: 5,
         role: "Head of Research, BioTech Unicorn",
       },
       {
         author: "David Park",
         quote:
-          "We scaled from 100 to 10,000 customers without hiring a single data analyst. ArchesAI handles everything. It's like having a team of 50 engineers for the price of 1.",
+          "We scaled from 100 to 10,000 customers without hiring a single data analyst. Arches handles everything. It's like having a team of 50 engineers for the price of 1.",
         rating: 5,
         role: "CEO, Hypergrowth SaaS Startup",
       },
@@ -573,7 +573,7 @@ export const defaultContent: LandingContent = {
       {
         author: "Roberto Silva",
         quote:
-          "ArchesAI predicted equipment failures 14 days in advance with 98% accuracy. We've reduced downtime by 87% and increased production efficiency by 45%.",
+          "Arches predicted equipment failures 14 days in advance with 98% accuracy. We've reduced downtime by 87% and increased production efficiency by 45%.",
         rating: 5,
         role: "Director of Innovation, Manufacturing Leader",
       },

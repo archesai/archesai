@@ -1,5 +1,5 @@
 name: Setup Build Environment
-description: Setup Go, Node.js, and pnpm for ArchesAI builds
+description: Setup Go, Node.js, and pnpm for Arches builds
 
 inputs:
   go-cache:

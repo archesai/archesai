@@ -18,8 +18,8 @@ var (
 // configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Manage ArchesAI configuration",
-	Long: `Manage ArchesAI configuration with various subcommands.
+	Short: "Manage Arches configuration",
+	Long: `Manage Arches configuration with various subcommands.
 
 This command allows you to:
 - Show current configuration
@@ -135,7 +135,7 @@ var configInitCmd = &cobra.Command{
 var configEnvCmd = &cobra.Command{
 	Use:   "env",
 	Short: "Show environment variables",
-	Long:  `Display all ArchesAI-related environment variables and their values.`,
+	Long:  `Display all Arches-related environment variables and their values.`,
 	RunE: func(_ *cobra.Command, _ []string) error {
 		envVars := []string{
 			"ARCHESAI_API_HOST",
@@ -162,7 +162,7 @@ var configEnvCmd = &cobra.Command{
 			"ARCHESAI_LOGGING_PRETTY",
 		}
 
-		fmt.Println("ArchesAI Environment Variables:")
+		fmt.Println("Arches Environment Variables:")
 		fmt.Println("================================")
 
 		found := false
@@ -174,7 +174,7 @@ var configEnvCmd = &cobra.Command{
 		}
 
 		if !found {
-			fmt.Println("No ArchesAI environment variables are currently set.")
+			fmt.Println("No Arches environment variables are currently set.")
 		}
 
 		return nil

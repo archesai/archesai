@@ -1,4 +1,4 @@
-# ArchesAI Assistant Guide
+# Arches Assistant Guide
 
 ## What is Arches?
 

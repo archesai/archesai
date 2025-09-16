@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers performance optimization strategies for ArchesAI, including database tuning,
+This guide covers performance optimization strategies for Arches, including database tuning,
 application optimization, caching strategies, and monitoring best practices.
 
 ## Database Performance

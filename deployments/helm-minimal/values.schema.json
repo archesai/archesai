@@ -1712,6 +1712,6 @@
     "redis",
     "storage"
   ],
-  "title": "ArchesAI Helm Values Schema",
+  "title": "Arches Helm Values Schema",
   "type": "object"
 }
