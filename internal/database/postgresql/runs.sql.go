@@ -31,8 +31,8 @@ RETURNING
 type CreateRunParams struct {
 	ID             uuid.UUID
 	OrganizationID uuid.UUID
-	PipelineID     *uuid.UUID
-	ToolID         *uuid.UUID
+	PipelineID     uuid.UUID
+	ToolID         uuid.UUID
 	Status         string
 	Progress       float64
 }
@@ -80,7 +80,7 @@ WHERE
   pipeline_id = $1
 `
 
-func (q *Queries) DeleteRunsByPipeline(ctx context.Context, pipelineID *uuid.UUID) error {
+func (q *Queries) DeleteRunsByPipeline(ctx context.Context, pipelineID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteRunsByPipeline, pipelineID)
 	return err
 }
@@ -234,7 +234,7 @@ OFFSET
 `
 
 type ListRunsByPipelineParams struct {
-	PipelineID *uuid.UUID
+	PipelineID uuid.UUID
 	Limit      int32
 	Offset     int32
 }
@@ -287,7 +287,7 @@ OFFSET
 `
 
 type ListRunsByToolParams struct {
-	ToolID *uuid.UUID
+	ToolID uuid.UUID
 	Limit  int32
 	Offset int32
 }

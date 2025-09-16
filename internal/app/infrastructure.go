@@ -33,8 +33,8 @@ type Infrastructure struct {
 	Logger         *slog.Logger
 	Database       database.Database
 	EventPublisher events.Publisher
-	AuthCache      sessions.Cache
-	UsersCache     users.Cache
+	AuthCache      cache.Cache[sessions.Session]
+	UsersCache     cache.Cache[users.User]
 	// Single Redis client shared across components
 	redisClient *redis.Client
 }
@@ -88,32 +88,22 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 
 		redisClient, err := redis.NewClient(redisConfig, log)
 		if err != nil {
-			// Log warning but continue with in-memory implementations
 			log.Warn("failed to connect to Redis, using in-memory alternatives", "error", err)
 			infra.EventPublisher = events.NewNoOpPublisher()
-			// Use memory cache for auth
-			sessionCache := cache.NewMemoryCache[sessions.Session]()
-			infra.AuthCache = sessions.NewCacheAdapter(sessionCache)
-			// Use NoOp cache for users (will be replaced later)
-			infra.UsersCache = users.NewNoOpCache()
+			infra.AuthCache = cache.NewMemoryCache[sessions.Session]()
+			infra.UsersCache = cache.NewMemoryCache[users.User]()
 		} else {
-			// Use Redis for all components
+			log.Info("connected to redis", "host", cfg.Redis.Host, "port", cfg.Redis.Port)
 			infra.redisClient = redisClient
 			infra.EventPublisher = events.NewRedisPublisher(redisClient.GetRedisClient())
-			// Use Redis cache for auth
-			sessionCache := cache.NewRedisCache[sessions.Session](redisClient.GetRedisClient(), "auth:session")
-			infra.AuthCache = sessions.NewCacheAdapter(sessionCache)
-			// Use NoOp cache for users (will be replaced later)
-			infra.UsersCache = users.NewNoOpCache()
+			infra.AuthCache = cache.NewRedisCache[sessions.Session](redisClient.GetRedisClient(), "auth:session")
+			infra.UsersCache = cache.NewRedisCache[users.User](redisClient.GetRedisClient(), "users")
 		}
 	} else {
-		// Use in-memory implementations when Redis is disabled
+		log.Info("redis is disabled, using in-memory alternatives")
 		infra.EventPublisher = events.NewNoOpPublisher()
-		// Use memory cache for auth
-		sessionCache := cache.NewMemoryCache[sessions.Session]()
-		infra.AuthCache = sessions.NewCacheAdapter(sessionCache)
-		// Use NoOp cache for users (will be replaced later)
-		infra.UsersCache = users.NewNoOpCache()
+		infra.AuthCache = cache.NewNoOpCache[sessions.Session]()
+		infra.UsersCache = cache.NewNoOpCache[users.User]()
 	}
 
 	return infra, nil

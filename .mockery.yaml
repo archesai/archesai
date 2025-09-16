@@ -7,11 +7,9 @@ packages:
   github.com/archesai/archesai/internal/users:
     interfaces:
       Repository:
-      Cache:
   github.com/archesai/archesai/internal/organizations:
     interfaces:
       Repository:
-      Cache:
   github.com/archesai/archesai/internal/artifacts:
     interfaces:
       Repository:
@@ -36,9 +34,7 @@ packages:
   github.com/archesai/archesai/internal/accounts:
     interfaces:
       Repository:
-      Cache:
   github.com/archesai/archesai/internal/sessions:
     interfaces:
       Repository:
-      Cache:
 log-level: warn

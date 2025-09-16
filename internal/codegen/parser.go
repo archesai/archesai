@@ -247,7 +247,7 @@ func NeedsService(schema *ParsedSchema) bool {
 	if schema == nil || schema.XCodegen == nil {
 		return false
 	}
-	// Generate service for any schema with repository operations
+	// Check if repository operations are defined
 	return len(schema.XCodegen.Repository.Operations) > 0
 }
 
@@ -256,7 +256,6 @@ func NeedsHandler(schema *ParsedSchema) bool {
 	if schema == nil || schema.XCodegen == nil {
 		return false
 	}
-	// Generate handlers for schemas that have repository operations
-	// This means they're entities that need HTTP endpoints
+	// Check if repository operations are defined
 	return len(schema.XCodegen.Repository.Operations) > 0
 }

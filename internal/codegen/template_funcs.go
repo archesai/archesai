@@ -11,27 +11,31 @@ import (
 // TemplateFuncs returns common template functions used across all generators.
 func TemplateFuncs() template.FuncMap {
 	return template.FuncMap{
-		"title":       Title,
-		"lower":       strings.ToLower,
-		"upper":       strings.ToUpper,
-		"camelCase":   CamelCase,
-		"pascalCase":  PascalCase,
-		"snakeCase":   SnakeCase,
-		"kebabCase":   KebabCase,
-		"pluralize":   Pluralize,
-		"singularize": Singularize,
-		"join":        strings.Join,
-		"contains":    Contains,
-		"hasPrefix":   strings.HasPrefix,
-		"hasSuffix":   strings.HasSuffix,
-		"trimPrefix":  strings.TrimPrefix,
-		"trimSuffix":  strings.TrimSuffix,
-		"replace":     strings.ReplaceAll,
-		"quote":       Quote,
-		"indent":      Indent,
-		"comment":     Comment,
-		"paramType":   ParamType,
-		"isUUIDParam": IsUUIDParam,
+		"title":                        Title,
+		"lower":                        strings.ToLower,
+		"upper":                        strings.ToUpper,
+		"camelCase":                    CamelCase,
+		"pascalCase":                   PascalCase,
+		"snakeCase":                    SnakeCase,
+		"kebabCase":                    KebabCase,
+		"pluralize":                    Pluralize,
+		"singularize":                  Singularize,
+		"join":                         strings.Join,
+		"contains":                     Contains,
+		"hasPrefix":                    strings.HasPrefix,
+		"hasSuffix":                    strings.HasSuffix,
+		"trimPrefix":                   strings.TrimPrefix,
+		"trimSuffix":                   strings.TrimSuffix,
+		"replace":                      strings.ReplaceAll,
+		"quote":                        Quote,
+		"indent":                       Indent,
+		"comment":                      Comment,
+		"paramType":                    ParamType,
+		"isUUIDParam":                  IsUUIDParam,
+		"generateTypeConversion":       GenerateTypeConversion,
+		"generateCreateTypeConversion": GenerateCreateTypeConversion,
+		"generateUpdateTypeConversion": GenerateUpdateTypeConversion,
+		"isUpdateExcluded":             IsUpdateExcluded,
 	}
 }
 
@@ -344,7 +348,7 @@ func isVowel(b byte) bool {
 func ParamType(paramName string) string {
 	switch paramName {
 	case "id", "ID", "userID", "organizationID", "pipelineID", "runId", "runID", "toolID", "invitationId", "invitationID", "artifactID":
-		return "uuid.UUID"
+		return goTypeUUIDType
 	case "name", "email", "token", "provider", "providerAccountId", "slug", "stripeCustomerId", "inviterId":
 		return "string" //nolint:goconst // Go type
 	default:
@@ -367,4 +371,221 @@ func ToSnakeCase(s string) string {
 		result.WriteRune(r)
 	}
 	return strings.ToLower(result.String())
+}
+
+// GenerateTypeConversion generates the appropriate type conversion between Go types and SQLC types
+//
+//nolint:gocyclo // This function needs to handle many type conversion cases
+func GenerateTypeConversion(goType, sqlcType, varPrefix, fieldName string) string {
+	if goType == "" || sqlcType == "" {
+		// Fallback to original logic if type inference failed
+		return varPrefix + "." + fieldName
+	}
+
+	// Handle special cases based on type combinations
+	switch {
+	// Email field conversions (including openapi_types.Email)
+	case (goType == goTypeEmail || goType == goTypeEmailFull) && sqlcType == goTypePtrString:
+		return "types.Email(stringFromPtr(" + varPrefix + "." + fieldName + "))"
+	case (goType == goTypeEmail || goType == goTypeEmailFull) && sqlcType == goTypeString:
+		return "types.Email(" + varPrefix + "." + fieldName + ")"
+
+	// Map/JSON conversions
+	case goType == goTypeMapString && sqlcType == goTypePtrString:
+		return "unmarshalJSON(" + varPrefix + "." + fieldName + ")"
+	case goType == goTypeString && sqlcType == goTypeString:
+		return varPrefix + "." + fieldName
+
+	// String pointer conversions
+	case goType == goTypeString && sqlcType == goTypePtrString:
+		return "stringFromPtr(" + varPrefix + "." + fieldName + ")"
+	case goType == "*string" && sqlcType == goTypeString:
+		return "stringPtr(" + varPrefix + "." + fieldName + ")"
+
+	// UUID conversions
+	case goType == goTypeUUIDLiteral && sqlcType == goTypePtrUUID:
+		return "uuidFromPtr(" + varPrefix + "." + fieldName + ")"
+	case goType == "*UUID" && sqlcType == goTypeUUIDType:
+		return "&" + varPrefix + "." + fieldName
+	case goType == goTypeUUIDLiteral && sqlcType == goTypeUUIDType:
+		return varPrefix + "." + fieldName
+
+	// Time conversions
+	case goType == goTypeTimeTime && sqlcType == goTypePtrTime:
+		return "timeFromPtr(" + varPrefix + "." + fieldName + ")"
+	case goType == "*time.Time" && sqlcType == goTypeTimeTime:
+		return "&" + varPrefix + "." + fieldName
+	case goType == goTypeTimeTime && sqlcType == goTypeTimeTime:
+		return varPrefix + "." + fieldName
+
+	// Boolean conversions
+	case goType == goTypeBool && sqlcType == goTypeBool:
+		return varPrefix + "." + fieldName
+
+	// Number conversions
+	case goType == goTypeFloat32 && sqlcType == goTypeInt32:
+		return "float32(" + varPrefix + "." + fieldName + ")"
+	case goType == goTypeFloat32 && sqlcType == goTypeFloat64:
+		return "float32(" + varPrefix + "." + fieldName + ")"
+	case goType == goTypeFloat64 && sqlcType == goTypeFloat32:
+		return "float64(" + varPrefix + "." + fieldName + ")"
+	case goType == goTypeFloat32 && sqlcType == goTypeFloat32:
+		return varPrefix + "." + fieldName
+	case goType == goTypeFloat64 && sqlcType == goTypeFloat64:
+		return varPrefix + "." + fieldName
+	case goType == goTypeInt32 && sqlcType == goTypeInt32:
+		return varPrefix + "." + fieldName
+
+	// Enum conversions (when Go type is not a basic type but SQLC type is string)
+	case sqlcType == goTypeString && goType != goTypeString && goType != "*string":
+		return goType + "(" + varPrefix + "." + fieldName + ")"
+
+	// Default: direct assignment
+	default:
+		return varPrefix + "." + fieldName
+	}
+}
+
+// GenerateCreateTypeConversion generates type conversions for Create operations
+//
+//nolint:gocyclo // This function needs to handle many type conversion cases
+func GenerateCreateTypeConversion(goType, sqlcType, varPrefix, fieldName string) string {
+	if goType == "" || sqlcType == "" {
+		// Fallback if type inference failed
+		return varPrefix + "." + fieldName
+	}
+
+	// Handle special cases based on type combinations
+	switch {
+	// Email field conversions (including openapi_types.Email)
+	case (goType == goTypeEmail || goType == goTypeEmailFull) && sqlcType == goTypePtrString:
+		return "stringPtr(string(" + varPrefix + "." + fieldName + "))"
+	case (goType == goTypeEmail || goType == goTypeEmailFull) && sqlcType == goTypeString:
+		return "string(" + varPrefix + "." + fieldName + ")"
+
+	// Enum conversions (custom type to string)
+	case strings.Contains(goType, "ID") && !strings.Contains(goType, "UUID") && sqlcType == goTypeString:
+		// This handles types like AccountProviderID
+		return "string(" + varPrefix + "." + fieldName + ")"
+
+	// Time to pointer conversions
+	case goType == goTypeTimeTime && sqlcType == goTypePtrTime:
+		return "&" + varPrefix + "." + fieldName
+
+	// Map/object to JSON string conversions
+	case goType == goTypeMapString && sqlcType == goTypePtrString:
+		return "marshalJSON(" + varPrefix + "." + fieldName + ")"
+
+	// String to pointer conversions (for optional fields)
+	case goType == goTypeString && sqlcType == goTypePtrString:
+		return "stringPtr(" + varPrefix + "." + fieldName + ")"
+
+	// UUID handling
+	case goType == goTypeUUIDLiteral && sqlcType == goTypeUUIDType:
+		return varPrefix + "." + fieldName
+	case goType == goTypeUUIDLiteral && sqlcType == goTypePtrUUID:
+		return "&" + varPrefix + "." + fieldName
+	case goType == "*UUID" && sqlcType == goTypePtrUUID:
+		return varPrefix + "." + fieldName
+
+	// Direct assignments
+	case goType == goTypeString && sqlcType == goTypeString:
+		return varPrefix + "." + fieldName
+	case goType == goTypeBool && sqlcType == goTypeBool:
+		return varPrefix + "." + fieldName
+
+	// Number conversions
+	case goType == goTypeFloat32 && sqlcType == goTypeInt32:
+		return "int32(" + varPrefix + "." + fieldName + ")"
+	case goType == goTypeFloat32 && sqlcType == goTypeFloat64:
+		return "float64(" + varPrefix + "." + fieldName + ")"
+	case goType == goTypeInt32 && sqlcType == goTypeInt32:
+		return varPrefix + "." + fieldName
+
+	// Enum conversions (when SQL expects string but Go has custom type)
+	case sqlcType == goTypeString && !strings.HasPrefix(goType, goTypeString) && !strings.HasPrefix(goType, goTypePtrString):
+		return "string(" + varPrefix + "." + fieldName + ")"
+
+	// Default: direct assignment
+	default:
+		return varPrefix + "." + fieldName
+	}
+}
+
+// IsUpdateExcluded checks if a field should be excluded from update operations
+func IsUpdateExcluded(fieldName string, excludeList []string) bool {
+	for _, excluded := range excludeList {
+		if strings.EqualFold(excluded, fieldName) {
+			return true
+		}
+	}
+	return false
+}
+
+// GenerateUpdateTypeConversion generates type conversions for Update operations
+// Update operations require pointer types for all fields to indicate which fields to update
+func GenerateUpdateTypeConversion(goType, sqlcType, varPrefix, fieldName string) string {
+	// For UPDATE operations, everything needs to be a pointer since all fields are optional
+
+	// Handle special type conversions first
+	switch {
+	// Email types need to be converted to string first, then to pointer
+	case strings.Contains(goType, "Email"):
+		return "stringPtr(string(" + varPrefix + "." + fieldName + "))"
+
+	// Custom types (enums, type aliases) that are string-based
+	case goType != "" && goType != goTypeString && goType != goTypeBool && goType != goTypeInt &&
+		goType != goTypeInt32 && goType != goTypeInt64 && goType != goTypeFloat32 && goType != goTypeFloat64 &&
+		goType != goTypeTimeTime && !strings.Contains(goType, "UUID") && !strings.Contains(goType, "*"):
+		// It's a custom type like MemberRole, convert to string then pointer
+		return "stringPtr(string(" + varPrefix + "." + fieldName + "))"
+
+	// UUID types
+	case strings.Contains(goType, "UUID"):
+		return "&" + varPrefix + "." + fieldName
+
+	// Map/JSON types
+	case strings.Contains(goType, "map[string]"):
+		return "marshalJSON(" + varPrefix + "." + fieldName + ")"
+
+	// Basic types - convert to pointer
+	case goType == goTypeString:
+		return "stringPtr(" + varPrefix + "." + fieldName + ")"
+	case goType == goTypeBool:
+		return "boolPtr(" + varPrefix + "." + fieldName + ")"
+	case goType == goTypeInt32:
+		return "int32Ptr(" + varPrefix + "." + fieldName + ")"
+	case goType == "int64":
+		return "int64Ptr(int64(" + varPrefix + "." + fieldName + "))"
+	case goType == goTypeFloat32:
+		// Check what SQLC expects for float32 fields
+		if strings.Contains(sqlcType, "int32") {
+			// Credits and similar fields are float32 but stored as int32
+			return "int32Ptr(int32(" + varPrefix + "." + fieldName + "))"
+		}
+		// For Update operations, SQLC often expects *float64 even when the field is float32
+		return "float64Ptr(float64(" + varPrefix + "." + fieldName + "))"
+	case goType == goTypeFloat64:
+		return "float64Ptr(" + varPrefix + "." + fieldName + ")"
+	case goType == goTypeTimeTime:
+		return "&" + varPrefix + "." + fieldName
+
+	// Already pointer types
+	case strings.HasPrefix(goType, "*"):
+		return varPrefix + "." + fieldName
+
+	// Default fallback - try to determine based on sqlcType or just take address
+	default:
+		if strings.Contains(sqlcType, goTypeString) {
+			return "stringPtr(" + varPrefix + "." + fieldName + ")"
+		} else if strings.Contains(sqlcType, goTypeBool) {
+			return "boolPtr(" + varPrefix + "." + fieldName + ")"
+		} else if strings.Contains(sqlcType, goTypeInt) {
+			return "int32Ptr(" + varPrefix + "." + fieldName + ")"
+		} else if strings.Contains(sqlcType, goTypeFloat32) || strings.Contains(sqlcType, goTypeFloat64) {
+			return "float64Ptr(" + varPrefix + "." + fieldName + ")"
+		}
+		// Last resort - take address
+		return "&" + varPrefix + "." + fieldName
+	}
 }

@@ -3,6 +3,7 @@ package members
 
 import (
 	"context"
+
 	"github.com/google/uuid"
 )
 

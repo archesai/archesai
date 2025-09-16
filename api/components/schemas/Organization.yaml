@@ -1,7 +1,6 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for Organization entity
 x-codegen:
-  # yaml-language-server: $schema=./XCodegen.yaml
   repository:
     operations: [create, read, update, delete, list]
     indices: [slug, stripeCustomerID]
@@ -12,17 +11,6 @@ x-codegen:
       - name: GetByStripeCustomerID
         params: [stripeCustomerID]
         returns: single
-  cache:
-    enabled: true
-    ttl: 600 # 10 minutes
-    key_pattern: 'org:{id}'
-    invalidate_on: [update, delete]
-  events:
-    - created
-    - updated
-    - deleted
-    - plan_changed
-    - credits_updated
   service:
     generate: true
     transaction_support: true

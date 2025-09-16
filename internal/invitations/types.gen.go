@@ -79,7 +79,7 @@ type Invitation struct {
 	Email string `json:"email" yaml:"email"`
 
 	// ExpiresAt The date and time when the invitation expires
-	ExpiresAt string `json:"expiresAt" yaml:"expiresAt"`
+	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
 
 	// ID Universally Unique IDentifier
 	ID             UUID `json:"id" yaml:"id"`

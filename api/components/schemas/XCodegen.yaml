@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
-description: x-codegen configuration for code generation from OpenAPI schemas
+description: Configuration for code generation from OpenAPI schemas
 type: object
 properties:
   repository:
@@ -7,7 +7,7 @@ properties:
     type: object
     properties:
       operations:
-        description: CRUD operations to generate
+        description: CRUD operations to generate for service/handler layers (repository always gets all)
         type: array
         items:
           type: string
@@ -35,6 +35,11 @@ properties:
           type: array
           items:
             type: string
+      update_exclude:
+        description: Fields to exclude from update operations (readonly after creation)
+        type: array
+        items:
+          type: string
       additional_methods:
         description: Custom repository methods to generate
         type: array
@@ -264,7 +269,7 @@ properties:
         default: false
     additionalProperties: false
   database:
-    description: Database configuration for x-codegen
+    description: Database configuration
     type: object
     properties:
       table:

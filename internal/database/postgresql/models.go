@@ -11,6 +11,21 @@ import (
 	"github.com/pgvector/pgvector-go"
 )
 
+type APIToken struct {
+	ID             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	ExpiresAt      *time.Time
+	KeyHash        string
+	Name           *string
+	Prefix         *string
+	UserID         uuid.UUID
+	OrganizationID uuid.UUID
+	Scopes         []string
+	RateLimit      int32
+	LastUsedAt     *time.Time
+}
+
 type Account struct {
 	ID                    uuid.UUID
 	CreatedAt             time.Time
@@ -27,21 +42,6 @@ type Account struct {
 	UserID                uuid.UUID
 }
 
-type ApiToken struct {
-	ID             uuid.UUID
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	ExpiresAt      *time.Time
-	KeyHash        string
-	Name           *string
-	Prefix         *string
-	UserID         uuid.UUID
-	OrganizationID uuid.UUID
-	Scopes         []string
-	RateLimit      int32
-	LastUsedAt     *time.Time
-}
-
 type Artifact struct {
 	ID             uuid.UUID
 	CreatedAt      time.Time
@@ -54,7 +54,7 @@ type Artifact struct {
 	PreviewImage   *string
 	ProducerID     *uuid.UUID
 	Text           *string
-	Url            *string
+	URL            *string
 	Embedding      *pgvector.Vector
 }
 
@@ -134,11 +134,11 @@ type Run struct {
 	CompletedAt    *time.Time
 	Error          *string
 	OrganizationID uuid.UUID
-	PipelineID     *uuid.UUID
+	PipelineID     uuid.UUID
 	Progress       float64
 	StartedAt      *time.Time
 	Status         string
-	ToolID         *uuid.UUID
+	ToolID         uuid.UUID
 }
 
 type RunToArtifact struct {
@@ -152,7 +152,7 @@ type Session struct {
 	UpdatedAt            time.Time
 	ActiveOrganizationID *uuid.UUID
 	ExpiresAt            time.Time
-	IpAddress            *string
+	IPAddress            *string
 	Token                string
 	UserAgent            *string
 	UserID               uuid.UUID

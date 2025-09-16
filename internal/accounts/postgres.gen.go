@@ -3,7 +3,10 @@ package accounts
 
 import (
 	"context"
-	"errors"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -28,93 +31,238 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Create creates a new account
 func (r *PostgresRepository) Create(ctx context.Context, entity *Account) (*Account, error) {
-	// Check if SQLC has the CreateAccount method
-	// For now, we'll generate a stub but with proper error handling
-	// TODO: Parse SQLC to detect available queries
+	params := postgresql.CreateAccountParams{
+		ID: entity.ID,
 
-	// Example of what it should look like when SQLC query exists:
-	// params := postgresql.CreateAccountParams{
-	//     ID: entity.ID,
-	//     // ... map other fields
-	// }
-	// dbAccount, err := r.queries.CreateAccount(ctx, params)
-	// if err != nil {
-	//     return nil, err
-	// }
-	// return mapAccountToDomain(&dbAccount), nil
+		AccountID:             entity.AccountID,
+		UserID:                entity.UserID,
+		ProviderID:            string(entity.ProviderID),
+		AccessToken:           stringPtr(entity.AccessToken),
+		AccessTokenExpiresAt:  &entity.AccessTokenExpiresAt,
+		RefreshToken:          stringPtr(entity.RefreshToken),
+		RefreshTokenExpiresAt: &entity.RefreshTokenExpiresAt,
+		IDToken:               stringPtr(entity.IDToken),
+		Password:              stringPtr(entity.Password),
+		Scope:                 stringPtr(entity.Scope),
+	}
 
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.CreateAccount(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create account: %w", err)
+	}
+
+	return mapAccountFromDB(&result), nil
 }
 
 // Get retrieves a account by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Account, error) {
-	// Try to call SQLC GetAccount if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.GetAccount(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrAccountNotFound
+		}
+		return nil, fmt.Errorf("failed to get account: %w", err)
+	}
+
+	return mapAccountFromDB(&result), nil
 }
 
 // Update updates an existing account
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Account) (*Account, error) {
-	// Update operations are often custom and may not have SQLC queries
-	return nil, errors.New("not implemented - SQLC query not found")
+	params := postgresql.UpdateAccountParams{
+		ID: id,
+
+		AccessToken:           stringPtr(entity.AccessToken),
+		AccessTokenExpiresAt:  &entity.AccessTokenExpiresAt,
+		RefreshToken:          stringPtr(entity.RefreshToken),
+		RefreshTokenExpiresAt: &entity.RefreshTokenExpiresAt,
+		IDToken:               stringPtr(entity.IDToken),
+		Password:              stringPtr(entity.Password),
+		Scope:                 stringPtr(entity.Scope),
+	}
+
+	result, err := r.queries.UpdateAccount(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrAccountNotFound
+		}
+		return nil, fmt.Errorf("failed to update account: %w", err)
+	}
+
+	return mapAccountFromDB(&result), nil
 }
 
 // Delete removes a account
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	// Try to call SQLC DeleteAccount if it exists
-	// For now, return not implemented
-	return errors.New("not implemented - SQLC query not found")
+	err := r.queries.DeleteAccount(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ErrAccountNotFound
+		}
+		return fmt.Errorf("failed to delete account: %w", err)
+	}
+	return nil
 }
 
 // List returns a paginated list of accounts
 func (r *PostgresRepository) List(ctx context.Context, params ListAccountsParams) ([]*Account, int64, error) {
-	// List operations need both List and Count queries from SQLC
-	return nil, 0, errors.New("not implemented - SQLC query not found")
+	// Calculate offset from page
+	offset := int32(0)
+	limit := int32(10) // default
+
+	// Check if params has Page field with Number and Size
+	if params.Page.Number > 0 && params.Page.Size > 0 {
+		offset = int32((params.Page.Number - 1) * params.Page.Size)
+		limit = int32(params.Page.Size)
+	}
+
+	listParams := postgresql.ListAccountsParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	results, err := r.queries.ListAccounts(ctx, listParams)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to list accounts: %w", err)
+	}
+
+	items := make([]*Account, len(results))
+	for i, result := range results {
+		items[i] = mapAccountFromDB(&result)
+	}
+
+	// For now, return the count as the length of results
+	// In production, you'd want a separate count query
+	count := int64(len(results))
+
+	return items, count, nil
 }
 
 // GetByProviderID retrieves account by providerproviderAccountID
 func (r *PostgresRepository) GetByProviderID(ctx context.Context, provider string, providerAccountID string) (*Account, error) {
+	// TODO: Implement GetByProviderID - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC GetByProviderID if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("GetByProviderID not implemented - add SQLC query")
 
 }
 
 // ListByUserID retrieves multiple accounts by userID
 func (r *PostgresRepository) ListByUserID(ctx context.Context, userID uuid.UUID) ([]*Account, error) {
+	// TODO: Implement ListByUserID - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC ListByUserID if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("ListByUserID not implemented - add SQLC query")
 
 }
 
 // Mapper functions - Convert between domain types and database types
-// These need to be customized based on the actual field mappings
 
-func mapAccountToDomain(db *postgresql.Account) *Account {
+func mapAccountFromDB(db *postgresql.Account) *Account {
 	if db == nil {
 		return nil
 	}
 
-	// This is a basic mapping - needs to be customized based on actual types
-	// The challenge is that OpenAPI types and database types don't always match
-	// For example:
-	// - OpenAPI might use string, database uses *string
-	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (ID vs ID)
-
 	result := &Account{
-		// TODO: Map fields properly based on actual type definitions
-		// This requires parsing both OpenAPI types and SQLC types
+		ID:        db.ID,
+		CreatedAt: db.CreatedAt,
+		UpdatedAt: db.UpdatedAt,
+
+		AccountID: db.AccountID,
+
+		UserID: db.UserID,
+
+		ProviderID: AccountProviderID(db.ProviderID),
+
+		AccessToken: stringFromPtr(db.AccessToken),
+
+		AccessTokenExpiresAt: timeFromPtr(db.AccessTokenExpiresAt),
+
+		RefreshToken: stringFromPtr(db.RefreshToken),
+
+		RefreshTokenExpiresAt: timeFromPtr(db.RefreshTokenExpiresAt),
+
+		IDToken: stringFromPtr(db.IDToken),
+
+		Password: stringFromPtr(db.Password),
+
+		Scope: stringFromPtr(db.Scope),
 	}
 
-	// Basic field mapping - customize based on your entity structure
-	// result.ID = db.ID
-	// result.CreatedAt = db.CreatedAt
-	// result.UpdatedAt = db.UpdatedAt
-	// Add specific field mappings as needed
-
 	return result
+}
+
+// Helper functions for conversions
+func stringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func stringFromPtr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func boolPtr(b bool) *bool {
+	return &b
+}
+
+func int32Ptr(i int32) *int32 {
+	return &i
+}
+
+func float32Ptr(f float32) *float32 {
+	return &f
+}
+
+func float64Ptr(f float64) *float64 {
+	return &f
+}
+
+func marshalJSON(v interface{}) *string {
+	if v == nil {
+		return nil
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil
+	}
+	s := string(data)
+	return &s
+}
+
+func unmarshalJSON(s *string) map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	var result map[string]interface{}
+	if err := json.Unmarshal([]byte(*s), &result); err != nil {
+		return nil
+	}
+	return result
+}
+
+func uuidFromPtr(u *uuid.UUID) uuid.UUID {
+	if u == nil {
+		return uuid.Nil
+	}
+	return *u
+}
+
+func timeFromPtr(t *time.Time) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return *t
 }

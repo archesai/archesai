@@ -26,8 +26,9 @@ allOf:
       expiresAt:
         description: The date and time when the invitation expires
         type: string
+        format: date-time
         minLength: 1
-        example: example-string
+        example: '2023-12-31T23:59:59Z'
       inviterID:
         allOf:
           - $ref: ./UUID.yaml

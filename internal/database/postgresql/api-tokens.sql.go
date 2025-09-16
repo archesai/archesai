@@ -43,7 +43,7 @@ type CreateApiTokenParams struct {
 	ExpiresAt      *time.Time
 }
 
-func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (ApiToken, error) {
+func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (APIToken, error) {
 	row := q.db.QueryRow(ctx, createApiToken,
 		arg.ID,
 		arg.UserID,
@@ -55,7 +55,7 @@ func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) 
 		arg.RateLimit,
 		arg.ExpiresAt,
 	)
-	var i ApiToken
+	var i APIToken
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
@@ -118,9 +118,9 @@ LIMIT
   1
 `
 
-func (q *Queries) GetApiToken(ctx context.Context, id uuid.UUID) (ApiToken, error) {
+func (q *Queries) GetApiToken(ctx context.Context, id uuid.UUID) (APIToken, error) {
 	row := q.db.QueryRow(ctx, getApiToken, id)
-	var i ApiToken
+	var i APIToken
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
@@ -149,9 +149,9 @@ LIMIT
   1
 `
 
-func (q *Queries) GetApiTokenByKeyHash(ctx context.Context, keyHash string) (ApiToken, error) {
+func (q *Queries) GetApiTokenByKeyHash(ctx context.Context, keyHash string) (APIToken, error) {
 	row := q.db.QueryRow(ctx, getApiTokenByKeyHash, keyHash)
-	var i ApiToken
+	var i APIToken
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
@@ -187,15 +187,15 @@ type ListApiTokensParams struct {
 	Offset int32
 }
 
-func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([]ApiToken, error) {
+func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([]APIToken, error) {
 	rows, err := q.db.Query(ctx, listApiTokens, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ApiToken
+	var items []APIToken
 	for rows.Next() {
-		var i ApiToken
+		var i APIToken
 		if err := rows.Scan(
 			&i.ID,
 			&i.CreatedAt,
@@ -241,15 +241,15 @@ type ListApiTokensByOrganizationParams struct {
 	Offset         int32
 }
 
-func (q *Queries) ListApiTokensByOrganization(ctx context.Context, arg ListApiTokensByOrganizationParams) ([]ApiToken, error) {
+func (q *Queries) ListApiTokensByOrganization(ctx context.Context, arg ListApiTokensByOrganizationParams) ([]APIToken, error) {
 	rows, err := q.db.Query(ctx, listApiTokensByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ApiToken
+	var items []APIToken
 	for rows.Next() {
-		var i ApiToken
+		var i APIToken
 		if err := rows.Scan(
 			&i.ID,
 			&i.CreatedAt,
@@ -295,15 +295,15 @@ type ListApiTokensByUserParams struct {
 	Offset int32
 }
 
-func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]ApiToken, error) {
+func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]APIToken, error) {
 	rows, err := q.db.Query(ctx, listApiTokensByUser, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ApiToken
+	var items []APIToken
 	for rows.Next() {
-		var i ApiToken
+		var i APIToken
 		if err := rows.Scan(
 			&i.ID,
 			&i.CreatedAt,
@@ -350,7 +350,7 @@ type UpdateApiTokenParams struct {
 	ID        uuid.UUID
 }
 
-func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (ApiToken, error) {
+func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (APIToken, error) {
 	row := q.db.QueryRow(ctx, updateApiToken,
 		arg.Name,
 		arg.Scopes,
@@ -358,7 +358,7 @@ func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) 
 		arg.ExpiresAt,
 		arg.ID,
 	)
-	var i ApiToken
+	var i APIToken
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,

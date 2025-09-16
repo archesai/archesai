@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for Session entity
 x-codegen:
-  # yaml-language-server: $schema=./XCodegen.yaml
   repository:
     operations: [create, read, update, delete, list]
     indices: [userID, token]
+    update_exclude: [ipAddress, token, userAgent] # These fields are readonly after creation
     additional_methods:
       - name: GetByToken
         params: [token]
@@ -18,16 +18,6 @@ x-codegen:
       - name: DeleteExpired
         params: []
         returns: void
-  cache:
-    enabled: true
-    ttl: 120 # 2 minutes - shorter for sessions
-    key_pattern: 'session:{token}'
-    invalidate_on: [update, delete]
-  events:
-    - created
-    - refreshed
-    - expired
-    - deleted
 allOf:
   - $ref: ./Base.yaml
   - type: object
@@ -39,7 +29,8 @@ allOf:
         description: The expiration date of the session
         type: string
         minLength: 1
-        example: example-string
+        format: date-time
+        example: '2023-10-05T14:48:00Z'
       ipAddress:
         description: The IP address of the session
         type: string

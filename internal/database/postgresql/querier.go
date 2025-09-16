@@ -16,7 +16,7 @@ type Querier interface {
 	CountPipelineSteps(ctx context.Context, pipelineID uuid.UUID) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
-	CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (ApiToken, error)
+	CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (APIToken, error)
 	CreateArtifact(ctx context.Context, arg CreateArtifactParams) (Artifact, error)
 	CreateInvitation(ctx context.Context, arg CreateInvitationParams) (Invitation, error)
 	CreateLabel(ctx context.Context, arg CreateLabelParams) (Label, error)
@@ -51,7 +51,7 @@ type Querier interface {
 	DeletePipelineStepsByPipeline(ctx context.Context, pipelineID uuid.UUID) error
 	DeletePipelinesByOrganization(ctx context.Context, organizationID uuid.UUID) error
 	DeleteRun(ctx context.Context, id uuid.UUID) error
-	DeleteRunsByPipeline(ctx context.Context, pipelineID *uuid.UUID) error
+	DeleteRunsByPipeline(ctx context.Context, pipelineID uuid.UUID) error
 	DeleteSession(ctx context.Context, id uuid.UUID) error
 	DeleteSessionsByUser(ctx context.Context, userID uuid.UUID) error
 	DeleteTool(ctx context.Context, id uuid.UUID) error
@@ -60,9 +60,10 @@ type Querier interface {
 	DeleteVerificationToken(ctx context.Context, id uuid.UUID) error
 	DeleteVerificationTokensByIdentifier(ctx context.Context, identifier string) error
 	GetAccount(ctx context.Context, id uuid.UUID) (Account, error)
+	GetAccountByProviderID(ctx context.Context, arg GetAccountByProviderIDParams) (Account, error)
 	GetAccountByUser(ctx context.Context, arg GetAccountByUserParams) (Account, error)
-	GetApiToken(ctx context.Context, id uuid.UUID) (ApiToken, error)
-	GetApiTokenByKeyHash(ctx context.Context, keyHash string) (ApiToken, error)
+	GetApiToken(ctx context.Context, id uuid.UUID) (APIToken, error)
+	GetApiTokenByKeyHash(ctx context.Context, keyHash string) (APIToken, error)
 	GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, error)
 	GetInvitation(ctx context.Context, id uuid.UUID) (Invitation, error)
 	GetInvitationByEmail(ctx context.Context, arg GetInvitationByEmailParams) (Invitation, error)
@@ -87,9 +88,9 @@ type Querier interface {
 	GetVerificationTokenByValue(ctx context.Context, arg GetVerificationTokenByValueParams) (VerificationToken, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
 	ListAccountsByUser(ctx context.Context, userID uuid.UUID) ([]Account, error)
-	ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([]ApiToken, error)
-	ListApiTokensByOrganization(ctx context.Context, arg ListApiTokensByOrganizationParams) ([]ApiToken, error)
-	ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]ApiToken, error)
+	ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([]APIToken, error)
+	ListApiTokensByOrganization(ctx context.Context, arg ListApiTokensByOrganizationParams) ([]APIToken, error)
+	ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]APIToken, error)
 	ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([]Artifact, error)
 	ListArtifactsByOrganization(ctx context.Context, arg ListArtifactsByOrganizationParams) ([]Artifact, error)
 	ListArtifactsByProducer(ctx context.Context, arg ListArtifactsByProducerParams) ([]Artifact, error)
@@ -119,7 +120,7 @@ type Querier interface {
 	ListVerificationTokens(ctx context.Context, arg ListVerificationTokensParams) ([]VerificationToken, error)
 	ListVerificationTokensByIdentifier(ctx context.Context, arg ListVerificationTokensByIdentifierParams) ([]VerificationToken, error)
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)
-	UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (ApiToken, error)
+	UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (APIToken, error)
 	UpdateApiTokenLastUsed(ctx context.Context, id uuid.UUID) error
 	UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) (Artifact, error)
 	UpdateInvitation(ctx context.Context, arg UpdateInvitationParams) (Invitation, error)

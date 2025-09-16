@@ -51,6 +51,17 @@ WHERE
 LIMIT
   1;
 
+-- name: GetAccountByProviderID :one
+SELECT
+  *
+FROM
+  account
+WHERE
+  provider_id = $1
+  AND account_id = $2
+LIMIT
+  1;
+
 -- name: ListAccounts :many
 SELECT
   *

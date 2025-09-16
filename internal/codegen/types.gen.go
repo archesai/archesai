@@ -226,7 +226,7 @@ type CodegenConfig_Generators_Tests struct {
 	union json.RawMessage
 }
 
-// XCodegen x-codegen configuration for code generation from OpenAPI schemas
+// XCodegen Configuration for code generation from OpenAPI schemas
 type XCodegen struct {
 	// Adapter Type adapter generation configuration
 	Adapter struct {
@@ -270,7 +270,7 @@ type XCodegen struct {
 		WarmOnStartup bool `json:"warm_on_startup,omitempty,omitzero" yaml:"warm_on_startup,omitempty"`
 	} `json:"cache,omitempty,omitzero" yaml:"cache,omitempty"`
 
-	// Database Database configuration for x-codegen
+	// Database Database configuration
 	Database struct {
 		// Indices Database indices to create
 		Indices []struct {
@@ -386,7 +386,7 @@ type XCodegen struct {
 		// Indices Fields to create indices on
 		Indices []string `json:"indices,omitempty,omitzero" yaml:"indices,omitempty"`
 
-		// Operations CRUD operations to generate
+		// Operations CRUD operations to generate for service/handler layers (repository always gets all)
 		Operations []XCodegenRepositoryOperations `json:"operations,omitempty,omitzero" yaml:"operations,omitempty"`
 
 		// Postgres PostgreSQL-specific configuration
@@ -412,6 +412,9 @@ type XCodegen struct {
 
 		// UniqueConstraints Unique constraints across multiple fields
 		UniqueConstraints [][]string `json:"unique_constraints,omitempty,omitzero" yaml:"unique_constraints,omitempty"`
+
+		// UpdateExclude Fields to exclude from update operations (readonly after creation)
+		UpdateExclude []string `json:"update_exclude,omitempty,omitzero" yaml:"update_exclude,omitempty"`
 	} `json:"repository,omitempty,omitzero" yaml:"repository,omitempty"`
 
 	// Service Service layer generation configuration

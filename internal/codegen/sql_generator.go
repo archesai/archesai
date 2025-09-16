@@ -133,7 +133,7 @@ func (g *SQLSchemaGenerator) inferSQLType(prop *oas3.Schema) string {
 			return "TIMESTAMP"
 		}
 		if prop.Format != nil && *prop.Format == "uuid" {
-			return "UUID"
+			return sqlTypeUUID
 		}
 		if prop.MaxLength != nil && *prop.MaxLength > 0 && *prop.MaxLength <= 255 {
 			return fmt.Sprintf("VARCHAR(%d)", *prop.MaxLength)
@@ -141,7 +141,7 @@ func (g *SQLSchemaGenerator) inferSQLType(prop *oas3.Schema) string {
 		return "TEXT" //nolint:goconst // SQL type
 	}
 	if schemaType == "integer" {
-		if prop.Format != nil && *prop.Format == "int64" {
+		if prop.Format != nil && *prop.Format == formatInt64 {
 			return "BIGINT"
 		}
 		return "INTEGER"

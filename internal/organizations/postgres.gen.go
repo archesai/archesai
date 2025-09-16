@@ -3,11 +3,15 @@ package organizations
 
 import (
 	"context"
-	"errors"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/oapi-codegen/runtime/types"
 )
 
 // PostgresRepository implements Repository using PostgreSQL.
@@ -28,93 +32,229 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Create creates a new organization
 func (r *PostgresRepository) Create(ctx context.Context, entity *Organization) (*Organization, error) {
-	// Check if SQLC has the CreateOrganization method
-	// For now, we'll generate a stub but with proper error handling
-	// TODO: Parse SQLC to detect available queries
+	params := postgresql.CreateOrganizationParams{
+		ID: entity.ID,
 
-	// Example of what it should look like when SQLC query exists:
-	// params := postgresql.CreateOrganizationParams{
-	//     ID: entity.ID,
-	//     // ... map other fields
-	// }
-	// dbOrganization, err := r.queries.CreateOrganization(ctx, params)
-	// if err != nil {
-	//     return nil, err
-	// }
-	// return mapOrganizationToDomain(&dbOrganization), nil
+		Name:             entity.Name,
+		Logo:             stringPtr(entity.Logo),
+		BillingEmail:     stringPtr(string(entity.BillingEmail)),
+		Plan:             string(entity.Plan),
+		Credits:          int32(entity.Credits),
+		Metadata:         marshalJSON(entity.Metadata),
+		StripeCustomerID: stringPtr(entity.StripeCustomerID),
+	}
 
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.CreateOrganization(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create organization: %w", err)
+	}
+
+	return mapOrganizationFromDB(&result), nil
 }
 
 // Get retrieves a organization by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Organization, error) {
-	// Try to call SQLC GetOrganization if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.GetOrganization(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrOrganizationNotFound
+		}
+		return nil, fmt.Errorf("failed to get organization: %w", err)
+	}
+
+	return mapOrganizationFromDB(&result), nil
 }
 
 // Update updates an existing organization
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error) {
-	// Update operations are often custom and may not have SQLC queries
-	return nil, errors.New("not implemented - SQLC query not found")
+	params := postgresql.UpdateOrganizationParams{
+		ID: id,
+
+		Name:             stringPtr(entity.Name),
+		Logo:             stringPtr(entity.Logo),
+		BillingEmail:     stringPtr(string(entity.BillingEmail)),
+		Plan:             stringPtr(string(entity.Plan)),
+		Credits:          int32Ptr(int32(entity.Credits)),
+		Metadata:         marshalJSON(entity.Metadata),
+		StripeCustomerID: stringPtr(entity.StripeCustomerID),
+	}
+
+	result, err := r.queries.UpdateOrganization(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrOrganizationNotFound
+		}
+		return nil, fmt.Errorf("failed to update organization: %w", err)
+	}
+
+	return mapOrganizationFromDB(&result), nil
 }
 
 // Delete removes a organization
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	// Try to call SQLC DeleteOrganization if it exists
-	// For now, return not implemented
-	return errors.New("not implemented - SQLC query not found")
+	err := r.queries.DeleteOrganization(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ErrOrganizationNotFound
+		}
+		return fmt.Errorf("failed to delete organization: %w", err)
+	}
+	return nil
 }
 
 // List returns a paginated list of organizations
 func (r *PostgresRepository) List(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error) {
-	// List operations need both List and Count queries from SQLC
-	return nil, 0, errors.New("not implemented - SQLC query not found")
+	// Calculate offset from page
+	offset := int32(0)
+	limit := int32(10) // default
+
+	// Check if params has Page field with Number and Size
+	if params.Page.Number > 0 && params.Page.Size > 0 {
+		offset = int32((params.Page.Number - 1) * params.Page.Size)
+		limit = int32(params.Page.Size)
+	}
+
+	listParams := postgresql.ListOrganizationsParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	results, err := r.queries.ListOrganizations(ctx, listParams)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to list organizations: %w", err)
+	}
+
+	items := make([]*Organization, len(results))
+	for i, result := range results {
+		items[i] = mapOrganizationFromDB(&result)
+	}
+
+	// For now, return the count as the length of results
+	// In production, you'd want a separate count query
+	count := int64(len(results))
+
+	return items, count, nil
 }
 
 // GetBySlug retrieves organization by slug
 func (r *PostgresRepository) GetBySlug(ctx context.Context, slug string) (*Organization, error) {
+	// TODO: Implement GetBySlug - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC GetBySlug if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("GetBySlug not implemented - add SQLC query")
 
 }
 
 // GetByStripeCustomerID retrieves organization by stripeCustomerID
 func (r *PostgresRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*Organization, error) {
+	// TODO: Implement GetByStripeCustomerID - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC GetByStripeCustomerID if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("GetByStripeCustomerID not implemented - add SQLC query")
 
 }
 
 // Mapper functions - Convert between domain types and database types
-// These need to be customized based on the actual field mappings
 
-func mapOrganizationToDomain(db *postgresql.Organization) *Organization {
+func mapOrganizationFromDB(db *postgresql.Organization) *Organization {
 	if db == nil {
 		return nil
 	}
 
-	// This is a basic mapping - needs to be customized based on actual types
-	// The challenge is that OpenAPI types and database types don't always match
-	// For example:
-	// - OpenAPI might use string, database uses *string
-	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (ID vs ID)
-
 	result := &Organization{
-		// TODO: Map fields properly based on actual type definitions
-		// This requires parsing both OpenAPI types and SQLC types
+		ID:        db.ID,
+		CreatedAt: db.CreatedAt,
+		UpdatedAt: db.UpdatedAt,
+
+		Name: db.Name,
+
+		Logo: stringFromPtr(db.Logo),
+
+		BillingEmail: types.Email(stringFromPtr(db.BillingEmail)),
+
+		Plan: OrganizationPlan(db.Plan),
+
+		Credits: float32(db.Credits),
+
+		Metadata: unmarshalJSON(db.Metadata),
+
+		StripeCustomerID: stringFromPtr(db.StripeCustomerID),
 	}
 
-	// Basic field mapping - customize based on your entity structure
-	// result.ID = db.ID
-	// result.CreatedAt = db.CreatedAt
-	// result.UpdatedAt = db.UpdatedAt
-	// Add specific field mappings as needed
-
 	return result
+}
+
+// Helper functions for conversions
+func stringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func stringFromPtr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func boolPtr(b bool) *bool {
+	return &b
+}
+
+func int32Ptr(i int32) *int32 {
+	return &i
+}
+
+func float32Ptr(f float32) *float32 {
+	return &f
+}
+
+func float64Ptr(f float64) *float64 {
+	return &f
+}
+
+func marshalJSON(v interface{}) *string {
+	if v == nil {
+		return nil
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil
+	}
+	s := string(data)
+	return &s
+}
+
+func unmarshalJSON(s *string) map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	var result map[string]interface{}
+	if err := json.Unmarshal([]byte(*s), &result); err != nil {
+		return nil
+	}
+	return result
+}
+
+func uuidFromPtr(u *uuid.UUID) uuid.UUID {
+	if u == nil {
+		return uuid.Nil
+	}
+	return *u
+}
+
+func timeFromPtr(t *time.Time) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return *t
 }

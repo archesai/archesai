@@ -43,7 +43,7 @@ type CreateSessionParams struct {
 	Token                string
 	ExpiresAt            time.Time
 	ActiveOrganizationID *uuid.UUID
-	IpAddress            *string
+	IPAddress            *string
 	UserAgent            *string
 }
 
@@ -54,7 +54,7 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 		arg.Token,
 		arg.ExpiresAt,
 		arg.ActiveOrganizationID,
-		arg.IpAddress,
+		arg.IPAddress,
 		arg.UserAgent,
 	)
 	var i Session
@@ -64,7 +64,7 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 		&i.UpdatedAt,
 		&i.ActiveOrganizationID,
 		&i.ExpiresAt,
-		&i.IpAddress,
+		&i.IPAddress,
 		&i.Token,
 		&i.UserAgent,
 		&i.UserID,
@@ -114,7 +114,7 @@ func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 		&i.UpdatedAt,
 		&i.ActiveOrganizationID,
 		&i.ExpiresAt,
-		&i.IpAddress,
+		&i.IPAddress,
 		&i.Token,
 		&i.UserAgent,
 		&i.UserID,
@@ -142,7 +142,7 @@ func (q *Queries) GetSessionByToken(ctx context.Context, token string) (Session,
 		&i.UpdatedAt,
 		&i.ActiveOrganizationID,
 		&i.ExpiresAt,
-		&i.IpAddress,
+		&i.IPAddress,
 		&i.Token,
 		&i.UserAgent,
 		&i.UserID,
@@ -183,7 +183,7 @@ func (q *Queries) ListSessions(ctx context.Context, arg ListSessionsParams) ([]S
 			&i.UpdatedAt,
 			&i.ActiveOrganizationID,
 			&i.ExpiresAt,
-			&i.IpAddress,
+			&i.IPAddress,
 			&i.Token,
 			&i.UserAgent,
 			&i.UserID,
@@ -234,7 +234,7 @@ func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUser
 			&i.UpdatedAt,
 			&i.ActiveOrganizationID,
 			&i.ExpiresAt,
-			&i.IpAddress,
+			&i.IPAddress,
 			&i.Token,
 			&i.UserAgent,
 			&i.UserID,
@@ -278,7 +278,7 @@ func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (S
 		&i.UpdatedAt,
 		&i.ActiveOrganizationID,
 		&i.ExpiresAt,
-		&i.IpAddress,
+		&i.IPAddress,
 		&i.Token,
 		&i.UserAgent,
 		&i.UserID,

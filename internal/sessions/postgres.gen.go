@@ -3,7 +3,10 @@ package sessions
 
 import (
 	"context"
-	"errors"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -28,111 +31,239 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Create creates a new session
 func (r *PostgresRepository) Create(ctx context.Context, entity *Session) (*Session, error) {
-	// Check if SQLC has the CreateSession method
-	// For now, we'll generate a stub but with proper error handling
-	// TODO: Parse SQLC to detect available queries
+	params := postgresql.CreateSessionParams{
+		ID: entity.ID,
 
-	// Example of what it should look like when SQLC query exists:
-	// params := postgresql.CreateSessionParams{
-	//     ID: entity.ID,
-	//     // ... map other fields
-	// }
-	// dbSession, err := r.queries.CreateSession(ctx, params)
-	// if err != nil {
-	//     return nil, err
-	// }
-	// return mapSessionToDomain(&dbSession), nil
+		ActiveOrganizationID: &entity.ActiveOrganizationID,
+		ExpiresAt:            entity.ExpiresAt,
+		IPAddress:            stringPtr(entity.IPAddress),
+		Token:                entity.Token,
+		UserAgent:            stringPtr(entity.UserAgent),
+		UserID:               entity.UserID,
+	}
 
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.CreateSession(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create session: %w", err)
+	}
+
+	return mapSessionFromDB(&result), nil
 }
 
 // Get retrieves a session by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Session, error) {
-	// Try to call SQLC GetSession if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.GetSession(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrSessionNotFound
+		}
+		return nil, fmt.Errorf("failed to get session: %w", err)
+	}
+
+	return mapSessionFromDB(&result), nil
 }
 
 // Update updates an existing session
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Session) (*Session, error) {
-	// Update operations are often custom and may not have SQLC queries
-	return nil, errors.New("not implemented - SQLC query not found")
+	params := postgresql.UpdateSessionParams{
+		ID: id,
+
+		ActiveOrganizationID: &entity.ActiveOrganizationID,
+		ExpiresAt:            &entity.ExpiresAt,
+	}
+
+	result, err := r.queries.UpdateSession(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrSessionNotFound
+		}
+		return nil, fmt.Errorf("failed to update session: %w", err)
+	}
+
+	return mapSessionFromDB(&result), nil
 }
 
 // Delete removes a session
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	// Try to call SQLC DeleteSession if it exists
-	// For now, return not implemented
-	return errors.New("not implemented - SQLC query not found")
+	err := r.queries.DeleteSession(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ErrSessionNotFound
+		}
+		return fmt.Errorf("failed to delete session: %w", err)
+	}
+	return nil
 }
 
 // List returns a paginated list of sessions
 func (r *PostgresRepository) List(ctx context.Context, params ListSessionsParams) ([]*Session, int64, error) {
-	// List operations need both List and Count queries from SQLC
-	return nil, 0, errors.New("not implemented - SQLC query not found")
+	// Calculate offset from page
+	offset := int32(0)
+	limit := int32(10) // default
+
+	// Check if params has Page field with Number and Size
+	if params.Page.Number > 0 && params.Page.Size > 0 {
+		offset = int32((params.Page.Number - 1) * params.Page.Size)
+		limit = int32(params.Page.Size)
+	}
+
+	listParams := postgresql.ListSessionsParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	results, err := r.queries.ListSessions(ctx, listParams)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to list sessions: %w", err)
+	}
+
+	items := make([]*Session, len(results))
+	for i, result := range results {
+		items[i] = mapSessionFromDB(&result)
+	}
+
+	// For now, return the count as the length of results
+	// In production, you'd want a separate count query
+	count := int64(len(results))
+
+	return items, count, nil
 }
 
 // GetByToken retrieves session by token
 func (r *PostgresRepository) GetByToken(ctx context.Context, token string) (*Session, error) {
+	// TODO: Implement GetByToken - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC GetByToken if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("GetByToken not implemented - add SQLC query")
 
 }
 
-// DeleteByToken deletes session by token
+// DeleteByToken performs DeleteByToken operation
 func (r *PostgresRepository) DeleteByToken(ctx context.Context, token string) error {
+	// TODO: Implement DeleteByToken - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC DeleteByToken if it exists
-	// For now, return not implemented
-	return errors.New("not implemented - SQLC query not found")
+	return fmt.Errorf("DeleteByToken not implemented - add SQLC query")
 
 }
 
-// DeleteByUser deletes session by userID
+// DeleteByUser performs DeleteByUser operation
 func (r *PostgresRepository) DeleteByUser(ctx context.Context, userID uuid.UUID) error {
+	// TODO: Implement DeleteByUser - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC DeleteByUser if it exists
-	// For now, return not implemented
-	return errors.New("not implemented - SQLC query not found")
+	return fmt.Errorf("DeleteByUser not implemented - add SQLC query")
 
 }
 
-// DeleteExpired deletes session by
+// DeleteExpired performs DeleteExpired operation
 func (r *PostgresRepository) DeleteExpired(ctx context.Context) error {
+	// TODO: Implement DeleteExpired - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC DeleteExpired if it exists
-	// For now, return not implemented
-	return errors.New("not implemented - SQLC query not found")
+	return fmt.Errorf("DeleteExpired not implemented - add SQLC query")
 
 }
 
 // Mapper functions - Convert between domain types and database types
-// These need to be customized based on the actual field mappings
 
-func mapSessionToDomain(db *postgresql.Session) *Session {
+func mapSessionFromDB(db *postgresql.Session) *Session {
 	if db == nil {
 		return nil
 	}
 
-	// This is a basic mapping - needs to be customized based on actual types
-	// The challenge is that OpenAPI types and database types don't always match
-	// For example:
-	// - OpenAPI might use string, database uses *string
-	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (ID vs ID)
-
 	result := &Session{
-		// TODO: Map fields properly based on actual type definitions
-		// This requires parsing both OpenAPI types and SQLC types
+		ID:        db.ID,
+		CreatedAt: db.CreatedAt,
+		UpdatedAt: db.UpdatedAt,
+
+		ActiveOrganizationID: uuidFromPtr(db.ActiveOrganizationID),
+
+		ExpiresAt: db.ExpiresAt,
+
+		IPAddress: stringFromPtr(db.IPAddress),
+
+		Token: db.Token,
+
+		UserAgent: stringFromPtr(db.UserAgent),
+
+		UserID: db.UserID,
 	}
 
-	// Basic field mapping - customize based on your entity structure
-	// result.ID = db.ID
-	// result.CreatedAt = db.CreatedAt
-	// result.UpdatedAt = db.UpdatedAt
-	// Add specific field mappings as needed
-
 	return result
+}
+
+// Helper functions for conversions
+func stringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func stringFromPtr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func boolPtr(b bool) *bool {
+	return &b
+}
+
+func int32Ptr(i int32) *int32 {
+	return &i
+}
+
+func float32Ptr(f float32) *float32 {
+	return &f
+}
+
+func float64Ptr(f float64) *float64 {
+	return &f
+}
+
+func marshalJSON(v interface{}) *string {
+	if v == nil {
+		return nil
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil
+	}
+	s := string(data)
+	return &s
+}
+
+func unmarshalJSON(s *string) map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	var result map[string]interface{}
+	if err := json.Unmarshal([]byte(*s), &result); err != nil {
+		return nil
+	}
+	return result
+}
+
+func uuidFromPtr(u *uuid.UUID) uuid.UUID {
+	if u == nil {
+		return uuid.Nil
+	}
+	return *u
+}
+
+func timeFromPtr(t *time.Time) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return *t
 }

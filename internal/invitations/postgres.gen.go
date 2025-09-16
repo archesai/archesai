@@ -3,7 +3,10 @@ package invitations
 
 import (
 	"context"
-	"errors"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -28,102 +31,232 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Create creates a new invitation
 func (r *PostgresRepository) Create(ctx context.Context, entity *Invitation) (*Invitation, error) {
-	// Check if SQLC has the CreateInvitation method
-	// For now, we'll generate a stub but with proper error handling
-	// TODO: Parse SQLC to detect available queries
+	params := postgresql.CreateInvitationParams{
+		ID: entity.ID,
 
-	// Example of what it should look like when SQLC query exists:
-	// params := postgresql.CreateInvitationParams{
-	//     ID: entity.ID,
-	//     // ... map other fields
-	// }
-	// dbInvitation, err := r.queries.CreateInvitation(ctx, params)
-	// if err != nil {
-	//     return nil, err
-	// }
-	// return mapInvitationToDomain(&dbInvitation), nil
+		Email:          entity.Email,
+		ExpiresAt:      entity.ExpiresAt,
+		InviterID:      entity.InviterID,
+		OrganizationID: entity.OrganizationID,
+		Role:           string(entity.Role),
+		Status:         entity.Status,
+	}
 
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.CreateInvitation(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create invitation: %w", err)
+	}
+
+	return mapInvitationFromDB(&result), nil
 }
 
 // Get retrieves a invitation by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Invitation, error) {
-	// Try to call SQLC GetInvitation if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.GetInvitation(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrInvitationNotFound
+		}
+		return nil, fmt.Errorf("failed to get invitation: %w", err)
+	}
+
+	return mapInvitationFromDB(&result), nil
 }
 
 // Update updates an existing invitation
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Invitation) (*Invitation, error) {
-	// Update operations are often custom and may not have SQLC queries
-	return nil, errors.New("not implemented - SQLC query not found")
+	params := postgresql.UpdateInvitationParams{
+		ID: id,
+
+		Email:     stringPtr(entity.Email),
+		ExpiresAt: &entity.ExpiresAt,
+		Role:      stringPtr(string(entity.Role)),
+		Status:    stringPtr(entity.Status),
+	}
+
+	result, err := r.queries.UpdateInvitation(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrInvitationNotFound
+		}
+		return nil, fmt.Errorf("failed to update invitation: %w", err)
+	}
+
+	return mapInvitationFromDB(&result), nil
 }
 
 // Delete removes a invitation
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	// Try to call SQLC DeleteInvitation if it exists
-	// For now, return not implemented
-	return errors.New("not implemented - SQLC query not found")
+	err := r.queries.DeleteInvitation(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ErrInvitationNotFound
+		}
+		return fmt.Errorf("failed to delete invitation: %w", err)
+	}
+	return nil
 }
 
 // List returns a paginated list of invitations
 func (r *PostgresRepository) List(ctx context.Context, params ListInvitationsParams) ([]*Invitation, int64, error) {
-	// List operations need both List and Count queries from SQLC
-	return nil, 0, errors.New("not implemented - SQLC query not found")
+	// Calculate offset from page
+	offset := int32(0)
+	limit := int32(10) // default
+
+	// Check if params has Page field with Number and Size
+	if params.Page.Number > 0 && params.Page.Size > 0 {
+		offset = int32((params.Page.Number - 1) * params.Page.Size)
+		limit = int32(params.Page.Size)
+	}
+
+	listParams := postgresql.ListInvitationsParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	results, err := r.queries.ListInvitations(ctx, listParams)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to list invitations: %w", err)
+	}
+
+	items := make([]*Invitation, len(results))
+	for i, result := range results {
+		items[i] = mapInvitationFromDB(&result)
+	}
+
+	// For now, return the count as the length of results
+	// In production, you'd want a separate count query
+	count := int64(len(results))
+
+	return items, count, nil
 }
 
 // ListByOrganization retrieves multiple invitations by organizationID
 func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Invitation, error) {
+	// TODO: Implement ListByOrganization - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC ListByOrganization if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("ListByOrganization not implemented - add SQLC query")
 
 }
 
 // GetByEmail retrieves invitation by emailorganizationID
 func (r *PostgresRepository) GetByEmail(ctx context.Context, email string, organizationID uuid.UUID) (*Invitation, error) {
+	// TODO: Implement GetByEmail - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC GetByEmail if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("GetByEmail not implemented - add SQLC query")
 
 }
 
 // ListByInviter retrieves multiple invitations by inviterID
 func (r *PostgresRepository) ListByInviter(ctx context.Context, inviterID string) ([]*Invitation, error) {
+	// TODO: Implement ListByInviter - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC ListByInviter if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("ListByInviter not implemented - add SQLC query")
 
 }
 
 // Mapper functions - Convert between domain types and database types
-// These need to be customized based on the actual field mappings
 
-func mapInvitationToDomain(db *postgresql.Invitation) *Invitation {
+func mapInvitationFromDB(db *postgresql.Invitation) *Invitation {
 	if db == nil {
 		return nil
 	}
 
-	// This is a basic mapping - needs to be customized based on actual types
-	// The challenge is that OpenAPI types and database types don't always match
-	// For example:
-	// - OpenAPI might use string, database uses *string
-	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (ID vs ID)
-
 	result := &Invitation{
-		// TODO: Map fields properly based on actual type definitions
-		// This requires parsing both OpenAPI types and SQLC types
+		ID:        db.ID,
+		CreatedAt: db.CreatedAt,
+		UpdatedAt: db.UpdatedAt,
+
+		Email: db.Email,
+
+		ExpiresAt: db.ExpiresAt,
+
+		InviterID: db.InviterID,
+
+		OrganizationID: db.OrganizationID,
+
+		Role: InvitationRole(db.Role),
+
+		Status: db.Status,
 	}
 
-	// Basic field mapping - customize based on your entity structure
-	// result.ID = db.ID
-	// result.CreatedAt = db.CreatedAt
-	// result.UpdatedAt = db.UpdatedAt
-	// Add specific field mappings as needed
-
 	return result
+}
+
+// Helper functions for conversions
+func stringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func stringFromPtr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func boolPtr(b bool) *bool {
+	return &b
+}
+
+func int32Ptr(i int32) *int32 {
+	return &i
+}
+
+func float32Ptr(f float32) *float32 {
+	return &f
+}
+
+func float64Ptr(f float64) *float64 {
+	return &f
+}
+
+func marshalJSON(v interface{}) *string {
+	if v == nil {
+		return nil
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil
+	}
+	s := string(data)
+	return &s
+}
+
+func unmarshalJSON(s *string) map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	var result map[string]interface{}
+	if err := json.Unmarshal([]byte(*s), &result); err != nil {
+		return nil
+	}
+	return result
+}
+
+func uuidFromPtr(u *uuid.UUID) uuid.UUID {
+	if u == nil {
+		return uuid.Nil
+	}
+	return *u
+}
+
+func timeFromPtr(t *time.Time) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return *t
 }

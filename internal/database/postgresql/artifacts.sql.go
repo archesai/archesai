@@ -37,7 +37,7 @@ type CreateArtifactParams struct {
 	Name           *string
 	Description    *string
 	MimeType       string
-	Url            *string
+	URL            *string
 	Credits        int32
 	PreviewImage   *string
 	ProducerID     *uuid.UUID
@@ -51,7 +51,7 @@ func (q *Queries) CreateArtifact(ctx context.Context, arg CreateArtifactParams) 
 		arg.Name,
 		arg.Description,
 		arg.MimeType,
-		arg.Url,
+		arg.URL,
 		arg.Credits,
 		arg.PreviewImage,
 		arg.ProducerID,
@@ -70,7 +70,7 @@ func (q *Queries) CreateArtifact(ctx context.Context, arg CreateArtifactParams) 
 		&i.PreviewImage,
 		&i.ProducerID,
 		&i.Text,
-		&i.Url,
+		&i.URL,
 		&i.Embedding,
 	)
 	return i, err
@@ -124,7 +124,7 @@ func (q *Queries) GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, erro
 		&i.PreviewImage,
 		&i.ProducerID,
 		&i.Text,
-		&i.Url,
+		&i.URL,
 		&i.Embedding,
 	)
 	return i, err
@@ -169,7 +169,7 @@ func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([
 			&i.PreviewImage,
 			&i.ProducerID,
 			&i.Text,
-			&i.Url,
+			&i.URL,
 			&i.Embedding,
 		); err != nil {
 			return nil, err
@@ -224,7 +224,7 @@ func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtif
 			&i.PreviewImage,
 			&i.ProducerID,
 			&i.Text,
-			&i.Url,
+			&i.URL,
 			&i.Embedding,
 		); err != nil {
 			return nil, err
@@ -279,7 +279,7 @@ func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifacts
 			&i.PreviewImage,
 			&i.ProducerID,
 			&i.Text,
-			&i.Url,
+			&i.URL,
 			&i.Embedding,
 		); err != nil {
 			return nil, err
@@ -313,7 +313,7 @@ type UpdateArtifactParams struct {
 	Name         *string
 	Description  *string
 	MimeType     *string
-	Url          *string
+	URL          *string
 	Credits      *int32
 	PreviewImage *string
 	Text         *string
@@ -325,7 +325,7 @@ func (q *Queries) UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) 
 		arg.Name,
 		arg.Description,
 		arg.MimeType,
-		arg.Url,
+		arg.URL,
 		arg.Credits,
 		arg.PreviewImage,
 		arg.Text,
@@ -343,7 +343,7 @@ func (q *Queries) UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) 
 		&i.PreviewImage,
 		&i.ProducerID,
 		&i.Text,
-		&i.Url,
+		&i.URL,
 		&i.Embedding,
 	)
 	return i, err

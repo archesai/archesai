@@ -1,9 +1,8 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for User entity
 x-codegen:
-  # yaml-language-server: $schema=./XCodegen.yaml
   repository:
-    operations: [read, update, delete, list]
+    operations: [read, update, delete, list] # No create endpoint in API
     indices: [email]
     additional_methods:
       - name: GetByEmail
@@ -30,10 +29,6 @@ allOf:
     properties:
       email:
         description: The user's email address
-        x-codegen:
-          unique: true
-          index: true
-          validation: email
         allOf:
           - $ref: ./Email.yaml
       emailVerified:
@@ -51,8 +46,6 @@ allOf:
         minLength: 1
         maxLength: 255
         example: John Doe
-        x-codegen:
-          searchable: true
     required:
       - email
       - emailVerified

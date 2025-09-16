@@ -3,8 +3,8 @@ package {{.Package}}
 
 import (
 	"context"
-{{range .Imports}}	"{{.}}"
-{{end}}
+
+	"github.com/google/uuid"
 )
 
 {{range .Entities}}{{$entity := .}}

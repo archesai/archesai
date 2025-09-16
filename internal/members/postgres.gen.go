@@ -3,7 +3,10 @@ package members
 
 import (
 	"context"
-	"errors"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -28,102 +31,220 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Create creates a new member
 func (r *PostgresRepository) Create(ctx context.Context, entity *Member) (*Member, error) {
-	// Check if SQLC has the CreateMember method
-	// For now, we'll generate a stub but with proper error handling
-	// TODO: Parse SQLC to detect available queries
+	params := postgresql.CreateMemberParams{
+		ID: entity.ID,
 
-	// Example of what it should look like when SQLC query exists:
-	// params := postgresql.CreateMemberParams{
-	//     ID: entity.ID,
-	//     // ... map other fields
-	// }
-	// dbMember, err := r.queries.CreateMember(ctx, params)
-	// if err != nil {
-	//     return nil, err
-	// }
-	// return mapMemberToDomain(&dbMember), nil
+		OrganizationID: entity.OrganizationID,
+		Role:           string(entity.Role),
+		UserID:         entity.UserID,
+	}
 
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.CreateMember(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create member: %w", err)
+	}
+
+	return mapMemberFromDB(&result), nil
 }
 
 // Get retrieves a member by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Member, error) {
-	// Try to call SQLC GetMember if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.GetMember(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrMemberNotFound
+		}
+		return nil, fmt.Errorf("failed to get member: %w", err)
+	}
+
+	return mapMemberFromDB(&result), nil
 }
 
 // Update updates an existing member
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Member) (*Member, error) {
-	// Update operations are often custom and may not have SQLC queries
-	return nil, errors.New("not implemented - SQLC query not found")
+	params := postgresql.UpdateMemberParams{
+		ID: id,
+
+		Role: stringPtr(string(entity.Role)),
+	}
+
+	result, err := r.queries.UpdateMember(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrMemberNotFound
+		}
+		return nil, fmt.Errorf("failed to update member: %w", err)
+	}
+
+	return mapMemberFromDB(&result), nil
 }
 
 // Delete removes a member
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	// Try to call SQLC DeleteMember if it exists
-	// For now, return not implemented
-	return errors.New("not implemented - SQLC query not found")
+	err := r.queries.DeleteMember(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ErrMemberNotFound
+		}
+		return fmt.Errorf("failed to delete member: %w", err)
+	}
+	return nil
 }
 
 // List returns a paginated list of members
 func (r *PostgresRepository) List(ctx context.Context, params ListMembersParams) ([]*Member, int64, error) {
-	// List operations need both List and Count queries from SQLC
-	return nil, 0, errors.New("not implemented - SQLC query not found")
+	// Calculate offset from page
+	offset := int32(0)
+	limit := int32(10) // default
+
+	// Check if params has Page field with Number and Size
+	if params.Page.Number > 0 && params.Page.Size > 0 {
+		offset = int32((params.Page.Number - 1) * params.Page.Size)
+		limit = int32(params.Page.Size)
+	}
+
+	listParams := postgresql.ListMembersParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	results, err := r.queries.ListMembers(ctx, listParams)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to list members: %w", err)
+	}
+
+	items := make([]*Member, len(results))
+	for i, result := range results {
+		items[i] = mapMemberFromDB(&result)
+	}
+
+	// For now, return the count as the length of results
+	// In production, you'd want a separate count query
+	count := int64(len(results))
+
+	return items, count, nil
 }
 
 // ListByOrganization retrieves multiple members by organizationID
 func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Member, error) {
+	// TODO: Implement ListByOrganization - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC ListByOrganization if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("ListByOrganization not implemented - add SQLC query")
 
 }
 
 // ListByUser retrieves multiple members by userID
 func (r *PostgresRepository) ListByUser(ctx context.Context, userID uuid.UUID) ([]*Member, error) {
+	// TODO: Implement ListByUser - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC ListByUser if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("ListByUser not implemented - add SQLC query")
 
 }
 
 // GetByUserAndOrganization retrieves member by userIDorganizationID
 func (r *PostgresRepository) GetByUserAndOrganization(ctx context.Context, userID uuid.UUID, organizationID uuid.UUID) (*Member, error) {
+	// TODO: Implement GetByUserAndOrganization - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC GetByUserAndOrganization if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("GetByUserAndOrganization not implemented - add SQLC query")
 
 }
 
 // Mapper functions - Convert between domain types and database types
-// These need to be customized based on the actual field mappings
 
-func mapMemberToDomain(db *postgresql.Member) *Member {
+func mapMemberFromDB(db *postgresql.Member) *Member {
 	if db == nil {
 		return nil
 	}
 
-	// This is a basic mapping - needs to be customized based on actual types
-	// The challenge is that OpenAPI types and database types don't always match
-	// For example:
-	// - OpenAPI might use string, database uses *string
-	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (ID vs ID)
-
 	result := &Member{
-		// TODO: Map fields properly based on actual type definitions
-		// This requires parsing both OpenAPI types and SQLC types
+		ID:        db.ID,
+		CreatedAt: db.CreatedAt,
+		UpdatedAt: db.UpdatedAt,
+
+		OrganizationID: db.OrganizationID,
+
+		Role: MemberRole(db.Role),
+
+		UserID: db.UserID,
 	}
 
-	// Basic field mapping - customize based on your entity structure
-	// result.ID = db.ID
-	// result.CreatedAt = db.CreatedAt
-	// result.UpdatedAt = db.UpdatedAt
-	// Add specific field mappings as needed
-
 	return result
+}
+
+// Helper functions for conversions
+func stringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func stringFromPtr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func boolPtr(b bool) *bool {
+	return &b
+}
+
+func int32Ptr(i int32) *int32 {
+	return &i
+}
+
+func float32Ptr(f float32) *float32 {
+	return &f
+}
+
+func float64Ptr(f float64) *float64 {
+	return &f
+}
+
+func marshalJSON(v interface{}) *string {
+	if v == nil {
+		return nil
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil
+	}
+	s := string(data)
+	return &s
+}
+
+func unmarshalJSON(s *string) map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	var result map[string]interface{}
+	if err := json.Unmarshal([]byte(*s), &result); err != nil {
+		return nil
+	}
+	return result
+}
+
+func uuidFromPtr(u *uuid.UUID) uuid.UUID {
+	if u == nil {
+		return uuid.Nil
+	}
+	return *u
+}
+
+func timeFromPtr(t *time.Time) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return *t
 }

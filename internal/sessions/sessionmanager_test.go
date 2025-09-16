@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	genericcache "github.com/archesai/archesai/internal/cache"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -24,7 +25,7 @@ func TestSessionManager_CreateSession(t *testing.T) {
 	t.Run("successful creation with cache", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -33,7 +34,7 @@ func TestSessionManager_CreateSession(t *testing.T) {
 			UserID:               userID,
 			Token:                "generated-token",
 			ActiveOrganizationID: orgID,
-			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
+			ExpiresAt:            time.Now().Add(24 * time.Hour),
 			IPAddress:            ipAddress,
 			UserAgent:            userAgent,
 			CreatedAt:            time.Now(),
@@ -64,7 +65,7 @@ func TestSessionManager_CreateSession(t *testing.T) {
 			UserID:               userID,
 			Token:                "generated-token",
 			ActiveOrganizationID: orgID,
-			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
+			ExpiresAt:            time.Now().Add(24 * time.Hour),
 			IPAddress:            ipAddress,
 			UserAgent:            userAgent,
 			CreatedAt:            time.Now(),
@@ -90,7 +91,7 @@ func TestSessionManager_GetSession(t *testing.T) {
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     testTokenConst,
-		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+		ExpiresAt: time.Now().Add(time.Hour),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -99,7 +100,7 @@ func TestSessionManager_GetSession(t *testing.T) {
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     "expired-token",
-		ExpiresAt: time.Now().Add(-time.Hour).Format(time.RFC3339),
+		ExpiresAt: time.Now().Add(-time.Hour),
 		CreatedAt: time.Now().Add(-2 * time.Hour),
 		UpdatedAt: time.Now().Add(-2 * time.Hour),
 	}
@@ -107,7 +108,7 @@ func TestSessionManager_GetSession(t *testing.T) {
 	t.Run("cache hit with valid session", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -126,7 +127,7 @@ func TestSessionManager_GetSession(t *testing.T) {
 	t.Run("cache miss falls back to database", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -144,7 +145,7 @@ func TestSessionManager_GetSession(t *testing.T) {
 	t.Run("expired session in cache", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -172,7 +173,7 @@ func TestSessionManager_GetSessionByToken(t *testing.T) {
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     token,
-		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+		ExpiresAt: time.Now().Add(time.Hour),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -180,7 +181,7 @@ func TestSessionManager_GetSessionByToken(t *testing.T) {
 	t.Run("successful retrieval from cache", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -199,7 +200,7 @@ func TestSessionManager_GetSessionByToken(t *testing.T) {
 	t.Run("cache miss with database fallback", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -230,14 +231,14 @@ func TestSessionManager_UpdateSession(t *testing.T) {
 	t.Run("successful update with cache", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		updatedSession := &Session{
 			ID:        sessionID,
 			UserID:    userID,
 			Token:     "updated-token",
-			ExpiresAt: time.Now().Add(24 * time.Hour).Format(time.RFC3339),
+			ExpiresAt: time.Now().Add(24 * time.Hour),
 			UpdatedAt: time.Now(),
 		}
 
@@ -264,13 +265,13 @@ func TestSessionManager_DeleteSession(t *testing.T) {
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     token,
-		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+		ExpiresAt: time.Now().Add(time.Hour),
 	}
 
 	t.Run("successful deletion with cache", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -309,7 +310,7 @@ func TestSessionManager_ListByUser(t *testing.T) {
 		ID:        uuid.New(),
 		UserID:    userID,
 		Token:     "token1",
-		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+		ExpiresAt: time.Now().Add(time.Hour),
 		CreatedAt: time.Now(),
 	}
 
@@ -317,7 +318,7 @@ func TestSessionManager_ListByUser(t *testing.T) {
 		ID:        uuid.New(),
 		UserID:    userID,
 		Token:     "token2",
-		ExpiresAt: time.Now().Add(2 * time.Hour).Format(time.RFC3339),
+		ExpiresAt: time.Now().Add(2 * time.Hour),
 		CreatedAt: time.Now(),
 	}
 
@@ -325,14 +326,14 @@ func TestSessionManager_ListByUser(t *testing.T) {
 		ID:        uuid.New(),
 		UserID:    userID,
 		Token:     "expired-token",
-		ExpiresAt: time.Now().Add(-time.Hour).Format(time.RFC3339),
+		ExpiresAt: time.Now().Add(-time.Hour),
 		CreatedAt: time.Now().Add(-2 * time.Hour),
 	}
 
 	t.Run("returns only active sessions", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		params := ListSessionsParams{
@@ -371,7 +372,7 @@ func TestSessionManager_Validate(t *testing.T) {
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     token,
-		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+		ExpiresAt: time.Now().Add(time.Hour),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -379,7 +380,7 @@ func TestSessionManager_Validate(t *testing.T) {
 	t.Run("valid session updates last activity", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		updatedSession := &Session{
@@ -407,14 +408,14 @@ func TestSessionManager_Validate(t *testing.T) {
 	t.Run("expired session is deleted", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		expiredSession := &Session{
 			ID:        sessionID,
 			UserID:    userID,
 			Token:     token,
-			ExpiresAt: time.Now().Add(-time.Hour).Format(time.RFC3339),
+			ExpiresAt: time.Now().Add(-time.Hour),
 		}
 
 		// Expectations - GetSessionByToken will return expired session from cache
@@ -444,7 +445,7 @@ func TestSessionManager_RefreshSession(t *testing.T) {
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     token,
-		ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+		ExpiresAt: time.Now().Add(time.Hour),
 		CreatedAt: time.Now().Add(-time.Hour),
 		UpdatedAt: time.Now().Add(-time.Hour),
 	}
@@ -452,7 +453,7 @@ func TestSessionManager_RefreshSession(t *testing.T) {
 	t.Run("successful refresh extends expiry", func(t *testing.T) {
 		// Setup
 		mockRepo := NewMockRepository(t)
-		mockCache := NewNoOpCache()
+		mockCache := genericcache.NewNoOpCache[Session]()
 		sm := NewSessionManager(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -461,7 +462,7 @@ func TestSessionManager_RefreshSession(t *testing.T) {
 			ID:        sessionID,
 			UserID:    userID,
 			Token:     token,
-			ExpiresAt: time.Now().Add(24 * time.Hour).Format(time.RFC3339),
+			ExpiresAt: time.Now().Add(24 * time.Hour),
 			UpdatedAt: time.Now(),
 		}, nil)
 
@@ -473,7 +474,6 @@ func TestSessionManager_RefreshSession(t *testing.T) {
 		assert.NotNil(t, session)
 
 		// Check that expiry was extended (session.ExpiresAt should be about 24 hours from now)
-		newExpiry, _ := time.Parse(time.RFC3339, session.ExpiresAt)
-		assert.True(t, time.Until(newExpiry) > 23*time.Hour)
+		assert.True(t, time.Until(session.ExpiresAt) > 23*time.Hour)
 	})
 }

@@ -173,13 +173,13 @@ CREATE TABLE run (
   completed_at TEXT,
   error TEXT,
   organization_id TEXT NOT NULL REFERENCES organization (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  pipeline_id TEXT REFERENCES pipeline (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  pipeline_id TEXT NOT NULL REFERENCES pipeline (id) ON DELETE SET NULL ON UPDATE CASCADE,
   progress REAL NOT NULL DEFAULT 0,
   started_at TEXT,
   status TEXT NOT NULL DEFAULT 'QUEUED' CHECK (
     status IN ('COMPLETED', 'FAILED', 'PROCESSING', 'QUEUED')
   ),
-  tool_id TEXT REFERENCES tool (id) ON DELETE SET NULL ON UPDATE CASCADE
+  tool_id TEXT NOT NULL REFERENCES tool (id) ON DELETE SET NULL ON UPDATE CASCADE 
 );
 
 -- Create artifact table

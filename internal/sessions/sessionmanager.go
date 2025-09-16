@@ -7,18 +7,19 @@ import (
 	"fmt"
 	"time"
 
+	genericcache "github.com/archesai/archesai/internal/cache"
 	"github.com/google/uuid"
 )
 
 // SessionManager handles session operations with Redis caching
 type SessionManager struct {
 	repo  Repository
-	cache Cache
+	cache genericcache.Cache[Session]
 	ttl   time.Duration
 }
 
 // NewSessionManager creates a new session manager
-func NewSessionManager(repo Repository, cache Cache, ttl time.Duration) *SessionManager {
+func NewSessionManager(repo Repository, cache genericcache.Cache[Session], ttl time.Duration) *SessionManager {
 	if ttl == 0 {
 		ttl = 30 * 24 * time.Hour // 30 days default
 	}
@@ -43,7 +44,7 @@ func (sm *SessionManager) Create(ctx context.Context, userID, orgID uuid.UUID, i
 		UserID:               userID,
 		Token:                token,
 		ActiveOrganizationID: orgID,
-		ExpiresAt:            time.Now().Add(sm.ttl).Format(time.RFC3339),
+		ExpiresAt:            time.Now().Add(sm.ttl),
 		IPAddress:            ipAddress,
 		UserAgent:            userAgent,
 		CreatedAt:            time.Now(),
@@ -59,13 +60,7 @@ func (sm *SessionManager) Create(ctx context.Context, userID, orgID uuid.UUID, i
 	// Store in Redis cache with TTL
 	if sm.cache != nil {
 		// Store by ID
-		_ = sm.cache.Set(ctx, created, sm.ttl)
-
-		// Note: Token-based cache lookup not supported by current cache interface
-
-		// Store user session index for listing
-		userSessionKey := fmt.Sprintf("user:%s:session:%s", userID.String(), created.ID.String())
-		_ = sm.storeUserSessionIndex(ctx, userSessionKey, created.ID, sm.ttl)
+		_ = sm.cache.Set(ctx, created.ID.String(), created, sm.ttl)
 	}
 
 	return created, nil
@@ -75,14 +70,14 @@ func (sm *SessionManager) Create(ctx context.Context, userID, orgID uuid.UUID, i
 func (sm *SessionManager) Get(ctx context.Context, sessionID uuid.UUID) (*Session, error) {
 	// Try cache first
 	if sm.cache != nil {
-		cached, err := sm.cache.Get(ctx, sessionID)
+		cached, err := sm.cache.Get(ctx, sessionID.String())
 		if err == nil && cached != nil {
 			// Validate expiry
 			if !sm.isSessionExpired(cached) {
 				return cached, nil
 			}
 			// If expired, delete from cache
-			_ = sm.cache.Delete(ctx, sessionID)
+			_ = sm.cache.Delete(ctx, sessionID.String())
 		}
 	}
 
@@ -101,7 +96,7 @@ func (sm *SessionManager) Get(ctx context.Context, sessionID uuid.UUID) (*Sessio
 
 	// Update cache
 	if sm.cache != nil && session != nil {
-		_ = sm.cache.Set(ctx, session, sm.ttl)
+		_ = sm.cache.Set(ctx, session.ID.String(), session, sm.ttl)
 	}
 
 	return session, nil
@@ -124,7 +119,7 @@ func (sm *SessionManager) GetSessionByToken(ctx context.Context, token string) (
 
 	// Update cache by ID
 	if sm.cache != nil && session != nil {
-		_ = sm.cache.Set(ctx, session, sm.ttl)
+		_ = sm.cache.Set(ctx, session.ID.String(), session, sm.ttl)
 	}
 
 	return session, nil
@@ -140,7 +135,7 @@ func (sm *SessionManager) Update(ctx context.Context, sessionID uuid.UUID, updat
 
 	// Update cache
 	if sm.cache != nil && updated != nil {
-		_ = sm.cache.Set(ctx, updated, sm.ttl)
+		_ = sm.cache.Set(ctx, updated.ID.String(), updated, sm.ttl)
 	}
 
 	return updated, nil
@@ -148,9 +143,6 @@ func (sm *SessionManager) Update(ctx context.Context, sessionID uuid.UUID, updat
 
 // Delete removes a session from both database and cache
 func (sm *SessionManager) Delete(ctx context.Context, sessionID uuid.UUID) error {
-	// Get session first to get the token
-	session, _ := sm.Get(ctx, sessionID)
-
 	// Delete from database
 	if err := sm.repo.Delete(ctx, sessionID); err != nil {
 		return err
@@ -158,12 +150,7 @@ func (sm *SessionManager) Delete(ctx context.Context, sessionID uuid.UUID) error
 
 	// Delete from cache
 	if sm.cache != nil {
-		_ = sm.cache.Delete(ctx, sessionID)
-		if session != nil {
-			// Remove from user session index
-			userSessionKey := fmt.Sprintf("user:%s:session:%s", session.UserID.String(), sessionID.String())
-			_ = sm.removeUserSessionIndex(ctx, userSessionKey)
-		}
+		_ = sm.cache.Delete(ctx, sessionID.String())
 	}
 
 	return nil
@@ -188,10 +175,8 @@ func (sm *SessionManager) DeleteByUser(ctx context.Context, userID uuid.UUID) er
 		return err
 	}
 
-	// Delete from cache
-	if sm.cache != nil {
-		_ = sm.cache.DeleteByUser(ctx, userID)
-	}
+	// Delete from cache - individual sessions will be invalidated as needed
+	// Cache entries will expire naturally with TTL
 
 	return nil
 }
@@ -231,8 +216,7 @@ func (sm *SessionManager) RefreshSession(ctx context.Context, sessionID uuid.UUI
 	}
 
 	// Update expiry
-	newExpiry := time.Now().Add(sm.ttl)
-	session.ExpiresAt = newExpiry.Format(time.RFC3339)
+	session.ExpiresAt = time.Now().Add(sm.ttl)
 	session.UpdatedAt = time.Now()
 
 	// Update in database
@@ -243,7 +227,7 @@ func (sm *SessionManager) RefreshSession(ctx context.Context, sessionID uuid.UUI
 
 	// Update cache with new TTL
 	if sm.cache != nil && updated != nil {
-		_ = sm.cache.Set(ctx, updated, sm.ttl)
+		_ = sm.cache.Set(ctx, updated.ID.String(), updated, sm.ttl)
 	}
 
 	return updated, nil
@@ -284,23 +268,8 @@ func (sm *SessionManager) isSessionExpired(session *Session) bool {
 		return true
 	}
 
-	expiresAt, err := time.Parse(time.RFC3339, session.ExpiresAt)
-	if err != nil {
-		return true
-	}
-
-	return time.Now().After(expiresAt)
-}
-
-func (sm *SessionManager) storeUserSessionIndex(_ context.Context, _ string, _ uuid.UUID, _ time.Duration) error {
-	// This would need a custom Redis implementation to maintain a set of session IDs per user
-	// For now, we'll rely on the database for listing
-	return nil
-}
-
-func (sm *SessionManager) removeUserSessionIndex(_ context.Context, _ string) error {
-	// This would need a custom Redis implementation
-	return nil
+	// ExpiresAt is now time.Time, no need to parse
+	return time.Now().After(session.ExpiresAt)
 }
 
 // generateSecureToken generates a cryptographically secure random token

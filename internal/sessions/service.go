@@ -2,10 +2,28 @@ package sessions
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
+	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
 )
+
+// Service implements the business logic
+type Service struct {
+	repo   Repository
+	db     *postgresql.Queries
+	logger *slog.Logger
+}
+
+// NewService creates a new service implementation
+func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *Service {
+	return &Service{
+		repo:   repo,
+		db:     db,
+		logger: logger,
+	}
+}
 
 // Validate validates a session token and returns the session if valid
 func (s *Service) Validate(ctx context.Context, token string) (*Session, error) {
@@ -16,12 +34,7 @@ func (s *Service) Validate(ctx context.Context, token string) (*Session, error) 
 	}
 
 	// Check if session is expired
-	expiresAt, err := time.Parse(time.RFC3339, session.ExpiresAt)
-	if err != nil {
-		return nil, ErrInvalidToken
-	}
-
-	if time.Now().After(expiresAt) {
+	if time.Now().After(session.ExpiresAt) {
 		// Clean up expired session
 		_ = s.repo.Delete(ctx, session.ID)
 		return nil, ErrSessionExpired

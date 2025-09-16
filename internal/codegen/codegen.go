@@ -17,6 +17,9 @@ package codegen
 
 import (
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -486,12 +489,27 @@ func prepareIndividualServiceData(schema *ParsedSchema) interface{} {
 }
 
 // Helper functions to prepare data for each generator type
+//
+//nolint:gocyclo // This function handles many different schema properties
 func prepareRepositoryData(domain string, schemas []*ParsedSchema) interface{} {
 	var entities []struct {
 		Name              string
 		Type              string
 		Operations        []string
 		AdditionalMethods []interface{}
+		UpdateExclude     []string
+		Fields            []struct {
+			Name          string
+			Type          string
+			Format        string
+			Enum          []string
+			Required      bool
+			Nullable      bool
+			GoType        string // Actual Go type from types.gen.go
+			SQLCType      string // Actual SQLC type from models.go
+			FieldName     string // Actual field name with correct casing from types.gen.go
+			SQLCFieldName string // Actual field name from SQLC models.go
+		}
 	}
 	for _, schema := range schemas {
 		ops := []string{}
@@ -517,17 +535,254 @@ func prepareRepositoryData(domain string, schemas []*ParsedSchema) interface{} {
 			}
 		}
 
+		// Extract fields from schema properties
+		var fields []struct {
+			Name          string
+			Type          string
+			Format        string
+			Enum          []string
+			Required      bool
+			Nullable      bool
+			GoType        string // Actual Go type from types.gen.go
+			SQLCType      string // Actual SQLC type from models.go
+			FieldName     string // Actual field name with correct casing from types.gen.go
+			SQLCFieldName string // Actual field name from SQLC models.go
+		}
+		// Check for properties in allOf (common pattern in OpenAPI)
+		if len(schema.AllOf) > 0 {
+			// Properties might be in allOf
+			for _, allOfItem := range schema.AllOf {
+				if allOfItem.IsLeft() {
+					allOfSchema := allOfItem.GetLeft()
+					if allOfSchema != nil && allOfSchema.Properties != nil {
+						for propName := range allOfSchema.Properties.Keys() {
+							propRef := allOfSchema.Properties.GetOrZero(propName)
+							if propRef != nil && propRef.IsLeft() {
+								prop := propRef.GetLeft()
+								fieldType := goTypeString // default
+
+								// Extract type from the complex Type field
+								if prop.Type != nil {
+									if prop.Type.IsRight() {
+										// Single type
+										rightType := prop.Type.GetRight()
+										if rightType != nil {
+											fieldType = string(*rightType)
+										}
+									} else if prop.Type.IsLeft() {
+										// Array of types, take the first one
+										types := prop.Type.GetLeft()
+										if types != nil && len(*types) > 0 {
+											fieldType = string((*types)[0])
+										}
+									}
+								}
+
+								// Extract format if present
+								fieldFormat := ""
+								if prop.Format != nil {
+									fieldFormat = *prop.Format
+								}
+
+								// Extract enum values if present
+								var enumValues []string
+								if prop.Enum != nil {
+									for _, enumVal := range prop.Enum {
+										if enumVal != nil {
+											// Convert to string representation
+											enumValues = append(enumValues, fmt.Sprintf("%v", enumVal))
+										}
+									}
+								}
+
+								// Check if field is required
+								required := false
+								if allOfSchema.Required != nil {
+									for _, req := range allOfSchema.Required {
+										if req == propName {
+											required = true
+											break
+										}
+									}
+								}
+
+								// Check if nullable
+								nullable := false
+								if prop.Nullable != nil {
+									nullable = *prop.Nullable
+								}
+
+								fields = append(fields, struct {
+									Name          string
+									Type          string
+									Format        string
+									Enum          []string
+									Required      bool
+									Nullable      bool
+									GoType        string // Actual Go type from types.gen.go
+									SQLCType      string // Actual SQLC type from models.go
+									FieldName     string // Actual field name with correct casing from types.gen.go
+									SQLCFieldName string // Actual field name from SQLC models.go
+								}{
+									Name:          propName,
+									Type:          fieldType,
+									Format:        fieldFormat,
+									Enum:          enumValues,
+									Required:      required,
+									Nullable:      nullable,
+									GoType:        "", // Will be filled by type inference
+									SQLCType:      "", // Will be filled by type inference
+									FieldName:     "", // Will be filled by type inference
+									SQLCFieldName: "", // Will be filled by type inference
+								})
+							}
+						}
+					}
+				}
+			}
+		}
+		if schema.Properties != nil {
+			for propName := range schema.Properties.Keys() {
+				propRef := schema.Properties.GetOrZero(propName)
+				if propRef != nil && propRef.IsLeft() {
+					prop := propRef.GetLeft()
+					fieldType := goTypeString // default
+
+					// Extract type from the complex Type field
+					if prop.Type != nil {
+						if prop.Type.IsRight() {
+							// Single type
+							rightType := prop.Type.GetRight()
+							if rightType != nil {
+								fieldType = string(*rightType)
+							}
+						} else if prop.Type.IsLeft() {
+							// Array of types, take the first one
+							types := prop.Type.GetLeft()
+							if types != nil && len(*types) > 0 {
+								fieldType = string((*types)[0])
+							}
+						}
+					}
+
+					// Extract format if present
+					fieldFormat := ""
+					if prop.Format != nil {
+						fieldFormat = *prop.Format
+					}
+
+					// Extract enum values if present
+					var enumValues []string
+					if prop.Enum != nil {
+						for _, enumVal := range prop.Enum {
+							if enumVal != nil {
+								enumValues = append(enumValues, fmt.Sprintf("%v", enumVal))
+							}
+						}
+					}
+
+					// Check if field is required
+					required := false
+					if schema.Required != nil {
+						for _, req := range schema.Required {
+							if req == propName {
+								required = true
+								break
+							}
+						}
+					}
+
+					// Check if nullable
+					nullable := false
+					if prop.Nullable != nil {
+						nullable = *prop.Nullable
+					}
+
+					fields = append(fields, struct {
+						Name          string
+						Type          string
+						Format        string
+						Enum          []string
+						Required      bool
+						Nullable      bool
+						GoType        string // Actual Go type from types.gen.go
+						SQLCType      string // Actual SQLC type from models.go
+						FieldName     string // Actual field name with correct casing from types.gen.go
+						SQLCFieldName string // Actual field name from SQLC models.go
+					}{
+						Name:          propName,
+						Type:          fieldType,
+						Format:        fieldFormat,
+						Enum:          enumValues,
+						Required:      required,
+						Nullable:      nullable,
+						GoType:        "", // Will be filled by type inference
+						SQLCType:      "", // Will be filled by type inference
+						FieldName:     "", // Will be filled by type inference
+						SQLCFieldName: "", // Will be filled by type inference
+					})
+				}
+			}
+		}
+
+		// Apply type inference to fill in GoType and SQLCType
+		inferFieldTypes(domain, fields)
+
+		// Get update exclude fields
+		var updateExclude []string
+		if schema.XCodegen != nil && schema.XCodegen.Repository.UpdateExclude != nil {
+			updateExclude = schema.XCodegen.Repository.UpdateExclude
+		}
+
 		entities = append(entities, struct {
 			Name              string
 			Type              string
 			Operations        []string
 			AdditionalMethods []interface{}
+			UpdateExclude     []string
+			Fields            []struct {
+				Name          string
+				Type          string
+				Format        string
+				Enum          []string
+				Required      bool
+				Nullable      bool
+				GoType        string // Actual Go type from types.gen.go
+				SQLCType      string // Actual SQLC type from models.go
+				FieldName     string // Actual field name with correct casing from types.gen.go
+				SQLCFieldName string // Actual field name from SQLC models.go
+			}
 		}{
 			Name:              schema.Name,
 			Type:              schema.Name,
 			Operations:        ops,
 			AdditionalMethods: additionalMethods,
+			UpdateExclude:     updateExclude,
+			Fields:            fields,
 		})
+	}
+
+	// Check if any field has Email type
+	hasEmailField := false
+	for _, entity := range entities {
+		for _, field := range entity.Fields {
+			// Check if the field format is email or the GoType indicates it's an Email type
+			if field.Format == formatEmail || strings.Contains(field.GoType, "Email") {
+				hasEmailField = true
+				break
+			}
+		}
+		if hasEmailField {
+			break
+		}
+	}
+
+	// Always include uuid, conditionally include types for Email
+	imports := []string{
+		"github.com/google/uuid",
+	}
+	if hasEmailField {
+		imports = append(imports, "github.com/oapi-codegen/runtime/types")
 	}
 
 	return struct {
@@ -538,24 +793,39 @@ func prepareRepositoryData(domain string, schemas []*ParsedSchema) interface{} {
 			Type              string
 			Operations        []string
 			AdditionalMethods []interface{}
+			UpdateExclude     []string
+			Fields            []struct {
+				Name          string
+				Type          string
+				Format        string
+				Enum          []string
+				Required      bool
+				Nullable      bool
+				GoType        string // Actual Go type from types.gen.go
+				SQLCType      string // Actual SQLC type from models.go
+				FieldName     string // Actual field name with correct casing from types.gen.go
+				SQLCFieldName string // Actual field name from SQLC models.go
+			}
 		}
-		Imports []string
+		Imports       []string
+		HasEmailField bool
 	}{
-		Domain:   domain,
-		Package:  domain,
-		Entities: entities,
-		Imports:  []string{"github.com/google/uuid"},
+		Domain:        domain,
+		Package:       domain,
+		Entities:      entities,
+		Imports:       imports,
+		HasEmailField: hasEmailField,
 	}
 }
 
+//nolint:gocyclo // This function processes complex schema structures
 func prepareCacheData(domain string, schemas []*ParsedSchema) interface{} {
 	var entities []interface{}
 	for _, schema := range schemas {
-		ops := []string{}
+		var ops []string
 		if schema.XCodegen.Cache.Enabled {
-			ops = append(ops, "get", "set", "delete")
+			ops = []string{"get", "set", "delete"}
 		}
-
 		// Extract additional methods from x-codegen repository config
 		var additionalMethods []interface{}
 		if schema.XCodegen != nil && schema.XCodegen.Repository.AdditionalMethods != nil {
@@ -580,11 +850,61 @@ func prepareCacheData(domain string, schemas []*ParsedSchema) interface{} {
 			XCodegen          *XCodegen
 		}{
 			Name:              schema.Name,
-			Type:              schema.Name, // Type is same as Name for cache
+			Type:              schema.Name,
 			Operations:        ops,
 			AdditionalMethods: additionalMethods,
 			XCodegen:          schema.XCodegen,
 		})
+	}
+
+	// Check if we need to import openapi_types for Email fields
+	needsEmailImport := false
+	for _, schema := range schemas {
+		// Check direct properties
+		if schema.Properties != nil {
+			for propName := range schema.Properties.Keys() {
+				propRef := schema.Properties.GetOrZero(propName)
+				if propRef != nil && propRef.IsLeft() {
+					prop := propRef.GetLeft()
+					if prop != nil && ((prop.Format != nil && *prop.Format == formatEmail) || propName == formatEmail || propName == "billingEmail") {
+						needsEmailImport = true
+						break
+					}
+				}
+			}
+		}
+		// Check properties in allOf
+		if !needsEmailImport && len(schema.AllOf) > 0 {
+			for _, allOfItem := range schema.AllOf {
+				if allOfItem.IsLeft() {
+					allOfSchema := allOfItem.GetLeft()
+					if allOfSchema != nil && allOfSchema.Properties != nil {
+						for propName := range allOfSchema.Properties.Keys() {
+							propRef := allOfSchema.Properties.GetOrZero(propName)
+							if propRef != nil && propRef.IsLeft() {
+								prop := propRef.GetLeft()
+								if prop != nil && ((prop.Format != nil && *prop.Format == formatEmail) || propName == formatEmail || propName == "billingEmail") {
+									needsEmailImport = true
+									break
+								}
+							}
+						}
+					}
+				}
+				if needsEmailImport {
+					break
+				}
+			}
+		}
+		if needsEmailImport {
+			break
+		}
+	}
+
+	// Always include types import as many domains use Email and other openapi types
+	imports := []string{
+		"github.com/google/uuid",
+		"github.com/oapi-codegen/runtime/types",
 	}
 
 	return struct {
@@ -596,7 +916,7 @@ func prepareCacheData(domain string, schemas []*ParsedSchema) interface{} {
 		Domain:   domain,
 		Package:  domain,
 		Entities: entities,
-		Imports:  []string{"github.com/google/uuid"},
+		Imports:  imports,
 	}
 }
 
@@ -825,4 +1145,194 @@ func autoDetectDomains(schemas map[string]*ParsedSchema) map[string]struct {
 	}
 
 	return domains
+}
+
+// TypeInference holds type information extracted from generated Go files
+type TypeInference struct {
+	GoTypes        map[string]map[string]string // domain -> field -> Go type
+	SQLCTypes      map[string]map[string]string // domain -> field -> SQLC type
+	FieldNames     map[string]map[string]string // domain -> field (lowercase) -> actual field name from types.gen.go
+	SQLCFieldNames map[string]map[string]string // domain -> field (lowercase) -> actual field name from SQLC
+}
+
+// parseGoTypes extracts type information from types.gen.go files
+func (t *TypeInference) parseGoTypes(domain string) error {
+	typesFile := filepath.Join("internal", domain, "types.gen.go")
+
+	// Check if file exists
+	if _, err := os.Stat(typesFile); os.IsNotExist(err) {
+		return nil // File doesn't exist, skip
+	}
+
+	// Parse the Go file
+	fset := token.NewFileSet()
+	node, err := parser.ParseFile(fset, typesFile, nil, parser.ParseComments)
+	if err != nil {
+		return fmt.Errorf("failed to parse %s: %w", typesFile, err)
+	}
+
+	if t.GoTypes == nil {
+		t.GoTypes = make(map[string]map[string]string)
+	}
+	if t.GoTypes[domain] == nil {
+		t.GoTypes[domain] = make(map[string]string)
+	}
+	if t.FieldNames == nil {
+		t.FieldNames = make(map[string]map[string]string)
+	}
+	if t.FieldNames[domain] == nil {
+		t.FieldNames[domain] = make(map[string]string)
+	}
+
+	// Find struct definitions for the main entity
+	entityName := Title(strings.TrimSuffix(domain, "s")) // users -> User
+
+	ast.Inspect(node, func(n ast.Node) bool {
+		switch x := n.(type) {
+		case *ast.TypeSpec:
+			if x.Name.Name == entityName {
+				if structType, ok := x.Type.(*ast.StructType); ok {
+					for _, field := range structType.Fields.List {
+						if len(field.Names) > 0 {
+							fieldName := field.Names[0].Name
+							fieldType := typeToString(field.Type)
+							lowercaseKey := strings.ToLower(fieldName)
+							t.GoTypes[domain][lowercaseKey] = fieldType
+							t.FieldNames[domain][lowercaseKey] = fieldName // Store actual field name
+						}
+					}
+				}
+			}
+		}
+		return true
+	})
+
+	return nil
+}
+
+// parseSQLCTypes extracts type information from SQLC models.go files
+func (t *TypeInference) parseSQLCTypes(domain string) error {
+	modelsFile := filepath.Join("internal", "database", "postgresql", "models.go")
+
+	// Check if file exists
+	if _, err := os.Stat(modelsFile); os.IsNotExist(err) {
+		return nil // File doesn't exist, skip
+	}
+
+	// Parse the Go file
+	fset := token.NewFileSet()
+	node, err := parser.ParseFile(fset, modelsFile, nil, parser.ParseComments)
+	if err != nil {
+		return fmt.Errorf("failed to parse %s: %w", modelsFile, err)
+	}
+
+	if t.SQLCTypes == nil {
+		t.SQLCTypes = make(map[string]map[string]string)
+	}
+	if t.SQLCTypes[domain] == nil {
+		t.SQLCTypes[domain] = make(map[string]string)
+	}
+	if t.SQLCFieldNames == nil {
+		t.SQLCFieldNames = make(map[string]map[string]string)
+	}
+	if t.SQLCFieldNames[domain] == nil {
+		t.SQLCFieldNames[domain] = make(map[string]string)
+	}
+
+	// Find struct definitions for the SQLC entity
+	entityName := Title(strings.TrimSuffix(domain, "s")) // users -> User
+
+	ast.Inspect(node, func(n ast.Node) bool {
+		switch x := n.(type) {
+		case *ast.TypeSpec:
+			if x.Name.Name == entityName {
+				if structType, ok := x.Type.(*ast.StructType); ok {
+					for _, field := range structType.Fields.List {
+						if len(field.Names) > 0 {
+							fieldName := field.Names[0].Name
+							fieldType := typeToString(field.Type)
+							lowercaseKey := strings.ToLower(fieldName)
+							t.SQLCTypes[domain][lowercaseKey] = fieldType
+							// Store SQLC field names separately
+							t.SQLCFieldNames[domain][lowercaseKey] = fieldName
+						}
+					}
+				}
+			}
+		}
+		return true
+	})
+
+	return nil
+}
+
+// typeToString converts an ast.Expr to a string representation
+func typeToString(expr ast.Expr) string {
+	switch x := expr.(type) {
+	case *ast.Ident:
+		return x.Name
+	case *ast.StarExpr:
+		return "*" + typeToString(x.X)
+	case *ast.SelectorExpr:
+		return typeToString(x.X) + "." + x.Sel.Name
+	case *ast.ArrayType:
+		return "[]" + typeToString(x.Elt)
+	case *ast.MapType:
+		return "map[" + typeToString(x.Key) + "]" + typeToString(x.Value)
+	case *ast.InterfaceType:
+		return "interface{}"
+	default:
+		return "unknown"
+	}
+}
+
+// inferFieldTypes fills in GoType, SQLCType and FieldName for fields based on parsed type information
+func inferFieldTypes(domain string, fields []struct {
+	Name          string
+	Type          string
+	Format        string
+	Enum          []string
+	Required      bool
+	Nullable      bool
+	GoType        string
+	SQLCType      string
+	FieldName     string
+	SQLCFieldName string
+}) {
+	typeInference := &TypeInference{}
+
+	// Parse type information from generated files
+	_ = typeInference.parseGoTypes(domain)
+	_ = typeInference.parseSQLCTypes(domain)
+
+	// Fill in type information for each field
+	for i := range fields {
+		fieldNameLower := strings.ToLower(fields[i].Name)
+
+		// Set Go type
+		if goType, exists := typeInference.GoTypes[domain][fieldNameLower]; exists {
+			fields[i].GoType = goType
+		}
+
+		// Set SQLC type
+		if sqlcType, exists := typeInference.SQLCTypes[domain][fieldNameLower]; exists {
+			fields[i].SQLCType = sqlcType
+		}
+
+		// Set actual field name with correct casing from types.gen.go
+		if actualName, exists := typeInference.FieldNames[domain][fieldNameLower]; exists {
+			fields[i].FieldName = actualName
+		} else {
+			// Fallback to title case if not found
+			fields[i].FieldName = Title(fields[i].Name)
+		}
+
+		// Set SQLC field name with correct casing from SQLC models
+		if sqlcName, exists := typeInference.SQLCFieldNames[domain][fieldNameLower]; exists {
+			fields[i].SQLCFieldName = sqlcName
+		} else {
+			// Fallback to FieldName if not found
+			fields[i].SQLCFieldName = fields[i].FieldName
+		}
+	}
 }

@@ -86,7 +86,7 @@ type Session struct {
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// ExpiresAt The expiration date of the session
-	ExpiresAt string `json:"expiresAt" yaml:"expiresAt"`
+	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
 
 	// ID Universally Unique IDentifier
 	ID UUID `json:"id" yaml:"id"`

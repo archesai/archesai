@@ -122,11 +122,9 @@ func (s *TokenService) RefreshToken(ctx context.Context, refreshToken string) (*
 			}
 
 			// Check if session is expired
-			if session.ExpiresAt != "" {
-				expiresAt, err := time.Parse(time.RFC3339, session.ExpiresAt)
-				if err == nil && time.Now().After(expiresAt) {
-					return nil, fmt.Errorf("session expired")
-				}
+			// ExpiresAt is now time.Time
+			if time.Now().After(session.ExpiresAt) {
+				return nil, fmt.Errorf("session expired")
 			}
 		}
 	}

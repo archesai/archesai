@@ -34,7 +34,7 @@ func TestService_Validate(t *testing.T) {
 			Token:                token,
 			UserID:               uuid.New(),
 			ActiveOrganizationID: uuid.New(),
-			ExpiresAt:            time.Now().Add(24 * time.Hour).Format(time.RFC3339),
+			ExpiresAt:            time.Now().Add(24 * time.Hour),
 		}
 
 		mockRepo.EXPECT().GetByToken(mock.Anything, token).Return(session, nil)
@@ -56,7 +56,7 @@ func TestService_Validate(t *testing.T) {
 			ID:        uuid.New(),
 			Token:     token,
 			UserID:    uuid.New(),
-			ExpiresAt: time.Now().Add(-1 * time.Hour).Format(time.RFC3339), // Expired
+			ExpiresAt: time.Now().Add(-1 * time.Hour), // Expired
 		}
 
 		mockRepo.EXPECT().GetByToken(mock.Anything, token).Return(session, nil)
@@ -76,7 +76,7 @@ func TestService_Validate(t *testing.T) {
 			ID:        uuid.New(),
 			Token:     token,
 			UserID:    uuid.New(),
-			ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+			ExpiresAt: time.Now().Add(time.Hour),
 		}
 
 		mockRepo.EXPECT().GetByToken(mock.Anything, token).Return(session, nil)
@@ -97,7 +97,7 @@ func TestService_Validate(t *testing.T) {
 			ID:        uuid.New(),
 			Token:     token,
 			UserID:    uuid.New(),
-			ExpiresAt: time.Now().Add(-time.Hour).Format(time.RFC3339),
+			ExpiresAt: time.Now().Add(-time.Hour),
 		}
 
 		mockRepo.EXPECT().GetByToken(mock.Anything, token).Return(session, nil)
@@ -136,13 +136,13 @@ func TestService_ListByUser_Repository(t *testing.T) {
 				ID:        uuid.New(),
 				UserID:    userID,
 				Token:     "token1",
-				ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+				ExpiresAt: time.Now().Add(time.Hour),
 			},
 			{
 				ID:        uuid.New(),
 				UserID:    userID,
 				Token:     "token2",
-				ExpiresAt: time.Now().Add(2 * time.Hour).Format(time.RFC3339),
+				ExpiresAt: time.Now().Add(2 * time.Hour),
 			},
 		}
 
@@ -282,7 +282,7 @@ func TestService_ListByUser(t *testing.T) {
 				ID:        uuid.New(),
 				UserID:    userID,
 				Token:     "token1",
-				ExpiresAt: time.Now().Add(time.Hour).Format(time.RFC3339),
+				ExpiresAt: time.Now().Add(time.Hour),
 			},
 		}
 

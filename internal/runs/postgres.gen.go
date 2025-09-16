@@ -3,7 +3,10 @@ package runs
 
 import (
 	"context"
-	"errors"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -28,102 +31,238 @@ func NewPostgresRepository(db *pgxpool.Pool) Repository {
 
 // Create creates a new run
 func (r *PostgresRepository) Create(ctx context.Context, entity *Run) (*Run, error) {
-	// Check if SQLC has the CreateRun method
-	// For now, we'll generate a stub but with proper error handling
-	// TODO: Parse SQLC to detect available queries
+	params := postgresql.CreateRunParams{
+		ID: entity.ID,
 
-	// Example of what it should look like when SQLC query exists:
-	// params := postgresql.CreateRunParams{
-	//     ID: entity.ID,
-	//     // ... map other fields
-	// }
-	// dbRun, err := r.queries.CreateRun(ctx, params)
-	// if err != nil {
-	//     return nil, err
-	// }
-	// return mapRunToDomain(&dbRun), nil
+		OrganizationID: entity.OrganizationID,
+		PipelineID:     entity.PipelineID,
+		Progress:       float64(entity.Progress),
+		Status:         string(entity.Status),
+		ToolID:         entity.ToolID,
+	}
 
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.CreateRun(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create run: %w", err)
+	}
+
+	return mapRunFromDB(&result), nil
 }
 
 // Get retrieves a run by ID
 func (r *PostgresRepository) Get(ctx context.Context, id uuid.UUID) (*Run, error) {
-	// Try to call SQLC GetRun if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	result, err := r.queries.GetRun(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrRunNotFound
+		}
+		return nil, fmt.Errorf("failed to get run: %w", err)
+	}
+
+	return mapRunFromDB(&result), nil
 }
 
 // Update updates an existing run
 func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *Run) (*Run, error) {
-	// Update operations are often custom and may not have SQLC queries
-	return nil, errors.New("not implemented - SQLC query not found")
+	params := postgresql.UpdateRunParams{
+		ID: id,
+
+		CompletedAt: &entity.CompletedAt,
+		Error:       stringPtr(entity.Error),
+		PipelineID:  &entity.PipelineID,
+		Progress:    float64Ptr(float64(entity.Progress)),
+		StartedAt:   &entity.StartedAt,
+		Status:      stringPtr(string(entity.Status)),
+		ToolID:      &entity.ToolID,
+	}
+
+	result, err := r.queries.UpdateRun(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrRunNotFound
+		}
+		return nil, fmt.Errorf("failed to update run: %w", err)
+	}
+
+	return mapRunFromDB(&result), nil
 }
 
 // Delete removes a run
 func (r *PostgresRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	// Try to call SQLC DeleteRun if it exists
-	// For now, return not implemented
-	return errors.New("not implemented - SQLC query not found")
+	err := r.queries.DeleteRun(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ErrRunNotFound
+		}
+		return fmt.Errorf("failed to delete run: %w", err)
+	}
+	return nil
 }
 
 // List returns a paginated list of runs
 func (r *PostgresRepository) List(ctx context.Context, params ListRunsParams) ([]*Run, int64, error) {
-	// List operations need both List and Count queries from SQLC
-	return nil, 0, errors.New("not implemented - SQLC query not found")
+	// Calculate offset from page
+	offset := int32(0)
+	limit := int32(10) // default
+
+	// Check if params has Page field with Number and Size
+	if params.Page.Number > 0 && params.Page.Size > 0 {
+		offset = int32((params.Page.Number - 1) * params.Page.Size)
+		limit = int32(params.Page.Size)
+	}
+
+	listParams := postgresql.ListRunsParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	results, err := r.queries.ListRuns(ctx, listParams)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to list runs: %w", err)
+	}
+
+	items := make([]*Run, len(results))
+	for i, result := range results {
+		items[i] = mapRunFromDB(&result)
+	}
+
+	// For now, return the count as the length of results
+	// In production, you'd want a separate count query
+	count := int64(len(results))
+
+	return items, count, nil
 }
 
 // ListByPipeline retrieves multiple runs by pipelineID
 func (r *PostgresRepository) ListByPipeline(ctx context.Context, pipelineID uuid.UUID) ([]*Run, error) {
+	// TODO: Implement ListByPipeline - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC ListByPipeline if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("ListByPipeline not implemented - add SQLC query")
 
 }
 
 // ListByOrganization retrieves multiple runs by organizationID
 func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Run, error) {
+	// TODO: Implement ListByOrganization - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC ListByOrganization if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("ListByOrganization not implemented - add SQLC query")
 
 }
 
 // ListByTool retrieves multiple runs by toolID
 func (r *PostgresRepository) ListByTool(ctx context.Context, toolID uuid.UUID) ([]*Run, error) {
+	// TODO: Implement ListByTool - this needs a custom SQLC query
+	// The implementation depends on the specific query available in SQLC
 
-	// Try to call SQLC ListByTool if it exists
-	// For now, return not implemented
-	return nil, errors.New("not implemented - SQLC query not found")
+	return nil, fmt.Errorf("ListByTool not implemented - add SQLC query")
 
 }
 
 // Mapper functions - Convert between domain types and database types
-// These need to be customized based on the actual field mappings
 
-func mapRunToDomain(db *postgresql.Run) *Run {
+func mapRunFromDB(db *postgresql.Run) *Run {
 	if db == nil {
 		return nil
 	}
 
-	// This is a basic mapping - needs to be customized based on actual types
-	// The challenge is that OpenAPI types and database types don't always match
-	// For example:
-	// - OpenAPI might use string, database uses *string
-	// - OpenAPI might use custom UUID type, database uses uuid.UUID
-	// - Field names might differ (ID vs ID)
-
 	result := &Run{
-		// TODO: Map fields properly based on actual type definitions
-		// This requires parsing both OpenAPI types and SQLC types
+		ID:        db.ID,
+		CreatedAt: db.CreatedAt,
+		UpdatedAt: db.UpdatedAt,
+
+		CompletedAt: timeFromPtr(db.CompletedAt),
+
+		Error: stringFromPtr(db.Error),
+
+		OrganizationID: db.OrganizationID,
+
+		PipelineID: db.PipelineID,
+
+		Progress: float32(db.Progress),
+
+		StartedAt: timeFromPtr(db.StartedAt),
+
+		Status: RunStatus(db.Status),
+
+		ToolID: db.ToolID,
 	}
 
-	// Basic field mapping - customize based on your entity structure
-	// result.ID = db.ID
-	// result.CreatedAt = db.CreatedAt
-	// result.UpdatedAt = db.UpdatedAt
-	// Add specific field mappings as needed
-
 	return result
+}
+
+// Helper functions for conversions
+func stringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func stringFromPtr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func boolPtr(b bool) *bool {
+	return &b
+}
+
+func int32Ptr(i int32) *int32 {
+	return &i
+}
+
+func float32Ptr(f float32) *float32 {
+	return &f
+}
+
+func float64Ptr(f float64) *float64 {
+	return &f
+}
+
+func marshalJSON(v interface{}) *string {
+	if v == nil {
+		return nil
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil
+	}
+	s := string(data)
+	return &s
+}
+
+func unmarshalJSON(s *string) map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	var result map[string]interface{}
+	if err := json.Unmarshal([]byte(*s), &result); err != nil {
+		return nil
+	}
+	return result
+}
+
+func uuidFromPtr(u *uuid.UUID) uuid.UUID {
+	if u == nil {
+		return uuid.Nil
+	}
+	return *u
+}
+
+func timeFromPtr(t *time.Time) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return *t
 }
