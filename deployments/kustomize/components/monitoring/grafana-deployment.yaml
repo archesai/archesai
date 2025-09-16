@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: archesai-grafana
+  labels:
+    app.kubernetes.io/name: archesai
+    app.kubernetes.io/component: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: archesai
+      app.kubernetes.io/component: grafana
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: archesai
+        app.kubernetes.io/component: grafana
+    spec:
+      serviceAccountName: archesai
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: admin
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '250m'
+            requests:
+              memory: '128Mi'
+              cpu: '100m'

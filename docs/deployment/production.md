@@ -268,7 +268,7 @@ spec:
 ### Network Security
 
 ```yaml
-# Network Policy
+# Network Policy with correct labels
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -276,7 +276,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: archesai
+      app.kubernetes.io/name: archesai
   policyTypes:
     - Ingress
     - Egress
@@ -284,19 +284,21 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: nginx-ingress
+              app.kubernetes.io/name: nginx-ingress
       ports:
         - protocol: TCP
-          port: 8080
+          port: 3001
   egress:
     - to:
         - podSelector:
             matchLabels:
-              app: postgres
+              app.kubernetes.io/name: archesai
+              app.kubernetes.io/component: postgres
     - to:
         - podSelector:
             matchLabels:
-              app: redis
+              app.kubernetes.io/name: archesai
+              app.kubernetes.io/component: redis
 ```
 
 ## Monitoring and Observability
@@ -456,7 +458,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Run tests
         run: |
@@ -465,22 +467,34 @@ jobs:
       - name: Security scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: archesai:${{ github.sha }}
+          image-ref: archesai/api:${{ github.sha }}
 
-      - name: Build and push
+      - name: Build and push images
         run: |
-          docker build -t archesai:${{ github.sha }} .
-          docker push registry.archesai.com/archesai:${{ github.sha }}
+          # Build and tag images
+          docker build -t archesai/api:${{ github.sha }} .
+          docker build -f web/platform/Dockerfile -t archesai/platform:${{ github.sha }} web/platform/
 
-      - name: Deploy to Kubernetes
+          # Push to registry
+          docker push archesai/api:${{ github.sha }}
+          docker push archesai/platform:${{ github.sha }}
+
+      - name: Deploy with Kustomize + Helm
         run: |
-          kubectl set image deployment/archesai-api \
-            api=registry.archesai.com/archesai:${{ github.sha }} \
-            -n production
+          # Template kustomization with new image tags
+          helm template archesai deployments/helm-minimal \
+            -f deployments/helm-minimal/values-prod.yaml \
+            --set api.image.tag=${{ github.sha }} \
+            --set platform.image.tag=${{ github.sha }} \
+            --set namespace=production > /tmp/kustomization.yaml
+
+          # Apply with Kustomize
+          kustomize build /tmp | kubectl apply -f -
 
       - name: Wait for rollout
         run: |
           kubectl rollout status deployment/archesai-api -n production
+          kubectl rollout status deployment/archesai-platform -n production
 
       - name: Smoke test
         run: |

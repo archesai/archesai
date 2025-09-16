@@ -1,253 +1,294 @@
 # Kubernetes Deployment
 
-This guide covers deploying ArchesAI on Kubernetes using Helm charts and raw manifests.
+This guide covers deploying ArchesAI on Kubernetes using our hybrid Kustomize + Helm approach.
 
 ## Prerequisites
 
 - Kubernetes cluster (1.24+)
 - kubectl configured
 - Helm 3.x installed
+- Kustomize 4.x installed
 - Container registry access
 
-## Quick Start with Helm
+## Architecture Overview
 
-### Install Helm Chart
+ArchesAI uses a **hybrid Kustomize + Helm deployment system**:
+
+- **Kustomize components**: Plain YAML Kubernetes resources organized by service
+- **Helm templating**: Only templates the `kustomization.yaml` file to control component composition
+- **Environment-specific values**: Dev/prod configurations control which components are enabled
+
+## Quick Start
+
+### Deploy to Development
 
 ```bash
-# Add the ArchesAI repository
-helm repo add archesai https://charts.archesai.com
-helm repo update
+# Preview what will be deployed
+make k8s-preview
 
-# Install with default values
-helm install archesai archesai/archesai
+# Deploy to dev environment
+make k8s-deploy-dev
 
-# Install with custom values
-helm install archesai archesai/archesai -f values.yaml
+# Or use the script directly
+./deployments/scripts/deploy.sh dev
 ```
 
-### Custom Values
+### Deploy to Production
 
-Create a `values.yaml` file:
+```bash
+# Deploy to production
+make k8s-deploy-prod
+
+# Or with custom namespace
+./deployments/scripts/deploy.sh prod archesai-production
+```
+
+## Component Architecture
+
+### Kustomize Components
+
+Each service is organized as a Kustomize component with **consistent labeling**:
 
 ```yaml
-# Application
+# All components use these standard labels
+commonLabels:
+  app.kubernetes.io/name: archesai
+  app.kubernetes.io/component: <service-name>
+```
+
+**Available Components:**
+
+- `api` - REST API server
+- `database` - PostgreSQL database
+- `platform` - React frontend
+- `redis` - Redis cache
+- `storage` - MinIO object storage
+- `monitoring` - Grafana + Loki
+- `ingress` - NGINX ingress rules
+- `unstructured` - Document processing service
+- `scraper` - Web scraping service
+- `migrations` - Database migration job
+
+### Environment Configuration
+
+#### Development (`values-dev.yaml`)
+
+```yaml
+# Core services only
 api:
-  replicaCount: 3
-  image:
-    repository: archesai/api
-    tag: latest
-    pullPolicy: IfNotPresent
-
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "250m"
-    limits:
-      memory: "1Gi"
-      cpu: "1000m"
-
-  autoscaling:
-    enabled: true
-    minReplicas: 3
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 70
-
-# Database
-postgresql:
   enabled: true
-  auth:
-    username: archesai
-    password: changeme
-    database: archesai
-  primary:
-    persistence:
-      enabled: true
-      size: 10Gi
+  replicas: 1
+  image:
+    tag: latest
 
-# Redis
+database:
+  enabled: true
+
+platform:
+  enabled: true
+  replicas: 1
+
+# Disabled in dev
+redis:
+  enabled: false
+monitoring:
+  enabled: false
+ingress:
+  enabled: false
+storage:
+  enabled: false
+```
+
+#### Production (`values-prod.yaml`)
+
+```yaml
+# All services enabled
+api:
+  enabled: true
+  replicas: 3
+  image:
+    tag: "v1.0.0"
+
+database:
+  enabled: true
+
+platform:
+  enabled: true
+  replicas: 2
+
+# Production features
 redis:
   enabled: true
-  auth:
-    enabled: true
-    password: changeme
-  master:
-    persistence:
-      enabled: true
-      size: 5Gi
-
-# Ingress
+monitoring:
+  enabled: true
 ingress:
   enabled: true
-  className: nginx
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-  hosts:
-    - host: api.archesai.com
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - secretName: archesai-tls
-      hosts:
-        - api.archesai.com
+storage:
+  enabled: true
+unstructured:
+  enabled: true
+scraper:
+  enabled: true
 ```
 
-## Kubernetes Manifests
+## Generated Manifests
 
-### Namespace
+The hybrid system generates clean Kubernetes manifests. Here are examples of what gets produced:
 
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: archesai
-```
+### Component Examples
 
-### ConfigMap
+#### API Component (`components/api/`)
 
 ```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: archesai-config
-  namespace: archesai
-data:
-  API_PORT: "8080"
-  LOG_LEVEL: "info"
-  DB_HOST: "postgres-service"
-  DB_PORT: "5432"
-  DB_NAME: "archesai"
-  REDIS_HOST: "redis-service"
-  REDIS_PORT: "6379"
-```
-
-### Secret
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: archesai-secret
-  namespace: archesai
-type: Opaque
-stringData:
-  DB_USER: archesai
-  DB_PASSWORD: secure-password
-  REDIS_PASSWORD: redis-password
-  JWT_SECRET: your-jwt-secret
-  JWT_REFRESH_SECRET: your-refresh-secret
-  OPENAI_API_KEY: your-openai-key
-```
-
-### Deployment
-
-```yaml
+# deployment.yaml (labels added by Kustomize)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: archesai-api
-  namespace: archesai
-  labels:
-    app: archesai-api
 spec:
-  replicas: 3
+  replicas: 1 # Controlled by Helm values
   selector:
     matchLabels:
-      app: archesai-api
+      # Labels injected by commonLabels
   template:
-    metadata:
-      labels:
-        app: archesai-api
     spec:
+      serviceAccountName: archesai
       containers:
         - name: api
-          image: archesai/api:latest
+          image: archesai/api:latest # Tag controlled by Helm
           ports:
-            - containerPort: 8080
-              name: http
-          envFrom:
-            - configMapRef:
-                name: archesai-config
-            - secretRef:
-                name: archesai-secret
+            - name: http
+              containerPort: 3001
           env:
             - name: DATABASE_URL
-              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=require"
-            - name: REDIS_URL
-              value: "redis://:$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)"
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "250m"
-            limits:
-              memory: "1Gi"
-              cpu: "1000m"
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /health/ready
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          volumeMounts:
-            - name: data
-              mountPath: /data
-      volumes:
-        - name: data
-          emptyDir: {}
+              valueFrom:
+                secretKeyRef:
+                  name: archesai-database
+                  key: DATABASE_URL
 ```
 
-### Service
+#### Database Component (`components/database/`)
 
 ```yaml
-apiVersion: v1
-kind: Service
+# statefulset.yaml (labels added by Kustomize)
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
-  name: archesai-api
-  namespace: archesai
+  name: archesai-postgres
 spec:
-  selector:
-    app: archesai-api
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-  type: ClusterIP
+  serviceName: archesai-postgres
+  replicas: 1
+  template:
+    spec:
+      serviceAccountName: archesai
+      containers:
+        - name: postgres
+          image: pgvector/pgvector:pg16
+          env:
+            - name: POSTGRES_DB
+              value: archesai
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: archesai-database
+                  key: POSTGRES_PASSWORD
 ```
 
-### Ingress
+## How It Works
+
+### 1. Helm Templates Kustomization
+
+```bash
+# Helm templates the kustomization.yaml with environment values
+helm template archesai deployments/helm-minimal \
+  -f deployments/helm-minimal/values-dev.yaml > /tmp/kustomization.yaml
+```
+
+Generated `kustomization.yaml`:
 
 ```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: archesai-ingress
-  namespace: archesai
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-spec:
-  tls:
-    - hosts:
-        - api.archesai.com
-      secretName: archesai-tls
-  rules:
-    - host: api.archesai.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: archesai-api
-                port:
-                  number: 80
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: archesai-dev
+
+resources:
+  - deployments/kustomize/base
+
+components:
+  - deployments/kustomize/components/api
+  - deployments/kustomize/components/database
+  - deployments/kustomize/components/platform
+  - deployments/kustomize/components/migrations
+
+replicas:
+  - name: archesai-api
+    count: 1
+  - name: archesai-platform
+    count: 1
+
+images:
+  - name: archesai/api
+    newTag: latest
+  - name: archesai/platform
+    newTag: latest
+```
+
+### 2. Kustomize Builds Final Manifests
+
+```bash
+# Kustomize processes components and applies labels
+kustomize build /tmp > final-manifests.yaml
+kubectl apply -f final-manifests.yaml
+```
+
+## Deployment Commands
+
+### Manual Deployment
+
+```bash
+# 1. Template the kustomization.yaml
+helm template archesai deployments/helm-minimal \
+  -f deployments/helm-minimal/values-prod.yaml \
+  --set namespace=archesai > /tmp/kustomization.yaml
+
+# 2. Build and apply with Kustomize
+kustomize build /tmp | kubectl apply -f -
+
+# 3. Check deployment status
+kubectl get all -n archesai
+```
+
+### Using Deployment Script
+
+```bash
+# Development environment
+./deployments/scripts/deploy.sh dev
+
+# Production environment
+./deployments/scripts/deploy.sh prod
+
+# Custom namespace
+./deployments/scripts/deploy.sh prod my-namespace
+
+# Dry run (see generated manifests)
+./deployments/scripts/deploy.sh dev default true
+```
+
+### Using Makefile
+
+```bash
+# Preview deployment
+make k8s-preview
+
+# Deploy development
+make k8s-deploy-dev
+
+# Deploy production
+make k8s-deploy-prod
+
+# Dry run
+make k8s-dry-run
 ```
 
 ## Database Deployment

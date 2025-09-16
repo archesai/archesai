@@ -1,0 +1,251 @@
+# yaml-language-server: $schema=./values.schema.json
+
+# Core settings required by template
+namespace: arches-system
+kustomizePath: '../kustomize'
+environment: 'production'
+
+# API Configuration
+api:
+  enabled: true
+  replicas: 1
+  cors:
+    origins: https://platform.archesai.dev
+  docs: true
+  email:
+    enabled: false
+  host: 0.0.0.0
+  image:
+    pullPolicy: IfNotPresent
+    repository: archesai/api
+    tag: latest
+  port: 3001
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  validate: true
+
+# Authentication
+auth:
+  enabled: true
+  firebase:
+    enabled: false
+  local:
+    accessTokenTtl: '15m'
+    jwtSecret: supersecretkey-supersecretkey-supersecretkey
+    refreshTokenTtl: '168h'
+    enabled: true
+  twitter:
+    enabled: false
+
+# Billing
+billing:
+  enabled: false
+
+# Database
+database:
+  enabled: true
+  url: postgresql://admin:password@127.0.0.1:5432/archesai
+  auth:
+    database: archesai
+    password: password
+  image:
+    pullPolicy: IfNotPresent
+    repository: pgvector/pgvector
+    tag: pg16
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+# Infrastructure
+infrastructure:
+  development:
+    api:
+      enabled: false
+      port: 3001
+    hostIP: 172.18.0.1
+    platform:
+      enabled: false
+      port: 3000
+    postgres:
+      enabled: false
+      port: 30054
+    redis:
+      enabled: false
+      port: 30055
+    loki:
+      enabled: false
+      port: 30056
+  images:
+    imagePullSecrets: []
+    imageRegistry: 'docker.io'
+  migrations:
+    enabled: false
+  namespace: arches-system
+  serviceAccount:
+    create: true
+    name: 'archesai-service-account'
+
+# Ingress
+ingress:
+  enabled: true
+  domain: archesai.com
+  tls:
+    enabled: true
+    issuer: letsencrypt-staging
+    secretName: archesai-tls
+
+# Intelligence (partial - keeping what template doesn't use)
+intelligence:
+  embedding:
+    type: ollama
+  llm:
+    endpoint: http://localhost:11434
+    type: ollama
+  runpod:
+    enabled: false
+  speech:
+    enabled: true
+
+# Logging
+logging:
+  level: info
+  pretty: false
+
+# Migrations
+migrations:
+  enabled: false
+
+# Monitoring
+monitoring:
+  enabled: true
+  grafana:
+    image:
+      pullPolicy: IfNotPresent
+      repository: grafana/grafana
+      tag: latest
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  loki:
+    image:
+      pullPolicy: IfNotPresent
+      repository: grafana/loki
+      tag: latest
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# Platform
+platform:
+  enabled: true
+  replicas: 1
+  host: localhost
+  image:
+    pullPolicy: IfNotPresent
+    repository: archesai/platform
+    tag: latest
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+# Redis
+redis:
+  enabled: true
+  auth: password
+  host: localhost
+  port: 6379
+  image:
+    pullPolicy: IfNotPresent
+    repository: redis
+    tag: 7-alpine
+  persistence:
+    enabled: true
+    size: 1Gi
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Scraper (moved to top level to match template)
+scraper:
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: mcr.microsoft.com/playwright
+    tag: v1.55.0-noble
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+# Secrets
+secrets:
+  databasePassword: 'password'
+  apiKey: ''
+
+# Storage
+storage:
+  enabled: true
+  accesskey: minioadmin
+  bucket: arches
+  endpoint: http://localhost:9000
+  image:
+    pullPolicy: IfNotPresent
+    repository: minio/minio
+    tag: latest
+  persistence:
+    enabled: true
+    size: 20Gi
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  secretkey: minioadmin
+
+# Unstructured (moved to top level to match template)
+unstructured:
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: downloads.unstructured.io/unstructured-io/unstructured-api
+    tag: latest
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi

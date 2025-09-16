@@ -1,0 +1,87 @@
+name: Deploy Docs
+
+on:
+  workflow_run:
+    workflows: ['Update Docs']
+    types: [completed]
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  deploy-docs:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+          node-version-file: package.json
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: |
+          cd web/docs
+          pnpm build
+
+      - uses: actions/checkout@v5
+        with:
+          repository: archesai/archesai.github.io
+          token: ${{ secrets.DOCS_DEPLOY_TOKEN }}
+          path: pages-repo
+          fetch-depth: 1
+
+      - run: |
+          # Remove all files except .git, CNAME, and README
+          find pages-repo -mindepth 1 -maxdepth 1 \
+            ! -name '.git' \
+            ! -name 'CNAME' \
+            ! -name 'README.md' \
+            ! -name '.gitignore' \
+            -exec rm -rf {} +
+
+      - run: |
+          # Copy all built files from web/docs/dist to the pages repo
+          cp -r web/docs/dist/* pages-repo/
+
+          # Create .nojekyll file to bypass Jekyll processing
+          touch pages-repo/.nojekyll
+
+      - run: |
+          # Navigate to the pages repo
+          cd pages-repo
+
+          # Configure git
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Add all changes
+          git add .
+
+          # Check if there are any changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to deploy"
+            exit 0
+          fi
+
+          # Commit and push changes
+          git commit -m "docs: deploy documentation from archesai/archesai
+
+          🤖 Generated with GitHub Actions from commit ${{ github.sha }}"
+          git push
+
+      - run: |
+          echo "📚 Documentation deployed successfully!"
+          echo "🔗 Available at: https://archesai.github.io/"
+          if [ -f pages-repo/CNAME ]; then
+            echo "🌐 Custom domain: https://$(cat pages-repo/CNAME)/"
+          fi

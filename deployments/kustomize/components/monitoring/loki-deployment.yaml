@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: archesai-loki
+  labels:
+    app.kubernetes.io/name: archesai
+    app.kubernetes.io/component: loki
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: archesai
+      app.kubernetes.io/component: loki
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: archesai
+        app.kubernetes.io/component: loki
+    spec:
+      containers:
+        - name: loki
+          image: grafana/loki:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3100
+              protocol: TCP
+          resources:
+            limits:
+              memory: '512Mi'
+              cpu: '250m'
+            requests:
+              memory: '256Mi'
+              cpu: '100m'

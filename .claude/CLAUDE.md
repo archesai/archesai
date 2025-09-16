@@ -1,15 +1,19 @@
 # ArchesAI Assistant Guide
 
-## Essential Commands
+## What is Arches?
 
-```bash
-make generate     # Run after API/SQL changes
-make lint         # Check code quality
-make dev          # Start backend server
-pnpm dev:platform # Start frontend
-make format       # Format code
-make help         # See all make commands
-```
+@../README.md
+
+## Project Layout
+
+@../docs/architecture/project-layout.md
+@../docs/architecture/overview.md
+
+## Dev Commands
+
+See Makefile Commands
+
+@../docs/guides/makefile-commands.md
 
 ## Project Conventions
 
@@ -20,60 +24,32 @@ make help         # See all make commands
 
 After modifying:
 
-- `api/**/*.yaml` → Run `make generate-oapi` (generates types.gen.go, http.gen.go)
-- `internal/database/**` or `internal/migrations/**` → Run `make generate-sqlc` (generates database
-  code)
-- Any x-codegen annotations → Run `make generate-codegen` (generates repository.gen.go)
+- Run `make generate` to run all of the generators.
 
 ## Testing
 
 ```bash
-make test                   # Run all tests
-go test ./internal/auth/... # Test specific domain
+make test
 ```
 
-## Database
+See more at @../docs/guides/testing.md
 
-```bash
-make db-migrate-up                  # Apply migrations
-make db-migrate-create name=feature # New migration
-```
+## Tips
 
-## Quick Fixes
+- **Build fails**: `make generate && make lint`
+- **Type errors**: Check generated files are up to date
+- **Directory moving**: Do not CD into other directories. You should ideally do everything through the Makefile
+- **DO NOT SWITCH DIRECTORIES, STAY IN THE ROOT AT ALL TIMES**
+- **Do not create your own mocks** - Always try to use mockery and generate from an interface
+- **We have done this many times in this project**
+- **DO NOT KEEP DEPRECATED OR LEGACY CODE** - Always implement latest patterns
+- **Improve test coverage as much as possible**
+- **You should only ever use mocks from mockery** that will be found in `mocks_test.go`
+- **If you need to get a mocked interface from another package**, alias the interface in your local package and add it to `.mockery.yaml`
 
-**Build fails**: `make generate && make lint` **Type errors**: Check generated files are up to date
-**Directory moving**: Try not to have to cd into other directories all the time. You can pretty much
-do everything from the makefile, which is the preferable way of doing anything.
+### Mockery Guidelines
 
-## Docs - MAKE SURE TO ALWAYS UPDATE THESE FILES AFTER MAKING A CHANGE
-
-@../docs/architecture/project-layout.md
-@../docs/architecture/overview.md
-@../docs/guides/makefile-commands.md
-@../docs/guides/testing.md
-@../README.md
-
-## Task Master AI Instructions
-
-**Import Task Master's development workflow commands and guidelines, treat as if import is in the
-main CLAUDE.md file.**
-
-@../.taskmaster/CLAUDE.md
-
-TIPS:
-
-- DO NOT SWITCH DIRECTORIES, STAY IN THE ROOT AT ALL TIMES
-- Do not create your own mocks. Always try to use mockery and generate from an interface.
-- We have done this many times in this project.
-
-ALWAYS USER MOCKERY FOR GETTING MOCKS, NEVER CREATE MOCKED SERVICES OR REPOSITORIES OR ANYTHING MANUALLY.
-RUN go tool mockery
-WE ARE RUNNING MOCKERY v3
-MOCKERY CONFIG IS .mockery.yaml
-
-DO NOT KEEP DEPRECATED OR LEGACY CODE, ALWAYS MAKE SURE YOU JUST IMPLEMENT LATEST
-
-i want you to improve test coverage as much as possible.
-you should only ever use mocks from mockery that will be found in mocks_test.go.
-if you need to get a mocked interface from another package, alias the interface
-in your local package and add it to .mockery.yaml
+- **ALWAYS USE MOCKERY FOR GETTING MOCKS** - Never create mocked services or repositories manually
+- **Run `go tool mockery`**
+- **We are running Mockery v3**
+- **Mockery config is `.mockery.yaml`**

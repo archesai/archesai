@@ -135,6 +135,18 @@ dev-all: ## Run all services with hot reload
 	wait
 
 # ------------------------------------------
+# Deployment Commands
+# ------------------------------------------
+
+.PHONY: deploy-docs
+deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
+	@echo -e "$(YELLOW)▶ Triggering documentation deployment...$(NC)"
+	@which gh > /dev/null || (echo -e "$(RED)✗ Please install GitHub CLI first$(NC)" && exit 1)
+	@gh workflow run deploy-docs.yaml
+	@echo -e "$(GREEN)✓ Documentation deployment triggered!$(NC)"
+	@echo -e "$(BLUE)Monitor progress: gh run list --workflow=deploy-docs.yaml$(NC)"
+
+# ------------------------------------------
 # Generate Commands
 # ------------------------------------------
 
@@ -142,13 +154,14 @@ dev-all: ## Run all services with hot reload
 generate: ## Generate all code
 	@echo -e "$(BLUE)━━━ Code Generation Pipeline ━━━$(NC)"
 	@START_TOTAL=$$(date +%s%3N); \
-	echo -e "$(CYAN)[0/6] OpenAPI Bundling$(NC)" && START=$$(date +%s%3N) && $(MAKE) bundle-openapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI bundling complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[1/6] Database Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-sqlc && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Database generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[2/6] OpenAPI Type Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen-types && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI type generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[3/6] Server Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-oapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Server code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[4/6] Repository Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Repository code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[5/6] Mock Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-mocks && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mock generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[6/6] Client Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-js-client && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Client generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[0/7] OpenAPI Bundling$(NC)" && START=$$(date +%s%3N) && $(MAKE) bundle-openapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI bundling complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[1/7] Database Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-sqlc && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Database generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[2/7] OpenAPI Type Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen-types && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI type generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[3/7] Server Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-oapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Server code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[4/7] Repository Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Repository code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[5/7] Mock Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-mocks && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mock generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[6/7] Client Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-js-client && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Client generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[7/7] Helm Schema Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-helm-schema && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Helm schema generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
 	START=$$(date +%s%3N) && $(MAKE) add-mapstructure-tags && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mapstructure tags added $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
 	END_TOTAL=$$(date +%s%3N); \
 	echo -e "$(GREEN)✓ All code generation complete in $$((END_TOTAL-START_TOTAL))ms!$(NC)"
@@ -203,6 +216,13 @@ generate-js-client: ## Generate JavaScript/TypeScript client from OpenAPI
 	@cd ./web/client && (pnpm orval > /dev/null 2>&1 || (echo -e "$(RED)✗ JavaScript client generation failed$(NC)" && pnpm orval && exit 1))
 	@echo -e "$(GREEN)✓ JavaScript/TypeScript client generated!$(NC)"
 
+.PHONY: generate-helm-schema
+generate-helm-schema: ## Generate Helm values.schema.json from ArchesConfig.yaml
+	@echo -e "$(YELLOW)▶ Generating Helm values schema...$(NC)"
+	@python3 scripts/generate-helm-schema.py
+	@pnpm biome check --fix deployments/helm-minimal/values.schema.json
+	@echo -e "$(GREEN)✓ Helm values schema generated!$(NC)"
+
 # ------------------------------------------
 # Test Commands
 # ------------------------------------------
@@ -250,6 +270,31 @@ test-watch: ## Run tests in watch mode (requires fswatch)
 	@echo -e "$(YELLOW)▶ Running tests in watch mode...$(NC)"
 	@which fswatch > /dev/null || (echo "Please install fswatch first" && exit 1)
 	@fswatch -o . -e ".*" -i "\\.go$$" | xargs -n1 -I{} sh -c 'clear && make test'
+
+
+# -------------------------------------------
+# GitHub Workflow Commands
+# -------------------------------------------
+
+.PHONY: run-workflow
+run-workflow: ## Run GitHub workflow locally with act (usage: make run-workflow workflow=update-docs)
+	@if [ -z "$(workflow)" ]; then \
+		echo -e "$(RED)✗ Please specify a workflow name$(NC)"; \
+		echo -e "$(BLUE)Usage: make run-workflow workflow=<workflow-name>$(NC)"; \
+		echo -e "$(BLUE)Example: make run-workflow workflow=update-docs$(NC)"; \
+		echo -e "$(BLUE)Available workflows:$(NC)"; \
+		ls -1 .github/workflows/*.y*ml | sed 's|.github/workflows/||' | sed 's|\.y.*ml||' | sed 's|^|  - |'; \
+		exit 1; \
+	fi
+	@echo -e "$(YELLOW)▶ Running workflow: $(workflow)...$(NC)"
+	@which act > /dev/null || (echo -e "$(RED)✗ Please install act first: https://github.com/nektos/act$(NC)" && exit 1)
+	@act -W .github/workflows/$(workflow).yaml
+	@echo -e "$(GREEN)✓ Workflow execution complete!$(NC)"
+
+.PHONY: list-workflows
+list-workflows: ## List all available GitHub workflows
+	@echo -e "$(BLUE)Available workflows:$(NC)"
+	@ls -1 .github/workflows/*.y*ml | sed 's|.github/workflows/||' | sed 's|\.y.*ml||' | sed 's|^|  - |'
 
 # ------------------------------------------
 # Lint Commands
@@ -360,6 +405,7 @@ clean-generated: ## Clean all generated code
 	@find . -type f -name "mocks_test.go" -exec rm -f {} +
 	@rm -rf ./web/client/src/generated
 	@rm -f ./api/openapi.bundled.yaml
+	@rm -f ./deployments/helm-minimal/values.schema.json
 	@echo -e "$(GREEN)✓ Generated code cleaned!$(NC)"
 
 .PHONY: clean-test
@@ -545,6 +591,28 @@ k8s-deploy: ## Deploy with Helm
 .PHONY: k8s-upgrade
 k8s-upgrade: ## Upgrade Helm deployment
 	@helm upgrade dev deployments/helm/arches -f deployments/helm/dev-overrides.yaml
+
+.PHONY: k8s-deploy-dev
+k8s-deploy-dev: ## Deploy to development with Kustomize + Helm
+	@echo -e "$(YELLOW)▶ Deploying to development environment...$(NC)"
+	@./deployments/scripts/deploy.sh dev
+	@echo -e "$(GREEN)✓ Development deployment complete!$(NC)"
+
+.PHONY: k8s-deploy-prod
+k8s-deploy-prod: ## Deploy to production with Kustomize + Helm
+	@echo -e "$(YELLOW)▶ Deploying to production environment...$(NC)"
+	@./deployments/scripts/deploy.sh prod
+	@echo -e "$(GREEN)✓ Production deployment complete!$(NC)"
+
+.PHONY: k8s-preview
+k8s-preview: ## Preview Kustomize deployment
+	@echo -e "$(YELLOW)▶ Previewing deployment...$(NC)"
+	@./deployments/scripts/deploy.sh preview
+
+.PHONY: k8s-dry-run
+k8s-dry-run: ## Dry run deployment to development
+	@echo -e "$(YELLOW)▶ Dry run deployment to development...$(NC)"
+	@./deployments/scripts/deploy.sh dev archesai-dev true
 
 # ------------------------------------------
 # Skaffold Commands

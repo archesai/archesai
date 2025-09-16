@@ -1,0 +1,158 @@
+name: Update Docs
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  update-docs-makefile:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - run: make deps-go
+
+      - run: |
+          # Create the updated documentation content
+          cat > docs/guides/makefile-commands.md << 'EOF'
+          # Makefile Commands
+
+          Run `make help` to see all available commands.
+
+          ## Available Commands
+
+          ```bash
+          EOF
+
+          # Append the make help output, removing ANSI color codes
+          make help | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' >> docs/guides/makefile-commands.md
+
+          # Close the code block
+          echo '```' >> docs/guides/makefile-commands.md
+
+      - id: changes
+        run: |
+          if git diff --quiet docs/guides/makefile-commands.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/guides/makefile-commands.md
+          git commit -m "docs: update Makefile commands documentation
+
+          🤖 Generated with GitHub Actions"
+          git push
+
+  update-docs-project-layout:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: |
+          # Generate tree structure (excluding hidden files and common build artifacts)
+          tree_output=$(tree -a -I '.git|node_modules|*.gen.go|dist|build|.DS_Store|*.log|coverage|.next|.turbo' --dirsfirst)
+
+          # Create a temporary file with the new content
+          cat > temp_project_layout.md << 'EOF'
+          # Project Layout
+
+          ## Directory Structure
+
+          ```text
+          EOF
+
+          echo "$tree_output" >> temp_project_layout.md
+          echo '```' >> temp_project_layout.md
+
+          # Append the rest of the existing content after the directory structure
+          # Extract everything after the first closing ``` in the original file
+          sed -n '/^```$/,$p' docs/architecture/project-layout.md | tail -n +2 >> temp_project_layout.md
+
+          # Replace the original file
+          mv temp_project_layout.md docs/architecture/project-layout.md
+
+      - id: changes
+        run: |
+          if git diff --quiet docs/architecture/project-layout.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/architecture/project-layout.md
+          git commit -m "docs: update project layout documentation
+
+          🤖 Generated with GitHub Actions"
+          git push
+
+  update-docs-general:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]' && always()
+    needs: [update-makefile-docs, update-project-layout]
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - id: claude-docs
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Analyze the recent commit changes and update relevant documentation files based on the changes made.
+
+            Your tasks:
+            1. Review the git diff to understand what changed in this commit
+            2. Identify documentation that needs updating based on code changes:
+               - If API endpoints changed: update API documentation
+               - If architecture changed: update system design docs
+               - If new features added: update feature documentation
+               - If configuration changed: update deployment/config docs
+               - If CLI commands changed: update CLI documentation
+               - If database schema changed: update database documentation
+
+            3. Update the relevant documentation files to reflect the changes
+            4. Ensure all cross-references and links remain valid
+            5. Follow the existing documentation style and structure
+            6. Only update files that actually need changes - don't make unnecessary edits
+
+            Use the project's CLAUDE.md for guidance on conventions and style.
+
+            IMPORTANT:
+            - Only update documentation files (*.md files in docs/)
+            - Do not modify code files
+            - Commit your changes with a descriptive message
+            - If no documentation needs updating, just report that no changes were necessary
+
+          claude_args: '--allowed-tools "Bash(git *),Bash(find *),Bash(grep *)" --model claude-opus-4-1-20250805'

@@ -1,0 +1,96 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Target namespace
+namespace: {{ .Values.namespace }}
+
+# Base resources (namespace and common labels)
+resources:
+  - {{ .Values.kustomizePath }}/base
+
+# Components to include based on enabled flags
+components:
+{{- if .Values.api.enabled }}
+  - {{ .Values.kustomizePath }}/components/api
+{{- end }}
+{{- if .Values.database.enabled }}
+  - {{ .Values.kustomizePath }}/components/database
+{{- end }}
+{{- if .Values.platform.enabled }}
+  - {{ .Values.kustomizePath }}/components/platform
+{{- end }}
+{{- if .Values.redis.enabled }}
+  - {{ .Values.kustomizePath }}/components/redis
+{{- end }}
+{{- if .Values.monitoring.enabled }}
+  - {{ .Values.kustomizePath }}/components/monitoring
+{{- end }}
+{{- if .Values.ingress.enabled }}
+  - {{ .Values.kustomizePath }}/components/ingress
+{{- end }}
+{{- if .Values.storage.enabled }}
+  - {{ .Values.kustomizePath }}/components/storage
+{{- end }}
+{{- if .Values.unstructured.enabled }}
+  - {{ .Values.kustomizePath }}/components/unstructured
+{{- end }}
+{{- if .Values.migrations.enabled }}
+  - {{ .Values.kustomizePath }}/components/migrations
+{{- end }}
+{{- if .Values.scraper.enabled }}
+  - {{ .Values.kustomizePath }}/components/scraper
+{{- end }}
+
+# Replica counts
+replicas:
+{{- if .Values.api.enabled }}
+  - name: archesai-api
+    count: {{ .Values.api.replicas }}
+{{- end }}
+{{- if .Values.platform.enabled }}
+  - name: archesai-platform
+    count: {{ .Values.platform.replicas }}
+{{- end }}
+
+# Image tags
+images:
+{{- if .Values.api.enabled }}
+  - name: archesai/api
+    newTag: {{ .Values.api.image.tag }}
+{{- end }}
+{{- if .Values.platform.enabled }}
+  - name: archesai/platform
+    newTag: {{ .Values.platform.image.tag }}
+{{- end }}
+
+# Generate ConfigMap with environment variables
+configMapGenerator:
+  - name: app-config
+    literals:
+{{- if .Values.database.enabled }}
+      - DATABASE_URL={{ .Values.database.url }}
+{{- end }}
+{{- if .Values.api.enabled }}
+      - API_PORT={{ .Values.api.port | quote }}
+{{- end }}
+      - ENVIRONMENT={{ .Values.environment }}
+
+# Generate Secret with sensitive values
+secretGenerator:
+  - name: archesai-database
+    literals:
+      - DATABASE_URL={{ .Values.database.url }}
+      - POSTGRES_PASSWORD={{ .Values.secrets.databasePassword }}
+{{- if .Values.secrets.apiKey }}
+  - name: archesai-secrets
+    literals:
+      - API_KEY={{ .Values.secrets.apiKey }}
+{{- end }}
+
+# Custom patches (for environment-specific overrides)
+{{- if .Values.patches }}
+patches:
+{{- range .Values.patches }}
+  - {{ . }}
+{{- end }}
+{{- end }}

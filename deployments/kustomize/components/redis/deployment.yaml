@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: archesai-redis
+  labels:
+    app.kubernetes.io/name: archesai
+    app.kubernetes.io/component: redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: archesai
+      app.kubernetes.io/component: redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: archesai
+        app.kubernetes.io/component: redis
+    spec:
+      serviceAccountName: archesai
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: archesai-redis
+                  key: REDIS_PASSWORD
+          command:
+            - redis-server
+            - --requirepass
+            - $(REDIS_PASSWORD)
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            limits:
+              memory: '256Mi'
+              cpu: '250m'
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+              # command:
+              #   - sh
+              #   - -c
+              #   - |
+              #     {{- if .Values.redis.auth }}
+              #     redis-cli -a $REDIS_PASSWORD ping
+              #     {{- else }}
+              #     redis-cli ping
+              #     {{- end }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+              # command:
+              #   - sh
+              #   - -c
+              #   - |
+              #     {{- if .Values.redis.auth }}
+              #     redis-cli -a $REDIS_PASSWORD ping
+              #     {{- else }}
+              #     redis-cli ping
+              #     {{- end }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: archesai-redis

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: archesai-unstructured
+  labels:
+    app.kubernetes.io/name: archesai
+    app.kubernetes.io/component: unstructured
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: archesai
+      app.kubernetes.io/component: unstructured
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: archesai
+        app.kubernetes.io/component: unstructured
+    spec:
+      serviceAccountName: archesai
+      containers:
+        - name: unstructured
+          image: archesai/unstructured:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          resources:
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
