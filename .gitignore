@@ -33,7 +33,7 @@ logs/
 
 ## Documentation
 web/docs/pages
-web/docs/apis
+web/docs/apis/openapi.yaml
 api/openapi.bundled.yaml
 
 ## Config/Generated
