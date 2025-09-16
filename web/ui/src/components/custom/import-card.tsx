@@ -204,12 +204,12 @@ export default function ImportCard(): JSX.Element {
                   {`${(file.size / 1024).toFixed(2)} KB`}
                 </Badge>
                 <button
-                  type="button"
                   aria-label={`Remove ${file.name}`}
                   className="text-red-500 hover:text-red-700 focus:outline-hidden"
                   onClick={() => {
                     removeFile(idx);
                   }}
+                  type="button"
                 >
                   <TrashIcon className="h-5 w-5" />
                 </button>

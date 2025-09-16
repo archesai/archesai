@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* @import "tailwindcss" source("../"); */
+
 @import "tw-animate-css";
 
 @import "@fontsource/geist";
@@ -226,9 +228,10 @@ select {
   ::selection {
     @apply bg-primary text-primary-foreground;
   }
+
   html {
-    @apply scroll-smooth;
     font-size: 16px;
+    @apply scroll-smooth;
   }
   body {
     @apply bg-background text-foreground overflow-y-auto overflow-x-clip;
@@ -259,46 +262,46 @@ select {
   h4,
   h5,
   h6 {
-    @apply font-semibold;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
     font-feature-settings:
       "kern" 1,
       "liga" 1;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    @apply font-semibold;
   }
 
   h1 {
-    @apply text-4xl md:text-5xl;
     font-weight: 700;
-    letter-spacing: -0.025em;
     line-height: 1.1;
+    letter-spacing: -0.025em;
+    @apply text-4xl md:text-5xl;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl;
     font-weight: 600;
     line-height: 1.2;
+    @apply text-3xl md:text-4xl;
   }
 
   h3 {
-    @apply text-2xl md:text-3xl;
     font-weight: 600;
     line-height: 1.3;
+    @apply text-2xl md:text-3xl;
   }
 
   h4 {
-    @apply text-xl md:text-2xl;
     font-weight: 500;
+    @apply text-xl md:text-2xl;
   }
 
   h5 {
-    @apply text-lg md:text-xl;
     font-weight: 500;
+    @apply text-lg md:text-xl;
   }
 
   h6 {
-    @apply text-base md:text-lg;
     font-weight: 500;
+    @apply text-base md:text-lg;
   }
 
   p {
@@ -310,8 +313,8 @@ select {
   small,
   .text-xs,
   .text-sm {
-    letter-spacing: 0;
     font-weight: 450;
+    letter-spacing: 0;
   }
 
   /* Code blocks with mono font */

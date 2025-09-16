@@ -41,12 +41,12 @@ export const Route = createFileRoute("/landing/")({
 // Icon mapping helper
 const getIcon = (iconName: string) => {
   const icons: Record<string, JSX.Element> = {
-    ZapIcon: <ZapIcon className="size-5" />,
     BarChartIcon: <BarChartIcon className="size-5" />,
-    UsersIcon: <UsersIcon className="size-5" />,
-    ShieldIcon: <ShieldIcon className="size-5" />,
     LayersIcon: <LayersIcon className="size-5" />,
+    ShieldIcon: <ShieldIcon className="size-5" />,
     StarIcon: <StarIcon className="size-5" />,
+    UsersIcon: <UsersIcon className="size-5" />,
+    ZapIcon: <ZapIcon className="size-5" />,
   };
   return icons[iconName] || <StarIcon className="size-5" />;
 };
@@ -103,8 +103,8 @@ export default function LandingPage({
           <nav className="hidden gap-8 md:flex">
             {content.navigation.links.map((link) => (
               <Link
-                key={link.label}
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                key={link.label}
                 {...(link.scrollTo
                   ? { search: { scrollTo: link.scrollTo } }
                   : {})}
@@ -154,8 +154,8 @@ export default function LandingPage({
             <div className="container flex flex-col gap-4 py-4">
               {content.navigation.links.map((link) => (
                 <Link
-                  key={link.label}
                   className="py-2 text-sm font-medium"
+                  key={link.label}
                   onClick={() => {
                     setMobileMenuOpen(false);
                   }}
@@ -229,8 +229,8 @@ export default function LandingPage({
               <div className="mt-6 flex items-center justify-center gap-4 text-sm text-muted-foreground">
                 {content.hero.benefits.map((benefit) => (
                   <div
-                    key={benefit}
                     className="flex items-center gap-1"
+                    key={benefit}
                   >
                     <CheckCircle2Icon className="size-4 text-primary" />
                     <span>{benefit}</span>
@@ -744,8 +744,8 @@ export default function LandingPage({
               <div className="flex gap-4">
                 {content.footer.social.map((social) => (
                   <Link
-                    key={social.name}
                     className="text-muted-foreground transition-colors hover:text-foreground"
+                    key={social.name}
                     to={social.to}
                   >
                     {social.icon === "facebook" && (
@@ -868,8 +868,8 @@ export default function LandingPage({
             <div className="flex gap-4">
               {content.footer.legal.links.map((link) => (
                 <Link
-                  key={link.label}
                   className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  key={link.label}
                   to={link.to}
                 >
                   {link.label}

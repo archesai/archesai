@@ -44,8 +44,8 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                     if (!children.length) {
                       return (
                         <SidebarMenuItem
-                          key={rootRoute.href}
                           className="relative"
+                          key={rootRoute.href}
                         >
                           {rootRoute.href === pathname && (
                             <div className="absolute left-0 top-0 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />

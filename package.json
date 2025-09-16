@@ -1,8 +1,4 @@
 {
-  "name": "@archesai/archesai",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
   "devDependencies": {
     "@biomejs/biome": "catalog:",
     "@redocly/cli": "catalog:",
@@ -11,8 +7,12 @@
     "task-master-ai": "catalog:",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.16.1",
   "engines": {
     "node": ">=24.8.0"
-  }
+  },
+  "name": "@archesai/archesai",
+  "packageManager": "pnpm@10.16.1",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0"
 }

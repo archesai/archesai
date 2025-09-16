@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "isolatedDeclarations": false,
-    "types": ["node", "vitest/globals"],
-    "tsBuildInfoFile": "${configDir}/.cache/tsconfig.spec.tsbuildinfo"
+    "tsBuildInfoFile": "${configDir}/.cache/tsconfig.spec.tsbuildinfo",
+    "types": ["node", "vitest/globals"]
   },
   "include": [
     "${configDir}/src/**/*.spec.ts",

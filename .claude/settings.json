@@ -1,4 +1,18 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "make format",
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit|MultiEdit"
+      }
+    ]
+  },
+  "outputStyle": "default",
   "permissions": {
     "allow": [
       "Bash(make generate:*)",
@@ -22,21 +36,7 @@
       "Bash(cp:*)",
       "Bash(make test:*)"
     ],
-    "deny": [],
-    "ask": []
-  },
-  "outputStyle": "default",
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "make format"
-          }
-        ]
-      }
-    ]
+    "ask": [],
+    "deny": []
   }
 }

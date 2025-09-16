@@ -1,11 +1,11 @@
 {
-  "name": "@archesai/typescript",
-  "version": "0.0.0",
-  "private": true,
-  "sideEffects": false,
-  "type": "module",
   "exports": {
     "./*": "./src/*.json",
     "./package.json": "./package.json"
-  }
+  },
+  "name": "@archesai/typescript",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "version": "0.0.0"
 }

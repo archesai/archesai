@@ -2,10 +2,6 @@ import type { ZudokuConfig } from "zudoku";
 import { docs } from "#sidebar";
 
 const config: ZudokuConfig = {
-  redirects: [
-    { from: "/", to: "/documentation" },
-    { from: "/documentation", to: "/documentation/getting-started" },
-  ],
   apis: [
     {
       input: "./apis/openapi.yaml",
@@ -32,6 +28,10 @@ const config: ZudokuConfig = {
     title: "%s | Arches AI",
   },
   navigation: docs,
+  redirects: [
+    { from: "/", to: "/documentation" },
+    { from: "/documentation", to: "/documentation/getting-started" },
+  ],
   search: {
     type: "pagefind",
   },

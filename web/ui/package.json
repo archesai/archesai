@@ -1,49 +1,22 @@
 {
-  "name": "@archesai/ui",
-  "version": "0.0.0",
-  "private": true,
-  "sideEffects": [
-    "**/*.css"
-  ],
-  "type": "module",
-  "imports": {
-    "#globals.css": "./src/styles/globals.css",
-    "#atoms/*": "./src/atoms/*.ts",
-    "#components/*": "./src/components/*.tsx",
-    "#hooks/*": "./src/hooks/*.tsx",
-    "#layouts/*": "./src/layouts/*.tsx",
-    "#lib/*": "./src/lib/*.ts",
-    "#providers/*": "./src/providers/*.tsx",
-    "#types/*": "./src/types/*.ts"
-  },
-  "exports": {
-    "./globals.css": "./src/styles/globals.css",
-    "./atoms/*": "./src/atoms/*.ts",
-    "./components/*": "./src/components/*.tsx",
-    "./hooks/*": "./src/hooks/*.tsx",
-    "./layouts/*": "./src/layouts/*.tsx",
-    "./lib/*": "./src/lib/*.ts",
-    "./providers/*": "./src/providers/*.tsx",
-    "./types/*": "./src/types/*.ts",
-    "./package.json": "./package.json"
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "typecheck": "tsc --build --emitDeclarationOnly"
-  },
   "dependencies": {
     "@dnd-kit/core": "catalog:ui",
     "@dnd-kit/modifiers": "catalog:ui",
     "@dnd-kit/sortable": "catalog:ui",
     "@dnd-kit/utilities": "catalog:ui",
     "@radix-ui/react-slot": "catalog:ui",
+    "@tanstack/react-devtools": "0.6.7",
     "@tanstack/react-query": "catalog:tanstack",
     "@tanstack/react-router": "catalog:tanstack",
+    "@tanstack/react-router-devtools": "1.131.44",
     "@tanstack/react-table": "catalog:tanstack",
+    "@tanstack/router-plugin": "1.131.44",
     "class-variance-authority": "catalog:ui",
     "clsx": "catalog:ui",
     "cmdk": "catalog:ui",
     "date-fns": "catalog:ui",
+    "embla-carousel-react": "catalog:ui",
+    "input-otp": "catalog:ui",
     "lucide-react": "catalog:ui",
     "motion": "catalog:ui",
     "next-themes": "catalog:ui",
@@ -62,14 +35,54 @@
     "@archesai/eslint": "workspace:*",
     "@fontsource/geist": "catalog:ui",
     "@fontsource/geist-mono": "catalog:ui",
+    "@tailwindcss/vite": "catalog:vite",
     "@tanstack/table-core": "catalog:tanstack",
+    "@testing-library/dom": "catalog:test",
+    "@testing-library/react": "catalog:test",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
+    "@vitejs/plugin-react": "catalog:vite",
     "@vitest/ui": "catalog:test",
     "eslint": "catalog:eslint",
+    "jsdom": "catalog:test",
+    "tailwindcss": "catalog:ui",
     "tw-animate-css": "catalog:ui",
     "typescript": "catalog:",
-    "vitest": "catalog:test"
-  }
+    "vite": "catalog:vite",
+    "vitest": "catalog:test",
+    "web-vitals": "catalog:test"
+  },
+  "exports": {
+    "./atoms/*": "./src/atoms/*.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./globals.css": "./src/styles/globals.css",
+    "./hooks/*": "./src/hooks/*.tsx",
+    "./layouts/*": "./src/layouts/*.tsx",
+    "./lib/*": "./src/lib/*.ts",
+    "./package.json": "./package.json",
+    "./providers/*": "./src/providers/*.tsx",
+    "./types/*": "./src/types/*.ts"
+  },
+  "imports": {
+    "#atoms/*": "./src/atoms/*.ts",
+    "#components/*": "./src/components/*.tsx",
+    "#globals.css": "./src/styles/globals.css",
+    "#hooks/*": "./src/hooks/*.tsx",
+    "#layouts/*": "./src/layouts/*.tsx",
+    "#lib/*": "./src/lib/*.ts",
+    "#providers/*": "./src/providers/*.tsx",
+    "#types/*": "./src/types/*.ts"
+  },
+  "name": "@archesai/ui",
+  "private": true,
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --build --emitDeclarationOnly"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "type": "module",
+  "version": "0.0.0"
 }

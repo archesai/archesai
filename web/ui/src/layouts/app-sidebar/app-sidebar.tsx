@@ -22,8 +22,8 @@ export function AppSidebar({
   return (
     <Sidebar
       {...props}
-      variant="inset"
       collapsible="icon"
+      variant="inset"
     >
       <SidebarHeader>
         <OrganizationButton />

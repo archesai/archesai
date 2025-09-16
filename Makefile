@@ -217,7 +217,7 @@ lint-go: ## Run Go linter
 .PHONY: lint-ts
 lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 	@echo -e "$(YELLOW)▶ Running Node.js linter...$(NC)"
-	@pnpm biome lint --fix
+	@pnpm biome check --fix
 	@echo -e "$(GREEN)✓ Node.js linting complete!$(NC)"
 
 .PHONY: lint-openapi
@@ -261,7 +261,7 @@ format-prettier: ## Format code with Prettier
 .PHONY: format-ts
 format-ts: ## Format Node.js/TypeScript code
 	@echo -e "$(YELLOW)▶ Formatting Node.js code...$(NC)"
-	@pnpm biome format --write
+	@pnpm biome check --fix
 	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------

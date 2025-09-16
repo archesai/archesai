@@ -54,8 +54,8 @@
     "sourceMap": true,
     "strict": true,
     "target": "esnext",
-    "types": ["node"],
     "tsBuildInfoFile": "${configDir}/.cache/tsconfig.tsbuildinfo",
+    "types": ["node"],
     "useDefineForClassFields": true,
     "useUnknownInCatchVariables": true,
     "verbatimModuleSyntax": true

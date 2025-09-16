@@ -1,37 +1,37 @@
 {
+  "claudeCode": {},
+  "global": {
+    "azureOpenaiBaseURL": "https://your-endpoint.openai.azure.com/",
+    "bedrockBaseURL": "https://bedrock.us-east-1.amazonaws.com",
+    "debug": false,
+    "defaultNumTasks": 10,
+    "defaultPriority": "medium",
+    "defaultSubtasks": 5,
+    "defaultTag": "main",
+    "logLevel": "info",
+    "ollamaBaseURL": "http://localhost:11434/api",
+    "projectName": "Taskmaster",
+    "responseLanguage": "English",
+    "userId": "1234567890"
+  },
   "models": {
-    "main": {
-      "provider": "claude-code",
-      "modelId": "sonnet",
+    "fallback": {
       "maxTokens": 64000,
+      "modelId": "sonnet",
+      "provider": "claude-code",
+      "temperature": 0.2
+    },
+    "main": {
+      "maxTokens": 64000,
+      "modelId": "sonnet",
+      "provider": "claude-code",
       "temperature": 0.2
     },
     "research": {
-      "provider": "claude-code",
-      "modelId": "opus",
       "maxTokens": 32000,
-      "temperature": 0.1
-    },
-    "fallback": {
+      "modelId": "opus",
       "provider": "claude-code",
-      "modelId": "sonnet",
-      "maxTokens": 64000,
-      "temperature": 0.2
+      "temperature": 0.1
     }
-  },
-  "global": {
-    "logLevel": "info",
-    "debug": false,
-    "defaultNumTasks": 10,
-    "defaultSubtasks": 5,
-    "defaultPriority": "medium",
-    "projectName": "Taskmaster",
-    "ollamaBaseURL": "http://localhost:11434/api",
-    "bedrockBaseURL": "https://bedrock.us-east-1.amazonaws.com",
-    "responseLanguage": "English",
-    "defaultTag": "main",
-    "azureOpenaiBaseURL": "https://your-endpoint.openai.azure.com/",
-    "userId": "1234567890"
-  },
-  "claudeCode": {}
+  }
 }

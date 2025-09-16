@@ -52,11 +52,11 @@ const useFormField = () => {
   const { id } = itemContext;
 
   return {
+    formDescriptionId: `${id}-form-item-description`,
+    formItemId: `${id}-form-item`,
+    formMessageId: `${id}-form-item-message`,
     id,
     name: fieldContext.name,
-    formItemID: `${id}-form-item`,
-    formDescriptionID: `${id}-form-item-description`,
-    formMessageID: `${id}-form-item-message`,
     ...fieldState,
   };
 };
@@ -75,8 +75,8 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <FormItemContext.Provider value={{ id }}>
       <div
-        data-slot="form-item"
         className={cn("grid gap-2", className)}
+        data-slot="form-item"
         {...props}
       />
     </FormItemContext.Provider>
@@ -87,14 +87,14 @@ function FormLabel({
   className,
   ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
-  const { error, formItemID } = useFormField();
+  const { error, formItemId } = useFormField();
 
   return (
     <Label
-      data-slot="form-label"
-      data-error={!!error}
       className={cn("data-[error=true]:text-destructive", className)}
-      htmlFor={formItemID}
+      data-error={!!error}
+      data-slot="form-label"
+      htmlFor={formItemId}
       {...props}
     />
   );
@@ -103,39 +103,39 @@ function FormLabel({
 function FormControl({
   ...props
 }: React.ComponentProps<typeof SlotPrimitive.Slot>) {
-  const { error, formItemID, formDescriptionID, formMessageID } =
+  const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
 
   return (
     <SlotPrimitive.Slot
-      data-slot="form-control"
-      id={formItemID}
       aria-describedby={
         !error
-          ? `${formDescriptionID}`
-          : `${formDescriptionID} ${formMessageID}`
+          ? `${formDescriptionId}`
+          : `${formDescriptionId} ${formMessageId}`
       }
       aria-invalid={!!error}
+      data-slot="form-control"
+      id={formItemId}
       {...props}
     />
   );
 }
 
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
-  const { formDescriptionID } = useFormField();
+  const { formDescriptionId } = useFormField();
 
   return (
     <p
+      className={cn("text-muted-foreground text-sm", className)}
       data-slot="form-description"
-      id={formDescriptionID}
-      className={cn("text-sm text-muted-foreground", className)}
+      id={formDescriptionId}
       {...props}
     />
   );
 }
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
-  const { error, formMessageID } = useFormField();
+  const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message ?? "") : props.children;
 
   if (!body) {
@@ -144,9 +144,9 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 
   return (
     <p
+      className={cn("text-destructive text-sm", className)}
       data-slot="form-message"
-      id={formMessageID}
-      className={cn("text-sm text-destructive", className)}
+      id={formMessageId}
       {...props}
     >
       {body}

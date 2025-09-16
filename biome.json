@@ -1,10 +1,24 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true,
-    "defaultBranch": "main"
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedAttributes": "on",
+        "useSortedKeys": "on",
+        "useSortedProperties": "on"
+      }
+    }
+  },
+  "css": {
+    "formatter": {
+      "enabled": true
+    },
+    "linter": {
+      "enabled": false
+    },
+    "parser": {
+      "cssModules": false
+    }
   },
   "files": {
     "ignoreUnknown": true,
@@ -13,49 +27,16 @@
       "!**/templates",
       "!**/*.gen.go",
       "!**/generated",
-      "!**/*.gen.ts",
-      "!**/routeTree.gen.ts",
-      "!**/shadcn"
+      "!**/*.gen.ts"
     ]
-  },
-  "css": {
-    "linter": {
-      "enabled": false
-    },
-    "parser": {
-      "cssModules": false
-    },
-    "formatter": {
-      "enabled": true
-    }
   },
   "formatter": {
     "attributePosition": "multiline",
     "useEditorconfig": true
   },
-  "linter": {
-    "rules": {
-      "correctness": {
-        "noUnusedImports": "error",
-        "noUnusedVariables": "error"
-      },
-      "complexity": {
-        "noUselessFragments": "off"
-      },
-      "a11y": {
-        "noSvgWithoutTitle": "off"
-      },
-      "style": {
-        "useExportType": "error",
-        "useNodejsImportProtocol": "error",
-        "useImportType": {
-          "level": "error",
-          "fix": "safe",
-          "options": {
-            "style": "separatedType"
-          }
-        }
-      }
+  "html": {
+    "formatter": {
+      "enabled": true
     }
   },
   "javascript": {
@@ -63,15 +44,41 @@
       "attributePosition": "multiline"
     }
   },
-  "html": {
-    "formatter": {
-      "enabled": true
-    }
-  },
   "json": {
     "parser": {
       "allowComments": true,
       "allowTrailingCommas": true
     }
+  },
+  "linter": {
+    "rules": {
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      },
+      "complexity": {
+        "noUselessFragments": "off"
+      },
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error"
+      },
+      "style": {
+        "useExportType": "error",
+        "useImportType": {
+          "fix": "safe",
+          "level": "error",
+          "options": {
+            "style": "separatedType"
+          }
+        },
+        "useNodejsImportProtocol": "error"
+      }
+    }
+  },
+  "vcs": {
+    "clientKind": "git",
+    "defaultBranch": "main",
+    "enabled": true,
+    "useIgnoreFile": true
   }
 }

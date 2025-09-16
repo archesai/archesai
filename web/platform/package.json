@@ -1,21 +1,4 @@
 {
-  "name": "@archesai/platform",
-  "version": "0.0.0",
-  "private": true,
-  "sideEffects": false,
-  "type": "module",
-  "imports": {
-    "#*": "./src/*.tsx",
-    "#lib/*": "./src/lib/*.ts",
-    "#routeTree.gen": "./src/routeTree.gen.ts"
-  },
-  "scripts": {
-    "build": "vite build",
-    "dev": "vite dev",
-    "lint": "eslint .",
-    "start": "vite preview",
-    "typecheck": "tsc --build --emitDeclarationOnly"
-  },
   "dependencies": {
     "@archesai/client": "workspace:*",
     "@archesai/ui": "workspace:*",
@@ -46,5 +29,22 @@
     "typescript": "catalog:",
     "vite": "catalog:vite",
     "vitest": "catalog:test"
-  }
+  },
+  "imports": {
+    "#*": "./src/*.tsx",
+    "#lib/*": "./src/lib/*.ts",
+    "#routeTree.gen": "./src/routeTree.gen.ts"
+  },
+  "name": "@archesai/platform",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev",
+    "lint": "eslint .",
+    "start": "vite preview",
+    "typecheck": "tsc --build --emitDeclarationOnly"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "version": "0.0.0"
 }
