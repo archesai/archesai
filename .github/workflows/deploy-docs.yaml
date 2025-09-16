@@ -1,16 +1,14 @@
 name: Deploy Docs
 
 on:
-  workflow_run:
-    workflows: ['Update Docs']
-    types: [completed]
+  push:
     branches: [main]
 
   workflow_dispatch:
 
 jobs:
   deploy-docs:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read

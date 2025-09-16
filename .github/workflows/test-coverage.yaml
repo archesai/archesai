@@ -1,0 +1,62 @@
+name: Test Coverage Docs
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test-coverage-docs:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - run: go mod download
+
+      - run: |
+          go test -race -coverprofile=coverage.out -covermode=atomic ./...
+          go tool cover -func=coverage.out > coverage.txt
+
+      - run: chmod +x scripts/generate-coverage-report.sh && ./scripts/generate-coverage-report.sh
+
+      - id: coverage-changes
+        run: |
+          if [[ -n $(git status --porcelain docs/guides/test-coverage-report.md) ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - if: steps.coverage-changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: docs/auto-update-test-coverage
+          title: 'docs: update test coverage report'
+          body: |
+            ## 📊 Auto-generated Test Coverage Report Update
+
+            This PR automatically updates the test coverage report with the latest test results.
+
+            ### Changes
+            - Updated `docs/guides/test-coverage-report.md` with current test coverage data
+
+            🤖 Generated with GitHub Actions
+          commit-message: 'docs: update test coverage report'
+          delete-branch: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-main
+          path: |
+            coverage.out
+            coverage.txt
+            docs/guides/test-coverage-report.md

@@ -13,8 +13,8 @@ NC='\033[0m' # No Color
 
 echo -e "${YELLOW}Generating coverage report...${NC}"
 
-# Ensure docs directory exists
-mkdir -p docs
+# Ensure docs/guides directory exists
+mkdir -p docs/guides
 
 # Run tests with coverage
 echo -e "${YELLOW}Running tests with coverage...${NC}"
@@ -36,7 +36,7 @@ else
 fi
 
 # Start generating the report
-cat > docs/TEST_COVERAGE_REPORT.md << EOF
+cat > docs/guides/test-coverage-report.md << EOF
 # Test Coverage Report
 
 Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
@@ -49,18 +49,18 @@ EOF
 
 # Add warning if coverage is low
 if [[ $TOTAL_COVERAGE_NUM -lt 80 ]]; then
-    echo "> ⚠️ **Warning:** Coverage is below recommended threshold of 80%" >> docs/TEST_COVERAGE_REPORT.md
-    echo "" >> docs/TEST_COVERAGE_REPORT.md
+    echo "> ⚠️ **Warning:** Coverage is below recommended threshold of 80%" >> docs/guides/test-coverage-report.md
+    echo "" >> docs/guides/test-coverage-report.md
 else
-    echo "> ✅ **Good:** Coverage meets recommended threshold of 80%" >> docs/TEST_COVERAGE_REPORT.md
-    echo "" >> docs/TEST_COVERAGE_REPORT.md
+    echo "> ✅ **Good:** Coverage meets recommended threshold of 80%" >> docs/guides/test-coverage-report.md
+    echo "" >> docs/guides/test-coverage-report.md
 fi
 
 # Generate coverage by package table
-echo "## Coverage by Package" >> docs/TEST_COVERAGE_REPORT.md
-echo "" >> docs/TEST_COVERAGE_REPORT.md
-echo "| Package | Coverage | Status |" >> docs/TEST_COVERAGE_REPORT.md
-echo "|---------|----------|--------|" >> docs/TEST_COVERAGE_REPORT.md
+echo "## Coverage by Package" >> docs/guides/test-coverage-report.md
+echo "" >> docs/guides/test-coverage-report.md
+echo "| Package | Coverage | Status |" >> docs/guides/test-coverage-report.md
+echo "|---------|----------|--------|" >> docs/guides/test-coverage-report.md
 
 # Process test output for package coverage
 grep -E "^(ok|FAIL)" test-output.txt | while read status pkg time coverage_text; do
@@ -87,12 +87,12 @@ grep -E "^(ok|FAIL)" test-output.txt | while read status pkg time coverage_text;
         # Clean package name (remove github.com/archesai/archesai/)
         clean_pkg=$(echo $pkg | sed 's|github.com/archesai/archesai/||')
         
-        echo "| \`$clean_pkg\` | $coverage | $status_emoji |" >> docs/TEST_COVERAGE_REPORT.md
+        echo "| \`$clean_pkg\` | $coverage | $status_emoji |" >> docs/guides/test-coverage-report.md
     fi
 done
 
 # Add legend
-cat >> docs/TEST_COVERAGE_REPORT.md << 'EOF'
+cat >> docs/guides/test-coverage-report.md << 'EOF'
 
 ## Coverage Trends
 
@@ -125,11 +125,11 @@ grep "0.0%" coverage.txt | head -5 | while read file line func coverage; do
     else
         desc=""
     fi
-    echo "- **\`$filename\`** - $desc" >> docs/TEST_COVERAGE_REPORT.md
+    echo "- **\`$filename\`** - $desc" >> docs/guides/test-coverage-report.md
 done
 
 # Add recommendations
-cat >> docs/TEST_COVERAGE_REPORT.md << 'EOF'
+cat >> docs/guides/test-coverage-report.md << 'EOF'
 
 ## Recommendations
 
@@ -138,28 +138,28 @@ EOF
 
 # Add specific recommendations based on coverage
 if [[ $TOTAL_COVERAGE_NUM -lt 20 ]]; then
-    cat >> docs/TEST_COVERAGE_REPORT.md << 'EOF'
+    cat >> docs/guides/test-coverage-report.md << 'EOF'
 - [ ] Add basic unit tests for all packages
 - [ ] Focus on critical business logic first
 - [ ] Set up test infrastructure and mocks
 - [ ] Aim for at least 40% coverage initially
 EOF
 elif [[ $TOTAL_COVERAGE_NUM -lt 40 ]]; then
-    cat >> docs/TEST_COVERAGE_REPORT.md << 'EOF'
+    cat >> docs/guides/test-coverage-report.md << 'EOF'
 - [ ] Increase coverage for core packages
 - [ ] Add integration tests for API endpoints
 - [ ] Test error handling paths
 - [ ] Aim for 60% coverage next
 EOF
 elif [[ $TOTAL_COVERAGE_NUM -lt 80 ]]; then
-    cat >> docs/TEST_COVERAGE_REPORT.md << 'EOF'
+    cat >> docs/guides/test-coverage-report.md << 'EOF'
 - [ ] Add edge case testing
 - [ ] Improve integration test coverage
 - [ ] Add performance benchmarks
 - [ ] Aim for 80% coverage target
 EOF
 else
-    cat >> docs/TEST_COVERAGE_REPORT.md << 'EOF'
+    cat >> docs/guides/test-coverage-report.md << 'EOF'
 - [ ] Maintain current coverage levels
 - [ ] Add tests for new features before merging
 - [ ] Consider adding mutation testing
@@ -171,7 +171,7 @@ fi
 TOTAL_PACKAGES=$(grep -c "^ok\|^FAIL\|^\?" test-output.txt || echo "0")
 TESTED_PACKAGES=$(grep -c "^ok" test-output.txt || echo "0")
 
-cat >> docs/TEST_COVERAGE_REPORT.md << EOF
+cat >> docs/guides/test-coverage-report.md << EOF
 
 ### Next Steps
 1. Focus on packages with lowest coverage
@@ -192,5 +192,5 @@ EOF
 # Clean up temp files
 rm -f test-output.txt
 
-echo -e "${GREEN}✓ Coverage report generated at docs/TEST_COVERAGE_REPORT.md${NC}"
+echo -e "${GREEN}✓ Coverage report generated at docs/guides/test-coverage-report.md${NC}"
 echo -e "${GREEN}Total Coverage: $TOTAL_COVERAGE${NC}"
