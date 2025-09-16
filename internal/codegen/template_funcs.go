@@ -525,67 +525,117 @@ func IsUpdateExcluded(fieldName string, excludeList []string) bool {
 // GenerateUpdateTypeConversion generates type conversions for Update operations
 // Update operations require pointer types for all fields to indicate which fields to update
 func GenerateUpdateTypeConversion(goType, sqlcType, varPrefix, fieldName string) string {
-	// For UPDATE operations, everything needs to be a pointer since all fields are optional
+	fieldRef := varPrefix + "." + fieldName
 
 	// Handle special type conversions first
-	switch {
-	// Email types need to be converted to string first, then to pointer
-	case strings.Contains(goType, "Email"):
-		return "stringPtr(string(" + varPrefix + "." + fieldName + "))"
-
-	// Custom types (enums, type aliases) that are string-based
-	case goType != "" && goType != goTypeString && goType != goTypeBool && goType != goTypeInt &&
-		goType != goTypeInt32 && goType != goTypeInt64 && goType != goTypeFloat32 && goType != goTypeFloat64 &&
-		goType != goTypeTimeTime && !strings.Contains(goType, "UUID") && !strings.Contains(goType, "*"):
-		// It's a custom type like MemberRole, convert to string then pointer
-		return "stringPtr(string(" + varPrefix + "." + fieldName + "))"
-
-	// UUID types
-	case strings.Contains(goType, "UUID"):
-		return "&" + varPrefix + "." + fieldName
-
-	// Map/JSON types
-	case strings.Contains(goType, "map[string]"):
-		return "marshalJSON(" + varPrefix + "." + fieldName + ")"
-
-	// Basic types - convert to pointer
-	case goType == goTypeString:
-		return "stringPtr(" + varPrefix + "." + fieldName + ")"
-	case goType == goTypeBool:
-		return "boolPtr(" + varPrefix + "." + fieldName + ")"
-	case goType == goTypeInt32:
-		return "int32Ptr(" + varPrefix + "." + fieldName + ")"
-	case goType == "int64":
-		return "int64Ptr(int64(" + varPrefix + "." + fieldName + "))"
-	case goType == goTypeFloat32:
-		// Check what SQLC expects for float32 fields
-		if strings.Contains(sqlcType, "int32") {
-			// Credits and similar fields are float32 but stored as int32
-			return "int32Ptr(int32(" + varPrefix + "." + fieldName + "))"
-		}
-		// For Update operations, SQLC often expects *float64 even when the field is float32
-		return "float64Ptr(float64(" + varPrefix + "." + fieldName + "))"
-	case goType == goTypeFloat64:
-		return "float64Ptr(" + varPrefix + "." + fieldName + ")"
-	case goType == goTypeTimeTime:
-		return "&" + varPrefix + "." + fieldName
-
-	// Already pointer types
-	case strings.HasPrefix(goType, "*"):
-		return varPrefix + "." + fieldName
-
-	// Default fallback - try to determine based on sqlcType or just take address
-	default:
-		if strings.Contains(sqlcType, goTypeString) {
-			return "stringPtr(" + varPrefix + "." + fieldName + ")"
-		} else if strings.Contains(sqlcType, goTypeBool) {
-			return "boolPtr(" + varPrefix + "." + fieldName + ")"
-		} else if strings.Contains(sqlcType, goTypeInt) {
-			return "int32Ptr(" + varPrefix + "." + fieldName + ")"
-		} else if strings.Contains(sqlcType, goTypeFloat32) || strings.Contains(sqlcType, goTypeFloat64) {
-			return "float64Ptr(" + varPrefix + "." + fieldName + ")"
-		}
-		// Last resort - take address
-		return "&" + varPrefix + "." + fieldName
+	if conversion := handleSpecialTypes(goType, fieldRef); conversion != "" {
+		return conversion
 	}
+
+	// Handle basic types
+	if conversion := handleBasicTypes(goType, sqlcType, fieldRef); conversion != "" {
+		return conversion
+	}
+
+	// Handle pointer types
+	if strings.HasPrefix(goType, "*") {
+		return fieldRef
+	}
+
+	// Default fallback based on sqlcType
+	return handleFallbackTypes(sqlcType, fieldRef)
+}
+
+// handleSpecialTypes handles email, map, custom types, and UUID types
+func handleSpecialTypes(goType, fieldRef string) string {
+	switch {
+	case strings.Contains(goType, "Email"):
+		return "stringPtr(string(" + fieldRef + "))"
+	case strings.Contains(goType, "map[string]") || strings.Contains(goType, "map["):
+		return "marshalJSON(" + fieldRef + ")"
+	case isCustomType(goType):
+		return "stringPtr(string(" + fieldRef + "))"
+	case strings.Contains(goType, "UUID"):
+		return "&" + fieldRef
+	}
+	return ""
+}
+
+// isCustomType checks if the type is a custom type (enum, type alias)
+func isCustomType(goType string) bool {
+	if goType == "" {
+		return false
+	}
+
+	basicTypes := []string{
+		goTypeString, goTypeBool, goTypeInt, goTypeInt32, goTypeInt64,
+		goTypeFloat32, goTypeFloat64, goTypeTimeTime,
+	}
+
+	for _, basicType := range basicTypes {
+		if goType == basicType {
+			return false
+		}
+	}
+
+	// Not a basic type, check if it's a complex type
+	complexTypeIndicators := []string{"UUID", "*", "map[", "[]"}
+	for _, indicator := range complexTypeIndicators {
+		if strings.Contains(goType, indicator) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// handleBasicTypes handles primitive Go types
+func handleBasicTypes(goType, sqlcType, fieldRef string) string {
+	switch goType {
+	case goTypeString:
+		return "stringPtr(" + fieldRef + ")"
+	case goTypeBool:
+		return "boolPtr(" + fieldRef + ")"
+	case goTypeInt32:
+		return "int32Ptr(" + fieldRef + ")"
+	case "int64":
+		return "int64Ptr(int64(" + fieldRef + "))"
+	case goTypeFloat32:
+		return handleFloat32Type(sqlcType, fieldRef)
+	case goTypeFloat64:
+		return "float64Ptr(" + fieldRef + ")"
+	case goTypeTimeTime:
+		return "&" + fieldRef
+	}
+	return ""
+}
+
+// handleFloat32Type handles float32 with special cases for int32 storage
+func handleFloat32Type(sqlcType, fieldRef string) string {
+	if strings.Contains(sqlcType, "int32") {
+		// Credits and similar fields are float32 but stored as int32
+		return "int32Ptr(int32(" + fieldRef + "))"
+	}
+	// For Update operations, SQLC often expects *float64 even when the field is float32
+	return "float64Ptr(float64(" + fieldRef + "))"
+}
+
+// handleFallbackTypes handles type conversion based on sqlcType
+func handleFallbackTypes(sqlcType, fieldRef string) string {
+	fallbackMappings := map[string]string{
+		goTypeString:  "stringPtr(" + fieldRef + ")",
+		goTypeBool:    "boolPtr(" + fieldRef + ")",
+		goTypeInt:     "int32Ptr(" + fieldRef + ")",
+		goTypeFloat32: "float64Ptr(" + fieldRef + ")",
+		goTypeFloat64: "float64Ptr(" + fieldRef + ")",
+	}
+
+	for sqlType, conversion := range fallbackMappings {
+		if strings.Contains(sqlcType, sqlType) {
+			return conversion
+		}
+	}
+
+	// Last resort - take address
+	return "&" + fieldRef
 }

@@ -16,10 +16,11 @@ make clean # Clean artifacts
 
 ```bash
 make generate           # Run all generators
-make generate-oapi      # Generate from OpenAPI
-make generate-sqlc      # Generate database code
-make generate-codegen   # Generate custom code
-make generate-mocks     # Generate test mocks
+make generate-oapi      # Generate OpenAPI types and server interfaces
+make generate-sqlc      # Generate database code from SQL queries
+make generate-codegen   # Generate repository, service, and server code from x-codegen
+make generate-codegen-types # Generate types for codegen configuration
+make generate-mocks     # Generate test mocks with mockery
 make generate-js-client # Generate TypeScript client
 ```
 

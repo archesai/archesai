@@ -16,21 +16,25 @@ backend.
 
 ### 1. Mock Repository Pattern
 
-We use mockery v3 to generate mocks from interfaces. This is configured in `.mockery.yaml`:
+We use mockery v3 to generate mocks from interfaces. The unified code generator creates repository interfaces
+that mockery then uses to generate test mocks.
 
 ```bash
-# Generate mocks for all interfaces
+# Generate repository interfaces from x-codegen
+make generate-codegen
+
+# Generate mocks from interfaces
 make generate-mocks
 
-# Or directly
-go run github.com/vektra/mockery/v2
+# Or generate everything
+make generate
 ```
 
 **Benefits:**
 
-- Automatic generation from interfaces
-- Consistent mock patterns
-- Type-safe mocks
+- Automatic generation from generated interfaces
+- Consistent mock patterns across all domains
+- Type-safe mocks matching repository contracts
 - Integration with testify assertions
 
 ### 2. Test Organization
@@ -42,6 +46,7 @@ internal/{domain}/
 ├── service_test.go      # Business logic tests
 ├── handler_test.go      # HTTP handler tests (if applicable)
 ├── middleware_test.go   # Middleware tests (if applicable)
+├── mocks_test.gen.go    # Generated mocks from interfaces
 └── postgres_test.go     # Integration tests with real database
 ```
 

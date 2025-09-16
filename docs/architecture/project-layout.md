@@ -44,16 +44,19 @@
 │   │   └── providers.go        # Service providers
 │   │
 │   ├── auth/                    # Authentication domain
-│   │   ├── domain.go           # User, Session, Token entities
+│   │   ├── auth.go             # Package constants and errors
 │   │   ├── service.go          # Login, Register, Verify logic
 │   │   ├── handler.go          # HTTP endpoints
 │   │   ├── middleware.go       # JWT validation middleware
-│   │   ├── repository.gen.go   # Generated DB queries
-│   │   ├── cache.gen.go        # Generated Redis cache
-│   │   ├── http.gen.go         # Generated HTTP interfaces
+│   │   ├── repository.gen.go   # Generated repository interface
+│   │   ├── postgres.gen.go     # Generated PostgreSQL implementation
+│   │   ├── sqlite.gen.go       # Generated SQLite implementation
+│   │   ├── service.gen.go      # Generated service interface
+│   │   ├── server.gen.go       # Generated HTTP server
 │   │   ├── types.gen.go        # Generated OpenAPI types
-│   │   ├── mappers.go          # Entity <-> DTO conversions
+│   │   ├── api.gen.go          # Generated API client
 │   │   ├── service_test.go     # Unit tests with mocks
+│   │   ├── mocks_test.gen.go   # Generated test mocks
 │   │   └── postgres_test.go    # Integration tests
 │   │
 │   ├── accounts/                # Account management domain
@@ -78,9 +81,26 @@
 │   │   ├── schema.sql          # Complete schema
 │   │   └── db.go               # Database connection
 │   │
-│   ├── codegen/                # Custom code generator
-│   │   ├── templates/          # Go templates
-│   │   └── generator.go        # Generation logic
+│   ├── codegen/                # Unified code generator
+│   │   ├── templates/          # Generation templates
+│   │   │   ├── repository.go.tmpl
+│   │   │   ├── repository_postgres.go.tmpl
+│   │   │   ├── repository_sqlite.go.tmpl
+│   │   │   ├── service.go.tmpl
+│   │   │   ├── service_impl.go.tmpl
+│   │   │   ├── handler.go.tmpl
+│   │   │   ├── cache.go.tmpl
+│   │   │   ├── cache_memory.go.tmpl
+│   │   │   ├── cache_redis.go.tmpl
+│   │   │   ├── events.go.tmpl
+│   │   │   ├── events_nats.go.tmpl
+│   │   │   ├── events_redis.go.tmpl
+│   │   │   └── config.go.tmpl
+│   │   ├── codegen.go          # Main generator
+│   │   ├── parser.go           # OpenAPI parser
+│   │   ├── sql_generator.go    # SQL generation
+│   │   ├── template_funcs.go   # Template helpers
+│   │   └── types.gen.go        # Generated config types
 │   │
 │   ├── cache/                   # Cache utilities
 │   │
@@ -196,19 +216,20 @@ Each domain in `/internal` follows this pattern:
 
 ```text
 domain/
-├── generate.go        # Code generation annotations
-├── service.go         # Business logic, use cases
+├── domain.go          # Package documentation, constants, errors
+├── service.go         # Business logic implementation
 ├── handler.go         # HTTP request/response handling
 ├── middleware.go      # Domain-specific middleware (optional)
-├── repository.gen.go  # Generated database interface
-├── cache.gen.go       # Generated cache layer (optional)
-├── events.gen.go      # Generated event publisher (optional)
-├── http.gen.go        # Generated HTTP interface from OpenAPI
+├── repository.gen.go  # Generated repository interface
+├── postgres.gen.go    # Generated PostgreSQL implementation
+├── sqlite.gen.go      # Generated SQLite implementation
+├── service.gen.go     # Generated service interface
+├── server.gen.go      # Generated HTTP server implementation
 ├── types.gen.go       # Generated types from OpenAPI
-├── mappers.go         # Convert between layers (optional)
+├── api.gen.go         # Generated API client interface
 ├── service_test.go    # Unit tests with mocked dependencies
 ├── handler_test.go    # HTTP handler tests (optional)
-├── mocks_test.go      # Generated test mocks
+├── mocks_test.gen.go  # Generated test mocks
 └── postgres_test.go   # Integration tests (optional)
 ```
 
@@ -218,10 +239,13 @@ domain/
 
 - `*.gen.go` - Do not edit manually
 - `types.gen.go` - OpenAPI struct definitions
-- `http.gen.go` - HTTP handler interfaces
-- `repository.gen.go` - Database query methods
-- `cache.gen.go` - Redis caching layer
-- `events.gen.go` - Event publishing
+- `api.gen.go` - API client interfaces
+- `repository.gen.go` - Repository interface from x-codegen
+- `postgres.gen.go` - PostgreSQL repository implementation
+- `sqlite.gen.go` - SQLite repository implementation
+- `service.gen.go` - Service interface from x-codegen
+- `server.gen.go` - HTTP server implementation
+- `mocks_test.gen.go` - Test mocks from mockery
 
 ### TypeScript Generated Files
 
@@ -237,13 +261,13 @@ domain/
 
 ### Go Files
 
-- `generate.go` - Code generation annotations
-- `service.go` - Business logic
+- `domain.go` - Package documentation, constants, errors
+- `service.go` - Business logic implementation
 - `handler.go` - HTTP handlers
-- `middleware.go` - Middleware functions
-- `mappers.go` - Type conversions (optional)
+- `middleware.go` - Middleware functions (optional)
 - `*_test.go` - Test files
-- `*.gen.go` - Generated (don't edit)
+- `*.gen.go` - Generated files (don't edit manually)
+- `mocks_test.gen.go` - Generated test mocks
 
 ### Config Files
 

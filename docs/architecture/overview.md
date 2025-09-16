@@ -113,58 +113,65 @@ Each domain maintains:
 
 ### 3. Code Generation Strategy
 
-ArchesAI leverages extensive code generation to maintain consistency and reduce boilerplate:
+ArchesAI leverages a unified code generation system to maintain consistency and reduce boilerplate:
 
 #### **OpenAPI-Driven Development**
 
 ```yaml
-# Define in api/openapi.yaml
-paths:
-  /organizations:
-    post:
-      operationId: createOrganization
+# Define in api/openapi.yaml with x-codegen annotations
+components:
+  schemas:
+    Organization:
+      x-codegen:
+        repository:
+          operations:
+            - create
+            - get
+            - update
+            - delete
+            - list
+        service:
+          enabled: true
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
 ```
 
 Generates:
 
 - Type definitions (`types.gen.go`)
-- HTTP handler interfaces (`http.gen.go`)
-- Client SDKs (`web/client/`)
+- Repository interface (`repository.gen.go`)
+- PostgreSQL implementation (`postgres.gen.go`)
+- SQLite implementation (`sqlite.gen.go`)
+- Service interface (`service.gen.go`)
+- HTTP server implementation (`server.gen.go`)
+- API client interface (`api.gen.go`)
+- Test mocks (`mocks_test.gen.go`)
 
 #### **SQL-First Database Layer**
 
 ```sql
 -- Define in internal/database/queries/
 -- name: GetOrganization :one
-SELECT
-  *
-FROM
-  organizations
-WHERE
-  id = $1;
+SELECT * FROM organizations WHERE id = $1;
 ```
 
 Generates:
 
-- Type-safe database queries
-- Repository interfaces
-- Transaction helpers
+- Type-safe database queries via SQLC
+- Database models and interfaces
 
-#### **Custom Code Generation**
+#### **Unified Code Generation**
 
-```yaml
-# x-codegen annotations in OpenAPI
-x-codegen:
-  repository: true
-  cache: true
-  events: true
-```
+The unified generator reads x-codegen annotations to produce:
 
-Generates:
-
-- Repository implementations
-- Cache layers with TTL
-- Event publishers
+- **Repository Layer**: Interface and database implementations (PostgreSQL/SQLite)
+- **Service Layer**: Business logic interfaces and HTTP servers
+- **Events Layer**: Optional event publishing with NATS/Redis
+- **Configuration**: Default values and environment mappings
 
 ### 4. Technology Stack
 
@@ -232,11 +239,12 @@ Generates:
 
 ### Why Code Generation?
 
-- Type safety across the stack
-- Reduced boilerplate code
-- Consistent patterns
-- Self-documenting APIs
-- Automatic mock generation for testing
+- **Type safety across the stack** - Generated types ensure compile-time safety
+- **Reduced boilerplate code** - Automatic generation of CRUD operations
+- **Consistent patterns** - Unified structure across all domains
+- **Self-documenting APIs** - OpenAPI serves as single source of truth
+- **Automatic mock generation** - Mockery generates test mocks from interfaces
+- **Multi-database support** - Same interface, multiple implementations
 
 ## Architecture Evolution
 

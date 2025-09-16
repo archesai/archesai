@@ -48,7 +48,7 @@ up your development environment and contribute to the project.
 ## Essential Commands
 
 ```bash
-make generate     # Run after API/SQL changes
+make generate     # Run after API/SQL/x-codegen changes
 make lint         # Check code quality
 make dev          # Start backend server
 pnpm dev:platform # Start frontend
@@ -65,11 +65,16 @@ For a detailed overview of the project organization, see
 
 ## Development Workflow
 
-1. **Code Generation First**: Define APIs in OpenAPI specs and database queries in SQL before
-   implementing
-2. **Run `make generate`** after any changes to API or database schemas
-3. **Follow the testing strategy** outlined in [Testing Documentation](testing.md)
-4. **Use the TUI for configuration** as described in the [TUI Guide](../features/tui.md)
+1. **Define First, Generate Second**:
+   - Add x-codegen annotations to OpenAPI schemas
+   - Define database queries in SQL files
+   - Run `make generate` to create all boilerplate code
+2. **Implement Business Logic**: Write your custom logic in `service.go` files
+3. **Test with Generated Mocks**: Use the generated `mocks_test.gen.go` files for testing
+4. **Follow the testing strategy** outlined in [Testing Documentation](testing.md)
+5. **Use the TUI for configuration** as described in the [TUI Guide](../features/tui.md)
+
+For detailed code generation instructions, see the [Code Generation Guide](code-generation.md).
 
 ## Contributing
 

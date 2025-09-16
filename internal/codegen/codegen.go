@@ -98,12 +98,7 @@ func RunWithConfig(config *CodegenConfig) error {
 		log.Debug("repository generator completed")
 	}
 
-	if config.Generators.Cache.Interface != "" || config.Generators.Cache.Memory != "" || config.Generators.Cache.Redis != "" {
-		if err := generateCache(config, filteredSchemas, templates, fileWriter, log); err != nil {
-			return fmt.Errorf("cache generator failed: %w", err)
-		}
-		log.Debug("cache generator completed")
-	}
+	// Cache generation removed - using generic cache instead
 
 	if config.Generators.Events.Interface != "" || config.Generators.Events.Redis != "" || config.Generators.Events.Nats != "" {
 		if err := generateEvents(config, filteredSchemas, templates, fileWriter, log); err != nil {
@@ -161,16 +156,12 @@ func loadTemplates() (map[string]*template.Template, error) {
 		"repository.go.tmpl",
 		"repository_postgres.go.tmpl",
 		"repository_sqlite.go.tmpl",
-		"cache.go.tmpl",
-		"cache_memory.go.tmpl",
-		"cache_redis.go.tmpl",
 		"events.go.tmpl",
 		"events_nats.go.tmpl",
 		"events_redis.go.tmpl",
 		"service.go.tmpl",
-		"service_impl.go.tmpl",
+		"server.gen.go.tmpl",
 		"config.go.tmpl",
-		"handler.go.tmpl",
 	}
 
 	for _, file := range templateFiles {
@@ -464,7 +455,7 @@ func getHandlerConfig(config *Config, domain string, schemas []*ParsedSchema) (i
 
 	// Use the configured handlers output path
 	outputFiles := []struct{ path, template string }{
-		{filepath.Join(config.Output, domain, "server.impl.gen.go"), "handler.go.tmpl"},
+		{filepath.Join(config.Output, domain, "server.impl.gen.go"), "server.gen.go.tmpl"},
 	}
 	return templateData, outputFiles
 }
@@ -1017,10 +1008,7 @@ func generateRepository(config *Config, schemas map[string]*ParsedSchema, templa
 	return runGeneratorWithPaths("repository", config, schemas, templates, fileWriter, NeedsRepository, log)
 }
 
-// generateCache generates cache interfaces and implementations.
-func generateCache(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
-	return runGeneratorWithPaths("cache", config, schemas, templates, fileWriter, NeedsCache, log)
-}
+// Cache generation removed - using generic cache instead
 
 // generateEvents generates event interfaces and implementations.
 func generateEvents(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
@@ -1068,7 +1056,7 @@ func generateService(config *Config, schemas map[string]*ParsedSchema, templates
 		} else {
 			// Generate server.gen.go
 			handlerPath := filepath.Join(config.Output, schema.Domain, "server.gen.go")
-			if err := fileWriter.WriteTemplate(handlerPath, templates["handler.go.tmpl"], templateData); err != nil {
+			if err := fileWriter.WriteTemplate(handlerPath, templates["server.gen.go.tmpl"], templateData); err != nil {
 				return fmt.Errorf("failed to write handler for %s: %w", schema.Name, err)
 			}
 		}

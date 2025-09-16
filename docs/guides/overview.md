@@ -6,6 +6,7 @@ the ArchesAI codebase.
 ## Getting Started
 
 - **[Development Guide](development.md)** - Main development setup and workflow
+- **[Code Generation Guide](code-generation.md)** - Unified code generation system
 - **[Testing Strategy](testing.md)** - Comprehensive testing documentation
 - **[Contributing Guidelines](../contributing.md)** - How to contribute to the project
 - **[Makefile Commands](makefile-commands.md)** - Complete command reference
@@ -19,12 +20,13 @@ the ArchesAI codebase.
 
 ### Code Generation
 
-Learn about our comprehensive code generation system:
+Learn about our unified code generation system:
 
-- OpenAPI-driven type generation
-- Database code generation with SQLC
-- Repository and handler generation
-- Event system generation
+- **[Code Generation Guide](code-generation.md)** - Complete documentation
+- OpenAPI-driven development with x-codegen annotations
+- Automatic repository and service generation
+- Multi-database support (PostgreSQL/SQLite)
+- Test mock generation with Mockery
 
 ### Testing
 

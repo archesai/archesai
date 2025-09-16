@@ -125,35 +125,41 @@ Each domain follows a flat package structure for simplicity:
 ```text
 internal/auth/
 ├── auth.go                    # Package documentation, constants, errors
-├── service.go                 # Business logic and use cases
+├── service.go                 # Business logic implementation
 ├── handler.go                 # HTTP request handlers
-├── http.gen.go                # Generated HTTP server interface
 ├── middleware_http.go         # HTTP middleware (auth domain only)
-├── repository_postgres.go     # PostgreSQL repository implementation
-├── repository_sqlite.go       # SQLite repository implementation
 ├── repository.gen.go          # Generated repository interface
+├── postgres.gen.go            # Generated PostgreSQL implementation
+├── sqlite.gen.go              # Generated SQLite implementation
+├── service.gen.go             # Generated service interface
+├── server.gen.go              # Generated HTTP server implementation
 ├── types.gen.go               # Generated OpenAPI types
-├── cache.gen.go               # Generated cache interface
-├── cache_memory.gen.go        # In-memory cache implementation
-├── cache_redis.gen.go         # Redis cache implementation
-├── events.gen.go              # Generated event definitions
-├── events_redis.gen.go        # Redis event publisher
-└── events_nats.gen.go         # NATS event publisher
+├── api.gen.go                 # Generated API client interface
+└── mocks_test.gen.go          # Generated test mocks
 ```
 
 ### Service Layer Pattern
 
-The service layer orchestrates business operations:
+The service layer orchestrates business operations with generated interfaces:
 
 ```go
-type Service struct {
-    repo   Repository      // Data persistence
-    cache  Cache          // Performance optimization
-    events EventPublisher // Event-driven communication
+// Generated service interface (service.gen.go)
+type Service interface {
+    CreateUser(ctx context.Context, req CreateUserRequest) (*User, error)
+    GetUser(ctx context.Context, id uuid.UUID) (*User, error)
+    UpdateUser(ctx context.Context, id uuid.UUID, req UpdateUserRequest) (*User, error)
+    DeleteUser(ctx context.Context, id uuid.UUID) error
+    ListUsers(ctx context.Context, params ListUsersParams) ([]*User, error)
+}
+
+// Manual implementation (service.go)
+type ServiceImpl struct {
+    repo Repository // Generated repository interface
+    log  *slog.Logger
 }
 
 // Business operation example
-func (s *Service) CreateUser(ctx context.Context, req CreateUserRequest) (*User, error) {
+func (s *ServiceImpl) CreateUser(ctx context.Context, req CreateUserRequest) (*User, error) {
     // 1. Validate business rules
     if err := s.validateUserCreation(req); err != nil {
         return nil, err
@@ -161,21 +167,24 @@ func (s *Service) CreateUser(ctx context.Context, req CreateUserRequest) (*User,
 
     // 2. Execute business logic
     user := &User{
-        ID:    uuid.New(),
-        Email: req.Email,
-        Name:  req.Name,
+        ID:        uuid.New(),
+        Email:     req.Email,
+        Name:      req.Name,
+        CreatedAt: time.Now(),
+        UpdatedAt: time.Now(),
     }
 
-    // 3. Persist to repository
+    // 3. Hash password
+    hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+    if err != nil {
+        return nil, err
+    }
+    user.PasswordHash = string(hash)
+
+    // 4. Persist to repository (generated interface)
     if err := s.repo.CreateUser(ctx, user); err != nil {
         return nil, err
     }
-
-    // 4. Update cache
-    _ = s.cache.SetUser(ctx, user, 5*time.Minute)
-
-    // 5. Publish domain event
-    _ = s.events.PublishUserCreated(ctx, user)
 
     return user, nil
 }
@@ -183,10 +192,10 @@ func (s *Service) CreateUser(ctx context.Context, req CreateUserRequest) (*User,
 
 ### Repository Pattern
 
-Repositories abstract data persistence:
+Repositories abstract data persistence with generated implementations:
 
 ```go
-// Port (interface) defined by domain
+// Generated repository interface (repository.gen.go)
 type Repository interface {
     CreateUser(ctx context.Context, user *User) error
     GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
@@ -195,18 +204,29 @@ type Repository interface {
     DeleteUser(ctx context.Context, id uuid.UUID) error
 }
 
-// Adapter (implementation) in infrastructure
+// Generated PostgreSQL implementation (postgres.gen.go)
 type PostgresRepository struct {
-    queries *postgresql.Queries
+    db *sql.DB
 }
 
 func (r *PostgresRepository) CreateUser(ctx context.Context, user *User) error {
-    _, err := r.queries.CreateUser(ctx, postgresql.CreateUserParams{
-        ID:           user.ID.String(),
-        Email:        user.Email,
-        Name:         user.Name,
-        PasswordHash: user.PasswordHash,
-    })
+    // Generated SQL execution
+    _, err := r.db.ExecContext(ctx,
+        `INSERT INTO users (id, email, name, password_hash) VALUES ($1, $2, $3, $4)`,
+        user.ID, user.Email, user.Name, user.PasswordHash)
+    return err
+}
+
+// Generated SQLite implementation (sqlite.gen.go)
+type SQLiteRepository struct {
+    db *sql.DB
+}
+
+func (r *SQLiteRepository) CreateUser(ctx context.Context, user *User) error {
+    // Generated SQL execution with SQLite syntax
+    _, err := r.db.ExecContext(ctx,
+        `INSERT INTO users (id, email, name, password_hash) VALUES (?, ?, ?, ?)`,
+        user.ID, user.Email, user.Name, user.PasswordHash)
     return err
 }
 ```
@@ -217,24 +237,25 @@ func (r *PostgresRepository) CreateUser(ctx context.Context, user *User) error {
 
 ```mermaid
 graph LR
-    OPENAPI[OpenAPI Spec] --> CODEGEN[Code Generator]
+    OPENAPI[OpenAPI Spec] --> UNIFIED[Unified Code Generator]
+    XCODEGEN[x-codegen Annotations] --> UNIFIED
+
+    UNIFIED --> REPO[Repository Interface]
+    UNIFIED --> POSTGRES[PostgreSQL Implementation]
+    UNIFIED --> SQLITE[SQLite Implementation]
+    UNIFIED --> SERVICE[Service Interface]
+    UNIFIED --> SERVER[HTTP Server]
+    UNIFIED --> TYPES[Go Types]
+    UNIFIED --> MOCKS[Test Mocks]
+
     SQL[SQL Queries] --> SQLC[SQLC Generator]
-
-    CODEGEN --> TYPES[Go Types]
-    CODEGEN --> HANDLERS[HTTP Handlers]
-    CODEGEN --> CACHE[Cache Interfaces]
-    CODEGEN --> EVENTS[Event Publishers]
-
     SQLC --> QUERIES[Database Queries]
     SQLC --> MODELS[Database Models]
 
-    TYPES --> SERVICE[Service Layer]
-    HANDLERS --> SERVICE
-    QUERIES --> REPO[Repository]
-
     SERVICE --> REPO
-    SERVICE --> CACHE
-    SERVICE --> EVENTS
+    REPO --> POSTGRES
+    REPO --> SQLITE
+    SERVER --> SERVICE
 ```
 
 ### Authentication Flow

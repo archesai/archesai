@@ -367,9 +367,11 @@ Update the README when:
 ### API Documentation
 
 - Update OpenAPI spec for API changes
+- Add x-codegen annotations for code generation
 - Include request/response examples
 - Document error responses
 - Add descriptions for all parameters
+- Define repository operations needed
 
 ## Architecture Guidelines
 
@@ -397,17 +399,21 @@ Follow the hexagonal architecture pattern:
 
 When adding a new feature:
 
-1. **Define the API** in `api/openapi.yaml`
+1. **Define the API** in `api/openapi.yaml` with x-codegen annotations
 2. **Create database migration** if needed
-3. **Write SQL queries** in `queries/`
-4. **Generate code**: `make generate`
-5. **Implement domain logic** in use cases
-6. **Implement repository** if needed
-7. **Create HTTP handler**
-8. **Wire dependencies** in `deps.go`
-9. **Add routes** in `routes.go`
-10. **Write tests**
-11. **Update documentation**
+3. **Write SQL queries** in `queries/` for complex operations
+4. **Generate code**: `make generate` (creates repository, service, server)
+5. **Implement business logic** in `service.go`
+6. **Wire dependencies** in application bootstrap
+7. **Write tests** using generated mocks
+8. **Update documentation**
+
+The unified code generator handles most boilerplate:
+
+- Repository interfaces and implementations (PostgreSQL/SQLite)
+- Service interfaces and HTTP servers
+- Test mocks for all interfaces
+- Type definitions from OpenAPI
 
 ## Review Process
 
