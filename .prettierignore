@@ -9,7 +9,6 @@
 !**/*.mdx
 !**/*.yml
 !**/*.yaml
-!**/*.sql
 
 **/templates
 

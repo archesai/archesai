@@ -8,7 +8,6 @@
     "@redocly/cli": "catalog:",
     "markdownlint-cli": "catalog:",
     "prettier": "catalog:",
-    "prettier-plugin-sql": "catalog:",
     "task-master-ai": "catalog:",
     "typescript": "catalog:"
   },
