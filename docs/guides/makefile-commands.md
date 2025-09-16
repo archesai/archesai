@@ -2,107 +2,91 @@
 
 Run `make help` to see all available commands.
 
-## Essential Commands
+## Available Commands
 
 ```bash
-make all   # Generate, lint, format
-make dev   # Start development
-make build # Build binaries
-make test  # Run tests
-make clean # Clean artifacts
-```
+Usage: make [target]
 
-## Code Generation
-
-```bash
-make generate           # Run all generators
-make generate-oapi      # Generate OpenAPI types and server interfaces
-make generate-sqlc      # Generate database code from SQL queries
-make generate-codegen   # Generate repository, service, and server code from x-codegen
-make generate-codegen-types # Generate types for codegen configuration
-make generate-mocks     # Generate test mocks with mockery
-make generate-js-client # Generate TypeScript client
-```
-
-## Development
-
-```bash
-make run-server # Run API server
-make run-web    # Run frontend
-make run-watch  # Hot reload (needs air)
-make run-tui    # Terminal UI
-make run-docs   # Documentation site
-```
-
-## Testing
-
-```bash
-make test               # All tests
-make test-short         # Skip integration tests
-make test-coverage      # Coverage report
-make test-coverage-html # HTML coverage
-make test-bench         # Benchmarks
-make test-watch         # Watch mode (needs fswatch)
-```
-
-## Linting & Formatting
-
-```bash
-make lint         # Run all linters
-make lint-go      # Go linter
-make lint-ts      # Node/TypeScript
-make lint-openapi # OpenAPI spec
-make lint-docs    # Markdown
-
-make format      # Format all code
-make format-go   # Format Go
-make format-node # Format JS/TS
-```
-
-## Database
-
-```bash
-make db-migrate-up                  # Apply migrations
-make db-migrate-down                # Rollback
-make db-migrate-create name=feature # New migration
-make db-migrate-status              # Check status
-make db-migrate-reset               # Reset database
-```
-
-## Dependencies
-
-```bash
-make deps          # Install all
-make deps-go       # Go dependencies
-make deps-node     # Node dependencies
-make deps-update   # Update all
-make install-tools # Dev tools
-```
-
-## Build & Deploy
-
-```bash
-make build-api # Build server binary
-make build-web    # Build frontend
-make build-docs   # Build documentation
-
-make docker-run  # Docker Compose up
-make docker-stop # Docker Compose down
-```
-
-## API Tools
-
-```bash
-make api-bundle # Bundle OpenAPI spec
-make api-split  # Split OpenAPI spec
-make api-stats  # Show API statistics
-```
-
-## Cleanup
-
-```bash
-make clean-generated # Remove generated code
-make clean-test      # Remove test cache
-make clean-deps      # Remove dependencies
-make clean-docs      # Remove docs build
+Available targets:
+  add-mapstructure-tags      Add mapstructure tags to config types for Viper compatibility
+  all                        Default: generate, lint, and format code
+  build                      Build all binaries
+  build-api                  Build archesai server binary
+  build-docs                 Build Docusaurus documentation site
+  build-web                  Build web assets
+  bundle-openapi             Bundle OpenAPI into single file
+  check-deps                 Check for required dependencies
+  clean                      Clean build artifacts
+  clean-deps                 Clean all dependencies
+  clean-generated            Clean all generated code
+  clean-go                   Clean Go build artifacts
+  clean-go-deps              Clean Go module cache
+  clean-test                 Clean test cache and coverage files
+  clean-ts                   Clean distribution builds
+  clean-ts-deps              Clean Node.js dependencies
+  db-migrate                 Alias for db-migrate-up
+  db-migrate-create          Create new migration (usage: make db-migrate-create name=add_users)
+  db-migrate-down            Rollback database migrations
+  db-migrate-reset           Reset database to initial state
+  db-migrate-status          Show migration status
+  db-migrate-up              Apply database migrations
+  deploy-docs                Manually trigger documentation deployment to GitHub Pages
+  deps                       Install all dependencies
+  deps-go                    Install Go dependencies and tools
+  deps-ts                    Install Node.js dependencies
+  deps-update                Update all dependencies
+  deps-update-go             Update Go dependencies
+  deps-update-ts             Update Node.js dependencies
+  dev                        Run all services in development mode
+  dev-all                    Run all services with hot reload
+  dev-api                    Run API server with hot reload
+  dev-docs                   Run documentation with hot reload
+  dev-web                    Run web platform with hot reload
+  docker-run                 Build and run with Docker Compose
+  docker-stop                Stop Docker Compose services
+  f                          Shortcut for format
+  format                     Format all code
+  format-go                  Format Go code
+  format-prettier            Format code with Prettier
+  format-ts                  Format Node.js/TypeScript code
+  g                          Shortcut for generate
+  generate                   Generate all code
+  generate-codegen           Generate codegen
+  generate-codegen-types     Generate types for codegen configuration
+  generate-helm-schema       Generate Helm values.schema.json from ArchesConfig.yaml
+  generate-js-client         Generate JavaScript/TypeScript client from OpenAPI
+  generate-mocks             Generate test mocks using mockery
+  generate-oapi              Generate OpenAPI server code
+  generate-schema-sqlite     Convert PostgreSQL schema to SQLite
+  generate-sqlc              Generate database code with sqlc
+  help                       Show this help message
+  install-tools              Install required development tools
+  lint                       Run all linters
+  lint-docs                  Lint documentation with markdownlint
+  lint-go                    Run Go linter
+  lint-openapi               Lint OpenAPI specification
+  lint-ts                    Run Node.js linter (includes typecheck)
+  lint-typecheck             Run TypeScript type checking
+  list-workflows             List all available GitHub workflows
+  prepare-docs               Copy markdown docs to web/docs/docs
+  run-api                    Run the API server (production mode)
+  run-docs                   Run documentation site (production build)
+  run-tui                    Launch the TUI interface
+  run-web                    Run the web UI (production build)
+  run-worker                 Run the background worker
+  run-workflow               Run GitHub workflow locally with act (usage: make run-workflow workflow=update-docs)
+  skaffold-delete            Delete Skaffold deployment
+  skaffold-dev               Run with Skaffold in dev mode
+  skaffold-run               Deploy with Skaffold
+  split-openapi              Split OpenAPI into multiple files
+  stats-openapi              Show OpenAPI specification statistics
+  t                          Shortcut for test
+  test                       Run all tests
+  test-bench                 Run benchmark tests
+  test-coverage              Generate test coverage report
+  test-coverage-html         Generate HTML coverage report
+  test-short                 Run short tests only (skip integration tests)
+  test-verbose               Run all tests with verbose output
+  test-watch                 Run tests in watch mode (requires fswatch)
+  w                          Shortcut for dev-all
 ```
