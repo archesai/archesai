@@ -21,11 +21,10 @@
   "private": true,
   "scripts": {
     "build": "zudoku build",
-    "copy:api": "cp ../../api/openapi.bundled.yaml ./apis/openapi.yaml",
-    "copy:docs": "cp -r ../../docs/** ./pages/documentation",
     "dev": "zudoku dev",
     "lint": "eslint",
-    "preview": "zudoku preview"
+    "preview": "zudoku preview",
+    "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "type": "module",
   "version": "0.0.0"

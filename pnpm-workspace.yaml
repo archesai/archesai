@@ -82,13 +82,13 @@ catalogs:
     rollup-plugin-visualizer: 6.0.3
     vite: 7.1.5
 
-# cleanupUnusedCatalogs: true
-
 disallowWorkspaceCycles: true
 
 engineStrict: true
 
 includeWorkspaceRoot: true
+
+loglevel: error
 
 onlyBuiltDependencies:
   - '@parcel/watcher'

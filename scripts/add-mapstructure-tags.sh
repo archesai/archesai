@@ -6,9 +6,6 @@
 
 CONFIG_FILE="internal/config/types.gen.go"
 
-echo "Adding mapstructure tags to $CONFIG_FILE..."
-echo "========================================="
-
 # Process the file to add mapstructure tags where they're missing
 # This will only add mapstructure tags if they don't already exist
 
@@ -33,13 +30,5 @@ sed -i -E '/mapstructure:/!s/`json:"([^",]+),omitzero,omitempty" yaml:"([^"]+)"`
 sed -i -E '/mapstructure:/!s/`json:"([^",]+),omitempty" yaml:"([^"]+)"`$/`json:"\1,omitempty" yaml:"\2" mapstructure:"\1,omitempty"`/g' "$CONFIG_FILE"
 sed -i -E '/mapstructure:/!s/`json:"([^",]+),omitzero" yaml:"([^"]+)"`$/`json:"\1,omitzero" yaml:"\2" mapstructure:"\1,omitempty"`/g' "$CONFIG_FILE"
 
-echo "✓ Processed $CONFIG_FILE"
-echo "========================================="
-
-# Format the modified file
-echo "Running gofmt to format the file..."
-gofmt -w "$CONFIG_FILE"
-
-echo "✅ All done! Mapstructure tags have been added where missing."
-echo ""
-echo "Review the changes with: git diff $CONFIG_FILE"
+# Format the modified file silently
+gofmt -w "$CONFIG_FILE" 2>/dev/null

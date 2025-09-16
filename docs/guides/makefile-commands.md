@@ -82,7 +82,7 @@ make install-tools # Dev tools
 ## Build & Deploy
 
 ```bash
-make build-server # Build server binary
+make build-api # Build server binary
 make build-web    # Build frontend
 make build-docs   # Build documentation
 

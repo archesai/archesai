@@ -41,7 +41,7 @@
     "build": "vite build",
     "dev": "vite dev",
     "lint": "eslint .",
-    "start": "vite preview",
+    "preview": "vite preview",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "sideEffects": false,

@@ -2,27 +2,32 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
 func main() {
+
+	log := logger.NewPretty(logger.Config{
+		Pretty: true,
+	})
+
 	postgresDir := filepath.Join("internal", "migrations", "postgresql")
 	sqliteDir := filepath.Join("internal", "migrations", "sqlite")
 
 	// Ensure SQLite directory exists
 	if err := os.MkdirAll(sqliteDir, 0755); err != nil {
-		log.Fatalf("Error creating SQLite directory: %v", err)
+		log.Error("Error creating SQLite directory: %v", "error", err)
 	}
 
 	// Read all SQL files from PostgreSQL directory
 	files, err := os.ReadDir(postgresDir)
 	if err != nil {
-		log.Fatalf("Error reading PostgreSQL directory: %v", err)
+		log.Error("Error reading PostgreSQL directory: %v", "error", err)
 	}
 
 	convertedCount := 0
@@ -37,7 +42,7 @@ func main() {
 		// Read PostgreSQL file
 		content, err := os.ReadFile(postgresPath)
 		if err != nil {
-			log.Printf("Error reading %s: %v", postgresPath, err)
+			log.Error("Error reading %s: %v", "path", postgresPath, "error", err)
 			continue
 		}
 
@@ -46,17 +51,16 @@ func main() {
 
 		// Write SQLite file
 		if err := os.WriteFile(sqlitePath, []byte(sqliteContent), 0644); err != nil {
-			log.Printf("Error writing %s: %v", sqlitePath, err)
+			log.Error("Error writing %s: %v", "path", sqlitePath, "error", err)
 			continue
 		}
 
 		// Run prettier on the generated file (if prettier is installed)
 		cmd := exec.Command("pnpm", "prettier", "--write", sqlitePath)
 		if err := cmd.Run(); err != nil {
-			log.Printf("Error running prettier on %s: %v", sqlitePath, err)
+			log.Error("Error running prettier on %s: %v", "path", sqlitePath, "error", err)
 		}
 
-		fmt.Printf("Converted: %s -> %s\n", file.Name(), file.Name())
 		convertedCount++
 	}
 }

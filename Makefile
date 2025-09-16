@@ -7,18 +7,16 @@
 # ------------------------------------------
 
 # Build Configuration
-MAKEFLAGS += -j4 --no-print-directory
-SERVER_OUTPUT := bin/archesai
-
-# Database Configuration
-MIGRATION_PATH := internal/migrations/postgresql
-DATABASE_URL ?= postgresql://admin:password@localhost:5432/archesai
+CPUS := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
+MAKEFLAGS += -j$(CPUS) --no-print-directory
 
 # Terminal Colors
 GREEN := \033[0;32m
 YELLOW := \033[0;33m
 BLUE := \033[0;34m
+CYAN := \033[0;36m
 RED := \033[0;31m
+GRAY := \033[0;90m
 NC := \033[0m # No Color
 
 # ------------------------------------------
@@ -27,10 +25,13 @@ NC := \033[0m # No Color
 
 .PHONY: all
 all: ## Default: generate, lint, and format code
-	@make generate
-	@make lint
-	@make format
-	@echo -e "$(GREEN)✓ All tasks complete!$(NC)"
+	@echo -e "$(YELLOW)━━━ Complete Development Pipeline ━━━$(NC)"
+	@START_TOTAL=$$(date +%s%3N); \
+	echo -e "$(BLUE)[1/3] Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(BLUE)[2/3] Code Linting$(NC)" && START=$$(date +%s%3N) && $(MAKE) lint && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Code linting complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(BLUE)[3/3] Code Formatting$(NC)" && START=$$(date +%s%3N) && $(MAKE) format && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Code formatting complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	END_TOTAL=$$(date +%s%3N); \
+	echo -e "$(GREEN)✓ All development tasks complete in $$((END_TOTAL-START_TOTAL))ms!$(NC)"
 
 .PHONY: help
 help: ## Show this help message
@@ -48,15 +49,17 @@ dev: ## Run all services in development mode
 # Build Commands
 # ------------------------------------------
 
+BINARY_PATH := ./bin
+
 .PHONY: build
-build: build-server build-web ## Build all binaries
+build: build-api build-web ## Build all binaries
 	@echo -e "$(GREEN)✓ All builds complete!$(NC)"
 
-.PHONY: build-server
-build-server: ## Build archesai server binary
+.PHONY: build-api
+build-api: ## Build archesai server binary
 	@echo -e "$(YELLOW)▶ Building archesai server...$(NC)"
-	@go build -o $(SERVER_OUTPUT) cmd/archesai/main.go
-	@echo -e "$(GREEN)✓ archesai built: $(SERVER_OUTPUT)$(NC)"
+	@go build -o $(BINARY_PATH)/archesai  cmd/archesai/main.go
+	@echo -e "$(GREEN)✓ archesai built: $(BINARY_PATH)/archesai $(NC)"
 
 .PHONY: build-web
 build-web: ## Build web assets
@@ -64,48 +67,91 @@ build-web: ## Build web assets
 	@cd web/platform && pnpm build
 	@echo -e "$(GREEN)✓ Web assets built!$(NC)"
 
+.PHONY: build-docs
+build-docs: prepare-docs ## Build Docusaurus documentation site
+	@echo -e "$(YELLOW)▶ Building Docusaurus documentation site...$(NC)"
+	@pnpm -F @archesai/docs build
+	@echo -e "$(GREEN)✓ Documentation built in web/docs/build/$(NC)"
+
 # ------------------------------------------
-# Run Commands
+# Run Commands (Production-like)
 # ------------------------------------------
 
-.PHONY: run
-run: run-server ## Alias for run-server
-
-.PHONY: run-server
-run-server: ## Run the API server
+.PHONY: run-api
+run-api: ## Run the API server (production mode)
 	@echo -e "$(YELLOW)▶ Starting API server...$(NC)"
 	@go run cmd/archesai/main.go api
 
 .PHONY: run-web
-run-web: ## Run the web UI server
+run-web: build-web ## Run the web UI (production build)
 	@echo -e "$(YELLOW)▶ Starting web server...$(NC)"
-	@pnpm -F @archesai/platform dev --port 3000 --host 0.0.0.0
+	@pnpm -F @archesai/platform start
+
+.PHONY: run-docs
+run-docs: build-docs ## Run documentation site (production build)
+	@echo -e "$(YELLOW)▶ Starting documentation server...$(NC)"
+	@pnpm -F @archesai/docs start
 
 .PHONY: run-worker
 run-worker: ## Run the background worker
 	@echo -e "$(YELLOW)▶ Starting worker...$(NC)"
 	@go run cmd/archesai/main.go worker
 
-.PHONY: run-watch
-run-watch: ## Run with hot reload (requires air)
-	@echo -e "$(YELLOW)▶ Running with hot reload...$(NC)"
-	@go tool air
-
 .PHONY: run-tui
 run-tui: build ## Launch the TUI interface
 	@echo -e "$(YELLOW)▶ Launching TUI...$(NC)"
-	@./bin/archesai tui
+	@go run cmd/archesai/main.go tui
+
+# ------------------------------------------
+# Development Commands (Hot Reload)
+# ------------------------------------------
+
+.PHONY: dev-api
+dev-api: ## Run API server with hot reload
+	@echo -e "$(YELLOW)▶ Starting API server with hot reload...$(NC)"
+	@go tool air
+
+.PHONY: dev-web
+dev-web: ## Run web platform with hot reload
+	@echo -e "$(YELLOW)▶ Starting web platform with hot reload...$(NC)"
+	@pnpm -F @archesai/platform dev
+
+.PHONY: dev-docs
+dev-docs: prepare-docs ## Run documentation with hot reload
+	@echo -e "$(YELLOW)▶ Starting documentation with hot reload...$(NC)"
+	@pnpm -F @archesai/docs dev
+
+.PHONY: dev-all
+dev-all: ## Run all services with hot reload
+	@echo -e "$(BLUE)🚀 Starting all development services...$(NC)"
+	@echo -e "$(CYAN)  API:      http://localhost:3001$(NC)"
+	@echo -e "$(CYAN)  Platform: http://localhost:3000$(NC)"
+	@echo -e "$(CYAN)  Docs:     http://localhost:3002$(NC)"
+	@echo -e "$(GRAY)Press Ctrl+C to stop all services$(NC)"
+	@trap 'echo -e "\n$(YELLOW)Stopping all services...$(NC)"; kill 0' INT; \
+	(make dev-api &) && \
+	(make dev-web &) && \
+	(make dev-docs &) && \
+	wait
 
 # ------------------------------------------
 # Generate Commands
 # ------------------------------------------
 
 .PHONY: generate
-generate: generate-sqlc generate-oapi generate-codegen generate-mocks generate-js-client ## Generate all code
-	@echo -e "$(YELLOW)▶ Adding mapstructure tags to config...$(NC)"
-	@chmod +x scripts/add-mapstructure-tags.sh 2>/dev/null || true
-	@./scripts/add-mapstructure-tags.sh
-	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
+generate: ## Generate all code
+	@echo -e "$(BLUE)━━━ Code Generation Pipeline ━━━$(NC)"
+	@START_TOTAL=$$(date +%s%3N); \
+	echo -e "$(CYAN)[0/6] OpenAPI Bundling$(NC)" && START=$$(date +%s%3N) && $(MAKE) bundle-openapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI bundling complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[1/6] Database Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-sqlc && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Database generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[2/6] OpenAPI Type Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen-types && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI type generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[3/6] Server Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-oapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Server code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[4/6] Repository Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Repository code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[5/6] Mock Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-mocks && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mock generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[6/6] Client Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-js-client && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Client generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	START=$$(date +%s%3N) && $(MAKE) add-mapstructure-tags && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mapstructure tags added $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	END_TOTAL=$$(date +%s%3N); \
+	echo -e "$(GREEN)✓ All code generation complete in $$((END_TOTAL-START_TOTAL))ms!$(NC)"
 
 .PHONY: generate-sqlc
 generate-sqlc: generate-schema-sqlite ## Generate database code with sqlc
@@ -120,19 +166,15 @@ generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 	@echo -e "$(GREEN)✓ Schema conversion complete!$(NC)"
 
 .PHONY: generate-oapi
-generate-oapi: generate-codegen-types ## Generate OpenAPI server code
+generate-oapi: ## Generate OpenAPI server code
 	@echo -e "$(YELLOW)▶ Generating OpenAPI server code...$(NC)"
-	@for dir in internal/*; do \
-		if [ -d "$$dir" ]; then \
-			if ls "$$dir"/*.go > /dev/null 2>&1 && grep -q "go:generate" "$$dir"/*.go 2>/dev/null; then \
-				cd "$$dir" && go generate 2>/dev/null && cd - > /dev/null; \
-			fi \
-		fi \
-	done
+	@find internal -name "*.go" -exec grep -l "go:generate" {} \; | \
+		xargs -I{} dirname {} | sort -u | \
+		xargs -P $$(nproc 2>/dev/null || echo 4) -I{} sh -c 'cd {} && go generate 2>/dev/null'
 	@echo -e "$(GREEN)✓ OpenAPI generation complete!$(NC)"
 
 .PHONY: generate-codegen-types
-generate-codegen-types: api-bundle ## Generate types for codegen configuration
+generate-codegen-types: ## Generate types for codegen configuration
 	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
 	@cd internal/codegen && go generate
 	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
@@ -143,6 +185,12 @@ generate-codegen: generate-codegen-types ## Generate codegen
 	@go run tools/codegen/main.go
 	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
 
+.PHONY: add-mapstructure-tags
+add-mapstructure-tags: ## Add mapstructure tags to config types for Viper compatibility
+	@echo -e "$(YELLOW)▶ Adding mapstructure tags for Viper compatibility...$(NC)"
+	@./scripts/add-mapstructure-tags.sh
+	@echo -e "$(GREEN)✓ Mapstructure tags added!$(NC)"
+
 .PHONY: generate-mocks
 generate-mocks: generate-oapi ## Generate test mocks using mockery
 	@echo -e "$(YELLOW)▶ Generating test mocks...$(NC)"
@@ -150,9 +198,9 @@ generate-mocks: generate-oapi ## Generate test mocks using mockery
 	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"
 
 .PHONY: generate-js-client
-generate-js-client: api-bundle ## Generate JavaScript/TypeScript client from OpenAPI
+generate-js-client: ## Generate JavaScript/TypeScript client from OpenAPI
 	@echo -e "$(YELLOW)▶ Generating JavaScript/TypeScript client...$(NC)"
-	@cd ./web/client && pnpm orval
+	@cd ./web/client && (pnpm orval > /dev/null 2>&1 || (echo -e "$(RED)✗ JavaScript client generation failed$(NC)" && pnpm orval && exit 1))
 	@echo -e "$(GREEN)✓ JavaScript/TypeScript client generated!$(NC)"
 
 # ------------------------------------------
@@ -214,19 +262,37 @@ lint: lint-go lint-ts lint-openapi lint-docs ## Run all linters
 .PHONY: lint-go
 lint-go: ## Run Go linter
 	@echo -e "$(YELLOW)▶ Running Go linter...$(NC)"
-	@golangci-lint run ./...
+	@OUTPUT=$$(golangci-lint run ./... 2>&1); \
+	if [ $$? -ne 0 ]; then \
+		echo -e "$(RED)✗ Go linting failed$(NC)"; \
+		echo "$$OUTPUT"; \
+		exit 1; \
+	elif echo "$$OUTPUT" | grep -v "^0 issues" | grep -q .; then \
+		echo "$$OUTPUT"; \
+	fi
 	@echo -e "$(GREEN)✓ Go linting complete!$(NC)"
 
 .PHONY: lint-ts
 lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 	@echo -e "$(YELLOW)▶ Running Node.js linter...$(NC)"
-	@pnpm biome check --fix
+	@OUTPUT=$$(pnpm biome check --fix 2>&1); \
+	if [ $$? -ne 0 ]; then \
+		echo -e "$(RED)✗ Node.js linting failed$(NC)"; \
+		echo "$$OUTPUT"; \
+		exit 1; \
+	elif echo "$$OUTPUT" | grep -v "No fixes applied" | grep -q .; then \
+		echo "$$OUTPUT"; \
+	fi
 	@echo -e "$(GREEN)✓ Node.js linting complete!$(NC)"
 
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
 	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@pnpm redocly --config .redocly.yaml lint api/openapi.yaml
+	@if ! pnpm redocly --config .redocly.yaml lint api/openapi.yaml 2>&1 | grep -q "Your API description is valid"; then \
+		echo -e "$(RED)✗ OpenAPI linting failed$(NC)"; \
+		pnpm redocly --config .redocly.yaml lint api/openapi.yaml; \
+		exit 1; \
+	fi
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
 .PHONY: lint-typecheck
@@ -319,28 +385,19 @@ clean-go-deps: ## Clean Go module cache
 	@go clean -modcache
 	@echo -e "$(GREEN)✓ Go module cache cleaned!$(NC)"
 
-.PHONY: build-docs
-build-docs: copy-docs ## Build Docusaurus documentation site
-	@echo -e "$(YELLOW)▶ Building Docusaurus documentation site...$(NC)"
-	@pnpm -F @archesai/docs build
-	@echo -e "$(GREEN)✓ Documentation built in web/docs/build/$(NC)"
-
-.PHONY: run-docs
-run-docs: copy-docs  ## Serve Docusaurus documentation in development mode
-	@echo -e "$(YELLOW)▶ Starting Docusaurus development server...$(NC)"
-	@pnpm -F @archesai/docs dev --port 3000 --host 0.0.0.0
-
-.PHONY: copy-docs
-copy-docs: ## Copy markdown docs to web/docs/docs
+.PHONY: prepare-docs
+prepare-docs: ## Copy markdown docs to web/docs/docs
 	@echo -e "$(YELLOW)▶ Copying markdown docs to web/docs...$(NC)"
-	@pnpm -F @archesai/docs run copy:docs
-	@pnpm -F @archesai/docs run copy:api
+	@cp ./api/openapi.bundled.yaml ./web/docs/apis/openapi.yaml
+	@cp -r ./docs/** ./web/docs/pages/documentation
 	@echo -e "$(GREEN)✓ Docs copied!$(NC)"
 
 
 # ------------------------------------------
 # Database Commands
 # ------------------------------------------
+
+MIGRATION_PATH := internal/migrations/postgresql
 
 .PHONY: db-migrate
 db-migrate: db-migrate-up ## Alias for db-migrate-up
@@ -379,20 +436,24 @@ db-migrate-reset: ## Reset database to initial state
 # API/OpenAPI Commands
 # ------------------------------------------
 
-.PHONY: api-bundle
-api-bundle: lint-openapi ## Bundle OpenAPI into single file
+.PHONY: bundle-openapi
+bundle-openapi: lint-openapi ## Bundle OpenAPI into single file
 	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
-	@pnpm redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml
+	@if ! pnpm redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml 2>&1 | grep -q "Created a bundle"; then \
+		echo -e "$(RED)✗ OpenAPI bundling failed$(NC)"; \
+		pnpm redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml; \
+		exit 1; \
+	fi
 	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
 
-.PHONY: api-split
-api-split: lint-openapi ## Split OpenAPI into multiple files
+.PHONY: split-openapi
+split-openapi: lint-openapi ## Split OpenAPI into multiple files
 	@echo -e "$(YELLOW)▶ Splitting OpenAPI spec...$(NC)"
 	@pnpm redocly --config .redocly.yaml split api/openapi.bundled.yaml --outDir api/split
 	@echo -e "$(GREEN)✓ OpenAPI split: api/split/$(NC)"
 
-.PHONY: api-stats
-api-stats: ## Show OpenAPI specification statistics
+.PHONY: stats-openapi
+stats-openapi: ## Show OpenAPI specification statistics
 	@echo -e "$(YELLOW)▶ Analyzing OpenAPI spec...$(NC)"
 	@pnpm redocly --config .redocly.yaml stats api/openapi.yaml
 	@echo -e "$(GREEN)✓ OpenAPI analysis complete!$(NC)"
@@ -424,7 +485,7 @@ deps-update: deps-update-go deps-update-ts ## Update all dependencies
 .PHONY: deps-update-go
 deps-update-go: ## Update Go dependencies
 	@echo -e "$(YELLOW)▶ Updating Go dependencies...$(NC)"
-	@go get -u ./... 2>&1 | grep -v "warning: ignoring symlink" || true
+	@go get -u ./... 2>&1 | { grep -v "warning: ignoring symlink" || true; }
 	@go mod tidy
 	@echo -e "$(GREEN)✓ Go dependencies updated!$(NC)"
 
@@ -434,23 +495,22 @@ deps-update-ts: ## Update Node.js dependencies
 	@pnpm update -r --latest
 	@echo -e "$(GREEN)✓ Node.js dependencies updated!$(NC)"
 
-# ------------------------------------------
-# Install Commands
-# ------------------------------------------
+.PHONY: check-deps
+check-deps: ## Check for required dependencies
+	@echo -e "$(YELLOW)▶ Checking required dependencies...$(NC)"
+	@command -v go >/dev/null 2>&1 || { echo -e "$(RED)✗ Go is required but not installed$(NC)"; exit 1; }
+	@command -v pnpm >/dev/null 2>&1 || { echo -e "$(RED)✗ pnpm is required but not installed$(NC)"; exit 1; }
+	@command -v docker >/dev/null 2>&1 || { echo -e "$(GRAY)△ Docker not found (optional)$(NC)"; }
+	@echo -e "$(GREEN)✓ All required dependencies found!$(NC)"
 
-.PHONY: install-completions
-install-completions: ## Install shell completions guide
-	@echo -e "$(BLUE)Shell Completions Installation:$(NC)"
-	@echo ""
-	@echo "For bash:"
-	@echo "  $$ source <(archesai completion bash)"
-	@echo "  $$ source <(codegen completion bash)"
-	@echo ""
-	@echo "For zsh:"
-	@echo "  $$ source <(archesai completion zsh)"
-	@echo "  $$ source <(codegen completion zsh)"
-	@echo ""
-	@echo -e "$(YELLOW)Add these to your shell profile to persist$(NC)"
+.PHONY: install-tools
+install-tools: check-deps ## Install required development tools
+	@echo -e "$(YELLOW)▶ Installing development tools...$(NC)"
+	@go install github.com/pressly/goose/v3/cmd/goose@latest
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	@go install github.com/air-verse/air@latest
+	@go install github.com/vektra/mockery/v2@latest
+	@echo -e "$(GREEN)✓ Development tools installed!$(NC)"
 
 # ------------------------------------------
 # Docker Commands
@@ -501,3 +561,19 @@ skaffold-run: ## Deploy with Skaffold
 .PHONY: skaffold-delete
 skaffold-delete: ## Delete Skaffold deployment
 	@skaffold delete --profile dev
+
+# ------------------------------------------
+# Shortcuts
+# ------------------------------------------
+
+.PHONY: g
+g: generate ## Shortcut for generate
+
+.PHONY: t
+t: test ## Shortcut for test
+
+.PHONY: f
+f: format ## Shortcut for format
+
+.PHONY: w
+w: dev-all ## Shortcut for dev-all

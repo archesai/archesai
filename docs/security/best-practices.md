@@ -560,8 +560,7 @@ go install github.com/sonatype-nexus-community/nancy@latest
 go list -json -deps | nancy sleuth
 
 # Node.js vulnerability check
-npm audit
-yarn audit
+pnpm audit
 ```
 
 ### Security Testing
