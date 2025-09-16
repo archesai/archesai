@@ -625,8 +625,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@anthropic-ai/claude-code@1.0.113':
-    resolution: {integrity: sha512-K/+N/rECfWa1ZauWLD6C/CnX6bxxAck5CFDuK58JjRN8v6QDuJVX7HZcNCanB0ucxEkaczAwvWnEM+UjFQsdqw==}
+  '@anthropic-ai/claude-code@1.0.115':
+    resolution: {integrity: sha512-scnmcSgtmRM4wUUWr+BfU+krK+m/n4Sxvhu9ePUlYRWklWrYnySvJ1WrAZG6/v9G6vDLDdoKIW7yol8SGnOSqA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -5780,8 +5780,8 @@ packages:
   fflate@0.8.2:
     resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
-  figlet@1.9.1:
-    resolution: {integrity: sha512-DpKC89iXFjq6NCaIQ1O91R+ofpfyvkwuBfoVd8LpP/JZGZQpelMXgiTStGOfksuMYaDoBAwFlvx7mk+wX+3rrA==}
+  figlet@1.9.2:
+    resolution: {integrity: sha512-rRnXvw0JtuEQtN6jlqa7nZ/N2RY49VsGTKTSj8rk5D7z9gY/0F7Gkt57Er7r/xZZ7UGNHsHUwhIA09URknhyVA==}
     engines: {node: '>= 17.0.0'}
     hasBin: true
 
@@ -9630,7 +9630,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
-  '@anthropic-ai/claude-code@1.0.113':
+  '@anthropic-ai/claude-code@1.0.115':
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.33.5
       '@img/sharp-darwin-x64': 0.33.5
@@ -16641,7 +16641,7 @@ snapshots:
 
   fflate@0.8.2: {}
 
-  figlet@1.9.1:
+  figlet@1.9.2:
     dependencies:
       commander: 14.0.1
 
@@ -20239,7 +20239,7 @@ snapshots:
     dependencies:
       emoji-regex: 10.5.0
       get-east-asian-width: 1.4.0
-      strip-ansi: 7.1.0
+      strip-ansi: 7.1.2
 
   string.prototype.matchall@4.0.12:
     dependencies:
@@ -20449,7 +20449,7 @@ snapshots:
       dotenv: 16.6.1
       express: 4.21.2
       fastmcp: 3.17.0
-      figlet: 1.9.1
+      figlet: 1.9.2
       fuse.js: 7.1.0
       gpt-tokens: 1.3.14
       gradient-string: 3.0.0
@@ -20466,7 +20466,7 @@ snapshots:
       zod: 3.25.76
       zod-to-json-schema: 3.24.6(zod@3.25.76)
     optionalDependencies:
-      '@anthropic-ai/claude-code': 1.0.113
+      '@anthropic-ai/claude-code': 1.0.115
       '@biomejs/cli-linux-x64': 1.9.4
       ai-sdk-provider-gemini-cli: 0.1.3(@modelcontextprotocol/sdk@1.18.0)(zod@3.25.76)
     transitivePeerDependencies:

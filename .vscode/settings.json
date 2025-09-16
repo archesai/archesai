@@ -1,5 +1,5 @@
 {
-  "explorer.excludeGitIgnore": true,
+  "explorer.excludeGitIgnore": false,
   "tailwindCSS.experimental.configFile": {
     "./web/platform/src/styles/globals.css": "./web/platform/src/**",
     "./web/ui/src/styles/globals.css": "./web/ui/src/**"

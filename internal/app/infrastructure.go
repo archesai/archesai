@@ -56,12 +56,18 @@ type Repositories struct {
 
 // NewInfrastructure creates all infrastructure components
 func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
+
 	// Initialize logger
 	loggerCfg := logger.Config{
 		Level:  string(cfg.Logging.Level),
 		Pretty: cfg.Logging.Pretty,
 	}
-	log := logger.New(loggerCfg)
+	var log *slog.Logger
+	if loggerCfg.Pretty {
+		log = logger.NewPretty(loggerCfg)
+	} else {
+		log = logger.New(loggerCfg)
+	}
 	slog.SetDefault(log)
 
 	// Initialize database

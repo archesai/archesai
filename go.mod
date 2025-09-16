@@ -10,6 +10,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/labstack/echo/v4 v4.13.4
+	github.com/lmittmann/tint v1.1.2
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/ollama/ollama v0.11.11
 	github.com/openai/openai-go v1.12.0

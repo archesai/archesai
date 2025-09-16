@@ -5,27 +5,26 @@ import (
 	"io"
 	"log/slog"
 	"os"
-)
+	"time"
 
-// Config defines logger configuration
-type Config struct {
-	Level  string // "debug", "info", "warn", "error"
-	Pretty bool   // Enable pretty-printed logs for development
-}
+	"github.com/lmittmann/tint"
+)
 
 // New creates a configured logger with stdout output
 func New(cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
-
-	if cfg.Pretty {
-		return slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			Level:     level,
-			AddSource: level == slog.LevelDebug,
-		}))
-	}
-
 	return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: level,
+	}))
+}
+
+// NewPretty creates a pretty-printed logger for development use
+func NewPretty(cfg Config) *slog.Logger {
+	level := parseLevel(cfg.Level)
+	return slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+		Level:      slog.LevelDebug,
+		TimeFormat: time.Kitchen,
+		AddSource:  level == slog.LevelDebug,
 	}))
 }
 
@@ -37,14 +36,6 @@ func NewTest() *slog.Logger {
 // NewWithWriter creates a logger with a custom writer
 func NewWithWriter(w io.Writer, cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
-
-	if cfg.Pretty {
-		return slog.New(slog.NewTextHandler(w, &slog.HandlerOptions{
-			Level:     level,
-			AddSource: level == slog.LevelDebug,
-		}))
-	}
-
 	return slog.New(slog.NewJSONHandler(w, &slog.HandlerOptions{
 		Level: level,
 	}))
