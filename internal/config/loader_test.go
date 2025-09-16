@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -21,8 +20,8 @@ func TestLoad(t *testing.T) {
 			name: "load with defaults",
 			setup: func() {
 				// Clear any existing env vars
-				_ = os.Unsetenv("ARCHESAI_API_HOST")
-				_ = os.Unsetenv("ARCHESAI_API_PORT")
+				_ = os.Unsetenv("ARCHES_API_HOST")
+				_ = os.Unsetenv("ARCHES_API_PORT")
 			},
 			cleanup: func() {},
 			wantErr: false,
@@ -39,16 +38,16 @@ func TestLoad(t *testing.T) {
 		{
 			name: "load with environment variables",
 			setup: func() {
-				_ = os.Setenv("ARCHESAI_API_HOST", "127.0.0.1")
-				_ = os.Setenv("ARCHESAI_API_PORT", "8080")
-				_ = os.Setenv("ARCHESAI_DATABASE_URL", "postgres://test")
-				_ = os.Setenv("ARCHESAI_AUTH_ENABLED", "false")
+				_ = os.Setenv("ARCHES_API_HOST", "127.0.0.1")
+				_ = os.Setenv("ARCHES_API_PORT", "8080")
+				_ = os.Setenv("ARCHES_DATABASE_URL", "postgres://test")
+				_ = os.Setenv("ARCHES_AUTH_ENABLED", "false")
 			},
 			cleanup: func() {
-				_ = os.Unsetenv("ARCHESAI_API_HOST")
-				_ = os.Unsetenv("ARCHESAI_API_PORT")
-				_ = os.Unsetenv("ARCHESAI_DATABASE_URL")
-				_ = os.Unsetenv("ARCHESAI_AUTH_ENABLED")
+				_ = os.Unsetenv("ARCHES_API_HOST")
+				_ = os.Unsetenv("ARCHES_API_PORT")
+				_ = os.Unsetenv("ARCHES_DATABASE_URL")
+				_ = os.Unsetenv("ARCHES_AUTH_ENABLED")
 			},
 			wantErr: false,
 			check: func(c *Config) error {
@@ -78,7 +77,7 @@ api:
   environment: "production"
 database:
   type: "postgres"
-  max_conns: 50
+  maxConns: 50
 logging:
   level: "debug"
   pretty: true
@@ -151,170 +150,11 @@ func TestSetupViper(t *testing.T) {
 	}
 
 	// Check environment prefix
-	_ = os.Setenv("ARCHESAI_TEST_VAR", "test_value")
-	defer func() { _ = os.Unsetenv("ARCHESAI_TEST_VAR") }()
+	_ = os.Setenv("ARCHES_TEST_VAR", "test_value")
+	defer func() { _ = os.Unsetenv("ARCHES_TEST_VAR") }()
 
 	if v.GetString("test.var") != "test_value" {
 		t.Error("Viper not reading environment variables correctly")
-	}
-}
-
-func TestApplyAPIOverrides(t *testing.T) {
-	config := &ArchesConfig{
-		API: APIConfig{
-			Host: "0.0.0.0",
-			Port: 3001,
-			Cors: CORSConfig{
-				Origins: "*",
-			},
-		},
-	}
-
-	v := viper.New()
-	v.Set("api.host", "localhost")
-	v.Set("api.port", 8080)
-	v.Set("api.docs", true)
-	v.Set("api.validate", true)
-	v.Set("api.environment", "production")
-	v.Set("api.cors.origins", "https://example.com")
-
-	applyAPIOverrides(config, v)
-
-	if config.API.Host != "localhost" {
-		t.Errorf("Expected host localhost, got %s", config.API.Host)
-	}
-	if config.API.Port != 8080 {
-		t.Errorf("Expected port 8080, got %f", config.API.Port)
-	}
-	if !config.API.Docs {
-		t.Error("Expected docs enabled")
-	}
-	if !config.API.Validate {
-		t.Error("Expected validate enabled")
-	}
-	if config.API.Environment != "production" {
-		t.Errorf("Expected environment production, got %s", config.API.Environment)
-	}
-	if config.API.Cors.Origins != "https://example.com" {
-		t.Errorf("Expected CORS origins https://example.com, got %s", config.API.Cors.Origins)
-	}
-}
-
-func TestApplyAuthOverrides(t *testing.T) {
-	config := &ArchesConfig{
-		Auth: AuthConfig{
-			Enabled: true,
-			Local: LocalAuth{
-				Enabled:         true,
-				JwtSecret:       "default-secret",
-				AccessTokenTTL:  "15m",
-				RefreshTokenTTL: "7d",
-			},
-		},
-	}
-
-	v := viper.New()
-	v.Set("auth.enabled", false)
-	v.Set("auth.local.enabled", false)
-	v.Set("auth.local.jwt_secret", "new-secret")
-	v.Set("auth.local.access_token_ttl", "30m")
-	v.Set("auth.local.refresh_token_ttl", "14d")
-
-	applyAuthOverrides(config, v)
-
-	if config.Auth.Enabled != false {
-		t.Error("Expected auth disabled")
-	}
-	if config.Auth.Local.Enabled != false {
-		t.Error("Expected local auth disabled")
-	}
-	if config.Auth.Local.JwtSecret != "new-secret" {
-		t.Errorf("Expected JWT secret new-secret, got %s", config.Auth.Local.JwtSecret)
-	}
-	if config.Auth.Local.AccessTokenTTL != "30m" {
-		t.Errorf("Expected access token TTL 30m, got %s", config.Auth.Local.AccessTokenTTL)
-	}
-	if config.Auth.Local.RefreshTokenTTL != "14d" {
-		t.Errorf("Expected refresh token TTL 14d, got %s", config.Auth.Local.RefreshTokenTTL)
-	}
-}
-
-func TestApplyDatabaseOverrides(t *testing.T) {
-	config := &ArchesConfig{
-		Database: DatabaseConfig{
-			Enabled:           true,
-			URL:               "postgres://localhost/test",
-			Type:              "postgres",
-			MaxConns:          25,
-			MinConns:          5,
-			ConnMaxLifetime:   "1h",
-			ConnMaxIdleTime:   "10m",
-			HealthCheckPeriod: "30s",
-			RunMigrations:     false,
-		},
-	}
-
-	v := viper.New()
-	v.Set("database.enabled", false)
-	v.Set("database.url", "postgres://remote/prod")
-	v.Set("database.type", "sqlite")
-	v.Set("database.max_conns", 100)
-	v.Set("database.min_conns", 10)
-	v.Set("database.conn_max_lifetime", "2h")
-	v.Set("database.conn_max_idle_time", "20m")
-	v.Set("database.health_check_period", "60s")
-	v.Set("database.run_migrations", true)
-
-	applyDatabaseOverrides(config, v)
-
-	if config.Database.Enabled != false {
-		t.Error("Expected database disabled")
-	}
-	if config.Database.URL != "postgres://remote/prod" {
-		t.Errorf("Expected URL postgres://remote/prod, got %s", config.Database.URL)
-	}
-	if config.Database.Type != "sqlite" {
-		t.Errorf("Expected type sqlite, got %s", config.Database.Type)
-	}
-	if config.Database.MaxConns != 100 {
-		t.Errorf("Expected max conns 100, got %d", config.Database.MaxConns)
-	}
-	if config.Database.MinConns != 10 {
-		t.Errorf("Expected min conns 10, got %d", config.Database.MinConns)
-	}
-	if config.Database.ConnMaxLifetime != "2h" {
-		t.Errorf("Expected conn max lifetime 2h, got %s", config.Database.ConnMaxLifetime)
-	}
-	if config.Database.ConnMaxIdleTime != "20m" {
-		t.Errorf("Expected conn max idle time 20m, got %s", config.Database.ConnMaxIdleTime)
-	}
-	if config.Database.HealthCheckPeriod != "60s" {
-		t.Errorf("Expected health check period 60s, got %s", config.Database.HealthCheckPeriod)
-	}
-	if !config.Database.RunMigrations {
-		t.Error("Expected run migrations enabled")
-	}
-}
-
-func TestApplyLoggingOverrides(t *testing.T) {
-	config := &ArchesConfig{
-		Logging: LoggingConfig{
-			Level:  "info",
-			Pretty: false,
-		},
-	}
-
-	v := viper.New()
-	v.Set("logging.level", "debug")
-	v.Set("logging.pretty", true)
-
-	applyLoggingOverrides(config, v)
-
-	if config.Logging.Level != "debug" {
-		t.Errorf("Expected log level debug, got %s", config.Logging.Level)
-	}
-	if !config.Logging.Pretty {
-		t.Error("Expected pretty logging enabled")
 	}
 }
 
@@ -326,8 +166,8 @@ func TestConfigConstants(t *testing.T) {
 	if DefaultConfigType != "yaml" {
 		t.Errorf("Expected DefaultConfigType to be 'yaml', got %s", DefaultConfigType)
 	}
-	if EnvPrefix != "ARCHESAI" {
-		t.Errorf("Expected EnvPrefix to be 'ARCHESAI', got %s", EnvPrefix)
+	if EnvPrefix != "ARCHES" {
+		t.Errorf("Expected EnvPrefix to be 'ARCHES', got %s", EnvPrefix)
 	}
 }
 
@@ -367,18 +207,6 @@ func (e *testError) Error() string {
 	if len(e.args) == 0 {
 		return e.msg
 	}
-	// Simple sprintf implementation for testing
-	result := e.msg
-	for _, arg := range e.args {
-		result = replaceFirst(result, "%", fmt.Sprintf("%v", arg))
-	}
-	return result
-}
-
-// Helper function for string replacement
-func replaceFirst(s, old, replacement string) string {
-	if idx := strings.Index(s, old); idx != -1 {
-		return s[:idx] + replacement + s[idx+len(old):]
-	}
-	return s
+	// Use fmt.Sprintf for proper formatting
+	return fmt.Sprintf(e.msg, e.args...)
 }

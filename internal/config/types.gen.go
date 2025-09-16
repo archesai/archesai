@@ -60,31 +60,31 @@ const (
 // APIConfig Configuration schema for the API server
 type APIConfig struct {
 	// Cors CORS configuration for the API server
-	Cors CORSConfig `json:"cors" yaml:"cors"`
+	Cors CORSConfig `json:"cors" yaml:"cors" mapstructure:"cors"`
 
 	// Docs Enable or disable API documentation
-	Docs bool `json:"docs" yaml:"docs"`
+	Docs bool `json:"docs" yaml:"docs" mapstructure:"docs"`
 
 	// Email Email configuration for sending emails
-	Email EmailConfig `json:"email" yaml:"email"`
+	Email EmailConfig `json:"email" yaml:"email" mapstructure:"email"`
 
 	// Environment Deployment environment (development, staging, production)
-	Environment APIConfigEnvironment `json:"environment,omitempty,omitzero" yaml:"environment,omitempty"`
+	Environment APIConfigEnvironment `json:"environment,omitempty,omitzero" yaml:"environment,omitempty" mapstructure:"environment,omitempty"`
 
 	// Host The host address on which the API server will listen
-	Host string `json:"host" yaml:"host"`
+	Host string `json:"host" yaml:"host" mapstructure:"host"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image" yaml:"image"`
+	Image ImageConfig `json:"image" yaml:"image" mapstructure:"image"`
 
 	// Port The port on which the API server will listen
-	Port float32 `json:"port" yaml:"port"`
+	Port float32 `json:"port" yaml:"port" mapstructure:"port"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources" yaml:"resources"`
+	Resources ResourceConfig `json:"resources" yaml:"resources" mapstructure:"resources"`
 
 	// Validate Enable or disable request validation
-	Validate bool `json:"validate" yaml:"validate"`
+	Validate bool `json:"validate" yaml:"validate" mapstructure:"validate"`
 }
 
 // APIConfigEnvironment Deployment environment (development, staging, production)
@@ -93,124 +93,124 @@ type APIConfigEnvironment string
 // ArchesConfig Arches AI configuration schema
 type ArchesConfig struct {
 	// API Configuration schema for the API server
-	API APIConfig `json:"api" yaml:"api"`
+	API APIConfig `json:"api" yaml:"api" mapstructure:"api"`
 
 	// Auth Authentication configuration for the API server
-	Auth AuthConfig `json:"auth" yaml:"auth"`
+	Auth AuthConfig `json:"auth" yaml:"auth" mapstructure:"auth"`
 
 	// Billing Billing configuration for Stripe
-	Billing BillingConfig `json:"billing" yaml:"billing"`
+	Billing BillingConfig `json:"billing" yaml:"billing" mapstructure:"billing"`
 
 	// Database Database configuration for PostgreSQL
-	Database DatabaseConfig `json:"database" yaml:"database"`
+	Database DatabaseConfig `json:"database" yaml:"database" mapstructure:"database"`
 
 	// Infrastructure Infrastructure configuration for Kubernetes deployments
-	Infrastructure InfrastructureConfig `json:"infrastructure" yaml:"infrastructure"`
+	Infrastructure InfrastructureConfig `json:"infrastructure" yaml:"infrastructure" mapstructure:"infrastructure"`
 
 	// Ingress Ingress configuration
-	Ingress IngressConfig `json:"ingress" yaml:"ingress"`
+	Ingress IngressConfig `json:"ingress" yaml:"ingress" mapstructure:"ingress"`
 
 	// Intelligence Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
-	Intelligence IntelligenceConfig `json:"intelligence" yaml:"intelligence"`
+	Intelligence IntelligenceConfig `json:"intelligence" yaml:"intelligence" mapstructure:"intelligence"`
 
 	// Logging Logging configuration
-	Logging LoggingConfig `json:"logging" yaml:"logging"`
+	Logging LoggingConfig `json:"logging" yaml:"logging" mapstructure:"logging"`
 
 	// Monitoring Monitoring configuration for Grafana and Loki
-	Monitoring MonitoringConfig `json:"monitoring" yaml:"monitoring"`
+	Monitoring MonitoringConfig `json:"monitoring" yaml:"monitoring" mapstructure:"monitoring"`
 
 	// Platform Platform configuration (host, image, resources)
-	Platform PlatformConfig `json:"platform" yaml:"platform"`
+	Platform PlatformConfig `json:"platform" yaml:"platform" mapstructure:"platform"`
 
 	// Redis Redis configuration
-	Redis RedisConfig `json:"redis" yaml:"redis"`
+	Redis RedisConfig `json:"redis" yaml:"redis" mapstructure:"redis"`
 
 	// Storage Object storage configuration for MinIO or S3-compatible services
-	Storage StorageConfig `json:"storage" yaml:"storage"`
+	Storage StorageConfig `json:"storage" yaml:"storage" mapstructure:"storage"`
 }
 
 // AuthConfig Authentication configuration for the API server
 type AuthConfig struct {
 	// Enabled Enable authentication
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Firebase Firebase authentication configuration
-	Firebase FirebaseAuth `json:"firebase,omitempty,omitzero" yaml:"firebase,omitempty"`
+	Firebase FirebaseAuth `json:"firebase,omitempty,omitzero" yaml:"firebase,omitempty" mapstructure:"firebase,omitempty"`
 
 	// Local Local username/password authentication
-	Local LocalAuth `json:"local,omitempty,omitzero" yaml:"local,omitempty"`
+	Local LocalAuth `json:"local,omitempty,omitzero" yaml:"local,omitempty" mapstructure:"local,omitempty"`
 
 	// Twitter Twitter OAuth configuration
-	Twitter TwitterAuth `json:"twitter,omitempty,omitzero" yaml:"twitter,omitempty"`
+	Twitter TwitterAuth `json:"twitter,omitempty,omitzero" yaml:"twitter,omitempty" mapstructure:"twitter,omitempty"`
 }
 
 // BillingConfig Billing configuration for Stripe
 type BillingConfig struct {
 	// Enabled Enable billing functionality
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Stripe Stripe payment configuration
-	Stripe StripeConfig `json:"stripe,omitempty,omitzero" yaml:"stripe,omitempty"`
+	Stripe StripeConfig `json:"stripe,omitempty,omitzero" yaml:"stripe,omitempty" mapstructure:"stripe,omitempty"`
 }
 
 // CORSConfig CORS configuration for the API server
 type CORSConfig struct {
 	// Origins A comma-separated list of allowed origins for CORS requests
-	Origins string `json:"origins" yaml:"origins"`
+	Origins string `json:"origins" yaml:"origins" mapstructure:"origins"`
 }
 
 // DatabaseAuth Database authentication credentials
 type DatabaseAuth struct {
 	// Database Database name
-	Database string `json:"database" yaml:"database"`
+	Database string `json:"database" yaml:"database" mapstructure:"database"`
 
 	// Password Database user password
-	Password string `json:"password" yaml:"password"`
+	Password string `json:"password" yaml:"password" mapstructure:"password"`
 }
 
 // DatabaseConfig Database configuration for PostgreSQL
 type DatabaseConfig struct {
 	// URL Database connection URL/string
-	URL string `json:"URL" yaml:"URL"`
+	URL string `json:"URL" yaml:"URL" mapstructure:"URL"`
 
 	// Auth Database authentication credentials
-	Auth DatabaseAuth `json:"auth,omitempty,omitzero" yaml:"auth,omitempty"`
+	Auth DatabaseAuth `json:"auth,omitempty,omitzero" yaml:"auth,omitempty" mapstructure:"auth,omitempty"`
 
 	// ConnMaxIdleTime Maximum connection idle time (e.g., "5m")
-	ConnMaxIdleTime string `json:"connMaxIdleTime,omitempty,omitzero" yaml:"connMaxIdleTime,omitempty"`
+	ConnMaxIdleTime string `json:"connMaxIdleTime,omitempty,omitzero" yaml:"connMaxIdleTime,omitempty" mapstructure:"connMaxIdleTime,omitempty"`
 
 	// ConnMaxLifetime Maximum connection lifetime (e.g., "30m")
-	ConnMaxLifetime string `json:"connMaxLifetime,omitempty,omitzero" yaml:"connMaxLifetime,omitempty"`
+	ConnMaxLifetime string `json:"connMaxLifetime,omitempty,omitzero" yaml:"connMaxLifetime,omitempty" mapstructure:"connMaxLifetime,omitempty"`
 
 	// Enabled Enable database
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// HealthCheckPeriod Health check period for connections (PostgreSQL)
-	HealthCheckPeriod string `json:"healthCheckPeriod,omitempty,omitzero" yaml:"healthCheckPeriod,omitempty"`
+	HealthCheckPeriod string `json:"healthCheckPeriod,omitempty,omitzero" yaml:"healthCheckPeriod,omitempty" mapstructure:"healthCheckPeriod,omitempty"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty" mapstructure:"image,omitempty"`
 
 	// Managed Use managed database deployment
-	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty" mapstructure:"managed,omitempty"`
 
 	// MaxConns Maximum number of connections in pool (PostgreSQL)
-	MaxConns int `json:"maxConns,omitempty,omitzero" yaml:"maxConns,omitempty"`
+	MaxConns int `json:"maxConns,omitempty,omitzero" yaml:"maxConns,omitempty" mapstructure:"maxConns,omitempty"`
 
 	// MinConns Minimum number of connections in pool (PostgreSQL)
-	MinConns int `json:"minConns,omitempty,omitzero" yaml:"minConns,omitempty"`
+	MinConns int `json:"minConns,omitempty,omitzero" yaml:"minConns,omitempty" mapstructure:"minConns,omitempty"`
 
 	// Persistence Persistent storage configuration
-	Persistence PersistenceConfig `json:"persistence,omitempty,omitzero" yaml:"persistence,omitempty"`
+	Persistence PersistenceConfig `json:"persistence,omitempty,omitzero" yaml:"persistence,omitempty" mapstructure:"persistence,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 
 	// RunMigrations Automatically run database migrations on startup
-	RunMigrations bool `json:"runMigrations,omitempty,omitzero" yaml:"runMigrations,omitempty"`
+	RunMigrations bool `json:"runMigrations,omitempty,omitzero" yaml:"runMigrations,omitempty" mapstructure:"runMigrations,omitempty"`
 
 	// Type Database type (postgresql or sqlite)
-	Type DatabaseConfigType `json:"type,omitempty,omitzero" yaml:"type,omitempty"`
+	Type DatabaseConfigType `json:"type,omitempty,omitzero" yaml:"type,omitempty" mapstructure:"type,omitempty"`
 }
 
 // DatabaseConfigType Database type (postgresql or sqlite)
@@ -219,52 +219,52 @@ type DatabaseConfigType string
 // DevServiceConfig Development service port forwarding configuration
 type DevServiceConfig struct {
 	// Enabled Enable dev port forwarding
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Port Local port for forwarding
-	Port float32 `json:"port" yaml:"port"`
+	Port float32 `json:"port" yaml:"port" mapstructure:"port"`
 }
 
 // DevelopmentConfig Development environment configuration
 type DevelopmentConfig struct {
 	// API Development service port forwarding configuration
-	API DevServiceConfig `json:"api" yaml:"api"`
+	API DevServiceConfig `json:"api" yaml:"api" mapstructure:"api"`
 
 	// HostIP Host IP address for dev port forwarding
-	HostIP string `json:"hostIP" yaml:"hostIP"`
+	HostIP string `json:"hostIP" yaml:"hostIP" mapstructure:"hostIP"`
 
 	// Loki Development service port forwarding configuration
-	Loki DevServiceConfig `json:"loki" yaml:"loki"`
+	Loki DevServiceConfig `json:"loki" yaml:"loki" mapstructure:"loki"`
 
 	// Platform Development service port forwarding configuration
-	Platform DevServiceConfig `json:"platform" yaml:"platform"`
+	Platform DevServiceConfig `json:"platform" yaml:"platform" mapstructure:"platform"`
 
 	// Postgres Development service port forwarding configuration
-	Postgres DevServiceConfig `json:"postgres" yaml:"postgres"`
+	Postgres DevServiceConfig `json:"postgres" yaml:"postgres" mapstructure:"postgres"`
 
 	// Redis Development service port forwarding configuration
-	Redis DevServiceConfig `json:"redis" yaml:"redis"`
+	Redis DevServiceConfig `json:"redis" yaml:"redis" mapstructure:"redis"`
 }
 
 // EmailConfig Email configuration for sending emails
 type EmailConfig struct {
 	// Enabled Enable email functionality
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Password Password for the email service
-	Password string `json:"password,omitempty,omitzero" yaml:"password,omitempty"`
+	Password string `json:"password,omitempty,omitzero" yaml:"password,omitempty" mapstructure:"password,omitempty"`
 
 	// Service Email service provider (e.g., "gmail", "sendgrid", etc.)
-	Service string `json:"service,omitempty,omitzero" yaml:"service,omitempty"`
+	Service string `json:"service,omitempty,omitzero" yaml:"service,omitempty" mapstructure:"service,omitempty"`
 
 	// User Username for the email service
-	User string `json:"user,omitempty,omitzero" yaml:"user,omitempty"`
+	User string `json:"user,omitempty,omitzero" yaml:"user,omitempty" mapstructure:"user,omitempty"`
 }
 
 // EmbeddingConfig Configuration for text embedding generation
 type EmbeddingConfig struct {
 	// Type The embedding provider to use for vector embeddings
-	Type EmbeddingConfigType `json:"type" yaml:"type"`
+	Type EmbeddingConfigType `json:"type" yaml:"type" mapstructure:"type"`
 }
 
 // EmbeddingConfigType The embedding provider to use for vector embeddings
@@ -273,43 +273,43 @@ type EmbeddingConfigType string
 // FirebaseAuth Firebase authentication configuration
 type FirebaseAuth struct {
 	// ClientEmail Firebase service account client email address
-	ClientEmail string `json:"clientEmail,omitempty,omitzero" yaml:"clientEmail,omitempty"`
+	ClientEmail string `json:"clientEmail,omitempty,omitzero" yaml:"clientEmail,omitempty" mapstructure:"clientEmail,omitempty"`
 
 	// Enabled Enable Firebase authentication
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// PrivateKey Firebase service account private key (PEM format)
-	PrivateKey string `json:"privateKey,omitempty,omitzero" yaml:"privateKey,omitempty"`
+	PrivateKey string `json:"privateKey,omitempty,omitzero" yaml:"privateKey,omitempty" mapstructure:"privateKey,omitempty"`
 
 	// ProjectID Firebase project ID for authentication
-	ProjectID string `json:"projectID,omitempty,omitzero" yaml:"projectID,omitempty"`
+	ProjectID string `json:"projectID,omitempty,omitzero" yaml:"projectID,omitempty" mapstructure:"projectID,omitempty"`
 }
 
 // GrafanaConfig Grafana monitoring dashboard configuration
 type GrafanaConfig struct {
 	// Enabled Enable Grafana
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty" mapstructure:"image,omitempty"`
 
 	// Managed Use managed Grafana deployment
-	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty" mapstructure:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 }
 
 // ImageConfig Container image configuration
 type ImageConfig struct {
 	// PullPolicy Kubernetes image pull policy
-	PullPolicy ImageConfigPullPolicy `json:"pullPolicy" yaml:"pullPolicy"`
+	PullPolicy ImageConfigPullPolicy `json:"pullPolicy" yaml:"pullPolicy" mapstructure:"pullPolicy"`
 
 	// Repository Container image repository
-	Repository string `json:"repository" yaml:"repository"`
+	Repository string `json:"repository" yaml:"repository" mapstructure:"repository"`
 
 	// Tag Container image tag
-	Tag string `json:"tag" yaml:"tag"`
+	Tag string `json:"tag" yaml:"tag" mapstructure:"tag"`
 }
 
 // ImageConfigPullPolicy Kubernetes image pull policy
@@ -318,73 +318,73 @@ type ImageConfigPullPolicy string
 // ImagesConfig Container image configuration
 type ImagesConfig struct {
 	// ImagePullSecrets List of Kubernetes secrets for pulling private images
-	ImagePullSecrets []string `json:"imagePullSecrets" yaml:"imagePullSecrets"`
+	ImagePullSecrets []string `json:"imagePullSecrets" yaml:"imagePullSecrets" mapstructure:"imagePullSecrets"`
 
 	// ImageRegistry Custom container registry URL (leave empty for Docker Hub)
-	ImageRegistry string `json:"imageRegistry" yaml:"imageRegistry"`
+	ImageRegistry string `json:"imageRegistry" yaml:"imageRegistry" mapstructure:"imageRegistry"`
 }
 
 // InfrastructureConfig Infrastructure configuration for Kubernetes deployments
 type InfrastructureConfig struct {
 	// Development Development environment configuration
-	Development DevelopmentConfig `json:"development" yaml:"development"`
+	Development DevelopmentConfig `json:"development" yaml:"development" mapstructure:"development"`
 
 	// Images Container image configuration
-	Images ImagesConfig `json:"images" yaml:"images"`
+	Images ImagesConfig `json:"images" yaml:"images" mapstructure:"images"`
 
 	// Migrations Database migration configuration
-	Migrations MigrationsConfig `json:"migrations" yaml:"migrations"`
+	Migrations MigrationsConfig `json:"migrations" yaml:"migrations" mapstructure:"migrations"`
 
 	// Namespace Kubernetes namespace where all resources will be deployed
-	Namespace string `json:"namespace" yaml:"namespace"`
+	Namespace string `json:"namespace" yaml:"namespace" mapstructure:"namespace"`
 
 	// ServiceAccount Kubernetes service account configuration
-	ServiceAccount ServiceAccountConfig `json:"serviceAccount" yaml:"serviceAccount"`
+	ServiceAccount ServiceAccountConfig `json:"serviceAccount" yaml:"serviceAccount" mapstructure:"serviceAccount"`
 }
 
 // IngressConfig Ingress configuration
 type IngressConfig struct {
 	// Domain Primary domain name for ingress routing
-	Domain string `json:"domain,omitempty,omitzero" yaml:"domain,omitempty"`
+	Domain string `json:"domain,omitempty,omitzero" yaml:"domain,omitempty" mapstructure:"domain,omitempty"`
 
 	// Enabled Enable ingress
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// TLS TLS configuration
-	TLS TLSConfig `json:"tls,omitempty,omitzero" yaml:"tls,omitempty"`
+	TLS TLSConfig `json:"tls,omitempty,omitzero" yaml:"tls,omitempty" mapstructure:"tls,omitempty"`
 }
 
 // IntelligenceConfig Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
 type IntelligenceConfig struct {
 	// Embedding Configuration for text embedding generation
-	Embedding EmbeddingConfig `json:"embedding" yaml:"embedding"`
+	Embedding EmbeddingConfig `json:"embedding" yaml:"embedding" mapstructure:"embedding"`
 
 	// Llm Large Language Model configuration
-	Llm LLMConfig `json:"llm" yaml:"llm"`
+	Llm LLMConfig `json:"llm" yaml:"llm" mapstructure:"llm"`
 
 	// Runpod RunPod serverless GPU configuration
-	Runpod RunPodConfig `json:"runpod" yaml:"runpod"`
+	Runpod RunPodConfig `json:"runpod" yaml:"runpod" mapstructure:"runpod"`
 
 	// Scraper Web scraping service configuration
-	Scraper ScraperConfig `json:"scraper" yaml:"scraper"`
+	Scraper ScraperConfig `json:"scraper" yaml:"scraper" mapstructure:"scraper"`
 
 	// Speech Speech recognition and TTS services
-	Speech SpeechConfig `json:"speech" yaml:"speech"`
+	Speech SpeechConfig `json:"speech" yaml:"speech" mapstructure:"speech"`
 
 	// Unstructured Unstructured.io service for document parsing
-	Unstructured UnstructuredConfig `json:"unstructured" yaml:"unstructured"`
+	Unstructured UnstructuredConfig `json:"unstructured" yaml:"unstructured" mapstructure:"unstructured"`
 }
 
 // LLMConfig Large Language Model configuration
 type LLMConfig struct {
 	// Endpoint LLM service endpoint URL
-	Endpoint string `json:"endpoint,omitempty,omitzero" yaml:"endpoint,omitempty"`
+	Endpoint string `json:"endpoint,omitempty,omitzero" yaml:"endpoint,omitempty" mapstructure:"endpoint,omitempty"`
 
 	// Token Authentication token for LLM service
-	Token string `json:"token,omitempty,omitzero" yaml:"token,omitempty"`
+	Token string `json:"token,omitempty,omitzero" yaml:"token,omitempty" mapstructure:"token,omitempty"`
 
 	// Type LLM provider type
-	Type LLMConfigType `json:"type" yaml:"type"`
+	Type LLMConfigType `json:"type" yaml:"type" mapstructure:"type"`
 }
 
 // LLMConfigType LLM provider type
@@ -393,25 +393,25 @@ type LLMConfigType string
 // LocalAuth Local username/password authentication
 type LocalAuth struct {
 	// AccessTokenTTL Access token time-to-live duration (e.g., "15m", "1h")
-	AccessTokenTTL string `json:"accessTokenTtl" yaml:"accessTokenTtl"`
+	AccessTokenTTL string `json:"accessTokenTtl" yaml:"accessTokenTtl" mapstructure:"accessTokenTtl"`
 
 	// Enabled Enable local authentication
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// JwtSecret Secret key for JWT token signing
-	JwtSecret string `json:"jwtSecret" yaml:"jwtSecret"`
+	JwtSecret string `json:"jwtSecret" yaml:"jwtSecret" mapstructure:"jwtSecret"`
 
 	// RefreshTokenTTL Refresh token time-to-live duration (e.g., "7d", "168h")
-	RefreshTokenTTL string `json:"refreshTokenTtl" yaml:"refreshTokenTtl"`
+	RefreshTokenTTL string `json:"refreshTokenTtl" yaml:"refreshTokenTtl" mapstructure:"refreshTokenTtl"`
 }
 
 // LoggingConfig Logging configuration
 type LoggingConfig struct {
 	// Level Minimum log level to output
-	Level LoggingConfigLevel `json:"level" yaml:"level"`
+	Level LoggingConfigLevel `json:"level" yaml:"level" mapstructure:"level"`
 
 	// Pretty Enable pretty-printed logs for development
-	Pretty bool `json:"pretty" yaml:"pretty"`
+	Pretty bool `json:"pretty" yaml:"pretty" mapstructure:"pretty"`
 }
 
 // LoggingConfigLevel Minimum log level to output
@@ -420,277 +420,277 @@ type LoggingConfigLevel string
 // LokiConfig Loki log aggregation service configuration
 type LokiConfig struct {
 	// Enabled Enable Loki
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Host Loki host URL
-	Host string `json:"host,omitempty,omitzero" yaml:"host,omitempty"`
+	Host string `json:"host,omitempty,omitzero" yaml:"host,omitempty" mapstructure:"host,omitempty"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty" mapstructure:"image,omitempty"`
 
 	// Managed Use managed Loki deployment
-	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty" mapstructure:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 }
 
 // MigrationsConfig Database migration configuration
 type MigrationsConfig struct {
 	// Enabled Enable automatic DB migrations
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 }
 
 // MonitoringConfig Monitoring configuration for Grafana and Loki
 type MonitoringConfig struct {
 	// Grafana Grafana monitoring dashboard configuration
-	Grafana GrafanaConfig `json:"grafana" yaml:"grafana"`
+	Grafana GrafanaConfig `json:"grafana" yaml:"grafana" mapstructure:"grafana"`
 
 	// Loki Loki log aggregation service configuration
-	Loki LokiConfig `json:"loki" yaml:"loki"`
+	Loki LokiConfig `json:"loki" yaml:"loki" mapstructure:"loki"`
 }
 
 // PersistenceConfig Persistent storage configuration
 type PersistenceConfig struct {
 	// Enabled Enable persistent storage
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Size Size of persistent volume
-	Size string `json:"size" yaml:"size"`
+	Size string `json:"size" yaml:"size" mapstructure:"size"`
 }
 
 // PlatformConfig Platform configuration (host, image, resources)
 type PlatformConfig struct {
 	// Enabled Enable platform service
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Host Host address where the platform service will be accessible
-	Host string `json:"host,omitempty,omitzero" yaml:"host,omitempty"`
+	Host string `json:"host,omitempty,omitzero" yaml:"host,omitempty" mapstructure:"host,omitempty"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty" mapstructure:"image,omitempty"`
 
 	// Managed Use managed platform deployment
-	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty" mapstructure:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 }
 
 // Problem RFC 7807 (Problem Details) compliant error response
 type Problem struct {
 	// Detail Human-readable explanation specific to this occurrence
-	Detail string `json:"detail" yaml:"detail"`
+	Detail string `json:"detail" yaml:"detail" mapstructure:"detail"`
 
 	// Errors Additional validation errors for specific fields
-	Errors []ValidationError `json:"errors,omitempty,omitzero" yaml:"errors,omitempty"`
+	Errors []ValidationError `json:"errors,omitempty,omitzero" yaml:"errors,omitempty" mapstructure:"errors,omitempty"`
 
 	// Instance URI identifying the specific occurrence
-	Instance string `json:"instance,omitempty,omitzero" yaml:"instance,omitempty"`
+	Instance string `json:"instance,omitempty,omitzero" yaml:"instance,omitempty" mapstructure:"instance,omitempty"`
 
 	// Status HTTP status code
-	Status int `json:"status" yaml:"status"`
+	Status int `json:"status" yaml:"status" mapstructure:"status"`
 
 	// Title Short, human-readable summary
-	Title string `json:"title" yaml:"title"`
+	Title string `json:"title" yaml:"title" mapstructure:"title"`
 
 	// Type URI identifying the problem type
-	Type string `json:"type" yaml:"type"`
+	Type string `json:"type" yaml:"type" mapstructure:"type"`
 }
 
 // RedisConfig Redis configuration
 type RedisConfig struct {
 	// Auth Redis authentication password
-	Auth string `json:"auth" yaml:"auth"`
+	Auth string `json:"auth" yaml:"auth" mapstructure:"auth"`
 
 	// Ca Certificate Authority for TLS (optional)
-	Ca string `json:"ca,omitempty,omitzero" yaml:"ca,omitempty"`
+	Ca string `json:"ca,omitempty,omitzero" yaml:"ca,omitempty" mapstructure:"ca,omitempty"`
 
 	// Enabled Enable Redis
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Host Redis hostname or IP
-	Host string `json:"host" yaml:"host"`
+	Host string `json:"host" yaml:"host" mapstructure:"host"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty" mapstructure:"image,omitempty"`
 
 	// Managed Use managed Redis deployment
-	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty" mapstructure:"managed,omitempty"`
 
 	// Persistence Persistent storage configuration
-	Persistence PersistenceConfig `json:"persistence,omitempty,omitzero" yaml:"persistence,omitempty"`
+	Persistence PersistenceConfig `json:"persistence,omitempty,omitzero" yaml:"persistence,omitempty" mapstructure:"persistence,omitempty"`
 
 	// Port Redis port number
-	Port float32 `json:"port" yaml:"port"`
+	Port float32 `json:"port" yaml:"port" mapstructure:"port"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 }
 
 // ResourceConfig Kubernetes resource configuration
 type ResourceConfig struct {
 	// Limits Resource limits
-	Limits ResourceLimits `json:"limits" yaml:"limits"`
+	Limits ResourceLimits `json:"limits" yaml:"limits" mapstructure:"limits"`
 
 	// Requests Resource requests
-	Requests ResourceRequests `json:"requests" yaml:"requests"`
+	Requests ResourceRequests `json:"requests" yaml:"requests" mapstructure:"requests"`
 }
 
 // ResourceLimits Resource limits
 type ResourceLimits struct {
 	// CPU Maximum CPU allocation
-	CPU string `json:"cpu" yaml:"cpu"`
+	CPU string `json:"cpu" yaml:"cpu" mapstructure:"cpu"`
 
 	// Memory Maximum memory allocation
-	Memory string `json:"memory" yaml:"memory"`
+	Memory string `json:"memory" yaml:"memory" mapstructure:"memory"`
 }
 
 // ResourceRequests Resource requests
 type ResourceRequests struct {
 	// CPU Requested CPU allocation
-	CPU string `json:"cpu" yaml:"cpu"`
+	CPU string `json:"cpu" yaml:"cpu" mapstructure:"cpu"`
 
 	// Memory Requested memory allocation
-	Memory string `json:"memory" yaml:"memory"`
+	Memory string `json:"memory" yaml:"memory" mapstructure:"memory"`
 }
 
 // RunPodConfig RunPod serverless GPU configuration
 type RunPodConfig struct {
 	// Enabled Enable RunPod integration
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Token RunPod API token
-	Token string `json:"token,omitempty,omitzero" yaml:"token,omitempty"`
+	Token string `json:"token,omitempty,omitzero" yaml:"token,omitempty" mapstructure:"token,omitempty"`
 }
 
 // ScraperConfig Web scraping service configuration
 type ScraperConfig struct {
 	// Enabled Enable scraper service
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Endpoint Web scraper service endpoint URL
-	Endpoint string `json:"endpoint,omitempty,omitzero" yaml:"endpoint,omitempty"`
+	Endpoint string `json:"endpoint,omitempty,omitzero" yaml:"endpoint,omitempty" mapstructure:"endpoint,omitempty"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty" mapstructure:"image,omitempty"`
 
 	// Managed Use managed scraper deployment
-	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty" mapstructure:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 }
 
 // ServiceAccountConfig Kubernetes service account configuration
 type ServiceAccountConfig struct {
 	// Create Create dedicated service account
-	Create bool `json:"create" yaml:"create"`
+	Create bool `json:"create" yaml:"create" mapstructure:"create"`
 
 	// Name Custom service account name
-	Name string `json:"name" yaml:"name"`
+	Name string `json:"name" yaml:"name" mapstructure:"name"`
 }
 
 // SpeechConfig Speech recognition and TTS services
 type SpeechConfig struct {
 	// Enabled Enable speech services
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Token Speech-to-text service API token
-	Token string `json:"token,omitempty,omitzero" yaml:"token,omitempty"`
+	Token string `json:"token,omitempty,omitzero" yaml:"token,omitempty" mapstructure:"token,omitempty"`
 }
 
 // StorageConfig Object storage configuration for MinIO or S3-compatible services
 type StorageConfig struct {
 	// Accesskey MinIO/S3 access key ID
-	Accesskey string `json:"accesskey" yaml:"accesskey"`
+	Accesskey string `json:"accesskey" yaml:"accesskey" mapstructure:"accesskey"`
 
 	// Bucket S3 bucket name
-	Bucket string `json:"bucket" yaml:"bucket"`
+	Bucket string `json:"bucket" yaml:"bucket" mapstructure:"bucket"`
 
 	// Enabled Enable object storage
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Endpoint MinIO server endpoint URL
-	Endpoint string `json:"endpoint" yaml:"endpoint"`
+	Endpoint string `json:"endpoint" yaml:"endpoint" mapstructure:"endpoint"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty" mapstructure:"image,omitempty"`
 
 	// Managed Use managed storage deployment
-	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty" mapstructure:"managed,omitempty"`
 
 	// Persistence Persistent storage configuration
-	Persistence PersistenceConfig `json:"persistence,omitempty,omitzero" yaml:"persistence,omitempty"`
+	Persistence PersistenceConfig `json:"persistence,omitempty,omitzero" yaml:"persistence,omitempty" mapstructure:"persistence,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 
 	// Secretkey MinIO/S3 secret access key
-	Secretkey string `json:"secretkey" yaml:"secretkey"`
+	Secretkey string `json:"secretkey" yaml:"secretkey" mapstructure:"secretkey"`
 }
 
 // StripeConfig Stripe payment configuration
 type StripeConfig struct {
 	// Token Stripe secret API key
-	Token string `json:"token" yaml:"token"`
+	Token string `json:"token" yaml:"token" mapstructure:"token"`
 
 	// Whsec Stripe webhook endpoint secret
-	Whsec string `json:"whsec" yaml:"whsec"`
+	Whsec string `json:"whsec" yaml:"whsec" mapstructure:"whsec"`
 }
 
 // TLSConfig TLS configuration
 type TLSConfig struct {
 	// Enabled Enable TLS/SSL
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Issuer Cert-manager ClusterIssuer
-	Issuer string `json:"issuer,omitempty,omitzero" yaml:"issuer,omitempty"`
+	Issuer string `json:"issuer,omitempty,omitzero" yaml:"issuer,omitempty" mapstructure:"issuer,omitempty"`
 
 	// SecretName Kubernetes secret name for TLS certificates
-	SecretName string `json:"secretName" yaml:"secretName"`
+	SecretName string `json:"secretName" yaml:"secretName" mapstructure:"secretName"`
 }
 
 // TwitterAuth Twitter OAuth configuration
 type TwitterAuth struct {
 	// CallbackURL OAuth callback URL
-	CallbackURL string `json:"callbackURL,omitempty,omitzero" yaml:"callbackURL,omitempty"`
+	CallbackURL string `json:"callbackURL,omitempty,omitzero" yaml:"callbackURL,omitempty" mapstructure:"callbackURL,omitempty"`
 
 	// ConsumerKey Twitter API consumer key
-	ConsumerKey string `json:"consumerKey,omitempty,omitzero" yaml:"consumerKey,omitempty"`
+	ConsumerKey string `json:"consumerKey,omitempty,omitzero" yaml:"consumerKey,omitempty" mapstructure:"consumerKey,omitempty"`
 
 	// ConsumerSecret Twitter API consumer secret
-	ConsumerSecret string `json:"consumerSecret,omitempty,omitzero" yaml:"consumerSecret,omitempty"`
+	ConsumerSecret string `json:"consumerSecret,omitempty,omitzero" yaml:"consumerSecret,omitempty" mapstructure:"consumerSecret,omitempty"`
 
 	// Enabled Enable Twitter OAuth
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 }
 
 // UnstructuredConfig Unstructured.io service for document parsing
 type UnstructuredConfig struct {
 	// Enabled Enable unstructured document parsing
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty" mapstructure:"image,omitempty"`
 
 	// Managed Use managed unstructured deployment
-	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty" mapstructure:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 }
 
 // ValidationError Individual field validation error
 type ValidationError struct {
 	// Field The field path that failed validation
-	Field string `json:"field" yaml:"field"`
+	Field string `json:"field" yaml:"field" mapstructure:"field"`
 
 	// Message Human-readable error message
-	Message string `json:"message" yaml:"message"`
+	Message string `json:"message" yaml:"message" mapstructure:"message"`
 
 	// Value The invalid value that was provided
-	Value ValidationError_Value `json:"value,omitempty,omitzero" yaml:"value,omitempty"`
+	Value ValidationError_Value `json:"value,omitempty,omitzero" yaml:"value,omitempty" mapstructure:"value,omitempty"`
 }
 
 // ValidationErrorValue0 defines model for .

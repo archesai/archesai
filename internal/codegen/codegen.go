@@ -13,7 +13,7 @@
 // All generated files follow the pattern *.gen.go and should not be edited manually.
 package codegen
 
-//go:generate go tool oapi-codegen --config=../../.types.codegen.yaml --package codegen --generate skip-prune,models ../../api/components/schemas/XCodegenWrapper.yaml
+//go:generate go tool oapi-codegen --config=../../.codegen.types.yaml --package codegen --generate skip-prune,models ../../api/components/schemas/XCodegenWrapper.yaml
 
 import (
 	"fmt"
@@ -29,6 +29,39 @@ import (
 
 	"github.com/archesai/archesai/internal/logger"
 	"gopkg.in/yaml.v3"
+)
+
+// Common type name constants used throughout code generation
+const (
+	// Format types
+	formatEmail = "email"
+	formatInt64 = "int64"
+
+	// SQL types
+	sqlTypeUUID = "UUID"
+
+	// Go types
+	goTypeString    = "string"
+	goTypeBool      = "bool"
+	goTypeInt       = "int"
+	goTypeInt32     = "int32"
+	goTypeInt64     = "int64"
+	goTypeFloat32   = "float32"
+	goTypeFloat64   = "float64"
+	goTypeTimeTime  = "time.Time"
+	goTypeUUIDType  = "uuid.UUID"
+	goTypeEmail     = "Email"
+	goTypeEmailFull = "openapi_types.Email"
+	goTypeMapString = "map[string]interface{}"
+
+	// Go pointer types
+	goTypePtrString   = "*string"
+	goTypePtrUUID     = "*uuid.UUID"
+	goTypePtrTime     = "*time.Time"
+	goTypePtrInt32    = "*int32"
+	goTypePtrFloat64  = "*float64"
+	goTypePtrBool     = "*bool"
+	goTypeUUIDLiteral = "UUID"
 )
 
 // Config is an alias to the generated CodegenConfig type for backward compatibility

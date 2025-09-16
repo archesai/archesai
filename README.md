@@ -16,11 +16,11 @@
 
 AI-powered data processing platform with workflow automation and beautiful terminal interfaces.
 
-<a href="#-installation"><strong>Installation</strong></a> ·
-<a href="https://archesai.com/docs"><strong>Docs</strong></a> ·
-<a href="#-examples"><strong>Examples</strong></a> ·
-<a href="#-contributing--community"><strong>Contributing</strong></a> ·
-<a href="#-features"><strong>Features</strong></a>
+<a href="#-quick-start"><strong>Quick Start</strong></a> ·
+<a href="#documentation"><strong>Documentation</strong></a> ·
+<a href="#-features"><strong>Features</strong></a> ·
+<a href="#development"><strong>Development</strong></a> ·
+<a href="#support"><strong>Support</strong></a>
 
 ## Introduction
 
@@ -83,10 +83,10 @@ For detailed installation and setup instructions, see
 
 #### Core Domains
 
-- [Auth](internal/auth/) - Authentication & authorization
+- [OAuth](internal/oauth) - Authentication & authorization
 - [Organizations](internal/organizations/) - Organization management
-- [Workflows](internal/workflows/) - Workflow automation
-- [Content](internal/content/) - Content management
+- [Pipelines](internal/pipelines/) - Pipeline automation
+- [Runs](internal/runs/) - Run management
 
 #### Infrastructure
 

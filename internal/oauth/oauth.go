@@ -1,8 +1,8 @@
 // Package oauth provides OAuth2 authentication services.
 package oauth
 
-//go:generate go tool oapi-codegen --config=../../.types.codegen.yaml --package oauth --include-tags OAuth ../../api/openapi.bundled.yaml
-//go:generate go tool oapi-codegen --config=../../.server.codegen.yaml --package oauth --include-tags OAuth ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../.codegen.types.yaml --package oauth --include-tags OAuth ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../.codegen.server.yaml --package oauth --include-tags OAuth ../../api/openapi.bundled.yaml
 
 import (
 	"context"

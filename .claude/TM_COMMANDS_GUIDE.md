@@ -100,7 +100,7 @@ Commands are organized hierarchically to match Task Master's CLI:
 
 All commands understand natural language:
 
-```
+```sh
 /project:tm/list pending high priority
 /project:tm/update mark 23 as done
 /project:tm/add-task implement OAuth login
@@ -126,7 +126,7 @@ Commands analyze project state and provide intelligent suggestions based on:
 
 ### Daily Development
 
-```
+```sh
 /project:tm/workflows/smart-flow morning
 /project:tm/next
 /project:tm/set-status/to-in-progress <id>
@@ -135,7 +135,7 @@ Commands analyze project state and provide intelligent suggestions based on:
 
 ### Task Breakdown
 
-```
+```sh
 /project:tm/show <id>
 /project:tm/expand <id>
 /project:tm/list/with-subtasks
@@ -143,7 +143,7 @@ Commands analyze project state and provide intelligent suggestions based on:
 
 ### Sprint Planning
 
-```
+```sh
 /project:tm/analyze-complexity
 /project:tm/workflows/pipeline init → expand/all → status
 ```

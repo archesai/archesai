@@ -3,8 +3,8 @@ package accounts
 
 import "errors"
 
-//go:generate go tool oapi-codegen --config=../../.types.codegen.yaml --package accounts --include-tags Accounts ../../api/openapi.bundled.yaml
-//go:generate go tool oapi-codegen --config=../../.server.codegen.yaml --package accounts --include-tags Accounts ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../.codegen.types.yaml --package accounts --include-tags Accounts ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../.codegen.server.yaml --package accounts --include-tags Accounts ../../api/openapi.bundled.yaml
 
 // Account errors
 var (

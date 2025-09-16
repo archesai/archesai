@@ -63,7 +63,8 @@ main CLAUDE.md file.**
 TIPS:
 
 - DO NOT SWITCH DIRECTORIES, STAY IN THE ROOT AT ALL TIMES
-- Do not create your own mocks. Always try to use mockery and generate from an interface. We have done this many times in this project.
+- Do not create your own mocks. Always try to use mockery and generate from an interface.
+- We have done this many times in this project.
 
 ALWAYS USER MOCKERY FOR GETTING MOCKS, NEVER CREATE MOCKED SERVICES OR REPOSITORIES OR ANYTHING MANUALLY.
 RUN go tool mockery

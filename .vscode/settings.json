@@ -1,14 +1,5 @@
 {
-  "files.exclude": {
-    "**/.cache": true,
-    "**/.coverage": true,
-    "**/.nitro": true,
-    "**/.output": true,
-    "**/.tanstack": true,
-    "**/bin": true,
-    "**/dist": true,
-    "**/node_modules": true
-  },
+  "explorer.excludeGitIgnore": true,
   "tailwindCSS.experimental.configFile": {
     "./web/platform/src/styles/globals.css": "./web/platform/src/**",
     "./web/ui/src/styles/globals.css": "./web/ui/src/**"

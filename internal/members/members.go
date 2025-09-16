@@ -3,8 +3,8 @@ package members
 
 import "errors"
 
-//go:generate go tool oapi-codegen --config=../../.types.codegen.yaml --package members --include-tags Members ../../api/openapi.bundled.yaml
-//go:generate go tool oapi-codegen --config=../../.server.codegen.yaml --package members --include-tags Members ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../.codegen.types.yaml --package members --include-tags Members ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=../../.codegen.server.yaml --package members --include-tags Members ../../api/openapi.bundled.yaml
 
 // Member errors
 var (

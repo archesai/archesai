@@ -54,7 +54,7 @@ task-master generate                                         # Update task markd
 
 ### Directory Structure
 
-```
+```sh
 project/
 ├── .taskmaster/
 │   ├── tasks/              # Task files directory

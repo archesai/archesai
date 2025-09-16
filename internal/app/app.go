@@ -95,7 +95,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 
 	// Initialize authentication middleware
-	authMiddleware := middleware.NewAuthMiddleware(cfg.GetJWTSecret(), log)
+	authMiddleware := middleware.NewAuthMiddleware(cfg.Auth.Local.JwtSecret, log)
 
 	// Initialize accounts domain
 	// accountsEvents := accounts.NewEventPublisher(infra.EventPublisher)
