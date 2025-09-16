@@ -10,10 +10,6 @@ inputs:
     description: 'Enable Node.js caching'
     required: false
     default: 'true'
-  pnpm-version:
-    description: 'pnpm version to install'
-    required: false
-    default: '10.16.1'
 
 runs:
   using: 'composite'
@@ -24,17 +20,13 @@ runs:
         go-version-file: go.mod
         cache: ${{ inputs.go-cache }}
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v5
+    - uses: pnpm/action-setup@v4
+
+    - uses: actions/setup-node@v5
       with:
         cache: 'pnpm'
         cache-dependency-path: pnpm-lock.yaml
         node-version-file: package.json
-
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: ${{ inputs.pnpm-version }}
 
     - name: Install dependencies
       shell: bash

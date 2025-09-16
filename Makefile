@@ -68,8 +68,8 @@ build-web: ## Build web assets
 	@echo -e "$(GREEN)✓ Web assets built!$(NC)"
 
 .PHONY: build-docs
-build-docs: prepare-docs ## Build Docusaurus documentation site
-	@echo -e "$(YELLOW)▶ Building Docusaurus documentation site...$(NC)"
+build-docs: prepare-docs ## Build documentation site
+	@echo -e "$(YELLOW)▶ Building documentation site...$(NC)"
 	@pnpm -F @archesai/docs build
 	@echo -e "$(GREEN)✓ Documentation built in web/docs/build/$(NC)"
 
