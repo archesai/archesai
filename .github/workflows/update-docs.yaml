@@ -10,6 +10,7 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v5
         with:
@@ -72,6 +73,7 @@ jobs:
     if: github.actor != 'github-actions[bot]' && always()
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v5
         with:
