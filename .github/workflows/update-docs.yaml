@@ -113,7 +113,7 @@ jobs:
   update-docs-general:
     runs-on: ubuntu-latest
     if: github.actor != 'github-actions[bot]' && always()
-    needs: [update-makefile-docs, update-project-layout]
+    needs: [update-docs-makefile, update-docs-project-layout]
     permissions:
       contents: read
       pull-requests: write
