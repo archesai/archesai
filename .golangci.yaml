@@ -30,4 +30,3 @@ formatters:
 run:
   tests: true
   allow-parallel-runners: true
-  go: '1.25.1'
