@@ -1,0 +1,80 @@
+name: Edge Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.github/**'
+      - '!.github/workflows/release-edge.yaml'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # Skip if commit message contains [skip ci] or [ci skip]
+    if: "!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup build environment
+        uses: ./.github/actions/setup-build-env
+
+      - name: Build project
+        uses: ./.github/actions/build-project
+        with:
+          test-type: 'short'
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker-setup
+        with:
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create edge tag
+        id: tag
+        uses: ./.github/actions/create-release-tag
+        with:
+          tag-name: 'edge'
+          delete-existing: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run GoReleaser (Snapshot)
+        id: goreleaser
+        uses: ./.github/actions/goreleaser-run
+        with:
+          mode: 'snapshot'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: ./.github/actions/create-github-release
+        with:
+          release-type: 'edge'
+          tag-name: 'edge'
+          commit-sha: ${{ steps.tag.outputs.commit-sha }}
+          branch: ${{ steps.tag.outputs.branch }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Retag Docker images as edge
+        uses: ./.github/actions/docker-retag
+        with:
+          source-tag: ${{ steps.goreleaser.outputs.version }}
+          target-tag: 'edge'
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Edge release failed for commit ${{ steps.tag.outputs.commit-sha }}. Check logs for details."

@@ -1,0 +1,53 @@
+name: Build Project
+description: Generate code, build web assets, and run tests
+
+inputs:
+  test-type:
+    description: 'Type of tests to run: "full", "short", or "skip"'
+    required: false
+    default: 'short'
+  build-web:
+    description: 'Whether to build web assets'
+    required: false
+    default: 'true'
+  generate-code:
+    description: 'Whether to generate code'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate code
+      if: inputs.generate-code == 'true'
+      shell: bash
+      run: |
+        echo "Generating code..."
+        make generate
+
+    - name: Build web assets
+      if: inputs.build-web == 'true'
+      shell: bash
+      run: |
+        echo "Building web assets..."
+        make build-web
+
+    - name: Run tests (full)
+      if: inputs.test-type == 'full'
+      shell: bash
+      run: |
+        echo "Running full test suite..."
+        make test
+
+    - name: Run tests (short)
+      if: inputs.test-type == 'short'
+      shell: bash
+      run: |
+        echo "Running short test suite..."
+        make test-short
+
+    - name: Skip tests
+      if: inputs.test-type == 'skip'
+      shell: bash
+      run: |
+        echo "Skipping tests as requested"

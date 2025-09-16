@@ -1,0 +1,14 @@
+FROM alpine:3.20.1
+
+RUN apk --no-cache add ca-certificates tzdata
+
+WORKDIR /app
+
+COPY archesai /app/archesai
+
+RUN chmod +x /app/archesai
+
+EXPOSE 8080
+
+ENTRYPOINT ["/app/archesai"]
+CMD ["api"]

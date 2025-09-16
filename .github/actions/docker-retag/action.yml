@@ -1,0 +1,127 @@
+name: 'Docker Retag'
+description: 'Retag Docker images for different release channels'
+
+inputs:
+  source-tag:
+    description: 'Source Docker tag (from GoReleaser snapshot)'
+    required: true
+  target-tag:
+    description: 'Target Docker tag (nightly, edge, etc.)'
+    required: true
+  registry:
+    description: 'Container registry'
+    required: false
+    default: 'ghcr.io'
+  repository:
+    description: 'Repository name'
+    required: false
+    default: ${{ github.repository }}
+  create-manifest:
+    description: 'Create multi-arch manifest'
+    required: false
+    default: 'true'
+
+outputs:
+  amd64-image:
+    description: 'AMD64 image name'
+    value: ${{ steps.tag-images.outputs.amd64_image }}
+  arm64-image:
+    description: 'ARM64 image name'
+    value: ${{ steps.tag-images.outputs.arm64_image }}
+  manifest-created:
+    description: 'Whether multi-arch manifest was created'
+    value: ${{ steps.create-manifest.outputs.created }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Tag and push Docker images
+      id: tag-images
+      shell: bash
+      run: |
+        REGISTRY="${{ inputs.registry }}"
+        REPO="${{ inputs.repository }}"
+        SOURCE_TAG="${{ inputs.source-tag }}"
+        TARGET_TAG="${{ inputs.target-tag }}"
+
+        AMD64_SOURCE="$REGISTRY/$REPO:$SOURCE_TAG"
+        AMD64_TARGET="$REGISTRY/$REPO:$TARGET_TAG"
+        ARM64_SOURCE="$REGISTRY/$REPO:$SOURCE_TAG-arm64"
+        ARM64_TARGET="$REGISTRY/$REPO:$TARGET_TAG-arm64"
+
+        echo "Retagging Docker images:"
+        echo "  Source: $SOURCE_TAG"
+        echo "  Target: $TARGET_TAG"
+
+        # Tag and push AMD64 image
+        echo "Tagging AMD64 image..."
+        docker tag "$AMD64_SOURCE" "$AMD64_TARGET"
+        docker push "$AMD64_TARGET"
+        echo "amd64_image=$AMD64_TARGET" >> $GITHUB_OUTPUT
+
+        # Check if ARM64 image exists and tag it
+        echo "Checking for ARM64 image..."
+        if docker manifest inspect "$ARM64_SOURCE" > /dev/null 2>&1; then
+          echo "ARM64 image found, tagging..."
+          docker tag "$ARM64_SOURCE" "$ARM64_TARGET"
+          docker push "$ARM64_TARGET"
+          echo "arm64_image=$ARM64_TARGET" >> $GITHUB_OUTPUT
+          echo "arm64_available=true" >> $GITHUB_OUTPUT
+        else
+          echo "ARM64 image not found, skipping"
+          echo "arm64_image=" >> $GITHUB_OUTPUT
+          echo "arm64_available=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create multi-arch manifest
+      id: create-manifest
+      if: inputs.create-manifest == 'true' && steps.tag-images.outputs.arm64_available == 'true'
+      shell: bash
+      run: |
+        REGISTRY="${{ inputs.registry }}"
+        REPO="${{ inputs.repository }}"
+        TARGET_TAG="${{ inputs.target-tag }}"
+
+        MANIFEST_NAME="$REGISTRY/$REPO:$TARGET_TAG"
+        AMD64_IMAGE="${{ steps.tag-images.outputs.amd64_image }}"
+        ARM64_IMAGE="${{ steps.tag-images.outputs.arm64_image }}"
+
+        echo "Creating multi-arch manifest: $MANIFEST_NAME"
+
+        # Create manifest list
+        docker manifest create "$MANIFEST_NAME" \
+          "$AMD64_IMAGE" \
+          "$ARM64_IMAGE"
+
+        # Push manifest
+        docker manifest push "$MANIFEST_NAME"
+
+        echo "created=true" >> $GITHUB_OUTPUT
+        echo "Multi-arch manifest created and pushed: $MANIFEST_NAME"
+
+    - name: Skip manifest creation
+      if: inputs.create-manifest != 'true' || steps.tag-images.outputs.arm64_available != 'true'
+      shell: bash
+      run: |
+        if [[ "${{ inputs.create-manifest }}" != "true" ]]; then
+          echo "Multi-arch manifest creation skipped (disabled)"
+        else
+          echo "Multi-arch manifest creation skipped (ARM64 not available)"
+        fi
+        echo "created=false" >> $GITHUB_OUTPUT
+
+    - name: Summary
+      shell: bash
+      run: |
+        echo "Docker retagging completed:"
+        echo "  AMD64: ${{ steps.tag-images.outputs.amd64_image }}"
+        if [[ "${{ steps.tag-images.outputs.arm64_available }}" == "true" ]]; then
+          echo "  ARM64: ${{ steps.tag-images.outputs.arm64_image }}"
+        else
+          echo "  ARM64: Not available"
+        fi
+        if [[ "${{ steps.create-manifest.outputs.created }}" == "true" ]]; then
+          echo "  Manifest: Created"
+        else
+          echo "  Manifest: Skipped"
+        fi

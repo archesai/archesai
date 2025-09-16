@@ -631,6 +631,125 @@ skaffold-delete: ## Delete Skaffold deployment
 	@skaffold delete --profile dev
 
 # ------------------------------------------
+# Release Management
+# ------------------------------------------
+
+.PHONY: release-check
+release-check: ## Check if ready for release
+	@echo -e "$(YELLOW)━━━ Release Readiness Check ━━━$(NC)"
+	@echo -e "$(BLUE)Checking code generation...$(NC)"
+	@$(MAKE) generate
+	@echo -e "$(BLUE)Running tests...$(NC)"
+	@$(MAKE) test-short
+	@echo -e "$(BLUE)Building web assets...$(NC)"
+	@$(MAKE) build-web
+	@echo -e "$(BLUE)Linting code...$(NC)"
+	@$(MAKE) lint
+	@echo -e "$(GREEN)✓ Ready for release!$(NC)"
+
+.PHONY: release-snapshot
+release-snapshot: ## Create a snapshot release (test GoReleaser config)
+	@echo -e "$(YELLOW)━━━ Creating Snapshot Release ━━━$(NC)"
+	@if ! command -v goreleaser >/dev/null 2>&1; then \
+		echo -e "$(RED)✗ GoReleaser not found. Install with: go install github.com/goreleaser/goreleaser@latest$(NC)"; \
+		exit 1; \
+	fi
+	@$(MAKE) release-check
+	@goreleaser release --snapshot --clean
+	@echo -e "$(GREEN)✓ Snapshot release created in ./dist/$(NC)"
+
+.PHONY: release-test
+release-test: ## Test release configuration without publishing
+	@echo -e "$(YELLOW)━━━ Testing Release Configuration ━━━$(NC)"
+	@if ! command -v goreleaser >/dev/null 2>&1; then \
+		echo -e "$(RED)✗ GoReleaser not found. Install with: go install github.com/goreleaser/goreleaser@latest$(NC)"; \
+		exit 1; \
+	fi
+	@goreleaser check
+	@goreleaser build --snapshot --clean
+	@echo -e "$(GREEN)✓ Release configuration is valid$(NC)"
+
+.PHONY: release-tag
+release-tag: ## Create and push a new release tag (usage: make release-tag VERSION=v1.0.0)
+	@if [ -z "$(VERSION)" ]; then \
+		echo -e "$(RED)✗ VERSION is required. Usage: make release-tag VERSION=v1.0.0$(NC)"; \
+		exit 1; \
+	fi
+	@echo -e "$(YELLOW)━━━ Creating Release Tag $(VERSION) ━━━$(NC)"
+	@if git rev-parse $(VERSION) >/dev/null 2>&1; then \
+		echo -e "$(RED)✗ Tag $(VERSION) already exists$(NC)"; \
+		exit 1; \
+	fi
+	@$(MAKE) release-check
+	@echo -e "$(BLUE)Creating tag $(VERSION)...$(NC)"
+	@git tag -a $(VERSION) -m "Release $(VERSION)"
+	@echo -e "$(BLUE)Pushing tag to origin...$(NC)"
+	@git push origin $(VERSION)
+	@echo -e "$(GREEN)✓ Tag $(VERSION) created and pushed. GitHub Actions will handle the release.$(NC)"
+
+.PHONY: release-draft
+release-draft: ## Create a draft release on GitHub (requires gh CLI)
+	@echo -e "$(YELLOW)━━━ Creating Draft Release ━━━$(NC)"
+	@if ! command -v gh >/dev/null 2>&1; then \
+		echo -e "$(RED)✗ GitHub CLI not found. Install from: https://cli.github.com/$(NC)"; \
+		exit 1; \
+	fi
+	@if [ -z "$(VERSION)" ]; then \
+		echo -e "$(RED)✗ VERSION is required. Usage: make release-draft VERSION=v1.0.0$(NC)"; \
+		exit 1; \
+	fi
+	@$(MAKE) release-check
+	@echo -e "$(BLUE)Creating draft release $(VERSION)...$(NC)"
+	@gh release create $(VERSION) --draft --title "Release $(VERSION)" --notes-file CHANGELOG.md || \
+		gh release create $(VERSION) --draft --title "Release $(VERSION)" --notes "Release $(VERSION)"
+	@echo -e "$(GREEN)✓ Draft release created. Edit at: https://github.com/archesai/archesai/releases$(NC)"
+
+.PHONY: release-edge-local
+release-edge-local: ## Test edge release workflow locally
+	@echo -e "$(YELLOW)━━━ Testing Edge Release Locally ━━━$(NC)"
+	@$(MAKE) release-snapshot
+	@echo -e "$(GREEN)✓ Edge release test complete. Check ./dist/ directory$(NC)"
+
+.PHONY: release-nightly-local
+release-nightly-local: ## Test nightly release workflow locally
+	@echo -e "$(YELLOW)━━━ Testing Nightly Release Locally ━━━$(NC)"
+	@$(MAKE) release-snapshot
+	@echo -e "$(GREEN)✓ Nightly release test complete. Check ./dist/ directory$(NC)"
+
+.PHONY: release-clean
+release-clean: ## Clean release artifacts
+	@echo -e "$(YELLOW)━━━ Cleaning Release Artifacts ━━━$(NC)"
+	@rm -rf dist/
+	@echo -e "$(GREEN)✓ Release artifacts cleaned$(NC)"
+
+.PHONY: release-info
+release-info: ## Show release information and next steps
+	@echo -e "$(CYAN)━━━ ArchesAI Release Information ━━━$(NC)"
+	@echo -e "$(BLUE)Release Types:$(NC)"
+	@echo -e "  • $(GREEN)Stable$(NC)    - Tagged releases (v1.0.0) via GitHub Actions"
+	@echo -e "  • $(YELLOW)Nightly$(NC)   - Daily builds from main branch (2 AM UTC)"
+	@echo -e "  • $(RED)Edge$(NC)       - Every push to main branch"
+	@echo ""
+	@echo -e "$(BLUE)Available Commands:$(NC)"
+	@echo -e "  • $(CYAN)make release-check$(NC)         - Verify readiness for release"
+	@echo -e "  • $(CYAN)make release-test$(NC)          - Test GoReleaser configuration"
+	@echo -e "  • $(CYAN)make release-snapshot$(NC)      - Create local snapshot build"
+	@echo -e "  • $(CYAN)make release-tag VERSION=v1.0.0$(NC) - Create and push release tag"
+	@echo -e "  • $(CYAN)make release-draft VERSION=v1.0.0$(NC) - Create GitHub draft release"
+	@echo ""
+	@echo -e "$(BLUE)Release Artifacts:$(NC)"
+	@echo -e "  • $(GREEN)Binaries$(NC)  - Cross-platform executables"
+	@echo -e "  • $(GREEN)Docker$(NC)    - Multi-arch container images"
+	@echo -e "  • $(GREEN)Checksums$(NC) - SHA256 verification files"
+	@echo -e "  • $(GREEN)Archives$(NC)  - Standard & full (with web assets)"
+	@echo ""
+	@echo -e "$(BLUE)Next Steps:$(NC)"
+	@echo -e "  1. Run $(CYAN)make release-check$(NC) to verify readiness"
+	@echo -e "  2. Run $(CYAN)make release-tag VERSION=v1.0.0$(NC) to create a release"
+	@echo -e "  3. GitHub Actions will automatically build and publish"
+	@echo ""
+
+# ------------------------------------------
 # Shortcuts
 # ------------------------------------------
 

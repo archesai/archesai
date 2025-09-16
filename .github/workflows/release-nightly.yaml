@@ -1,0 +1,99 @@
+name: Nightly Release
+
+on:
+  schedule:
+    # Run at 2 AM UTC every day
+    - cron: '0 2 * * *'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+      last_commit: ${{ steps.check.outputs.last_commit }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - id: check
+        run: |
+          # Get the last commit from the last 24 hours
+          LAST_COMMIT=$(git log --since="24 hours ago" --pretty=format:"%H" | head -n 1)
+          if [ -n "$LAST_COMMIT" ]; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "last_commit=$LAST_COMMIT" >> $GITHUB_OUTPUT
+            echo "Found commits in the last 24 hours, will create nightly release"
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "No commits in the last 24 hours, skipping nightly release"
+          fi
+
+  release:
+    needs: check-changes
+    if: needs.check-changes.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup build environment
+        uses: ./.github/actions/setup-build-env
+
+      - name: Build project
+        uses: ./.github/actions/build-project
+        with:
+          test-type: 'short'
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker-setup
+        with:
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create nightly tag
+        id: tag
+        uses: ./.github/actions/create-release-tag
+        with:
+          tag-name: 'nightly'
+          delete-existing: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run GoReleaser (Snapshot)
+        id: goreleaser
+        uses: ./.github/actions/goreleaser-run
+        with:
+          mode: 'snapshot'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: ./.github/actions/create-github-release
+        with:
+          release-type: 'nightly'
+          tag-name: 'nightly'
+          commit-sha: ${{ steps.tag.outputs.commit-sha }}
+          branch: ${{ steps.tag.outputs.branch }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Retag Docker images as nightly
+        uses: ./.github/actions/docker-retag
+        with:
+          source-tag: ${{ steps.goreleaser.outputs.version }}
+          target-tag: 'nightly'
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Nightly release failed. Check logs for details."

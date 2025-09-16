@@ -7,23 +7,80 @@ on:
 
 permissions:
   contents: write
+  packages: write
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: go.mod
+      - name: Setup build environment
+        uses: ./.github/actions/setup-build-env
 
-      - uses: goreleaser/goreleaser-action@v6
+      - name: Build project
+        uses: ./.github/actions/build-project
         with:
-          distribution: goreleaser
-          version: ${{ env.GITHUB_REF_NAME }}
-          args: release --clean
+          test-type: 'full'
+
+      - name: Setup Docker
+        uses: ./.github/actions/docker-setup
+        with:
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          # Extract version from tag (e.g., v1.0.0 -> 1.0.0)
+          VERSION=${GITHUB_REF#refs/tags/}
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "tag_name=$VERSION" >> $GITHUB_OUTPUT
+
+          echo "Stable release version: $VERSION"
+          echo "Commit SHA: $COMMIT_SHA"
+
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        if: ${{ env.GPG_PRIVATE_KEY != '' }}
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: Run GoReleaser
+        id: goreleaser
+        uses: ./.github/actions/goreleaser-run
+        with:
+          mode: 'release'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          gpg-fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}
+
+      - name: Update Docker Repository Description
+        uses: peter-evans/dockerhub-description@v4
+        if: ${{ env.DOCKERHUB_USERNAME != '' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: archesai/archesai
+          short-description: 'AI-powered data processing platform'
+          readme-filepath: ./README.md
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Stable release failed for ${{ steps.version.outputs.version }}. Check logs for details."

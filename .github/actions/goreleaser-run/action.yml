@@ -1,0 +1,78 @@
+name: Run GoReleaser
+description: Execute GoReleaser with configurable options
+
+inputs:
+  mode:
+    description: 'GoReleaser mode: "release", "snapshot", or "build"'
+    required: false
+    default: 'snapshot'
+  args:
+    description: 'Additional GoReleaser arguments'
+    required: false
+    default: '--clean'
+  github-token:
+    description: 'GitHub token for releases'
+    required: true
+  gpg-fingerprint:
+    description: 'GPG fingerprint for signing (optional)'
+    required: false
+    default: ''
+  working-directory:
+    description: 'Working directory for GoReleaser'
+    required: false
+    default: '.'
+
+outputs:
+  version:
+    description: 'Generated version from GoReleaser'
+    value: ${{ steps.version.outputs.version }}
+  artifacts:
+    description: 'Path to build artifacts'
+    value: 'dist'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup GoReleaser arguments
+      id: setup
+      shell: bash
+      run: |
+        case "${{ inputs.mode }}" in
+          "release")
+            echo "args=release ${{ inputs.args }}" >> $GITHUB_OUTPUT
+            ;;
+          "snapshot")
+            echo "args=release --snapshot ${{ inputs.args }}" >> $GITHUB_OUTPUT
+            ;;
+          "build")
+            echo "args=build --snapshot ${{ inputs.args }}" >> $GITHUB_OUTPUT
+            ;;
+          *)
+            echo "Invalid mode: ${{ inputs.mode }}"
+            exit 1
+            ;;
+        esac
+
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v6
+      with:
+        distribution: goreleaser
+        version: latest
+        args: ${{ steps.setup.outputs.args }}
+        workdir: ${{ inputs.working-directory }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        GPG_FINGERPRINT: ${{ inputs.gpg-fingerprint }}
+
+    - name: Extract version information
+      id: version
+      shell: bash
+      run: |
+        if [ -f "dist/metadata.json" ]; then
+          VERSION=$(cat dist/metadata.json | jq -r '.version // "unknown"')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Generated version: $VERSION"
+        else
+          echo "version=unknown" >> $GITHUB_OUTPUT
+          echo "No metadata.json found, version unknown"
+        fi

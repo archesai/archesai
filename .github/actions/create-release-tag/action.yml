@@ -1,0 +1,116 @@
+name: Create Release Tag
+description: Create and manage release tags for different release types
+
+inputs:
+  tag-name:
+    description: 'Name of the tag to create'
+    required: true
+  force-update:
+    description: 'Force update existing tag'
+    required: false
+    default: 'true'
+  delete-existing:
+    description: 'Delete existing tag and release before creating new one'
+    required: false
+    default: 'false'
+  github-token:
+    description: 'GitHub token for operations'
+    required: true
+  skip-if-exists:
+    description: 'Skip tag creation if it already exists (for stable releases)'
+    required: false
+    default: 'false'
+
+outputs:
+  tag-created:
+    description: 'Whether a new tag was created'
+    value: ${{ steps.create-tag.outputs.created }}
+  commit-sha:
+    description: 'Short commit SHA'
+    value: ${{ steps.version-info.outputs.commit_sha }}
+  timestamp:
+    description: 'Creation timestamp'
+    value: ${{ steps.version-info.outputs.timestamp }}
+  branch:
+    description: 'Current branch name'
+    value: ${{ steps.version-info.outputs.branch }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate version information
+      id: version-info
+      shell: bash
+      run: |
+        COMMIT_SHA=$(git rev-parse --short HEAD)
+        TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+
+        echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+        echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+        echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+        echo "Generated version info:"
+        echo "  Commit: $COMMIT_SHA"
+        echo "  Timestamp: $TIMESTAMP"
+        echo "  Branch: $BRANCH_NAME"
+
+    - name: Check if tag exists
+      id: check-tag
+      shell: bash
+      run: |
+        if git rev-parse "${{ inputs.tag-name }}" >/dev/null 2>&1; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+          echo "Tag ${{ inputs.tag-name }} already exists"
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+          echo "Tag ${{ inputs.tag-name }} does not exist"
+        fi
+
+    - name: Delete existing release and tag
+      if: inputs.delete-existing == 'true' && steps.check-tag.outputs.exists == 'true'
+      shell: bash
+      run: |
+        echo "Deleting existing release and tag: ${{ inputs.tag-name }}"
+
+        # Delete GitHub release
+        gh release delete "${{ inputs.tag-name }}" --yes || true
+
+        # Delete remote tag
+        git push --delete origin "${{ inputs.tag-name }}" || true
+
+        # Delete local tag
+        git tag -d "${{ inputs.tag-name }}" || true
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+
+    - name: Create tag
+      id: create-tag
+      shell: bash
+      run: |
+        if [[ "${{ inputs.skip-if-exists }}" == "true" && "${{ steps.check-tag.outputs.exists }}" == "true" ]]; then
+          echo "Skipping tag creation - tag already exists and skip-if-exists is true"
+          echo "created=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        echo "Creating tag: ${{ inputs.tag-name }}"
+
+        if [[ "${{ inputs.force-update }}" == "true" ]]; then
+          # Force create/update tag
+          git tag -f "${{ inputs.tag-name }}"
+          git push origin "${{ inputs.tag-name }}" --force
+        else
+          # Create tag only if it doesn't exist
+          if [[ "${{ steps.check-tag.outputs.exists }}" == "false" ]]; then
+            git tag "${{ inputs.tag-name }}"
+            git push origin "${{ inputs.tag-name }}"
+          else
+            echo "Tag already exists and force-update is false"
+            echo "created=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+        fi
+
+        echo "created=true" >> $GITHUB_OUTPUT
+        echo "Tag ${{ inputs.tag-name }} created successfully"

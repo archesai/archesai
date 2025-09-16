@@ -1,0 +1,202 @@
+name: Create GitHub Release
+description: Create GitHub release with customizable notes for different release types
+
+inputs:
+  release-type:
+    description: 'Type of release: "stable", "nightly", or "edge"'
+    required: true
+  tag-name:
+    description: 'Tag name for the release'
+    required: true
+  version:
+    description: 'Version string'
+    required: false
+    default: ''
+  commit-sha:
+    description: 'Short commit SHA'
+    required: true
+  branch:
+    description: 'Branch name'
+    required: false
+    default: 'main'
+  github-token:
+    description: 'GitHub token for creating release'
+    required: true
+  artifacts-path:
+    description: 'Path to release artifacts'
+    required: false
+    default: 'dist/*'
+  prerelease:
+    description: 'Mark as prerelease'
+    required: false
+    default: 'true'
+
+outputs:
+  release-url:
+    description: 'URL of the created release'
+    value: ${{ steps.create-release.outputs.url }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get commit information
+      id: commit-info
+      shell: bash
+      run: |
+        COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+        COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
+        TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+        echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+        echo "commit_author=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
+        echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+
+    - name: Generate release notes
+      id: notes
+      shell: bash
+      run: |
+        case "${{ inputs.release-type }}" in
+          "stable")
+            cat > release_notes.md << 'EOF'
+        # 🎉 ArchesAI ${{ inputs.tag-name }}
+
+        **Release Date:** ${{ steps.commit-info.outputs.timestamp }}
+        **Commit:** `${{ inputs.commit-sha }}`
+
+        ## What's New
+
+        This is a stable release of ArchesAI with the latest features and bug fixes.
+
+        ## 📦 Installation
+
+        ### Binary Download
+        Choose the appropriate binary for your system from the assets below.
+
+        ### Docker
+        ```bash
+        docker run --rm -it ghcr.io/archesai/archesai:${{ inputs.tag-name }}
+        docker run --rm -it ghcr.io/archesai/archesai:latest
+        ```
+
+        ### Homebrew (coming soon)
+        ```bash
+        brew install archesai/tap/archesai
+        ```
+
+        ## 🔍 Recent Changes
+        EOF
+            git log --since="7 days ago" --pretty=format:"- %s (%an)" >> release_notes.md
+            ;;
+
+          "nightly")
+            cat > release_notes.md << 'EOF'
+        # 🌙 Nightly Build
+
+        **Build Date:** ${{ steps.commit-info.outputs.timestamp }}
+        **Commit:** `${{ inputs.commit-sha }}`
+        **Latest Change:** ${{ steps.commit-info.outputs.commit_msg }} (@${{ steps.commit-info.outputs.commit_author }})
+
+        ## ⚠️ Development Build Warning
+
+        This is an automated nightly build from the main branch. It may contain:
+        - Unstable features
+        - Breaking changes
+        - Experimental functionality
+        - Known bugs
+
+        **Not recommended for production use.**
+
+        ## 📦 Installation
+
+        ### Binary Download
+        Choose the appropriate binary for your system from the assets below.
+
+        ### Docker
+        ```bash
+        docker run --rm -it ghcr.io/archesai/archesai:nightly
+        ```
+
+        ## 🔍 What's Changed Since Yesterday
+        EOF
+            git log --since="24 hours ago" --pretty=format:"- %s (%an)" >> release_notes.md
+            ;;
+
+          "edge")
+            cat > release_notes.md << 'EOF'
+        # ⚡ Edge Build
+
+        **Build Date:** ${{ steps.commit-info.outputs.timestamp }}
+        **Commit:** `${{ inputs.commit-sha }}`
+        **Branch:** `${{ inputs.branch }}`
+        **Latest Change:** ${{ steps.commit-info.outputs.commit_msg }} (@${{ steps.commit-info.outputs.commit_author }})
+
+        ## ⚠️ Bleeding Edge Warning
+
+        This is an automated build from the latest commit on the main branch. It contains:
+        - The absolute latest changes
+        - Potentially unstable features
+        - Untested functionality
+        - May break at any time
+
+        **Only for development and testing purposes.**
+
+        ## 📦 Installation
+
+        ### Binary Download
+        Choose the appropriate binary for your system from the assets below.
+
+        ### Docker
+        ```bash
+        docker run --rm -it ghcr.io/archesai/archesai:edge
+        ```
+
+        ## 🔍 Recent Changes
+        EOF
+            git log -5 --pretty=format:"- %s (%an)" >> release_notes.md
+            ;;
+
+          *)
+            echo "Error: Unknown release type '${{ inputs.release-type }}'"
+            exit 1
+            ;;
+        esac
+
+        echo "Release notes generated for ${{ inputs.release-type }} release"
+
+    - name: Generate release title
+      id: title
+      shell: bash
+      run: |
+        case "${{ inputs.release-type }}" in
+          "stable")
+            echo "title=Release ${{ inputs.tag-name }}" >> $GITHUB_OUTPUT
+            ;;
+          "nightly")
+            echo "title=Nightly Build (${{ steps.commit-info.outputs.timestamp }})" >> $GITHUB_OUTPUT
+            ;;
+          "edge")
+            echo "title=Edge Build (${{ inputs.commit-sha }})" >> $GITHUB_OUTPUT
+            ;;
+        esac
+
+    - name: Create GitHub Release
+      id: create-release
+      shell: bash
+      run: |
+        PRERELEASE_FLAG=""
+        if [[ "${{ inputs.prerelease }}" == "true" ]]; then
+          PRERELEASE_FLAG="--prerelease"
+        fi
+
+        RELEASE_URL=$(gh release create "${{ inputs.tag-name }}" \
+          --title "${{ steps.title.outputs.title }}" \
+          --notes-file release_notes.md \
+          $PRERELEASE_FLAG \
+          --target ${{ inputs.branch }} \
+          ${{ inputs.artifacts-path }})
+
+        echo "url=$RELEASE_URL" >> $GITHUB_OUTPUT
+        echo "Release created: $RELEASE_URL"
+
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}

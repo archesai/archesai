@@ -4,16 +4,19 @@ version: 2
 
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
-    - go generate ./...
+    - make generate
+    - make build-web
 
 env:
   - PACKAGE_PATH=github.com/archesai/archesai/cmd
+  - CGO_ENABLED=0
+
+project_name: archesai
 
 builds:
-  - binary: '{{ .ProjectName }}'
+  - id: archesai
+    binary: '{{ .ProjectName }}'
     main: ./cmd/archesai
     goos:
       - darwin
@@ -25,22 +28,103 @@ builds:
     env:
       - CGO_ENABLED=0
     ldflags:
-      - -s -w -X {{.Env.PACKAGE_PATH}}={{.Version}}
+      - -s -w
+      - -X {{.Env.PACKAGE_PATH}}={{.Version}}
+      - -X main.version={{ .Version }}
+      - -X main.commit={{ .ShortCommit }}
+      - -X main.date={{ .Date }}
+      - -X main.builtBy=goreleaser
 
+# Docker images
+dockers:
+  - image_templates:
+      - 'ghcr.io/archesai/archesai:latest'
+      - 'ghcr.io/archesai/archesai:{{ .Tag }}'
+      - 'ghcr.io/archesai/archesai:v{{ .Major }}'
+      - 'ghcr.io/archesai/archesai:v{{ .Major }}.{{ .Minor }}'
+    dockerfile: deployments/docker/Dockerfile.goreleaser
+    build_flag_templates:
+      - --platform=linux/amd64
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description=AI-powered data processing platform
+      - --label=org.opencontainers.image.url=https://github.com/archesai/archesai
+      - --label=org.opencontainers.image.source=https://github.com/archesai/archesai
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=Proprietary
+    extra_files:
+      - deployments/docker/Dockerfile.goreleaser
+
+  # ARM64 Docker images
+  - image_templates:
+      - 'ghcr.io/archesai/archesai:latest-arm64'
+      - 'ghcr.io/archesai/archesai:{{ .Tag }}-arm64'
+    dockerfile: deployments/docker/Dockerfile.goreleaser
+    build_flag_templates:
+      - --platform=linux/arm64
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description=AI-powered data processing platform
+      - --label=org.opencontainers.image.url=https://github.com/archesai/archesai
+      - --label=org.opencontainers.image.source=https://github.com/archesai/archesai
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=Proprietary
+    goarch: arm64
+    extra_files:
+      - deployments/docker/Dockerfile.goreleaser
+
+# Multi-arch Docker manifest
+docker_manifests:
+  - name_template: 'ghcr.io/archesai/archesai:latest'
+    image_templates:
+      - 'ghcr.io/archesai/archesai:latest'
+      - 'ghcr.io/archesai/archesai:latest-arm64'
+  - name_template: 'ghcr.io/archesai/archesai:{{ .Tag }}'
+    image_templates:
+      - 'ghcr.io/archesai/archesai:{{ .Tag }}'
+      - 'ghcr.io/archesai/archesai:{{ .Tag }}-arm64'
+
+# Release configuration
 release:
   prerelease: auto
-  footer: >-
+  mode: replace
+  header: |
+    ## ArchesAI {{ .Tag }}
+
+    Welcome to this new release of ArchesAI! 🎉
+  footer: |
+    ## Installation
+
+    ### Binary Installation
+    ```bash
+    # Linux/macOS
+    curl -sSL https://github.com/archesai/archesai/releases/latest/download/archesai_$(uname -s)_$(uname -m).tar.gz | tar xz
+    sudo mv archesai /usr/local/bin/
+    ```
+
+    ### Docker
+    ```bash
+    docker run --rm -it ghcr.io/archesai/archesai:{{ .Tag }}
+    ```
+
+    ### Homebrew (coming soon)
+    ```bash
+    brew install archesai/tap/archesai
+    ```
 
     ---
 
-    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+    **Full Changelog**: https://github.com/archesai/archesai/compare/{{ .PreviousTag }}...{{ .Tag }}
 
 universal_binaries:
   - replace: true
 
+# Archive configuration
 archives:
-  - formats: [tar.gz]
-    # this name template makes the OS and Arch compatible with the results of `uname`.
+  - id: default
+    builds: [archesai]
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -48,22 +132,94 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
     format_overrides:
       - goos: windows
-        formats: [zip]
-    builds_info:
-      group: root
-      owner: root
+        format: zip
     files:
       - README.md
+      - LICENSE
 
+  # Full archive with web assets
+  - id: full
+    builds: [archesai]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}_full
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+      - docs/**/*
+      - web/platform/dist/**/*
+
+# Snapshots for nightly/edge builds
+snapshot:
+  version_template: '{{ .Branch }}-{{ .ShortCommit }}'
+
+# Changelog configuration
 changelog:
   sort: asc
+  use: github
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+      - '^ci:'
+      - '^build:'
+      - '^chore:'
+      - 'merge conflict'
+      - Merge pull request
+      - Merge remote-tracking branch
+      - Merge branch
+  groups:
+    - title: Breaking Changes
+      regexp: "^.*feat!(\\(.+\\))??!?:.+$"
+      order: 0
+    - title: New Features
+      regexp: "^.*feat(\\(.+\\))??!?:.+$"
+      order: 1
+    - title: Bug Fixes
+      regexp: "^.*fix(\\(.+\\))??!?:.+$"
+      order: 2
+    - title: Performance Improvements
+      regexp: "^.*perf(\\(.+\\))??!?:.+$"
+      order: 3
+    - title: Refactors
+      regexp: "^.*refactor(\\(.+\\))??!?:.+$"
+      order: 4
+    - title: Documentation
+      regexp: "^.*docs(\\(.+\\))??!?:.+$"
+      order: 5
+    - title: Other Changes
+      order: 999
 
+# Checksum
 checksum:
   name_template: 'checksums.txt'
+  algorithm: sha256
+
+# Sign artifacts
+signs:
+  - artifacts: checksum
+    args:
+      - '--batch'
+      - '--local-user'
+      - '{{ .Env.GPG_FINGERPRINT }}'
+      - '--output'
+      - '${signature}'
+      - '--detach-sign'
+      - '${artifact}'
+# Package managers (future)
+# brews:
+#   - tap:
+#       owner: archesai
+#       name: homebrew-tap
+#     homepage: https://archesai.com
+#     description: AI-powered data processing platform
+#     license: Proprietary
