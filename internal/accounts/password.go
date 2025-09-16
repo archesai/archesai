@@ -8,11 +8,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var (
-	// ErrWeakPassword is returned when a password doesn't meet strength requirements
-	ErrWeakPassword = errors.New("password does not meet strength requirements")
-)
-
 // PasswordValidator validates password strength
 type PasswordValidator struct {
 	MinLength      int
@@ -20,6 +15,17 @@ type PasswordValidator struct {
 	RequireLower   bool
 	RequireDigit   bool
 	RequireSpecial bool
+}
+
+// NewPasswordValidator creates a new PasswordValidator with given settings
+func NewPasswordValidator() *PasswordValidator {
+	return &PasswordValidator{
+		MinLength:      8,
+		RequireUpper:   true,
+		RequireLower:   true,
+		RequireDigit:   true,
+		RequireSpecial: false, // Keep this optional for better UX
+	}
 }
 
 // DefaultPasswordValidator returns a password validator with default settings

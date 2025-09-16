@@ -58,14 +58,8 @@ const (
 	goTypePtrString   = "*string"
 	goTypePtrUUID     = "*uuid.UUID"
 	goTypePtrTime     = "*time.Time"
-	goTypePtrInt32    = "*int32"
-	goTypePtrFloat64  = "*float64"
-	goTypePtrBool     = "*bool"
 	goTypeUUIDLiteral = "UUID"
 )
-
-// Config is an alias to the generated CodegenConfig type for backward compatibility
-type Config = CodegenConfig
 
 // RunWithConfig executes the unified code generator with the given configuration.
 func RunWithConfig(config *CodegenConfig) error {
@@ -215,7 +209,7 @@ func loadTemplates() (map[string]*template.Template, error) {
 }
 
 // filterSchemas filters schemas based on domain configuration and x-codegen presence.
-func filterSchemas(config *Config, allSchemas map[string]*ParsedSchema) map[string]*ParsedSchema {
+func filterSchemas(config *CodegenConfig, allSchemas map[string]*ParsedSchema) map[string]*ParsedSchema {
 	filtered := make(map[string]*ParsedSchema)
 
 	for name, s := range allSchemas {
@@ -234,7 +228,7 @@ func filterSchemas(config *Config, allSchemas map[string]*ParsedSchema) map[stri
 }
 
 // matchesDomainFilter checks if a schema matches the configured domain filters.
-func matchesDomainFilter(config *Config, s *ParsedSchema) bool {
+func matchesDomainFilter(config *CodegenConfig, s *ParsedSchema) bool {
 	// If no domain config, include all
 	if len(config.Domains) == 0 {
 		return true
@@ -261,12 +255,12 @@ func matchesDomainFilter(config *Config, s *ParsedSchema) bool {
 }
 
 // loadConfig loads the codegen configuration from a YAML file.
-func loadConfig(path string) (*Config, error) {
+func loadConfig(path string) (*CodegenConfig, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		// Try default locations
 		defaultPaths := []string{
-			"archesai.codegen.yaml",
+			".codegen.archesai.yaml",
 			".archesai.codegen.yaml",
 			"codegen.yaml",
 			"codegen.yml",
@@ -285,7 +279,7 @@ func loadConfig(path string) (*Config, error) {
 		}
 	}
 
-	var config Config
+	var config CodegenConfig
 	if err := yaml.Unmarshal(data, &config); err != nil {
 		return nil, fmt.Errorf("failed to parse config: %w", err)
 	}
@@ -301,7 +295,7 @@ func loadConfig(path string) (*Config, error) {
 }
 
 // runGeneratorWithPaths runs generators using path-based configuration
-func runGeneratorWithPaths(generatorType string, config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, filterFunc func(*ParsedSchema) bool, log *slog.Logger) error {
+func runGeneratorWithPaths(generatorType string, config *CodegenConfig, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, filterFunc func(*ParsedSchema) bool, log *slog.Logger) error {
 	log.Debug("Running generator", slog.String("type", generatorType))
 
 	// Group schemas by domain
@@ -366,7 +360,7 @@ func sortSchemasByName(schemas []*ParsedSchema) {
 }
 
 // getGeneratorConfig returns template data and output files for a generator type
-func getGeneratorConfig(generatorType string, config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+func getGeneratorConfig(generatorType string, config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
 	switch generatorType {
 	case "repository":
 		return getRepositoryConfig(config, domain, schemas)
@@ -384,7 +378,7 @@ func getGeneratorConfig(generatorType string, config *Config, domain string, sch
 }
 
 // getRepositoryConfig returns repository generator configuration
-func getRepositoryConfig(config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+func getRepositoryConfig(config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
 	if config.Generators.Repository.Interface == "" && config.Generators.Repository.Postgres == "" && config.Generators.Repository.Sqlite == "" {
 		return nil, nil
 	}
@@ -409,7 +403,7 @@ func getRepositoryConfig(config *Config, domain string, schemas []*ParsedSchema)
 }
 
 // getCacheConfig returns cache generator configuration
-func getCacheConfig(config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+func getCacheConfig(config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
 	if config.Generators.Cache.Interface == "" && config.Generators.Cache.Memory == "" && config.Generators.Cache.Redis == "" {
 		return nil, nil
 	}
@@ -434,7 +428,7 @@ func getCacheConfig(config *Config, domain string, schemas []*ParsedSchema) (int
 }
 
 // getEventsConfig returns events generator configuration
-func getEventsConfig(config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+func getEventsConfig(config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
 	if config.Generators.Events.Interface == "" && config.Generators.Events.Redis == "" && config.Generators.Events.Nats == "" {
 		return nil, nil
 	}
@@ -459,7 +453,7 @@ func getEventsConfig(config *Config, domain string, schemas []*ParsedSchema) (in
 }
 
 // getHandlerConfig returns handler generator configuration (new OpenAPI-style)
-func getHandlerConfig(config *Config, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+func getHandlerConfig(config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
 	// Check if handler generation is configured
 	if config.Generators.Handlers == "" {
 		return nil, nil
@@ -961,7 +955,7 @@ func prepareEventsData(domain string, schemas []*ParsedSchema) interface{} {
 }
 
 // generateSQL generates SQL schema and query files from OpenAPI schemas.
-func generateSQL(config *Config, schemas map[string]*ParsedSchema, fileWriter *FileWriter, log *slog.Logger) error {
+func generateSQL(config *CodegenConfig, schemas map[string]*ParsedSchema, fileWriter *FileWriter, log *slog.Logger) error {
 	if config.Generators.SQL.SchemaDir == "" && config.Generators.SQL.QueryDir == "" {
 		return nil
 	}
@@ -1037,19 +1031,19 @@ func generateSQL(config *Config, schemas map[string]*ParsedSchema, fileWriter *F
 }
 
 // generateRepository generates repository interfaces and implementations.
-func generateRepository(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+func generateRepository(config *CodegenConfig, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
 	return runGeneratorWithPaths("repository", config, schemas, templates, fileWriter, NeedsRepository, log)
 }
 
 // Cache generation removed - using generic cache instead
 
 // generateEvents generates event interfaces and implementations.
-func generateEvents(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+func generateEvents(config *CodegenConfig, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
 	return runGeneratorWithPaths("events", config, schemas, templates, fileWriter, NeedsEvents, log)
 }
 
 // generateService generates service interfaces and implementations.
-func generateService(config *Config, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+func generateService(config *CodegenConfig, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
 	log.Debug("Running service generator")
 
 	// Generate individual service files per schema
@@ -1099,7 +1093,7 @@ func generateService(config *Config, schemas map[string]*ParsedSchema, templates
 }
 
 // generateDefaults generates configuration defaults.
-func generateDefaults(config *Config, _ map[string]*ParsedSchema, _ map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+func generateDefaults(config *CodegenConfig, _ map[string]*ParsedSchema, _ map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
 	log.Debug("Running defaults generator")
 
 	// Create parser
