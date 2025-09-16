@@ -432,7 +432,7 @@ clean-go-deps: ## Clean Go module cache
 	@echo -e "$(GREEN)✓ Go module cache cleaned!$(NC)"
 
 .PHONY: prepare-docs
-prepare-docs: ## Copy markdown docs to web/docs/docs
+prepare-docs: bundle-openapi ## Copy markdown docs to web/docs/docs
 	@echo -e "$(YELLOW)▶ Copying markdown docs to web/docs...$(NC)"
 	@cp ./api/openapi.bundled.yaml ./web/docs/apis/openapi.yaml
 	@cp -r ./docs/** ./web/docs/pages/documentation
