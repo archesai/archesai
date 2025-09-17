@@ -5,7 +5,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "extends": "../typescript/src/base.json",
+  "extends": "../../tools/tsconfig/src/base.json",
   "files": [],
   "references": [
     {

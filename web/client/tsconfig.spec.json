@@ -1,5 +1,8 @@
 {
-  "extends": ["../typescript/src/base.json", "../typescript/src/spec.json"],
+  "extends": [
+    "../../tools/tsconfig/src/base.json",
+    "../../tools/tsconfig/src/spec.json"
+  ],
   "references": [
     {
       "path": "./tsconfig.lib.json"
