@@ -35,17 +35,23 @@ runs:
 
         # Configure GPG for non-interactive signing
         mkdir -p ~/.gnupg
-        echo "allow-preset-passphrase" >> ~/.gnupg/gpg-agent.conf
         echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
         echo "default-cache-ttl 7200" >> ~/.gnupg/gpg-agent.conf
         echo "max-cache-ttl 31536000" >> ~/.gnupg/gpg-agent.conf
-        gpg-connect-agent RELOADAGENT /bye
 
-        # Preset the passphrase for GoReleaser to use
-        KEYGRIP=$(gpg --with-keygrip --list-secret-keys "$FINGERPRINT" | grep Keygrip | head -1 | awk '{print $3}')
-        echo "${{ inputs.gpg-passphrase }}" | gpg-preset-passphrase --preset "$KEYGRIP"
+        # Kill any existing gpg-agent and restart it
+        gpgconf --kill gpg-agent
+        gpg-agent --daemon --allow-loopback-pinentry
 
-        # Test that signing works
+        # Configure GPG to use loopback for pinentry
+        echo "use-agent" >> ~/.gnupg/gpg.conf
+        echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+
+        # Export passphrase for GoReleaser to use
+        export GORELEASER_GPG_PASSPHRASE="${{ inputs.gpg-passphrase }}"
+        echo "GORELEASER_GPG_PASSPHRASE=${{ inputs.gpg-passphrase }}" >> $GITHUB_ENV
+
+        # Test that signing works with passphrase
         echo "Test" | gpg --batch --yes --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --armor --sign > /dev/null
         echo "GPG signing test successful"
       env:
