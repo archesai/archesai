@@ -10,7 +10,7 @@ api:
   enabled: true
   replicas: 1
   cors:
-    origins: https://platform.archesai.dev
+    origins: https://platform.archesai.com
   docs: true
   email:
     enabled: false

@@ -4,5 +4,9 @@
     "../../tools/tsconfig/src/react.json",
     "../../tools/tsconfig/src/lib.json"
   ],
-  "references": []
+  "references": [
+    {
+      "path": "../ui/tsconfig.lib.json"
+    }
+  ]
 }

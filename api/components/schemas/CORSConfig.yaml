@@ -5,7 +5,7 @@ properties:
   origins:
     description: A comma-separated list of allowed origins for CORS requests
     type: string
-    default: https://platform.archesai.dev
+    default: https://platform.archesai.com
     minLength: 1
     example: example-string
 required:

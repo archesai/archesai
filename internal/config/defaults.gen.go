@@ -8,7 +8,7 @@ func GetDefaultConfig() *ArchesConfig {
 	return &ArchesConfig{
 		API: APIConfig{
 			Cors: CORSConfig{
-				Origins: "https://platform.archesai.dev",
+				Origins: "https://platform.archesai.com",
 			},
 			Docs: true,
 			Email: EmailConfig{

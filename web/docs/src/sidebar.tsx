@@ -1,3 +1,6 @@
+/// <reference types="vite/client" />
+/// <reference types="vite-plugin-svgr/client" />
+
 import type { Navigation } from "zudoku";
 
 /**
@@ -6,6 +9,14 @@ import type { Navigation } from "zudoku";
  */
 
 export const docs: Navigation = [
+  {
+    display: "hide",
+    element: <></>,
+    label: "Landing Page",
+    layout: "none",
+    path: "/landing",
+    type: "custom-page",
+  },
   {
     items: [
       {
@@ -131,5 +142,12 @@ export const docs: Navigation = [
     label: "API Reference",
     to: "/docs/api",
     type: "link",
+  },
+  {
+    // element: <ThemePlayground />,
+    element: <></>,
+    label: "Themes",
+    path: "/docs/theme-playground",
+    type: "custom-page",
   },
 ];

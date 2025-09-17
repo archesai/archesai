@@ -43,6 +43,13 @@
       "react": "recommended"
     },
     "rules": {
+      "correctness": {
+        "noUnusedImports": {
+          "fix": "safe",
+          "level": "error",
+          "options": {}
+        }
+      },
       "nursery": {
         "useSortedClasses": {
           "fix": "safe",

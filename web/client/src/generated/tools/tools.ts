@@ -5,7 +5,11 @@
  * The Arches AI API
  * OpenAPI spec version: v0.0.0
  */
-
+import {
+  useMutation,
+  useQuery,
+  useSuspenseQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,10 +24,9 @@ import type {
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseQueryOptions,
-  UseSuspenseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { customFetch } from "../../fetcher";
+  UseSuspenseQueryResult
+} from '@tanstack/react-query';
+
 import type {
   BadRequestResponse,
   CreateTool201,
@@ -36,852 +39,543 @@ import type {
   UnauthorizedResponse,
   UpdateTool200,
   UpdateToolBody,
-  Uuid,
-} from "../orval.schemas";
+  Uuid
+} from '../orval.schemas';
+
+import { customFetch } from '../../fetcher';
+
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
 
 /**
  * Create a tool
  * @summary Create a tool
  */
 export const getCreateToolUrl = () => {
-  return `/tools`;
-};
 
-export const createTool = async (
-  createToolBody: CreateToolBody,
-  options?: RequestInit,
-): Promise<CreateTool201> => {
-  return customFetch<CreateTool201>(getCreateToolUrl(), {
+
+  
+
+  return `/tools`
+}
+
+export const createTool = async (createToolBody: CreateToolBody, options?: RequestInit): Promise<CreateTool201> => {
+  
+  return customFetch<CreateTool201>(getCreateToolUrl(),
+  {      
     ...options,
-    body: JSON.stringify(createToolBody),
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    method: "POST",
-  });
-};
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createToolBody,)
+  }
+);}
 
-export const getCreateToolMutationOptions = <
-  TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createTool>>,
-    TError,
-    { data: CreateToolBody },
-    TContext
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof createTool>>,
-  TError,
-  { data: CreateToolBody },
-  TContext
-> => {
-  const mutationKey = ["createTool"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createTool>>,
-    { data: CreateToolBody }
-  > = (props) => {
-    const { data } = props ?? {};
 
-    return createTool(data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getCreateToolMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createTool>>, TError,{data: CreateToolBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createTool>>, TError,{data: CreateToolBody}, TContext> => {
 
-export type CreateToolMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createTool>>
->;
-export type CreateToolMutationBody = CreateToolBody;
-export type CreateToolMutationError = BadRequestResponse | UnauthorizedResponse;
+const mutationKey = ['createTool'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-/**
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createTool>>, {data: CreateToolBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createTool(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateToolMutationResult = NonNullable<Awaited<ReturnType<typeof createTool>>>
+    export type CreateToolMutationBody = CreateToolBody
+    export type CreateToolMutationError = BadRequestResponse | UnauthorizedResponse
+
+    /**
  * @summary Create a tool
  */
-export const useCreateTool = <
-  TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createTool>>,
-      TError,
-      { data: CreateToolBody },
-      TContext
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof createTool>>,
-  TError,
-  { data: CreateToolBody },
-  TContext
-> => {
-  const mutationOptions = getCreateToolMutationOptions(options);
+export const useCreateTool = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createTool>>, TError,{data: CreateToolBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createTool>>,
+        TError,
+        {data: CreateToolBody},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getCreateToolMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * List tools
  * @summary List tools
  */
-export const getListToolsUrl = (params?: ListToolsParams) => {
+export const getListToolsUrl = (params?: ListToolsParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
     const explodeParameters = ["sort"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
-      value.forEach((v) =>
-        normalizedParams.append(key, v === null ? "null" : v.toString()),
-      );
+      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
       return;
     }
-
+      
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? "null" : value.toString());
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0
-    ? `/tools?${stringifiedParams}`
-    : `/tools`;
-};
+  return stringifiedParams.length > 0 ? `/tools?${stringifiedParams}` : `/tools`
+}
 
-export const listTools = async (
-  params?: ListToolsParams,
-  options?: RequestInit,
-): Promise<ListTools200> => {
-  return customFetch<ListTools200>(getListToolsUrl(params), {
+export const listTools = async (params?: ListToolsParams, options?: RequestInit): Promise<ListTools200> => {
+  
+  return customFetch<ListTools200>(getListToolsUrl(params),
+  {      
     ...options,
-    method: "GET",
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
 
-export const getListToolsQueryKey = (params?: ListToolsParams) => {
-  return [`/tools`, ...(params ? [params] : [])] as const;
-};
 
-export const getListToolsQueryOptions = <
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: ListToolsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
+
+export const getListToolsQueryKey = (params?: ListToolsParams,) => {
+    return [`/tools`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getListToolsQueryOptions = <TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getListToolsQueryKey(params);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof listTools>>> = ({
-    signal,
-  }) => listTools(params, { signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getListToolsQueryKey(params);
 
-  return { queryFn, queryKey, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof listTools>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type ListToolsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof listTools>>
->;
-export type ListToolsQueryError = BadRequestResponse | UnauthorizedResponse;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listTools>>> = ({ signal }) => listTools(params, { signal, ...requestOptions });
 
-export function useListTools<
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params: undefined | ListToolsParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListToolsQueryResult = NonNullable<Awaited<ReturnType<typeof listTools>>>
+export type ListToolsQueryError = BadRequestResponse | UnauthorizedResponse
+
+
+export function useListTools<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListToolsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listTools>>,
           TError,
           Awaited<ReturnType<typeof listTools>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useListTools<
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: ListToolsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListTools<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listTools>>,
           TError,
           Awaited<ReturnType<typeof listTools>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useListTools<
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: ListToolsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListTools<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List tools
  */
 
-export function useListTools<
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: ListToolsParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getListToolsQueryOptions(params, options);
+export function useListTools<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getListToolsQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
-export const getListToolsSuspenseQueryOptions = <
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: ListToolsParams,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof listTools>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
+
+
+export const getListToolsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getListToolsQueryKey(params);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof listTools>>> = ({
-    signal,
-  }) => listTools(params, { signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getListToolsQueryKey(params);
 
-  return { queryFn, queryKey, ...queryOptions } as UseSuspenseQueryOptions<
-    Awaited<ReturnType<typeof listTools>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type ListToolsSuspenseQueryResult = NonNullable<
-  Awaited<ReturnType<typeof listTools>>
->;
-export type ListToolsSuspenseQueryError =
-  | BadRequestResponse
-  | UnauthorizedResponse;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listTools>>> = ({ signal }) => listTools(params, { signal, ...requestOptions });
 
-export function useListToolsSuspense<
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params: undefined | ListToolsParams,
-  options: {
-    query: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof listTools>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useListToolsSuspense<
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: ListToolsParams,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof listTools>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useListToolsSuspense<
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: ListToolsParams,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof listTools>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListToolsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listTools>>>
+export type ListToolsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
+
+
+export function useListToolsSuspense<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListToolsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListToolsSuspense<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListToolsSuspense<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List tools
  */
 
-export function useListToolsSuspense<
-  TData = Awaited<ReturnType<typeof listTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse,
->(
-  params?: ListToolsParams,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof listTools>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getListToolsSuspenseQueryOptions(params, options);
+export function useListToolsSuspense<TData = Awaited<ReturnType<typeof listTools>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListToolsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listTools>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useSuspenseQuery(
-    queryOptions,
-    queryClient,
-  ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getListToolsSuspenseQueryOptions(params,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
 
 /**
  * Delete a tool
  * @summary Delete a tool
  */
-export const getDeleteToolUrl = (id: Uuid | undefined | null) => {
-  return `/tools/${id}`;
-};
+export const getDeleteToolUrl = (id: Uuid | undefined | null,) => {
 
-export const deleteTool = async (
-  id: Uuid | undefined | null,
-  options?: RequestInit,
-): Promise<DeleteTool200> => {
-  return customFetch<DeleteTool200>(getDeleteToolUrl(id), {
+
+  
+
+  return `/tools/${id}`
+}
+
+export const deleteTool = async (id: Uuid | undefined | null, options?: RequestInit): Promise<DeleteTool200> => {
+  
+  return customFetch<DeleteTool200>(getDeleteToolUrl(id),
+  {      
     ...options,
-    method: "DELETE",
-  });
-};
+    method: 'DELETE'
+    
+    
+  }
+);}
 
-export const getDeleteToolMutationOptions = <
-  TError = NotFoundResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteTool>>,
-    TError,
-    { id: Uuid | undefined | null },
-    TContext
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteTool>>,
-  TError,
-  { id: Uuid | undefined | null },
-  TContext
-> => {
-  const mutationKey = ["deleteTool"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteTool>>,
-    { id: Uuid | undefined | null }
-  > = (props) => {
-    const { id } = props ?? {};
 
-    return deleteTool(id, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getDeleteToolMutationOptions = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTool>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteTool>>, TError,{id: Uuid | undefined | null}, TContext> => {
 
-export type DeleteToolMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteTool>>
->;
+const mutationKey = ['deleteTool'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-export type DeleteToolMutationError = NotFoundResponse;
+      
 
-/**
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteTool>>, {id: Uuid | undefined | null}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteTool(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteToolMutationResult = NonNullable<Awaited<ReturnType<typeof deleteTool>>>
+    
+    export type DeleteToolMutationError = NotFoundResponse
+
+    /**
  * @summary Delete a tool
  */
-export const useDeleteTool = <TError = NotFoundResponse, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteTool>>,
-      TError,
-      { id: Uuid | undefined | null },
-      TContext
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof deleteTool>>,
-  TError,
-  { id: Uuid | undefined | null },
-  TContext
-> => {
-  const mutationOptions = getDeleteToolMutationOptions(options);
+export const useDeleteTool = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTool>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteTool>>,
+        TError,
+        {id: Uuid | undefined | null},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
-/**
+      const mutationOptions = getDeleteToolMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Find a tool
  * @summary Find a tool
  */
-export const getGetToolUrl = (id: Uuid | undefined | null) => {
-  return `/tools/${id}`;
-};
+export const getGetToolUrl = (id: Uuid | undefined | null,) => {
 
-export const getTool = async (
-  id: Uuid | undefined | null,
-  options?: RequestInit,
-): Promise<GetTool200> => {
-  return customFetch<GetTool200>(getGetToolUrl(id), {
+
+  
+
+  return `/tools/${id}`
+}
+
+export const getTool = async (id: Uuid | undefined | null, options?: RequestInit): Promise<GetTool200> => {
+  
+  return customFetch<GetTool200>(getGetToolUrl(id),
+  {      
     ...options,
-    method: "GET",
-  });
-};
+    method: 'GET'
+    
+    
+  }
+);}
 
-export const getGetToolQueryKey = (id?: Uuid | undefined | null) => {
-  return [`/tools/${id}`] as const;
-};
 
-export const getGetToolQueryOptions = <
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
+
+export const getGetToolQueryKey = (id?: Uuid | undefined | null,) => {
+    return [`/tools/${id}`] as const;
+    }
+
+    
+export const getGetToolQueryOptions = <TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetToolQueryKey(id);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getTool>>> = ({
-    signal,
-  }) => getTool(id, { signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getGetToolQueryKey(id);
 
-  return {
-    enabled: !!id,
-    queryFn,
-    queryKey,
-    ...queryOptions,
-  } as UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
-};
+  
 
-export type GetToolQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getTool>>
->;
-export type GetToolQueryError = NotFoundResponse;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTool>>> = ({ signal }) => getTool(id, { signal, ...requestOptions });
 
-export function useGetTool<
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>
-    > &
-      Pick<
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetToolQueryResult = NonNullable<Awaited<ReturnType<typeof getTool>>>
+export type GetToolQueryError = NotFoundResponse
+
+
+export function useGetTool<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: Uuid | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTool>>,
           TError,
           Awaited<ReturnType<typeof getTool>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetTool<
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>
-    > &
-      Pick<
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTool<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTool>>,
           TError,
           Awaited<ReturnType<typeof getTool>>
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetTool<
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTool<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find a tool
  */
 
-export function useGetTool<
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetToolQueryOptions(id, options);
+export function useGetTool<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetToolQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
 
-export const getGetToolSuspenseQueryOptions = <
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getTool>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
+
+
+export const getGetToolSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetToolQueryKey(id);
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getTool>>> = ({
-    signal,
-  }) => getTool(id, { signal, ...requestOptions });
+  const queryKey =  queryOptions?.queryKey ?? getGetToolQueryKey(id);
 
-  return { queryFn, queryKey, ...queryOptions } as UseSuspenseQueryOptions<
-    Awaited<ReturnType<typeof getTool>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  
 
-export type GetToolSuspenseQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getTool>>
->;
-export type GetToolSuspenseQueryError = NotFoundResponse;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTool>>> = ({ signal }) => getTool(id, { signal, ...requestOptions });
 
-export function useGetToolSuspense<
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options: {
-    query: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getTool>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetToolSuspense<
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getTool>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetToolSuspense<
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getTool>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetToolSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getTool>>>
+export type GetToolSuspenseQueryError = NotFoundResponse
+
+
+export function useGetToolSuspense<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: Uuid | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetToolSuspense<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetToolSuspense<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Find a tool
  */
 
-export function useGetToolSuspense<
-  TData = Awaited<ReturnType<typeof getTool>>,
-  TError = NotFoundResponse,
->(
-  id: Uuid | undefined | null,
-  options?: {
-    query?: Partial<
-      UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getTool>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetToolSuspenseQueryOptions(id, options);
+export function useGetToolSuspense<TData = Awaited<ReturnType<typeof getTool>>, TError = NotFoundResponse>(
+ id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getTool>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useSuspenseQuery(
-    queryOptions,
-    queryClient,
-  ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>;
-  };
+  const queryOptions = getGetToolSuspenseQueryOptions(id,options)
 
-  query.queryKey = queryOptions.queryKey;
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
 
   return query;
 }
+
+
 
 /**
  * Update a tool
  * @summary Update a tool
  */
-export const getUpdateToolUrl = (id: Uuid | undefined | null) => {
-  return `/tools/${id}`;
-};
+export const getUpdateToolUrl = (id: Uuid | undefined | null,) => {
 
-export const updateTool = async (
-  id: Uuid | undefined | null,
-  updateToolBody: UpdateToolBody,
-  options?: RequestInit,
-): Promise<UpdateTool200> => {
-  return customFetch<UpdateTool200>(getUpdateToolUrl(id), {
+
+  
+
+  return `/tools/${id}`
+}
+
+export const updateTool = async (id: Uuid | undefined | null,
+    updateToolBody: UpdateToolBody, options?: RequestInit): Promise<UpdateTool200> => {
+  
+  return customFetch<UpdateTool200>(getUpdateToolUrl(id),
+  {      
     ...options,
-    body: JSON.stringify(updateToolBody),
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    method: "PATCH",
-  });
-};
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateToolBody,)
+  }
+);}
 
-export const getUpdateToolMutationOptions = <
-  TError = NotFoundResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateTool>>,
-    TError,
-    { id: Uuid | undefined | null; data: UpdateToolBody },
-    TContext
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof updateTool>>,
-  TError,
-  { id: Uuid | undefined | null; data: UpdateToolBody },
-  TContext
-> => {
-  const mutationKey = ["updateTool"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateTool>>,
-    { id: Uuid | undefined | null; data: UpdateToolBody }
-  > = (props) => {
-    const { id, data } = props ?? {};
 
-    return updateTool(id, data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getUpdateToolMutationOptions = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateTool>>, TError,{id: Uuid | undefined | null;data: UpdateToolBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateTool>>, TError,{id: Uuid | undefined | null;data: UpdateToolBody}, TContext> => {
 
-export type UpdateToolMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateTool>>
->;
-export type UpdateToolMutationBody = UpdateToolBody;
-export type UpdateToolMutationError = NotFoundResponse;
+const mutationKey = ['updateTool'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-/**
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateTool>>, {id: Uuid | undefined | null;data: UpdateToolBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateTool(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateToolMutationResult = NonNullable<Awaited<ReturnType<typeof updateTool>>>
+    export type UpdateToolMutationBody = UpdateToolBody
+    export type UpdateToolMutationError = NotFoundResponse
+
+    /**
  * @summary Update a tool
  */
-export const useUpdateTool = <TError = NotFoundResponse, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateTool>>,
-      TError,
-      { id: Uuid | undefined | null; data: UpdateToolBody },
-      TContext
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof updateTool>>,
-  TError,
-  { id: Uuid | undefined | null; data: UpdateToolBody },
-  TContext
-> => {
-  const mutationOptions = getUpdateToolMutationOptions(options);
+export const useUpdateTool = <TError = NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateTool>>, TError,{id: Uuid | undefined | null;data: UpdateToolBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateTool>>,
+        TError,
+        {id: Uuid | undefined | null;data: UpdateToolBody},
+        TContext
+      > => {
 
-  return useMutation(mutationOptions, queryClient);
-};
+      const mutationOptions = getUpdateToolMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    

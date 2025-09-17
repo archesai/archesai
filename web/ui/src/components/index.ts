@@ -3,7 +3,9 @@
 export * from "./custom/arches-logo";
 export * from "./custom/artifact-viewer";
 export * from "./custom/delete-items";
+export * from "./custom/discord-icon";
 export * from "./custom/generic-form";
+export * from "./custom/github-icon";
 // Custom Components
 export * from "./custom/Introduction";
 export * from "./custom/icons";

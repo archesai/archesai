@@ -18,11 +18,11 @@ export const Route = createFileRoute("/_app")({
 
 function AppLayout(): JSX.Element {
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={false}>
       <AppSidebarContainer siteRoutes={siteRoutes} />
-      <SidebarInset className="flex h-screen flex-col">
+      <SidebarInset>
         <PageHeaderContainer siteRoutes={siteRoutes} />
-        <main className="flex-1 overflow-auto p-4">
+        <main className="flex-1 p-4">
           <Outlet />
         </main>
       </SidebarInset>

@@ -13,7 +13,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRouteImport } from './app/__root'
 import { Route as AuthRouteRouteImport } from './app/auth/route'
 import { Route as AppRouteRouteImport } from './app/_app/route'
-import { Route as LandingIndexRouteImport } from './app/landing/index'
 import { Route as AppIndexRouteImport } from './app/_app/index'
 import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
@@ -41,11 +40,6 @@ const AuthRouteRoute = AuthRouteRouteImport.update({
 } as any)
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LandingIndexRoute = LandingIndexRouteImport.update({
-  id: '/landing/',
-  path: '/landing/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -138,7 +132,6 @@ const AppArtifactsArtifactIDIndexRoute =
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
-  '/landing': typeof LandingIndexRoute
   '/artifacts': typeof AppArtifactsIndexRoute
   '/labels': typeof AppLabelsIndexRoute
   '/organization': typeof AppOrganizationIndexRoute
@@ -158,7 +151,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
-  '/landing': typeof LandingIndexRoute
   '/artifacts': typeof AppArtifactsIndexRoute
   '/labels': typeof AppLabelsIndexRoute
   '/organization': typeof AppOrganizationIndexRoute
@@ -180,7 +172,6 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/_app/': typeof AppIndexRoute
-  '/landing/': typeof LandingIndexRoute
   '/_app/artifacts/': typeof AppArtifactsIndexRoute
   '/_app/labels/': typeof AppLabelsIndexRoute
   '/_app/organization/': typeof AppOrganizationIndexRoute
@@ -202,7 +193,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/auth'
     | '/'
-    | '/landing'
     | '/artifacts'
     | '/labels'
     | '/organization'
@@ -222,7 +212,6 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/'
-    | '/landing'
     | '/artifacts'
     | '/labels'
     | '/organization'
@@ -243,7 +232,6 @@ export interface FileRouteTypes {
     | '/_app'
     | '/auth'
     | '/_app/'
-    | '/landing/'
     | '/_app/artifacts/'
     | '/_app/labels/'
     | '/_app/organization/'
@@ -264,7 +252,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  LandingIndexRoute: typeof LandingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -281,13 +268,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AppRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/landing/': {
-      id: '/landing/'
-      path: '/landing'
-      fullPath: '/landing'
-      preLoaderRoute: typeof LandingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/': {
@@ -460,7 +440,6 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  LandingIndexRoute: LandingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

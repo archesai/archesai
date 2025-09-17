@@ -12,7 +12,7 @@
           "description": "CORS configuration for the API server",
           "properties": {
             "origins": {
-              "default": "https://platform.archesai.dev",
+              "default": "https://platform.archesai.com",
               "description": "A comma-separated list of allowed origins for CORS requests",
               "example": "example-string",
               "minLength": 1,

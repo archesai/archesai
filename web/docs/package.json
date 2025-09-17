@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@archesai/ui": "workspace:*",
     "motion": "catalog:ui",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
@@ -10,6 +11,8 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "typescript": "catalog:",
+    "vite": "catalog:vite",
+    "vite-plugin-svgr": "catalog:vite",
     "vitest": "catalog:test"
   },
   "imports": {
@@ -23,6 +26,7 @@
     "start": "zudoku preview",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
+  "sideEffects": false,
   "type": "module",
   "version": "0.0.0"
 }

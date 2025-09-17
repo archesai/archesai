@@ -24,16 +24,12 @@ import {
   XCircleIcon,
   ZapIcon,
 } from "@archesai/ui";
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import type { JSX } from "react";
 import { useEffect, useState } from "react";
-import type { LandingContent } from "./-content";
-import { defaultContent } from "./-content";
-
-export const Route = createFileRoute("/landing/")({
-  component: RouteComponent,
-});
+import { Link } from "zudoku/router";
+import type { LandingContent } from "./landing_content";
+import { defaultContent } from "./landing_content";
 
 // Icon mapping helper
 const getIcon = (iconName: string) => {
@@ -52,7 +48,7 @@ interface LandingPageProps {
   content?: LandingContent;
 }
 
-function LandingPage({
+export function LandingPage({
   content = defaultContent,
 }: LandingPageProps): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -1047,8 +1043,4 @@ function LandingPage({
       </footer>
     </div>
   );
-}
-
-function RouteComponent() {
-  return <LandingPage />;
 }

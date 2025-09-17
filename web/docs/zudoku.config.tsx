@@ -6,7 +6,9 @@ const config: ZudokuConfig = {
   apis: [
     {
       input: "./apis/openapi.yaml",
-      options: {},
+      options: {
+        expandAllTags: true,
+      },
       path: "/docs/api",
       type: "file",
     },
@@ -24,32 +26,62 @@ const config: ZudokuConfig = {
     },
     files: ["/pages/**/*.{md,mdx}"],
   },
+  enableStatusPages: true,
   metadata: {
     applicationName: "Arches AI",
     defaultTitle: "Arches AI",
-    favicon: "https://platform.archesai.com/icon.png",
+    favicon: "/favicon.ico",
+    logo: "/large-logo.svg",
     title: "%s | Arches AI",
   },
   navigation: docs,
+  port: 3002,
   redirects: [
     {
       from: "/",
       to: "/getting-started",
     },
   ],
-  search: {
-    type: "pagefind",
-  },
+  // search: {
+  //   type: "pagefind",
+  // },
   site: {
+    banner: {
+      color: "#7362ef",
+      dismissible: true,
+      message: "⭐️ If you like Arches, give it a star on GitHub! ⭐️",
+    },
+    footer: {
+      copyright: `© ${new Date().getFullYear()} Arches AI`,
+      logo: {
+        alt: "Arches AI",
+        href: "/getting-started",
+        src: {
+          dark: "/large-logo-white.svg",
+          light: "/large-logo.svg",
+        },
+      },
+      social: [
+        {
+          href: "github.com/archesai/archesai",
+          label: "GitHub",
+        },
+        {
+          href: "twitter.com/archesai",
+          label: "Twitter",
+        },
+      ],
+    },
     logo: {
       alt: "Arches AI",
       href: "/getting-started",
       src: {
-        dark: "/logo-light.svg",
-        light: "/logo-dark.svg",
+        dark: "/large-logo-white.svg",
+        light: "/large-logo.svg",
       },
       width: "130px",
     },
+    logoUrl: "/large-logo.svg",
     showPoweredBy: false,
     title: "Arches AI",
   },
@@ -95,6 +127,7 @@ const config: ZudokuConfig = {
       </div>
     ),
   },
+
   theme: {
     customCss: `
 
@@ -110,6 +143,7 @@ const config: ZudokuConfig = {
     }
   }
 }`,
+
     dark: {
       primary: "#7362ef",
       primaryForeground: "#000000",
