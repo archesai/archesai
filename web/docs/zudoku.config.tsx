@@ -40,11 +40,11 @@ const config: ZudokuConfig = {
   //   type: "pagefind",
   // },
   site: {
-    banner: {
-      color: "#7362ef",
-      dismissible: true,
-      message: "⭐️ If you like Arches, give it a star on GitHub! ⭐️",
-    },
+    // banner: {
+    //   color: "#7362ef",
+    //   dismissible: true,
+    //   message: "⭐️ If you like Arches, give it a star on GitHub! ⭐️",
+    // },
     footer: {
       copyright: `© ${new Date().getFullYear()} Arches AI`,
       logo: {

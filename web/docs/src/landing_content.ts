@@ -345,12 +345,12 @@ export const defaultContent: LandingContent = {
         {
           label: "Features",
           scrollTo: "features",
-          to: "/landing",
+          to: "/",
         },
         {
           label: "Pricing",
           scrollTo: "pricing",
-          to: "/landing",
+          to: "/",
         },
         {
           label: "Integrations",
@@ -400,17 +400,17 @@ export const defaultContent: LandingContent = {
       {
         icon: "linkedin",
         name: "LinkedIn",
-        to: "/landing",
+        to: "/",
       },
       {
         icon: "twitter",
         name: "Twitter",
-        to: "/landing",
+        to: "/",
       },
       {
         icon: "facebook",
         name: "Facebook",
-        to: "/landing",
+        to: "/",
       },
     ],
   },
@@ -502,22 +502,22 @@ export const defaultContent: LandingContent = {
       {
         label: "Features",
         scrollTo: "features",
-        to: "/landing",
+        to: "/",
       },
       {
         label: "Testimonials",
         scrollTo: "testimonials",
-        to: "/landing",
+        to: "/",
       },
       {
         label: "Pricing",
         scrollTo: "pricing",
-        to: "/landing",
+        to: "/",
       },
       {
         label: "FAQ",
         scrollTo: "faq",
-        to: "/landing",
+        to: "/",
       },
     ],
   },
