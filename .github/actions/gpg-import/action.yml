@@ -35,17 +35,9 @@ runs:
 
         # Configure GPG for non-interactive signing
         mkdir -p ~/.gnupg
-        echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
-        echo "default-cache-ttl 7200" >> ~/.gnupg/gpg-agent.conf
-        echo "max-cache-ttl 31536000" >> ~/.gnupg/gpg-agent.conf
-
-        # Kill any existing gpg-agent and restart it
-        gpgconf --kill gpg-agent
-        gpg-agent --daemon --allow-loopback-pinentry
-
-        # Configure GPG to use loopback for pinentry
         echo "use-agent" >> ~/.gnupg/gpg.conf
         echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+        echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
 
         # Export passphrase for GoReleaser to use
         export GORELEASER_GPG_PASSPHRASE="${{ inputs.gpg-passphrase }}"
