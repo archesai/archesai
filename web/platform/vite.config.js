@@ -31,6 +31,7 @@ export default defineConfig({
     tailwindcss(),
     svgr(),
   ],
+  publicDir: resolve(import.meta.dirname, "../../assets"),
   resolve: {
     alias: {
       "@assets": resolve(import.meta.dirname, "../../assets"),

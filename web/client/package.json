@@ -3,10 +3,8 @@
     "@tanstack/react-query": "catalog:tanstack"
   },
   "devDependencies": {
-    "@archesai/eslint": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/ui": "catalog:test",
-    "eslint": "catalog:eslint",
     "orval": "catalog:client",
     "typescript": "catalog:",
     "vitest": "catalog:test"
@@ -22,7 +20,6 @@
   "private": true,
   "scripts": {
     "generate": "orval",
-    "lint": "eslint .",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "sideEffects": false,

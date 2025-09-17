@@ -6,11 +6,9 @@
     "zudoku": "catalog:"
   },
   "devDependencies": {
-    "@archesai/eslint": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
-    "eslint": "catalog:eslint",
     "typescript": "catalog:",
     "vitest": "catalog:test"
   },
@@ -22,7 +20,6 @@
   "scripts": {
     "build": "zudoku build",
     "dev": "zudoku dev",
-    "lint": "eslint",
     "start": "zudoku preview",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },

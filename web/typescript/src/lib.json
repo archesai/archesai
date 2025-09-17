@@ -11,8 +11,7 @@
     "${configDir}/vitest.config.ts",
     "${configDir}/playwright.config.ts",
     "${configDir}/orval.config.ts",
-    "${configDir}/drizzle.config.ts",
-    "${configDir}/eslint.config.ts"
+    "${configDir}/drizzle.config.ts"
   ],
   "include": ["${configDir}/src/**/*.ts", "${configDir}/src/**/*.tsx"]
 }

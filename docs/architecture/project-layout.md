@@ -617,7 +617,6 @@
 │   │   │   │   └── orval.schemas.ts
 │   │   │   ├── fetcher.ts
 │   │   │   └── index.ts
-│   │   ├── eslint.config.js
 │   │   ├── orval.config.ts
 │   │   ├── package.json
 │   │   ├── tsconfig.json
@@ -638,18 +637,12 @@
 │   │   │   └── banner.svg
 │   │   ├── src
 │   │   │   └── sidebar.tsx
-│   │   ├── eslint.config.js
 │   │   ├── package.json
 │   │   ├── tsconfig.app.json
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.spec.json
 │   │   ├── vite.config.ts
 │   │   └── zudoku.config.tsx
-│   ├── eslint
-│   │   ├── src
-│   │   │   ├── base.js
-│   │   │   └── react.js
-│   │   └── package.json
 │   ├── platform
 │   │   ├── public
 │   │   │   ├── android-chrome-192x192.png
@@ -745,7 +738,6 @@
 │   │   │   ├── routeTree.gen.ts
 │   │   │   └── router.tsx
 │   │   ├── Dockerfile
-│   │   ├── eslint.config.js
 │   │   ├── package.json
 │   │   ├── playwright.config.js
 │   │   ├── tsconfig.app.json
@@ -896,7 +888,6 @@
 │       │   │   └── table-meta.d.ts
 │       │   └── index.ts
 │       ├── components.json
-│       ├── eslint.config.js
 │       ├── package.json
 │       ├── tsconfig.json
 │       ├── tsconfig.lib.json

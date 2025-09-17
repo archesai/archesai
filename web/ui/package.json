@@ -26,7 +26,6 @@
     "vaul": "catalog:ui"
   },
   "devDependencies": {
-    "@archesai/eslint": "workspace:*",
     "@fontsource/geist": "catalog:ui",
     "@fontsource/geist-mono": "catalog:ui",
     "@tailwindcss/vite": "catalog:vite",
@@ -38,7 +37,6 @@
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:vite",
     "@vitest/ui": "catalog:test",
-    "eslint": "catalog:eslint",
     "jsdom": "catalog:test",
     "tailwindcss": "catalog:ui",
     "tw-animate-css": "catalog:ui",
@@ -68,7 +66,6 @@
   "name": "@archesai/ui",
   "private": true,
   "scripts": {
-    "lint": "eslint .",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "sideEffects": ["**/*.css"],
