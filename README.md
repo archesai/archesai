@@ -1,7 +1,7 @@
 <div align=center>
 
 <a href="https://archesai.com" alt="Arches">
-  <img src="./assets/github-hero.png" width=630 alt="Arches Platform">
+  <img src="./assets/github-hero.svg" width=630 alt="Arches Platform">
 </a>
 
 [![Go Version](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat&labelColor=000000)](https://go.dev/)
