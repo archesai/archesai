@@ -6,8 +6,7 @@
 
 ## Project Layout
 
-@../docs/architecture/project-layout.md
-@../docs/architecture/overview.md
+You can reference these files -> ../docs/architecture/project-layout.md, ../docs/architecture/overview.md
 
 ## Dev Commands
 

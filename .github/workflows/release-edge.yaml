@@ -52,12 +52,23 @@ jobs:
           delete-existing: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Import GPG key
+        id: import_gpg
+        if: ${{ env.GPG_PRIVATE_KEY != '' }}
+        uses: ./.github/actions/gpg-import
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+
       - name: Run GoReleaser (Snapshot)
         id: goreleaser
         uses: ./.github/actions/goreleaser-run
         with:
           mode: 'snapshot'
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          gpg-fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}
 
       - name: Create GitHub Release
         uses: ./.github/actions/create-github-release

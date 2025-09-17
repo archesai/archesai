@@ -1,0 +1,52 @@
+name: Import GPG Key
+description: Import GPG key for artifact signing
+
+inputs:
+  gpg-private-key:
+    description: 'GPG private key (ASCII armored)'
+    required: true
+  gpg-passphrase:
+    description: 'GPG key passphrase'
+    required: true
+
+outputs:
+  fingerprint:
+    description: 'GPG key fingerprint'
+    value: ${{ steps.import.outputs.fingerprint }}
+  keyid:
+    description: 'GPG key ID'
+    value: ${{ steps.import.outputs.keyid }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Import GPG key
+      id: import
+      shell: bash
+      run: |
+        # Import the GPG private key with pinentry-mode loopback to avoid TTY issues
+        echo "${{ inputs.gpg-private-key }}" | gpg --batch --yes --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --import
+
+        # Get the fingerprint of the imported key
+        FINGERPRINT=$(gpg --list-secret-keys --keyid-format=long | grep sec | head -1 | awk '{print $2}' | cut -d'/' -f2)
+        echo "fingerprint=$FINGERPRINT" >> $GITHUB_OUTPUT
+        echo "keyid=$FINGERPRINT" >> $GITHUB_OUTPUT
+        echo "GPG key imported with fingerprint: $FINGERPRINT"
+
+        # Configure GPG for non-interactive signing
+        mkdir -p ~/.gnupg
+        echo "allow-preset-passphrase" >> ~/.gnupg/gpg-agent.conf
+        echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+        echo "default-cache-ttl 7200" >> ~/.gnupg/gpg-agent.conf
+        echo "max-cache-ttl 31536000" >> ~/.gnupg/gpg-agent.conf
+        gpg-connect-agent RELOADAGENT /bye
+
+        # Preset the passphrase for GoReleaser to use
+        KEYGRIP=$(gpg --with-keygrip --list-secret-keys "$FINGERPRINT" | grep Keygrip | head -1 | awk '{print $3}')
+        echo "${{ inputs.gpg-passphrase }}" | gpg-preset-passphrase --preset "$KEYGRIP"
+
+        # Test that signing works
+        echo "Test" | gpg --batch --yes --pinentry-mode loopback --passphrase "${{ inputs.gpg-passphrase }}" --armor --sign > /dev/null
+        echo "GPG signing test successful"
+      env:
+        GPG_TTY: /dev/tty
