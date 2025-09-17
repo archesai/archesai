@@ -51,3 +51,48 @@ jobs:
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.anthropic.com/en/docs/claude-code/sdk#command-line for available options
           claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
+
+  claude-review-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+          ref: main # Always get the latest main branch
+
+      - id: claude-docs
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Analyze the recent commit changes and update relevant documentation files based on the changes made.
+
+            Your tasks:
+            1. Review the git diff to understand what changed in this commit
+            2. Identify documentation that needs updating based on code changes:
+               - If API endpoints changed: update API documentation
+               - If architecture changed: update system design docs
+               - If new features added: update feature documentation
+               - If configuration changed: update deployment/config docs
+               - If CLI commands changed: update CLI documentation
+               - If database schema changed: update database documentation
+
+            3. Update the relevant documentation files to reflect the changes
+            4. Ensure all cross-references and links remain valid
+            5. Follow the existing documentation style and structure
+            6. Only update files that actually need changes - don't make unnecessary edits
+
+            Use the project's CLAUDE.md for guidance on conventions and style.
+
+            IMPORTANT:
+            - Only update documentation files (*.md files in docs/)
+            - Do not modify code files
+            - Create a Pull Request with your changes using a descriptive title and body
+            - If no documentation needs updating, just report that no changes were necessary
+
+          claude_args: '--allowed-tools "Bash(git *),Bash(find *),Bash(grep *),Bash(gh pr create *)" --model claude-opus-4-1-20250805'
