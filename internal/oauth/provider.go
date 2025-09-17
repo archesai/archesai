@@ -7,7 +7,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Provider defines the interface for OAuth2 providers
+// Provider defines the interface for OAuth2 providers.
 type Provider interface {
 	// GetAuthURL returns the authorization URL for the provider
 	GetAuthURL(state string, redirectURI string) string
@@ -25,7 +25,7 @@ type Provider interface {
 	GetProviderID() string
 }
 
-// Tokens represents OAuth2 tokens returned by a provider
+// Tokens represents OAuth2 tokens returned by a provider.
 type Tokens struct {
 	AccessToken  string
 	RefreshToken string
@@ -34,7 +34,7 @@ type Tokens struct {
 	Scope        string
 }
 
-// UserInfo represents user information from an OAuth provider
+// UserInfo represents user information from an OAuth provider.
 type UserInfo struct {
 	ProviderAccountID string // Unique ID from the provider
 	Email             string
@@ -46,7 +46,7 @@ type UserInfo struct {
 	Raw map[string]interface{}
 }
 
-// Config holds common OAuth2 configuration
+// Config holds common OAuth2 configuration.
 type Config struct {
 	ClientID     string
 	ClientSecret string
@@ -55,12 +55,12 @@ type Config struct {
 	TokenURL     string
 }
 
-// BaseOAuthProvider provides common OAuth2 functionality
+// BaseOAuthProvider provides common OAuth2 functionality.
 type BaseOAuthProvider struct {
 	Config *oauth2.Config
 }
 
-// GetAuthURL returns the authorization URL with the provided state
+// GetAuthURL returns the authorization URL with the provided state.
 func (p *BaseOAuthProvider) GetAuthURL(state string, redirectURI string) string {
 	p.Config.RedirectURL = redirectURI
 
@@ -74,14 +74,21 @@ func (p *BaseOAuthProvider) GetAuthURL(state string, redirectURI string) string 
 	return authURL.String()
 }
 
-// ExchangeCode exchanges an authorization code for tokens
-func (p *BaseOAuthProvider) ExchangeCode(ctx context.Context, code string, redirectURI string) (*oauth2.Token, error) {
+// ExchangeCode exchanges an authorization code for tokens.
+func (p *BaseOAuthProvider) ExchangeCode(
+	ctx context.Context,
+	code string,
+	redirectURI string,
+) (*oauth2.Token, error) {
 	p.Config.RedirectURL = redirectURI
 	return p.Config.Exchange(ctx, code)
 }
 
-// RefreshToken refreshes an access token using a refresh token
-func (p *BaseOAuthProvider) RefreshToken(ctx context.Context, refreshToken string) (*oauth2.Token, error) {
+// RefreshToken refreshes an access token using a refresh token.
+func (p *BaseOAuthProvider) RefreshToken(
+	ctx context.Context,
+	refreshToken string,
+) (*oauth2.Token, error) {
 	tokenSource := p.Config.TokenSource(ctx, &oauth2.Token{
 		RefreshToken: refreshToken,
 	})

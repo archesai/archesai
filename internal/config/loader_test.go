@@ -190,7 +190,7 @@ func TestConfigPaths(t *testing.T) {
 	}
 }
 
-// Helper function to create formatted errors
+// Helper function to create formatted errors.
 func errorf(format string, args ...interface{}) error {
 	if len(args) == 0 {
 		return &testError{msg: format}

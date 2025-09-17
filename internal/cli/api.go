@@ -11,13 +11,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/archesai/archesai/internal/app"
-	"github.com/archesai/archesai/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/archesai/archesai/internal/app"
+	"github.com/archesai/archesai/internal/config"
 )
 
-// apiCmd represents the api command
+// apiCmd represents the api command.
 var apiCmd = &cobra.Command{
 	Use:   "api",
 	Short: "Run the API server",

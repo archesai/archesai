@@ -10,19 +10,19 @@ package config
 //go:generate go tool oapi-codegen --config=../../.codegen.types.yaml --package config --include-tags Config ../../api/openapi.bundled.yaml
 //go:generate go tool oapi-codegen --config=../../.codegen.server.yaml --package config --include-tags Config ../../api/openapi.bundled.yaml
 
-// Configuration constants
+// Configuration constants.
 const (
-	// DefaultConfigName is the default config file name
+	// DefaultConfigName is the default config file name.
 	DefaultConfigName = "config"
 
-	// DefaultConfigType is the default config file type
+	// DefaultConfigType is the default config file type.
 	DefaultConfigType = "yaml"
 
-	// EnvPrefix is the environment variable prefix
+	// EnvPrefix is the environment variable prefix.
 	EnvPrefix = "ARCHES"
 )
 
-// ConfigPaths defines the search paths for configuration files
+// ConfigPaths defines the search paths for configuration files.
 var ConfigPaths = []string{
 	".",
 	"/etc/archesai/",

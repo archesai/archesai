@@ -6,16 +6,17 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/archesai/archesai/internal/config"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+
+	"github.com/archesai/archesai/internal/config"
 )
 
 var (
 	outputFormat string
 )
 
-// configCmd represents the config command
+// configCmd represents the config command.
 var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "Manage Arches configuration",
@@ -28,7 +29,7 @@ This command allows you to:
 - Show environment variables`,
 }
 
-// configShowCmd shows the current configuration
+// configShowCmd shows the current configuration.
 var configShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Show current configuration",
@@ -59,7 +60,7 @@ var configShowCmd = &cobra.Command{
 	},
 }
 
-// configValidateCmd validates the configuration
+// configValidateCmd validates the configuration.
 var configValidateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate configuration",
@@ -77,7 +78,7 @@ var configValidateCmd = &cobra.Command{
 	},
 }
 
-// configInitCmd initializes a default configuration file
+// configInitCmd initializes a default configuration file.
 var configInitCmd = &cobra.Command{
 	Use:   "init [path]",
 	Short: "Initialize default configuration",
@@ -131,7 +132,7 @@ var configInitCmd = &cobra.Command{
 	},
 }
 
-// configEnvCmd shows environment variables
+// configEnvCmd shows environment variables.
 var configEnvCmd = &cobra.Command{
 	Use:   "env",
 	Short: "Show environment variables",
@@ -181,7 +182,7 @@ var configEnvCmd = &cobra.Command{
 	},
 }
 
-// getConfigSource returns a description of where the config was loaded from
+// getConfigSource returns a description of where the config was loaded from.
 func getConfigSource(cfg *config.Config) string {
 	viper := cfg.GetViperInstance()
 	if viper.ConfigFileUsed() != "" {
@@ -201,5 +202,6 @@ func init() {
 	configCmd.AddCommand(configEnvCmd)
 
 	// Add flags
-	configShowCmd.Flags().StringVarP(&outputFormat, "output", "o", "yaml", "Output format (yaml, json)")
+	configShowCmd.Flags().
+		StringVarP(&outputFormat, "output", "o", "yaml", "Output format (yaml, json)")
 }

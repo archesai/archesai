@@ -222,7 +222,10 @@ func TestEnhancedClaims_Creation(t *testing.T) {
 			t.Errorf("CustomClaims[tier] = %v, want premium", claims.CustomClaims["tier"])
 		}
 		if claims.CustomClaims["beta_features"] != true {
-			t.Errorf("CustomClaims[beta_features] = %v, want true", claims.CustomClaims["beta_features"])
+			t.Errorf(
+				"CustomClaims[beta_features] = %v, want true",
+				claims.CustomClaims["beta_features"],
+			)
 		}
 	})
 }

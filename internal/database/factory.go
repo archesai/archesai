@@ -7,19 +7,19 @@ import (
 	"github.com/archesai/archesai/internal/config"
 )
 
-// Factory creates database instances based on configuration
+// Factory creates database instances based on configuration.
 type Factory struct {
 	logger *slog.Logger
 }
 
-// NewFactory creates a new database factory
+// NewFactory creates a new database factory.
 func NewFactory(logger *slog.Logger) *Factory {
 	return &Factory{
 		logger: logger,
 	}
 }
 
-// Create creates a new database connection based on the provided configuration
+// Create creates a new database connection based on the provided configuration.
 func (f *Factory) Create(cfg *config.DatabaseConfig) (Database, error) {
 	if cfg == nil {
 		return nil, fmt.Errorf("database config is nil")
@@ -44,7 +44,7 @@ func (f *Factory) Create(cfg *config.DatabaseConfig) (Database, error) {
 }
 
 // CreateFromURL creates a database connection from a connection URL
-// It auto-detects the database type from the URL scheme
+// It auto-detects the database type from the URL scheme.
 func (f *Factory) CreateFromURL(url string) (Database, error) {
 	dbType := DetectTypeFromURL(url)
 	cfg := &config.DatabaseConfig{

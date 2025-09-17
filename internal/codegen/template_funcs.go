@@ -347,9 +347,26 @@ func isVowel(b byte) bool {
 // ParamType returns the Go type for a parameter name based on naming conventions.
 func ParamType(paramName string) string {
 	switch paramName {
-	case "id", "ID", "userID", "organizationID", "pipelineID", "runId", "runID", "toolID", "invitationId", "invitationID", "artifactID":
+	case "id",
+		"ID",
+		"userID",
+		"organizationID",
+		"pipelineID",
+		"runId",
+		"runID",
+		"toolID",
+		"invitationId",
+		"invitationID",
+		"artifactID":
 		return goTypeUUIDType
-	case "name", "email", "token", "provider", "providerAccountId", "slug", "stripeCustomerId", "inviterId":
+	case "name",
+		"email",
+		"token",
+		"provider",
+		"providerAccountId",
+		"slug",
+		"stripeCustomerId",
+		"inviterId":
 		return "string" //nolint:goconst // Go type
 	default:
 		return "string" //nolint:goconst // Go type
@@ -361,7 +378,7 @@ func IsUUIDParam(paramName string) bool {
 	return paramName == "id" || paramName == "userID"
 }
 
-// ToSnakeCase converts camelCase to snake_case
+// ToSnakeCase converts camelCase to snake_case.
 func ToSnakeCase(s string) string {
 	var result strings.Builder
 	for i, r := range s {
@@ -512,7 +529,7 @@ func GenerateCreateTypeConversion(goType, sqlcType, varPrefix, fieldName string)
 	}
 }
 
-// IsUpdateExcluded checks if a field should be excluded from update operations
+// IsUpdateExcluded checks if a field should be excluded from update operations.
 func IsUpdateExcluded(fieldName string, excludeList []string) bool {
 	for _, excluded := range excludeList {
 		if strings.EqualFold(excluded, fieldName) {
@@ -523,7 +540,7 @@ func IsUpdateExcluded(fieldName string, excludeList []string) bool {
 }
 
 // GenerateUpdateTypeConversion generates type conversions for Update operations
-// Update operations require pointer types for all fields to indicate which fields to update
+// Update operations require pointer types for all fields to indicate which fields to update.
 func GenerateUpdateTypeConversion(goType, sqlcType, varPrefix, fieldName string) string {
 	fieldRef := varPrefix + "." + fieldName
 
@@ -546,7 +563,7 @@ func GenerateUpdateTypeConversion(goType, sqlcType, varPrefix, fieldName string)
 	return handleFallbackTypes(sqlcType, fieldRef)
 }
 
-// handleSpecialTypes handles email, map, custom types, and UUID types
+// handleSpecialTypes handles email, map, custom types, and UUID types.
 func handleSpecialTypes(goType, fieldRef string) string {
 	switch {
 	case strings.Contains(goType, "Email"):
@@ -561,7 +578,7 @@ func handleSpecialTypes(goType, fieldRef string) string {
 	return ""
 }
 
-// isCustomType checks if the type is a custom type (enum, type alias)
+// isCustomType checks if the type is a custom type (enum, type alias).
 func isCustomType(goType string) bool {
 	if goType == "" {
 		return false
@@ -589,7 +606,7 @@ func isCustomType(goType string) bool {
 	return true
 }
 
-// handleBasicTypes handles primitive Go types
+// handleBasicTypes handles primitive Go types.
 func handleBasicTypes(goType, sqlcType, fieldRef string) string {
 	switch goType {
 	case goTypeString:
@@ -610,7 +627,7 @@ func handleBasicTypes(goType, sqlcType, fieldRef string) string {
 	return ""
 }
 
-// handleFloat32Type handles float32 with special cases for int32 storage
+// handleFloat32Type handles float32 with special cases for int32 storage.
 func handleFloat32Type(sqlcType, fieldRef string) string {
 	if strings.Contains(sqlcType, "int32") {
 		// Credits and similar fields are float32 but stored as int32
@@ -620,7 +637,7 @@ func handleFloat32Type(sqlcType, fieldRef string) string {
 	return "float64Ptr(float64(" + fieldRef + "))"
 }
 
-// handleFallbackTypes handles type conversion based on sqlcType
+// handleFallbackTypes handles type conversion based on sqlcType.
 func handleFallbackTypes(sqlcType, fieldRef string) string {
 	fallbackMappings := map[string]string{
 		goTypeString:  "stringPtr(" + fieldRef + ")",

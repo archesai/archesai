@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// workerCmd represents the worker command
+// workerCmd represents the worker command.
 var workerCmd = &cobra.Command{
 	Use:   "worker",
 	Short: "Run background job worker",
@@ -30,7 +30,8 @@ func init() {
 	rootCmd.AddCommand(workerCmd)
 
 	// Local flags for worker
-	workerCmd.Flags().StringSliceVar(&workerQueues, "queues", []string{"default"}, "Queues to process")
+	workerCmd.Flags().
+		StringSliceVar(&workerQueues, "queues", []string{"default"}, "Queues to process")
 	workerCmd.Flags().IntVar(&workerConcurrency, "concurrency", 10, "Number of concurrent workers")
 
 	// Bind to viper

@@ -5,13 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
-// Test helper functions
+// Test helper functions.
 func createTestLabelsService(t *testing.T) (*Service, *MockRepository) {
 	t.Helper()
 
@@ -22,7 +23,7 @@ func createTestLabelsService(t *testing.T) (*Service, *MockRepository) {
 	return service, mockRepo
 }
 
-// TestLabelsService_Create tests creating a label
+// TestLabelsService_Create tests creating a label.
 func TestLabelsService_Create(t *testing.T) {
 	orgID := uuid.New()
 
@@ -41,7 +42,9 @@ func TestLabelsService_Create(t *testing.T) {
 			UpdatedAt:      time.Now(),
 		}
 
-		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*labels.Label")).Return(expectedLabel, nil)
+		mockRepo.EXPECT().
+			Create(mock.Anything, mock.AnythingOfType("*labels.Label")).
+			Return(expectedLabel, nil)
 
 		request := CreateLabelRequestObject{
 			Body: req,
@@ -66,7 +69,9 @@ func TestLabelsService_Create(t *testing.T) {
 		}
 
 		// Mock repository to return an error
-		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*labels.Label")).Return(nil, assert.AnError)
+		mockRepo.EXPECT().
+			Create(mock.Anything, mock.AnythingOfType("*labels.Label")).
+			Return(nil, assert.AnError)
 
 		request := CreateLabelRequestObject{
 			Body: req,
@@ -96,7 +101,9 @@ func TestLabelsService_Create(t *testing.T) {
 			UpdatedAt:      time.Now(),
 		}
 
-		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*labels.Label")).Return(expectedLabel, nil)
+		mockRepo.EXPECT().
+			Create(mock.Anything, mock.AnythingOfType("*labels.Label")).
+			Return(expectedLabel, nil)
 
 		request := CreateLabelRequestObject{
 			Body: req,
@@ -113,7 +120,7 @@ func TestLabelsService_Create(t *testing.T) {
 	})
 }
 
-// TestLabelsService_Get tests getting a label
+// TestLabelsService_Get tests getting a label.
 func TestLabelsService_Get(t *testing.T) {
 	labelID := uuid.New()
 	label := &Label{
@@ -163,7 +170,7 @@ func TestLabelsService_Get(t *testing.T) {
 	})
 }
 
-// TestLabelsService_Update tests updating a label
+// TestLabelsService_Update tests updating a label.
 func TestLabelsService_Update(t *testing.T) {
 	labelID := uuid.New()
 
@@ -232,7 +239,7 @@ func TestLabelsService_Update(t *testing.T) {
 	})
 }
 
-// TestLabelsService_Delete tests deleting a label
+// TestLabelsService_Delete tests deleting a label.
 func TestLabelsService_Delete(t *testing.T) {
 	labelID := uuid.New()
 
@@ -277,7 +284,7 @@ func TestLabelsService_Delete(t *testing.T) {
 	})
 }
 
-// TestLabelsService_List tests listing labels
+// TestLabelsService_List tests listing labels.
 func TestLabelsService_List(t *testing.T) {
 	t.Run("successful list", func(t *testing.T) {
 		service, mockRepo := createTestLabelsService(t)

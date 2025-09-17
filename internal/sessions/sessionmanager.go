@@ -7,19 +7,24 @@ import (
 	"fmt"
 	"time"
 
-	genericcache "github.com/archesai/archesai/internal/cache"
 	"github.com/google/uuid"
+
+	genericcache "github.com/archesai/archesai/internal/cache"
 )
 
-// SessionManager handles session operations with Redis caching
+// SessionManager handles session operations with Redis caching.
 type SessionManager struct {
 	repo  Repository
 	cache genericcache.Cache[Session]
 	ttl   time.Duration
 }
 
-// NewSessionManager creates a new session manager
-func NewSessionManager(repo Repository, cache genericcache.Cache[Session], ttl time.Duration) *SessionManager {
+// NewSessionManager creates a new session manager.
+func NewSessionManager(
+	repo Repository,
+	cache genericcache.Cache[Session],
+	ttl time.Duration,
+) *SessionManager {
 	if ttl == 0 {
 		ttl = 30 * 24 * time.Hour // 30 days default
 	}
@@ -30,8 +35,12 @@ func NewSessionManager(repo Repository, cache genericcache.Cache[Session], ttl t
 	}
 }
 
-// Create creates a new session and stores it in both database and Redis
-func (sm *SessionManager) Create(ctx context.Context, userID, orgID uuid.UUID, ipAddress, userAgent string) (*Session, error) {
+// Create creates a new session and stores it in both database and Redis.
+func (sm *SessionManager) Create(
+	ctx context.Context,
+	userID, orgID uuid.UUID,
+	ipAddress, userAgent string,
+) (*Session, error) {
 	// Generate secure session token
 	token, err := generateSecureToken()
 	if err != nil {
@@ -66,7 +75,7 @@ func (sm *SessionManager) Create(ctx context.Context, userID, orgID uuid.UUID, i
 	return created, nil
 }
 
-// Get retrieves a session by ID, checking cache first
+// Get retrieves a session by ID, checking cache first.
 func (sm *SessionManager) Get(ctx context.Context, sessionID uuid.UUID) (*Session, error) {
 	// Try cache first
 	if sm.cache != nil {
@@ -102,7 +111,7 @@ func (sm *SessionManager) Get(ctx context.Context, sessionID uuid.UUID) (*Sessio
 	return session, nil
 }
 
-// GetSessionByToken retrieves a session by token, checking cache first
+// GetSessionByToken retrieves a session by token, checking cache first.
 func (sm *SessionManager) GetSessionByToken(ctx context.Context, token string) (*Session, error) {
 	// Cache doesn't support token-based lookup, use database directly
 	session, err := sm.repo.GetByToken(ctx, token)
@@ -125,8 +134,12 @@ func (sm *SessionManager) GetSessionByToken(ctx context.Context, token string) (
 	return session, nil
 }
 
-// Update updates session metadata (like last activity)
-func (sm *SessionManager) Update(ctx context.Context, sessionID uuid.UUID, updates *Session) (*Session, error) {
+// Update updates session metadata (like last activity).
+func (sm *SessionManager) Update(
+	ctx context.Context,
+	sessionID uuid.UUID,
+	updates *Session,
+) (*Session, error) {
 	// Update in database
 	updated, err := sm.repo.Update(ctx, sessionID, updates)
 	if err != nil {
@@ -141,7 +154,7 @@ func (sm *SessionManager) Update(ctx context.Context, sessionID uuid.UUID, updat
 	return updated, nil
 }
 
-// Delete removes a session from both database and cache
+// Delete removes a session from both database and cache.
 func (sm *SessionManager) Delete(ctx context.Context, sessionID uuid.UUID) error {
 	// Delete from database
 	if err := sm.repo.Delete(ctx, sessionID); err != nil {
@@ -156,7 +169,7 @@ func (sm *SessionManager) Delete(ctx context.Context, sessionID uuid.UUID) error
 	return nil
 }
 
-// DeleteSessionByToken removes a session by token
+// DeleteSessionByToken removes a session by token.
 func (sm *SessionManager) DeleteSessionByToken(ctx context.Context, token string) error {
 	// Get session first
 	session, err := sm.GetSessionByToken(ctx, token)
@@ -168,7 +181,7 @@ func (sm *SessionManager) DeleteSessionByToken(ctx context.Context, token string
 	return sm.Delete(ctx, session.ID)
 }
 
-// DeleteByUser removes all sessions for a user
+// DeleteByUser removes all sessions for a user.
 func (sm *SessionManager) DeleteByUser(ctx context.Context, userID uuid.UUID) error {
 	// Delete from database
 	if err := sm.repo.DeleteByUser(ctx, userID); err != nil {
@@ -181,7 +194,7 @@ func (sm *SessionManager) DeleteByUser(ctx context.Context, userID uuid.UUID) er
 	return nil
 }
 
-// ListByUser returns all active sessions for a user
+// ListByUser returns all active sessions for a user.
 func (sm *SessionManager) ListByUser(ctx context.Context, _ uuid.UUID) ([]*Session, error) {
 	// For now, use database directly
 	// In a future enhancement, we could maintain a session index in Redis
@@ -208,8 +221,11 @@ func (sm *SessionManager) ListByUser(ctx context.Context, _ uuid.UUID) ([]*Sessi
 	return activeSessions, nil
 }
 
-// RefreshSession extends the expiry of a session
-func (sm *SessionManager) RefreshSession(ctx context.Context, sessionID uuid.UUID) (*Session, error) {
+// RefreshSession extends the expiry of a session.
+func (sm *SessionManager) RefreshSession(
+	ctx context.Context,
+	sessionID uuid.UUID,
+) (*Session, error) {
 	session, err := sm.Get(ctx, sessionID)
 	if err != nil {
 		return nil, err
@@ -233,12 +249,12 @@ func (sm *SessionManager) RefreshSession(ctx context.Context, sessionID uuid.UUI
 	return updated, nil
 }
 
-// CleanupExpiredSessions removes all expired sessions
+// CleanupExpiredSessions removes all expired sessions.
 func (sm *SessionManager) CleanupExpiredSessions(ctx context.Context) error {
 	return sm.repo.DeleteExpired(ctx)
 }
 
-// Validate checks if a session is valid and not expired
+// Validate checks if a session is valid and not expired.
 func (sm *SessionManager) Validate(ctx context.Context, token string) (*Session, error) {
 	session, err := sm.GetSessionByToken(ctx, token)
 	if err != nil {
@@ -272,7 +288,7 @@ func (sm *SessionManager) isSessionExpired(session *Session) bool {
 	return time.Now().After(session.ExpiresAt)
 }
 
-// generateSecureToken generates a cryptographically secure random token
+// generateSecureToken generates a cryptographically secure random token.
 func generateSecureToken() (string, error) {
 	b := make([]byte, 32)
 	if _, err := rand.Read(b); err != nil {

@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// SetupInfrastructureRoutes configures infrastructure routes only
+// SetupInfrastructureRoutes configures infrastructure routes only.
 func (s *Server) SetupInfrastructureRoutes() {
 	// Health check - simple liveness probe
 	s.echo.GET("/health", func(c echo.Context) error {
@@ -31,7 +31,7 @@ func (s *Server) SetupInfrastructureRoutes() {
 	})
 }
 
-// SetReadinessCheck allows the container to provide a readiness check function
+// SetReadinessCheck allows the container to provide a readiness check function.
 func (s *Server) SetReadinessCheck(checkFunc func(echo.Context) error) {
 	s.echo.GET("/ready", checkFunc)
 }

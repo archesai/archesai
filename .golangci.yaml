@@ -1,26 +1,72 @@
 version: '2'
+issues:
+  max-same-issues: 50
 linters:
   default: standard
   enable:
+    # - dupl
     - bodyclose
     - goconst
     - gocyclo
+    # - funcorder
+    # - funlen
     - misspell
+    # - gocheckcompilerdirectives
+    # - godot
+    # - gosec
+    # - iface
+    # - sloglint
+    # - testifylint
     - nakedret
     - revive
     - tparallel
     - unconvert
     - unparam
+    # - depguard
   exclusions:
     generated: lax
     paths:
       - third_party$
       - builtin$
       - examples$
+  # settings:
+  #   depguard:
+  #     rules:
+  #       'non-main files':
+  #         files:
+  #           - '!**/main.go'
+  #         deny:
+  #           - pkg: log$
+  #             desc: Use log/slog instead, see https://go.dev/blog/slog
+
+  #   errcheck:
+  #     check-type-assertions: true
+
+  #   funcorder:
+  #     # Checks if the exported methods of a structure are placed before the non-exported ones.
+  #     # Default: true
+  #     struct-method: false
+
+  #   funlen:
+  #     # Checks the number of lines in a function.
+  #     # If lower than 0, disable the check.
+  #     # Default: 60
+  #     lines: 100
+  #     # Checks the number of statements in a function.
+  #     # If lower than 0, disable the check.
+  #     # Default: 40
+  #     statements: 50
+
 formatters:
   enable:
     - gofmt
     - goimports
+    - golines
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/archesai/archesai
+
   exclusions:
     generated: lax
     paths:
@@ -28,5 +74,6 @@ formatters:
       - builtin$
       - examples$
 run:
+  go: '1.25.1'
   tests: true
   allow-parallel-runners: true

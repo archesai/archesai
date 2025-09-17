@@ -5,18 +5,19 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
+
+	"github.com/archesai/archesai/internal/database/postgresql"
 )
 
-// Service implements the business logic
+// Service implements the business logic.
 type Service struct {
 	repo   Repository
 	db     *postgresql.Queries
 	logger *slog.Logger
 }
 
-// NewService creates a new service implementation
+// NewService creates a new service implementation.
 func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *Service {
 	return &Service{
 		repo:   repo,
@@ -25,7 +26,7 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Validate validates a session token and returns the session if valid
+// Validate validates a session token and returns the session if valid.
 func (s *Service) Validate(ctx context.Context, token string) (*Session, error) {
 	// Get session by token
 	session, err := s.repo.GetByToken(ctx, token)
@@ -50,7 +51,7 @@ func (s *Service) Validate(ctx context.Context, token string) (*Session, error) 
 	return updated, nil
 }
 
-// ListByUser lists all sessions for a specific user
+// ListByUser lists all sessions for a specific user.
 func (s *Service) ListByUser(ctx context.Context, _ uuid.UUID) ([]*Session, error) {
 	params := ListSessionsParams{
 		Page: PageQuery{
@@ -67,7 +68,7 @@ func (s *Service) ListByUser(ctx context.Context, _ uuid.UUID) ([]*Session, erro
 	return sessions, nil
 }
 
-// RevokeSession revokes a session by ID
+// RevokeSession revokes a session by ID.
 func (s *Service) RevokeSession(ctx context.Context, sessionID uuid.UUID) error {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, sessionID)
@@ -84,7 +85,7 @@ func (s *Service) RevokeSession(ctx context.Context, sessionID uuid.UUID) error 
 	return nil
 }
 
-// CleanupExpiredSessions removes all expired sessions from the repository
+// CleanupExpiredSessions removes all expired sessions from the repository.
 func (s *Service) CleanupExpiredSessions(ctx context.Context) error {
 	err := s.repo.DeleteExpired(ctx)
 	if err != nil {

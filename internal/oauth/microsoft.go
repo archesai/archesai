@@ -14,19 +14,21 @@ const (
 	microsoftUserInfoURL = "https://graph.microsoft.com/v1.0/me"
 )
 
-// MicrosoftOAuthProvider implements OAuth2 for Microsoft
+// MicrosoftOAuthProvider implements OAuth2 for Microsoft.
 type MicrosoftOAuthProvider struct {
 	*BaseOAuthProvider
 }
 
-// NewMicrosoftOAuthProvider creates a new Microsoft OAuth provider
+// NewMicrosoftOAuthProvider creates a new Microsoft OAuth provider.
 func NewMicrosoftOAuthProvider(clientID, clientSecret string) Provider {
 	return &MicrosoftOAuthProvider{
 		BaseOAuthProvider: &BaseOAuthProvider{
 			Config: &oauth2.Config{
 				ClientID:     clientID,
 				ClientSecret: clientSecret,
-				Endpoint:     microsoft.AzureADEndpoint("common"), // "common" allows any Azure AD and personal Microsoft account
+				Endpoint: microsoft.AzureADEndpoint(
+					"common",
+				), // "common" allows any Azure AD and personal Microsoft account
 				Scopes: []string{
 					"openid",
 					"profile",
@@ -39,20 +41,24 @@ func NewMicrosoftOAuthProvider(clientID, clientSecret string) Provider {
 	}
 }
 
-// GetProviderID returns the provider identifier
+// GetProviderID returns the provider identifier.
 func (p *MicrosoftOAuthProvider) GetProviderID() string {
 	return "microsoft"
 }
 
-// GetAuthURL returns the Microsoft authorization URL
+// GetAuthURL returns the Microsoft authorization URL.
 func (p *MicrosoftOAuthProvider) GetAuthURL(state string, redirectURI string) string {
 	p.Config.RedirectURL = redirectURI
 	// Add prompt=select_account to allow account selection
 	return p.Config.AuthCodeURL(state, oauth2.SetAuthURLParam("prompt", "select_account"))
 }
 
-// ExchangeCode exchanges an authorization code for tokens
-func (p *MicrosoftOAuthProvider) ExchangeCode(ctx context.Context, code string, redirectURI string) (*Tokens, error) {
+// ExchangeCode exchanges an authorization code for tokens.
+func (p *MicrosoftOAuthProvider) ExchangeCode(
+	ctx context.Context,
+	code string,
+	redirectURI string,
+) (*Tokens, error) {
 	p.Config.RedirectURL = redirectURI
 	token, err := p.Config.Exchange(ctx, code)
 	if err != nil {
@@ -67,8 +73,11 @@ func (p *MicrosoftOAuthProvider) ExchangeCode(ctx context.Context, code string, 
 	}, nil
 }
 
-// RefreshToken refreshes an access token using a refresh token
-func (p *MicrosoftOAuthProvider) RefreshToken(ctx context.Context, refreshToken string) (*Tokens, error) {
+// RefreshToken refreshes an access token using a refresh token.
+func (p *MicrosoftOAuthProvider) RefreshToken(
+	ctx context.Context,
+	refreshToken string,
+) (*Tokens, error) {
 	token, err := p.BaseOAuthProvider.RefreshToken(ctx, refreshToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to refresh token: %w", err)
@@ -81,8 +90,11 @@ func (p *MicrosoftOAuthProvider) RefreshToken(ctx context.Context, refreshToken 
 	}, nil
 }
 
-// GetUserInfo retrieves user information from Microsoft Graph
-func (p *MicrosoftOAuthProvider) GetUserInfo(ctx context.Context, accessToken string) (*UserInfo, error) {
+// GetUserInfo retrieves user information from Microsoft Graph.
+func (p *MicrosoftOAuthProvider) GetUserInfo(
+	ctx context.Context,
+	accessToken string,
+) (*UserInfo, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", microsoftUserInfoURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
@@ -154,10 +166,18 @@ func (p *MicrosoftOAuthProvider) GetUserInfo(ctx context.Context, accessToken st
 	}, nil
 }
 
-// getProfilePhotoURL attempts to get the user's profile photo URL
-func (p *MicrosoftOAuthProvider) getProfilePhotoURL(ctx context.Context, accessToken string) (string, error) {
+// getProfilePhotoURL attempts to get the user's profile photo URL.
+func (p *MicrosoftOAuthProvider) getProfilePhotoURL(
+	ctx context.Context,
+	accessToken string,
+) (string, error) {
 	// Check if photo exists
-	req, err := http.NewRequestWithContext(ctx, "GET", "https://graph.microsoft.com/v1.0/me/photo", nil)
+	req, err := http.NewRequestWithContext(
+		ctx,
+		"GET",
+		"https://graph.microsoft.com/v1.0/me/photo",
+		nil,
+	)
 	if err != nil {
 		return "", err
 	}

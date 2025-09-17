@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+
 	"log/slog"
 	"net/http"
 	"os"
@@ -13,13 +14,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/archesai/archesai/internal/app"
-	"github.com/archesai/archesai/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/archesai/archesai/internal/app"
+	"github.com/archesai/archesai/internal/config"
 )
 
-// allCmd represents the all command
+// allCmd represents the all command.
 var allCmd = &cobra.Command{
 	Use:     "all",
 	Aliases: []string{"dev"},

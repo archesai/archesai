@@ -14,15 +14,15 @@ const (
 	googleUserInfoURL = "https://www.googleapis.com/oauth2/v2/userinfo"
 )
 
-// GoogleOAuthProvider implements OAuth2 for Google
+// GoogleOAuthProvider implements OAuth2 for Google.
 type GoogleOAuthProvider struct {
 	*BaseOAuthProvider
 }
 
-// Ensure GoogleOAuthProvider implements Provider
+// Ensure GoogleOAuthProvider implements Provider.
 var _ Provider = (*GoogleOAuthProvider)(nil)
 
-// NewGoogleOAuthProvider creates a new Google OAuth provider
+// NewGoogleOAuthProvider creates a new Google OAuth provider.
 func NewGoogleOAuthProvider(clientID, clientSecret string) Provider {
 	return &GoogleOAuthProvider{
 		BaseOAuthProvider: &BaseOAuthProvider{
@@ -40,20 +40,24 @@ func NewGoogleOAuthProvider(clientID, clientSecret string) Provider {
 	}
 }
 
-// GetProviderID returns the provider identifier
+// GetProviderID returns the provider identifier.
 func (p *GoogleOAuthProvider) GetProviderID() string {
 	return "google"
 }
 
-// GetAuthURL returns the Google authorization URL
+// GetAuthURL returns the Google authorization URL.
 func (p *GoogleOAuthProvider) GetAuthURL(state string, redirectURI string) string {
 	p.Config.RedirectURL = redirectURI
 	// Google requires access_type=offline to get refresh token
 	return p.Config.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 }
 
-// ExchangeCode exchanges an authorization code for tokens
-func (p *GoogleOAuthProvider) ExchangeCode(ctx context.Context, code string, redirectURI string) (*Tokens, error) {
+// ExchangeCode exchanges an authorization code for tokens.
+func (p *GoogleOAuthProvider) ExchangeCode(
+	ctx context.Context,
+	code string,
+	redirectURI string,
+) (*Tokens, error) {
 	p.Config.RedirectURL = redirectURI
 	token, err := p.Config.Exchange(ctx, code)
 	if err != nil {
@@ -68,8 +72,11 @@ func (p *GoogleOAuthProvider) ExchangeCode(ctx context.Context, code string, red
 	}, nil
 }
 
-// RefreshToken refreshes an access token using a refresh token
-func (p *GoogleOAuthProvider) RefreshToken(ctx context.Context, refreshToken string) (*Tokens, error) {
+// RefreshToken refreshes an access token using a refresh token.
+func (p *GoogleOAuthProvider) RefreshToken(
+	ctx context.Context,
+	refreshToken string,
+) (*Tokens, error) {
 	token, err := p.BaseOAuthProvider.RefreshToken(ctx, refreshToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to refresh token: %w", err)
@@ -82,8 +89,11 @@ func (p *GoogleOAuthProvider) RefreshToken(ctx context.Context, refreshToken str
 	}, nil
 }
 
-// GetUserInfo retrieves user information from Google
-func (p *GoogleOAuthProvider) GetUserInfo(ctx context.Context, accessToken string) (*UserInfo, error) {
+// GetUserInfo retrieves user information from Google.
+func (p *GoogleOAuthProvider) GetUserInfo(
+	ctx context.Context,
+	accessToken string,
+) (*UserInfo, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", googleUserInfoURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
@@ -135,7 +145,7 @@ func (p *GoogleOAuthProvider) GetUserInfo(ctx context.Context, accessToken strin
 	}, nil
 }
 
-// extractIDToken extracts the ID token from the OAuth2 token extra fields
+// extractIDToken extracts the ID token from the OAuth2 token extra fields.
 func extractIDToken(token *oauth2.Token) string {
 	if idToken, ok := token.Extra("id_token").(string); ok {
 		return idToken

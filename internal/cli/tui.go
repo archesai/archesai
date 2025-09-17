@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/archesai/archesai/internal/llm"
-	"github.com/archesai/archesai/internal/tui"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
+
+	"github.com/archesai/archesai/internal/llm"
+	"github.com/archesai/archesai/internal/tui"
 )
 
-// tuiCmd represents the tui command
+// tuiCmd represents the tui command.
 var tuiCmd = &cobra.Command{
 	Use:   "tui",
 	Short: "Launch the interactive TUI for configuration and AI agents",
@@ -43,10 +44,13 @@ func init() {
 	rootCmd.AddCommand(tuiCmd)
 
 	// TUI specific flags
-	tuiCmd.Flags().BoolVar(&tuiChatMode, "chat", false, "Launch AI chat interface instead of config viewer")
-	tuiCmd.Flags().StringVar(&tuiProvider, "provider", "openai", "LLM provider (openai, claude, gemini, ollama)")
+	tuiCmd.Flags().
+		BoolVar(&tuiChatMode, "chat", false, "Launch AI chat interface instead of config viewer")
+	tuiCmd.Flags().
+		StringVar(&tuiProvider, "provider", "openai", "LLM provider (openai, claude, gemini, ollama)")
 	tuiCmd.Flags().StringVar(&tuiModel, "model", "gpt-4", "Model to use")
-	tuiCmd.Flags().StringVar(&tuiAPIKey, "api-key", "", "API key for the provider (or use environment variable)")
+	tuiCmd.Flags().
+		StringVar(&tuiAPIKey, "api-key", "", "API key for the provider (or use environment variable)")
 }
 
 func runTUI(_ *cobra.Command, _ []string) error {
@@ -76,7 +80,9 @@ func runTUI(_ *cobra.Command, _ []string) error {
 		}
 
 		if tuiAPIKey == "" && tuiProvider != providerOllama {
-			return fmt.Errorf("API key required for chat mode. Set --api-key flag or appropriate environment variable")
+			return fmt.Errorf(
+				"API key required for chat mode. Set --api-key flag or appropriate environment variable",
+			)
 		}
 	}
 

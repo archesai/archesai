@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-// SetupMiddleware configures all middleware for the server
+// SetupMiddleware configures all middleware for the server.
 func (s *Server) SetupMiddleware() {
 	// Request ID middleware
 	s.echo.Use(middleware.RequestID())
@@ -57,9 +57,24 @@ func (s *Server) SetupMiddleware() {
 
 	// CORS middleware
 	s.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     strings.Split(s.config.Cors.Origins, ","),
-		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "X-Request-ID", "X-Requested-With"},
+		AllowOrigins: strings.Split(s.config.Cors.Origins, ","),
+		AllowMethods: []string{
+			http.MethodGet,
+			http.MethodHead,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodPost,
+			http.MethodDelete,
+			http.MethodOptions,
+		},
+		AllowHeaders: []string{
+			echo.HeaderOrigin,
+			echo.HeaderContentType,
+			echo.HeaderAccept,
+			echo.HeaderAuthorization,
+			"X-Request-ID",
+			"X-Requested-With",
+		},
 		AllowCredentials: true,
 		ExposeHeaders:    []string{"X-Request-ID"},
 		MaxAge:           86400,
@@ -113,7 +128,15 @@ func (s *Server) SetupMiddleware() {
 			})
 		},
 		DenyHandler: func(c echo.Context, identifier string, err error) error {
-			s.logger.Info("rate limit exceeded", "identifier", identifier, "path", c.Request().URL.Path, "error", err)
+			s.logger.Info(
+				"rate limit exceeded",
+				"identifier",
+				identifier,
+				"path",
+				c.Request().URL.Path,
+				"error",
+				err,
+			)
 			return c.JSON(http.StatusTooManyRequests, map[string]string{
 				"error": "Rate limit exceeded",
 			})

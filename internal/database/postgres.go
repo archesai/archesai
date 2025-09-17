@@ -7,21 +7,22 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/config"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib" // PostgreSQL driver for database/sql compatibility
+
+	"github.com/archesai/archesai/internal/config"
 )
 
-// PGDatabase implements the Database interface for PostgreSQL
+// PGDatabase implements the Database interface for PostgreSQL.
 type PGDatabase struct {
 	pool   *pgxpool.Pool
 	sqlDB  *sql.DB // For stdlib compatibility when needed
 	logger *slog.Logger
 }
 
-// NewPostgreSQL creates a new PostgreSQL database connection
+// NewPostgreSQL creates a new PostgreSQL database connection.
 func NewPostgreSQL(cfg *config.DatabaseConfig, logger *slog.Logger) (Database, error) {
 	ctx := context.Background()
 
@@ -96,7 +97,7 @@ func NewPostgreSQL(cfg *config.DatabaseConfig, logger *slog.Logger) (Database, e
 	}, nil
 }
 
-// Query executes a query that returns rows
+// Query executes a query that returns rows.
 func (db *PGDatabase) Query(ctx context.Context, query string, args ...interface{}) (Rows, error) {
 	rows, err := db.pool.Query(ctx, query, args...)
 	if err != nil {
@@ -105,12 +106,12 @@ func (db *PGDatabase) Query(ctx context.Context, query string, args ...interface
 	return &pgRows{rows: rows}, nil
 }
 
-// QueryRow executes a query that returns at most one row
+// QueryRow executes a query that returns at most one row.
 func (db *PGDatabase) QueryRow(ctx context.Context, query string, args ...interface{}) Row {
 	return &pgRow{row: db.pool.QueryRow(ctx, query, args...)}
 }
 
-// Exec executes a query without returning any rows
+// Exec executes a query without returning any rows.
 func (db *PGDatabase) Exec(ctx context.Context, query string, args ...interface{}) (Result, error) {
 	result, err := db.pool.Exec(ctx, query, args...)
 	if err != nil {
@@ -119,7 +120,7 @@ func (db *PGDatabase) Exec(ctx context.Context, query string, args ...interface{
 	return &pgResult{result: result}, nil
 }
 
-// Begin starts a transaction
+// Begin starts a transaction.
 func (db *PGDatabase) Begin(ctx context.Context) (Transaction, error) {
 	tx, err := db.pool.Begin(ctx)
 	if err != nil {
@@ -128,7 +129,7 @@ func (db *PGDatabase) Begin(ctx context.Context) (Transaction, error) {
 	return &pgTransaction{tx: tx}, nil
 }
 
-// BeginTx starts a transaction with options
+// BeginTx starts a transaction with options.
 func (db *PGDatabase) BeginTx(ctx context.Context, opts *sql.TxOptions) (Transaction, error) {
 	// Map SQL isolation levels to pgx string values
 	var isoLevel pgx.TxIsoLevel
@@ -158,12 +159,12 @@ func (db *PGDatabase) BeginTx(ctx context.Context, opts *sql.TxOptions) (Transac
 	return &pgTransaction{tx: tx}, nil
 }
 
-// Ping verifies the connection to the database
+// Ping verifies the connection to the database.
 func (db *PGDatabase) Ping(ctx context.Context) error {
 	return db.pool.Ping(ctx)
 }
 
-// Close closes the database connection
+// Close closes the database connection.
 func (db *PGDatabase) Close() error {
 	db.logger.Info("Closing PostgreSQL connection")
 	db.pool.Close()
@@ -173,7 +174,7 @@ func (db *PGDatabase) Close() error {
 	return nil
 }
 
-// Stats returns database statistics
+// Stats returns database statistics.
 func (db *PGDatabase) Stats() Stats {
 	stats := db.pool.Stat()
 	return Stats{
@@ -187,17 +188,17 @@ func (db *PGDatabase) Stats() Stats {
 	}
 }
 
-// Type returns the database type
+// Type returns the database type.
 func (db *PGDatabase) Type() Type {
 	return TypePostgreSQL
 }
 
-// Underlying returns the underlying connection pool
+// Underlying returns the underlying connection pool.
 func (db *PGDatabase) Underlying() interface{} {
 	return db.pool
 }
 
-// GetSQLDB returns the stdlib SQL database connection for migrations
+// GetSQLDB returns the stdlib SQL database connection for migrations.
 func (db *PGDatabase) GetSQLDB() *sql.DB {
 	return db.sqlDB
 }
@@ -249,7 +250,11 @@ type pgTransaction struct {
 	tx pgx.Tx
 }
 
-func (t *pgTransaction) Query(ctx context.Context, query string, args ...interface{}) (Rows, error) {
+func (t *pgTransaction) Query(
+	ctx context.Context,
+	query string,
+	args ...interface{},
+) (Rows, error) {
 	rows, err := t.tx.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -261,7 +266,11 @@ func (t *pgTransaction) QueryRow(ctx context.Context, query string, args ...inte
 	return &pgRow{row: t.tx.QueryRow(ctx, query, args...)}
 }
 
-func (t *pgTransaction) Exec(ctx context.Context, query string, args ...interface{}) (Result, error) {
+func (t *pgTransaction) Exec(
+	ctx context.Context,
+	query string,
+	args ...interface{},
+) (Result, error) {
 	result, err := t.tx.Exec(ctx, query, args...)
 	if err != nil {
 		return nil, err

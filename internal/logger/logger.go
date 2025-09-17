@@ -10,7 +10,7 @@ import (
 	"github.com/lmittmann/tint"
 )
 
-// New creates a configured logger with stdout output
+// New creates a configured logger with stdout output.
 func New(cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
 	return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
@@ -18,7 +18,7 @@ func New(cfg Config) *slog.Logger {
 	}))
 }
 
-// NewPretty creates a pretty-printed logger for development use
+// NewPretty creates a pretty-printed logger for development use.
 func NewPretty(cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
 	return slog.New(tint.NewHandler(os.Stdout, &tint.Options{
@@ -28,12 +28,12 @@ func NewPretty(cfg Config) *slog.Logger {
 	}))
 }
 
-// NewTest creates a test logger that discards all output
+// NewTest creates a test logger that discards all output.
 func NewTest() *slog.Logger {
-	return slog.New(slog.NewTextHandler(io.Discard, nil))
+	return slog.New(slog.DiscardHandler)
 }
 
-// NewWithWriter creates a logger with a custom writer
+// NewWithWriter creates a logger with a custom writer.
 func NewWithWriter(w io.Writer, cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
 	return slog.New(slog.NewJSONHandler(w, &slog.HandlerOptions{
@@ -41,7 +41,7 @@ func NewWithWriter(w io.Writer, cfg Config) *slog.Logger {
 	}))
 }
 
-// parseLevel converts string log level to slog.Level
+// parseLevel converts string log level to slog.Level.
 func parseLevel(level string) slog.Level {
 	switch level {
 	case "debug", "trace":

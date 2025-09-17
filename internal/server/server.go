@@ -17,72 +17,73 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/archesai/archesai/internal/config"
 	"github.com/labstack/echo/v4"
+
+	"github.com/archesai/archesai/internal/config"
 )
 
-// Server configuration constants
+// Server configuration constants.
 const (
-	// DefaultPort is the default server port
+	// DefaultPort is the default server port.
 	DefaultPort = "8080"
 
-	// DefaultReadTimeout is the default read timeout
+	// DefaultReadTimeout is the default read timeout.
 	DefaultReadTimeout = 30 * time.Second
 
-	// DefaultWriteTimeout is the default write timeout
+	// DefaultWriteTimeout is the default write timeout.
 	DefaultWriteTimeout = 30 * time.Second
 
-	// DefaultIdleTimeout is the default idle timeout
+	// DefaultIdleTimeout is the default idle timeout.
 	DefaultIdleTimeout = 120 * time.Second
 
-	// DefaultShutdownTimeout is the timeout for graceful shutdown
+	// DefaultShutdownTimeout is the timeout for graceful shutdown.
 	DefaultShutdownTimeout = 10 * time.Second
 
-	// DefaultMaxHeaderBytes is the maximum header size
+	// DefaultMaxHeaderBytes is the maximum header size.
 	DefaultMaxHeaderBytes = 1 << 20 // 1 MB
 )
 
-// WebSocket constants
+// WebSocket constants.
 const (
-	// WebSocketReadBufferSize is the WebSocket read buffer size
+	// WebSocketReadBufferSize is the WebSocket read buffer size.
 	WebSocketReadBufferSize = 1024
 
-	// WebSocketWriteBufferSize is the WebSocket write buffer size
+	// WebSocketWriteBufferSize is the WebSocket write buffer size.
 	WebSocketWriteBufferSize = 1024
 
-	// WebSocketHandshakeTimeout is the WebSocket handshake timeout
+	// WebSocketHandshakeTimeout is the WebSocket handshake timeout.
 	WebSocketHandshakeTimeout = 10 * time.Second
 
-	// WebSocketPingPeriod is the WebSocket ping period
+	// WebSocketPingPeriod is the WebSocket ping period.
 	WebSocketPingPeriod = 54 * time.Second
 
-	// WebSocketPongTimeout is the WebSocket pong timeout
+	// WebSocketPongTimeout is the WebSocket pong timeout.
 	WebSocketPongTimeout = 60 * time.Second
 )
 
-// Middleware priority constants (lower number = higher priority)
+// Middleware priority constants (lower number = higher priority).
 const (
-	// MiddlewarePriorityRecover runs first to catch panics
+	// MiddlewarePriorityRecover runs first to catch panics.
 	MiddlewarePriorityRecover = 1
 
-	// MiddlewarePriorityLogger logs all requests
+	// MiddlewarePriorityLogger logs all requests.
 	MiddlewarePriorityLogger = 2
 
-	// MiddlewarePriorityCORS handles CORS headers
+	// MiddlewarePriorityCORS handles CORS headers.
 	MiddlewarePriorityCORS = 3
 
-	// MiddlewarePriorityAuth handles authentication
+	// MiddlewarePriorityAuth handles authentication.
 	MiddlewarePriorityAuth = 10
 )
 
-// Server represents the API server
+// Server represents the API server.
 type Server struct {
 	echo   *echo.Echo
 	config *config.APIConfig
 	logger *slog.Logger
 }
 
-// NewServer creates a new API server
+// NewServer creates a new API server.
 func NewServer(config *config.APIConfig, logger *slog.Logger) *Server {
 	e := echo.New()
 	e.HideBanner = true
@@ -100,13 +101,13 @@ func NewServer(config *config.APIConfig, logger *slog.Logger) *Server {
 	return server
 }
 
-// Echo returns the underlying echo instance for route registration
+// Echo returns the underlying echo instance for route registration.
 func (s *Server) Echo() *echo.Echo {
 	return s.echo
 }
 
 // ListenAndServe starts the server without signal handling
-// This is useful when the caller wants to manage the server lifecycle
+// This is useful when the caller wants to manage the server lifecycle.
 func (s *Server) ListenAndServe() error {
 	addr := fmt.Sprintf(":%d", int(s.config.Port))
 	s.logger.Info("starting server", "address", addr)
@@ -114,7 +115,7 @@ func (s *Server) ListenAndServe() error {
 }
 
 // Start starts the server with built-in signal handling
-// This is a convenience method for simple use cases
+// This is a convenience method for simple use cases.
 func (s *Server) Start() error {
 	// Start server in goroutine
 	go func() {
@@ -144,7 +145,7 @@ func (s *Server) Start() error {
 	return nil
 }
 
-// Shutdown shuts down the server gracefully
+// Shutdown shuts down the server gracefully.
 func (s *Server) Shutdown(ctx context.Context) error {
 	return s.echo.Shutdown(ctx)
 }

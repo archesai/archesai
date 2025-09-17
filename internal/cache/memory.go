@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// MemoryCache implements Cache using in-memory storage (for testing)
+// MemoryCache implements Cache using in-memory storage (for testing).
 type MemoryCache[T any] struct {
 	mu    sync.RWMutex
 	items map[string]*memoryItem[T]
@@ -17,14 +17,14 @@ type memoryItem[T any] struct {
 	expiresAt time.Time
 }
 
-// NewMemoryCache creates a new in-memory cache
+// NewMemoryCache creates a new in-memory cache.
 func NewMemoryCache[T any]() *MemoryCache[T] {
 	return &MemoryCache[T]{
 		items: make(map[string]*memoryItem[T]),
 	}
 }
 
-// Get retrieves an item from cache by key
+// Get retrieves an item from cache by key.
 func (c *MemoryCache[T]) Get(_ context.Context, key string) (*T, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
@@ -42,7 +42,7 @@ func (c *MemoryCache[T]) Get(_ context.Context, key string) (*T, error) {
 	return item.value, nil
 }
 
-// Set stores an item in cache with TTL
+// Set stores an item in cache with TTL.
 func (c *MemoryCache[T]) Set(_ context.Context, key string, value *T, ttl time.Duration) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -60,7 +60,7 @@ func (c *MemoryCache[T]) Set(_ context.Context, key string, value *T, ttl time.D
 	return nil
 }
 
-// Delete removes an item from cache
+// Delete removes an item from cache.
 func (c *MemoryCache[T]) Delete(_ context.Context, key string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -69,7 +69,7 @@ func (c *MemoryCache[T]) Delete(_ context.Context, key string) error {
 	return nil
 }
 
-// Exists checks if a key exists in cache
+// Exists checks if a key exists in cache.
 func (c *MemoryCache[T]) Exists(_ context.Context, key string) (bool, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
@@ -87,7 +87,7 @@ func (c *MemoryCache[T]) Exists(_ context.Context, key string) (bool, error) {
 	return true, nil
 }
 
-// Clear removes all items from cache
+// Clear removes all items from cache.
 func (c *MemoryCache[T]) Clear(_ context.Context) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -96,7 +96,7 @@ func (c *MemoryCache[T]) Clear(_ context.Context) error {
 	return nil
 }
 
-// GetMany retrieves multiple items from cache
+// GetMany retrieves multiple items from cache.
 func (c *MemoryCache[T]) GetMany(_ context.Context, keys []string) (map[string]*T, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
@@ -121,7 +121,7 @@ func (c *MemoryCache[T]) GetMany(_ context.Context, keys []string) (map[string]*
 	return result, nil
 }
 
-// SetMany stores multiple items in cache
+// SetMany stores multiple items in cache.
 func (c *MemoryCache[T]) SetMany(_ context.Context, items map[string]*T, ttl time.Duration) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -141,7 +141,7 @@ func (c *MemoryCache[T]) SetMany(_ context.Context, items map[string]*T, ttl tim
 	return nil
 }
 
-// DeleteMany removes multiple items from cache
+// DeleteMany removes multiple items from cache.
 func (c *MemoryCache[T]) DeleteMany(_ context.Context, keys []string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -153,5 +153,5 @@ func (c *MemoryCache[T]) DeleteMany(_ context.Context, keys []string) error {
 	return nil
 }
 
-// Ensure MemoryCache implements MultiCache
+// Ensure MemoryCache implements MultiCache.
 var _ MultiCache[any] = (*MemoryCache[any])(nil)

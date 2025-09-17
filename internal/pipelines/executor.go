@@ -8,32 +8,43 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/runs"
 	"github.com/archesai/archesai/internal/tools"
-	"github.com/google/uuid"
 )
 
-// QueueService defines the interface for workflow queueing
+// QueueService defines the interface for workflow queueing.
 type QueueService interface {
 	EnqueueRun(ctx context.Context, runID uuid.UUID) error
 	DequeueRun(ctx context.Context, status string) (*uuid.UUID, error)
 }
 
-// ToolRunner defines the interface for executing tools
+// ToolRunner defines the interface for executing tools.
 type ToolRunner interface {
 	// Run executes a tool with the given configuration and input
-	Run(ctx context.Context, tool *tools.Tool, config map[string]interface{}, input interface{}) (interface{}, error)
+	Run(
+		ctx context.Context,
+		tool *tools.Tool,
+		config map[string]interface{},
+		input interface{},
+	) (interface{}, error)
 }
 
-// ToolRunnerFunc is an adapter to allow functions to be used as ToolRunner
+// ToolRunnerFunc is an adapter to allow functions to be used as ToolRunner.
 type ToolRunnerFunc func(ctx context.Context, tool *tools.Tool, config map[string]interface{}, input interface{}) (interface{}, error)
 
-// Run implements ToolRunner
-func (f ToolRunnerFunc) Run(ctx context.Context, tool *tools.Tool, config map[string]interface{}, input interface{}) (interface{}, error) {
+// Run implements ToolRunner.
+func (f ToolRunnerFunc) Run(
+	ctx context.Context,
+	tool *tools.Tool,
+	config map[string]interface{},
+	input interface{},
+) (interface{}, error) {
 	return f(ctx, tool, config, input)
 }
 
-// WorkflowExecutor handles the execution of workflow pipelines
+// WorkflowExecutor handles the execution of workflow pipelines.
 type WorkflowExecutor struct {
 	pipelineRepo    Repository
 	runRepo         runs.Repository
@@ -47,7 +58,7 @@ type WorkflowExecutor struct {
 	executions      map[uuid.UUID]*ExecutionContext
 }
 
-// ExecutionContext tracks the state of a running pipeline
+// ExecutionContext tracks the state of a running pipeline.
 type ExecutionContext struct {
 	RunID      uuid.UUID
 	PipelineID uuid.UUID
@@ -61,8 +72,17 @@ type ExecutionContext struct {
 	mu         sync.RWMutex
 }
 
-// NewWorkflowExecutor creates a new workflow executor
-func NewWorkflowExecutor(pipelineRepo Repository, runRepo runs.Repository, toolRepo tools.Repository, pipelineManager *PipelineManager, runner ToolRunner, queue QueueService, logger *slog.Logger, maxParallel int) *WorkflowExecutor {
+// NewWorkflowExecutor creates a new workflow executor.
+func NewWorkflowExecutor(
+	pipelineRepo Repository,
+	runRepo runs.Repository,
+	toolRepo tools.Repository,
+	pipelineManager *PipelineManager,
+	runner ToolRunner,
+	queue QueueService,
+	logger *slog.Logger,
+	maxParallel int,
+) *WorkflowExecutor {
 	if maxParallel <= 0 {
 		maxParallel = 4 // Default parallelism
 	}
@@ -79,8 +99,12 @@ func NewWorkflowExecutor(pipelineRepo Repository, runRepo runs.Repository, toolR
 	}
 }
 
-// ExecutePipeline starts the execution of a pipeline
-func (we *WorkflowExecutor) ExecutePipeline(ctx context.Context, pipelineID uuid.UUID, input map[string]interface{}) (*runs.Run, error) {
+// ExecutePipeline starts the execution of a pipeline.
+func (we *WorkflowExecutor) ExecutePipeline(
+	ctx context.Context,
+	pipelineID uuid.UUID,
+	input map[string]interface{},
+) (*runs.Run, error) {
 	// Get pipeline
 	pipeline, err := we.pipelineRepo.Get(ctx, pipelineID)
 	if err != nil {
@@ -126,7 +150,7 @@ func (we *WorkflowExecutor) ExecutePipeline(ctx context.Context, pipelineID uuid
 	return createdRun, nil
 }
 
-// executeRun performs the actual pipeline execution
+// executeRun performs the actual pipeline execution.
 func (we *WorkflowExecutor) executeRun(ctx context.Context, runID uuid.UUID) {
 	we.logger.Info("Starting pipeline execution", "runId", runID)
 
@@ -186,7 +210,7 @@ func (we *WorkflowExecutor) executeRun(ctx context.Context, runID uuid.UUID) {
 	we.handleRunSuccess(ctx, run)
 }
 
-// buildDAG creates a DAG from pipeline steps
+// buildDAG creates a DAG from pipeline steps.
 func (we *WorkflowExecutor) buildDAG(ctx context.Context, pipelineID uuid.UUID) (*DAG, error) {
 	we.logger.Info("Building DAG for pipeline", "pipelineID", pipelineID)
 
@@ -199,7 +223,7 @@ func (we *WorkflowExecutor) buildDAG(ctx context.Context, pipelineID uuid.UUID) 
 	return NewDAG(steps, dependencies)
 }
 
-// handleRunFailure updates the run status to failed
+// handleRunFailure updates the run status to failed.
 func (we *WorkflowExecutor) handleRunFailure(ctx context.Context, run *runs.Run, err error) {
 	we.logger.Error("Pipeline execution failed", "error", err, "runId", run.ID)
 
@@ -215,7 +239,7 @@ func (we *WorkflowExecutor) handleRunFailure(ctx context.Context, run *runs.Run,
 	}
 }
 
-// handleRunSuccess updates the run status to completed
+// handleRunSuccess updates the run status to completed.
 func (we *WorkflowExecutor) handleRunSuccess(ctx context.Context, run *runs.Run) {
 	we.logger.Info("Pipeline execution completed", "runId", run.ID)
 
@@ -229,7 +253,7 @@ func (we *WorkflowExecutor) handleRunSuccess(ctx context.Context, run *runs.Run)
 	}
 }
 
-// GetExecutionStatus returns the current status of a run
+// GetExecutionStatus returns the current status of a run.
 func (we *WorkflowExecutor) GetExecutionStatus(runID uuid.UUID) (*ExecutionContext, bool) {
 	we.mu.RLock()
 	defer we.mu.RUnlock()
@@ -238,14 +262,18 @@ func (we *WorkflowExecutor) GetExecutionStatus(runID uuid.UUID) (*ExecutionConte
 	return exec, exists
 }
 
-// dagToolExecutor adapts WorkflowExecutor to work with DAGExecutor
+// dagToolExecutor adapts WorkflowExecutor to work with DAGExecutor.
 type dagToolExecutor struct {
 	executor *WorkflowExecutor
 	runID    uuid.UUID
 }
 
-// Execute implements ToolExecutor interface for DAGExecutor
-func (dte *dagToolExecutor) Execute(ctx context.Context, tool *tools.Tool, input interface{}) (interface{}, error) {
+// Execute implements ToolExecutor interface for DAGExecutor.
+func (dte *dagToolExecutor) Execute(
+	ctx context.Context,
+	tool *tools.Tool,
+	input interface{},
+) (interface{}, error) {
 	// Get the step configuration from the execution context
 	dte.executor.mu.RLock()
 	execCtx, exists := dte.executor.executions[dte.runID]
@@ -271,20 +299,25 @@ func (dte *dagToolExecutor) Execute(ctx context.Context, tool *tools.Tool, input
 	return result, nil
 }
 
-// ContainerToolRunner executes tools in containers
+// ContainerToolRunner executes tools in containers.
 type ContainerToolRunner struct {
 	logger *slog.Logger
 }
 
-// NewContainerToolRunner creates a new container-based tool runner
+// NewContainerToolRunner creates a new container-based tool runner.
 func NewContainerToolRunner(logger *slog.Logger) *ContainerToolRunner {
 	return &ContainerToolRunner{
 		logger: logger,
 	}
 }
 
-// Run executes a tool in a container
-func (ctr *ContainerToolRunner) Run(_ context.Context, tool *tools.Tool, config map[string]interface{}, input interface{}) (interface{}, error) {
+// Run executes a tool in a container.
+func (ctr *ContainerToolRunner) Run(
+	_ context.Context,
+	tool *tools.Tool,
+	config map[string]interface{},
+	input interface{},
+) (interface{}, error) {
 	_ = input // will be used in actual implementation
 	ctr.logger.Info("Executing tool in container",
 		"toolID", tool.ID,
@@ -310,20 +343,25 @@ func (ctr *ContainerToolRunner) Run(_ context.Context, tool *tools.Tool, config 
 	}, nil
 }
 
-// HTTPToolRunner executes tools via HTTP API calls
+// HTTPToolRunner executes tools via HTTP API calls.
 type HTTPToolRunner struct {
 	logger *slog.Logger
 }
 
-// NewHTTPToolRunner creates a new HTTP-based tool runner
+// NewHTTPToolRunner creates a new HTTP-based tool runner.
 func NewHTTPToolRunner(logger *slog.Logger) *HTTPToolRunner {
 	return &HTTPToolRunner{
 		logger: logger,
 	}
 }
 
-// Run executes a tool via HTTP API
-func (htr *HTTPToolRunner) Run(_ context.Context, tool *tools.Tool, config map[string]interface{}, input interface{}) (interface{}, error) {
+// Run executes a tool via HTTP API.
+func (htr *HTTPToolRunner) Run(
+	_ context.Context,
+	tool *tools.Tool,
+	config map[string]interface{},
+	input interface{},
+) (interface{}, error) {
 	_ = input // will be used in actual implementation
 	htr.logger.Info("Executing tool via HTTP",
 		"toolID", tool.ID,
@@ -348,13 +386,13 @@ func (htr *HTTPToolRunner) Run(_ context.Context, tool *tools.Tool, config map[s
 	}, nil
 }
 
-// CompositeToolRunner routes to different runners based on tool type
+// CompositeToolRunner routes to different runners based on tool type.
 type CompositeToolRunner struct {
 	runners map[string]ToolRunner
 	logger  *slog.Logger
 }
 
-// NewCompositeToolRunner creates a runner that delegates to specific runners
+// NewCompositeToolRunner creates a runner that delegates to specific runners.
 func NewCompositeToolRunner(logger *slog.Logger) *CompositeToolRunner {
 	return &CompositeToolRunner{
 		runners: make(map[string]ToolRunner),
@@ -362,13 +400,18 @@ func NewCompositeToolRunner(logger *slog.Logger) *CompositeToolRunner {
 	}
 }
 
-// RegisterRunner registers a runner for a specific tool type
+// RegisterRunner registers a runner for a specific tool type.
 func (ctr *CompositeToolRunner) RegisterRunner(toolType string, runner ToolRunner) {
 	ctr.runners[toolType] = runner
 }
 
-// Run delegates to the appropriate runner based on tool type
-func (ctr *CompositeToolRunner) Run(ctx context.Context, tool *tools.Tool, config map[string]interface{}, input interface{}) (interface{}, error) {
+// Run delegates to the appropriate runner based on tool type.
+func (ctr *CompositeToolRunner) Run(
+	ctx context.Context,
+	tool *tools.Tool,
+	config map[string]interface{},
+	input interface{},
+) (interface{}, error) {
 	// Determine tool type from configuration or metadata
 	toolType := "container" // Default type
 	if typeVal, ok := config["type"].(string); ok {

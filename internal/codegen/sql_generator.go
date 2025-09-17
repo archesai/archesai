@@ -7,36 +7,36 @@ import (
 	"github.com/speakeasy-api/openapi/jsonschema/oas3"
 )
 
-// Common constants for SQL generation
+// Common constants for SQL generation.
 const (
 	fieldUpdatedAt = "updatedAt"
 	fieldCreatedAt = "createdAt"
 	fieldID        = "id"
 )
 
-// Dialect represents the SQL dialect to use for generation
+// Dialect represents the SQL dialect to use for generation.
 type Dialect string
 
 const (
-	// PostgreSQLDialect generates PostgreSQL-compatible SQL
+	// PostgreSQLDialect generates PostgreSQL-compatible SQL.
 	PostgreSQLDialect Dialect = "postgresql"
-	// SQLiteDialect generates SQLite-compatible SQL
+	// SQLiteDialect generates SQLite-compatible SQL.
 	SQLiteDialect Dialect = "sqlite"
 )
 
-// SQLSchemaGenerator generates SQL schema (CREATE TABLE) statements from OpenAPI schemas
+// SQLSchemaGenerator generates SQL schema (CREATE TABLE) statements from OpenAPI schemas.
 type SQLSchemaGenerator struct {
 	dialect Dialect
 }
 
-// NewSQLSchemaGenerator creates a new SQL schema generator
+// NewSQLSchemaGenerator creates a new SQL schema generator.
 func NewSQLSchemaGenerator(dialect string) *SQLSchemaGenerator {
 	return &SQLSchemaGenerator{
 		dialect: Dialect(dialect),
 	}
 }
 
-// GenerateCreateTable generates a CREATE TABLE statement for a schema
+// GenerateCreateTable generates a CREATE TABLE statement for a schema.
 func (g *SQLSchemaGenerator) GenerateCreateTable(schema *ParsedSchema) (string, error) {
 	if schema.XCodegen == nil || schema.XCodegen.Database.Table == "" {
 		return "", fmt.Errorf("schema %s has no database configuration", schema.Name)
@@ -53,17 +53,27 @@ func (g *SQLSchemaGenerator) GenerateCreateTable(schema *ParsedSchema) (string, 
 	columns := []string{}
 
 	// Add id column (from Base.yaml)
-	columns = append(columns, g.generateColumn("id", "UUID", false, "PRIMARY KEY DEFAULT gen_random_uuid()"))
+	columns = append(
+		columns,
+		g.generateColumn("id", "UUID", false, "PRIMARY KEY DEFAULT gen_random_uuid()"),
+	)
 
 	// Add timestamp columns (from Base.yaml)
-	columns = append(columns, g.generateColumn("created_at", "TIMESTAMPTZ", false, "DEFAULT CURRENT_TIMESTAMP"))
-	columns = append(columns, g.generateColumn("updated_at", "TIMESTAMPTZ", false, "DEFAULT CURRENT_TIMESTAMP"))
+	columns = append(
+		columns,
+		g.generateColumn("created_at", "TIMESTAMPTZ", false, "DEFAULT CURRENT_TIMESTAMP"),
+	)
+	columns = append(
+		columns,
+		g.generateColumn("updated_at", "TIMESTAMPTZ", false, "DEFAULT CURRENT_TIMESTAMP"),
+	)
 
 	// Add columns from properties
 	if schema.Properties != nil {
 		for name := range schema.Properties.Keys() {
 			propRef := schema.Properties.GetOrZero(name)
-			if name == "id" || name == "createdAt" || name == "updatedAt" { //nolint:goconst // field names
+			if name == "id" || name == "createdAt" ||
+				name == "updatedAt" { //nolint:goconst // field names
 				continue // Already added from Base
 			}
 
@@ -91,8 +101,12 @@ func (g *SQLSchemaGenerator) GenerateCreateTable(schema *ParsedSchema) (string, 
 	return b.String(), nil
 }
 
-// generateColumn generates a column definition
-func (g *SQLSchemaGenerator) generateColumn(name, sqlType string, nullable bool, extra string) string {
+// generateColumn generates a column definition.
+func (g *SQLSchemaGenerator) generateColumn(
+	name, sqlType string,
+	nullable bool,
+	extra string,
+) string {
 	col := fmt.Sprintf("%s %s", name, sqlType)
 	if !nullable {
 		col += " NOT NULL"
@@ -103,8 +117,12 @@ func (g *SQLSchemaGenerator) generateColumn(name, sqlType string, nullable bool,
 	return col
 }
 
-// generateColumnFromProperty generates a column definition from an OpenAPI property
-func (g *SQLSchemaGenerator) generateColumnFromProperty(name string, prop *oas3.Schema, required []string) string {
+// generateColumnFromProperty generates a column definition from an OpenAPI property.
+func (g *SQLSchemaGenerator) generateColumnFromProperty(
+	name string,
+	prop *oas3.Schema,
+	required []string,
+) string {
 	// Infer from OpenAPI type
 	columnName := ToSnakeCase(name)
 	sqlType := g.inferSQLType(prop)
@@ -114,7 +132,7 @@ func (g *SQLSchemaGenerator) generateColumnFromProperty(name string, prop *oas3.
 	return g.generateColumn(columnName, sqlType, nullable, extra)
 }
 
-// inferSQLType infers SQL type from OpenAPI property
+// inferSQLType infers SQL type from OpenAPI property.
 func (g *SQLSchemaGenerator) inferSQLType(prop *oas3.Schema) string {
 	// Get the types array from the schema
 	types := prop.GetType()
@@ -162,7 +180,7 @@ func (g *SQLSchemaGenerator) inferSQLType(prop *oas3.Schema) string {
 	return "TEXT" //nolint:goconst // default SQL type
 }
 
-// generateForeignKeyConstraint generates a foreign key constraint
+// generateForeignKeyConstraint generates a foreign key constraint.
 func (g *SQLSchemaGenerator) generateForeignKeyConstraint(rel struct {
 	Field      string                            `json:"field" yaml:"field"`
 	OnDelete   XCodegenDatabaseRelationsOnDelete `json:"onDelete,omitempty,omitzero" yaml:"onDelete,omitempty"`
@@ -187,7 +205,7 @@ func (g *SQLSchemaGenerator) generateForeignKeyConstraint(rel struct {
 	return constraint
 }
 
-// GenerateIndices generates CREATE INDEX statements
+// GenerateIndices generates CREATE INDEX statements.
 func (g *SQLSchemaGenerator) GenerateIndices(schema *ParsedSchema) ([]string, error) {
 	if schema.XCodegen == nil || schema.XCodegen.Database.Table == "" {
 		return nil, nil
@@ -209,7 +227,12 @@ func (g *SQLSchemaGenerator) GenerateIndices(schema *ParsedSchema) ([]string, er
 		if idx.Unique {
 			stmt += "UNIQUE "
 		}
-		stmt += fmt.Sprintf("INDEX %s ON %s (%s)", indexName, tableName, strings.Join(idx.Fields, ", "))
+		stmt += fmt.Sprintf(
+			"INDEX %s ON %s (%s)",
+			indexName,
+			tableName,
+			strings.Join(idx.Fields, ", "),
+		)
 
 		if idx.Where != "" {
 			stmt += " WHERE " + idx.Where
@@ -222,19 +245,19 @@ func (g *SQLSchemaGenerator) GenerateIndices(schema *ParsedSchema) ([]string, er
 	return indices, nil
 }
 
-// SQLQueryGenerator generates SQLC query files from OpenAPI schemas
+// SQLQueryGenerator generates SQLC query files from OpenAPI schemas.
 type SQLQueryGenerator struct {
 	dialect Dialect // "postgresql" or "sqlite"
 }
 
-// NewSQLQueryGenerator creates a new SQL query generator
+// NewSQLQueryGenerator creates a new SQL query generator.
 func NewSQLQueryGenerator(dialect Dialect) *SQLQueryGenerator {
 	return &SQLQueryGenerator{
 		dialect: dialect,
 	}
 }
 
-// GenerateQueries generates all SQL queries for a schema
+// GenerateQueries generates all SQL queries for a schema.
 func (g *SQLQueryGenerator) GenerateQueries(schema *ParsedSchema) (string, error) {
 	if schema.XCodegen == nil {
 		return "", fmt.Errorf("schema %s has no x-codegen configuration", schema.Name)
@@ -290,7 +313,7 @@ func (g *SQLQueryGenerator) GenerateQueries(schema *ParsedSchema) (string, error
 	return b.String(), nil
 }
 
-// generateCreateQuery generates an INSERT query
+// generateCreateQuery generates an INSERT query.
 func (g *SQLQueryGenerator) generateCreateQuery(schema *ParsedSchema, tableName string) string {
 	var b strings.Builder
 	b.WriteString(fmt.Sprintf("-- name: Create%s :one\n", schema.Name))
@@ -320,7 +343,8 @@ func (g *SQLQueryGenerator) generateCreateQuery(schema *ParsedSchema, tableName 
 			// Required fields: accountId, userID, providerId from YAML map to
 			// account_id, user_id, provider_id in database
 			isRequired := false
-			if columnName == "account_id" || columnName == "user_id" || columnName == "provider_id" {
+			if columnName == "account_id" || columnName == "user_id" ||
+				columnName == "provider_id" {
 				isRequired = true
 			}
 
@@ -341,14 +365,14 @@ func (g *SQLQueryGenerator) generateCreateQuery(schema *ParsedSchema, tableName 
 	return b.String()
 }
 
-// generateGetQuery generates a SELECT by ID query
+// generateGetQuery generates a SELECT by ID query.
 func (g *SQLQueryGenerator) generateGetQuery(schema *ParsedSchema, tableName string) string {
 	return fmt.Sprintf(`-- name: Get%s :one
 SELECT * FROM %s
 WHERE id = $1 LIMIT 1`, schema.Name, tableName)
 }
 
-// generateUpdateQuery generates an UPDATE query
+// generateUpdateQuery generates an UPDATE query.
 func (g *SQLQueryGenerator) generateUpdateQuery(schema *ParsedSchema, tableName string) string {
 	var b strings.Builder
 	b.WriteString(fmt.Sprintf("-- name: Update%s :one\n", schema.Name))
@@ -370,7 +394,15 @@ func (g *SQLQueryGenerator) generateUpdateQuery(schema *ParsedSchema, tableName 
 			columnName := g.getColumnName(name)
 			// Use COALESCE for optional fields
 			if !Contains(schema.Required, name) {
-				updates = append(updates, fmt.Sprintf("    %s = COALESCE(sqlc.narg(%s), %s)", columnName, columnName, columnName))
+				updates = append(
+					updates,
+					fmt.Sprintf(
+						"    %s = COALESCE(sqlc.narg(%s), %s)",
+						columnName,
+						columnName,
+						columnName,
+					),
+				)
 			} else {
 				updates = append(updates, fmt.Sprintf("    %s = sqlc.arg(%s)", columnName, columnName))
 			}
@@ -389,14 +421,14 @@ func (g *SQLQueryGenerator) generateUpdateQuery(schema *ParsedSchema, tableName 
 	return b.String()
 }
 
-// generateDeleteQuery generates a DELETE query
+// generateDeleteQuery generates a DELETE query.
 func (g *SQLQueryGenerator) generateDeleteQuery(schema *ParsedSchema, tableName string) string {
 	return fmt.Sprintf(`-- name: Delete%s :exec
 DELETE FROM %s
 WHERE id = $1;`, schema.Name, tableName)
 }
 
-// generateListQuery generates a SELECT list query
+// generateListQuery generates a SELECT list query.
 func (g *SQLQueryGenerator) generateListQuery(schema *ParsedSchema, tableName string) string {
 	return fmt.Sprintf(`-- name: List%ss :many
 SELECT * FROM %s
@@ -404,14 +436,18 @@ ORDER BY created_at DESC
 LIMIT $1 OFFSET $2;`, schema.Name, tableName)
 }
 
-// generateAdditionalMethodQuery generates query for additional repository methods
-func (g *SQLQueryGenerator) generateAdditionalMethodQuery(_ *ParsedSchema, tableName string, method struct {
-	Cache   bool                                       `json:"cache,omitempty,omitzero" yaml:"cache,omitempty"`
-	Name    string                                     `json:"name" yaml:"name"`
-	Params  []string                                   `json:"params" yaml:"params"`
-	Query   string                                     `json:"query,omitempty,omitzero" yaml:"query,omitempty"`
-	Returns XCodegenRepositoryAdditionalMethodsReturns `json:"returns" yaml:"returns"`
-}) string {
+// generateAdditionalMethodQuery generates query for additional repository methods.
+func (g *SQLQueryGenerator) generateAdditionalMethodQuery(
+	_ *ParsedSchema,
+	tableName string,
+	method struct {
+		Cache   bool                                       `json:"cache,omitempty,omitzero" yaml:"cache,omitempty"`
+		Name    string                                     `json:"name" yaml:"name"`
+		Params  []string                                   `json:"params" yaml:"params"`
+		Query   string                                     `json:"query,omitempty,omitzero" yaml:"query,omitempty"`
+		Returns XCodegenRepositoryAdditionalMethodsReturns `json:"returns" yaml:"returns"`
+	},
+) string {
 	// If custom query is provided, use it
 	if method.Query != "" {
 		sqlcType := ":one"
@@ -461,7 +497,7 @@ WHERE %s = $1;`, method.Name, tableName, columnName)
 	return ""
 }
 
-// formatCustomQuery formats a custom query from database configuration
+// formatCustomQuery formats a custom query from database configuration.
 func (g *SQLQueryGenerator) formatCustomQuery(query struct {
 	Description string                      `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 	Name        string                      `json:"name" yaml:"name"`
@@ -486,7 +522,7 @@ func (g *SQLQueryGenerator) formatCustomQuery(query struct {
 	return b.String()
 }
 
-// getColumnName gets the database column name for a property
+// getColumnName gets the database column name for a property.
 func (g *SQLQueryGenerator) getColumnName(name string) string {
 	return ToSnakeCase(name)
 }

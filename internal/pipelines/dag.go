@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/archesai/archesai/internal/tools"
 	"github.com/google/uuid"
+
+	"github.com/archesai/archesai/internal/tools"
 )
 
-// DAGNode represents a node in the workflow DAG
+// DAGNode represents a node in the workflow DAG.
 type DAGNode struct {
 	ID           uuid.UUID
 	Step         *PipelineStep
@@ -20,10 +21,10 @@ type DAGNode struct {
 	Error        error
 }
 
-// NodeStatus represents the execution status of a DAG node
+// NodeStatus represents the execution status of a DAG node.
 type NodeStatus int
 
-// Node status constants
+// Node status constants.
 const (
 	NodeStatusPending   NodeStatus = iota // Node is waiting for dependencies
 	NodeStatusReady                       // Node is ready to execute
@@ -33,14 +34,14 @@ const (
 	NodeStatusSkipped                     // Node was skipped due to upstream failure
 )
 
-// DAG represents a Directed Acyclic Graph for workflow execution
+// DAG represents a Directed Acyclic Graph for workflow execution.
 type DAG struct {
 	Nodes     map[uuid.UUID]*DAGNode
 	RootNodes []*DAGNode // Nodes with no dependencies
 	mu        sync.RWMutex
 }
 
-// NewDAG creates a new DAG from pipeline steps
+// NewDAG creates a new DAG from pipeline steps.
 func NewDAG(steps []PipelineStep, dependencies map[uuid.UUID][]uuid.UUID) (*DAG, error) {
 	dag := &DAG{
 		Nodes:     make(map[uuid.UUID]*DAGNode),
@@ -94,7 +95,7 @@ func NewDAG(steps []PipelineStep, dependencies map[uuid.UUID][]uuid.UUID) (*DAG,
 	return dag, nil
 }
 
-// ValidateCycles checks if the DAG contains any cycles
+// ValidateCycles checks if the DAG contains any cycles.
 func (d *DAG) ValidateCycles() error {
 	visited := make(map[uuid.UUID]bool)
 	recStack := make(map[uuid.UUID]bool)
@@ -109,7 +110,7 @@ func (d *DAG) ValidateCycles() error {
 	return nil
 }
 
-// hasCycleDFS is a helper function for cycle detection using DFS
+// hasCycleDFS is a helper function for cycle detection using DFS.
 func (d *DAG) hasCycleDFS(nodeID uuid.UUID, visited, recStack map[uuid.UUID]bool) bool {
 	visited[nodeID] = true
 	recStack[nodeID] = true
@@ -129,7 +130,7 @@ func (d *DAG) hasCycleDFS(nodeID uuid.UUID, visited, recStack map[uuid.UUID]bool
 	return false
 }
 
-// TopologicalSort returns nodes in topological order
+// TopologicalSort returns nodes in topological order.
 func (d *DAG) TopologicalSort() ([]*DAGNode, error) {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -168,7 +169,7 @@ func (d *DAG) TopologicalSort() ([]*DAGNode, error) {
 	return result, nil
 }
 
-// GetReadyNodes returns all nodes that are ready to execute
+// GetReadyNodes returns all nodes that are ready to execute.
 func (d *DAG) GetReadyNodes() []*DAGNode {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -182,7 +183,7 @@ func (d *DAG) GetReadyNodes() []*DAGNode {
 	return ready
 }
 
-// MarkNodeCompleted marks a node as completed and updates dependent nodes
+// MarkNodeCompleted marks a node as completed and updates dependent nodes.
 func (d *DAG) MarkNodeCompleted(nodeID uuid.UUID, result interface{}) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -203,7 +204,7 @@ func (d *DAG) MarkNodeCompleted(nodeID uuid.UUID, result interface{}) {
 	}
 }
 
-// MarkNodeFailed marks a node as failed and skips dependent nodes
+// MarkNodeFailed marks a node as failed and skips dependent nodes.
 func (d *DAG) MarkNodeFailed(nodeID uuid.UUID, err error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -220,7 +221,7 @@ func (d *DAG) MarkNodeFailed(nodeID uuid.UUID, err error) {
 	d.skipDependents(node)
 }
 
-// skipDependents recursively skips all dependent nodes
+// skipDependents recursively skips all dependent nodes.
 func (d *DAG) skipDependents(node *DAGNode) {
 	for _, dependent := range node.Dependents {
 		if dependent.Status != NodeStatusSkipped {
@@ -230,7 +231,7 @@ func (d *DAG) skipDependents(node *DAGNode) {
 	}
 }
 
-// areAllDependenciesCompleted checks if all dependencies of a node are completed
+// areAllDependenciesCompleted checks if all dependencies of a node are completed.
 func (d *DAG) areAllDependenciesCompleted(node *DAGNode) bool {
 	for _, dep := range node.Dependencies {
 		if dep.Status != NodeStatusCompleted {
@@ -240,7 +241,7 @@ func (d *DAG) areAllDependenciesCompleted(node *DAGNode) bool {
 	return true
 }
 
-// GetExecutionPlan returns the execution plan as levels of parallel tasks
+// GetExecutionPlan returns the execution plan as levels of parallel tasks.
 func (d *DAG) GetExecutionPlan() ([][]uuid.UUID, error) {
 	sorted, err := d.TopologicalSort()
 	if err != nil {
@@ -271,19 +272,19 @@ func (d *DAG) GetExecutionPlan() ([][]uuid.UUID, error) {
 	return levels, nil
 }
 
-// DAGExecutor handles the execution of a DAG
+// DAGExecutor handles the execution of a DAG.
 type DAGExecutor struct {
 	dag         *DAG
 	executor    ToolExecutor
 	maxParallel int
 }
 
-// ToolExecutor defines the interface for executing tools
+// ToolExecutor defines the interface for executing tools.
 type ToolExecutor interface {
 	Execute(ctx context.Context, tool *tools.Tool, input interface{}) (interface{}, error)
 }
 
-// NewDAGExecutor creates a new DAG executor
+// NewDAGExecutor creates a new DAG executor.
 func NewDAGExecutor(dag *DAG, executor ToolExecutor, maxParallel int) *DAGExecutor {
 	if maxParallel <= 0 {
 		maxParallel = 1
@@ -295,7 +296,7 @@ func NewDAGExecutor(dag *DAG, executor ToolExecutor, maxParallel int) *DAGExecut
 	}
 }
 
-// Execute runs the DAG execution
+// Execute runs the DAG execution.
 func (e *DAGExecutor) Execute(ctx context.Context) error {
 	// Get execution plan
 	plan, err := e.dag.GetExecutionPlan()
@@ -356,7 +357,7 @@ func (e *DAGExecutor) Execute(ctx context.Context) error {
 	return nil
 }
 
-// executeNode executes a single node
+// executeNode executes a single node.
 func (e *DAGExecutor) executeNode(ctx context.Context, node *DAGNode) error {
 	node.Status = NodeStatusRunning
 
@@ -375,7 +376,7 @@ func (e *DAGExecutor) executeNode(ctx context.Context, node *DAGNode) error {
 	return nil
 }
 
-// collectInputs collects outputs from dependencies
+// collectInputs collects outputs from dependencies.
 func (e *DAGExecutor) collectInputs(node *DAGNode) map[uuid.UUID]interface{} {
 	inputs := make(map[uuid.UUID]interface{})
 	for _, dep := range node.Dependencies {
@@ -387,8 +388,12 @@ func (e *DAGExecutor) collectInputs(node *DAGNode) map[uuid.UUID]interface{} {
 }
 
 // executeStep executes a pipeline step
-// This is a placeholder - you'll need to implement actual tool execution
-func (e *DAGExecutor) executeStep(_ context.Context, step *PipelineStep, inputs map[uuid.UUID]interface{}) (interface{}, error) {
+// This is a placeholder - you'll need to implement actual tool execution.
+func (e *DAGExecutor) executeStep(
+	_ context.Context,
+	step *PipelineStep,
+	inputs map[uuid.UUID]interface{},
+) (interface{}, error) {
 	// TODO: Implement actual tool execution
 	// This would typically:
 	// 1. Load the tool configuration

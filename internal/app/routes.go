@@ -1,6 +1,8 @@
 package app
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/artifacts"
 	"github.com/archesai/archesai/internal/health"
@@ -11,10 +13,9 @@ import (
 	"github.com/archesai/archesai/internal/runs"
 	"github.com/archesai/archesai/internal/tools"
 	"github.com/archesai/archesai/internal/users"
-	"github.com/labstack/echo/v4"
 )
 
-// RegisterRoutes registers all application routes with the Echo server
+// RegisterRoutes registers all application routes with the Echo server.
 func (a *App) RegisterRoutes(e *echo.Echo) {
 	// API v1 group
 	v1 := e.Group("/api/v1")

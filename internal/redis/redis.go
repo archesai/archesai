@@ -11,35 +11,35 @@ import (
 	"time"
 )
 
-// Default configuration values
+// Default configuration values.
 const (
-	// DefaultMaxRetries is the default number of retries
+	// DefaultMaxRetries is the default number of retries.
 	DefaultMaxRetries = 3
 
-	// DefaultDialTimeout is the default dial timeout
+	// DefaultDialTimeout is the default dial timeout.
 	DefaultDialTimeout = 5 * time.Second
 
-	// DefaultReadTimeout is the default read timeout
+	// DefaultReadTimeout is the default read timeout.
 	DefaultReadTimeout = 3 * time.Second
 
-	// DefaultWriteTimeout is the default write timeout
+	// DefaultWriteTimeout is the default write timeout.
 	DefaultWriteTimeout = 3 * time.Second
 
-	// DefaultPoolSize is the default connection pool size
+	// DefaultPoolSize is the default connection pool size.
 	DefaultPoolSize = 10
 
-	// DefaultMinIdleConns is the default minimum idle connections
+	// DefaultMinIdleConns is the default minimum idle connections.
 	DefaultMinIdleConns = 5
 
-	// DefaultDB is the default Redis database
+	// DefaultDB is the default Redis database.
 	DefaultDB = 0
 )
 
-// Key prefixes for different subsystems
+// Key prefixes for different subsystems.
 const (
-	// QueueKeyPrefix is the prefix for queue keys
+	// QueueKeyPrefix is the prefix for queue keys.
 	QueueKeyPrefix = "queue:"
 
-	// PubSubKeyPrefix is the prefix for pubsub channel names
+	// PubSubKeyPrefix is the prefix for pubsub channel names.
 	PubSubKeyPrefix = "pubsub:"
 )

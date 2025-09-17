@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// webCmd represents the web command
+// webCmd represents the web command.
 var webCmd = &cobra.Command{
 	Use:   "web",
 	Short: "Run the web UI server",
@@ -32,7 +32,8 @@ func init() {
 
 	// Local flags for web server
 	webCmd.Flags().IntVar(&webPort, "port", 3000, "Port to bind the web server to")
-	webCmd.Flags().StringVar(&webAPIURL, "api-url", "http://localhost:8080", "URL of the API server to proxy requests to")
+	webCmd.Flags().
+		StringVar(&webAPIURL, "api-url", "http://localhost:8080", "URL of the API server to proxy requests to")
 
 	// Bind to viper
 	if err := viper.BindPFlag("web.port", webCmd.Flags().Lookup("port")); err != nil {

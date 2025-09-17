@@ -8,14 +8,14 @@ import (
 	"github.com/archesai/archesai/internal/database"
 )
 
-// Service handles health check business logic
+// Service handles health check business logic.
 type Service struct {
 	db     *database.Database
 	logger *slog.Logger
 	start  time.Time
 }
 
-// NewService creates a new health service
+// NewService creates a new health service.
 func NewService(db *database.Database, logger *slog.Logger) *Service {
 	return &Service{
 		db:     db,
@@ -24,7 +24,7 @@ func NewService(db *database.Database, logger *slog.Logger) *Service {
 	}
 }
 
-// CheckHealth performs health checks on all services
+// CheckHealth performs health checks on all services.
 func (s *Service) CheckHealth(ctx context.Context) (*HealthResponse, error) {
 	// Check database
 	dbStatus := StatusHealthy
@@ -51,7 +51,7 @@ func (s *Service) CheckHealth(ctx context.Context) (*HealthResponse, error) {
 	return response, nil
 }
 
-// checkDatabase verifies database connectivity
+// checkDatabase verifies database connectivity.
 func (s *Service) checkDatabase(_ context.Context) error {
 	// Simple ping check - could be enhanced with actual query
 	// For now, if we have a db connection, we consider it healthy

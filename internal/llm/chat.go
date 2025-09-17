@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-// ChatPersona represents a chat agent/assistant persona
+// ChatPersona represents a chat agent/assistant persona.
 type ChatPersona struct {
 	Name         string
 	SystemPrompt string
@@ -14,14 +14,14 @@ type ChatPersona struct {
 	Temperature  float32
 }
 
-// ChatSession manages a conversation with an LLM
+// ChatSession manages a conversation with an LLM.
 type ChatSession struct {
 	Messages []Message
 	Persona  *ChatPersona
 	Context  map[string]interface{}
 }
 
-// ChatClient provides a high-level interface for chat conversations
+// ChatClient provides a high-level interface for chat conversations.
 type ChatClient interface {
 	// NewSession creates a new chat session
 	NewSession(persona *ChatPersona) *ChatSession
@@ -30,20 +30,24 @@ type ChatClient interface {
 	SendMessage(ctx context.Context, session *ChatSession, content string) (*Message, error)
 
 	// SendMessageStream sends a message and returns a streaming response
-	SendMessageStream(ctx context.Context, session *ChatSession, content string) (ChatCompletionStream, error)
+	SendMessageStream(
+		ctx context.Context,
+		session *ChatSession,
+		content string,
+	) (ChatCompletionStream, error)
 }
 
-// DefaultChatClient implements ChatClient using an LLM provider
+// DefaultChatClient implements ChatClient using an LLM provider.
 type DefaultChatClient struct {
 	llm LLM
 }
 
-// NewChatClient creates a new chat client
+// NewChatClient creates a new chat client.
 func NewChatClient(llm LLM) ChatClient {
 	return &DefaultChatClient{llm: llm}
 }
 
-// NewSession creates a new chat session
+// NewSession creates a new chat session.
 func (c *DefaultChatClient) NewSession(persona *ChatPersona) *ChatSession {
 	session := &ChatSession{
 		Messages: []Message{},
@@ -62,8 +66,12 @@ func (c *DefaultChatClient) NewSession(persona *ChatPersona) *ChatSession {
 	return session
 }
 
-// SendMessage sends a message and returns the response
-func (c *DefaultChatClient) SendMessage(ctx context.Context, session *ChatSession, content string) (*Message, error) {
+// SendMessage sends a message and returns the response.
+func (c *DefaultChatClient) SendMessage(
+	ctx context.Context,
+	session *ChatSession,
+	content string,
+) (*Message, error) {
 	// Add user message to session
 	userMsg := Message{
 		Role:    RoleUser,
@@ -100,8 +108,12 @@ func (c *DefaultChatClient) SendMessage(ctx context.Context, session *ChatSessio
 	return &assistantMsg, nil
 }
 
-// SendMessageStream sends a message and returns a streaming response
-func (c *DefaultChatClient) SendMessageStream(ctx context.Context, session *ChatSession, content string) (ChatCompletionStream, error) {
+// SendMessageStream sends a message and returns a streaming response.
+func (c *DefaultChatClient) SendMessageStream(
+	ctx context.Context,
+	session *ChatSession,
+	content string,
+) (ChatCompletionStream, error) {
 	// Add user message to session
 	userMsg := Message{
 		Role:    RoleUser,
@@ -129,7 +141,7 @@ func (c *DefaultChatClient) SendMessageStream(ctx context.Context, session *Chat
 	return stream, nil
 }
 
-// AddAssistantMessage adds an assistant message to the session (useful after streaming)
+// AddAssistantMessage adds an assistant message to the session (useful after streaming).
 func (session *ChatSession) AddAssistantMessage(content string) {
 	assistantMsg := Message{
 		Role:    RoleAssistant,
@@ -138,7 +150,7 @@ func (session *ChatSession) AddAssistantMessage(content string) {
 	session.Messages = append(session.Messages, assistantMsg)
 }
 
-// ClearHistory clears the message history but keeps the system prompt
+// ClearHistory clears the message history but keeps the system prompt.
 func (session *ChatSession) ClearHistory() {
 	var systemMessages []Message
 	for _, msg := range session.Messages {
@@ -149,7 +161,7 @@ func (session *ChatSession) ClearHistory() {
 	session.Messages = systemMessages
 }
 
-// GetLastMessage returns the last message in the session
+// GetLastMessage returns the last message in the session.
 func (session *ChatSession) GetLastMessage() *Message {
 	if len(session.Messages) == 0 {
 		return nil
@@ -157,7 +169,7 @@ func (session *ChatSession) GetLastMessage() *Message {
 	return &session.Messages[len(session.Messages)-1]
 }
 
-// DefaultPersonas provides some common chat personas
+// DefaultPersonas provides some common chat personas.
 var DefaultPersonas = struct {
 	Assistant      *ChatPersona
 	CodeHelper     *ChatPersona

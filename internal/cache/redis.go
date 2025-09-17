@@ -10,13 +10,13 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// RedisCache implements Cache using Redis as the backend
+// RedisCache implements Cache using Redis as the backend.
 type RedisCache[T any] struct {
 	client    *redis.Client
 	keyPrefix string
 }
 
-// NewRedisCache creates a new Redis-backed cache with an optional key prefix
+// NewRedisCache creates a new Redis-backed cache with an optional key prefix.
 func NewRedisCache[T any](client *redis.Client, keyPrefix string) *RedisCache[T] {
 	return &RedisCache[T]{
 		client:    client,
@@ -24,7 +24,7 @@ func NewRedisCache[T any](client *redis.Client, keyPrefix string) *RedisCache[T]
 	}
 }
 
-// formatKey adds the prefix to a cache key
+// formatKey adds the prefix to a cache key.
 func (c *RedisCache[T]) formatKey(key string) string {
 	if c.keyPrefix != "" {
 		return fmt.Sprintf("%s:%s", c.keyPrefix, key)
@@ -32,7 +32,7 @@ func (c *RedisCache[T]) formatKey(key string) string {
 	return key
 }
 
-// Get retrieves an item from cache by key
+// Get retrieves an item from cache by key.
 func (c *RedisCache[T]) Get(ctx context.Context, key string) (*T, error) {
 	data, err := c.client.Get(ctx, c.formatKey(key)).Bytes()
 	if err != nil {
@@ -50,7 +50,7 @@ func (c *RedisCache[T]) Get(ctx context.Context, key string) (*T, error) {
 	return &value, nil
 }
 
-// Set stores an item in cache with TTL
+// Set stores an item in cache with TTL.
 func (c *RedisCache[T]) Set(ctx context.Context, key string, value *T, ttl time.Duration) error {
 	if value == nil {
 		return errors.New("cannot cache nil value")
@@ -68,7 +68,7 @@ func (c *RedisCache[T]) Set(ctx context.Context, key string, value *T, ttl time.
 	return nil
 }
 
-// Delete removes an item from cache
+// Delete removes an item from cache.
 func (c *RedisCache[T]) Delete(ctx context.Context, key string) error {
 	if err := c.client.Del(ctx, c.formatKey(key)).Err(); err != nil {
 		return fmt.Errorf("redis del: %w", err)
@@ -76,7 +76,7 @@ func (c *RedisCache[T]) Delete(ctx context.Context, key string) error {
 	return nil
 }
 
-// Exists checks if a key exists in cache
+// Exists checks if a key exists in cache.
 func (c *RedisCache[T]) Exists(ctx context.Context, key string) (bool, error) {
 	count, err := c.client.Exists(ctx, c.formatKey(key)).Result()
 	if err != nil {
@@ -85,7 +85,7 @@ func (c *RedisCache[T]) Exists(ctx context.Context, key string) (bool, error) {
 	return count > 0, nil
 }
 
-// Clear removes all items from cache (use with caution)
+// Clear removes all items from cache (use with caution).
 func (c *RedisCache[T]) Clear(ctx context.Context) error {
 	if c.keyPrefix == "" {
 		return errors.New("cannot clear cache without key prefix")
@@ -112,7 +112,7 @@ func (c *RedisCache[T]) Clear(ctx context.Context) error {
 	return nil
 }
 
-// GetMany retrieves multiple items from cache
+// GetMany retrieves multiple items from cache.
 func (c *RedisCache[T]) GetMany(ctx context.Context, keys []string) (map[string]*T, error) {
 	if len(keys) == 0 {
 		return make(map[string]*T), nil
@@ -153,7 +153,7 @@ func (c *RedisCache[T]) GetMany(ctx context.Context, keys []string) (map[string]
 	return result, nil
 }
 
-// SetMany stores multiple items in cache
+// SetMany stores multiple items in cache.
 func (c *RedisCache[T]) SetMany(ctx context.Context, items map[string]*T, ttl time.Duration) error {
 	if len(items) == 0 {
 		return nil
@@ -182,7 +182,7 @@ func (c *RedisCache[T]) SetMany(ctx context.Context, items map[string]*T, ttl ti
 	return nil
 }
 
-// DeleteMany removes multiple items from cache
+// DeleteMany removes multiple items from cache.
 func (c *RedisCache[T]) DeleteMany(ctx context.Context, keys []string) error {
 	if len(keys) == 0 {
 		return nil
@@ -200,5 +200,5 @@ func (c *RedisCache[T]) DeleteMany(ctx context.Context, keys []string) error {
 	return nil
 }
 
-// Ensure RedisCache implements MultiCache
+// Ensure RedisCache implements MultiCache.
 var _ MultiCache[any] = (*RedisCache[any])(nil)

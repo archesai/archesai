@@ -5,13 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
-// Test helper functions
+// Test helper functions.
 func createTestArtifactsService(t *testing.T) (*Service, *MockRepository) {
 	t.Helper()
 
@@ -22,7 +23,7 @@ func createTestArtifactsService(t *testing.T) (*Service, *MockRepository) {
 	return service, mockArtifactRepo
 }
 
-// TestArtifactsService_Create tests creating an artifact
+// TestArtifactsService_Create tests creating an artifact.
 func TestArtifactsService_Create(t *testing.T) {
 	orgID := uuid.New()
 	producerID := uuid.New()
@@ -47,7 +48,9 @@ func TestArtifactsService_Create(t *testing.T) {
 			UpdatedAt:      time.Now(),
 		}
 
-		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*artifacts.Artifact")).Return(expectedArtifact, nil)
+		mockRepo.EXPECT().
+			Create(mock.Anything, mock.AnythingOfType("*artifacts.Artifact")).
+			Return(expectedArtifact, nil)
 
 		request := CreateArtifactRequestObject{
 			Body: req,
@@ -72,7 +75,9 @@ func TestArtifactsService_Create(t *testing.T) {
 		}
 
 		// Mock repository to return an error
-		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*artifacts.Artifact")).Return(nil, assert.AnError)
+		mockRepo.EXPECT().
+			Create(mock.Anything, mock.AnythingOfType("*artifacts.Artifact")).
+			Return(nil, assert.AnError)
 
 		request := CreateArtifactRequestObject{
 			Body: req,
@@ -88,7 +93,7 @@ func TestArtifactsService_Create(t *testing.T) {
 	})
 }
 
-// TestArtifactsService_Get tests getting an artifact
+// TestArtifactsService_Get tests getting an artifact.
 func TestArtifactsService_Get(t *testing.T) {
 	artifactID := uuid.New()
 	artifact := &Artifact{
@@ -141,7 +146,7 @@ func TestArtifactsService_Get(t *testing.T) {
 	})
 }
 
-// TestArtifactsService_Update tests updating an artifact
+// TestArtifactsService_Update tests updating an artifact.
 func TestArtifactsService_Update(t *testing.T) {
 	artifactID := uuid.New()
 
@@ -172,7 +177,9 @@ func TestArtifactsService_Update(t *testing.T) {
 			MimeType:       "",
 		}
 		mockRepo.EXPECT().Get(mock.Anything, artifactID).Return(existingArtifact, nil)
-		mockRepo.EXPECT().Update(mock.Anything, artifactID, mock.Anything).Return(expectedArtifact, nil)
+		mockRepo.EXPECT().
+			Update(mock.Anything, artifactID, mock.Anything).
+			Return(expectedArtifact, nil)
 
 		request := UpdateArtifactRequestObject{
 			ID:   artifactID,
@@ -213,7 +220,7 @@ func TestArtifactsService_Update(t *testing.T) {
 	})
 }
 
-// TestArtifactsService_Delete tests deleting an artifact
+// TestArtifactsService_Delete tests deleting an artifact.
 func TestArtifactsService_Delete(t *testing.T) {
 	artifactID := uuid.New()
 
@@ -257,7 +264,7 @@ func TestArtifactsService_Delete(t *testing.T) {
 	})
 }
 
-// TestArtifactsService_List tests listing artifacts
+// TestArtifactsService_List tests listing artifacts.
 func TestArtifactsService_List(t *testing.T) {
 
 	t.Run("successful list", func(t *testing.T) {

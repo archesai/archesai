@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Cache provides a generic caching interface for any type T
+// Cache provides a generic caching interface for any type T.
 type Cache[T any] interface {
 	// Get retrieves an item from cache by key
 	Get(ctx context.Context, key string) (*T, error)
@@ -24,7 +24,7 @@ type Cache[T any] interface {
 	Clear(ctx context.Context) error
 }
 
-// MultiCache provides batch operations for cache
+// MultiCache provides batch operations for cache.
 type MultiCache[T any] interface {
 	Cache[T]
 

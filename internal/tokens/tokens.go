@@ -15,7 +15,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// GenerateAPIKey generates a new API key with prefix
+// GenerateAPIKey generates a new API key with prefix.
 func GenerateAPIKey() (string, string, error) {
 	// Generate 32 bytes of random data
 	bytes := make([]byte, 32)
@@ -33,7 +33,7 @@ func GenerateAPIKey() (string, string, error) {
 	return fullKey, prefix, nil
 }
 
-// ParseAPIKey extracts the key from various header formats
+// ParseAPIKey extracts the key from various header formats.
 func ParseAPIKey(authHeader string) string {
 	authHeader = strings.TrimSpace(authHeader)
 
@@ -58,7 +58,7 @@ func ParseAPIKey(authHeader string) string {
 	return ""
 }
 
-// ValidateAPIKeyFormat checks if the API key has valid format
+// ValidateAPIKeyFormat checks if the API key has valid format.
 func ValidateAPIKeyFormat(key string) bool {
 	// Expected format: sk_live_<64 hex chars> or sk_test_<64 hex chars>
 	if !strings.HasPrefix(key, "sk_") {
@@ -85,14 +85,14 @@ func ValidateAPIKeyFormat(key string) bool {
 	return err == nil
 }
 
-// HashAPIKey creates a hash of the API key for storage
+// HashAPIKey creates a hash of the API key for storage.
 func HashAPIKey(key string) string {
 	// In production, use a proper hashing algorithm like bcrypt or argon2
 	// For now, using a simple SHA256 (should be replaced)
 	return fmt.Sprintf("hashed_%s", key) // Placeholder - implement proper hashing
 }
 
-// APIKeyRepository defines the interface for API key storage operations
+// APIKeyRepository defines the interface for API key storage operations.
 type APIKeyRepository interface {
 	CreateAPIKey(ctx context.Context, apiKey *APIKey) (*APIKey, error)
 	GetAPIKeyByPrefix(ctx context.Context, prefix string) (*APIKey, error)
@@ -103,20 +103,20 @@ type APIKeyRepository interface {
 	ValidateAPIKeyHash(ctx context.Context, prefix, keyHash string) (*APIKey, error)
 }
 
-// APIKeyCache provides caching for API keys
+// APIKeyCache provides caching for API keys.
 type APIKeyCache interface {
 	GetAPIKey(ctx context.Context, prefix string) (*APIKey, error)
 	SetAPIKey(ctx context.Context, prefix string, apiKey *APIKey, ttl time.Duration) error
 	DeleteAPIKey(ctx context.Context, prefix string) error
 }
 
-// APIKeyService handles API key operations
+// APIKeyService handles API key operations.
 type APIKeyService struct {
 	repo  APIKeyRepository
 	cache APIKeyCache
 }
 
-// NewAPIKeyService creates a new API key service
+// NewAPIKeyService creates a new API key service.
 func NewAPIKeyService(repo APIKeyRepository, cache APIKeyCache) *APIKeyService {
 	return &APIKeyService{
 		repo:  repo,
@@ -124,8 +124,14 @@ func NewAPIKeyService(repo APIKeyRepository, cache APIKeyCache) *APIKeyService {
 	}
 }
 
-// CreateAPIKey creates a new API key for a user
-func (s *APIKeyService) CreateAPIKey(ctx context.Context, userID, organizationID uuid.UUID, name string, scopes []string, expiresIn time.Duration) (*APIKeyResponse, error) {
+// CreateAPIKey creates a new API key for a user.
+func (s *APIKeyService) CreateAPIKey(
+	ctx context.Context,
+	userID, organizationID uuid.UUID,
+	name string,
+	scopes []string,
+	expiresIn time.Duration,
+) (*APIKeyResponse, error) {
 	// Generate the key
 	plainKey, prefix, err := GenerateAPIKey()
 	if err != nil {
@@ -170,7 +176,7 @@ func (s *APIKeyService) CreateAPIKey(ctx context.Context, userID, organizationID
 	}, nil
 }
 
-// ValidateAPIKey validates an API key and returns the associated data
+// ValidateAPIKey validates an API key and returns the associated data.
 func (s *APIKeyService) ValidateAPIKey(ctx context.Context, key string) (*APIKey, error) {
 	// Validate format
 	if !ValidateAPIKeyFormat(key) {
@@ -223,7 +229,7 @@ func (s *APIKeyService) ValidateAPIKey(ctx context.Context, key string) (*APIKey
 	return apiKey, nil
 }
 
-// RevokeAPIKey revokes an API key
+// RevokeAPIKey revokes an API key.
 func (s *APIKeyService) RevokeAPIKey(ctx context.Context, keyID uuid.UUID) error {
 	// Get the key to find its prefix
 	apiKey, err := s.repo.GetAPIKeyByID(ctx, keyID)

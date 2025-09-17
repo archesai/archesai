@@ -39,7 +39,10 @@ func TestS3ConfigConstants(t *testing.T) {
 		t.Errorf("Expected DefaultUploadConcurrency to be 5, got %d", DefaultUploadConcurrency)
 	}
 	if DefaultPresignExpiration != 15*time.Minute {
-		t.Errorf("Expected DefaultPresignExpiration to be 15 minutes, got %v", DefaultPresignExpiration)
+		t.Errorf(
+			"Expected DefaultPresignExpiration to be 15 minutes, got %v",
+			DefaultPresignExpiration,
+		)
 	}
 }
 
@@ -177,7 +180,12 @@ func TestFilenameValidation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			isValid := len(tt.filename) <= MaxFilenameLength
 			if isValid != tt.wantValid {
-				t.Errorf("Filename length %d validation = %v, want %v", len(tt.filename), isValid, tt.wantValid)
+				t.Errorf(
+					"Filename length %d validation = %v, want %v",
+					len(tt.filename),
+					isValid,
+					tt.wantValid,
+				)
 			}
 		})
 	}
@@ -215,7 +223,12 @@ func TestPathValidation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			isValid := len(tt.path) <= MaxPathLength
 			if isValid != tt.wantValid {
-				t.Errorf("Path length %d validation = %v, want %v", len(tt.path), isValid, tt.wantValid)
+				t.Errorf(
+					"Path length %d validation = %v, want %v",
+					len(tt.path),
+					isValid,
+					tt.wantValid,
+				)
 			}
 		})
 	}

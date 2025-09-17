@@ -14,7 +14,7 @@ const (
 	viewMenu = "menu"
 )
 
-// ConfigModel represents the configuration TUI
+// ConfigModel represents the configuration TUI.
 type ConfigModel struct {
 	sections     []string
 	selectedItem int
@@ -24,7 +24,7 @@ type ConfigModel struct {
 	styles       *ConfigStyles
 }
 
-// ConfigStyles holds styling for the config viewer
+// ConfigStyles holds styling for the config viewer.
 type ConfigStyles struct {
 	Title    lipgloss.Style
 	Menu     lipgloss.Style
@@ -38,7 +38,7 @@ type ConfigStyles struct {
 	Error    lipgloss.Style
 }
 
-// NewConfigStyles creates the config viewer styles
+// NewConfigStyles creates the config viewer styles.
 func NewConfigStyles() *ConfigStyles {
 	return &ConfigStyles{
 		Title: lipgloss.NewStyle().
@@ -103,7 +103,7 @@ func NewConfigStyles() *ConfigStyles {
 	}
 }
 
-// NewConfigModel creates a new configuration viewer
+// NewConfigModel creates a new configuration viewer.
 func NewConfigModel() ConfigModel {
 	// Initialize viper to load config
 	viper.SetConfigName("config")
@@ -132,12 +132,12 @@ func NewConfigModel() ConfigModel {
 	}
 }
 
-// Init initializes the config model
+// Init initializes the config model.
 func (m ConfigModel) Init() tea.Cmd {
 	return tea.EnterAltScreen
 }
 
-// Update handles messages
+// Update handles messages.
 func (m ConfigModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -190,7 +190,7 @@ func (m ConfigModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// View renders the TUI
+// View renders the TUI.
 func (m ConfigModel) View() string {
 	if m.width == 0 || m.height == 0 {
 		return "Initializing..."
@@ -245,7 +245,7 @@ func (m ConfigModel) View() string {
 	return lipgloss.JoinVertical(lipgloss.Center, sections...)
 }
 
-// renderMenu renders the main menu
+// renderMenu renders the main menu.
 func (m ConfigModel) renderMenu() string {
 	var items []string
 
@@ -287,7 +287,7 @@ func (m ConfigModel) renderMenu() string {
 		Render(menu)
 }
 
-// renderDatabase renders database configuration
+// renderDatabase renders database configuration.
 func (m ConfigModel) renderDatabase() string {
 	var content strings.Builder
 
@@ -295,16 +295,42 @@ func (m ConfigModel) renderDatabase() string {
 
 	// PostgreSQL settings
 	content.WriteString(m.styles.Key.Render("PostgreSQL") + "\n")
-	content.WriteString(m.renderConfigItem("Host", viper.GetString("database.postgres.host"), false))
-	content.WriteString(m.renderConfigItem("Port", fmt.Sprintf("%d", viper.GetInt("database.postgres.port")), false))
-	content.WriteString(m.renderConfigItem("Database", viper.GetString("database.postgres.database"), false))
-	content.WriteString(m.renderConfigItem("User", viper.GetString("database.postgres.user"), false))
-	content.WriteString(m.renderConfigItem("SSL Mode", viper.GetString("database.postgres.sslmode"), false))
+	content.WriteString(
+		m.renderConfigItem("Host", viper.GetString("database.postgres.host"), false),
+	)
+	content.WriteString(
+		m.renderConfigItem(
+			"Port",
+			fmt.Sprintf("%d", viper.GetInt("database.postgres.port")),
+			false,
+		),
+	)
+	content.WriteString(
+		m.renderConfigItem("Database", viper.GetString("database.postgres.database"), false),
+	)
+	content.WriteString(
+		m.renderConfigItem("User", viper.GetString("database.postgres.user"), false),
+	)
+	content.WriteString(
+		m.renderConfigItem("SSL Mode", viper.GetString("database.postgres.sslmode"), false),
+	)
 
 	// Connection pool settings
 	content.WriteString("\n" + m.styles.Key.Render("Connection Pool") + "\n")
-	content.WriteString(m.renderConfigItem("Max Open", fmt.Sprintf("%d", viper.GetInt("database.postgres.max_open_conns")), false))
-	content.WriteString(m.renderConfigItem("Max Idle", fmt.Sprintf("%d", viper.GetInt("database.postgres.max_idle_conns")), false))
+	content.WriteString(
+		m.renderConfigItem(
+			"Max Open",
+			fmt.Sprintf("%d", viper.GetInt("database.postgres.max_open_conns")),
+			false,
+		),
+	)
+	content.WriteString(
+		m.renderConfigItem(
+			"Max Idle",
+			fmt.Sprintf("%d", viper.GetInt("database.postgres.max_idle_conns")),
+			false,
+		),
+	)
 
 	// SQLite settings
 	content.WriteString("\n" + m.styles.Key.Render("SQLite") + "\n")
@@ -335,7 +361,7 @@ func (m ConfigModel) renderDatabase() string {
 	return m.styles.Menu.Width(contentWidth).Render(content.String())
 }
 
-// renderConfigItem renders a configuration key-value pair with consistent formatting
+// renderConfigItem renders a configuration key-value pair with consistent formatting.
 func (m ConfigModel) renderConfigItem(key, value string, _ bool) string {
 	if value == "" || value == "0" {
 		value = lipgloss.NewStyle().Foreground(lipgloss.Color("245")).Italic(true).Render("not set")
@@ -351,7 +377,7 @@ func (m ConfigModel) renderConfigItem(key, value string, _ bool) string {
 	return fmt.Sprintf("%s %s\n", keyStyle, value)
 }
 
-// renderServer renders server configuration
+// renderServer renders server configuration.
 func (m ConfigModel) renderServer() string {
 	var content strings.Builder
 
@@ -359,7 +385,9 @@ func (m ConfigModel) renderServer() string {
 
 	content.WriteString(m.styles.Key.Render("API Server") + "\n")
 	content.WriteString(m.renderConfigItem("Host", viper.GetString("server.host"), false))
-	content.WriteString(m.renderConfigItem("Port", fmt.Sprintf("%d", viper.GetInt("server.port")), false))
+	content.WriteString(
+		m.renderConfigItem("Port", fmt.Sprintf("%d", viper.GetInt("server.port")), false),
+	)
 	content.WriteString(m.renderConfigItem("Mode", viper.GetString("server.mode"), false))
 
 	content.WriteString("\n" + m.styles.Key.Render("CORS Settings") + "\n")
@@ -383,7 +411,13 @@ func (m ConfigModel) renderServer() string {
 	} else {
 		content.WriteString(m.renderConfigItem("Status", m.styles.Warning.Render("Disabled"), false))
 	}
-	content.WriteString(m.renderConfigItem("Requests/Min", fmt.Sprintf("%d", viper.GetInt("server.rate_limit.requests_per_minute")), false))
+	content.WriteString(
+		m.renderConfigItem(
+			"Requests/Min",
+			fmt.Sprintf("%d", viper.GetInt("server.rate_limit.requests_per_minute")),
+			false,
+		),
+	)
 
 	// Use fixed width for better centering
 	contentWidth := 60
@@ -394,7 +428,7 @@ func (m ConfigModel) renderServer() string {
 	return m.styles.Menu.Width(contentWidth).Render(content.String())
 }
 
-// renderAuth renders authentication configuration
+// renderAuth renders authentication configuration.
 func (m ConfigModel) renderAuth() string {
 	var content strings.Builder
 
@@ -407,7 +441,9 @@ func (m ConfigModel) renderAuth() string {
 	} else {
 		content.WriteString("  Secret: " + m.styles.Error.Render("✗ Not Set") + "\n")
 	}
-	content.WriteString(fmt.Sprintf("  Expiry: %s\n", m.styles.Value.Render(viper.GetString("auth.jwt.expiry"))))
+	content.WriteString(
+		fmt.Sprintf("  Expiry: %s\n", m.styles.Value.Render(viper.GetString("auth.jwt.expiry"))),
+	)
 
 	content.WriteString("\n" + m.styles.Key.Render("OAuth Providers:") + "\n")
 
@@ -436,16 +472,28 @@ func (m ConfigModel) renderAuth() string {
 	return m.styles.Menu.Width(contentWidth).Render(content.String())
 }
 
-// renderRedis renders Redis configuration
+// renderRedis renders Redis configuration.
 func (m ConfigModel) renderRedis() string {
 	var content strings.Builder
 
 	content.WriteString(m.styles.Section.Render("Redis Configuration") + "\n\n")
 
 	content.WriteString(m.styles.Key.Render("Connection:") + "\n")
-	content.WriteString(fmt.Sprintf("  Host: %s\n", m.styles.Value.Render(viper.GetString("redis.host"))))
-	content.WriteString(fmt.Sprintf("  Port: %s\n", m.styles.Value.Render(fmt.Sprintf("%d", viper.GetInt("redis.port")))))
-	content.WriteString(fmt.Sprintf("  Database: %s\n", m.styles.Value.Render(fmt.Sprintf("%d", viper.GetInt("redis.db")))))
+	content.WriteString(
+		fmt.Sprintf("  Host: %s\n", m.styles.Value.Render(viper.GetString("redis.host"))),
+	)
+	content.WriteString(
+		fmt.Sprintf(
+			"  Port: %s\n",
+			m.styles.Value.Render(fmt.Sprintf("%d", viper.GetInt("redis.port"))),
+		),
+	)
+	content.WriteString(
+		fmt.Sprintf(
+			"  Database: %s\n",
+			m.styles.Value.Render(fmt.Sprintf("%d", viper.GetInt("redis.db"))),
+		),
+	)
 
 	passwordSet := viper.GetString("redis.password") != ""
 	if passwordSet {
@@ -455,8 +503,18 @@ func (m ConfigModel) renderRedis() string {
 	}
 
 	content.WriteString("\n" + m.styles.Key.Render("Pool Settings:") + "\n")
-	content.WriteString(fmt.Sprintf("  Max Retries: %s\n", m.styles.Value.Render(fmt.Sprintf("%d", viper.GetInt("redis.max_retries")))))
-	content.WriteString(fmt.Sprintf("  Pool Size: %s\n", m.styles.Value.Render(fmt.Sprintf("%d", viper.GetInt("redis.pool_size")))))
+	content.WriteString(
+		fmt.Sprintf(
+			"  Max Retries: %s\n",
+			m.styles.Value.Render(fmt.Sprintf("%d", viper.GetInt("redis.max_retries"))),
+		),
+	)
+	content.WriteString(
+		fmt.Sprintf(
+			"  Pool Size: %s\n",
+			m.styles.Value.Render(fmt.Sprintf("%d", viper.GetInt("redis.pool_size"))),
+		),
+	)
 
 	// Use fixed width for better centering
 	contentWidth := 60
@@ -467,22 +525,44 @@ func (m ConfigModel) renderRedis() string {
 	return m.styles.Menu.Width(contentWidth).Render(content.String())
 }
 
-// renderStorage renders storage configuration
+// renderStorage renders storage configuration.
 func (m ConfigModel) renderStorage() string {
 	var content strings.Builder
 
 	content.WriteString(m.styles.Section.Render("Storage Settings") + "\n\n")
 
 	content.WriteString(m.styles.Key.Render("Local Storage:") + "\n")
-	content.WriteString(fmt.Sprintf("  Upload Dir: %s\n", m.styles.Value.Render(viper.GetString("storage.local.upload_dir"))))
-	content.WriteString(fmt.Sprintf("  Max File Size: %s MB\n", m.styles.Value.Render(fmt.Sprintf("%d", viper.GetInt("storage.local.max_file_size_mb")))))
+	content.WriteString(
+		fmt.Sprintf(
+			"  Upload Dir: %s\n",
+			m.styles.Value.Render(viper.GetString("storage.local.upload_dir")),
+		),
+	)
+	content.WriteString(
+		fmt.Sprintf(
+			"  Max File Size: %s MB\n",
+			m.styles.Value.Render(
+				fmt.Sprintf("%d", viper.GetInt("storage.local.max_file_size_mb")),
+			),
+		),
+	)
 
 	content.WriteString("\n" + m.styles.Key.Render("S3 Storage:") + "\n")
 	s3Enabled := viper.GetString("storage.s3.bucket") != ""
 	if s3Enabled {
 		content.WriteString("  Status: " + m.styles.Success.Render("✓ Configured") + "\n")
-		content.WriteString(fmt.Sprintf("  Bucket: %s\n", m.styles.Value.Render(viper.GetString("storage.s3.bucket"))))
-		content.WriteString(fmt.Sprintf("  Region: %s\n", m.styles.Value.Render(viper.GetString("storage.s3.region"))))
+		content.WriteString(
+			fmt.Sprintf(
+				"  Bucket: %s\n",
+				m.styles.Value.Render(viper.GetString("storage.s3.bucket")),
+			),
+		)
+		content.WriteString(
+			fmt.Sprintf(
+				"  Region: %s\n",
+				m.styles.Value.Render(viper.GetString("storage.s3.region")),
+			),
+		)
 	} else {
 		content.WriteString("  Status: " + m.styles.Warning.Render("○ Not Configured") + "\n")
 	}
@@ -496,7 +576,7 @@ func (m ConfigModel) renderStorage() string {
 	return m.styles.Menu.Width(contentWidth).Render(content.String())
 }
 
-// renderAgents renders AI agents configuration
+// renderAgents renders AI agents configuration.
 func (m ConfigModel) renderAgents() string {
 	var content strings.Builder
 
@@ -507,7 +587,12 @@ func (m ConfigModel) renderAgents() string {
 	openaiKey := viper.GetString("llm.openai.api_key")
 	if openaiKey != "" {
 		content.WriteString("  API Key: " + m.styles.Success.Render("✓ Configured") + "\n")
-		content.WriteString(fmt.Sprintf("  Model: %s\n", m.styles.Value.Render(viper.GetString("llm.openai.model"))))
+		content.WriteString(
+			fmt.Sprintf(
+				"  Model: %s\n",
+				m.styles.Value.Render(viper.GetString("llm.openai.model")),
+			),
+		)
 	} else {
 		content.WriteString("  API Key: " + m.styles.Warning.Render("○ Not Set") + "\n")
 	}
@@ -516,7 +601,12 @@ func (m ConfigModel) renderAgents() string {
 	claudeKey := viper.GetString("llm.anthropic.api_key")
 	if claudeKey != "" {
 		content.WriteString("  API Key: " + m.styles.Success.Render("✓ Configured") + "\n")
-		content.WriteString(fmt.Sprintf("  Model: %s\n", m.styles.Value.Render(viper.GetString("llm.anthropic.model"))))
+		content.WriteString(
+			fmt.Sprintf(
+				"  Model: %s\n",
+				m.styles.Value.Render(viper.GetString("llm.anthropic.model")),
+			),
+		)
 	} else {
 		content.WriteString("  API Key: " + m.styles.Warning.Render("○ Not Set") + "\n")
 	}
@@ -557,7 +647,7 @@ func (m ConfigModel) renderAgents() string {
 	return m.styles.Menu.Width(contentWidth).Render(content.String())
 }
 
-// renderStatus renders system status
+// renderStatus renders system status.
 func (m ConfigModel) renderStatus() string {
 	var content strings.Builder
 
@@ -607,7 +697,7 @@ func (m ConfigModel) renderStatus() string {
 	return m.styles.Menu.Width(contentWidth).Render(content.String())
 }
 
-// renderEnv renders environment variables
+// renderEnv renders environment variables.
 func (m ConfigModel) renderEnv() string {
 	var content strings.Builder
 

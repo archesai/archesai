@@ -8,20 +8,21 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/archesai/archesai/internal/database"
 	"github.com/pressly/goose/v3"
+
+	"github.com/archesai/archesai/internal/database"
 )
 
 //go:embed postgresql/*.sql
 var migrations embed.FS
 
-// MigrationRunner handles database migrations
+// MigrationRunner handles database migrations.
 type MigrationRunner struct {
 	db     database.Database
 	logger *slog.Logger
 }
 
-// NewMigrationRunner creates a new migration runner
+// NewMigrationRunner creates a new migration runner.
 func NewMigrationRunner(db database.Database, logger *slog.Logger) *MigrationRunner {
 	return &MigrationRunner{
 		db:     db,
@@ -29,7 +30,7 @@ func NewMigrationRunner(db database.Database, logger *slog.Logger) *MigrationRun
 	}
 }
 
-// Up applies all pending migrations
+// Up applies all pending migrations.
 func (m *MigrationRunner) Up() error {
 	if err := m.setEnvironmentVariables(); err != nil {
 		return fmt.Errorf("failed to set environment variables: %w", err)
@@ -56,7 +57,7 @@ func (m *MigrationRunner) Up() error {
 	return nil
 }
 
-// Down rolls back the last migration
+// Down rolls back the last migration.
 func (m *MigrationRunner) Down() error {
 	if err := m.setEnvironmentVariables(); err != nil {
 		return fmt.Errorf("failed to set environment variables: %w", err)
@@ -82,7 +83,7 @@ func (m *MigrationRunner) Down() error {
 	return nil
 }
 
-// Version returns the current migration version
+// Version returns the current migration version.
 func (m *MigrationRunner) Version() (int64, error) {
 	sqlDB, err := m.getSQLDB()
 	if err != nil {
@@ -104,7 +105,7 @@ func (m *MigrationRunner) Version() (int64, error) {
 	return version, nil
 }
 
-// Force sets the migration version without running migrations
+// Force sets the migration version without running migrations.
 func (m *MigrationRunner) Force(version int64) error {
 	if err := m.setEnvironmentVariables(); err != nil {
 		return fmt.Errorf("failed to set environment variables: %w", err)
@@ -137,7 +138,7 @@ func (m *MigrationRunner) Force(version int64) error {
 	return nil
 }
 
-// setEnvironmentVariables sets database-specific environment variables for migrations
+// setEnvironmentVariables sets database-specific environment variables for migrations.
 func (m *MigrationRunner) setEnvironmentVariables() error {
 	switch m.db.Type() {
 	case database.TypePostgreSQL:
@@ -154,7 +155,7 @@ func (m *MigrationRunner) setEnvironmentVariables() error {
 	return nil
 }
 
-// getDialect returns the goose dialect string for the database type
+// getDialect returns the goose dialect string for the database type.
 func (m *MigrationRunner) getDialect() string {
 	switch m.db.Type() {
 	case database.TypePostgreSQL:
@@ -166,7 +167,7 @@ func (m *MigrationRunner) getDialect() string {
 	}
 }
 
-// getSQLDB gets a database/sql connection
+// getSQLDB gets a database/sql connection.
 func (m *MigrationRunner) getSQLDB() (*sql.DB, error) {
 	switch m.db.Type() {
 	case database.TypePostgreSQL:
@@ -186,20 +187,20 @@ func (m *MigrationRunner) getSQLDB() (*sql.DB, error) {
 	}
 }
 
-// RunMigrations is a convenience function to run migrations on a database
+// RunMigrations is a convenience function to run migrations on a database.
 func RunMigrations(db database.Database, logger *slog.Logger) error {
 	runner := NewMigrationRunner(db, logger)
 	return runner.Up()
 }
 
-// MigrationConfig holds configuration for migrations
+// MigrationConfig holds configuration for migrations.
 type MigrationConfig struct {
 	Direction string // "up" or "down"
 	Steps     int    // Number of steps (0 means all)
 	Force     int64  // Force to a specific version (-1 means don't force)
 }
 
-// RunMigrationsWithConfig runs migrations with specific configuration
+// RunMigrationsWithConfig runs migrations with specific configuration.
 func RunMigrationsWithConfig(db database.Database, cfg MigrationConfig, logger *slog.Logger) error {
 	runner := NewMigrationRunner(db, logger)
 

@@ -15,12 +15,12 @@ const (
 	githubUserURL = "https://api.github.com/user"
 )
 
-// GitHubOAuthProvider implements OAuth2 for GitHub
+// GitHubOAuthProvider implements OAuth2 for GitHub.
 type GitHubOAuthProvider struct {
 	*BaseOAuthProvider
 }
 
-// NewGitHubOAuthProvider creates a new GitHub OAuth provider
+// NewGitHubOAuthProvider creates a new GitHub OAuth provider.
 func NewGitHubOAuthProvider(clientID, clientSecret string) Provider {
 	return &GitHubOAuthProvider{
 		BaseOAuthProvider: &BaseOAuthProvider{
@@ -37,19 +37,23 @@ func NewGitHubOAuthProvider(clientID, clientSecret string) Provider {
 	}
 }
 
-// GetProviderID returns the provider identifier
+// GetProviderID returns the provider identifier.
 func (p *GitHubOAuthProvider) GetProviderID() string {
 	return "github"
 }
 
-// GetAuthURL returns the GitHub authorization URL
+// GetAuthURL returns the GitHub authorization URL.
 func (p *GitHubOAuthProvider) GetAuthURL(state string, redirectURI string) string {
 	p.Config.RedirectURL = redirectURI
 	return p.Config.AuthCodeURL(state)
 }
 
-// ExchangeCode exchanges an authorization code for tokens
-func (p *GitHubOAuthProvider) ExchangeCode(ctx context.Context, code string, redirectURI string) (*Tokens, error) {
+// ExchangeCode exchanges an authorization code for tokens.
+func (p *GitHubOAuthProvider) ExchangeCode(
+	ctx context.Context,
+	code string,
+	redirectURI string,
+) (*Tokens, error) {
 	p.Config.RedirectURL = redirectURI
 	token, err := p.Config.Exchange(ctx, code)
 	if err != nil {
@@ -64,14 +68,17 @@ func (p *GitHubOAuthProvider) ExchangeCode(ctx context.Context, code string, red
 	}, nil
 }
 
-// RefreshToken is not supported by GitHub
+// RefreshToken is not supported by GitHub.
 func (p *GitHubOAuthProvider) RefreshToken(_ context.Context, _ string) (*Tokens, error) {
 	// GitHub doesn't support refresh tokens
 	return nil, fmt.Errorf("GitHub does not support refresh tokens")
 }
 
-// GetUserInfo retrieves user information from GitHub
-func (p *GitHubOAuthProvider) GetUserInfo(ctx context.Context, accessToken string) (*UserInfo, error) {
+// GetUserInfo retrieves user information from GitHub.
+func (p *GitHubOAuthProvider) GetUserInfo(
+	ctx context.Context,
+	accessToken string,
+) (*UserInfo, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", githubUserURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
@@ -146,8 +153,11 @@ func (p *GitHubOAuthProvider) GetUserInfo(ctx context.Context, accessToken strin
 	}, nil
 }
 
-// getPrimaryEmail retrieves the primary email from GitHub's emails endpoint
-func (p *GitHubOAuthProvider) getPrimaryEmail(ctx context.Context, accessToken string) (string, error) {
+// getPrimaryEmail retrieves the primary email from GitHub's emails endpoint.
+func (p *GitHubOAuthProvider) getPrimaryEmail(
+	ctx context.Context,
+	accessToken string,
+) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", "https://api.github.com/user/emails", nil)
 	if err != nil {
 		return "", err

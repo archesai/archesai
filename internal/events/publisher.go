@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// DomainEvent is the interface that all domain events must implement
+// DomainEvent is the interface that all domain events must implement.
 type DomainEvent interface {
 	// EventType returns the event type string (e.g., "user.created")
 	EventType() string
@@ -18,7 +18,7 @@ type DomainEvent interface {
 	EventData() interface{}
 }
 
-// BaseEvent provides common fields for all events
+// BaseEvent provides common fields for all events.
 type BaseEvent struct {
 	ID        string    `json:"id"`
 	Domain    string    `json:"domain"`
@@ -27,7 +27,7 @@ type BaseEvent struct {
 	Version   string    `json:"version,omitempty"`
 }
 
-// NewBaseEvent creates a new base event
+// NewBaseEvent creates a new base event.
 func NewBaseEvent(domain, eventType string) BaseEvent {
 	return BaseEvent{
 		ID:        uuid.New().String(),
@@ -38,7 +38,7 @@ func NewBaseEvent(domain, eventType string) BaseEvent {
 	}
 }
 
-// PublishDomainEvent is a helper function to publish domain events
+// PublishDomainEvent is a helper function to publish domain events.
 func PublishDomainEvent(ctx context.Context, publisher Publisher, event DomainEvent) error {
 	if event == nil {
 		return fmt.Errorf("event cannot be nil")

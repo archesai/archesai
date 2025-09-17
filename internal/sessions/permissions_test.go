@@ -186,7 +186,13 @@ func TestHasPermission(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := HasPermission(tt.role, tt.permission); got != tt.want {
-				t.Errorf("HasPermission(%v, %v) = %v, want %v", tt.role, tt.permission, got, tt.want)
+				t.Errorf(
+					"HasPermission(%v, %v) = %v, want %v",
+					tt.role,
+					tt.permission,
+					got,
+					tt.want,
+				)
 			}
 		})
 	}
@@ -403,16 +409,32 @@ func TestPermissionConsistency(t *testing.T) {
 		guestPerms := len(GetRolePermissions(RoleOrgGuest))
 
 		if ownerPerms < adminPerms {
-			t.Errorf("OrgOwner has fewer permissions (%d) than OrgAdmin (%d)", ownerPerms, adminPerms)
+			t.Errorf(
+				"OrgOwner has fewer permissions (%d) than OrgAdmin (%d)",
+				ownerPerms,
+				adminPerms,
+			)
 		}
 		if adminPerms < memberPerms {
-			t.Errorf("OrgAdmin has fewer permissions (%d) than OrgMember (%d)", adminPerms, memberPerms)
+			t.Errorf(
+				"OrgAdmin has fewer permissions (%d) than OrgMember (%d)",
+				adminPerms,
+				memberPerms,
+			)
 		}
 		if memberPerms < viewerPerms {
-			t.Errorf("OrgMember has fewer permissions (%d) than OrgViewer (%d)", memberPerms, viewerPerms)
+			t.Errorf(
+				"OrgMember has fewer permissions (%d) than OrgViewer (%d)",
+				memberPerms,
+				viewerPerms,
+			)
 		}
 		if viewerPerms < guestPerms {
-			t.Errorf("OrgViewer has fewer permissions (%d) than OrgGuest (%d)", viewerPerms, guestPerms)
+			t.Errorf(
+				"OrgViewer has fewer permissions (%d) than OrgGuest (%d)",
+				viewerPerms,
+				guestPerms,
+			)
 		}
 	})
 }

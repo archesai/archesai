@@ -7,16 +7,16 @@ import (
 	"time"
 )
 
-// Handler handles health check operations
+// Handler handles health check operations.
 type Handler struct {
 	service *Service
 	logger  *slog.Logger
 }
 
-// Ensure Handler implements StrictServerInterface
+// Ensure Handler implements StrictServerInterface.
 var _ StrictServerInterface = (*Handler)(nil)
 
-// NewHandler creates a new health handler
+// NewHandler creates a new health handler.
 func NewHandler(service *Service, logger *slog.Logger) *Handler {
 	return &Handler{
 		service: service,
@@ -24,8 +24,11 @@ func NewHandler(service *Service, logger *slog.Logger) *Handler {
 	}
 }
 
-// GetHealth implements the health check endpoint
-func (h *Handler) GetHealth(ctx context.Context, _ GetHealthRequestObject) (GetHealthResponseObject, error) {
+// GetHealth implements the health check endpoint.
+func (h *Handler) GetHealth(
+	ctx context.Context,
+	_ GetHealthRequestObject,
+) (GetHealthResponseObject, error) {
 	h.logger.Debug("health check requested")
 
 	status, err := h.service.CheckHealth(ctx)

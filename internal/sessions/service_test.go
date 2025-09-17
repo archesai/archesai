@@ -6,13 +6,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
-// createSessionTestService helper function to create a service with mocks for session tests
+// createSessionTestService helper function to create a service with mocks for session tests.
 func createSessionTestService(t *testing.T) (*Service, *MockRepository) {
 	t.Helper()
 
@@ -23,7 +24,7 @@ func createSessionTestService(t *testing.T) (*Service, *MockRepository) {
 	return service, mockRepo
 }
 
-// TestService_Validate tests validating a session
+// TestService_Validate tests validating a session.
 func TestService_Validate(t *testing.T) {
 	t.Run("valid session", func(t *testing.T) {
 		service, mockRepo := createSessionTestService(t)
@@ -39,7 +40,9 @@ func TestService_Validate(t *testing.T) {
 
 		mockRepo.EXPECT().GetByToken(mock.Anything, token).Return(session, nil)
 		// SessionManager's Validate calls Update to refresh the session
-		mockRepo.EXPECT().Update(mock.Anything, session.ID, mock.AnythingOfType("*sessions.Session")).Return(session, nil)
+		mockRepo.EXPECT().
+			Update(mock.Anything, session.ID, mock.AnythingOfType("*sessions.Session")).
+			Return(session, nil)
 
 		result, err := service.Validate(context.Background(), token)
 
@@ -81,7 +84,9 @@ func TestService_Validate(t *testing.T) {
 
 		mockRepo.EXPECT().GetByToken(mock.Anything, token).Return(session, nil)
 		// SessionManager's Validate calls Update to refresh the session
-		mockRepo.EXPECT().Update(mock.Anything, session.ID, mock.AnythingOfType("*sessions.Session")).Return(session, nil)
+		mockRepo.EXPECT().
+			Update(mock.Anything, session.ID, mock.AnythingOfType("*sessions.Session")).
+			Return(session, nil)
 
 		result, err := service.Validate(context.Background(), token)
 
@@ -111,7 +116,7 @@ func TestService_Validate(t *testing.T) {
 	})
 }
 
-// TestService_NewService tests service creation with cache
+// TestService_NewService tests service creation with cache.
 func TestService_NewService(t *testing.T) {
 	t.Run("creates service with cache and session manager", func(t *testing.T) {
 		mockRepo := NewMockRepository(t)
@@ -125,7 +130,7 @@ func TestService_NewService(t *testing.T) {
 	})
 }
 
-// TestService_ListByUser_Repository tests getting all sessions for a user using repository directly
+// TestService_ListByUser_Repository tests getting all sessions for a user using repository directly.
 func TestService_ListByUser_Repository(t *testing.T) {
 	t.Run("returns user sessions", func(t *testing.T) {
 		service, mockRepo := createSessionTestService(t)
@@ -178,7 +183,7 @@ func TestService_ListByUser_Repository(t *testing.T) {
 	})
 }
 
-// TestService_RevokeSession tests revoking a specific session
+// TestService_RevokeSession tests revoking a specific session.
 func TestService_RevokeSession(t *testing.T) {
 	t.Run("successfully revokes session", func(t *testing.T) {
 		service, mockRepo := createSessionTestService(t)
@@ -215,7 +220,7 @@ func TestService_RevokeSession(t *testing.T) {
 	})
 }
 
-// TestService_CleanupExpiredSessions tests cleanup of expired sessions
+// TestService_CleanupExpiredSessions tests cleanup of expired sessions.
 func TestService_CleanupExpiredSessions(t *testing.T) {
 	t.Run("successfully cleans up expired sessions", func(t *testing.T) {
 		service, mockRepo := createSessionTestService(t)
@@ -239,7 +244,7 @@ func TestService_CleanupExpiredSessions(t *testing.T) {
 }
 
 // TestService_DeleteUserSessions tests deleting all sessions for a user
-// Note: DeleteUserSessions is not in the interface anymore, testing through repository
+// Note: DeleteUserSessions is not in the interface anymore, testing through repository.
 func TestService_DeleteUserSessions(t *testing.T) {
 	t.Run("repository can delete all user sessions", func(t *testing.T) {
 		_, mockRepo := createSessionTestService(t)
@@ -271,7 +276,7 @@ func TestService_DeleteUserSessions(t *testing.T) {
 	})
 }
 
-// TestService_ListByUser tests listing user sessions
+// TestService_ListByUser tests listing user sessions.
 func TestService_ListByUser(t *testing.T) {
 	t.Run("without session manager uses repository directly", func(t *testing.T) {
 		service, mockRepo := createSessionTestService(t)

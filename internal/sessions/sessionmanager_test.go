@@ -5,10 +5,11 @@ import (
 	"testing"
 	"time"
 
-	genericcache "github.com/archesai/archesai/internal/cache"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	genericcache "github.com/archesai/archesai/internal/cache"
 )
 
 const (
@@ -393,7 +394,9 @@ func TestSessionManager_Validate(t *testing.T) {
 
 		// Expectations
 		mockRepo.EXPECT().GetByToken(ctx, token).Return(validSession, nil)
-		mockRepo.EXPECT().Update(ctx, sessionID, mock.AnythingOfType("*sessions.Session")).Return(updatedSession, nil)
+		mockRepo.EXPECT().
+			Update(ctx, sessionID, mock.AnythingOfType("*sessions.Session")).
+			Return(updatedSession, nil)
 
 		// Execute
 		session, err := sm.Validate(ctx, token)
@@ -402,7 +405,7 @@ func TestSessionManager_Validate(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, session)
 		// UpdatedAt should be recent
-		assert.True(t, time.Since(session.UpdatedAt) < 5*time.Second)
+		assert.Less(t, time.Since(session.UpdatedAt), 5*time.Second)
 	})
 
 	t.Run("expired session is deleted", func(t *testing.T) {
@@ -458,13 +461,15 @@ func TestSessionManager_RefreshSession(t *testing.T) {
 
 		// Expectations
 		mockRepo.EXPECT().Get(ctx, sessionID).Return(validSession, nil)
-		mockRepo.EXPECT().Update(ctx, sessionID, mock.AnythingOfType("*sessions.Session")).Return(&Session{
-			ID:        sessionID,
-			UserID:    userID,
-			Token:     token,
-			ExpiresAt: time.Now().Add(24 * time.Hour),
-			UpdatedAt: time.Now(),
-		}, nil)
+		mockRepo.EXPECT().
+			Update(ctx, sessionID, mock.AnythingOfType("*sessions.Session")).
+			Return(&Session{
+				ID:        sessionID,
+				UserID:    userID,
+				Token:     token,
+				ExpiresAt: time.Now().Add(24 * time.Hour),
+				UpdatedAt: time.Now(),
+			}, nil)
 
 		// Execute
 		session, err := sm.RefreshSession(ctx, sessionID)
@@ -474,6 +479,6 @@ func TestSessionManager_RefreshSession(t *testing.T) {
 		assert.NotNil(t, session)
 
 		// Check that expiry was extended (session.ExpiresAt should be about 24 hours from now)
-		assert.True(t, time.Until(session.ExpiresAt) > 23*time.Hour)
+		assert.Greater(t, time.Until(session.ExpiresAt), 23*time.Hour)
 	})
 }

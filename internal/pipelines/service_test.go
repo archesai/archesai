@@ -5,13 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
-// Test helper functions
+// Test helper functions.
 func createTestService(t *testing.T) (*Service, *MockRepository) {
 	t.Helper()
 
@@ -22,7 +23,7 @@ func createTestService(t *testing.T) (*Service, *MockRepository) {
 	return service, mockRepo
 }
 
-// TestService_CreatePipeline tests creating a pipeline
+// TestService_CreatePipeline tests creating a pipeline.
 func TestService_CreatePipeline(t *testing.T) {
 	t.Run("successful creation", func(t *testing.T) {
 		service, mockRepo := createTestService(t)
@@ -41,7 +42,9 @@ func TestService_CreatePipeline(t *testing.T) {
 			UpdatedAt:      time.Now(),
 		}
 
-		mockRepo.EXPECT().Create(mock.Anything, mock.AnythingOfType("*pipelines.Pipeline")).Return(expectedPipeline, nil)
+		mockRepo.EXPECT().
+			Create(mock.Anything, mock.AnythingOfType("*pipelines.Pipeline")).
+			Return(expectedPipeline, nil)
 
 		request := CreatePipelineRequestObject{
 			Body: req,
@@ -58,7 +61,7 @@ func TestService_CreatePipeline(t *testing.T) {
 	})
 }
 
-// TestService_GetPipeline tests getting a pipeline
+// TestService_GetPipeline tests getting a pipeline.
 func TestService_GetPipeline(t *testing.T) {
 	pipelineID := uuid.New()
 	pipeline := &Pipeline{
@@ -108,7 +111,7 @@ func TestService_GetPipeline(t *testing.T) {
 	})
 }
 
-// TestService_UpdatePipeline tests updating a pipeline
+// TestService_UpdatePipeline tests updating a pipeline.
 func TestService_UpdatePipeline(t *testing.T) {
 	pipelineID := uuid.New()
 
@@ -139,7 +142,9 @@ func TestService_UpdatePipeline(t *testing.T) {
 		}
 
 		mockRepo.EXPECT().Get(mock.Anything, pipelineID).Return(existingPipeline, nil)
-		mockRepo.EXPECT().Update(mock.Anything, pipelineID, mock.AnythingOfType("*pipelines.Pipeline")).Return(updatedPipeline, nil)
+		mockRepo.EXPECT().
+			Update(mock.Anything, pipelineID, mock.AnythingOfType("*pipelines.Pipeline")).
+			Return(updatedPipeline, nil)
 
 		request := UpdatePipelineRequestObject{
 			ID:   pipelineID,
@@ -158,7 +163,7 @@ func TestService_UpdatePipeline(t *testing.T) {
 	})
 }
 
-// TestService_DeletePipeline tests deleting a pipeline
+// TestService_DeletePipeline tests deleting a pipeline.
 func TestService_DeletePipeline(t *testing.T) {
 	pipelineID := uuid.New()
 
@@ -202,7 +207,7 @@ func TestService_DeletePipeline(t *testing.T) {
 	})
 }
 
-// TestService_ListPipelines tests listing pipelines
+// TestService_ListPipelines tests listing pipelines.
 func TestService_ListPipelines(t *testing.T) {
 	t.Run("successful list", func(t *testing.T) {
 		service, mockRepo := createTestService(t)

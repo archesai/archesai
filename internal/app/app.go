@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/artifacts"
 	"github.com/archesai/archesai/internal/config"
@@ -22,10 +24,9 @@ import (
 	"github.com/archesai/archesai/internal/server"
 	"github.com/archesai/archesai/internal/tools"
 	"github.com/archesai/archesai/internal/users"
-	"github.com/labstack/echo/v4"
 )
 
-// App holds all application dependencies
+// App holds all application dependencies.
 type App struct {
 	// Core infrastructure
 	infra *Infrastructure // Private infrastructure holder
@@ -66,7 +67,7 @@ type App struct {
 	// ConfigHandler        *config.Handler
 }
 
-// NewApp creates and initializes all application dependencies
+// NewApp creates and initializes all application dependencies.
 func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize infrastructure
 	infra, err := NewInfrastructure(cfg)
@@ -197,7 +198,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	return app, nil
 }
 
-// Close cleans up all resources
+// Close cleans up all resources.
 func (a *App) Close() error {
 	if a.infra != nil {
 		return a.infra.Close()
@@ -205,7 +206,7 @@ func (a *App) Close() error {
 	return nil
 }
 
-// registerRoutes registers all application routes with the server
+// registerRoutes registers all application routes with the server.
 func (a *App) registerRoutes() {
 	// Get the echo instance from the server
 	e := a.Server.Echo()
@@ -224,7 +225,7 @@ func (a *App) registerRoutes() {
 	a.RegisterRoutes(e)
 }
 
-// readinessCheck checks if the service is ready to handle requests
+// readinessCheck checks if the service is ready to handle requests.
 func (a *App) readinessCheck(ctx echo.Context) error {
 	// Check database connection
 	if err := a.infra.Database.Ping(ctx.Request().Context()); err != nil {

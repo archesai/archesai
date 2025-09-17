@@ -8,35 +8,35 @@ import (
 	"github.com/google/uuid"
 )
 
-// TokenType represents the type of JWT token
+// TokenType represents the type of JWT token.
 type TokenType string
 
 const (
-	// AccessTokenType represents an access token
+	// AccessTokenType represents an access token.
 	AccessTokenType TokenType = "access"
-	// RefreshTokenType represents a refresh token
+	// RefreshTokenType represents a refresh token.
 	RefreshTokenType TokenType = "refresh"
-	// APIKeyTokenType represents an API key token
+	// APIKeyTokenType represents an API key token.
 	APIKeyTokenType TokenType = "api_key"
-	// SessionTokenType represents a session token
+	// SessionTokenType represents a session token.
 	SessionTokenType TokenType = "session"
 )
 
-// Method represents the authentication method used
+// Method represents the authentication method used.
 type Method string
 
 const (
-	// AuthMethodPassword represents password authentication
+	// AuthMethodPassword represents password authentication.
 	AuthMethodPassword Method = "password"
-	// AuthMethodOAuth represents OAuth authentication
+	// AuthMethodOAuth represents OAuth authentication.
 	AuthMethodOAuth Method = "oauth"
-	// AuthMethodAPIKey represents API key authentication
+	// AuthMethodAPIKey represents API key authentication.
 	AuthMethodAPIKey Method = "api_key"
-	// AuthMethodMFA represents multi-factor authentication
+	// AuthMethodMFA represents multi-factor authentication.
 	AuthMethodMFA Method = "mfa"
 )
 
-// EnhancedClaims represents comprehensive JWT claims with rich context
+// EnhancedClaims represents comprehensive JWT claims with rich context.
 type EnhancedClaims struct {
 	// Standard JWT claims
 	jwt.RegisteredClaims
@@ -80,7 +80,7 @@ type EnhancedClaims struct {
 	CustomClaims map[string]interface{} `json:"custom,omitempty"`
 }
 
-// OrganizationClaim represents organization membership in claims
+// OrganizationClaim represents organization membership in claims.
 type OrganizationClaim struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
@@ -88,7 +88,7 @@ type OrganizationClaim struct {
 	Permissions []string  `json:"permissions,omitempty"`
 }
 
-// RefreshClaims represents minimal claims for refresh tokens
+// RefreshClaims represents minimal claims for refresh tokens.
 type RefreshClaims struct {
 	jwt.RegisteredClaims
 	UserID     uuid.UUID `json:"uid"`
@@ -97,14 +97,14 @@ type RefreshClaims struct {
 	AuthMethod Method    `json:"auth_method"`
 }
 
-// SessionClaims represents minimal claims for session tokens
+// SessionClaims represents minimal claims for session tokens.
 type SessionClaims struct {
 	jwt.RegisteredClaims
 	UserID    uuid.UUID `json:"uid"`
 	TokenType TokenType `json:"token_type"`
 }
 
-// APIKeyClaims represents claims for API key tokens
+// APIKeyClaims represents claims for API key tokens.
 type APIKeyClaims struct {
 	jwt.RegisteredClaims
 	KeyID          string    `json:"kid"`
@@ -115,7 +115,7 @@ type APIKeyClaims struct {
 	RateLimit      int       `json:"rate_limit,omitempty"`
 }
 
-// HasPermission checks if the claims contain a specific permission
+// HasPermission checks if the claims contain a specific permission.
 func (c *EnhancedClaims) HasPermission(permission string) bool {
 	for _, p := range c.Permissions {
 		if p == permission {
@@ -137,7 +137,7 @@ func (c *EnhancedClaims) HasPermission(permission string) bool {
 	return false
 }
 
-// HasRole checks if the claims contain a specific role
+// HasRole checks if the claims contain a specific role.
 func (c *EnhancedClaims) HasRole(role string) bool {
 	for _, r := range c.Roles {
 		if r == role {
@@ -147,7 +147,7 @@ func (c *EnhancedClaims) HasRole(role string) bool {
 	return c.OrganizationRole == role
 }
 
-// HasScope checks if the claims contain a specific scope
+// HasScope checks if the claims contain a specific scope.
 func (c *EnhancedClaims) HasScope(scope string) bool {
 	for _, s := range c.Scopes {
 		if s == scope {
@@ -157,7 +157,7 @@ func (c *EnhancedClaims) HasScope(scope string) bool {
 	return false
 }
 
-// IsOrgMember checks if the user is a member of a specific organization
+// IsOrgMember checks if the user is a member of a specific organization.
 func (c *EnhancedClaims) IsOrgMember(orgID uuid.UUID) bool {
 	if c.OrganizationID == orgID {
 		return true
@@ -170,7 +170,7 @@ func (c *EnhancedClaims) IsOrgMember(orgID uuid.UUID) bool {
 	return false
 }
 
-// GetOrgRole returns the user's role in a specific organization
+// GetOrgRole returns the user's role in a specific organization.
 func (c *EnhancedClaims) GetOrgRole(orgID uuid.UUID) string {
 	if c.OrganizationID == orgID {
 		return c.OrganizationRole
@@ -183,7 +183,7 @@ func (c *EnhancedClaims) GetOrgRole(orgID uuid.UUID) string {
 	return ""
 }
 
-// IsValid checks if the claims are valid
+// IsValid checks if the claims are valid.
 func (c *EnhancedClaims) IsValid() bool {
 	now := time.Now()
 
@@ -205,8 +205,11 @@ func (c *EnhancedClaims) IsValid() bool {
 	return true
 }
 
-// ValidateForEndpoint checks if claims are valid for a specific endpoint
-func (c *EnhancedClaims) ValidateForEndpoint(requiredScopes []string, requiredPermissions []string) bool {
+// ValidateForEndpoint checks if claims are valid for a specific endpoint.
+func (c *EnhancedClaims) ValidateForEndpoint(
+	requiredScopes []string,
+	requiredPermissions []string,
+) bool {
 	// Check if claims are valid
 	if !c.IsValid() {
 		return false

@@ -87,7 +87,11 @@ func TestService_CheckHealth(t *testing.T) {
 				expectedDBStatus := StatusUnhealthy
 
 				if status.Services.Database != expectedDBStatus {
-					t.Errorf("Database status = %v, want %v", status.Services.Database, expectedDBStatus)
+					t.Errorf(
+						"Database status = %v, want %v",
+						status.Services.Database,
+						expectedDBStatus,
+					)
 				}
 
 				// Email and Redis should always be healthy (TODO in implementation)

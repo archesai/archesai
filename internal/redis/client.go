@@ -8,7 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// Client wraps the Redis client with domain-specific functionality
+// Client wraps the Redis client with domain-specific functionality.
 type Client struct {
 	redis  *redis.Client
 	Queue  *Queue
@@ -17,7 +17,7 @@ type Client struct {
 	logger *slog.Logger
 }
 
-// NewClient creates a new Redis client with all features
+// NewClient creates a new Redis client with all features.
 func NewClient(config *Config, logger *slog.Logger) (*Client, error) {
 	if config == nil {
 		config = DefaultConfig()
@@ -93,7 +93,7 @@ func NewClient(config *Config, logger *slog.Logger) (*Client, error) {
 	return client, nil
 }
 
-// Close closes the Redis connection
+// Close closes the Redis connection.
 func (c *Client) Close() error {
 	if c.redis != nil {
 		return c.redis.Close()
@@ -101,12 +101,12 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// Ping checks if Redis is reachable
+// Ping checks if Redis is reachable.
 func (c *Client) Ping(ctx context.Context) error {
 	return c.redis.Ping(ctx).Err()
 }
 
-// GetRedisClient returns the underlying Redis client for advanced usage
+// GetRedisClient returns the underlying Redis client for advanced usage.
 func (c *Client) GetRedisClient() *redis.Client {
 	return c.redis
 }
@@ -121,7 +121,7 @@ func (c *Client) FlushAll(ctx context.Context) error {
 	return c.redis.FlushAll(ctx).Err()
 }
 
-// Info returns Redis server information
+// Info returns Redis server information.
 func (c *Client) Info(ctx context.Context, sections ...string) (string, error) {
 	var cmd *redis.StringCmd
 	if len(sections) > 0 {
@@ -132,7 +132,7 @@ func (c *Client) Info(ctx context.Context, sections ...string) (string, error) {
 	return cmd.Result()
 }
 
-// DBSize returns the number of keys in the current database
+// DBSize returns the number of keys in the current database.
 func (c *Client) DBSize(ctx context.Context) (int64, error) {
 	return c.redis.DBSize(ctx).Result()
 }

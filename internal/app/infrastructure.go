@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/artifacts"
 	"github.com/archesai/archesai/internal/cache"
@@ -25,10 +27,9 @@ import (
 	"github.com/archesai/archesai/internal/sessions"
 	"github.com/archesai/archesai/internal/tools"
 	"github.com/archesai/archesai/internal/users"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Infrastructure holds all infrastructure components
+// Infrastructure holds all infrastructure components.
 type Infrastructure struct {
 	Logger         *slog.Logger
 	Database       database.Database
@@ -39,7 +40,7 @@ type Infrastructure struct {
 	redisClient *redis.Client
 }
 
-// Repositories holds all domain repositories
+// Repositories holds all domain repositories.
 type Repositories struct {
 	Accounts      accounts.Repository
 	Sessions      sessions.Repository
@@ -54,7 +55,7 @@ type Repositories struct {
 	Invitations   invitations.Repository
 }
 
-// NewInfrastructure creates all infrastructure components
+// NewInfrastructure creates all infrastructure components.
 func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 
 	// Initialize logger
@@ -115,7 +116,7 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 	return infra, nil
 }
 
-// NewRepositories creates all domain repositories based on database type
+// NewRepositories creates all domain repositories based on database type.
 func NewRepositories(db database.Database, cfg *config.Config) (*Repositories, error) {
 	// Determine database type
 	var dbType database.Type
@@ -185,8 +186,11 @@ func NewRepositories(db database.Database, cfg *config.Config) (*Repositories, e
 	return repos, nil
 }
 
-// GetQueries returns database-specific query objects
-func GetQueries(db database.Database, cfg *config.Config) (pgQueries *postgresql.Queries, sqliteQueries *sqlite.Queries) {
+// GetQueries returns database-specific query objects.
+func GetQueries(
+	db database.Database,
+	cfg *config.Config,
+) (pgQueries *postgresql.Queries, sqliteQueries *sqlite.Queries) {
 	// Determine database type
 	var dbType database.Type
 	if cfg.Database.Type != "" {
@@ -209,7 +213,7 @@ func GetQueries(db database.Database, cfg *config.Config) (pgQueries *postgresql
 	return pgQueries, sqliteQueries
 }
 
-// Close cleans up all infrastructure resources
+// Close cleans up all infrastructure resources.
 func (i *Infrastructure) Close() error {
 	// Close database
 	if i.Database != nil {

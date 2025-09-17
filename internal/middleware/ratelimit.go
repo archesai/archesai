@@ -9,7 +9,7 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// RateLimiter provides rate limiting functionality
+// RateLimiter provides rate limiting functionality.
 type RateLimiter struct {
 	limiters map[string]*rate.Limiter
 	mu       sync.RWMutex
@@ -17,7 +17,7 @@ type RateLimiter struct {
 	burst    int
 }
 
-// NewRateLimiter creates a new rate limiter
+// NewRateLimiter creates a new rate limiter.
 func NewRateLimiter(rps int, burst int) *RateLimiter {
 	return &RateLimiter{
 		limiters: make(map[string]*rate.Limiter),
@@ -26,7 +26,7 @@ func NewRateLimiter(rps int, burst int) *RateLimiter {
 	}
 }
 
-// getLimiter returns the rate limiter for a given key (usually IP address)
+// getLimiter returns the rate limiter for a given key (usually IP address).
 func (rl *RateLimiter) getLimiter(key string) *rate.Limiter {
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
@@ -40,7 +40,7 @@ func (rl *RateLimiter) getLimiter(key string) *rate.Limiter {
 	return limiter
 }
 
-// RateLimit creates a rate limiting middleware
+// RateLimit creates a rate limiting middleware.
 func (rl *RateLimiter) RateLimit() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -56,7 +56,7 @@ func (rl *RateLimiter) RateLimit() echo.MiddlewareFunc {
 	}
 }
 
-// CleanupOldLimiters removes limiters that haven't been used recently
+// CleanupOldLimiters removes limiters that haven't been used recently.
 func (rl *RateLimiter) CleanupOldLimiters(maxAge time.Duration) {
 	ticker := time.NewTicker(maxAge)
 	defer ticker.Stop()

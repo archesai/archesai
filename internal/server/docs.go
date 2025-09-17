@@ -14,7 +14,7 @@ import (
 //go:embed assets/docs.html
 var docsHTML []byte
 
-// SetupDocs configures API documentation endpoints
+// SetupDocs configures API documentation endpoints.
 func (s *Server) SetupDocs() error {
 	if !s.config.Docs {
 		s.logger.Info("API documentation disabled")

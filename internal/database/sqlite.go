@@ -7,17 +7,18 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/config"
 	_ "modernc.org/sqlite" // Pure Go SQLite driver
+
+	"github.com/archesai/archesai/internal/config"
 )
 
-// SQLite implements the Database interface for SQLite
+// SQLite implements the Database interface for SQLite.
 type SQLite struct {
 	db     *sql.DB
 	logger *slog.Logger
 }
 
-// NewSQLite creates a new SQLite database connection
+// NewSQLite creates a new SQLite database connection.
 func NewSQLite(cfg *config.DatabaseConfig, logger *slog.Logger) (Database, error) {
 	ctx := context.Background()
 
@@ -74,7 +75,7 @@ func NewSQLite(cfg *config.DatabaseConfig, logger *slog.Logger) (Database, error
 	}, nil
 }
 
-// configureSQLitePragmas sets SQLite-specific pragmas for performance and reliability
+// configureSQLitePragmas sets SQLite-specific pragmas for performance and reliability.
 func configureSQLitePragmas(db *sql.DB) error {
 	pragmas := []string{
 		"PRAGMA journal_mode = WAL",
@@ -93,7 +94,7 @@ func configureSQLitePragmas(db *sql.DB) error {
 	return nil
 }
 
-// Query executes a query that returns rows
+// Query executes a query that returns rows.
 func (db *SQLite) Query(ctx context.Context, query string, args ...interface{}) (Rows, error) {
 	rows, err := db.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -102,17 +103,17 @@ func (db *SQLite) Query(ctx context.Context, query string, args ...interface{}) 
 	return &sqlRows{rows: rows}, nil
 }
 
-// QueryRow executes a query that returns at most one row
+// QueryRow executes a query that returns at most one row.
 func (db *SQLite) QueryRow(ctx context.Context, query string, args ...interface{}) Row {
 	return &sqlRow{row: db.db.QueryRowContext(ctx, query, args...)}
 }
 
-// Exec executes a query without returning any rows
+// Exec executes a query without returning any rows.
 func (db *SQLite) Exec(ctx context.Context, query string, args ...interface{}) (Result, error) {
 	return db.db.ExecContext(ctx, query, args...)
 }
 
-// Begin starts a transaction
+// Begin starts a transaction.
 func (db *SQLite) Begin(ctx context.Context) (Transaction, error) {
 	tx, err := db.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -121,7 +122,7 @@ func (db *SQLite) Begin(ctx context.Context) (Transaction, error) {
 	return &sqlTransaction{tx: tx}, nil
 }
 
-// BeginTx starts a transaction with options
+// BeginTx starts a transaction with options.
 func (db *SQLite) BeginTx(ctx context.Context, opts *sql.TxOptions) (Transaction, error) {
 	tx, err := db.db.BeginTx(ctx, opts)
 	if err != nil {
@@ -130,18 +131,18 @@ func (db *SQLite) BeginTx(ctx context.Context, opts *sql.TxOptions) (Transaction
 	return &sqlTransaction{tx: tx}, nil
 }
 
-// Ping verifies the connection to the database
+// Ping verifies the connection to the database.
 func (db *SQLite) Ping(ctx context.Context) error {
 	return db.db.PingContext(ctx)
 }
 
-// Close closes the database connection
+// Close closes the database connection.
 func (db *SQLite) Close() error {
 	db.logger.Info("Closing SQLite connection")
 	return db.db.Close()
 }
 
-// Stats returns database statistics
+// Stats returns database statistics.
 func (db *SQLite) Stats() Stats {
 	stats := db.db.Stats()
 	return Stats{
@@ -155,12 +156,12 @@ func (db *SQLite) Stats() Stats {
 	}
 }
 
-// Type returns the database type
+// Type returns the database type.
 func (db *SQLite) Type() Type {
 	return TypeSQLite
 }
 
-// Underlying returns the underlying database connection
+// Underlying returns the underlying database connection.
 func (db *SQLite) Underlying() interface{} {
 	return db.db
 }
@@ -199,7 +200,11 @@ type sqlTransaction struct {
 	tx *sql.Tx
 }
 
-func (t *sqlTransaction) Query(ctx context.Context, query string, args ...interface{}) (Rows, error) {
+func (t *sqlTransaction) Query(
+	ctx context.Context,
+	query string,
+	args ...interface{},
+) (Rows, error) {
 	rows, err := t.tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -211,7 +216,11 @@ func (t *sqlTransaction) QueryRow(ctx context.Context, query string, args ...int
 	return &sqlRow{row: t.tx.QueryRowContext(ctx, query, args...)}
 }
 
-func (t *sqlTransaction) Exec(ctx context.Context, query string, args ...interface{}) (Result, error) {
+func (t *sqlTransaction) Exec(
+	ctx context.Context,
+	query string,
+	args ...interface{},
+) (Result, error) {
 	return t.tx.ExecContext(ctx, query, args...)
 }
 

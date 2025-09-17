@@ -7,7 +7,7 @@ import (
 )
 
 // GetAuthContextFromGoContext retrieves authentication data from standard Go context
-// This is useful for service and repository layers that don't have access to Echo context
+// This is useful for service and repository layers that don't have access to Echo context.
 func GetAuthContextFromGoContext(ctx context.Context) (*EnhancedClaims, uuid.UUID, bool) {
 	// Try to get enhanced claims first
 	if claims, ok := ctx.Value("auth.claims").(*EnhancedClaims); ok {

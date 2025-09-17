@@ -351,8 +351,12 @@ func (p *Parser) FlattenConfigDefaults(defaults map[string]interface{}) map[stri
 	return result
 }
 
-// flattenRecursive is a helper to recursively flatten nested maps
-func (p *Parser) flattenRecursive(prefix string, nested map[string]interface{}, result map[string]interface{}) {
+// flattenRecursive is a helper to recursively flatten nested maps.
+func (p *Parser) flattenRecursive(
+	prefix string,
+	nested map[string]interface{},
+	result map[string]interface{},
+) {
 	for key, value := range nested {
 		fullKey := key
 		if prefix != "" {

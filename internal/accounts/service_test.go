@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// Test helper functions
+// Test helper functions.
 func createTestService(t *testing.T) (*Service, *MockRepository) {
 	t.Helper()
 
@@ -24,7 +24,7 @@ func createTestService(t *testing.T) (*Service, *MockRepository) {
 	return service, mockRepo
 }
 
-// TestNewService tests the service constructor
+// TestNewService tests the service constructor.
 func TestNewService(t *testing.T) {
 	service, _ := createTestService(t)
 
@@ -33,7 +33,7 @@ func TestNewService(t *testing.T) {
 	assert.NotNil(t, service.logger)
 }
 
-// TestCreateAccount tests creating an account
+// TestCreateAccount tests creating an account.
 func TestCreateAccount(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -103,7 +103,7 @@ func TestCreateAccount(t *testing.T) {
 	}
 }
 
-// TestGetAccount tests getting an account by ID
+// TestGetAccount tests getting an account by ID.
 func TestGetAccount(t *testing.T) {
 	accountID := uuid.New()
 	account := &Account{
@@ -165,7 +165,7 @@ func TestGetAccount(t *testing.T) {
 	}
 }
 
-// TestUpdateAccount tests updating an account
+// TestUpdateAccount tests updating an account.
 func TestUpdateAccount(t *testing.T) {
 	accountID := uuid.New()
 	existingAccount := &Account{
@@ -200,7 +200,8 @@ func TestUpdateAccount(t *testing.T) {
 					CreatedAt:  existingAccount.CreatedAt,
 					UpdatedAt:  time.Now(),
 				}
-				repo.EXPECT().Update(mock.Anything, accountID, mock.AnythingOfType("*accounts.Account")).
+				repo.EXPECT().
+					Update(mock.Anything, accountID, mock.AnythingOfType("*accounts.Account")).
 					Return(updatedAccount, nil)
 			},
 			wantErr: false,
@@ -243,7 +244,7 @@ func TestUpdateAccount(t *testing.T) {
 	}
 }
 
-// TestDeleteAccount tests deleting an account
+// TestDeleteAccount tests deleting an account.
 func TestDeleteAccount(t *testing.T) {
 	accountID := uuid.New()
 	account := &Account{
@@ -305,7 +306,7 @@ func TestDeleteAccount(t *testing.T) {
 	}
 }
 
-// TestListAccounts tests listing accounts
+// TestListAccounts tests listing accounts.
 func TestListAccounts(t *testing.T) {
 	accounts := []*Account{
 		{

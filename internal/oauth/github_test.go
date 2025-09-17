@@ -51,7 +51,7 @@ func TestGitHubOAuthProvider_ExchangeCodeError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-// TestGitHubOAuthProvider_RefreshToken tests that GitHub doesn't support refresh tokens
+// TestGitHubOAuthProvider_RefreshToken tests that GitHub doesn't support refresh tokens.
 func TestGitHubOAuthProvider_RefreshToken(t *testing.T) {
 	provider := NewGitHubOAuthProvider("test-client", "test-secret")
 

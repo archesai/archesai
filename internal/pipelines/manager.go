@@ -8,15 +8,19 @@ import (
 	"github.com/google/uuid"
 )
 
-// PipelineManager handles pipeline step operations with DAG support
+// PipelineManager handles pipeline step operations with DAG support.
 type PipelineManager struct {
 	pipelineRepository     Repository
 	pipelineStepRepository PipelineStepRepository
 	logger                 *slog.Logger
 }
 
-// NewPipelineManager creates a new pipeline manager
-func NewPipelineManager(pipelineRepository Repository, pipelineStepRepository PipelineStepRepository, logger *slog.Logger) *PipelineManager {
+// NewPipelineManager creates a new pipeline manager.
+func NewPipelineManager(
+	pipelineRepository Repository,
+	pipelineStepRepository PipelineStepRepository,
+	logger *slog.Logger,
+) *PipelineManager {
 	return &PipelineManager{
 		pipelineRepository:     pipelineRepository,
 		pipelineStepRepository: pipelineStepRepository,
@@ -24,8 +28,12 @@ func NewPipelineManager(pipelineRepository Repository, pipelineStepRepository Pi
 	}
 }
 
-// CreatePipelineStep adds a new step to a pipeline
-func (pm *PipelineManager) CreatePipelineStep(ctx context.Context, pipelineID, toolID uuid.UUID, config map[string]interface{}) (*PipelineStep, error) {
+// CreatePipelineStep adds a new step to a pipeline.
+func (pm *PipelineManager) CreatePipelineStep(
+	ctx context.Context,
+	pipelineID, toolID uuid.UUID,
+	config map[string]interface{},
+) (*PipelineStep, error) {
 	step := &PipelineStep{
 		ID:         uuid.New(),
 		PipelineID: pipelineID,
@@ -42,8 +50,11 @@ func (pm *PipelineManager) CreatePipelineStep(ctx context.Context, pipelineID, t
 	return createdStep, nil
 }
 
-// AddStepDependency creates a dependency between two steps
-func (pm *PipelineManager) AddStepDependency(ctx context.Context, stepID, dependsOnID uuid.UUID) error {
+// AddStepDependency creates a dependency between two steps.
+func (pm *PipelineManager) AddStepDependency(
+	ctx context.Context,
+	stepID, dependsOnID uuid.UUID,
+) error {
 	// Create the dependency
 	err := pm.pipelineStepRepository.CreateStepDependency(ctx, stepID, dependsOnID)
 	if err != nil {
@@ -58,8 +69,11 @@ func (pm *PipelineManager) AddStepDependency(ctx context.Context, stepID, depend
 	return nil
 }
 
-// GetPipelineDAG retrieves all steps and dependencies for a pipeline
-func (pm *PipelineManager) GetPipelineDAG(ctx context.Context, pipelineID uuid.UUID) ([]PipelineStep, map[uuid.UUID][]uuid.UUID, error) {
+// GetPipelineDAG retrieves all steps and dependencies for a pipeline.
+func (pm *PipelineManager) GetPipelineDAG(
+	ctx context.Context,
+	pipelineID uuid.UUID,
+) ([]PipelineStep, map[uuid.UUID][]uuid.UUID, error) {
 	// Get all steps for the pipeline
 	steps, err := pm.pipelineStepRepository.GetPipelineSteps(ctx, pipelineID)
 	if err != nil {
@@ -75,7 +89,7 @@ func (pm *PipelineManager) GetPipelineDAG(ctx context.Context, pipelineID uuid.U
 	return steps, dependencies, nil
 }
 
-// ValidatePipeline checks if a pipeline is valid for execution
+// ValidatePipeline checks if a pipeline is valid for execution.
 func (pm *PipelineManager) ValidatePipeline(ctx context.Context, pipelineID uuid.UUID) error {
 	steps, deps, err := pm.GetPipelineDAG(ctx, pipelineID)
 	if err != nil {
@@ -105,8 +119,11 @@ func (pm *PipelineManager) ValidatePipeline(ctx context.Context, pipelineID uuid
 	return nil
 }
 
-// GetExecutionPlan returns the execution plan for a pipeline
-func (pm *PipelineManager) GetExecutionPlan(ctx context.Context, pipelineID uuid.UUID) ([][]uuid.UUID, error) {
+// GetExecutionPlan returns the execution plan for a pipeline.
+func (pm *PipelineManager) GetExecutionPlan(
+	ctx context.Context,
+	pipelineID uuid.UUID,
+) ([][]uuid.UUID, error) {
 	steps, deps, err := pm.GetPipelineDAG(ctx, pipelineID)
 	if err != nil {
 		return nil, err
@@ -120,7 +137,7 @@ func (pm *PipelineManager) GetExecutionPlan(ctx context.Context, pipelineID uuid
 	return dag.GetExecutionPlan()
 }
 
-// PipelineStepResponse represents the API response for a pipeline step
+// PipelineStepResponse represents the API response for a pipeline step.
 type PipelineStepResponse struct {
 	ID           uuid.UUID              `json:"id"`
 	PipelineID   uuid.UUID              `json:"pipelineID"`
@@ -132,7 +149,7 @@ type PipelineStepResponse struct {
 	Dependencies []uuid.UUID            `json:"dependencies"`
 }
 
-// ConvertStepToResponse converts a domain step to API response
+// ConvertStepToResponse converts a domain step to API response.
 func ConvertStepToResponse(step *PipelineStep, dependencies []uuid.UUID) PipelineStepResponse {
 	deps := make([]uuid.UUID, len(dependencies))
 	copy(deps, dependencies)
@@ -149,7 +166,7 @@ func ConvertStepToResponse(step *PipelineStep, dependencies []uuid.UUID) Pipelin
 	}
 }
 
-// ExecutionPlanResponse represents the execution plan for a pipeline
+// ExecutionPlanResponse represents the execution plan for a pipeline.
 type ExecutionPlanResponse struct {
 	PipelineID uuid.UUID        `json:"pipelineID"`
 	Levels     []ExecutionLevel `json:"levels"`
@@ -157,13 +174,13 @@ type ExecutionPlanResponse struct {
 	IsValid    bool             `json:"isValid"`
 }
 
-// ExecutionLevel represents a level of parallel execution
+// ExecutionLevel represents a level of parallel execution.
 type ExecutionLevel struct {
 	Level int         `json:"level"`
 	Steps []uuid.UUID `json:"steps"`
 }
 
-// ConvertExecutionPlan converts internal execution plan to API response
+// ConvertExecutionPlan converts internal execution plan to API response.
 func ConvertExecutionPlan(pipelineID uuid.UUID, plan [][]uuid.UUID) ExecutionPlanResponse {
 	levels := make([]ExecutionLevel, len(plan))
 	totalSteps := 0

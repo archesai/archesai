@@ -6,12 +6,12 @@ import (
 	"database/sql"
 )
 
-// Queries struct stub for SQLite
+// Queries struct stub for SQLite.
 type Queries struct {
 	db *sql.DB
 }
 
-// New creates a new Queries instance
+// New creates a new Queries instance.
 func New(db *sql.DB) *Queries {
 	return &Queries{db: db}
 }

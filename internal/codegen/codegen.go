@@ -27,20 +27,21 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/archesai/archesai/internal/logger"
 	"gopkg.in/yaml.v3"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
-// Common type name constants used throughout code generation
+// Common type name constants used throughout code generation.
 const (
-	// Format types
+	// Format types.
 	formatEmail = "email"
 	formatInt64 = "int64"
 
-	// SQL types
+	// SQL types.
 	sqlTypeUUID = "UUID"
 
-	// Go types
+	// Go types.
 	goTypeString    = "string"
 	goTypeBool      = "bool"
 	goTypeInt       = "int"
@@ -54,7 +55,7 @@ const (
 	goTypeEmailFull = "openapi_types.Email"
 	goTypeMapString = "map[string]interface{}"
 
-	// Go pointer types
+	// Go pointer types.
 	goTypePtrString   = "*string"
 	goTypePtrUUID     = "*uuid.UUID"
 	goTypePtrTime     = "*time.Time"
@@ -97,7 +98,11 @@ func RunWithConfig(config *CodegenConfig) error {
 		return fmt.Errorf("failed to parse OpenAPI spec: %w", err)
 	}
 
-	log.Debug("Parsed schemas", slog.Int("count", len(schemas)), slog.String("spec", config.Openapi))
+	log.Debug(
+		"Parsed schemas",
+		slog.Int("count", len(schemas)),
+		slog.String("spec", config.Openapi),
+	)
 
 	// Auto-detect domains if not configured
 	if len(config.Domains) == 0 {
@@ -118,7 +123,9 @@ func RunWithConfig(config *CodegenConfig) error {
 		log.Debug("SQL generator completed")
 	}
 
-	if config.Generators.Repository.Interface != "" || config.Generators.Repository.Postgres != "" || config.Generators.Repository.Sqlite != "" {
+	if config.Generators.Repository.Interface != "" ||
+		config.Generators.Repository.Postgres != "" ||
+		config.Generators.Repository.Sqlite != "" {
 		if err := generateRepository(config, filteredSchemas, templates, fileWriter, log); err != nil {
 			return fmt.Errorf("repository generator failed: %w", err)
 		}
@@ -127,7 +134,8 @@ func RunWithConfig(config *CodegenConfig) error {
 
 	// Cache generation removed - using generic cache instead
 
-	if config.Generators.Events.Interface != "" || config.Generators.Events.Redis != "" || config.Generators.Events.Nats != "" {
+	if config.Generators.Events.Interface != "" || config.Generators.Events.Redis != "" ||
+		config.Generators.Events.Nats != "" {
 		if err := generateEvents(config, filteredSchemas, templates, fileWriter, log); err != nil {
 			return fmt.Errorf("events generator failed: %w", err)
 		}
@@ -209,7 +217,10 @@ func loadTemplates() (map[string]*template.Template, error) {
 }
 
 // filterSchemas filters schemas based on domain configuration and x-codegen presence.
-func filterSchemas(config *CodegenConfig, allSchemas map[string]*ParsedSchema) map[string]*ParsedSchema {
+func filterSchemas(
+	config *CodegenConfig,
+	allSchemas map[string]*ParsedSchema,
+) map[string]*ParsedSchema {
 	filtered := make(map[string]*ParsedSchema)
 
 	for name, s := range allSchemas {
@@ -294,8 +305,16 @@ func loadConfig(path string) (*CodegenConfig, error) {
 	return &config, nil
 }
 
-// runGeneratorWithPaths runs generators using path-based configuration
-func runGeneratorWithPaths(generatorType string, config *CodegenConfig, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, filterFunc func(*ParsedSchema) bool, log *slog.Logger) error {
+// runGeneratorWithPaths runs generators using path-based configuration.
+func runGeneratorWithPaths(
+	generatorType string,
+	config *CodegenConfig,
+	schemas map[string]*ParsedSchema,
+	templates map[string]*template.Template,
+	fileWriter *FileWriter,
+	filterFunc func(*ParsedSchema) bool,
+	log *slog.Logger,
+) error {
 	log.Debug("Running generator", slog.String("type", generatorType))
 
 	// Group schemas by domain
@@ -331,8 +350,11 @@ func runGeneratorWithPaths(generatorType string, config *CodegenConfig, schemas 
 	return nil
 }
 
-// groupSchemasByDomain groups schemas by their domain
-func groupSchemasByDomain(schemas map[string]*ParsedSchema, filterFunc func(*ParsedSchema) bool) map[string][]*ParsedSchema {
+// groupSchemasByDomain groups schemas by their domain.
+func groupSchemasByDomain(
+	schemas map[string]*ParsedSchema,
+	filterFunc func(*ParsedSchema) bool,
+) map[string][]*ParsedSchema {
 	domainSchemas := make(map[string][]*ParsedSchema)
 	for _, s := range schemas {
 		if filterFunc(s) {
@@ -342,7 +364,7 @@ func groupSchemasByDomain(schemas map[string]*ParsedSchema, filterFunc func(*Par
 	return domainSchemas
 }
 
-// getSortedDomains returns sorted domain names
+// getSortedDomains returns sorted domain names.
 func getSortedDomains(domainSchemas map[string][]*ParsedSchema) []string {
 	domains := make([]string, 0, len(domainSchemas))
 	for domain := range domainSchemas {
@@ -352,15 +374,20 @@ func getSortedDomains(domainSchemas map[string][]*ParsedSchema) []string {
 	return domains
 }
 
-// sortSchemasByName sorts schemas by name
+// sortSchemasByName sorts schemas by name.
 func sortSchemasByName(schemas []*ParsedSchema) {
 	sort.Slice(schemas, func(i, j int) bool {
 		return schemas[i].Name < schemas[j].Name
 	})
 }
 
-// getGeneratorConfig returns template data and output files for a generator type
-func getGeneratorConfig(generatorType string, config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+// getGeneratorConfig returns template data and output files for a generator type.
+func getGeneratorConfig(
+	generatorType string,
+	config *CodegenConfig,
+	domain string,
+	schemas []*ParsedSchema,
+) (interface{}, []struct{ path, template string }) {
 	switch generatorType {
 	case "repository":
 		return getRepositoryConfig(config, domain, schemas)
@@ -377,83 +404,139 @@ func getGeneratorConfig(generatorType string, config *CodegenConfig, domain stri
 	}
 }
 
-// getRepositoryConfig returns repository generator configuration
-func getRepositoryConfig(config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
-	if config.Generators.Repository.Interface == "" && config.Generators.Repository.Postgres == "" && config.Generators.Repository.Sqlite == "" {
+// getRepositoryConfig returns repository generator configuration.
+func getRepositoryConfig(
+	config *CodegenConfig,
+	domain string,
+	schemas []*ParsedSchema,
+) (interface{}, []struct{ path, template string }) {
+	if config.Generators.Repository.Interface == "" &&
+		config.Generators.Repository.Postgres == "" &&
+		config.Generators.Repository.Sqlite == "" {
 		return nil, nil
 	}
 	templateData := prepareRepositoryData(domain, schemas)
 	var outputFiles []struct{ path, template string }
 	if config.Generators.Repository.Interface != "" {
 		outputFiles = append(outputFiles, struct{ path, template string }{
-			filepath.Join(config.Output, domain, config.Generators.Repository.Interface), "repository.go.tmpl",
+			filepath.Join(
+				config.Output,
+				domain,
+				config.Generators.Repository.Interface,
+			), "repository.go.tmpl",
 		})
 	}
 	if config.Generators.Repository.Postgres != "" {
 		outputFiles = append(outputFiles, struct{ path, template string }{
-			filepath.Join(config.Output, domain, config.Generators.Repository.Postgres), "repository_postgres.go.tmpl",
+			filepath.Join(
+				config.Output,
+				domain,
+				config.Generators.Repository.Postgres,
+			), "repository_postgres.go.tmpl",
 		})
 	}
 	if config.Generators.Repository.Sqlite != "" {
 		outputFiles = append(outputFiles, struct{ path, template string }{
-			filepath.Join(config.Output, domain, config.Generators.Repository.Sqlite), "repository_sqlite.go.tmpl",
+			filepath.Join(
+				config.Output,
+				domain,
+				config.Generators.Repository.Sqlite,
+			), "repository_sqlite.go.tmpl",
 		})
 	}
 	return templateData, outputFiles
 }
 
-// getCacheConfig returns cache generator configuration
-func getCacheConfig(config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
-	if config.Generators.Cache.Interface == "" && config.Generators.Cache.Memory == "" && config.Generators.Cache.Redis == "" {
+// getCacheConfig returns cache generator configuration.
+func getCacheConfig(
+	config *CodegenConfig,
+	domain string,
+	schemas []*ParsedSchema,
+) (interface{}, []struct{ path, template string }) {
+	if config.Generators.Cache.Interface == "" && config.Generators.Cache.Memory == "" &&
+		config.Generators.Cache.Redis == "" {
 		return nil, nil
 	}
 	templateData := prepareCacheData(domain, schemas)
 	var outputFiles []struct{ path, template string }
 	if config.Generators.Cache.Interface != "" {
 		outputFiles = append(outputFiles, struct{ path, template string }{
-			filepath.Join(config.Output, domain, config.Generators.Cache.Interface), "cache.go.tmpl",
+			filepath.Join(
+				config.Output,
+				domain,
+				config.Generators.Cache.Interface,
+			), "cache.go.tmpl",
 		})
 	}
 	if config.Generators.Cache.Memory != "" {
 		outputFiles = append(outputFiles, struct{ path, template string }{
-			filepath.Join(config.Output, domain, config.Generators.Cache.Memory), "cache_memory.go.tmpl",
+			filepath.Join(
+				config.Output,
+				domain,
+				config.Generators.Cache.Memory,
+			), "cache_memory.go.tmpl",
 		})
 	}
 	if config.Generators.Cache.Redis != "" {
 		outputFiles = append(outputFiles, struct{ path, template string }{
-			filepath.Join(config.Output, domain, config.Generators.Cache.Redis), "cache_redis.go.tmpl",
+			filepath.Join(
+				config.Output,
+				domain,
+				config.Generators.Cache.Redis,
+			), "cache_redis.go.tmpl",
 		})
 	}
 	return templateData, outputFiles
 }
 
-// getEventsConfig returns events generator configuration
-func getEventsConfig(config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
-	if config.Generators.Events.Interface == "" && config.Generators.Events.Redis == "" && config.Generators.Events.Nats == "" {
+// getEventsConfig returns events generator configuration.
+func getEventsConfig(
+	config *CodegenConfig,
+	domain string,
+	schemas []*ParsedSchema,
+) (interface{}, []struct{ path, template string }) {
+	if config.Generators.Events.Interface == "" && config.Generators.Events.Redis == "" &&
+		config.Generators.Events.Nats == "" {
 		return nil, nil
 	}
 	templateData := prepareEventsData(domain, schemas)
 	var outputFiles []struct{ path, template string }
 	if config.Generators.Events.Interface != "" {
 		outputFiles = append(outputFiles, struct{ path, template string }{
-			filepath.Join(config.Output, domain, config.Generators.Events.Interface), "events.go.tmpl",
+			filepath.Join(
+				config.Output,
+				domain,
+				config.Generators.Events.Interface,
+			), "events.go.tmpl",
 		})
 	}
 	if config.Generators.Events.Redis != "" {
 		outputFiles = append(outputFiles, struct{ path, template string }{
-			filepath.Join(config.Output, domain, config.Generators.Events.Redis), "events_redis.go.tmpl",
+			filepath.Join(
+				config.Output,
+				domain,
+				config.Generators.Events.Redis,
+			), "events_redis.go.tmpl",
 		})
 	}
 	if config.Generators.Events.Nats != "" {
 		outputFiles = append(outputFiles, struct{ path, template string }{
-			filepath.Join(config.Output, domain, config.Generators.Events.Nats), "events_nats.go.tmpl",
+			filepath.Join(
+				config.Output,
+				domain,
+				config.Generators.Events.Nats,
+			), "events_nats.go.tmpl",
 		})
 	}
 	return templateData, outputFiles
 }
 
-// getHandlerConfig returns handler generator configuration (new OpenAPI-style)
-func getHandlerConfig(config *CodegenConfig, domain string, schemas []*ParsedSchema) (interface{}, []struct{ path, template string }) {
+// getHandlerConfig returns handler generator configuration (new OpenAPI-style).
+func getHandlerConfig(
+	config *CodegenConfig,
+	domain string,
+	schemas []*ParsedSchema,
+) (interface{}, []struct{ path, template string }) {
 	// Check if handler generation is configured
 	if config.Generators.Handlers == "" {
 		return nil, nil
@@ -487,7 +570,7 @@ func getHandlerConfig(config *CodegenConfig, domain string, schemas []*ParsedSch
 	return templateData, outputFiles
 }
 
-// prepareIndividualServiceData prepares template data for a single schema
+// prepareIndividualServiceData prepares template data for a single schema.
 func prepareIndividualServiceData(schema *ParsedSchema) interface{} {
 	return struct {
 		Package         string
@@ -608,7 +691,10 @@ func prepareRepositoryData(domain string, schemas []*ParsedSchema) interface{} {
 									for _, enumVal := range prop.Enum {
 										if enumVal != nil {
 											// Convert to string representation
-											enumValues = append(enumValues, fmt.Sprintf("%v", enumVal))
+											enumValues = append(
+												enumValues,
+												fmt.Sprintf("%v", enumVal),
+											)
 										}
 									}
 								}
@@ -884,7 +970,8 @@ func prepareCacheData(domain string, schemas []*ParsedSchema) interface{} {
 				propRef := schema.Properties.GetOrZero(propName)
 				if propRef != nil && propRef.IsLeft() {
 					prop := propRef.GetLeft()
-					if prop != nil && ((prop.Format != nil && *prop.Format == formatEmail) || propName == formatEmail || propName == "billingEmail") {
+					if prop != nil &&
+						((prop.Format != nil && *prop.Format == formatEmail) || propName == formatEmail || propName == "billingEmail") {
 						needsEmailImport = true
 						break
 					}
@@ -901,7 +988,8 @@ func prepareCacheData(domain string, schemas []*ParsedSchema) interface{} {
 							propRef := allOfSchema.Properties.GetOrZero(propName)
 							if propRef != nil && propRef.IsLeft() {
 								prop := propRef.GetLeft()
-								if prop != nil && ((prop.Format != nil && *prop.Format == formatEmail) || propName == formatEmail || propName == "billingEmail") {
+								if prop != nil &&
+									((prop.Format != nil && *prop.Format == formatEmail) || propName == formatEmail || propName == "billingEmail") {
 									needsEmailImport = true
 									break
 								}
@@ -955,7 +1043,12 @@ func prepareEventsData(domain string, schemas []*ParsedSchema) interface{} {
 }
 
 // generateSQL generates SQL schema and query files from OpenAPI schemas.
-func generateSQL(config *CodegenConfig, schemas map[string]*ParsedSchema, fileWriter *FileWriter, log *slog.Logger) error {
+func generateSQL(
+	config *CodegenConfig,
+	schemas map[string]*ParsedSchema,
+	fileWriter *FileWriter,
+	log *slog.Logger,
+) error {
 	if config.Generators.SQL.SchemaDir == "" && config.Generators.SQL.QueryDir == "" {
 		return nil
 	}
@@ -988,14 +1081,22 @@ func generateSQL(config *CodegenConfig, schemas map[string]*ParsedSchema, fileWr
 		if sqlConfig.SchemaDir != "" {
 			schemaSQL, err := schemaGen.GenerateCreateTable(parsedSchema)
 			if err != nil {
-				log.Warn("Failed to generate schema", slog.String("schema", name), slog.String("error", err.Error()))
+				log.Warn(
+					"Failed to generate schema",
+					slog.String("schema", name),
+					slog.String("error", err.Error()),
+				)
 				continue
 			}
 
 			// Generate indices
 			indices, err := schemaGen.GenerateIndices(parsedSchema)
 			if err != nil {
-				log.Warn("Failed to generate indices", slog.String("schema", name), slog.String("error", err.Error()))
+				log.Warn(
+					"Failed to generate indices",
+					slog.String("schema", name),
+					slog.String("error", err.Error()),
+				)
 			}
 
 			// Combine schema and indices
@@ -1015,7 +1116,11 @@ func generateSQL(config *CodegenConfig, schemas map[string]*ParsedSchema, fileWr
 		if sqlConfig.QueryDir != "" {
 			querySQL, err := queryGen.GenerateQueries(parsedSchema)
 			if err != nil {
-				log.Warn("Failed to generate queries", slog.String("schema", name), slog.String("error", err.Error()))
+				log.Warn(
+					"Failed to generate queries",
+					slog.String("schema", name),
+					slog.String("error", err.Error()),
+				)
 				continue
 			}
 
@@ -1031,19 +1136,45 @@ func generateSQL(config *CodegenConfig, schemas map[string]*ParsedSchema, fileWr
 }
 
 // generateRepository generates repository interfaces and implementations.
-func generateRepository(config *CodegenConfig, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
-	return runGeneratorWithPaths("repository", config, schemas, templates, fileWriter, NeedsRepository, log)
+func generateRepository(
+	config *CodegenConfig,
+	schemas map[string]*ParsedSchema,
+	templates map[string]*template.Template,
+	fileWriter *FileWriter,
+	log *slog.Logger,
+) error {
+	return runGeneratorWithPaths(
+		"repository",
+		config,
+		schemas,
+		templates,
+		fileWriter,
+		NeedsRepository,
+		log,
+	)
 }
 
 // Cache generation removed - using generic cache instead
 
 // generateEvents generates event interfaces and implementations.
-func generateEvents(config *CodegenConfig, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+func generateEvents(
+	config *CodegenConfig,
+	schemas map[string]*ParsedSchema,
+	templates map[string]*template.Template,
+	fileWriter *FileWriter,
+	log *slog.Logger,
+) error {
 	return runGeneratorWithPaths("events", config, schemas, templates, fileWriter, NeedsEvents, log)
 }
 
 // generateService generates service interfaces and implementations.
-func generateService(config *CodegenConfig, schemas map[string]*ParsedSchema, templates map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+func generateService(
+	config *CodegenConfig,
+	schemas map[string]*ParsedSchema,
+	templates map[string]*template.Template,
+	fileWriter *FileWriter,
+	log *slog.Logger,
+) error {
 	log.Debug("Running service generator")
 
 	// Generate individual service files per schema
@@ -1093,7 +1224,13 @@ func generateService(config *CodegenConfig, schemas map[string]*ParsedSchema, te
 }
 
 // generateDefaults generates configuration defaults.
-func generateDefaults(config *CodegenConfig, _ map[string]*ParsedSchema, _ map[string]*template.Template, fileWriter *FileWriter, log *slog.Logger) error {
+func generateDefaults(
+	config *CodegenConfig,
+	_ map[string]*ParsedSchema,
+	_ map[string]*template.Template,
+	fileWriter *FileWriter,
+	log *slog.Logger,
+) error {
 	log.Debug("Running defaults generator")
 
 	// Create parser
@@ -1127,7 +1264,7 @@ func generateDefaults(config *CodegenConfig, _ map[string]*ParsedSchema, _ map[s
 	return nil
 }
 
-// autoDetectDomains analyzes schemas and auto-detects domain configuration
+// autoDetectDomains analyzes schemas and auto-detects domain configuration.
 func autoDetectDomains(schemas map[string]*ParsedSchema) map[string]struct {
 	Schemas []string `json:"schemas,omitempty,omitzero" yaml:"schemas,omitempty"`
 	Tags    []string `json:"tags,omitempty,omitzero" yaml:"tags,omitempty"`
@@ -1162,7 +1299,7 @@ func autoDetectDomains(schemas map[string]*ParsedSchema) map[string]struct {
 	return domains
 }
 
-// TypeInference holds type information extracted from generated Go files
+// TypeInference holds type information extracted from generated Go files.
 type TypeInference struct {
 	GoTypes        map[string]map[string]string // domain -> field -> Go type
 	SQLCTypes      map[string]map[string]string // domain -> field -> SQLC type
@@ -1170,7 +1307,7 @@ type TypeInference struct {
 	SQLCFieldNames map[string]map[string]string // domain -> field (lowercase) -> actual field name from SQLC
 }
 
-// parseGoTypes extracts type information from types.gen.go files
+// parseGoTypes extracts type information from types.gen.go files.
 func (t *TypeInference) parseGoTypes(domain string) error {
 	typesFile := filepath.Join("internal", domain, "types.gen.go")
 
@@ -1225,7 +1362,7 @@ func (t *TypeInference) parseGoTypes(domain string) error {
 	return nil
 }
 
-// parseSQLCTypes extracts type information from SQLC models.go files
+// parseSQLCTypes extracts type information from SQLC models.go files.
 func (t *TypeInference) parseSQLCTypes(domain string) error {
 	modelsFile := filepath.Join("internal", "database", "postgresql", "models.go")
 
@@ -1281,7 +1418,7 @@ func (t *TypeInference) parseSQLCTypes(domain string) error {
 	return nil
 }
 
-// typeToString converts an ast.Expr to a string representation
+// typeToString converts an ast.Expr to a string representation.
 func typeToString(expr ast.Expr) string {
 	switch x := expr.(type) {
 	case *ast.Ident:
@@ -1301,7 +1438,7 @@ func typeToString(expr ast.Expr) string {
 	}
 }
 
-// inferFieldTypes fills in GoType, SQLCType and FieldName for fields based on parsed type information
+// inferFieldTypes fills in GoType, SQLCType and FieldName for fields based on parsed type information.
 func inferFieldTypes(domain string, fields []struct {
 	Name          string
 	Type          string

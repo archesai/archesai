@@ -13,13 +13,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/sessions"
 	"github.com/archesai/archesai/internal/users"
-	"github.com/google/uuid"
 )
 
-// Service handles OAuth2 authentication flows
+// Service handles OAuth2 authentication flows.
 type Service struct {
 	providers      map[string]Provider
 	sessionManager *sessions.SessionManager
@@ -28,7 +29,7 @@ type Service struct {
 	logger         *slog.Logger
 }
 
-// NewService creates a new OAuth service
+// NewService creates a new OAuth service.
 func NewService(
 	sessionManager *sessions.SessionManager,
 	repo accounts.Repository,
@@ -44,13 +45,17 @@ func NewService(
 	}
 }
 
-// RegisterProvider registers an OAuth provider
+// RegisterProvider registers an OAuth provider.
 func (s *Service) RegisterProvider(provider Provider) {
 	s.providers[provider.GetProviderID()] = provider
 }
 
-// GetAuthURL generates an authorization URL for the specified provider
-func (s *Service) GetAuthURL(ctx context.Context, providerID string, redirectURI string) (string, string, error) {
+// GetAuthURL generates an authorization URL for the specified provider.
+func (s *Service) GetAuthURL(
+	ctx context.Context,
+	providerID string,
+	redirectURI string,
+) (string, string, error) {
 	provider, ok := s.providers[providerID]
 	if !ok {
 		return "", "", fmt.Errorf("provider %s not found", providerID)
@@ -71,8 +76,11 @@ func (s *Service) GetAuthURL(ctx context.Context, providerID string, redirectURI
 	return authURL, state, nil
 }
 
-// HandleCallback processes the OAuth callback
-func (s *Service) HandleCallback(ctx context.Context, providerID, code, state, storedState string) (*users.User, *sessions.TokenResponse, error) {
+// HandleCallback processes the OAuth callback.
+func (s *Service) HandleCallback(
+	ctx context.Context,
+	providerID, code, state, storedState string,
+) (*users.User, *sessions.TokenResponse, error) {
 	// Validate state to prevent CSRF attacks
 	if state != storedState {
 		return nil, nil, fmt.Errorf("invalid state parameter")
@@ -153,8 +161,13 @@ func (s *Service) HandleCallback(ctx context.Context, providerID, code, state, s
 	return user, tokenResponse, nil
 }
 
-// createOAuthUser creates a new user from OAuth provider info
-func (s *Service) createOAuthUser(ctx context.Context, providerID string, userInfo *UserInfo, tokens *Tokens) (*users.User, error) {
+// createOAuthUser creates a new user from OAuth provider info.
+func (s *Service) createOAuthUser(
+	ctx context.Context,
+	providerID string,
+	userInfo *UserInfo,
+	tokens *Tokens,
+) (*users.User, error) {
 	now := time.Now()
 
 	// Create user entity
@@ -195,8 +208,12 @@ func (s *Service) createOAuthUser(ctx context.Context, providerID string, userIn
 	return createdUser, nil
 }
 
-// RefreshOAuthToken refreshes an OAuth access token
-func (s *Service) RefreshOAuthToken(ctx context.Context, _ uuid.UUID, providerID string) (*Tokens, error) {
+// RefreshOAuthToken refreshes an OAuth access token.
+func (s *Service) RefreshOAuthToken(
+	ctx context.Context,
+	_ uuid.UUID,
+	providerID string,
+) (*Tokens, error) {
 	// Get the user's OAuth account
 	accounts, _, err := s.repo.List(ctx, accounts.ListAccountsParams{
 		Page: accounts.PageQuery{
@@ -235,7 +252,7 @@ func (s *Service) RefreshOAuthToken(ctx context.Context, _ uuid.UUID, providerID
 	return tokens, nil
 }
 
-// generateState generates a secure random state parameter
+// generateState generates a secure random state parameter.
 func generateState() (string, error) {
 	b := make([]byte, 32)
 	if _, err := rand.Read(b); err != nil {
@@ -245,7 +262,7 @@ func generateState() (string, error) {
 }
 
 // OAuth state storage using a simple in-memory map
-// In production, this should use Redis or another distributed cache
+// In production, this should use Redis or another distributed cache.
 var oauthStateStore = struct {
 	sync.RWMutex
 	states map[string]oauthState
@@ -259,8 +276,12 @@ type oauthState struct {
 	ExpiresAt   time.Time
 }
 
-// StoreOAuthState stores OAuth state data temporarily
-func (s *Service) StoreOAuthState(_ context.Context, state, provider, redirectURI string, ttl time.Duration) error {
+// StoreOAuthState stores OAuth state data temporarily.
+func (s *Service) StoreOAuthState(
+	_ context.Context,
+	state, provider, redirectURI string,
+	ttl time.Duration,
+) error {
 	oauthStateStore.Lock()
 	defer oauthStateStore.Unlock()
 
@@ -281,7 +302,7 @@ func (s *Service) StoreOAuthState(_ context.Context, state, provider, redirectUR
 	return nil
 }
 
-// GetOAuthRedirectURI retrieves the redirect URI for a state
+// GetOAuthRedirectURI retrieves the redirect URI for a state.
 func (s *Service) GetOAuthRedirectURI(_ context.Context, state string) (string, error) {
 	oauthStateStore.RLock()
 	defer oauthStateStore.RUnlock()
@@ -295,7 +316,7 @@ func (s *Service) GetOAuthRedirectURI(_ context.Context, state string) (string, 
 	return "", fmt.Errorf("state not found or expired")
 }
 
-// DeleteOAuthState removes OAuth state data
+// DeleteOAuthState removes OAuth state data.
 func (s *Service) DeleteOAuthState(_ context.Context, state string) error {
 	oauthStateStore.Lock()
 	defer oauthStateStore.Unlock()

@@ -20,14 +20,14 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-// PostgresContainer wraps a PostgreSQL test container
+// PostgresContainer wraps a PostgreSQL test container.
 type PostgresContainer struct {
 	container testcontainers.Container
 	DSN       string
 	Pool      *pgxpool.Pool
 }
 
-// StartPostgresContainer starts a PostgreSQL container for testing
+// StartPostgresContainer starts a PostgreSQL container for testing.
 func StartPostgresContainer(ctx context.Context, t *testing.T) *PostgresContainer {
 	t.Helper()
 
@@ -56,7 +56,11 @@ func StartPostgresContainer(ctx context.Context, t *testing.T) *PostgresContaine
 		t.Fatalf("Failed to get container port: %v", err)
 	}
 
-	dsn := fmt.Sprintf("postgresql://testuser:testpass@%s:%s/testdb?sslmode=disable", host, port.Port())
+	dsn := fmt.Sprintf(
+		"postgresql://testuser:testpass@%s:%s/testdb?sslmode=disable",
+		host,
+		port.Port(),
+	)
 
 	pool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
@@ -77,7 +81,7 @@ func StartPostgresContainer(ctx context.Context, t *testing.T) *PostgresContaine
 	return pc
 }
 
-// RunMigrations runs database migrations on the test database
+// RunMigrations runs database migrations on the test database.
 func (pc *PostgresContainer) RunMigrations(migrationsPath string) error {
 	db, err := sql.Open("pgx", pc.DSN)
 	if err != nil {
@@ -103,7 +107,7 @@ func (pc *PostgresContainer) RunMigrations(migrationsPath string) error {
 	return nil
 }
 
-// Stop stops the PostgreSQL container
+// Stop stops the PostgreSQL container.
 func (pc *PostgresContainer) Stop(ctx context.Context) error {
 	if pc.Pool != nil {
 		pc.Pool.Close()
@@ -114,14 +118,14 @@ func (pc *PostgresContainer) Stop(ctx context.Context) error {
 	return nil
 }
 
-// RedisContainer wraps a Redis test container
+// RedisContainer wraps a Redis test container.
 type RedisContainer struct {
 	container testcontainers.Container
 	Client    *redis.Client
 	Address   string
 }
 
-// StartRedisContainer starts a Redis container for testing
+// StartRedisContainer starts a Redis container for testing.
 func StartRedisContainer(ctx context.Context, t *testing.T) *RedisContainer {
 	t.Helper()
 
@@ -182,7 +186,7 @@ func StartRedisContainer(ctx context.Context, t *testing.T) *RedisContainer {
 	return rc
 }
 
-// Stop stops the Redis container
+// Stop stops the Redis container.
 func (rc *RedisContainer) Stop(ctx context.Context) error {
 	if rc.Client != nil {
 		if err := rc.Client.Close(); err != nil {

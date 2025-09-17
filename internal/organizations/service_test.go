@@ -4,12 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/archesai/archesai/internal/logger"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
-// Test helper functions
+// Test helper functions.
 func createTestService(t *testing.T) (*Service, *MockRepository) {
 	t.Helper()
 
@@ -21,7 +22,7 @@ func createTestService(t *testing.T) (*Service, *MockRepository) {
 	return service, mockRepo
 }
 
-// TestService_Interface tests that the service implements the interface correctly
+// TestService_Interface tests that the service implements the interface correctly.
 func TestService_Interface(t *testing.T) {
 	service, mockRepo := createTestService(t)
 

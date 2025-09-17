@@ -9,19 +9,19 @@ import (
 	"github.com/archesai/archesai/internal/runs"
 )
 
-// QueueAdapter handles job queueing in Redis
+// QueueAdapter handles job queueing in Redis.
 type QueueAdapter struct {
 	client *redis.Client
 }
 
-// NewQueueAdapter creates a new Redis queue adapter
+// NewQueueAdapter creates a new Redis queue adapter.
 func NewQueueAdapter(client *redis.Client) *QueueAdapter {
 	return &QueueAdapter{
 		client: client,
 	}
 }
 
-// EnqueueRun adds a run to the processing queue
+// EnqueueRun adds a run to the processing queue.
 func (q *QueueAdapter) EnqueueRun(run *runs.Run) error {
 	queueName := fmt.Sprintf("workflows:runs:%s", run.Status)
 	data, err := json.Marshal(run)
@@ -31,7 +31,7 @@ func (q *QueueAdapter) EnqueueRun(run *runs.Run) error {
 	return q.client.Queue.Push(queueName, data)
 }
 
-// DequeueRun retrieves and removes a run from the queue
+// DequeueRun retrieves and removes a run from the queue.
 func (q *QueueAdapter) DequeueRun(status string, timeout int) (*runs.Run, error) {
 	queueName := fmt.Sprintf("workflows:runs:%s", status)
 	var run runs.Run
@@ -42,7 +42,7 @@ func (q *QueueAdapter) DequeueRun(status string, timeout int) (*runs.Run, error)
 	return &run, nil
 }
 
-// PeekQueue checks the next item without removing it
+// PeekQueue checks the next item without removing it.
 func (q *QueueAdapter) PeekQueue(status string) (*runs.Run, error) {
 	queueName := fmt.Sprintf("workflows:runs:%s", status)
 	var run runs.Run
@@ -53,13 +53,13 @@ func (q *QueueAdapter) PeekQueue(status string) (*runs.Run, error) {
 	return &run, nil
 }
 
-// GetQueueLength returns the number of items in a queue
+// GetQueueLength returns the number of items in a queue.
 func (q *QueueAdapter) GetQueueLength(status string) (int64, error) {
 	queueName := fmt.Sprintf("workflows:runs:%s", status)
 	return q.client.Queue.Length(queueName)
 }
 
-// MoveRun moves a run from one status queue to another
+// MoveRun moves a run from one status queue to another.
 func (q *QueueAdapter) MoveRun(run *runs.Run, fromStatus, toStatus string) error {
 	// Remove from old queue
 	fromQueue := fmt.Sprintf("workflows:runs:%s", fromStatus)

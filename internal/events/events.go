@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-// Event represents a domain event with common fields
+// Event represents a domain event with common fields.
 type Event struct {
 	ID        string            `json:"id"`
 	Type      string            `json:"type"`
@@ -26,7 +26,7 @@ type Event struct {
 	Metadata  map[string]string `json:"metadata,omitempty"`
 }
 
-// Publisher is the shared event publisher interface used by all domains
+// Publisher is the shared event publisher interface used by all domains.
 type Publisher interface {
 	// Publish sends an event to the event system
 	Publish(ctx context.Context, event Event) error
@@ -35,16 +35,21 @@ type Publisher interface {
 	PublishRaw(ctx context.Context, domain string, eventType string, data interface{}) error
 }
 
-// Subscriber handles event subscriptions
+// Subscriber handles event subscriptions.
 type Subscriber interface {
 	// Subscribe to all events from a specific domain
 	Subscribe(ctx context.Context, domain string, handler func(event Event) error) error
 
 	// SubscribeToType subscribes to specific event types
-	SubscribeToType(ctx context.Context, domain string, eventType string, handler func(event Event) error) error
+	SubscribeToType(
+		ctx context.Context,
+		domain string,
+		eventType string,
+		handler func(event Event) error,
+	) error
 }
 
-// PublisherSubscriber combines publishing and subscribing capabilities
+// PublisherSubscriber combines publishing and subscribing capabilities.
 type PublisherSubscriber interface {
 	Publisher
 	Subscriber

@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config wraps the generated ArchesConfig for easy access
+// Config wraps the generated ArchesConfig for easy access.
 type Config struct {
 	*ArchesConfig
 	v *viper.Viper
@@ -39,7 +39,7 @@ func Load() (*Config, error) {
 	}, nil
 }
 
-// setupViper configures viper for reading config
+// setupViper configures viper for reading config.
 func setupViper(v *viper.Viper) {
 	v.SetConfigName(DefaultConfigName)
 	v.SetConfigType(DefaultConfigType)
@@ -55,13 +55,13 @@ func setupViper(v *viper.Viper) {
 	setDefaultsFromStruct(v)
 }
 
-// setDefaultsFromStruct uses reflection to set viper defaults from a struct with default values
+// setDefaultsFromStruct uses reflection to set viper defaults from a struct with default values.
 func setDefaultsFromStruct(v *viper.Viper) {
 	defaults := GetDefaultConfig()
 	setStructDefaults(v, defaults, "")
 }
 
-// setStructDefaults recursively sets defaults from a struct using reflection
+// setStructDefaults recursively sets defaults from a struct using reflection.
 func setStructDefaults(v *viper.Viper, data interface{}, prefix string) {
 	val := reflect.ValueOf(data)
 	if val.Kind() == reflect.Ptr {
@@ -113,7 +113,7 @@ func setStructDefaults(v *viper.Viper, data interface{}, prefix string) {
 	}
 }
 
-// GetViperInstance returns the underlying viper instance for advanced usage
+// GetViperInstance returns the underlying viper instance for advanced usage.
 func (c *Config) GetViperInstance() *viper.Viper {
 	return c.v
 }

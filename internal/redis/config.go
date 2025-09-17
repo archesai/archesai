@@ -4,32 +4,32 @@ import (
 	"time"
 )
 
-// Config holds Redis-specific configuration
+// Config holds Redis-specific configuration.
 type Config struct {
 	// Connection settings
-	URL      string `mapstructure:"url" yaml:"url" env:"REDIS_URL"`
-	Host     string `mapstructure:"host" yaml:"host" env:"REDIS_HOST"`
-	Port     int    `mapstructure:"port" yaml:"port" env:"REDIS_PORT"`
+	URL      string `mapstructure:"url"      yaml:"url"      env:"REDIS_URL"`
+	Host     string `mapstructure:"host"     yaml:"host"     env:"REDIS_HOST"`
+	Port     int    `mapstructure:"port"     yaml:"port"     env:"REDIS_PORT"`
 	Password string `mapstructure:"password" yaml:"password" env:"REDIS_PASSWORD"`
-	DB       int    `mapstructure:"db" yaml:"db" env:"REDIS_DB"`
+	DB       int    `mapstructure:"db"       yaml:"db"       env:"REDIS_DB"`
 
 	// Connection pool settings
-	PoolSize     int           `mapstructure:"pool_size" yaml:"pool_size" env:"REDIS_POOL_SIZE"`
+	PoolSize     int           `mapstructure:"pool_size"      yaml:"pool_size"      env:"REDIS_POOL_SIZE"`
 	MinIdleConns int           `mapstructure:"min_idle_conns" yaml:"min_idle_conns" env:"REDIS_MIN_IDLE_CONNS"`
-	MaxRetries   int           `mapstructure:"max_retries" yaml:"max_retries" env:"REDIS_MAX_RETRIES"`
-	DialTimeout  time.Duration `mapstructure:"dial_timeout" yaml:"dial_timeout" env:"REDIS_DIAL_TIMEOUT"`
-	ReadTimeout  time.Duration `mapstructure:"read_timeout" yaml:"read_timeout" env:"REDIS_READ_TIMEOUT"`
-	WriteTimeout time.Duration `mapstructure:"write_timeout" yaml:"write_timeout" env:"REDIS_WRITE_TIMEOUT"`
+	MaxRetries   int           `mapstructure:"max_retries"    yaml:"max_retries"    env:"REDIS_MAX_RETRIES"`
+	DialTimeout  time.Duration `mapstructure:"dial_timeout"   yaml:"dial_timeout"   env:"REDIS_DIAL_TIMEOUT"`
+	ReadTimeout  time.Duration `mapstructure:"read_timeout"   yaml:"read_timeout"   env:"REDIS_READ_TIMEOUT"`
+	WriteTimeout time.Duration `mapstructure:"write_timeout"  yaml:"write_timeout"  env:"REDIS_WRITE_TIMEOUT"`
 
 	// Feature flags
-	EnableQueue  bool `mapstructure:"enable_queue" yaml:"enable_queue" env:"REDIS_ENABLE_QUEUE"`
+	EnableQueue  bool `mapstructure:"enable_queue"  yaml:"enable_queue"  env:"REDIS_ENABLE_QUEUE"`
 	EnablePubSub bool `mapstructure:"enable_pubsub" yaml:"enable_pubsub" env:"REDIS_ENABLE_PUBSUB"`
 
 	// Queue settings
 	QueueBlockTimeout time.Duration `mapstructure:"queue_block_timeout" yaml:"queue_block_timeout" env:"REDIS_QUEUE_BLOCK_TIMEOUT"`
 }
 
-// DefaultConfig returns a Config with default values
+// DefaultConfig returns a Config with default values.
 func DefaultConfig() *Config {
 	return &Config{
 		Host:         "localhost",
@@ -49,7 +49,7 @@ func DefaultConfig() *Config {
 	}
 }
 
-// Validate checks if the configuration is valid
+// Validate checks if the configuration is valid.
 func (c *Config) Validate() error {
 	if c.URL == "" && c.Host == "" {
 		return ErrNoRedisConfig

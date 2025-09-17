@@ -26,8 +26,12 @@ func TestNewDAG(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000002")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+				},
 			},
 			wantRoots: 1,
 			wantNodes: 3,
@@ -41,8 +45,12 @@ func TestNewDAG(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "End"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
 				uuid.MustParse("00000000-0000-0000-0000-000000000004"): {
 					uuid.MustParse("00000000-0000-0000-0000-000000000002"),
 					uuid.MustParse("00000000-0000-0000-0000-000000000003"),
@@ -74,8 +82,12 @@ func TestNewDAG(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000002"), Name: "Step 2"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000001"): {uuid.MustParse("00000000-0000-0000-0000-000000000002")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000001"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
 			},
 			wantErr:     true,
 			errContains: "cycle detected",
@@ -86,7 +98,9 @@ func TestNewDAG(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000001"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000001"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
 			},
 			wantErr:     true,
 			errContains: "cycle detected",
@@ -104,7 +118,9 @@ func TestNewDAG(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000001"), Name: "Step 1"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000001"): {uuid.MustParse("00000000-0000-0000-0000-000000000999")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000001"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000999"),
+				},
 			},
 			wantErr:     true,
 			errContains: "not found for node",
@@ -146,8 +162,12 @@ func TestDAG_TopologicalSort(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000002")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+				},
 			},
 			validate: func(t *testing.T, sorted []*DAGNode) {
 				require.Len(t, sorted, 3)
@@ -164,8 +184,12 @@ func TestDAG_TopologicalSort(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Branch2"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
 			},
 			validate: func(t *testing.T, sorted []*DAGNode) {
 				require.Len(t, sorted, 3)
@@ -206,8 +230,12 @@ func TestDAG_ExecutionPlanLevels(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000002")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+				},
 			},
 			wantLevels: []int{1, 1, 1},
 		},
@@ -220,8 +248,12 @@ func TestDAG_ExecutionPlanLevels(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "End"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
 				uuid.MustParse("00000000-0000-0000-0000-000000000004"): {
 					uuid.MustParse("00000000-0000-0000-0000-000000000002"),
 					uuid.MustParse("00000000-0000-0000-0000-000000000003"),
@@ -239,9 +271,15 @@ func TestDAG_ExecutionPlanLevels(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000005"), Name: "E"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000004"): {uuid.MustParse("00000000-0000-0000-0000-000000000002")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000004"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+				},
 				uuid.MustParse("00000000-0000-0000-0000-000000000005"): {
 					uuid.MustParse("00000000-0000-0000-0000-000000000003"),
 					uuid.MustParse("00000000-0000-0000-0000-000000000004"),
@@ -258,8 +296,12 @@ func TestDAG_ExecutionPlanLevels(t *testing.T) {
 				{ID: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "Child2"},
 			},
 			dependencies: map[uuid.UUID][]uuid.UUID{
-				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-				uuid.MustParse("00000000-0000-0000-0000-000000000004"): {uuid.MustParse("00000000-0000-0000-0000-000000000002")},
+				uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				},
+				uuid.MustParse("00000000-0000-0000-0000-000000000004"): {
+					uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+				},
 			},
 			wantLevels: []int{2, 2},
 		},
@@ -289,8 +331,12 @@ func TestDAG_GetExecutionPlan(t *testing.T) {
 			{ID: uuid.MustParse("00000000-0000-0000-0000-000000000003"), Name: "Step 3"},
 		}
 		dependencies := map[uuid.UUID][]uuid.UUID{
-			uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-			uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000002")},
+			uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+				uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+			},
+			uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+				uuid.MustParse("00000000-0000-0000-0000-000000000002"),
+			},
 		}
 
 		dag, err := NewDAG(steps, dependencies)
@@ -314,8 +360,12 @@ func TestDAG_GetExecutionPlan(t *testing.T) {
 			{ID: uuid.MustParse("00000000-0000-0000-0000-000000000004"), Name: "End"},
 		}
 		dependencies := map[uuid.UUID][]uuid.UUID{
-			uuid.MustParse("00000000-0000-0000-0000-000000000002"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
-			uuid.MustParse("00000000-0000-0000-0000-000000000003"): {uuid.MustParse("00000000-0000-0000-0000-000000000001")},
+			uuid.MustParse("00000000-0000-0000-0000-000000000002"): {
+				uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+			},
+			uuid.MustParse("00000000-0000-0000-0000-000000000003"): {
+				uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+			},
 			uuid.MustParse("00000000-0000-0000-0000-000000000004"): {
 				uuid.MustParse("00000000-0000-0000-0000-000000000002"),
 				uuid.MustParse("00000000-0000-0000-0000-000000000003"),

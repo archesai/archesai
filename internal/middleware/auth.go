@@ -15,16 +15,16 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// contextKey is a custom type for context keys to avoid collisions
+// contextKey is a custom type for context keys to avoid collisions.
 type contextKey string
 
-// AuthUserContextKey is the context key for user authentication
+// AuthUserContextKey is the context key for user authentication.
 const AuthUserContextKey contextKey = "auth.user"
 
-// AuthClaimsContextKey is the context key for auth claims
+// AuthClaimsContextKey is the context key for auth claims.
 const AuthClaimsContextKey contextKey = "auth.claims"
 
-// Claims represents JWT claims with user information
+// Claims represents JWT claims with user information.
 type Claims struct {
 	UserID             uuid.UUID `json:"user_id"`
 	Email              string    `json:"email"`
@@ -36,7 +36,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// User represents the authenticated user context
+// User represents the authenticated user context.
 type User struct {
 	ID                 uuid.UUID `json:"id"`
 	Email              string    `json:"email"`
@@ -47,13 +47,13 @@ type User struct {
 	RequiresOnboarding bool      `json:"requires_onboarding"`
 }
 
-// AuthMiddleware provides authentication middleware functionality
+// AuthMiddleware provides authentication middleware functionality.
 type AuthMiddleware struct {
 	jwtSecret []byte
 	logger    *slog.Logger
 }
 
-// NewAuthMiddleware creates a new authentication middleware
+// NewAuthMiddleware creates a new authentication middleware.
 func NewAuthMiddleware(jwtSecret string, logger *slog.Logger) *AuthMiddleware {
 	return &AuthMiddleware{
 		jwtSecret: []byte(jwtSecret),
@@ -61,7 +61,7 @@ func NewAuthMiddleware(jwtSecret string, logger *slog.Logger) *AuthMiddleware {
 	}
 }
 
-// RequireAuth creates middleware that validates JWT tokens
+// RequireAuth creates middleware that validates JWT tokens.
 func (am *AuthMiddleware) RequireAuth() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -74,16 +74,23 @@ func (am *AuthMiddleware) RequireAuth() echo.MiddlewareFunc {
 			// Check for Bearer token format
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 			if tokenString == authHeader {
-				return echo.NewHTTPError(http.StatusUnauthorized, "invalid authorization header format")
+				return echo.NewHTTPError(
+					http.StatusUnauthorized,
+					"invalid authorization header format",
+				)
 			}
 
 			// Parse and validate JWT token
-			token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-				}
-				return am.jwtSecret, nil
-			})
+			token, err := jwt.ParseWithClaims(
+				tokenString,
+				&Claims{},
+				func(token *jwt.Token) (interface{}, error) {
+					if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+						return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+					}
+					return am.jwtSecret, nil
+				},
+			)
 
 			if err != nil {
 				am.logger.Warn("JWT validation failed", "error", err)
@@ -121,19 +128,19 @@ func (am *AuthMiddleware) RequireAuth() echo.MiddlewareFunc {
 	}
 }
 
-// GetUserFromContext retrieves the authenticated user from the request context
+// GetUserFromContext retrieves the authenticated user from the request context.
 func GetUserFromContext(c echo.Context) (*User, bool) {
 	user, ok := c.Request().Context().Value(AuthUserContextKey).(*User)
 	return user, ok
 }
 
-// GetClaimsFromContext retrieves the JWT claims from the request context
+// GetClaimsFromContext retrieves the JWT claims from the request context.
 func GetClaimsFromContext(c echo.Context) (*Claims, bool) {
 	claims, ok := c.Request().Context().Value(AuthClaimsContextKey).(*Claims)
 	return claims, ok
 }
 
-// RequireEmailVerified creates middleware that requires email verification
+// RequireEmailVerified creates middleware that requires email verification.
 func (am *AuthMiddleware) RequireEmailVerified() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -151,7 +158,7 @@ func (am *AuthMiddleware) RequireEmailVerified() echo.MiddlewareFunc {
 	}
 }
 
-// RequireOrganizationMember creates middleware that requires organization membership
+// RequireOrganizationMember creates middleware that requires organization membership.
 func (am *AuthMiddleware) RequireOrganizationMember() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -169,7 +176,7 @@ func (am *AuthMiddleware) RequireOrganizationMember() echo.MiddlewareFunc {
 	}
 }
 
-// RequireRole creates middleware that requires a specific role
+// RequireRole creates middleware that requires a specific role.
 func (am *AuthMiddleware) RequireRole(role string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -179,7 +186,10 @@ func (am *AuthMiddleware) RequireRole(role string) echo.MiddlewareFunc {
 			}
 
 			if user.Role != role {
-				return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("role '%s' required", role))
+				return echo.NewHTTPError(
+					http.StatusForbidden,
+					fmt.Sprintf("role '%s' required", role),
+				)
 			}
 
 			return next(c)

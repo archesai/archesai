@@ -6,12 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/archesai/archesai/internal/users"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+
+	"github.com/archesai/archesai/internal/users"
 )
 
-// TokenConfig holds JWT token configuration
+// TokenConfig holds JWT token configuration.
 type TokenConfig struct {
 	JWTSecret             string
 	AccessTokenExpiry     time.Duration
@@ -20,7 +21,7 @@ type TokenConfig struct {
 	MaxConcurrentSessions int
 }
 
-// TokenService handles JWT token operations
+// TokenService handles JWT token operations.
 type TokenService struct {
 	config       TokenConfig
 	jwtSecret    []byte
@@ -28,8 +29,12 @@ type TokenService struct {
 	usersRepo    users.Repository
 }
 
-// NewTokenService creates a new JWT token service
-func NewTokenService(config TokenConfig, sessionsRepo Repository, usersRepo users.Repository) *TokenService {
+// NewTokenService creates a new JWT token service.
+func NewTokenService(
+	config TokenConfig,
+	sessionsRepo Repository,
+	usersRepo users.Repository,
+) *TokenService {
 	// Set default values
 	if config.AccessTokenExpiry == 0 {
 		config.AccessTokenExpiry = 15 * time.Minute
@@ -49,20 +54,24 @@ func NewTokenService(config TokenConfig, sessionsRepo Repository, usersRepo user
 	}
 }
 
-// ValidateToken validates and parses a JWT token using enhanced claims
+// ValidateToken validates and parses a JWT token using enhanced claims.
 func (s *TokenService) ValidateToken(tokenString string) (*EnhancedClaims, error) {
 	// Remove Bearer prefix if present
 	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 	tokenString = strings.TrimSpace(tokenString)
 
 	// Parse and validate the token with enhanced claims
-	token, err := jwt.ParseWithClaims(tokenString, &EnhancedClaims{}, func(token *jwt.Token) (interface{}, error) {
-		// Validate the signing method
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return s.jwtSecret, nil
-	})
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&EnhancedClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			// Validate the signing method
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return s.jwtSecret, nil
+		},
+	)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token: %w", err)
@@ -81,16 +90,23 @@ func (s *TokenService) ValidateToken(tokenString string) (*EnhancedClaims, error
 	return claims, nil
 }
 
-// RefreshToken refreshes an access token using a refresh token
-func (s *TokenService) RefreshToken(ctx context.Context, refreshToken string) (*TokenResponse, error) {
+// RefreshToken refreshes an access token using a refresh token.
+func (s *TokenService) RefreshToken(
+	ctx context.Context,
+	refreshToken string,
+) (*TokenResponse, error) {
 	// Parse the refresh token with refresh claims
-	token, err := jwt.ParseWithClaims(refreshToken, &RefreshClaims{}, func(token *jwt.Token) (interface{}, error) {
-		// Validate the signing method
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return s.jwtSecret, nil
-	})
+	token, err := jwt.ParseWithClaims(
+		refreshToken,
+		&RefreshClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			// Validate the signing method
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return s.jwtSecret, nil
+		},
+	)
 
 	if err != nil {
 		return nil, fmt.Errorf("invalid refresh token: %w", err)
@@ -138,7 +154,7 @@ func (s *TokenService) RefreshToken(ctx context.Context, refreshToken string) (*
 	return newTokens, nil
 }
 
-// GenerateTokens generates access and refresh tokens for a user
+// GenerateTokens generates access and refresh tokens for a user.
 func (s *TokenService) GenerateTokens(user *users.User) (*TokenResponse, error) {
 	return s.GenerateTokensWithContext(
 		user,
@@ -151,7 +167,7 @@ func (s *TokenService) GenerateTokens(user *users.User) (*TokenResponse, error) 
 	)
 }
 
-// GenerateTokensWithContext generates tokens with full context
+// GenerateTokensWithContext generates tokens with full context.
 func (s *TokenService) GenerateTokensWithContext(
 	user *users.User,
 	activeOrgID uuid.UUID,

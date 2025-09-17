@@ -307,7 +307,7 @@ lint: lint-go lint-ts lint-openapi lint-docs ## Run all linters
 .PHONY: lint-go
 lint-go: ## Run Go linter
 	@echo -e "$(YELLOW)▶ Running Go linter...$(NC)"
-	@OUTPUT=$$(golangci-lint run ./... 2>&1); \
+	@OUTPUT=$$(golangci-lint run --color always ./... 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo -e "$(RED)✗ Go linting failed$(NC)"; \
 		echo "$$OUTPUT"; \

@@ -11,12 +11,12 @@ import (
 	"github.com/openai/openai-go/packages/ssestream"
 )
 
-// OpenAILLM implements the LLM interface for OpenAI
+// OpenAILLM implements the LLM interface for OpenAI.
 type OpenAILLM struct {
 	client *openai.Client
 }
 
-// NewOpenAILLM creates a new OpenAI LLM client
+// NewOpenAILLM creates a new OpenAI LLM client.
 func NewOpenAILLM(apiKey string) *OpenAILLM {
 	// If apiKey is empty, try to get from environment
 	if apiKey == "" {
@@ -29,7 +29,7 @@ func NewOpenAILLM(apiKey string) *OpenAILLM {
 	return &OpenAILLM{client: &client}
 }
 
-// NewOpenAILLMWithHost creates an OpenAI client with custom host
+// NewOpenAILLMWithHost creates an OpenAI client with custom host.
 func NewOpenAILLMWithHost(apiKey string, host string) *OpenAILLM {
 	if apiKey == "" {
 		apiKey = os.Getenv("OPENAI_API_KEY")
@@ -42,7 +42,7 @@ func NewOpenAILLMWithHost(apiKey string, host string) *OpenAILLM {
 	return &OpenAILLM{client: &client}
 }
 
-// convertToOpenAIMessages converts our generic Message type to OpenAI's message param type
+// convertToOpenAIMessages converts our generic Message type to OpenAI's message param type.
 func convertToOpenAIMessages(messages []Message) []openai.ChatCompletionMessageParamUnion {
 	var openAIMessages []openai.ChatCompletionMessageParamUnion
 
@@ -65,7 +65,7 @@ func convertToOpenAIMessages(messages []Message) []openai.ChatCompletionMessageP
 	return openAIMessages
 }
 
-// convertToOpenAITools converts our Tool type to OpenAI's tool param
+// convertToOpenAITools converts our Tool type to OpenAI's tool param.
 func convertToOpenAITools(tools []Tool) []openai.ChatCompletionToolParam {
 	if len(tools) == 0 {
 		return nil
@@ -92,8 +92,11 @@ func convertToOpenAITools(tools []Tool) []openai.ChatCompletionToolParam {
 	return openAITools
 }
 
-// CreateChatCompletion implements the LLM interface for OpenAI
-func (o *OpenAILLM) CreateChatCompletion(ctx context.Context, req ChatCompletionRequest) (ChatCompletionResponse, error) {
+// CreateChatCompletion implements the LLM interface for OpenAI.
+func (o *OpenAILLM) CreateChatCompletion(
+	ctx context.Context,
+	req ChatCompletionRequest,
+) (ChatCompletionResponse, error) {
 	params := openai.ChatCompletionNewParams{
 		Model:    req.Model,
 		Messages: convertToOpenAIMessages(req.Messages),
@@ -170,12 +173,14 @@ func (o *OpenAILLM) CreateChatCompletion(ctx context.Context, req ChatCompletion
 	}, nil
 }
 
-// openAIStreamWrapper wraps the OpenAI stream
+// openAIStreamWrapper wraps the OpenAI stream.
 type openAIStreamWrapper struct {
 	stream *ssestream.Stream[openai.ChatCompletionChunk]
 }
 
-func newOpenAIStreamWrapper(stream *ssestream.Stream[openai.ChatCompletionChunk]) *openAIStreamWrapper {
+func newOpenAIStreamWrapper(
+	stream *ssestream.Stream[openai.ChatCompletionChunk],
+) *openAIStreamWrapper {
 	return &openAIStreamWrapper{
 		stream: stream,
 	}
@@ -234,8 +239,11 @@ func (w *openAIStreamWrapper) Close() error {
 	return nil
 }
 
-// CreateChatCompletionStream implements the LLM interface for OpenAI streaming
-func (o *OpenAILLM) CreateChatCompletionStream(ctx context.Context, req ChatCompletionRequest) (ChatCompletionStream, error) {
+// CreateChatCompletionStream implements the LLM interface for OpenAI streaming.
+func (o *OpenAILLM) CreateChatCompletionStream(
+	ctx context.Context,
+	req ChatCompletionRequest,
+) (ChatCompletionStream, error) {
 	params := openai.ChatCompletionNewParams{
 		Model:    req.Model,
 		Messages: convertToOpenAIMessages(req.Messages),

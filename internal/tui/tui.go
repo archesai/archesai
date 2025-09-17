@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/archesai/archesai/internal/llm"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
+	"github.com/archesai/archesai/internal/llm"
 )
 
-// Model represents the TUI application state
+// Model represents the TUI application state.
 type Model struct {
 	chatClient    llm.ChatClient
 	session       *llm.ChatSession
@@ -26,14 +27,14 @@ type Model struct {
 	style         *Styles
 }
 
-// Message represents a chat message
+// Message represents a chat message.
 type Message struct {
 	Role    string
 	Content string
 	Agent   string
 }
 
-// Styles holds all the styling configurations
+// Styles holds all the styling configurations.
 type Styles struct {
 	Title      lipgloss.Style
 	Agent      lipgloss.Style
@@ -48,7 +49,7 @@ type Styles struct {
 	Selected   lipgloss.Style
 }
 
-// NewStyles creates default styles
+// NewStyles creates default styles.
 func NewStyles() *Styles {
 	return &Styles{
 		Title: lipgloss.NewStyle().
@@ -103,7 +104,7 @@ func NewStyles() *Styles {
 	}
 }
 
-// New creates a new TUI model
+// New creates a new TUI model.
 func New(chatClient llm.ChatClient, personas []*llm.ChatPersona) Model {
 	var session *llm.ChatSession
 	if len(personas) > 0 {
@@ -119,7 +120,7 @@ func New(chatClient llm.ChatClient, personas []*llm.ChatPersona) Model {
 	}
 }
 
-// Init initializes the model
+// Init initializes the model.
 func (m Model) Init() tea.Cmd {
 	return tea.Batch(
 		tea.EnterAltScreen,
@@ -127,7 +128,7 @@ func (m Model) Init() tea.Cmd {
 	)
 }
 
-// Update handles messages and updates the model
+// Update handles messages and updates the model.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -166,7 +167,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// View renders the TUI
+// View renders the TUI.
 func (m Model) View() string {
 	if m.width == 0 || m.height == 0 {
 		return "Initializing..."
@@ -218,7 +219,7 @@ func (m Model) View() string {
 	return lipgloss.JoinVertical(lipgloss.Left, sections...)
 }
 
-// handleKeyPress processes keyboard input
+// handleKeyPress processes keyboard input.
 func (m Model) handleKeyPress(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.Type {
 	case tea.KeyCtrlC:
@@ -246,7 +247,9 @@ func (m Model) handleKeyPress(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			if m.selectedAgent < len(m.personas) {
 				m.session = m.chatClient.NewSession(m.personas[m.selectedAgent])
 				m.showAgentList = false
-				return m, m.addSystemMessage(fmt.Sprintf("Switched to agent: %s", m.personas[m.selectedAgent].Name))
+				return m, m.addSystemMessage(
+					fmt.Sprintf("Switched to agent: %s", m.personas[m.selectedAgent].Name),
+				)
 			}
 		} else if m.input != "" && !m.isProcessing {
 			// Send message
@@ -276,7 +279,7 @@ func (m Model) handleKeyPress(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-// renderMessages renders the message history
+// renderMessages renders the message history.
 func (m Model) renderMessages() string {
 	var messages []string
 
@@ -314,7 +317,7 @@ func (m Model) renderMessages() string {
 	return messageBox
 }
 
-// renderAgentList renders the list of available personas
+// renderAgentList renders the list of available personas.
 func (m Model) renderAgentList() string {
 	var items []string
 	for i, persona := range m.personas {
@@ -329,7 +332,7 @@ func (m Model) renderAgentList() string {
 	return m.style.AgentList.Render("Select Agent:\n" + list)
 }
 
-// sendMessage sends a message to the current chat session
+// sendMessage sends a message to the current chat session.
 func (m Model) sendMessage(content string) tea.Cmd {
 	return func() tea.Msg {
 		if m.session == nil || m.chatClient == nil {
@@ -348,14 +351,14 @@ func (m Model) sendMessage(content string) tea.Cmd {
 	}
 }
 
-// addSystemMessage adds a system message
+// addSystemMessage adds a system message.
 func (m Model) addSystemMessage(content string) tea.Cmd {
 	return func() tea.Msg {
 		return systemMsg{content: content}
 	}
 }
 
-// Message types for tea.Cmd
+// Message types for tea.Cmd.
 type responseMsg struct {
 	content string
 	err     error

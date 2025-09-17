@@ -10,13 +10,13 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// RedisPublisher implements PublisherSubscriber using Redis pub/sub
+// RedisPublisher implements PublisherSubscriber using Redis pub/sub.
 type RedisPublisher struct {
 	client  *redis.Client
 	channel string
 }
 
-// NewRedisPublisher creates a new Redis event publisher with default channel
+// NewRedisPublisher creates a new Redis event publisher with default channel.
 func NewRedisPublisher(client *redis.Client) PublisherSubscriber {
 	return &RedisPublisher{
 		client:  client,
@@ -24,7 +24,7 @@ func NewRedisPublisher(client *redis.Client) PublisherSubscriber {
 	}
 }
 
-// Publish sends an event to Redis
+// Publish sends an event to Redis.
 func (p *RedisPublisher) Publish(ctx context.Context, event Event) error {
 	if event.ID == "" {
 		event.ID = uuid.New().String()
@@ -61,8 +61,13 @@ func (p *RedisPublisher) Publish(ctx context.Context, event Event) error {
 	return nil
 }
 
-// PublishRaw publishes an event with domain context
-func (p *RedisPublisher) PublishRaw(ctx context.Context, domain string, eventType string, data interface{}) error {
+// PublishRaw publishes an event with domain context.
+func (p *RedisPublisher) PublishRaw(
+	ctx context.Context,
+	domain string,
+	eventType string,
+	data interface{},
+) error {
 	event := Event{
 		ID:        uuid.New().String(),
 		Type:      eventType,
@@ -86,8 +91,12 @@ func (p *RedisPublisher) PublishRaw(ctx context.Context, domain string, eventTyp
 	return p.Publish(ctx, event)
 }
 
-// Subscribe subscribes to all events from a specific domain
-func (p *RedisPublisher) Subscribe(ctx context.Context, domain string, handler func(event Event) error) error {
+// Subscribe subscribes to all events from a specific domain.
+func (p *RedisPublisher) Subscribe(
+	ctx context.Context,
+	domain string,
+	handler func(event Event) error,
+) error {
 	// Subscribe to domain-specific channel
 	domainChannel := fmt.Sprintf("%s:%s", p.channel, domain)
 
@@ -131,8 +140,13 @@ func (p *RedisPublisher) Subscribe(ctx context.Context, domain string, handler f
 	}
 }
 
-// SubscribeToType subscribes to specific event types
-func (p *RedisPublisher) SubscribeToType(ctx context.Context, domain string, eventType string, handler func(event Event) error) error {
+// SubscribeToType subscribes to specific event types.
+func (p *RedisPublisher) SubscribeToType(
+	ctx context.Context,
+	domain string,
+	eventType string,
+	handler func(event Event) error,
+) error {
 	// Subscribe to type-specific channel
 	typeChannel := fmt.Sprintf("%s:%s:%s", p.channel, domain, eventType)
 
@@ -176,6 +190,6 @@ func (p *RedisPublisher) SubscribeToType(ctx context.Context, domain string, eve
 	}
 }
 
-// Ensure RedisPublisher implements the interfaces
+// Ensure RedisPublisher implements the interfaces.
 var _ Publisher = (*RedisPublisher)(nil)
 var _ PublisherSubscriber = (*RedisPublisher)(nil)

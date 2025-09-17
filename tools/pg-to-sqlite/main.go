@@ -77,7 +77,11 @@ func convertToSQLite(content string) string {
 	content = strings.ReplaceAll(content, "TIMESTAMPTZ", "TEXT")
 
 	// Replace CURRENT_TIMESTAMP with SQLite datetime function
-	content = strings.ReplaceAll(content, "DEFAULT CURRENT_TIMESTAMP", "DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now'))")
+	content = strings.ReplaceAll(
+		content,
+		"DEFAULT CURRENT_TIMESTAMP",
+		"DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now'))",
+	)
 
 	// Replace DOUBLE PRECISION with REAL
 	content = strings.ReplaceAll(content, "DOUBLE PRECISION", "REAL")

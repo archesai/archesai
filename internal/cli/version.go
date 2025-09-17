@@ -7,13 +7,13 @@ import (
 )
 
 var (
-	// These will be set by ldflags during build
+	// These will be set by ldflags during build.
 	version   = "dev"
 	commit    = "none"
 	buildDate = "unknown"
 )
 
-// versionCmd represents the version command
+// versionCmd represents the version command.
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print version information",

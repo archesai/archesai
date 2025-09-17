@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// Test helper functions
+// Test helper functions.
 func createTestService(t *testing.T) (*Service, *MockRepository) {
 	t.Helper()
 
@@ -23,7 +23,7 @@ func createTestService(t *testing.T) (*Service, *MockRepository) {
 	return service, mockRepo
 }
 
-// TestNewService tests the service constructor
+// TestNewService tests the service constructor.
 func TestNewService(t *testing.T) {
 	service, _ := createTestService(t)
 
@@ -32,7 +32,7 @@ func TestNewService(t *testing.T) {
 	assert.NotNil(t, service.logger)
 }
 
-// TestGetUser tests getting a user by ID
+// TestGetUser tests getting a user by ID.
 func TestGetUser(t *testing.T) {
 	// Create a test user
 	user := &User{
@@ -97,7 +97,7 @@ func TestGetUser(t *testing.T) {
 	}
 }
 
-// TestUpdateUser tests updating a user
+// TestUpdateUser tests updating a user.
 func TestUpdateUser(t *testing.T) {
 	// Create a test user
 	user := &User{
@@ -132,7 +132,9 @@ func TestUpdateUser(t *testing.T) {
 					CreatedAt:     user.CreatedAt,
 					UpdatedAt:     time.Now(),
 				}
-				repo.EXPECT().Update(mock.Anything, user.ID, mock.AnythingOfType("*users.User")).Return(updatedUser, nil)
+				repo.EXPECT().
+					Update(mock.Anything, user.ID, mock.AnythingOfType("*users.User")).
+					Return(updatedUser, nil)
 			},
 			wantErr: false,
 		},
@@ -181,7 +183,7 @@ func TestUpdateUser(t *testing.T) {
 	}
 }
 
-// TestDeleteUser tests deleting a user
+// TestDeleteUser tests deleting a user.
 func TestDeleteUser(t *testing.T) {
 	// Create a test user
 	user := &User{
@@ -244,7 +246,7 @@ func TestDeleteUser(t *testing.T) {
 	}
 }
 
-// TestListUsers tests listing users
+// TestListUsers tests listing users.
 func TestListUsers(t *testing.T) {
 	// Create test users
 	users := []*User{
