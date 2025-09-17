@@ -26,6 +26,8 @@
 │   │   │   └── action.yml
 │   │   ├── goreleaser-run
 │   │   │   └── action.yml
+│   │   ├── gpg-import
+│   │   │   └── action.yml
 │   │   └── setup-build-env
 │   │       └── action.yml
 │   ├── workflows
@@ -185,8 +187,15 @@
 │   │   └── users_{id}.yaml
 │   └── openapi.yaml
 ├── assets
-│   ├── github-hero.png
+│   ├── android-chrome-192x192.png
+│   ├── android-chrome-512x512.png
+│   ├── apple-touch-icon.png
+│   ├── favicon-16x16.png
+│   ├── favicon-32x32.png
+│   ├── favicon.ico
+│   ├── github-hero.svg
 │   ├── large-logo.svg
+│   ├── site.webmanifest
 │   └── small-logo.svg
 ├── cmd
 │   └── archesai
@@ -576,8 +585,15 @@
 ├── tools
 │   ├── codegen
 │   │   └── main.go
-│   └── pg-to-sqlite
-│       └── main.go
+│   ├── pg-to-sqlite
+│   │   └── main.go
+│   └── tsconfig
+│       ├── src
+│       │   ├── base.json
+│       │   ├── lib.json
+│       │   ├── react.json
+│       │   └── spec.json
+│       └── package.json
 ├── web
 │   ├── client
 │   │   ├── src
@@ -645,13 +661,7 @@
 │   │   └── zudoku.config.tsx
 │   ├── platform
 │   │   ├── public
-│   │   │   ├── android-chrome-192x192.png
-│   │   │   ├── android-chrome-512x512.png
-│   │   │   ├── apple-touch-icon.png
-│   │   │   ├── favicon-16x16.png
-│   │   │   ├── favicon-32x32.png
-│   │   │   ├── favicon.ico
-│   │   │   └── site.webmanifest
+│   │   │   └── .gitkeep
 │   │   ├── src
 │   │   │   ├── app
 │   │   │   │   ├── _app
@@ -744,20 +754,12 @@
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.spec.json
 │   │   └── vite.config.js
-│   ├── typescript
-│   │   ├── src
-│   │   │   ├── base.json
-│   │   │   ├── lib.json
-│   │   │   ├── react.json
-│   │   │   └── spec.json
-│   │   └── package.json
 │   └── ui
 │       ├── src
 │       │   ├── components
 │       │   │   ├── custom
 │       │   │   │   ├── Callout.tsx
 │       │   │   │   ├── Introduction.tsx
-│       │   │   │   ├── LandingPage.tsx
 │       │   │   │   ├── ThemeEditor.tsx
 │       │   │   │   ├── arches-logo.tsx
 │       │   │   │   ├── artifact-viewer.tsx
@@ -918,7 +920,7 @@
 ├── pnpm-workspace.yaml
 └── tsconfig.json
 
-198 directories, 725 files
+197 directories, 719 files
 ```
 
 ## Domain Package Structure
