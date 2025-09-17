@@ -32,11 +32,6 @@ export default defineConfig({
     svgr(),
   ],
   publicDir: resolve(import.meta.dirname, "../../assets"),
-  resolve: {
-    alias: {
-      "@assets": resolve(import.meta.dirname, "../../assets"),
-    },
-  },
   server: {
     allowedHosts: ["moose"],
     host: "0.0.0.0",

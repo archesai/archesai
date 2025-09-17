@@ -5,9 +5,4 @@ import svgr from "vite-plugin-svgr";
 export default defineConfig({
   plugins: [svgr()],
   publicDir: resolve(import.meta.dirname, "../../assets"),
-  resolve: {
-    alias: {
-      "@assets": resolve(import.meta.dirname, "../../assets"),
-    },
-  },
 });
