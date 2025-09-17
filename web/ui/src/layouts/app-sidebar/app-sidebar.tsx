@@ -33,7 +33,7 @@ export function AppSidebar({
     <Sidebar
       {...props}
       collapsible="icon"
-      variant="inset"
+      variant="floating"
     >
       <SidebarHeader>
         {organizationSlot}
@@ -70,19 +70,18 @@ export function SearchForm({
   return (
     <form
       {...props}
-      className="p-2"
       onSubmit={handleSubmit}
     >
-      <div className="relative">
+      <div className="relative group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center">
         <Label
           className="sr-only"
           htmlFor="search"
         >
           Search
         </Label>
-        <SearchIcon className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-2 size-4 text-muted-foreground" />
+        <SearchIcon className="pointer-events-none absolute top-2 left-2 size-4 text-muted-foreground" />
         <SidebarInput
-          className="pl-8"
+          className="pl-8 group-data-[collapsible=icon]:hidden"
           id="search"
           name="search"
           placeholder="Search the docs..."

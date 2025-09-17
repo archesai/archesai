@@ -12,27 +12,28 @@ export function ArchesLogo({
   scale?: number;
   size?: "lg" | "sm";
 }): JSX.Element {
-  const content =
-    size === "sm" ? (
-      <SmallLogoSVG
-        className="fill-current text-black transition-all dark:text-white"
-        height={scale * 40}
-        width={scale * 40}
-      />
-    ) : (
-      <div className="flex items-center gap-1">
+  return (
+    <div className="flex items-center justify-center gap-2">
+      {size === "sm" ? (
         <SmallLogoSVG
-          className="fill-current text-primary dark:text-white"
+          className="fill-current text-primary dark:text-foreground"
           height={scale * 40}
           width={scale * 40}
         />
-        <LargeLogoSVG
-          className="fill-current text-primary dark:text-white"
-          height={scale * 40}
-          width={scale * 80}
-        />
-      </div>
-    );
-
-  return content;
+      ) : (
+        <>
+          <SmallLogoSVG
+            className="text-primary dark:text-foreground"
+            height={scale * 40}
+            width={scale * 40}
+          />
+          <LargeLogoSVG
+            className="text-primary dark:text-foreground"
+            height={scale * 60}
+            width={scale * 80}
+          />
+        </>
+      )}
+    </div>
+  );
 }

@@ -52,11 +52,11 @@ export function SidebarLinks({
                     if (!children.length) {
                       return (
                         <SidebarMenuItem
-                          className="relative"
+                          className="relative group-data-[collapsible=icon]:my-1"
                           key={rootRoute.href}
                         >
                           {rootRoute.href === currentPath && (
-                            <div className="absolute top-0 left-0 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />
+                            <div className="-ml-2 absolute top-0 left-0 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />
                           )}
                           <SidebarMenuButton
                             asChild
@@ -64,17 +64,15 @@ export function SidebarLinks({
                             tooltip={rootRoute.title}
                           >
                             <Link
-                              className="flex items-center gap-2 text-muted-foreground group-data-[collapsible=icon]:gap-0"
+                              className="text-muted-foreground"
                               href={rootRoute.href}
                               onClick={(e) => {
                                 e.preventDefault();
                                 onNavigate?.(rootRoute.href);
                               }}
                             >
-                              <rootRoute.Icon className="group-data-[collapsible=icon]:mx-auto" />
-                              <span className="group-data-[collapsible=icon]:hidden">
-                                {rootRoute.title}
-                              </span>
+                              <rootRoute.Icon />
+                              {rootRoute.title}
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -88,7 +86,7 @@ export function SidebarLinks({
                         defaultOpen={isActive ?? false}
                         key={rootRoute.title}
                       >
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="group-data-[collapsible=icon]:my-1">
                           <CollapsibleTrigger asChild>
                             <SidebarMenuButton
                               className="flex items-center gap-2 text-muted-foreground group-data-[collapsible=icon]:gap-0"

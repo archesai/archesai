@@ -65,11 +65,16 @@ export function OrganizationButton({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               size="lg"
             >
-              <ArchesLogo
-                scale={0.8}
-                size="sm"
-              />
-              <ChevronsUpDownIcon className="ml-auto" />
+              <span className="hidden group-data-[collapsible=icon]:flex">
+                <ArchesLogo
+                  scale={0.8}
+                  size="sm"
+                />
+              </span>
+              <span className="flex group-data-[collapsible=icon]:hidden">
+                <ArchesLogo size="lg" />
+              </span>
+              <ChevronsUpDownIcon className="ml-auto group-data-[collapsible=icon]:hidden" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -83,7 +88,6 @@ export function OrganizationButton({
             </DropdownMenuLabel>
             {memberships?.data.map((membership) => (
               <DropdownMenuItem
-                className="gap-2 p-2"
                 key={membership.id}
                 onClick={async () => {
                   if (onUpdateSession && session) {
@@ -111,7 +115,7 @@ export function OrganizationButton({
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
+            <DropdownMenuItem>
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                 <PlusSquareIcon className="size-4" />
               </div>

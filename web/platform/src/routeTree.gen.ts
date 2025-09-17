@@ -25,6 +25,7 @@ import { Route as AppOrganizationIndexRouteImport } from './app/_app/organizatio
 import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
 import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
 import { Route as AppRunsRunIDIndexRouteImport } from './app/_app/runs/$runID/index'
+import { Route as AppProfileThemesIndexRouteImport } from './app/_app/profile/themes/index'
 import { Route as AppPipelinesPipelineIDIndexRouteImport } from './app/_app/pipelines/$pipelineID/index'
 import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
 import { Route as AppArtifactsArtifactIDIndexRouteImport } from './app/_app/artifacts/$artifactID/index'
@@ -110,6 +111,11 @@ const AppRunsRunIDIndexRoute = AppRunsRunIDIndexRouteImport.update({
   path: '/runs/$runID/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppProfileThemesIndexRoute = AppProfileThemesIndexRouteImport.update({
+  id: '/profile/themes/',
+  path: '/profile/themes/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppPipelinesPipelineIDIndexRoute =
   AppPipelinesPipelineIDIndexRouteImport.update({
     id: '/pipelines/$pipelineID/',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/artifacts/$artifactID': typeof AppArtifactsArtifactIDIndexRoute
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineID': typeof AppPipelinesPipelineIDIndexRoute
+  '/profile/themes': typeof AppProfileThemesIndexRoute
   '/runs/$runID': typeof AppRunsRunIDIndexRoute
   '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
 }
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/artifacts/$artifactID': typeof AppArtifactsArtifactIDIndexRoute
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineID': typeof AppPipelinesPipelineIDIndexRoute
+  '/profile/themes': typeof AppProfileThemesIndexRoute
   '/runs/$runID': typeof AppRunsRunIDIndexRoute
   '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
 }
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/_app/artifacts/$artifactID/': typeof AppArtifactsArtifactIDIndexRoute
   '/_app/organization/members/': typeof AppOrganizationMembersIndexRoute
   '/_app/pipelines/$pipelineID/': typeof AppPipelinesPipelineIDIndexRoute
+  '/_app/profile/themes/': typeof AppProfileThemesIndexRoute
   '/_app/runs/$runID/': typeof AppRunsRunIDIndexRoute
   '/_app/pipelines/create/': typeof AppPipelinesCreateIndexLazyRoute
 }
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/artifacts/$artifactID'
     | '/organization/members'
     | '/pipelines/$pipelineID'
+    | '/profile/themes'
     | '/runs/$runID'
     | '/pipelines/create'
   fileRoutesByTo: FileRoutesByTo
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/artifacts/$artifactID'
     | '/organization/members'
     | '/pipelines/$pipelineID'
+    | '/profile/themes'
     | '/runs/$runID'
     | '/pipelines/create'
   id:
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/_app/artifacts/$artifactID/'
     | '/_app/organization/members/'
     | '/_app/pipelines/$pipelineID/'
+    | '/_app/profile/themes/'
     | '/_app/runs/$runID/'
     | '/_app/pipelines/create/'
   fileRoutesById: FileRoutesById
@@ -361,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRunsRunIDIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/profile/themes/': {
+      id: '/_app/profile/themes/'
+      path: '/profile/themes'
+      fullPath: '/profile/themes'
+      preLoaderRoute: typeof AppProfileThemesIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/pipelines/$pipelineID/': {
       id: '/_app/pipelines/$pipelineID/'
       path: '/pipelines/$pipelineID'
@@ -397,6 +416,7 @@ interface AppRouteRouteChildren {
   AppArtifactsArtifactIDIndexRoute: typeof AppArtifactsArtifactIDIndexRoute
   AppOrganizationMembersIndexRoute: typeof AppOrganizationMembersIndexRoute
   AppPipelinesPipelineIDIndexRoute: typeof AppPipelinesPipelineIDIndexRoute
+  AppProfileThemesIndexRoute: typeof AppProfileThemesIndexRoute
   AppRunsRunIDIndexRoute: typeof AppRunsRunIDIndexRoute
   AppPipelinesCreateIndexLazyRoute: typeof AppPipelinesCreateIndexLazyRoute
 }
@@ -413,6 +433,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppArtifactsArtifactIDIndexRoute: AppArtifactsArtifactIDIndexRoute,
   AppOrganizationMembersIndexRoute: AppOrganizationMembersIndexRoute,
   AppPipelinesPipelineIDIndexRoute: AppPipelinesPipelineIDIndexRoute,
+  AppProfileThemesIndexRoute: AppProfileThemesIndexRoute,
   AppRunsRunIDIndexRoute: AppRunsRunIDIndexRoute,
   AppPipelinesCreateIndexLazyRoute: AppPipelinesCreateIndexLazyRoute,
 }
