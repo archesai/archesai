@@ -36,12 +36,6 @@ const config: ZudokuConfig = {
   },
   navigation: docs,
   port: 3002,
-  redirects: [
-    {
-      from: "/",
-      to: "/getting-started",
-    },
-  ],
   // search: {
   //   type: "pagefind",
   // },

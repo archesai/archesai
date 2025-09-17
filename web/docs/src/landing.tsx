@@ -99,7 +99,7 @@ export function LandingPage({
       <header
         className={`sticky top-0 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"}`}
       >
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
           <ArchesLogo />
           <nav className="hidden gap-8 md:flex">
             {content.navigation.links.map((link) => (
@@ -165,7 +165,7 @@ export function LandingPage({
               y: -20,
             }}
           >
-            <div className="container flex flex-col gap-4 py-4">
+            <div className="container mx-auto flex flex-col gap-4 px-4 py-4 md:px-6">
               {content.navigation.links.map((link) => (
                 <Link
                   className="py-2 font-medium text-sm"
@@ -207,7 +207,7 @@ export function LandingPage({
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full overflow-hidden py-20 md:py-32 lg:py-40">
-          <div className="container relative px-4 md:px-6">
+          <div className="container relative mx-auto px-4 md:px-6">
             <div className="-z-10 absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] bg-white [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] dark:bg-black"></div>
 
             <motion.div
@@ -298,7 +298,7 @@ export function LandingPage({
 
         {/* Logos Section */}
         <section className="w-full border-y bg-muted/30 py-12">
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <p className="font-medium text-muted-foreground text-sm">
                 {content.logos.title}
@@ -324,7 +324,7 @@ export function LandingPage({
           className="w-full py-20 md:py-32"
           id="features"
         >
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto px-4 md:px-6">
             <motion.div
               className="mb-12 flex flex-col items-center justify-center space-y-4 text-center"
               initial={{
@@ -393,7 +393,7 @@ export function LandingPage({
         <section className="relative w-full overflow-hidden bg-muted/30 py-20 md:py-32">
           <div className="-z-10 absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] bg-white [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] dark:bg-black"></div>
 
-          <div className="container relative px-4 md:px-6">
+          <div className="container relative mx-auto px-4 md:px-6">
             <motion.div
               className="mb-16 flex flex-col items-center justify-center space-y-4 text-center"
               initial={{
@@ -464,7 +464,7 @@ export function LandingPage({
           className="w-full py-20 md:py-32"
           id="testimonials"
         >
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto px-4 md:px-6">
             <motion.div
               className="mb-12 flex flex-col items-center justify-center space-y-4 text-center"
               initial={{
@@ -557,7 +557,7 @@ export function LandingPage({
         >
           <div className="-z-10 absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] bg-white [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] dark:bg-black"></div>
 
-          <div className="container relative px-4 md:px-6">
+          <div className="container relative mx-auto px-4 md:px-6">
             <motion.div
               className="mb-12 flex flex-col items-center justify-center space-y-4 text-center"
               initial={{
@@ -751,7 +751,7 @@ export function LandingPage({
           className="w-full py-20 md:py-32"
           id="faq"
         >
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto px-4 md:px-6">
             <motion.div
               className="mb-12 flex flex-col items-center justify-center space-y-4 text-center"
               initial={{
@@ -832,7 +832,7 @@ export function LandingPage({
           <div className="-top-24 -left-24 absolute h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
           <div className="-right-24 -bottom-24 absolute h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
 
-          <div className="container relative px-4 md:px-6">
+          <div className="container relative mx-auto px-4 md:px-6">
             <motion.div
               className="flex flex-col items-center justify-center space-y-6 text-center"
               initial={{
@@ -881,7 +881,7 @@ export function LandingPage({
         </section>
       </main>
       <footer className="w-full border-t bg-background/95 backdrop-blur-sm">
-        <div className="container flex flex-col gap-8 px-4 py-10 md:px-6 lg:py-16">
+        <div className="container mx-auto flex flex-col gap-8 px-4 py-10 md:px-6 lg:py-16">
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
             <div className="space-y-4">
               <div className="flex items-center gap-2 font-bold">

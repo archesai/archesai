@@ -1,9 +1,9 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-svgr/client" />
 
-import LargeLogoSVG from "@assets/large-logo.svg?react";
-import SmallLogoSVG from "@assets/small-logo.svg?react";
 import type { JSX } from "react";
+import LargeLogoSVG from "../../../../../assets/large-logo.svg?react";
+import SmallLogoSVG from "../../../../../assets/small-logo.svg?react";
 
 export function ArchesLogo({
   size = "lg" as "lg" | "sm",

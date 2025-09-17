@@ -2,6 +2,7 @@
 /// <reference types="vite-plugin-svgr/client" />
 
 import type { Navigation } from "zudoku";
+import { LandingPage } from "#landing";
 
 /**
  * NOTE: This file should not import anything except zudoku. We use this file
@@ -11,10 +12,10 @@ import type { Navigation } from "zudoku";
 export const docs: Navigation = [
   {
     display: "hide",
-    element: <></>,
+    element: <LandingPage />,
     label: "Landing Page",
     layout: "none",
-    path: "/landing",
+    path: "/",
     type: "custom-page",
   },
   {
