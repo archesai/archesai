@@ -12,7 +12,7 @@ Available targets:
   all                        Default: generate, lint, and format code
   build                      Build all binaries
   build-api                  Build archesai server binary
-  build-docs                 Build Docusaurus documentation site
+  build-docs                 Build documentation site
   build-web                  Build web assets
   bundle-openapi             Bundle OpenAPI into single file
   check-deps                 Check for required dependencies
@@ -69,6 +69,15 @@ Available targets:
   lint-typecheck             Run TypeScript type checking
   list-workflows             List all available GitHub workflows
   prepare-docs               Copy markdown docs to web/docs/docs
+  release-check              Check if ready for release
+  release-clean              Clean release artifacts
+  release-draft              Create a draft release on GitHub (requires gh CLI)
+  release-edge-local         Test edge release workflow locally
+  release-info               Show release information and next steps
+  release-nightly-local      Test nightly release workflow locally
+  release-snapshot           Create a snapshot release (test GoReleaser config)
+  release-tag                Create and push a new release tag (usage: make release-tag VERSION=v1.0.0)
+  release-test               Test release configuration without publishing
   run-api                    Run the API server (production mode)
   run-docs                   Run documentation site (production build)
   run-tui                    Launch the TUI interface
