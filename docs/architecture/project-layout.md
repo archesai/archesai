@@ -13,6 +13,21 @@
 │   ├── ISSUE_TEMPLATE
 │   │   ├── bug_report.yaml
 │   │   └── config.yaml
+│   ├── actions
+│   │   ├── build-project
+│   │   │   └── action.yml
+│   │   ├── create-github-release
+│   │   │   └── action.yml
+│   │   ├── create-release-tag
+│   │   │   └── action.yml
+│   │   ├── docker-retag
+│   │   │   └── action.yml
+│   │   ├── docker-setup
+│   │   │   └── action.yml
+│   │   ├── goreleaser-run
+│   │   │   └── action.yml
+│   │   └── setup-build-env
+│   │       └── action.yml
 │   ├── workflows
 │   │   ├── claude-code-review.yaml
 │   │   ├── claude.yaml
@@ -20,12 +35,13 @@
 │   │   ├── docker-build-and-push.yaml
 │   │   ├── lint-go.yaml
 │   │   ├── lint-typescript.yaml
+│   │   ├── release-edge.yaml
+│   │   ├── release-nightly.yaml
 │   │   ├── release.yaml
-│   │   ├── test-coverage.yml
+│   │   ├── test-coverage.yaml
 │   │   ├── test-go.yaml
 │   │   └── update-docs.yaml
-│   ├── dependabot.yaml
-│   └── release.yaml
+│   └── dependabot.yaml
 ├── .vscode
 │   ├── extensions.json
 │   └── settings.json
@@ -169,7 +185,9 @@
 │   │   └── users_{id}.yaml
 │   └── openapi.yaml
 ├── assets
-│   └── github-hero.png
+│   ├── github-hero.png
+│   ├── large-logo.svg
+│   └── small-logo.svg
 ├── cmd
 │   └── archesai
 │       └── main.go
@@ -178,6 +196,7 @@
 │   │   └── skaffold.yaml
 │   ├── docker
 │   │   ├── Dockerfile
+│   │   ├── Dockerfile.goreleaser
 │   │   └── docker-compose.yaml
 │   ├── gcp
 │   │   └── clouddeploy.yaml
@@ -616,9 +635,7 @@
 │   │   │   ├── background.png
 │   │   │   ├── background.svg
 │   │   │   ├── banner-dark.svg
-│   │   │   ├── banner.svg
-│   │   │   ├── logo-dark.svg
-│   │   │   └── logo-light.svg
+│   │   │   └── banner.svg
 │   │   ├── src
 │   │   │   └── sidebar.tsx
 │   │   ├── eslint.config.js
@@ -627,7 +644,7 @@
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.spec.json
 │   │   ├── vite.config.ts
-│   │   └── zudoku.config.ts
+│   │   └── zudoku.config.tsx
 │   ├── eslint
 │   │   ├── src
 │   │   │   ├── base.js
@@ -685,6 +702,9 @@
 │   │   │   │   │   └── index.tsx
 │   │   │   │   └── __root.tsx
 │   │   │   ├── components
+│   │   │   │   ├── containers
+│   │   │   │   │   ├── app-sidebar-container.tsx
+│   │   │   │   │   └── page-header-container.tsx
 │   │   │   │   ├── datatables
 │   │   │   │   │   ├── artifact-datatable.tsx
 │   │   │   │   │   ├── data-table-container.tsx
@@ -699,9 +719,6 @@
 │   │   │   │   │   ├── member-form.tsx
 │   │   │   │   │   ├── organization-form.tsx
 │   │   │   │   │   └── user-form.tsx
-│   │   │   │   ├── layouts
-│   │   │   │   │   ├── app-sidebar-container.tsx
-│   │   │   │   │   └── page-header-container.tsx
 │   │   │   │   ├── navigation
 │   │   │   │   │   ├── link.tsx
 │   │   │   │   │   └── user-button-container.tsx
@@ -883,7 +900,8 @@
 │       ├── package.json
 │       ├── tsconfig.json
 │       ├── tsconfig.lib.json
-│       └── tsconfig.spec.json
+│       ├── tsconfig.spec.json
+│       └── vite.config.ts
 ├── .air.toml
 ├── .codegen.archesai.yaml
 ├── .codegen.server.yaml
@@ -909,7 +927,7 @@
 ├── pnpm-workspace.yaml
 └── tsconfig.json
 
-190 directories, 715 files
+198 directories, 725 files
 ```
 
 ## Domain Package Structure
