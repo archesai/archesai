@@ -12,10 +12,10 @@ export const TitleAndDescription = ({
     <div className="container flex items-center gap-3 border-b px-4 py-3">
       <siteRoute.Icon className="h-8 w-8" />
       <div>
-        <p className="text-xl font-semibold text-foreground/85">
+        <p className="font-semibold text-foreground/85 text-xl">
           {siteRoute.title}
         </p>
-        <p className="text-sm text-muted-foreground">{siteRoute.description}</p>
+        <p className="text-muted-foreground text-sm">{siteRoute.description}</p>
       </div>
     </div>
   );

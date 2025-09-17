@@ -32,7 +32,11 @@ const FormField = <
   ...props
 }: ControllerProps<TFieldValues, TName>) => {
   return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
+    <FormFieldContext.Provider
+      value={{
+        name: props.name,
+      }}
+    >
       <Controller {...props} />
     </FormFieldContext.Provider>
   );
@@ -42,7 +46,9 @@ const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);
   const { getFieldState } = useFormContext();
-  const formState = useFormState({ name: fieldContext.name });
+  const formState = useFormState({
+    name: fieldContext.name,
+  });
   const fieldState = getFieldState(fieldContext.name, formState);
 
   if (!fieldContext) {
@@ -73,7 +79,11 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   const id = React.useId();
 
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider
+      value={{
+        id,
+      }}
+    >
       <div
         className={cn("grid gap-2", className)}
         data-slot="form-item"

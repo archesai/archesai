@@ -29,7 +29,7 @@
 // import { Preview } from "./components/Preview";
 // import { SparklesText } from "./components/Sparkles";
 // import { StartCustomizing } from "./components/StartCustomizing";
-// import Zudoku from "./components/Zudoku";
+// import Arches from "./components/Arches";
 // import DiscordIcon from "./DiscordIcon";
 // import GithubIcon from "./GithubIcon";
 
@@ -94,7 +94,7 @@
 //   return (
 //     <div className="z-1 mx-auto flex w-full flex-col items-center gap-25 pt-10 dark:bg-white dark:text-black">
 //       <div className="flex w-full max-w-screen-xl flex-col items-center justify-between gap-6 px-10 md:flex-row">
-//         <Zudoku />
+//         <Arches />
 //         <ul className="flex items-center gap-6">
 //           <li>
 //             <Link href="/docs">Documentation</Link>
@@ -233,7 +233,7 @@
 //                   <h3 className="text-2xl font-semibold">Add your OpenAPI</h3>
 //                   <p className="text-muted-foreground">
 //                     Bring your OpenAPI schema into the project and add it to the
-//                     Zudoku config.
+//                     Arches config.
 //                   </p>
 //                 </div>
 //               </div>
@@ -600,9 +600,9 @@
 //       </div>
 //       <div className="mt-10 mb-30 grid w-full max-w-screen-lg grid-cols-1 px-10 md:grid-cols-2">
 //         <div className="flex flex-col gap-10">
-//           <Zudoku />
+//           <Arches />
 //           <h2 className="text-3xl font-medium capitalize">
-//             Zudoku is free, open-source,
+//             Arches is free, open-source,
 //             <br />
 //             and ready to power your docs.
 //           </h2>

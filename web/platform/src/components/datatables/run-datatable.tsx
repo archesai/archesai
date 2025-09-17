@@ -106,7 +106,12 @@ export default function RunDataTable(): JSX.Element {
       // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={async (run) => {
-        await navigate({ params: { runID: run.id }, to: `/runs/$runID` });
+        await navigate({
+          params: {
+            runID: run.id,
+          },
+          to: `/runs/$runID`,
+        });
       }}
       icon={<PackageCheckIcon />}
     />

@@ -72,16 +72,28 @@ function DataTableActionBar<TData>({
     <AnimatePresence>
       {visible && (
         <motion.div
-          animate={{ opacity: 1, y: 0 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
           aria-orientation="horizontal"
           className={cn(
             "fixed inset-x-0 bottom-6 z-50 mx-auto flex w-fit flex-wrap items-center justify-center gap-2 rounded-md border bg-background p-2 text-foreground shadow-sm",
             className,
           )}
-          exit={{ opacity: 0, y: 20 }}
-          initial={{ opacity: 0, y: 20 }}
+          exit={{
+            opacity: 0,
+            y: 20,
+          }}
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
           role="toolbar"
-          transition={{ duration: 0.2, ease: "easeInOut" }}
+          transition={{
+            duration: 0.2,
+            ease: "easeInOut",
+          }}
           {...props}
         >
           {children}
@@ -141,7 +153,7 @@ function DataTableActionBarSelection<TData>({
 
   return (
     <div className="flex h-7 items-center rounded-md border pr-1 pl-2.5">
-      <span className="text-xs whitespace-nowrap">
+      <span className="whitespace-nowrap text-xs">
         {table.getFilteredSelectedRowModel().rows.length} selected
       </span>
       <Separator
@@ -164,7 +176,7 @@ function DataTableActionBarSelection<TData>({
           sideOffset={10}
         >
           <p>Clear selection</p>
-          <kbd className="rounded border bg-background px-1.5 py-px font-mono text-[0.7rem] font-normal text-foreground shadow-xs select-none">
+          <kbd className="select-none rounded border bg-background px-1.5 py-px font-mono font-normal text-[0.7rem] text-foreground shadow-xs">
             <abbr
               className="no-underline"
               title="Escape"

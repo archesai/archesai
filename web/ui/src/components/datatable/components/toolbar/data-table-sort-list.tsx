@@ -54,7 +54,10 @@ const REMOVE_SORT_SHORTCUTS = ["backspace", "delete"];
 
 interface DataTableSortItemProps {
   columnLabels: Map<string, string>;
-  columns: { id: string; label: string }[];
+  columns: {
+    id: string;
+    label: string;
+  }[];
   onSortRemove: (sortID: string) => void;
   onSortUpdate: (sortID: string, updates: Partial<ColumnSort>) => void;
   sort: ColumnSort;
@@ -82,7 +85,10 @@ export function DataTableSortList<TData>({
   const { columnLabels, columns } = useMemo(() => {
     const labels = new Map<string, string>();
     const sortingIDs = new Set(sorting.map((s) => s.id));
-    const availableColumns: { id: string; label: string }[] = [];
+    const availableColumns: {
+      id: string;
+      label: string;
+    }[] = [];
 
     for (const column of table.getAllColumns()) {
       if (!column.getCanSort()) continue;
@@ -91,7 +97,10 @@ export function DataTableSortList<TData>({
       labels.set(column.id, label);
 
       if (!sortingIDs.has(column.id)) {
-        availableColumns.push({ id: column.id, label });
+        availableColumns.push({
+          id: column.id,
+          label,
+        });
       }
     }
 
@@ -107,7 +116,10 @@ export function DataTableSortList<TData>({
 
     onSortingChange((prevSorting) => [
       ...prevSorting,
-      { desc: false, id: firstColumn.id },
+      {
+        desc: false,
+        id: firstColumn.id,
+      },
     ]);
   }, [columns, onSortingChange]);
 
@@ -116,7 +128,12 @@ export function DataTableSortList<TData>({
       onSortingChange((prevSorting) => {
         if (!prevSorting[0]) return prevSorting;
         return prevSorting.map((sort) =>
-          sort.id === sortID ? { ...sort, ...updates } : sort,
+          sort.id === sortID
+            ? {
+                ...sort,
+                ...updates,
+              }
+            : sort,
         );
       });
     },
@@ -204,7 +221,7 @@ export function DataTableSortList<TData>({
             Sort
             {sorting.length > 0 && (
               <Badge
-                className="h-[18.24px] rounded-[3.2px] px-[5.12px] font-mono text-[10.4px] font-normal"
+                className="h-[18.24px] rounded-[3.2px] px-[5.12px] font-mono font-normal text-[10.4px]"
                 variant="secondary"
               >
                 {sorting.length}
@@ -220,14 +237,14 @@ export function DataTableSortList<TData>({
         >
           <div className="flex flex-col gap-1">
             <h4
-              className="leading-none font-medium"
+              className="font-medium leading-none"
               id={labelID}
             >
               {sorting.length > 0 ? "Sort by" : "No sorting applied"}
             </h4>
             <p
               className={cn(
-                "text-sm text-muted-foreground",
+                "text-muted-foreground text-sm",
                 sorting.length > 0 && "sr-only",
               )}
               id={descriptionID}
@@ -365,7 +382,9 @@ function DataTableSortItem({
                     <CommandItem
                       key={column.id}
                       onSelect={(value) => {
-                        onSortUpdate(sort.id, { id: value });
+                        onSortUpdate(sort.id, {
+                          id: value,
+                        });
                       }}
                       value={column.id}
                     >
@@ -380,7 +399,9 @@ function DataTableSortItem({
         <Select
           onOpenChange={setShowDirectionSelector}
           onValueChange={(value: SortDirection) => {
-            onSortUpdate(sort.id, { desc: value === "desc" });
+            onSortUpdate(sort.id, {
+              desc: value === "desc",
+            });
           }}
           open={showDirectionSelector}
           value={sort.desc ? "desc" : "asc"}
@@ -396,8 +417,14 @@ function DataTableSortItem({
             id={directionListboxID}
           >
             {[
-              { label: "Asc", value: "asc" as const },
-              { label: "Desc", value: "desc" as const },
+              {
+                label: "Asc",
+                value: "asc" as const,
+              },
+              {
+                label: "Desc",
+                value: "desc" as const,
+              },
             ].map((order) => (
               <SelectItem
                 key={order.value}

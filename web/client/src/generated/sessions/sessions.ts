@@ -5,11 +5,7 @@
  * The Arches AI API
  * OpenAPI spec version: v0.0.0
  */
-import {
-  useMutation,
-  useQuery,
-  useSuspenseQuery
-} from '@tanstack/react-query';
+
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -24,9 +20,10 @@ import type {
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseQueryOptions,
-  UseSuspenseQueryResult
-} from '@tanstack/react-query';
-
+  UseSuspenseQueryResult,
+} from "@tanstack/react-query";
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { customFetch } from "../../fetcher";
 import type {
   BadRequestResponse,
   CreateSessionBody,
@@ -39,543 +36,866 @@ import type {
   UnauthorizedResponse,
   UpdateSession200,
   UpdateSessionBody,
-  Uuid
-} from '../orval.schemas';
-
-import { customFetch } from '../../fetcher';
-
+  Uuid,
+} from "../orval.schemas";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * List user sessions
  * @summary List sessions
  */
-export const getListSessionsUrl = (params?: ListSessionsParams,) => {
+export const getListSessionsUrl = (params?: ListSessionsParams) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
     const explodeParameters = ["sort"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
-      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
       return;
     }
-      
+
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/sessions?${stringifiedParams}` : `/sessions`
-}
+  return stringifiedParams.length > 0
+    ? `/sessions?${stringifiedParams}`
+    : `/sessions`;
+};
 
-export const listSessions = async (params?: ListSessionsParams, options?: RequestInit): Promise<ListSessions200> => {
-  
-  return customFetch<ListSessions200>(getListSessionsUrl(params),
-  {      
+export const listSessions = async (
+  params?: ListSessionsParams,
+  options?: RequestInit,
+): Promise<ListSessions200> => {
+  return customFetch<ListSessions200>(getListSessionsUrl(params), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    method: "GET",
+  });
+};
 
+export const getListSessionsQueryKey = (params?: ListSessionsParams) => {
+  return [`/sessions`, ...(params ? [params] : [])] as const;
+};
 
-
-export const getListSessionsQueryKey = (params?: ListSessionsParams,) => {
-    return [`/sessions`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getListSessionsQueryOptions = <TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListSessionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params?: ListSessionsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getListSessionsQueryKey(params);
 
-  const queryKey =  queryOptions?.queryKey ?? getListSessionsQueryKey(params);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listSessions>>> = ({
+    signal,
+  }) => listSessions(params, { signal, ...requestOptions });
 
-  
+  return { queryFn, queryKey, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listSessions>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSessions>>> = ({ signal }) => listSessions(params, { signal, ...requestOptions });
+export type ListSessionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listSessions>>
+>;
+export type ListSessionsQueryError = BadRequestResponse | UnauthorizedResponse;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof listSessions>>>
-export type ListSessionsQueryError = BadRequestResponse | UnauthorizedResponse
-
-
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  ListSessionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>> & Pick<
+export function useListSessions<
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params: undefined | ListSessionsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listSessions>>,
           TError,
           Awaited<ReturnType<typeof listSessions>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListSessions<
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params?: ListSessionsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listSessions>>,
           TError,
           Awaited<ReturnType<typeof listSessions>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListSessions<
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params?: ListSessionsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary List sessions
  */
 
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useListSessions<
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params?: ListSessionsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getListSessionsQueryOptions(params, options);
 
-  const queryOptions = getListSessionsQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
 
-
-
-export const getListSessionsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListSessionsSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params?: ListSessionsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listSessions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getListSessionsQueryKey(params);
 
-  const queryKey =  queryOptions?.queryKey ?? getListSessionsQueryKey(params);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listSessions>>> = ({
+    signal,
+  }) => listSessions(params, { signal, ...requestOptions });
 
-  
+  return { queryFn, queryKey, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof listSessions>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSessions>>> = ({ signal }) => listSessions(params, { signal, ...requestOptions });
+export type ListSessionsSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listSessions>>
+>;
+export type ListSessionsSuspenseQueryError =
+  | BadRequestResponse
+  | UnauthorizedResponse;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListSessionsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listSessions>>>
-export type ListSessionsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
-
-
-export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params: undefined |  ListSessionsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListSessionsSuspense<
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params: undefined | ListSessionsParams,
+  options: {
+    query: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listSessions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListSessionsSuspense<
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params?: ListSessionsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listSessions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListSessionsSuspense<
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params?: ListSessionsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listSessions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary List sessions
  */
 
-export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
- params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useListSessionsSuspense<
+  TData = Awaited<ReturnType<typeof listSessions>>,
+  TError = BadRequestResponse | UnauthorizedResponse,
+>(
+  params?: ListSessionsParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof listSessions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getListSessionsSuspenseQueryOptions(params, options);
 
-  const queryOptions = getListSessionsSuspenseQueryOptions(params,options)
+  const query = useSuspenseQuery(
+    queryOptions,
+    queryClient,
+  ) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
 
 /**
  * Authenticate user and Create a session
  * @summary Create session (Login)
  */
 export const getCreateSessionUrl = () => {
+  return `/sessions`;
+};
 
-
-  
-
-  return `/sessions`
-}
-
-export const createSession = async (createSessionBody: CreateSessionBody, options?: RequestInit): Promise<TokenResponse> => {
-  
-  return customFetch<TokenResponse>(getCreateSessionUrl(),
-  {      
+export const createSession = async (
+  createSessionBody: CreateSessionBody,
+  options?: RequestInit,
+): Promise<TokenResponse> => {
+  return customFetch<TokenResponse>(getCreateSessionUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createSessionBody,)
-  }
-);}
+    body: JSON.stringify(createSessionBody),
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: "POST",
+  });
+};
 
+export const getCreateSessionMutationOptions = <
+  TError = BadRequestResponse | UnauthorizedResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createSession>>,
+    TError,
+    { data: CreateSessionBody },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createSession>>,
+  TError,
+  { data: CreateSessionBody },
+  TContext
+> => {
+  const mutationKey = ["createSession"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createSession>>,
+    { data: CreateSessionBody }
+  > = (props) => {
+    const { data } = props ?? {};
 
+    return createSession(data, requestOptions);
+  };
 
-export const getCreateSessionMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSession>>, TError,{data: CreateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createSession>>, TError,{data: CreateSessionBody}, TContext> => {
+  return { mutationFn, ...mutationOptions };
+};
 
-const mutationKey = ['createSession'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type CreateSessionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createSession>>
+>;
+export type CreateSessionMutationBody = CreateSessionBody;
+export type CreateSessionMutationError =
+  | BadRequestResponse
+  | UnauthorizedResponse;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createSession>>, {data: CreateSessionBody}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createSession(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createSession>>>
-    export type CreateSessionMutationBody = CreateSessionBody
-    export type CreateSessionMutationError = BadRequestResponse | UnauthorizedResponse
-
-    /**
+/**
  * @summary Create session (Login)
  */
-export const useCreateSession = <TError = BadRequestResponse | UnauthorizedResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSession>>, TError,{data: CreateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createSession>>,
-        TError,
-        {data: CreateSessionBody},
-        TContext
-      > => {
+export const useCreateSession = <
+  TError = BadRequestResponse | UnauthorizedResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createSession>>,
+      TError,
+      { data: CreateSessionBody },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof createSession>>,
+  TError,
+  { data: CreateSessionBody },
+  TContext
+> => {
+  const mutationOptions = getCreateSessionMutationOptions(options);
 
-      const mutationOptions = getCreateSessionMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Delete a specific session (logout from that session)
  * @summary Delete session (Logout)
  */
-export const getDeleteSessionUrl = (id: Uuid | undefined | null,) => {
+export const getDeleteSessionUrl = (id: Uuid | undefined | null) => {
+  return `/sessions/${id}`;
+};
 
-
-  
-
-  return `/sessions/${id}`
-}
-
-export const deleteSession = async (id: Uuid | undefined | null, options?: RequestInit): Promise<DeleteSession200> => {
-  
-  return customFetch<DeleteSession200>(getDeleteSessionUrl(id),
-  {      
+export const deleteSession = async (
+  id: Uuid | undefined | null,
+  options?: RequestInit,
+): Promise<DeleteSession200> => {
+  return customFetch<DeleteSession200>(getDeleteSessionUrl(id), {
     ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
+    method: "DELETE",
+  });
+};
 
+export const getDeleteSessionMutationOptions = <
+  TError = UnauthorizedResponse | NotFoundResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteSession>>,
+    TError,
+    { id: Uuid | undefined | null },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteSession>>,
+  TError,
+  { id: Uuid | undefined | null },
+  TContext
+> => {
+  const mutationKey = ["deleteSession"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteSession>>,
+    { id: Uuid | undefined | null }
+  > = (props) => {
+    const { id } = props ?? {};
 
+    return deleteSession(id, requestOptions);
+  };
 
-export const getDeleteSessionMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: Uuid | undefined | null}, TContext> => {
+  return { mutationFn, ...mutationOptions };
+};
 
-const mutationKey = ['deleteSession'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type DeleteSessionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteSession>>
+>;
 
-      
+export type DeleteSessionMutationError =
+  | UnauthorizedResponse
+  | NotFoundResponse;
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteSession>>, {id: Uuid | undefined | null}> = (props) => {
-          const {id} = props ?? {};
-
-          return  deleteSession(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteSessionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteSession>>>
-    
-    export type DeleteSessionMutationError = UnauthorizedResponse | NotFoundResponse
-
-    /**
+/**
  * @summary Delete session (Logout)
  */
-export const useDeleteSession = <TError = UnauthorizedResponse | NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteSession>>,
-        TError,
-        {id: Uuid | undefined | null},
-        TContext
-      > => {
+export const useDeleteSession = <
+  TError = UnauthorizedResponse | NotFoundResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteSession>>,
+      TError,
+      { id: Uuid | undefined | null },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteSession>>,
+  TError,
+  { id: Uuid | undefined | null },
+  TContext
+> => {
+  const mutationOptions = getDeleteSessionMutationOptions(options);
 
-      const mutationOptions = getDeleteSessionMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Find a session
  * @summary Find a session
  */
-export const getGetSessionUrl = (id: Uuid | undefined | null,) => {
+export const getGetSessionUrl = (id: Uuid | undefined | null) => {
+  return `/sessions/${id}`;
+};
 
-
-  
-
-  return `/sessions/${id}`
-}
-
-export const getSession = async (id: Uuid | undefined | null, options?: RequestInit): Promise<GetSession200> => {
-  
-  return customFetch<GetSession200>(getGetSessionUrl(id),
-  {      
+export const getSession = async (
+  id: Uuid | undefined | null,
+  options?: RequestInit,
+): Promise<GetSession200> => {
+  return customFetch<GetSession200>(getGetSessionUrl(id), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    method: "GET",
+  });
+};
 
+export const getGetSessionQueryKey = (id?: Uuid | undefined | null) => {
+  return [`/sessions/${id}`] as const;
+};
 
-
-export const getGetSessionQueryKey = (id?: Uuid | undefined | null,) => {
-    return [`/sessions/${id}`] as const;
-    }
-
-    
-export const getGetSessionQueryOptions = <TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetSessionQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetSessionQueryKey(id);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetSessionQueryKey(id);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getSession>>> = ({
+    signal,
+  }) => getSession(id, { signal, ...requestOptions });
 
-  
+  return {
+    enabled: !!id,
+    queryFn,
+    queryKey,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getSession>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSession>>> = ({ signal }) => getSession(id, { signal, ...requestOptions });
+export type GetSessionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSession>>
+>;
+export type GetSessionQueryError = NotFoundResponse;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetSessionQueryResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
-export type GetSessionQueryError = NotFoundResponse
-
-
-export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>> & Pick<
+export function useGetSession<
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSession>>,
           TError,
           Awaited<ReturnType<typeof getSession>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSession<
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSession>>,
           TError,
           Awaited<ReturnType<typeof getSession>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSession<
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a session
  */
 
-export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetSession<
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetSessionQueryOptions(id, options);
 
-  const queryOptions = getGetSessionQueryOptions(id,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
 
-
-
-export const getGetSessionSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetSessionSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getSession>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetSessionQueryKey(id);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetSessionQueryKey(id);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getSession>>> = ({
+    signal,
+  }) => getSession(id, { signal, ...requestOptions });
 
-  
+  return { queryFn, queryKey, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof getSession>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSession>>> = ({ signal }) => getSession(id, { signal, ...requestOptions });
+export type GetSessionSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSession>>
+>;
+export type GetSessionSuspenseQueryError = NotFoundResponse;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetSessionSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
-export type GetSessionSuspenseQueryError = NotFoundResponse
-
-
-export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionSuspense<
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options: {
+    query: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getSession>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSessionSuspense<
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getSession>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetSessionSuspense<
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getSession>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a session
  */
 
-export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetSessionSuspense<
+  TData = Awaited<ReturnType<typeof getSession>>,
+  TError = NotFoundResponse,
+>(
+  id: Uuid | undefined | null,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof getSession>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetSessionSuspenseQueryOptions(id, options);
 
-  const queryOptions = getGetSessionSuspenseQueryOptions(id,options)
+  const query = useSuspenseQuery(
+    queryOptions,
+    queryClient,
+  ) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
 
 /**
  * This endpoint will update the active organization for the current session
  * @summary Update Session
  */
-export const getUpdateSessionUrl = (id: Uuid | undefined | null,) => {
+export const getUpdateSessionUrl = (id: Uuid | undefined | null) => {
+  return `/sessions/${id}`;
+};
 
-
-  
-
-  return `/sessions/${id}`
-}
-
-export const updateSession = async (id: Uuid | undefined | null,
-    updateSessionBody: UpdateSessionBody, options?: RequestInit): Promise<UpdateSession200> => {
-  
-  return customFetch<UpdateSession200>(getUpdateSessionUrl(id),
-  {      
+export const updateSession = async (
+  id: Uuid | undefined | null,
+  updateSessionBody: UpdateSessionBody,
+  options?: RequestInit,
+): Promise<UpdateSession200> => {
+  return customFetch<UpdateSession200>(getUpdateSessionUrl(id), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateSessionBody,)
-  }
-);}
+    body: JSON.stringify(updateSessionBody),
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: "PATCH",
+  });
+};
 
+export const getUpdateSessionMutationOptions = <
+  TError = UnauthorizedResponse | NotFoundResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateSession>>,
+    TError,
+    { id: Uuid | undefined | null; data: UpdateSessionBody },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateSession>>,
+  TError,
+  { id: Uuid | undefined | null; data: UpdateSessionBody },
+  TContext
+> => {
+  const mutationKey = ["updateSession"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateSession>>,
+    { id: Uuid | undefined | null; data: UpdateSessionBody }
+  > = (props) => {
+    const { id, data } = props ?? {};
 
+    return updateSession(id, data, requestOptions);
+  };
 
-export const getUpdateSessionMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSession>>, TError,{id: Uuid | undefined | null;data: UpdateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateSession>>, TError,{id: Uuid | undefined | null;data: UpdateSessionBody}, TContext> => {
+  return { mutationFn, ...mutationOptions };
+};
 
-const mutationKey = ['updateSession'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type UpdateSessionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateSession>>
+>;
+export type UpdateSessionMutationBody = UpdateSessionBody;
+export type UpdateSessionMutationError =
+  | UnauthorizedResponse
+  | NotFoundResponse;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateSession>>, {id: Uuid | undefined | null;data: UpdateSessionBody}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  updateSession(id,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateSessionMutationResult = NonNullable<Awaited<ReturnType<typeof updateSession>>>
-    export type UpdateSessionMutationBody = UpdateSessionBody
-    export type UpdateSessionMutationError = UnauthorizedResponse | NotFoundResponse
-
-    /**
+/**
  * @summary Update Session
  */
-export const useUpdateSession = <TError = UnauthorizedResponse | NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSession>>, TError,{id: Uuid | undefined | null;data: UpdateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateSession>>,
-        TError,
-        {id: Uuid | undefined | null;data: UpdateSessionBody},
-        TContext
-      > => {
+export const useUpdateSession = <
+  TError = UnauthorizedResponse | NotFoundResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof updateSession>>,
+      TError,
+      { id: Uuid | undefined | null; data: UpdateSessionBody },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof updateSession>>,
+  TError,
+  { id: Uuid | undefined | null; data: UpdateSessionBody },
+  TContext
+> => {
+  const mutationOptions = getUpdateSessionMutationOptions(options);
 
-      const mutationOptions = getUpdateSessionMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    
+  return useMutation(mutationOptions, queryClient);
+};

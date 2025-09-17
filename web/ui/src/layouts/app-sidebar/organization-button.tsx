@@ -67,7 +67,7 @@ export function OrganizationButton({
             >
               <ArchesLogo
                 scale={0.8}
-                size="lg"
+                size="sm"
               />
               <ChevronsUpDownIcon className="ml-auto" />
             </SidebarMenuButton>
@@ -78,7 +78,7 @@ export function OrganizationButton({
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
+            <DropdownMenuLabel className="text-muted-foreground text-xs">
               Organizations
             </DropdownMenuLabel>
             {memberships?.data.map((membership) => (

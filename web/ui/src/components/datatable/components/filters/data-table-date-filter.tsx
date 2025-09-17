@@ -31,7 +31,12 @@ export function DataTableDateFilter<TData>({
 
   const selectedDates = useMemo<DateSelection>(() => {
     if (!columnFilterValue) {
-      return multiple ? { from: undefined, to: undefined } : [];
+      return multiple
+        ? {
+            from: undefined,
+            to: undefined,
+          }
+        : [];
     }
 
     if (multiple) {
@@ -149,7 +154,7 @@ export function DataTableDateFilter<TData>({
           {hasValue ? (
             <button
               aria-label={`Clear ${title} filter`}
-              className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
+              className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               onClick={onReset}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -180,7 +185,10 @@ export function DataTableDateFilter<TData>({
             selected={
               getIsDateRange(selectedDates)
                 ? selectedDates
-                : { from: undefined, to: undefined }
+                : {
+                    from: undefined,
+                    to: undefined,
+                  }
             }
           />
         ) : (

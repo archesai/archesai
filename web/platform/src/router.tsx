@@ -41,7 +41,9 @@ export function createRouter() {
         }
       },
       onSuccess: () => {
-        toast.success("Success", { className: "bg-green-500 text-white" });
+        toast.success("Success", {
+          className: "bg-green-500 text-white",
+        });
       },
     }),
   });

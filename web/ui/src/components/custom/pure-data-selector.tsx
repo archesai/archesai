@@ -32,7 +32,11 @@ export interface PureDataSelectorProps<TItem extends BaseEntity> {
   // Config
   itemType: string;
   isMultiSelect?: boolean;
-  icons?: { color: string; Icon: LucideIcon; name: string }[];
+  icons?: {
+    color: string;
+    Icon: LucideIcon;
+    name: string;
+  }[];
 
   // Callbacks
   onSelect: (data: TItem | TItem[] | undefined) => void;
@@ -143,7 +147,9 @@ export function PureDataSelector<TItem extends BaseEntity>({
                               key={`${x.name}-${x.color}`}
                               style={{
                                 ...(iconColor.startsWith("#")
-                                  ? { color: iconColor }
+                                  ? {
+                                      color: iconColor,
+                                    }
                                   : {}),
                               }}
                             />
@@ -203,7 +209,9 @@ export function PureDataSelector<TItem extends BaseEntity>({
                             key={`${item.id}-${x.name}-${x.color}`}
                             style={{
                               ...(iconColor.startsWith("#")
-                                ? { color: iconColor }
+                                ? {
+                                    color: iconColor,
+                                  }
                                 : {}),
                             }}
                           />
@@ -242,7 +250,7 @@ export function PureDataSelector<TItem extends BaseEntity>({
           <div className="flex flex-wrap gap-2">
             {selectedData.map((item) => (
               <span
-                className="inline-flex items-center rounded-xs bg-blue-100 px-2 py-1 text-sm text-blue-700"
+                className="inline-flex items-center rounded-xs bg-blue-100 px-2 py-1 text-blue-700 text-sm"
                 key={item.id}
               >
                 {item.id}

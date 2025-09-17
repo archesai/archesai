@@ -17,23 +17,32 @@ export const PageHeader = ({
   themeToggle,
   userMenu,
   showSidebarTrigger = true,
-  className = "flex h-16 shrink-0 justify-between px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12",
+  className,
 }: PageHeaderProps): JSX.Element => {
+  const headerClassName =
+    className ||
+    [
+      "flex h-14 shrink-0 items-center justify-between",
+      "border-b px-4",
+      "transition-[width,height] ease-linear",
+      "group-has-data-[collapsible=icon]/sidebar-wrapper:h-12",
+    ].join(" ");
+
   return (
-    <header className={className}>
-      <div className="flex items-center justify-start gap-2">
+    <header className={headerClassName}>
+      <div className="flex items-center gap-2">
         {showSidebarTrigger && (
           <>
-            <SidebarTrigger />
+            <SidebarTrigger className="-ml-1" />
             <Separator
-              className="data-[orientation=vertical]:h-4"
+              className="h-4"
               orientation="vertical"
             />
           </>
         )}
         {breadcrumbs}
       </div>
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex items-center gap-2">
         {commandMenu}
         {themeToggle}
         {userMenu}

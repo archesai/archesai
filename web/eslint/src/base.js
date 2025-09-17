@@ -27,26 +27,39 @@ const base = defineConfig(
       },
       sourceType: "module",
     },
-    linterOptions: { reportUnusedDisableDirectives: true },
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
+    },
     name: "javascript-typescript",
     rules: {
       "@typescript-eslint/consistent-type-assertions": [
         "off",
-        { assertionStyle: "never" },
+        {
+          assertionStyle: "never",
+        },
       ],
       "@typescript-eslint/consistent-type-exports": [
         "error",
-        { fixMixedExportsWithInlineTypeSpecifier: false },
+        {
+          fixMixedExportsWithInlineTypeSpecifier: false,
+        },
       ],
       "@typescript-eslint/consistent-type-imports": [
         "error",
-        { fixStyle: "separate-type-imports", prefer: "type-imports" },
+        {
+          fixStyle: "separate-type-imports",
+          prefer: "type-imports",
+        },
       ],
       "@typescript-eslint/explicit-module-boundary-types": "error",
       "@typescript-eslint/no-import-type-side-effects": "error",
       "@typescript-eslint/no-misused-promises": [
         2,
-        { checksVoidReturn: { attributes: false } },
+        {
+          checksVoidReturn: {
+            attributes: false,
+          },
+        },
       ],
       "@typescript-eslint/no-unnecessary-condition": [
         "error",
@@ -56,7 +69,10 @@ const base = defineConfig(
       ],
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
       ],
       ...(process.env.CI !== "true" && {
         "@typescript-eslint/no-deprecated": "off",

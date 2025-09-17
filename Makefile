@@ -220,7 +220,7 @@ generate-js-client: ## Generate JavaScript/TypeScript client from OpenAPI
 generate-helm-schema: ## Generate Helm values.schema.json from ArchesConfig.yaml
 	@echo -e "$(YELLOW)▶ Generating Helm values schema...$(NC)"
 	@python3 scripts/generate-helm-schema.py
-	@pnpm biome check --fix deployments/helm-minimal/values.schema.json
+	@pnpm biome check --fix --colors=force deployments/helm-minimal/values.schema.json
 	@echo -e "$(GREEN)✓ Helm values schema generated!$(NC)"
 
 # ------------------------------------------
@@ -320,7 +320,7 @@ lint-go: ## Run Go linter
 .PHONY: lint-ts
 lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 	@echo -e "$(YELLOW)▶ Running Node.js linter...$(NC)"
-	@OUTPUT=$$(pnpm biome check --fix 2>&1); \
+	@OUTPUT=$$(pnpm biome check --fix --colors=force 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo -e "$(RED)✗ Node.js linting failed$(NC)"; \
 		echo "$$OUTPUT"; \
@@ -375,7 +375,7 @@ format-prettier: ## Format code with Prettier
 .PHONY: format-ts
 format-ts: ## Format Node.js/TypeScript code
 	@echo -e "$(YELLOW)▶ Formatting Node.js code...$(NC)"
-	@pnpm biome format --fix
+	@pnpm biome format --fix --colors=force
 	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------

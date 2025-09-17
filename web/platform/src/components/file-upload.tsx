@@ -505,7 +505,7 @@ export default function FileUpload({
   return (
     <div className={cn("relative mx-auto w-full max-w-sm", className ?? "")}>
       <div className="group relative w-full rounded-xl bg-white p-0.5 ring-1 ring-gray-200 dark:bg-black dark:ring-white/10">
-        <div className="absolute inset-x-0 -top-px h-px w-full bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+        <div className="-top-px absolute inset-x-0 h-px w-full bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
 
         <div className="relative w-full rounded-[10px] bg-gray-50/50 p-1.5 dark:bg-white/[0.02]">
           <div
@@ -527,7 +527,7 @@ export default function FileUpload({
               <div className="absolute inset-[20%] animate-pulse rounded-lg bg-blue-500/5 transition-all duration-300" />
             </div>
 
-            <div className="absolute -top-4 -right-4 h-8 w-8 bg-gradient-to-br from-blue-500/20 to-transparent opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
+            <div className="-top-4 -right-4 absolute h-8 w-8 bg-gradient-to-br from-blue-500/20 to-transparent opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
 
             <div className="relative h-[240px]">
               <AnimatePresence mode="wait">
@@ -539,23 +539,31 @@ export default function FileUpload({
                       y: 0,
                     }}
                     className="absolute inset-0 flex flex-col items-center justify-center p-6"
-                    exit={{ opacity: 0, y: -10 }}
-                    initial={{ opacity: 0, y: 10 }}
+                    exit={{
+                      opacity: 0,
+                      y: -10,
+                    }}
+                    initial={{
+                      opacity: 0,
+                      y: 10,
+                    }}
                     key="dropzone"
                     onDragLeave={handleDragLeave}
                     onDragOver={handleDragOver}
                     onDrop={handleDrop}
-                    transition={{ duration: 0.2 }}
+                    transition={{
+                      duration: 0.2,
+                    }}
                   >
                     <div className="mb-4">
                       <UploadIllustration />
                     </div>
 
                     <div className="mb-4 space-y-1.5 text-center">
-                      <h3 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
+                      <h3 className="font-semibold text-gray-900 text-lg tracking-tight dark:text-white">
                         Drag and drop or
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-gray-500 text-xs dark:text-gray-400">
                         {acceptedFileTypes.length
                           ? acceptedFileTypes
                               .map((t) => t.split("/")[1])
@@ -567,7 +575,7 @@ export default function FileUpload({
                     </div>
 
                     <button
-                      className="group flex w-4/5 items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-900 transition-all duration-200 hover:bg-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+                      className="group flex w-4/5 items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2.5 font-semibold text-gray-900 text-sm transition-all duration-200 hover:bg-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
                       onClick={triggerFileInput}
                       type="button"
                     >
@@ -575,7 +583,7 @@ export default function FileUpload({
                       <UploadCloudIcon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
                     </button>
 
-                    <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                    <p className="mt-3 text-gray-500 text-xs dark:text-gray-400">
                       or drag and drop your file here
                     </p>
 
@@ -590,10 +598,19 @@ export default function FileUpload({
                   </motion.div>
                 ) : status === "uploading" ? (
                   <motion.div
-                    animate={{ opacity: 1, scale: 1 }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                    }}
                     className="absolute inset-0 flex flex-col items-center justify-center p-6"
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    exit={{
+                      opacity: 0,
+                      scale: 0.95,
+                    }}
+                    initial={{
+                      opacity: 0,
+                      scale: 0.95,
+                    }}
                     key="uploading"
                   >
                     <div className="mb-4">
@@ -601,7 +618,7 @@ export default function FileUpload({
                     </div>
 
                     <div className="mb-4 space-y-1.5 text-center">
-                      <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                      <h3 className="truncate font-semibold text-gray-900 text-sm dark:text-white">
                         {file?.name}
                       </h3>
                       <div className="flex items-center justify-center gap-2 text-xs">
@@ -615,7 +632,7 @@ export default function FileUpload({
                     </div>
 
                     <button
-                      className="flex w-4/5 items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-900 transition-all duration-200 hover:bg-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+                      className="flex w-4/5 items-center justify-center gap-2 rounded-lg bg-gray-100 px-4 py-2.5 font-semibold text-gray-900 text-sm transition-all duration-200 hover:bg-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
                       onClick={resetState}
                       type="button"
                     >
@@ -629,12 +646,21 @@ export default function FileUpload({
             <AnimatePresence>
               {error && (
                 <motion.div
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2"
-                  exit={{ opacity: 0, y: -10 }}
-                  initial={{ opacity: 0, y: 10 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  className="-translate-x-1/2 absolute bottom-4 left-1/2 transform rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2"
+                  exit={{
+                    opacity: 0,
+                    y: -10,
+                  }}
+                  initial={{
+                    opacity: 0,
+                    y: 10,
+                  }}
                 >
-                  <p className="text-sm text-red-500 dark:text-red-400">
+                  <p className="text-red-500 text-sm dark:text-red-400">
                     {error.message}
                   </p>
                 </motion.div>

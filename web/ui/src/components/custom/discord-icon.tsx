@@ -5,6 +5,8 @@ const DiscordIcon = (
   props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ): JSX.Element => (
   <svg
+    aria-label="Discord"
+    role="img"
     viewBox="0 0 640 512"
     xmlns="http://www.w3.org/2000/svg"
     {...props}

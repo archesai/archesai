@@ -25,7 +25,9 @@ export interface DataTableContainerProps<TEntity extends BaseEntity> {
   handleSelect?: (item: TEntity) => void;
   deleteItem?: (id: string) => Promise<void>;
   createForm?: React.ComponentType;
-  updateForm?: React.ComponentType<{ id: string }>;
+  updateForm?: React.ComponentType<{
+    id: string;
+  }>;
   icon?: React.ReactNode;
   minimal?: boolean;
   grid?: (item: TEntity) => React.ReactNode;
@@ -79,9 +81,14 @@ export function DataTableContainer<TEntity extends BaseEntity>({
     data: queryData.data,
     getRowId: (originalRow: TEntity) => originalRow.id,
     initialState: {
-      columnPinning: { right: ["actions"] },
+      columnPinning: {
+        right: ["actions"],
+      },
       sorting: [
-        { desc: true, id: "createdAt" as Extract<keyof TEntity, string> },
+        {
+          desc: true,
+          id: "createdAt" as Extract<keyof TEntity, string>,
+        },
       ],
     },
     onPaginationChange: (updater) => {
@@ -134,7 +141,11 @@ export function DataTableContainer<TEntity extends BaseEntity>({
       showPagination={true}
       showViewOptions={true}
       table={table}
-      updateForm={updateForm as ComponentType<{ id: string }>}
+      updateForm={
+        updateForm as ComponentType<{
+          id: string;
+        }>
+      }
       viewMode={view}
     />
   );

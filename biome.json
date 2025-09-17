@@ -9,29 +9,17 @@
       }
     }
   },
-  "css": {
-    "formatter": {
-      "enabled": true
-    },
-    "linter": {
-      "enabled": false
-    },
-    "parser": {
-      "cssModules": false
-    }
-  },
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "**/*.{ts,tsx,js,jsx,mjs,json,yml,yaml,css,html}",
-      "!**/templates",
-      "!**/*.gen.go",
+      "**/*.{ts,tsx,js,json,html}",
       "!**/generated",
-      "!**/*.gen.ts"
+      "!**/routeTree.gen.ts"
     ]
   },
   "formatter": {
     "attributePosition": "multiline",
+    "expand": "auto",
     "useEditorconfig": true
   },
   "html": {
@@ -51,27 +39,28 @@
     }
   },
   "linter": {
+    "domains": {
+      "react": "recommended"
+    },
     "rules": {
-      "a11y": {
-        "noSvgWithoutTitle": "off"
-      },
-      "complexity": {
-        "noUselessFragments": "off"
-      },
-      "correctness": {
-        "noUnusedImports": "error",
-        "noUnusedVariables": "error"
+      "nursery": {
+        "useSortedClasses": {
+          "fix": "safe",
+          "level": "info",
+          "options": {
+            "attributes": ["className", "class"],
+            "functions": ["clsx", "cn"]
+          }
+        }
       },
       "style": {
-        "useExportType": "error",
         "useImportType": {
           "fix": "safe",
           "level": "error",
           "options": {
             "style": "separatedType"
           }
-        },
-        "useNodejsImportProtocol": "error"
+        }
       }
     }
   },

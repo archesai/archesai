@@ -104,7 +104,10 @@ type SortableRootProps<T> = DndContextProps &
   (T extends object ? GetItemValue<T> : Partial<GetItemValue<T>>) & {
     flatCursor?: boolean;
     onMove?: (
-      event: DragEndEvent & { activeIndex: number; overIndex: number },
+      event: DragEndEvent & {
+        activeIndex: number;
+        overIndex: number;
+      },
     ) => void;
     onValueChange?: (items: T[]) => void;
     orientation?: "horizontal" | "mixed" | "vertical";
@@ -139,58 +142,51 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
   );
   const config = useMemo(() => orientationConfig[orientation], [orientation]);
 
-  const getItemValue = useCallback(
-    (item: T): UniqueIdentifier => {
-      if (typeof item === "object" && !getItemValueProp) {
-        throw new Error("getItemValue is required when using array of objects");
+  const getItemValue = (item: T): UniqueIdentifier => {
+    if (typeof item === "object" && !getItemValueProp) {
+      throw new Error("getItemValue is required when using array of objects");
+    }
+    return getItemValueProp
+      ? getItemValueProp(item)
+      : (item as UniqueIdentifier);
+  };
+
+  const items = value.map((item) => getItemValue(item));
+
+  const onDragStart = (event: DragStartEvent) => {
+    sortableProps.onDragStart?.(event);
+
+    if (event.activatorEvent.defaultPrevented) return;
+
+    setActiveID(event.active.id);
+  };
+
+  const onDragEnd = (event: DragEndEvent) => {
+    sortableProps.onDragEnd?.(event);
+
+    if (event.activatorEvent.defaultPrevented) return;
+
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const activeIndex = value.findIndex(
+        (item) => getItemValue(item) === active.id,
+      );
+      const overIndex = value.findIndex(
+        (item) => getItemValue(item) === over.id,
+      );
+
+      if (onMove) {
+        onMove({
+          ...event,
+          activeIndex,
+          overIndex,
+        });
+      } else {
+        onValueChange?.(arrayMove(value, activeIndex, overIndex));
       }
-      return getItemValueProp
-        ? getItemValueProp(item)
-        : (item as UniqueIdentifier);
-    },
-    [getItemValueProp],
-  );
-
-  const items = useMemo(() => {
-    return value.map((item) => getItemValue(item));
-  }, [value, getItemValue]);
-
-  const onDragStart = useCallback(
-    (event: DragStartEvent) => {
-      sortableProps.onDragStart?.(event);
-
-      if (event.activatorEvent.defaultPrevented) return;
-
-      setActiveID(event.active.id);
-    },
-    [sortableProps],
-  );
-
-  const onDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      sortableProps.onDragEnd?.(event);
-
-      if (event.activatorEvent.defaultPrevented) return;
-
-      const { active, over } = event;
-      if (over && active.id !== over.id) {
-        const activeIndex = value.findIndex(
-          (item) => getItemValue(item) === active.id,
-        );
-        const overIndex = value.findIndex(
-          (item) => getItemValue(item) === over.id,
-        );
-
-        if (onMove) {
-          onMove({ ...event, activeIndex, overIndex });
-        } else {
-          onValueChange?.(arrayMove(value, activeIndex, overIndex));
-        }
-      }
-      setActiveID(null);
-    },
-    [value, onValueChange, onMove, getItemValue, sortableProps],
-  );
+    }
+    setActiveID(null);
+  };
 
   const onDragCancel = useCallback(
     (event: DragEndEvent) => {
@@ -200,15 +196,20 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
 
       setActiveID(null);
     },
-    [sortableProps],
+    [sortableProps.onDragCancel],
   );
 
   const announcements: Announcements = useMemo(
     () => ({
       onDragCancel({ active }) {
         const activeIndex =
-          (active.data.current as null | { sortable: { index: number } })
-            ?.sortable.index ?? 0;
+          (
+            active.data.current as null | {
+              sortable: {
+                index: number;
+              };
+            }
+          )?.sortable.index ?? 0;
         const activeValue = active.id.toString();
         return `Sorting cancelled. Sortable item "${activeValue}" returned to position ${(activeIndex + 1).toString()} of ${value.length.toString()}.`;
       },
@@ -216,8 +217,13 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
         const activeValue = active.id.toString();
         if (over) {
           const overIndex =
-            (over.data.current as null | { sortable: { index: number } })
-              ?.sortable.index ?? 0;
+            (
+              over.data.current as null | {
+                sortable: {
+                  index: number;
+                };
+              }
+            )?.sortable.index ?? 0;
           return `Sortable item "${activeValue}" dropped at position ${(overIndex + 1).toString()} of ${value.length.toString()}.`;
         }
         return `Sortable item "${activeValue}" dropped. No changes were made.`;
@@ -225,11 +231,21 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
       onDragMove({ active, over }) {
         if (over) {
           const overIndex =
-            (over.data.current as null | { sortable?: { index: number } })
-              ?.sortable?.index ?? 0;
+            (
+              over.data.current as null | {
+                sortable?: {
+                  index: number;
+                };
+              }
+            )?.sortable?.index ?? 0;
           const activeIndex =
-            (active.data.current as null | { sortable?: { index: number } })
-              ?.sortable?.index ?? 0;
+            (
+              active.data.current as null | {
+                sortable?: {
+                  index: number;
+                };
+              }
+            )?.sortable?.index ?? 0;
           const moveDirection = overIndex > activeIndex ? "down" : "up";
           const activeValue = active.id.toString();
           return `Sortable item "${activeValue}" is moving ${moveDirection} to position ${(overIndex + 1).toString()} of ${value.length.toString()}.`;
@@ -239,11 +255,21 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
       onDragOver({ active, over }) {
         if (over) {
           const overIndex =
-            (over.data.current as null | { sortable?: { index: number } })
-              ?.sortable?.index ?? 0;
+            (
+              over.data.current as null | {
+                sortable?: {
+                  index: number;
+                };
+              }
+            )?.sortable?.index ?? 0;
           const activeIndex =
-            (active.data.current as null | { sortable?: { index: number } })
-              ?.sortable?.index ?? 0;
+            (
+              active.data.current as null | {
+                sortable?: {
+                  index: number;
+                };
+              }
+            )?.sortable?.index ?? 0;
           const moveDirection = overIndex > activeIndex ? "down" : "up";
           const activeValue = active.id.toString();
           return `Sortable item "${activeValue}" moved ${moveDirection} to position ${(overIndex + 1).toString()} of ${value.length.toString()}.`;
@@ -253,7 +279,9 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
       onDragStart({ active }) {
         const activeValue = active.id.toString();
         const sortableData = active.data.current as null | {
-          sortable?: { index: number };
+          sortable?: {
+            index: number;
+          };
         };
         const currentIndex = sortableData?.sortable?.index ?? 0;
         return `Grabbed sortable item "${activeValue}". Current position is ${(currentIndex + 1).toString()} of ${value.length.toString()}. Use arrow keys to move, space to drop.`;
@@ -279,33 +307,20 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
     [orientation],
   );
 
-  const contextValue = useMemo(
-    () => ({
-      activeID,
-      flatCursor,
-      getItemValue,
-      id,
-      items,
-      modifiers: modifiers ?? config.modifiers,
-      setActiveID,
-      strategy: strategy ?? config.strategy,
-    }),
-    [
-      id,
-      items,
-      modifiers,
-      strategy,
-      config.modifiers,
-      config.strategy,
-      activeID,
-      getItemValue,
-      flatCursor,
-    ],
-  );
+  const contextValue = {
+    activeID,
+    flatCursor,
+    getItemValue,
+    id,
+    items,
+    modifiers: modifiers ?? config.modifiers,
+    setActiveID,
+    strategy: strategy ?? config.strategy,
+  };
 
   return (
     <SortableRootContext.Provider
-      value={contextValue as SortableRootContextValue<unknown>}
+      value={contextValue as SortableRootContextValue<unknown> | null}
     >
       {/* @ts-ignore FIXME */}
       <DndContext
@@ -449,7 +464,10 @@ const SortableItem = forwardRef<HTMLDivElement, SortableItemProps>(
       transform,
       transition,
       // @ts-expect-error FIXME
-    } = useSortable({ disabled, id: value });
+    } = useSortable({
+      disabled,
+      id: value,
+    });
 
     const composedRef = useComposedRefs(forwardedRef, (node) => {
       if (disabled) return;
@@ -491,7 +509,7 @@ const SortableItem = forwardRef<HTMLDivElement, SortableItemProps>(
           {...(asHandle && !disabled ? attributes : {})}
           {...(asHandle && !disabled ? listeners : {})}
           className={cn(
-            "focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:outline-hidden",
+            "focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
             {
               "cursor-default": context.flatCursor,
               "cursor-grab": !isDragging && asHandle && !context.flatCursor,
@@ -605,7 +623,9 @@ function SortableOverlay(props: SortableOverlayProps): JSX.Element | null {
       <SortableOverlayContext.Provider value={true}>
         {context.activeID
           ? typeof children === "function"
-            ? children({ value: context.activeID })
+            ? children({
+                value: context.activeID,
+              })
             : children
           : null}
       </SortableOverlayContext.Provider>

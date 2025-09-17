@@ -12,7 +12,9 @@ export function AppSidebarContainer({ siteRoutes }: AppSidebarContainerProps) {
   const navigate = useNavigate();
 
   const handleNavigate = (href: string) => {
-    navigate({ to: href });
+    navigate({
+      to: href,
+    });
   };
 
   const handleSearch = (query: string) => {

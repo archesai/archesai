@@ -89,7 +89,12 @@ export const CreatePipelineContent = (): JSX.Element => {
   //   }
   // }, [pipelines, onConnect, setNodes])
 
-  const nodeTypes = useMemo(() => ({ runFormNode: RunFormNode }), []);
+  const nodeTypes = useMemo(
+    () => ({
+      runFormNode: RunFormNode,
+    }),
+    [],
+  );
 
   return (
     <ReactFlow

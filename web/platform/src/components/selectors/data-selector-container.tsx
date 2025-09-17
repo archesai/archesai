@@ -18,7 +18,11 @@ export interface DataSelectorContainerProps<TItem extends BaseEntity> {
   // Config
   itemType: string;
   isMultiSelect?: boolean;
-  icons?: { color: string; Icon: LucideIcon; name: string }[];
+  icons?: {
+    color: string;
+    Icon: LucideIcon;
+    name: string;
+  }[];
   getItemDetails?: (item: TItem) => React.ReactNode;
 
   // Optional

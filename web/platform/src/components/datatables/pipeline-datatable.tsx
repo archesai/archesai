@@ -37,7 +37,9 @@ export default function PipelineDataTable(): JSX.Element {
               <div className="flex gap-2">
                 <Link
                   className="max-w-[200px] shrink truncate font-medium text-blue-500"
-                  params={{ pipelineID: row.original.id }}
+                  params={{
+                    pipelineID: row.original.id,
+                  }}
                   to={`/pipelines/$pipelineID`}
                 >
                   {row.original.name}

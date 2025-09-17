@@ -27,33 +27,31 @@ function ForgotPasswordPage(): JSX.Element {
   ];
 
   return (
-    <>
-      <GenericForm<RequestPasswordResetBody, never>
-        description="Enter your email address to receive a password reset link"
-        entityKey="auth"
-        fields={formFields}
-        isUpdateForm={false}
-        onSubmitCreate={async (data) => {
-          await requestPasswordReset({
-            data: {
-              email: data.email,
-            },
-          });
-        }}
-        postContent={
-          <div className="text-center text-sm">
-            Remembered your password?{" "}
-            <Link
-              className="underline"
-              to="/auth/login"
-            >
-              Login
-            </Link>
-          </div>
-        }
-        showCard={true}
-        title="Forgot Password"
-      />
-    </>
+    <GenericForm<RequestPasswordResetBody, never>
+      description="Enter your email address to receive a password reset link"
+      entityKey="auth"
+      fields={formFields}
+      isUpdateForm={false}
+      onSubmitCreate={async (data) => {
+        await requestPasswordReset({
+          data: {
+            email: data.email,
+          },
+        });
+      }}
+      postContent={
+        <div className="text-center text-sm">
+          Remembered your password?{" "}
+          <Link
+            className="underline"
+            to="/auth/login"
+          >
+            Login
+          </Link>
+        </div>
+      }
+      showCard={true}
+      title="Forgot Password"
+    />
   );
 }

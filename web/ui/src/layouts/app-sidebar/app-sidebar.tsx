@@ -5,8 +5,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
   SidebarHeader,
   SidebarInput,
 } from "#components/shadcn/sidebar";
@@ -72,25 +70,24 @@ export function SearchForm({
   return (
     <form
       {...props}
+      className="p-2"
       onSubmit={handleSubmit}
     >
-      <SidebarGroup>
-        <SidebarGroupContent className="relative">
-          <Label
-            className="sr-only"
-            htmlFor="search"
-          >
-            Search
-          </Label>
-          <SidebarInput
-            className="pl-8"
-            id="search"
-            name="search"
-            placeholder="Search the docs..."
-          />
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
-        </SidebarGroupContent>
-      </SidebarGroup>
+      <div className="relative">
+        <Label
+          className="sr-only"
+          htmlFor="search"
+        >
+          Search
+        </Label>
+        <SearchIcon className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-2 size-4 text-muted-foreground" />
+        <SidebarInput
+          className="pl-8"
+          id="search"
+          name="search"
+          placeholder="Search the docs..."
+        />
+      </div>
     </form>
   );
 }

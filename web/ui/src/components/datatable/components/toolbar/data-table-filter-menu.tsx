@@ -57,7 +57,9 @@ const REMOVE_FILTER_SHORTCUTS = ["backspace", "delete"];
 
 interface DataTableFilterItemProps<TData extends BaseEntity> {
   columns: Column<TData>[];
-  filter: FilterCondition & { id: string };
+  filter: FilterCondition & {
+    id: string;
+  };
   filterItemID: string;
   onFilterRemove: (filterID: string) => void;
   onFilterUpdate: (
@@ -144,7 +146,9 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
     const extractConditions = (
       node: FilterNode | undefined,
       id = 0,
-    ): (FilterCondition & { id: string })[] => {
+    ): (FilterCondition & {
+      id: string;
+    })[] => {
       if (!node) return [];
       if (node.type === "condition") {
         return [
@@ -523,7 +527,7 @@ function DataTableFilterItem<TData extends BaseEntity>({
       >
         <SelectTrigger
           aria-controls={operatorListboxID}
-          className="h-8 rounded-none border-r-0 px-2.5 lowercase [&_svg]:hidden [&[data-size]]:h-8"
+          className="h-8 rounded-none border-r-0 px-2.5 lowercase [&[data-size]]:h-8 [&_svg]:hidden"
         >
           <SelectValue placeholder={filter.operator} />
         </SelectTrigger>
@@ -670,7 +674,9 @@ function onFilterInputRender<TData extends BaseEntity>({
   showValueSelector,
 }: {
   column: Column<TData>;
-  filter: FilterCondition & { id: string };
+  filter: FilterCondition & {
+    id: string;
+  };
   inputID: string;
   onFilterUpdate: (
     filterID: string,
@@ -704,7 +710,9 @@ function onFilterInputRender<TData extends BaseEntity>({
         <Select
           onOpenChange={setShowValueSelector}
           onValueChange={(value: "false" | "true") => {
-            onFilterUpdate(filter.id, { value });
+            onFilterUpdate(filter.id, {
+              value,
+            });
           }}
           open={showValueSelector}
           value={typeof filter.value === "string" ? filter.value : "true"}
@@ -845,7 +853,7 @@ function onFilterInputRender<TData extends BaseEntity>({
                 )
               ) : (
                 <>
-                  <div className="flex items-center -space-x-2 rtl:space-x-reverse">
+                  <div className="-space-x-2 flex items-center rtl:space-x-reverse">
                     {selectedOptions.map((selectedOption) =>
                       selectedOption.icon ? (
                         <div
@@ -940,7 +948,9 @@ function onFilterInputRender<TData extends BaseEntity>({
           id={inputID}
           inputMode={isNumber ? "numeric" : undefined}
           onChange={(event) => {
-            onFilterUpdate(filter.id, { value: event.target.value });
+            onFilterUpdate(filter.id, {
+              value: event.target.value,
+            });
           }}
           placeholder={column.columnDef.meta?.label ?? "Enter value..."}
           type={isNumber ? "number" : "text"}

@@ -49,29 +49,27 @@ export const BreadCrumbs = ({
     <Breadcrumb>
       <BreadcrumbList>
         {breadcrumbItems.map((breadcrumb, index) => (
-          <div
-            className="flex items-center"
+          <BreadcrumbItem
+            className={index === 0 ? "hidden md:flex" : "flex"}
             key={breadcrumb.path || breadcrumb.title}
           >
-            {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
-            <BreadcrumbItem className={index === 0 ? "hidden md:block" : ""}>
-              {!breadcrumb.path ? (
-                <BreadcrumbPage>{breadcrumb.title}</BreadcrumbPage>
-              ) : (
-                <BreadcrumbLink
-                  href={breadcrumb.path}
-                  onClick={(e) => {
-                    if (onNavigate && breadcrumb.path) {
-                      e.preventDefault();
-                      onNavigate(breadcrumb.path);
-                    }
-                  }}
-                >
-                  {breadcrumb.title}
-                </BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
-          </div>
+            {index > 0 && <BreadcrumbSeparator />}
+            {!breadcrumb.path ? (
+              <BreadcrumbPage>{breadcrumb.title}</BreadcrumbPage>
+            ) : (
+              <BreadcrumbLink
+                href={breadcrumb.path}
+                onClick={(e) => {
+                  if (onNavigate && breadcrumb.path) {
+                    e.preventDefault();
+                    onNavigate(breadcrumb.path);
+                  }
+                }}
+              >
+                {breadcrumb.title}
+              </BreadcrumbLink>
+            )}
+          </BreadcrumbItem>
         ))}
       </BreadcrumbList>
     </Breadcrumb>

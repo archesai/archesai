@@ -53,7 +53,9 @@ export interface PureDataTableProps<TEntity extends BaseEntity> {
 
   // Forms (optional)
   createForm?: React.ComponentType;
-  updateForm?: React.ComponentType<{ id: string }>;
+  updateForm?: React.ComponentType<{
+    id: string;
+  }>;
 
   // Grid view customization
   gridRenderer?: (item: TEntity) => React.ReactNode;
@@ -187,7 +189,9 @@ export function PureDataTable<TEntity extends BaseEntity>({
           {dialogVariant === "update" &&
             updateForm &&
             selectedRow &&
-            React.createElement(updateForm, { id: selectedRow.id })}
+            React.createElement(updateForm, {
+              id: selectedRow.id,
+            })}
 
           {dialogVariant === "create" &&
             createForm &&

@@ -17,7 +17,9 @@ export function PageHeaderContainer({ siteRoutes }: PageHeaderContainerProps) {
   const navigate = useNavigate();
 
   const handleNavigate = (path: string) => {
-    navigate({ to: path });
+    navigate({
+      to: path,
+    });
   };
 
   return (

@@ -46,7 +46,7 @@ export const BoxLongshadow = ({
 };
 
 const CardTitle = ({ children }: { children: React.ReactNode }) => {
-  return <div className="text-2xl font-semibold">{children}</div>;
+  return <div className="font-semibold text-2xl">{children}</div>;
 };
 
 const CardContent = ({ children }: { children: React.ReactNode }) => {
@@ -61,7 +61,7 @@ const CardHeader = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
       className={cn(
-        "h-50 relative flex w-full items-end border-b border-black",
+        "relative flex h-50 w-full items-end border-black border-b",
         // "bg-[url(/grid.svg)]",
         "bg-center bg-repeat p-8",
       )}
@@ -77,7 +77,7 @@ export const Introduction = (): JSX.Element => {
       <BoxLongshadow>
         <CardHeader>
           <img
-            alt="Zudoku"
+            alt="Arches"
             className="h-16 w-16"
             src="/quickstart.svg"
           />
@@ -86,7 +86,7 @@ export const Introduction = (): JSX.Element => {
         <CardContent>
           <CardTitle>Quickstart</CardTitle>
           <CardDescription>
-            Learn how to install Zudoku, configure your first project, and
+            Learn how to install Arches, configure your first project, and
             generate your first docs.
           </CardDescription>
         </CardContent>
@@ -95,7 +95,7 @@ export const Introduction = (): JSX.Element => {
       <BoxLongshadow>
         <CardHeader>
           <img
-            alt="Zudoku"
+            alt="Arches"
             className="h-16 w-16"
             src="/themes.svg"
           />
@@ -103,7 +103,7 @@ export const Introduction = (): JSX.Element => {
         <CardContent>
           <CardTitle>Themes</CardTitle>
           <CardDescription>
-            Learn how to install Zudoku, configure your first project, and
+            Learn how to install Arches, configure your first project, and
             generate your first docs.
           </CardDescription>
         </CardContent>
@@ -112,7 +112,7 @@ export const Introduction = (): JSX.Element => {
       <BoxLongshadow>
         <CardHeader>
           <img
-            alt="Zudoku"
+            alt="Arches"
             className="z-20 h-16 w-16"
             src="/components.svg"
           />
@@ -120,7 +120,7 @@ export const Introduction = (): JSX.Element => {
         <CardContent>
           <CardTitle>Components</CardTitle>
           <CardDescription>
-            Learn how to install Zudoku, configure your first project, and
+            Learn how to install Arches, configure your first project, and
             generate your first docs.
           </CardDescription>
         </CardContent>
@@ -128,7 +128,7 @@ export const Introduction = (): JSX.Element => {
       <BoxLongshadow>
         <CardHeader>
           <img
-            alt="Zudoku"
+            alt="Arches"
             className="z-20 h-16 w-16"
             src="/authentication.svg"
           />
@@ -136,7 +136,7 @@ export const Introduction = (): JSX.Element => {
         <CardContent>
           <CardTitle>Authentication</CardTitle>
           <CardDescription>
-            Learn how to install Zudoku, configure your first project, and
+            Learn how to install Arches, configure your first project, and
             generate your first docs.
           </CardDescription>
         </CardContent>

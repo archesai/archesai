@@ -292,43 +292,126 @@ export const defaultContent: LandingContent = {
     legal: {
       copyright: `© ${new Date().getFullYear()} Arches. All rights reserved.`,
       links: [
-        { label: "Privacy Policy", to: "/" },
-        { label: "Terms of Service", to: "/" },
-        { label: "Cookie Policy", to: "/" },
-        { label: "GDPR", to: "/" },
-        { label: "Security", to: "/" },
+        {
+          label: "Privacy Policy",
+          to: "/",
+        },
+        {
+          label: "Terms of Service",
+          to: "/",
+        },
+        {
+          label: "Cookie Policy",
+          to: "/",
+        },
+        {
+          label: "GDPR",
+          to: "/",
+        },
+        {
+          label: "Security",
+          to: "/",
+        },
       ],
     },
     links: {
       company: [
-        { label: "About Us", to: "/" },
-        { label: "Careers", to: "/" },
-        { label: "Press Kit", to: "/" },
-        { label: "Investors", to: "/" },
-        { label: "Contact", to: "/" },
-        { label: "Partners", to: "/" },
+        {
+          label: "About Us",
+          to: "/",
+        },
+        {
+          label: "Careers",
+          to: "/",
+        },
+        {
+          label: "Press Kit",
+          to: "/",
+        },
+        {
+          label: "Investors",
+          to: "/",
+        },
+        {
+          label: "Contact",
+          to: "/",
+        },
+        {
+          label: "Partners",
+          to: "/",
+        },
       ],
       product: [
-        { label: "Features", scrollTo: "features", to: "/landing" },
-        { label: "Pricing", scrollTo: "pricing", to: "/landing" },
-        { label: "Integrations", to: "/" },
-        { label: "API Documentation", to: "/" },
-        { label: "Security", to: "/" },
-        { label: "Roadmap", to: "/" },
+        {
+          label: "Features",
+          scrollTo: "features",
+          to: "/landing",
+        },
+        {
+          label: "Pricing",
+          scrollTo: "pricing",
+          to: "/landing",
+        },
+        {
+          label: "Integrations",
+          to: "/",
+        },
+        {
+          label: "API Documentation",
+          to: "/",
+        },
+        {
+          label: "Security",
+          to: "/",
+        },
+        {
+          label: "Roadmap",
+          to: "/",
+        },
       ],
       resources: [
-        { label: "Documentation", to: "/" },
-        { label: "Video Tutorials", to: "/" },
-        { label: "Case Studies", to: "/" },
-        { label: "Blog", to: "/" },
-        { label: "Community", to: "/" },
-        { label: "System Status", to: "/" },
+        {
+          label: "Documentation",
+          to: "/",
+        },
+        {
+          label: "Video Tutorials",
+          to: "/",
+        },
+        {
+          label: "Case Studies",
+          to: "/",
+        },
+        {
+          label: "Blog",
+          to: "/",
+        },
+        {
+          label: "Community",
+          to: "/",
+        },
+        {
+          label: "System Status",
+          to: "/",
+        },
       ],
     },
     social: [
-      { icon: "linkedin", name: "LinkedIn", to: "/landing" },
-      { icon: "twitter", name: "Twitter", to: "/landing" },
-      { icon: "facebook", name: "Facebook", to: "/landing" },
+      {
+        icon: "linkedin",
+        name: "LinkedIn",
+        to: "/landing",
+      },
+      {
+        icon: "twitter",
+        name: "Twitter",
+        to: "/landing",
+      },
+      {
+        icon: "facebook",
+        name: "Facebook",
+        to: "/landing",
+      },
     ],
   },
   hero: {
@@ -382,11 +465,26 @@ export const defaultContent: LandingContent = {
   },
   logos: {
     logos: [
-      { alt: "Microsoft", src: "/placeholder-logo.svg" },
-      { alt: "Google", src: "/placeholder-logo.svg" },
-      { alt: "Amazon", src: "/placeholder-logo.svg" },
-      { alt: "Meta", src: "/placeholder-logo.svg" },
-      { alt: "Tesla", src: "/placeholder-logo.svg" },
+      {
+        alt: "Microsoft",
+        src: "/placeholder-logo.svg",
+      },
+      {
+        alt: "Google",
+        src: "/placeholder-logo.svg",
+      },
+      {
+        alt: "Amazon",
+        src: "/placeholder-logo.svg",
+      },
+      {
+        alt: "Meta",
+        src: "/placeholder-logo.svg",
+      },
+      {
+        alt: "Tesla",
+        src: "/placeholder-logo.svg",
+      },
     ],
     title: "Powering the world's most innovative companies",
   },
@@ -401,10 +499,26 @@ export const defaultContent: LandingContent = {
       },
     },
     links: [
-      { label: "Features", scrollTo: "features", to: "/landing" },
-      { label: "Testimonials", scrollTo: "testimonials", to: "/landing" },
-      { label: "Pricing", scrollTo: "pricing", to: "/landing" },
-      { label: "FAQ", scrollTo: "faq", to: "/landing" },
+      {
+        label: "Features",
+        scrollTo: "features",
+        to: "/landing",
+      },
+      {
+        label: "Testimonials",
+        scrollTo: "testimonials",
+        to: "/landing",
+      },
+      {
+        label: "Pricing",
+        scrollTo: "pricing",
+        to: "/landing",
+      },
+      {
+        label: "FAQ",
+        scrollTo: "faq",
+        to: "/landing",
+      },
     ],
   },
   pricing: {

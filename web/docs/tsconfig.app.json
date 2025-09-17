@@ -1,7 +1,4 @@
 {
-  "compilerOptions": {
-    "rootDir": "."
-  },
   "extends": [
     "../typescript/src/base.json",
     "../typescript/src/react.json",

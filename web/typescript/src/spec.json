@@ -12,7 +12,7 @@
     "${configDir}/vitest.config.ts",
     "${configDir}/playwright.config.ts",
     "${configDir}/orval.config.ts",
-    "${configDir}/zudoku.config.ts",
+    "${configDir}/zudoku.config.tsx",
     "${configDir}/eslint.config.ts"
   ]
 }

@@ -72,10 +72,22 @@ export default function ArtifactDataTable(): JSX.Element {
             icon: TextIcon,
             label: "Artifact Type",
             options: [
-              { label: "Text", value: "text" },
-              { label: "Image", value: "image" },
-              { label: "Audio", value: "audio" },
-              { label: "Video", value: "video" },
+              {
+                label: "Text",
+                value: "text",
+              },
+              {
+                label: "Image",
+                value: "image",
+              },
+              {
+                label: "Audio",
+                value: "audio",
+              },
+              {
+                label: "Video",
+                value: "video",
+              },
             ],
           },
         },
@@ -141,7 +153,9 @@ export default function ArtifactDataTable(): JSX.Element {
       }}
       handleSelect={async (artifact) => {
         await navigate({
-          params: { artifactID: artifact.id },
+          params: {
+            artifactID: artifact.id,
+          },
           to: `/artifacts/$artifactID`,
         });
       }}

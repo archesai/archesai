@@ -171,7 +171,7 @@ export default function ImportCard(): JSX.Element {
         onDrop={handleDrop}
       >
         <UploadCloudIcon className="h-5 w-5 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Drag and drop files here, or click to select files
         </p>
 
@@ -239,7 +239,7 @@ export default function ImportCard(): JSX.Element {
           {uploading && (
             <div className="flex flex-col gap-2">
               <Progress value={uploadProgress} />
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-center text-gray-600 text-sm">
                 {uploadProgress}% Uploaded
               </p>
             </div>

@@ -41,7 +41,11 @@ export function DataTableSliderFilter<TData>({
   const defaultRange = column.columnDef.meta?.range;
   const unit = column.columnDef.meta?.unit;
 
-  const { max, min, step } = useMemo<Range & { step: number }>(() => {
+  const { max, min, step } = useMemo<
+    Range & {
+      step: number;
+    }
+  >(() => {
     let minValue = 0;
     let maxValue = 100;
 
@@ -73,7 +77,11 @@ export function DataTableSliderFilter<TData>({
           ? Math.ceil(rangeSize / 20)
           : Math.ceil(rangeSize / 50);
 
-    return { max: maxValue, min: minValue, step };
+    return {
+      max: maxValue,
+      min: minValue,
+      step,
+    };
   }, [column, defaultRange]);
 
   const range = useMemo((): RangeValue => {
@@ -81,7 +89,9 @@ export function DataTableSliderFilter<TData>({
   }, [columnFilterValue, min, max]);
 
   const formatValue = useCallback((value: number) => {
-    return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    return value.toLocaleString(undefined, {
+      maximumFractionDigits: 0,
+    });
   }, []);
 
   const onFromInputChange = useCallback(
@@ -134,7 +144,7 @@ export function DataTableSliderFilter<TData>({
           {columnFilterValue ? (
             <button
               aria-label={`Clear ${title ?? ""} filter`}
-              className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
+              className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               onClick={onReset}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -169,7 +179,7 @@ export function DataTableSliderFilter<TData>({
         className="flex w-auto flex-col gap-4"
       >
         <div className="flex flex-col gap-3">
-          <p className="leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          <p className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             {title}
           </p>
           <div className="flex items-center gap-4">
@@ -195,7 +205,7 @@ export function DataTableSliderFilter<TData>({
                 value={range[0].toString()}
               />
               {unit && (
-                <span className="absolute top-0 right-0 bottom-0 flex items-center rounded-r-md bg-accent px-2 text-sm text-muted-foreground">
+                <span className="absolute top-0 right-0 bottom-0 flex items-center rounded-r-md bg-accent px-2 text-muted-foreground text-sm">
                   {unit}
                 </span>
               )}
@@ -222,7 +232,7 @@ export function DataTableSliderFilter<TData>({
                 value={range[1].toString()}
               />
               {unit && (
-                <span className="absolute top-0 right-0 bottom-0 flex items-center rounded-r-md bg-accent px-2 text-sm text-muted-foreground">
+                <span className="absolute top-0 right-0 bottom-0 flex items-center rounded-r-md bg-accent px-2 text-muted-foreground text-sm">
                   {unit}
                 </span>
               )}

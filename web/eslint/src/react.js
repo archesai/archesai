@@ -31,7 +31,11 @@ const react = defineConfig({
     "react-hooks/react-compiler": "error",
     "react/prop-types": "off",
   },
-  settings: { react: { version: "detect" } },
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
 });
 
 export { react };

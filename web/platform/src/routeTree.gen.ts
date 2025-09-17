@@ -8,460 +8,460 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-import { Route as rootRouteImport } from './app/__root'
-import { Route as AuthRouteRouteImport } from './app/auth/route'
-import { Route as AppRouteRouteImport } from './app/_app/route'
-import { Route as LandingIndexRouteImport } from './app/landing/index'
-import { Route as AppIndexRouteImport } from './app/_app/index'
-import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
-import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
-import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-password/index'
-import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
-import { Route as AppRunsIndexRouteImport } from './app/_app/runs/index'
-import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
-import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
-import { Route as AppOrganizationIndexRouteImport } from './app/_app/organization/index'
-import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
-import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
-import { Route as AppRunsRunIDIndexRouteImport } from './app/_app/runs/$runID/index'
-import { Route as AppPipelinesPipelineIDIndexRouteImport } from './app/_app/pipelines/$pipelineID/index'
-import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
-import { Route as AppArtifactsArtifactIDIndexRouteImport } from './app/_app/artifacts/$artifactID/index'
+import { Route as rootRouteImport } from "./app/__root";
+import { Route as AppArtifactsArtifactIDIndexRouteImport } from "./app/_app/artifacts/$artifactID/index";
+import { Route as AppArtifactsIndexRouteImport } from "./app/_app/artifacts/index";
+import { Route as AppIndexRouteImport } from "./app/_app/index";
+import { Route as AppLabelsIndexRouteImport } from "./app/_app/labels/index";
+import { Route as AppOrganizationIndexRouteImport } from "./app/_app/organization/index";
+import { Route as AppOrganizationMembersIndexRouteImport } from "./app/_app/organization/members/index";
+import { Route as AppPipelinesPipelineIDIndexRouteImport } from "./app/_app/pipelines/$pipelineID/index";
+import { Route as AppPipelinesIndexRouteImport } from "./app/_app/pipelines/index";
+import { Route as AppProfileIndexRouteImport } from "./app/_app/profile/index";
+import { Route as AppRouteRouteImport } from "./app/_app/route";
+import { Route as AppRunsRunIDIndexRouteImport } from "./app/_app/runs/$runID/index";
+import { Route as AppRunsIndexRouteImport } from "./app/_app/runs/index";
+import { Route as AppToolsIndexRouteImport } from "./app/_app/tools/index";
+import { Route as AuthForgotPasswordIndexRouteImport } from "./app/auth/forgot-password/index";
+import { Route as AuthLoginIndexRouteImport } from "./app/auth/login/index";
+import { Route as AuthRegisterIndexRouteImport } from "./app/auth/register/index";
+import { Route as AuthRouteRouteImport } from "./app/auth/route";
+import { Route as LandingIndexRouteImport } from "./app/landing/index";
 
 const AppPipelinesCreateIndexLazyRouteImport = createFileRoute(
-  '/_app/pipelines/create/',
-)()
+  "/_app/pipelines/create/",
+)();
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRouteImport,
-} as any)
+  id: "/auth",
+  path: "/auth",
+} as any);
 const AppRouteRoute = AppRouteRouteImport.update({
-  id: '/_app',
   getParentRoute: () => rootRouteImport,
-} as any)
+  id: "/_app",
+} as any);
 const LandingIndexRoute = LandingIndexRouteImport.update({
-  id: '/landing/',
-  path: '/landing/',
   getParentRoute: () => rootRouteImport,
-} as any)
+  id: "/landing/",
+  path: "/landing/",
+} as any);
 const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+  id: "/",
+  path: "/",
+} as any);
 const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
-  id: '/register/',
-  path: '/register/',
   getParentRoute: () => AuthRouteRoute,
-} as any)
+  id: "/register/",
+  path: "/register/",
+} as any);
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
-  id: '/login/',
-  path: '/login/',
   getParentRoute: () => AuthRouteRoute,
-} as any)
+  id: "/login/",
+  path: "/login/",
+} as any);
 const AuthForgotPasswordIndexRoute = AuthForgotPasswordIndexRouteImport.update({
-  id: '/forgot-password/',
-  path: '/forgot-password/',
   getParentRoute: () => AuthRouteRoute,
-} as any)
+  id: "/forgot-password/",
+  path: "/forgot-password/",
+} as any);
 const AppToolsIndexRoute = AppToolsIndexRouteImport.update({
-  id: '/tools/',
-  path: '/tools/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+  id: "/tools/",
+  path: "/tools/",
+} as any);
 const AppRunsIndexRoute = AppRunsIndexRouteImport.update({
-  id: '/runs/',
-  path: '/runs/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+  id: "/runs/",
+  path: "/runs/",
+} as any);
 const AppProfileIndexRoute = AppProfileIndexRouteImport.update({
-  id: '/profile/',
-  path: '/profile/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+  id: "/profile/",
+  path: "/profile/",
+} as any);
 const AppPipelinesIndexRoute = AppPipelinesIndexRouteImport.update({
-  id: '/pipelines/',
-  path: '/pipelines/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+  id: "/pipelines/",
+  path: "/pipelines/",
+} as any);
 const AppOrganizationIndexRoute = AppOrganizationIndexRouteImport.update({
-  id: '/organization/',
-  path: '/organization/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+  id: "/organization/",
+  path: "/organization/",
+} as any);
 const AppLabelsIndexRoute = AppLabelsIndexRouteImport.update({
-  id: '/labels/',
-  path: '/labels/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+  id: "/labels/",
+  path: "/labels/",
+} as any);
 const AppArtifactsIndexRoute = AppArtifactsIndexRouteImport.update({
-  id: '/artifacts/',
-  path: '/artifacts/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+  id: "/artifacts/",
+  path: "/artifacts/",
+} as any);
 const AppPipelinesCreateIndexLazyRoute =
   AppPipelinesCreateIndexLazyRouteImport.update({
-    id: '/pipelines/create/',
-    path: '/pipelines/create/',
     getParentRoute: () => AppRouteRoute,
+    id: "/pipelines/create/",
+    path: "/pipelines/create/",
   } as any).lazy(() =>
-    import('./app/_app/pipelines/create/index.lazy').then((d) => d.Route),
-  )
+    import("./app/_app/pipelines/create/index.lazy").then((d) => d.Route),
+  );
 const AppRunsRunIDIndexRoute = AppRunsRunIDIndexRouteImport.update({
-  id: '/runs/$runID/',
-  path: '/runs/$runID/',
   getParentRoute: () => AppRouteRoute,
-} as any)
+  id: "/runs/$runID/",
+  path: "/runs/$runID/",
+} as any);
 const AppPipelinesPipelineIDIndexRoute =
   AppPipelinesPipelineIDIndexRouteImport.update({
-    id: '/pipelines/$pipelineID/',
-    path: '/pipelines/$pipelineID/',
     getParentRoute: () => AppRouteRoute,
-  } as any)
+    id: "/pipelines/$pipelineID/",
+    path: "/pipelines/$pipelineID/",
+  } as any);
 const AppOrganizationMembersIndexRoute =
   AppOrganizationMembersIndexRouteImport.update({
-    id: '/organization/members/',
-    path: '/organization/members/',
     getParentRoute: () => AppRouteRoute,
-  } as any)
+    id: "/organization/members/",
+    path: "/organization/members/",
+  } as any);
 const AppArtifactsArtifactIDIndexRoute =
   AppArtifactsArtifactIDIndexRouteImport.update({
-    id: '/artifacts/$artifactID/',
-    path: '/artifacts/$artifactID/',
     getParentRoute: () => AppRouteRoute,
-  } as any)
+    id: "/artifacts/$artifactID/",
+    path: "/artifacts/$artifactID/",
+  } as any);
 
 export interface FileRoutesByFullPath {
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/': typeof AppIndexRoute
-  '/landing': typeof LandingIndexRoute
-  '/artifacts': typeof AppArtifactsIndexRoute
-  '/labels': typeof AppLabelsIndexRoute
-  '/organization': typeof AppOrganizationIndexRoute
-  '/pipelines': typeof AppPipelinesIndexRoute
-  '/profile': typeof AppProfileIndexRoute
-  '/runs': typeof AppRunsIndexRoute
-  '/tools': typeof AppToolsIndexRoute
-  '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
-  '/auth/login': typeof AuthLoginIndexRoute
-  '/auth/register': typeof AuthRegisterIndexRoute
-  '/artifacts/$artifactID': typeof AppArtifactsArtifactIDIndexRoute
-  '/organization/members': typeof AppOrganizationMembersIndexRoute
-  '/pipelines/$pipelineID': typeof AppPipelinesPipelineIDIndexRoute
-  '/runs/$runID': typeof AppRunsRunIDIndexRoute
-  '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
+  "/auth": typeof AuthRouteRouteWithChildren;
+  "/": typeof AppIndexRoute;
+  "/landing": typeof LandingIndexRoute;
+  "/artifacts": typeof AppArtifactsIndexRoute;
+  "/labels": typeof AppLabelsIndexRoute;
+  "/organization": typeof AppOrganizationIndexRoute;
+  "/pipelines": typeof AppPipelinesIndexRoute;
+  "/profile": typeof AppProfileIndexRoute;
+  "/runs": typeof AppRunsIndexRoute;
+  "/tools": typeof AppToolsIndexRoute;
+  "/auth/forgot-password": typeof AuthForgotPasswordIndexRoute;
+  "/auth/login": typeof AuthLoginIndexRoute;
+  "/auth/register": typeof AuthRegisterIndexRoute;
+  "/artifacts/$artifactID": typeof AppArtifactsArtifactIDIndexRoute;
+  "/organization/members": typeof AppOrganizationMembersIndexRoute;
+  "/pipelines/$pipelineID": typeof AppPipelinesPipelineIDIndexRoute;
+  "/runs/$runID": typeof AppRunsRunIDIndexRoute;
+  "/pipelines/create": typeof AppPipelinesCreateIndexLazyRoute;
 }
 export interface FileRoutesByTo {
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/': typeof AppIndexRoute
-  '/landing': typeof LandingIndexRoute
-  '/artifacts': typeof AppArtifactsIndexRoute
-  '/labels': typeof AppLabelsIndexRoute
-  '/organization': typeof AppOrganizationIndexRoute
-  '/pipelines': typeof AppPipelinesIndexRoute
-  '/profile': typeof AppProfileIndexRoute
-  '/runs': typeof AppRunsIndexRoute
-  '/tools': typeof AppToolsIndexRoute
-  '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
-  '/auth/login': typeof AuthLoginIndexRoute
-  '/auth/register': typeof AuthRegisterIndexRoute
-  '/artifacts/$artifactID': typeof AppArtifactsArtifactIDIndexRoute
-  '/organization/members': typeof AppOrganizationMembersIndexRoute
-  '/pipelines/$pipelineID': typeof AppPipelinesPipelineIDIndexRoute
-  '/runs/$runID': typeof AppRunsRunIDIndexRoute
-  '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
+  "/auth": typeof AuthRouteRouteWithChildren;
+  "/": typeof AppIndexRoute;
+  "/landing": typeof LandingIndexRoute;
+  "/artifacts": typeof AppArtifactsIndexRoute;
+  "/labels": typeof AppLabelsIndexRoute;
+  "/organization": typeof AppOrganizationIndexRoute;
+  "/pipelines": typeof AppPipelinesIndexRoute;
+  "/profile": typeof AppProfileIndexRoute;
+  "/runs": typeof AppRunsIndexRoute;
+  "/tools": typeof AppToolsIndexRoute;
+  "/auth/forgot-password": typeof AuthForgotPasswordIndexRoute;
+  "/auth/login": typeof AuthLoginIndexRoute;
+  "/auth/register": typeof AuthRegisterIndexRoute;
+  "/artifacts/$artifactID": typeof AppArtifactsArtifactIDIndexRoute;
+  "/organization/members": typeof AppOrganizationMembersIndexRoute;
+  "/pipelines/$pipelineID": typeof AppPipelinesPipelineIDIndexRoute;
+  "/runs/$runID": typeof AppRunsRunIDIndexRoute;
+  "/pipelines/create": typeof AppPipelinesCreateIndexLazyRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/_app': typeof AppRouteRouteWithChildren
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/_app/': typeof AppIndexRoute
-  '/landing/': typeof LandingIndexRoute
-  '/_app/artifacts/': typeof AppArtifactsIndexRoute
-  '/_app/labels/': typeof AppLabelsIndexRoute
-  '/_app/organization/': typeof AppOrganizationIndexRoute
-  '/_app/pipelines/': typeof AppPipelinesIndexRoute
-  '/_app/profile/': typeof AppProfileIndexRoute
-  '/_app/runs/': typeof AppRunsIndexRoute
-  '/_app/tools/': typeof AppToolsIndexRoute
-  '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
-  '/auth/login/': typeof AuthLoginIndexRoute
-  '/auth/register/': typeof AuthRegisterIndexRoute
-  '/_app/artifacts/$artifactID/': typeof AppArtifactsArtifactIDIndexRoute
-  '/_app/organization/members/': typeof AppOrganizationMembersIndexRoute
-  '/_app/pipelines/$pipelineID/': typeof AppPipelinesPipelineIDIndexRoute
-  '/_app/runs/$runID/': typeof AppRunsRunIDIndexRoute
-  '/_app/pipelines/create/': typeof AppPipelinesCreateIndexLazyRoute
+  __root__: typeof rootRouteImport;
+  "/_app": typeof AppRouteRouteWithChildren;
+  "/auth": typeof AuthRouteRouteWithChildren;
+  "/_app/": typeof AppIndexRoute;
+  "/landing/": typeof LandingIndexRoute;
+  "/_app/artifacts/": typeof AppArtifactsIndexRoute;
+  "/_app/labels/": typeof AppLabelsIndexRoute;
+  "/_app/organization/": typeof AppOrganizationIndexRoute;
+  "/_app/pipelines/": typeof AppPipelinesIndexRoute;
+  "/_app/profile/": typeof AppProfileIndexRoute;
+  "/_app/runs/": typeof AppRunsIndexRoute;
+  "/_app/tools/": typeof AppToolsIndexRoute;
+  "/auth/forgot-password/": typeof AuthForgotPasswordIndexRoute;
+  "/auth/login/": typeof AuthLoginIndexRoute;
+  "/auth/register/": typeof AuthRegisterIndexRoute;
+  "/_app/artifacts/$artifactID/": typeof AppArtifactsArtifactIDIndexRoute;
+  "/_app/organization/members/": typeof AppOrganizationMembersIndexRoute;
+  "/_app/pipelines/$pipelineID/": typeof AppPipelinesPipelineIDIndexRoute;
+  "/_app/runs/$runID/": typeof AppRunsRunIDIndexRoute;
+  "/_app/pipelines/create/": typeof AppPipelinesCreateIndexLazyRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | '/auth'
-    | '/'
-    | '/landing'
-    | '/artifacts'
-    | '/labels'
-    | '/organization'
-    | '/pipelines'
-    | '/profile'
-    | '/runs'
-    | '/tools'
-    | '/auth/forgot-password'
-    | '/auth/login'
-    | '/auth/register'
-    | '/artifacts/$artifactID'
-    | '/organization/members'
-    | '/pipelines/$pipelineID'
-    | '/runs/$runID'
-    | '/pipelines/create'
-  fileRoutesByTo: FileRoutesByTo
+    | "/auth"
+    | "/"
+    | "/landing"
+    | "/artifacts"
+    | "/labels"
+    | "/organization"
+    | "/pipelines"
+    | "/profile"
+    | "/runs"
+    | "/tools"
+    | "/auth/forgot-password"
+    | "/auth/login"
+    | "/auth/register"
+    | "/artifacts/$artifactID"
+    | "/organization/members"
+    | "/pipelines/$pipelineID"
+    | "/runs/$runID"
+    | "/pipelines/create";
+  fileRoutesByTo: FileRoutesByTo;
   to:
-    | '/auth'
-    | '/'
-    | '/landing'
-    | '/artifacts'
-    | '/labels'
-    | '/organization'
-    | '/pipelines'
-    | '/profile'
-    | '/runs'
-    | '/tools'
-    | '/auth/forgot-password'
-    | '/auth/login'
-    | '/auth/register'
-    | '/artifacts/$artifactID'
-    | '/organization/members'
-    | '/pipelines/$pipelineID'
-    | '/runs/$runID'
-    | '/pipelines/create'
+    | "/auth"
+    | "/"
+    | "/landing"
+    | "/artifacts"
+    | "/labels"
+    | "/organization"
+    | "/pipelines"
+    | "/profile"
+    | "/runs"
+    | "/tools"
+    | "/auth/forgot-password"
+    | "/auth/login"
+    | "/auth/register"
+    | "/artifacts/$artifactID"
+    | "/organization/members"
+    | "/pipelines/$pipelineID"
+    | "/runs/$runID"
+    | "/pipelines/create";
   id:
-    | '__root__'
-    | '/_app'
-    | '/auth'
-    | '/_app/'
-    | '/landing/'
-    | '/_app/artifacts/'
-    | '/_app/labels/'
-    | '/_app/organization/'
-    | '/_app/pipelines/'
-    | '/_app/profile/'
-    | '/_app/runs/'
-    | '/_app/tools/'
-    | '/auth/forgot-password/'
-    | '/auth/login/'
-    | '/auth/register/'
-    | '/_app/artifacts/$artifactID/'
-    | '/_app/organization/members/'
-    | '/_app/pipelines/$pipelineID/'
-    | '/_app/runs/$runID/'
-    | '/_app/pipelines/create/'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/_app"
+    | "/auth"
+    | "/_app/"
+    | "/landing/"
+    | "/_app/artifacts/"
+    | "/_app/labels/"
+    | "/_app/organization/"
+    | "/_app/pipelines/"
+    | "/_app/profile/"
+    | "/_app/runs/"
+    | "/_app/tools/"
+    | "/auth/forgot-password/"
+    | "/auth/login/"
+    | "/auth/register/"
+    | "/_app/artifacts/$artifactID/"
+    | "/_app/organization/members/"
+    | "/_app/pipelines/$pipelineID/"
+    | "/_app/runs/$runID/"
+    | "/_app/pipelines/create/";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  AppRouteRoute: typeof AppRouteRouteWithChildren
-  AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  LandingIndexRoute: typeof LandingIndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren;
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren;
+  LandingIndexRoute: typeof LandingIndexRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app': {
-      id: '/_app'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AppRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/landing/': {
-      id: '/landing/'
-      path: '/landing'
-      fullPath: '/landing'
-      preLoaderRoute: typeof LandingIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_app/': {
-      id: '/_app/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/auth/register/': {
-      id: '/auth/register/'
-      path: '/register'
-      fullPath: '/auth/register'
-      preLoaderRoute: typeof AuthRegisterIndexRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth/login/': {
-      id: '/auth/login/'
-      path: '/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginIndexRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth/forgot-password/': {
-      id: '/auth/forgot-password/'
-      path: '/forgot-password'
-      fullPath: '/auth/forgot-password'
-      preLoaderRoute: typeof AuthForgotPasswordIndexRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/_app/tools/': {
-      id: '/_app/tools/'
-      path: '/tools'
-      fullPath: '/tools'
-      preLoaderRoute: typeof AppToolsIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/runs/': {
-      id: '/_app/runs/'
-      path: '/runs'
-      fullPath: '/runs'
-      preLoaderRoute: typeof AppRunsIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/profile/': {
-      id: '/_app/profile/'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AppProfileIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/pipelines/': {
-      id: '/_app/pipelines/'
-      path: '/pipelines'
-      fullPath: '/pipelines'
-      preLoaderRoute: typeof AppPipelinesIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/organization/': {
-      id: '/_app/organization/'
-      path: '/organization'
-      fullPath: '/organization'
-      preLoaderRoute: typeof AppOrganizationIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/labels/': {
-      id: '/_app/labels/'
-      path: '/labels'
-      fullPath: '/labels'
-      preLoaderRoute: typeof AppLabelsIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/artifacts/': {
-      id: '/_app/artifacts/'
-      path: '/artifacts'
-      fullPath: '/artifacts'
-      preLoaderRoute: typeof AppArtifactsIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/pipelines/create/': {
-      id: '/_app/pipelines/create/'
-      path: '/pipelines/create'
-      fullPath: '/pipelines/create'
-      preLoaderRoute: typeof AppPipelinesCreateIndexLazyRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/runs/$runID/': {
-      id: '/_app/runs/$runID/'
-      path: '/runs/$runID'
-      fullPath: '/runs/$runID'
-      preLoaderRoute: typeof AppRunsRunIDIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/pipelines/$pipelineID/': {
-      id: '/_app/pipelines/$pipelineID/'
-      path: '/pipelines/$pipelineID'
-      fullPath: '/pipelines/$pipelineID'
-      preLoaderRoute: typeof AppPipelinesPipelineIDIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/organization/members/': {
-      id: '/_app/organization/members/'
-      path: '/organization/members'
-      fullPath: '/organization/members'
-      preLoaderRoute: typeof AppOrganizationMembersIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/artifacts/$artifactID/': {
-      id: '/_app/artifacts/$artifactID/'
-      path: '/artifacts/$artifactID'
-      fullPath: '/artifacts/$artifactID'
-      preLoaderRoute: typeof AppArtifactsArtifactIDIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
+    "/auth": {
+      id: "/auth";
+      path: "/auth";
+      fullPath: "/auth";
+      preLoaderRoute: typeof AuthRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_app": {
+      id: "/_app";
+      path: "";
+      fullPath: "";
+      preLoaderRoute: typeof AppRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/landing/": {
+      id: "/landing/";
+      path: "/landing";
+      fullPath: "/landing";
+      preLoaderRoute: typeof LandingIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_app/": {
+      id: "/_app/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof AppIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/auth/register/": {
+      id: "/auth/register/";
+      path: "/register";
+      fullPath: "/auth/register";
+      preLoaderRoute: typeof AuthRegisterIndexRouteImport;
+      parentRoute: typeof AuthRouteRoute;
+    };
+    "/auth/login/": {
+      id: "/auth/login/";
+      path: "/login";
+      fullPath: "/auth/login";
+      preLoaderRoute: typeof AuthLoginIndexRouteImport;
+      parentRoute: typeof AuthRouteRoute;
+    };
+    "/auth/forgot-password/": {
+      id: "/auth/forgot-password/";
+      path: "/forgot-password";
+      fullPath: "/auth/forgot-password";
+      preLoaderRoute: typeof AuthForgotPasswordIndexRouteImport;
+      parentRoute: typeof AuthRouteRoute;
+    };
+    "/_app/tools/": {
+      id: "/_app/tools/";
+      path: "/tools";
+      fullPath: "/tools";
+      preLoaderRoute: typeof AppToolsIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/runs/": {
+      id: "/_app/runs/";
+      path: "/runs";
+      fullPath: "/runs";
+      preLoaderRoute: typeof AppRunsIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/profile/": {
+      id: "/_app/profile/";
+      path: "/profile";
+      fullPath: "/profile";
+      preLoaderRoute: typeof AppProfileIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/pipelines/": {
+      id: "/_app/pipelines/";
+      path: "/pipelines";
+      fullPath: "/pipelines";
+      preLoaderRoute: typeof AppPipelinesIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/organization/": {
+      id: "/_app/organization/";
+      path: "/organization";
+      fullPath: "/organization";
+      preLoaderRoute: typeof AppOrganizationIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/labels/": {
+      id: "/_app/labels/";
+      path: "/labels";
+      fullPath: "/labels";
+      preLoaderRoute: typeof AppLabelsIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/artifacts/": {
+      id: "/_app/artifacts/";
+      path: "/artifacts";
+      fullPath: "/artifacts";
+      preLoaderRoute: typeof AppArtifactsIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/pipelines/create/": {
+      id: "/_app/pipelines/create/";
+      path: "/pipelines/create";
+      fullPath: "/pipelines/create";
+      preLoaderRoute: typeof AppPipelinesCreateIndexLazyRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/runs/$runID/": {
+      id: "/_app/runs/$runID/";
+      path: "/runs/$runID";
+      fullPath: "/runs/$runID";
+      preLoaderRoute: typeof AppRunsRunIDIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/pipelines/$pipelineID/": {
+      id: "/_app/pipelines/$pipelineID/";
+      path: "/pipelines/$pipelineID";
+      fullPath: "/pipelines/$pipelineID";
+      preLoaderRoute: typeof AppPipelinesPipelineIDIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/organization/members/": {
+      id: "/_app/organization/members/";
+      path: "/organization/members";
+      fullPath: "/organization/members";
+      preLoaderRoute: typeof AppOrganizationMembersIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
+    "/_app/artifacts/$artifactID/": {
+      id: "/_app/artifacts/$artifactID/";
+      path: "/artifacts/$artifactID";
+      fullPath: "/artifacts/$artifactID";
+      preLoaderRoute: typeof AppArtifactsArtifactIDIndexRouteImport;
+      parentRoute: typeof AppRouteRoute;
+    };
   }
 }
 
 interface AppRouteRouteChildren {
-  AppIndexRoute: typeof AppIndexRoute
-  AppArtifactsIndexRoute: typeof AppArtifactsIndexRoute
-  AppLabelsIndexRoute: typeof AppLabelsIndexRoute
-  AppOrganizationIndexRoute: typeof AppOrganizationIndexRoute
-  AppPipelinesIndexRoute: typeof AppPipelinesIndexRoute
-  AppProfileIndexRoute: typeof AppProfileIndexRoute
-  AppRunsIndexRoute: typeof AppRunsIndexRoute
-  AppToolsIndexRoute: typeof AppToolsIndexRoute
-  AppArtifactsArtifactIDIndexRoute: typeof AppArtifactsArtifactIDIndexRoute
-  AppOrganizationMembersIndexRoute: typeof AppOrganizationMembersIndexRoute
-  AppPipelinesPipelineIDIndexRoute: typeof AppPipelinesPipelineIDIndexRoute
-  AppRunsRunIDIndexRoute: typeof AppRunsRunIDIndexRoute
-  AppPipelinesCreateIndexLazyRoute: typeof AppPipelinesCreateIndexLazyRoute
+  AppIndexRoute: typeof AppIndexRoute;
+  AppArtifactsIndexRoute: typeof AppArtifactsIndexRoute;
+  AppLabelsIndexRoute: typeof AppLabelsIndexRoute;
+  AppOrganizationIndexRoute: typeof AppOrganizationIndexRoute;
+  AppPipelinesIndexRoute: typeof AppPipelinesIndexRoute;
+  AppProfileIndexRoute: typeof AppProfileIndexRoute;
+  AppRunsIndexRoute: typeof AppRunsIndexRoute;
+  AppToolsIndexRoute: typeof AppToolsIndexRoute;
+  AppArtifactsArtifactIDIndexRoute: typeof AppArtifactsArtifactIDIndexRoute;
+  AppOrganizationMembersIndexRoute: typeof AppOrganizationMembersIndexRoute;
+  AppPipelinesPipelineIDIndexRoute: typeof AppPipelinesPipelineIDIndexRoute;
+  AppRunsRunIDIndexRoute: typeof AppRunsRunIDIndexRoute;
+  AppPipelinesCreateIndexLazyRoute: typeof AppPipelinesCreateIndexLazyRoute;
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppIndexRoute: AppIndexRoute,
+  AppArtifactsArtifactIDIndexRoute: AppArtifactsArtifactIDIndexRoute,
   AppArtifactsIndexRoute: AppArtifactsIndexRoute,
+  AppIndexRoute: AppIndexRoute,
   AppLabelsIndexRoute: AppLabelsIndexRoute,
   AppOrganizationIndexRoute: AppOrganizationIndexRoute,
+  AppOrganizationMembersIndexRoute: AppOrganizationMembersIndexRoute,
+  AppPipelinesCreateIndexLazyRoute: AppPipelinesCreateIndexLazyRoute,
   AppPipelinesIndexRoute: AppPipelinesIndexRoute,
+  AppPipelinesPipelineIDIndexRoute: AppPipelinesPipelineIDIndexRoute,
   AppProfileIndexRoute: AppProfileIndexRoute,
   AppRunsIndexRoute: AppRunsIndexRoute,
-  AppToolsIndexRoute: AppToolsIndexRoute,
-  AppArtifactsArtifactIDIndexRoute: AppArtifactsArtifactIDIndexRoute,
-  AppOrganizationMembersIndexRoute: AppOrganizationMembersIndexRoute,
-  AppPipelinesPipelineIDIndexRoute: AppPipelinesPipelineIDIndexRoute,
   AppRunsRunIDIndexRoute: AppRunsRunIDIndexRoute,
-  AppPipelinesCreateIndexLazyRoute: AppPipelinesCreateIndexLazyRoute,
-}
+  AppToolsIndexRoute: AppToolsIndexRoute,
+};
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
   AppRouteRouteChildren,
-)
+);
 
 interface AuthRouteRouteChildren {
-  AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute
-  AuthLoginIndexRoute: typeof AuthLoginIndexRoute
-  AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
+  AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute;
+  AuthLoginIndexRoute: typeof AuthLoginIndexRoute;
+  AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute;
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthRegisterIndexRoute: AuthRegisterIndexRoute,
-}
+};
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
-)
+);
 
 const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   LandingIndexRoute: LandingIndexRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();

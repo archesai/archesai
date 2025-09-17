@@ -16,7 +16,9 @@ import type { BaseEntity } from "#types/entities";
 export interface DataTableRowActionsProps<TEntity extends BaseEntity> {
   deleteItem?: (id: string) => Promise<void>;
   getEditFormFromItem?: (item: TEntity) => React.ReactNode;
-  row: { original: TEntity };
+  row: {
+    original: TEntity;
+  };
   setFinalForm?: (form: React.ReactNode) => void;
   setFormOpen?: (open: boolean) => void;
   table: Table<TEntity>;

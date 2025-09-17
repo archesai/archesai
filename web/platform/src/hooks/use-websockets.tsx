@@ -69,5 +69,5 @@ export const useWebsockets = ({
     return () => {
       websocket.close();
     };
-  }, [queryClient, defaultOrgname, overrideToken]);
+  }, [queryClient, overrideToken]);
 };

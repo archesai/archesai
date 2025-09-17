@@ -61,7 +61,9 @@ export default function LabelDataTable(): JSX.Element {
       // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={async (chatbot) => {
-        await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` });
+        await navigate({
+          to: `/chatbots/chat?labelId=${chatbot.id}`,
+        });
       }}
       icon={<ListIcon />}
       updateForm={LabelForm}

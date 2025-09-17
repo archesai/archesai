@@ -27,7 +27,7 @@ function AuthenticationLayout(): JSX.Element {
   return (
     <div className="flex h-svh flex-col items-center justify-center gap-4">
       <Link to="/">
-        <ArchesLogo size="lg" />
+        <ArchesLogo scale={1.5} />
       </Link>
       <Outlet />
     </div>

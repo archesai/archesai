@@ -44,6 +44,7 @@
     "tw-animate-css": "catalog:ui",
     "typescript": "catalog:",
     "vite": "catalog:vite",
+    "vite-plugin-svgr": "catalog:vite",
     "vitest": "catalog:test",
     "web-vitals": "catalog:test"
   },
@@ -70,9 +71,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "sideEffects": ["**/*.css"],
   "type": "module",
   "version": "0.0.0"
 }

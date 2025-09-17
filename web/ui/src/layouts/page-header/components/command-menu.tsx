@@ -65,7 +65,7 @@ export function CommandMenu({
     <div>
       <Button
         className={cn(
-          "h-8 w-full justify-between gap-2 rounded-lg text-sm font-normal text-muted-foreground md:text-sm",
+          "h-8 w-full justify-between gap-2 rounded-lg font-normal text-muted-foreground text-sm md:text-sm",
         )}
         onClick={() => {
           setOpen(true);
@@ -78,7 +78,7 @@ export function CommandMenu({
         </span>
         <span className="inline-flex sm:hidden">Search...</span>
 
-        <kbd className="pointer-events-none flex h-5 items-center gap-1 rounded-xs border border-sidebar-accent bg-sidebar-accent p-2 font-mono text-[10px] font-medium select-none">
+        <kbd className="pointer-events-none flex h-5 select-none items-center gap-1 rounded-xs border border-sidebar-accent bg-sidebar-accent p-2 font-medium font-mono text-[10px]">
           <span className="text-xs">⌘</span>
           <span>K</span>
         </kbd>

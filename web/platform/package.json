@@ -28,6 +28,7 @@
     "tailwindcss": "catalog:ui",
     "typescript": "catalog:",
     "vite": "catalog:vite",
+    "vite-plugin-svgr": "catalog:vite",
     "vitest": "catalog:test"
   },
   "imports": {

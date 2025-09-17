@@ -76,7 +76,9 @@ function LandingPage({
   }, []);
 
   const container = {
-    hidden: { opacity: 0 },
+    hidden: {
+      opacity: 0,
+    },
     show: {
       opacity: 1,
       transition: {
@@ -86,8 +88,14 @@ function LandingPage({
   };
 
   const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    show: {
+      opacity: 1,
+      y: 0,
+    },
   };
 
   return (
@@ -96,14 +104,18 @@ function LandingPage({
         className={`sticky top-0 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"}`}
       >
         <div className="container flex h-16 items-center justify-between">
-          <ArchesLogo size="lg" />
+          <ArchesLogo />
           <nav className="hidden gap-8 md:flex">
             {content.navigation.links.map((link) => (
               <Link
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
                 key={link.label}
                 {...(link.scrollTo
-                  ? { search: { scrollTo: link.scrollTo } }
+                  ? {
+                      search: {
+                        scrollTo: link.scrollTo,
+                      },
+                    }
                   : {})}
                 to={link.to}
               >
@@ -113,7 +125,7 @@ function LandingPage({
           </nav>
           <div className="hidden items-center gap-4 md:flex">
             <Link
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="font-medium text-muted-foreground text-sm transition-colors hover:text-foreground"
               to={content.navigation.buttons.login.to}
             >
               {content.navigation.buttons.login.label}
@@ -143,21 +155,34 @@ function LandingPage({
         {/* Mobile menu */}
         {mobileMenuOpen && (
           <motion.div
-            animate={{ opacity: 1, y: 0 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
             className="absolute inset-x-0 top-16 border-b bg-background/95 backdrop-blur-lg md:hidden"
-            exit={{ opacity: 0, y: -20 }}
-            initial={{ opacity: 0, y: -20 }}
+            exit={{
+              opacity: 0,
+              y: -20,
+            }}
+            initial={{
+              opacity: 0,
+              y: -20,
+            }}
           >
             <div className="container flex flex-col gap-4 py-4">
               {content.navigation.links.map((link) => (
                 <Link
-                  className="py-2 text-sm font-medium"
+                  className="py-2 font-medium text-sm"
                   key={link.label}
                   onClick={() => {
                     setMobileMenuOpen(false);
                   }}
                   {...(link.scrollTo
-                    ? { search: { scrollTo: link.scrollTo } }
+                    ? {
+                        search: {
+                          scrollTo: link.scrollTo,
+                        },
+                      }
                     : {})}
                   to={link.to}
                 >
@@ -166,7 +191,7 @@ function LandingPage({
               ))}
               <div className="flex flex-col gap-2 border-t pt-2">
                 <Link
-                  className="py-2 text-sm font-medium"
+                  className="py-2 font-medium text-sm"
                   onClick={() => {
                     setMobileMenuOpen(false);
                   }}
@@ -186,22 +211,30 @@ function LandingPage({
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full overflow-hidden py-20 md:py-32 lg:py-40">
-          <div className="relative container px-4 md:px-6">
-            <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] bg-[size:4rem_4rem] dark:bg-black dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)]"></div>
+          <div className="container relative px-4 md:px-6">
+            <div className="-z-10 absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] bg-white [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] dark:bg-black"></div>
 
             <motion.div
-              animate={{ opacity: 1, y: 0 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
               className="mx-auto mb-12 max-w-3xl text-center"
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              transition={{
+                duration: 0.5,
+              }}
             >
               <Badge
-                className="mb-4 rounded-full px-4 py-1.5 text-sm font-medium"
+                className="mb-4 rounded-full px-4 py-1.5 font-medium text-sm"
                 variant="secondary"
               >
                 {content.hero.badge}
               </Badge>
-              <h1 className="mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl lg:text-6xl">
+              <h1 className="mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text font-bold text-4xl text-transparent tracking-tight md:text-5xl lg:text-6xl">
                 {content.hero.title}
               </h1>
               <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground md:text-xl">
@@ -223,7 +256,7 @@ function LandingPage({
                   {content.hero.buttons.secondary.label}
                 </Button>
               </div>
-              <div className="mt-6 flex items-center justify-center gap-4 text-sm text-muted-foreground">
+              <div className="mt-6 flex items-center justify-center gap-4 text-muted-foreground text-sm">
                 {content.hero.benefits.map((benefit) => (
                   <div
                     className="flex items-center gap-1"
@@ -237,10 +270,19 @@ function LandingPage({
             </motion.div>
 
             <motion.div
-              animate={{ opacity: 1, y: 0 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
               className="relative mx-auto max-w-5xl"
-              initial={{ opacity: 0, y: 40 }}
-              transition={{ delay: 0.2, duration: 0.7 }}
+              initial={{
+                opacity: 0,
+                y: 40,
+              }}
+              transition={{
+                delay: 0.2,
+                duration: 0.7,
+              }}
             >
               <div className="overflow-hidden rounded-xl border border-border/40 bg-gradient-to-b from-background to-muted/20 shadow-2xl">
                 <img
@@ -252,8 +294,8 @@ function LandingPage({
                 />
                 <div className="absolute inset-0 rounded-xl ring-1 ring-black/10 ring-inset dark:ring-white/10"></div>
               </div>
-              <div className="absolute -right-6 -bottom-6 -z-10 h-[300px] w-[300px] rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 opacity-70 blur-3xl"></div>
-              <div className="absolute -top-6 -left-6 -z-10 h-[300px] w-[300px] rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 opacity-70 blur-3xl"></div>
+              <div className="-right-6 -bottom-6 -z-10 absolute h-[300px] w-[300px] rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 opacity-70 blur-3xl"></div>
+              <div className="-top-6 -left-6 -z-10 absolute h-[300px] w-[300px] rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 opacity-70 blur-3xl"></div>
             </motion.div>
           </div>
         </section>
@@ -262,7 +304,7 @@ function LandingPage({
         <section className="w-full border-y bg-muted/30 py-12">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <p className="text-sm font-medium text-muted-foreground">
+              <p className="font-medium text-muted-foreground text-sm">
                 {content.logos.title}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 lg:gap-16">
@@ -289,18 +331,28 @@ function LandingPage({
           <div className="container px-4 md:px-6">
             <motion.div
               className="mb-12 flex flex-col items-center justify-center space-y-4 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              transition={{
+                duration: 0.5,
+              }}
+              viewport={{
+                once: true,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
             >
               <Badge
-                className="rounded-full px-4 py-1.5 text-sm font-medium"
+                className="rounded-full px-4 py-1.5 font-medium text-sm"
                 variant="secondary"
               >
                 {content.features.badge}
               </Badge>
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              <h2 className="font-bold text-3xl tracking-tight md:text-4xl">
                 {content.features.title}
               </h2>
               <p className="max-w-[800px] text-muted-foreground md:text-lg">
@@ -312,7 +364,9 @@ function LandingPage({
               className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
               initial="hidden"
               variants={container}
-              viewport={{ once: true }}
+              viewport={{
+                once: true,
+              }}
               whileInView="show"
             >
               {content.features.features.map((feature) => (
@@ -325,7 +379,7 @@ function LandingPage({
                       <div className="mb-4 flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20">
                         {getIcon(feature.icon)}
                       </div>
-                      <h3 className="mb-2 text-xl font-bold">
+                      <h3 className="mb-2 font-bold text-xl">
                         {feature.title}
                       </h3>
                       <p className="text-muted-foreground">
@@ -341,23 +395,33 @@ function LandingPage({
 
         {/* How It Works Section */}
         <section className="relative w-full overflow-hidden bg-muted/30 py-20 md:py-32">
-          <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)] bg-[size:4rem_4rem] dark:bg-black dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)]"></div>
+          <div className="-z-10 absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] bg-white [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] dark:bg-black"></div>
 
-          <div className="relative container px-4 md:px-6">
+          <div className="container relative px-4 md:px-6">
             <motion.div
               className="mb-16 flex flex-col items-center justify-center space-y-4 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              transition={{
+                duration: 0.5,
+              }}
+              viewport={{
+                once: true,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
             >
               <Badge
-                className="rounded-full px-4 py-1.5 text-sm font-medium"
+                className="rounded-full px-4 py-1.5 font-medium text-sm"
                 variant="secondary"
               >
                 {content.howItWorks.badge}
               </Badge>
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              <h2 className="font-bold text-3xl tracking-tight md:text-4xl">
                 {content.howItWorks.title}
               </h2>
               <p className="max-w-[800px] text-muted-foreground md:text-lg">
@@ -366,21 +430,32 @@ function LandingPage({
             </motion.div>
 
             <div className="relative grid gap-8 md:grid-cols-3 md:gap-12">
-              <div className="absolute top-1/2 right-0 left-0 z-0 hidden h-0.5 -translate-y-1/2 bg-gradient-to-r from-transparent via-border to-transparent md:block"></div>
+              <div className="-translate-y-1/2 absolute top-1/2 right-0 left-0 z-0 hidden h-0.5 bg-gradient-to-r from-transparent via-border to-transparent md:block"></div>
 
               {content.howItWorks.steps.map((step, i) => (
                 <motion.div
                   className="relative z-10 flex flex-col items-center space-y-4 text-center"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{
+                    opacity: 0,
+                    y: 20,
+                  }}
                   key={step.step}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  viewport={{ once: true }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: i * 0.1,
+                    duration: 0.5,
+                  }}
+                  viewport={{
+                    once: true,
+                  }}
+                  whileInView={{
+                    opacity: 1,
+                    y: 0,
+                  }}
                 >
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-xl font-bold text-primary-foreground shadow-lg">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 font-bold text-primary-foreground text-xl shadow-lg">
                     {step.step}
                   </div>
-                  <h3 className="text-xl font-bold">{step.title}</h3>
+                  <h3 className="font-bold text-xl">{step.title}</h3>
                   <p className="text-muted-foreground">{step.description}</p>
                 </motion.div>
               ))}
@@ -396,18 +471,28 @@ function LandingPage({
           <div className="container px-4 md:px-6">
             <motion.div
               className="mb-12 flex flex-col items-center justify-center space-y-4 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              transition={{
+                duration: 0.5,
+              }}
+              viewport={{
+                once: true,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
             >
               <Badge
-                className="rounded-full px-4 py-1.5 text-sm font-medium"
+                className="rounded-full px-4 py-1.5 font-medium text-sm"
                 variant="secondary"
               >
                 {content.testimonials.badge}
               </Badge>
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              <h2 className="font-bold text-3xl tracking-tight md:text-4xl">
                 {content.testimonials.title}
               </h2>
               <p className="max-w-[800px] text-muted-foreground md:text-lg">
@@ -418,11 +503,22 @@ function LandingPage({
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {content.testimonials.testimonials.map((testimonial, i) => (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{
+                    opacity: 0,
+                    y: 20,
+                  }}
                   key={testimonial.author}
-                  transition={{ delay: i * 0.05, duration: 0.5 }}
-                  viewport={{ once: true }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: i * 0.05,
+                    duration: 0.5,
+                  }}
+                  viewport={{
+                    once: true,
+                  }}
+                  whileInView={{
+                    opacity: 1,
+                    y: 0,
+                  }}
                 >
                   <Card className="h-full overflow-hidden border-border/40 bg-gradient-to-b from-background to-muted/10 backdrop-blur transition-all hover:shadow-md">
                     <CardContent className="flex h-full flex-col p-6">
@@ -439,13 +535,13 @@ function LandingPage({
                       <p className="mb-6 flex-grow text-lg">
                         {testimonial.quote}
                       </p>
-                      <div className="mt-auto flex items-center gap-4 border-t border-border/40 pt-4">
+                      <div className="mt-auto flex items-center gap-4 border-border/40 border-t pt-4">
                         <div className="flex size-10 items-center justify-center rounded-full bg-muted font-medium text-foreground">
                           {testimonial.author.charAt(0)}
                         </div>
                         <div>
                           <p className="font-medium">{testimonial.author}</p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-muted-foreground text-sm">
                             {testimonial.role}
                           </p>
                         </div>
@@ -463,23 +559,33 @@ function LandingPage({
           className="relative w-full overflow-hidden bg-muted/30 py-20 md:py-32"
           id="pricing"
         >
-          <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)] bg-[size:4rem_4rem] dark:bg-black dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)]"></div>
+          <div className="-z-10 absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] bg-white [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] dark:bg-black"></div>
 
-          <div className="relative container px-4 md:px-6">
+          <div className="container relative px-4 md:px-6">
             <motion.div
               className="mb-12 flex flex-col items-center justify-center space-y-4 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              transition={{
+                duration: 0.5,
+              }}
+              viewport={{
+                once: true,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
             >
               <Badge
-                className="rounded-full px-4 py-1.5 text-sm font-medium"
+                className="rounded-full px-4 py-1.5 font-medium text-sm"
                 variant="secondary"
               >
                 {content.pricing.badge}
               </Badge>
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              <h2 className="font-bold text-3xl tracking-tight md:text-4xl">
                 {content.pricing.title}
               </h2>
               <p className="max-w-[800px] text-muted-foreground md:text-lg">
@@ -513,24 +619,35 @@ function LandingPage({
                   <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
                     {content.pricing.tabs.monthly.plans.map((plan, i) => (
                       <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{
+                          opacity: 0,
+                          y: 20,
+                        }}
                         key={plan.name}
-                        transition={{ delay: i * 0.1, duration: 0.5 }}
-                        viewport={{ once: true }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: i * 0.1,
+                          duration: 0.5,
+                        }}
+                        viewport={{
+                          once: true,
+                        }}
+                        whileInView={{
+                          opacity: 1,
+                          y: 0,
+                        }}
                       >
                         <Card
                           className={`relative h-full overflow-hidden ${plan.popular ? "border-primary shadow-lg" : "border-border/40 shadow-md"} bg-gradient-to-b from-background to-muted/10 backdrop-blur`}
                         >
                           {plan.popular && (
-                            <div className="absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+                            <div className="absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 font-medium text-primary-foreground text-xs">
                               Most Popular
                             </div>
                           )}
                           <CardContent className="flex h-full flex-col p-6">
-                            <h3 className="text-2xl font-bold">{plan.name}</h3>
+                            <h3 className="font-bold text-2xl">{plan.name}</h3>
                             <div className="mt-4 flex items-baseline">
-                              <span className="text-4xl font-bold">
+                              <span className="font-bold text-4xl">
                                 {plan.price}
                               </span>
                               <span className="ml-1 text-muted-foreground">
@@ -567,24 +684,35 @@ function LandingPage({
                   <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
                     {content.pricing.tabs.annually.plans.map((plan, i) => (
                       <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{
+                          opacity: 0,
+                          y: 20,
+                        }}
                         key={plan.name}
-                        transition={{ delay: i * 0.1, duration: 0.5 }}
-                        viewport={{ once: true }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: i * 0.1,
+                          duration: 0.5,
+                        }}
+                        viewport={{
+                          once: true,
+                        }}
+                        whileInView={{
+                          opacity: 1,
+                          y: 0,
+                        }}
                       >
                         <Card
                           className={`relative h-full overflow-hidden ${plan.popular ? "border-primary shadow-lg" : "border-border/40 shadow-md"} bg-gradient-to-b from-background to-muted/10 backdrop-blur`}
                         >
                           {plan.popular && (
-                            <div className="absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+                            <div className="absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 font-medium text-primary-foreground text-xs">
                               Most Popular
                             </div>
                           )}
                           <CardContent className="flex h-full flex-col p-6">
-                            <h3 className="text-2xl font-bold">{plan.name}</h3>
+                            <h3 className="font-bold text-2xl">{plan.name}</h3>
                             <div className="mt-4 flex items-baseline">
-                              <span className="text-4xl font-bold">
+                              <span className="font-bold text-4xl">
                                 {plan.price}
                               </span>
                               <span className="ml-1 text-muted-foreground">
@@ -630,18 +758,28 @@ function LandingPage({
           <div className="container px-4 md:px-6">
             <motion.div
               className="mb-12 flex flex-col items-center justify-center space-y-4 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              transition={{
+                duration: 0.5,
+              }}
+              viewport={{
+                once: true,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
             >
               <Badge
-                className="rounded-full px-4 py-1.5 text-sm font-medium"
+                className="rounded-full px-4 py-1.5 font-medium text-sm"
                 variant="secondary"
               >
                 {content.faq.badge}
               </Badge>
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              <h2 className="font-bold text-3xl tracking-tight md:text-4xl">
                 {content.faq.title}
               </h2>
               <p className="max-w-[800px] text-muted-foreground md:text-lg">
@@ -657,14 +795,25 @@ function LandingPage({
               >
                 {content.faq.questions.map((faq, i) => (
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{
+                      opacity: 0,
+                      y: 10,
+                    }}
                     key={faq.question}
-                    transition={{ delay: i * 0.05, duration: 0.3 }}
-                    viewport={{ once: true }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: i * 0.05,
+                      duration: 0.3,
+                    }}
+                    viewport={{
+                      once: true,
+                    }}
+                    whileInView={{
+                      opacity: 1,
+                      y: 0,
+                    }}
                   >
                     <AccordionItem
-                      className="border-b border-border/40 py-2"
+                      className="border-border/40 border-b py-2"
                       value={`item-${i.toString()}`}
                     >
                       <AccordionTrigger className="text-left font-medium hover:no-underline">
@@ -683,19 +832,29 @@ function LandingPage({
 
         {/* CTA Section */}
         <section className="relative w-full overflow-hidden bg-gradient-to-br from-primary to-primary/80 py-20 text-primary-foreground md:py-32">
-          <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-          <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
-          <div className="absolute -right-24 -bottom-24 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+          <div className="-z-10 absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+          <div className="-top-24 -left-24 absolute h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+          <div className="-right-24 -bottom-24 absolute h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
 
-          <div className="relative container px-4 md:px-6">
+          <div className="container relative px-4 md:px-6">
             <motion.div
               className="flex flex-col items-center justify-center space-y-6 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{
+                opacity: 0,
+                y: 20,
+              }}
+              transition={{
+                duration: 0.5,
+              }}
+              viewport={{
+                once: true,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
             >
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+              <h2 className="font-bold text-3xl tracking-tight md:text-4xl lg:text-5xl">
                 {content.cta.title}
               </h2>
               <p className="mx-auto max-w-[700px] text-primary-foreground/80 md:text-xl">
@@ -718,7 +877,7 @@ function LandingPage({
                   {content.cta.buttons.secondary.label}
                 </Button>
               </div>
-              <p className="mt-4 text-sm text-primary-foreground/80">
+              <p className="mt-4 text-primary-foreground/80 text-sm">
                 {content.cta.disclaimer}
               </p>
             </motion.div>
@@ -735,7 +894,7 @@ function LandingPage({
                 </div>
                 <span>{content.footer.company.name}</span>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 {content.footer.company.tagline}
               </p>
               <div className="flex gap-4">
@@ -747,9 +906,11 @@ function LandingPage({
                   >
                     {social.icon === "facebook" && (
                       <svg
+                        aria-label="Facebook"
                         className="size-5"
                         fill="none"
                         height="24"
+                        role="img"
                         stroke="currentColor"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -763,9 +924,11 @@ function LandingPage({
                     )}
                     {social.icon === "twitter" && (
                       <svg
+                        aria-label="Twitter"
                         className="size-5"
                         fill="none"
                         height="24"
+                        role="img"
                         stroke="currentColor"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -779,9 +942,11 @@ function LandingPage({
                     )}
                     {social.icon === "linkedin" && (
                       <svg
+                        aria-label="LinkedIn"
                         className="size-5"
                         fill="none"
                         height="24"
+                        role="img"
                         stroke="currentColor"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -810,14 +975,18 @@ function LandingPage({
               </div>
             </div>
             <div className="space-y-4">
-              <h4 className="text-sm font-bold">Product</h4>
+              <h4 className="font-bold text-sm">Product</h4>
               <ul className="space-y-2 text-sm">
                 {content.footer.links.product.map((link) => (
                   <li key={link.label}>
                     <Link
                       className="text-muted-foreground transition-colors hover:text-foreground"
                       {...(link.scrollTo
-                        ? { search: { scrollTo: link.scrollTo } }
+                        ? {
+                            search: {
+                              scrollTo: link.scrollTo,
+                            },
+                          }
                         : {})}
                       to={link.to}
                     >
@@ -828,7 +997,7 @@ function LandingPage({
               </ul>
             </div>
             <div className="space-y-4">
-              <h4 className="text-sm font-bold">Resources</h4>
+              <h4 className="font-bold text-sm">Resources</h4>
               <ul className="space-y-2 text-sm">
                 {content.footer.links.resources.map((link) => (
                   <li key={link.label}>
@@ -843,7 +1012,7 @@ function LandingPage({
               </ul>
             </div>
             <div className="space-y-4">
-              <h4 className="text-sm font-bold">Company</h4>
+              <h4 className="font-bold text-sm">Company</h4>
               <ul className="space-y-2 text-sm">
                 {content.footer.links.company.map((link) => (
                   <li key={link.label}>
@@ -858,14 +1027,14 @@ function LandingPage({
               </ul>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between gap-4 border-t border-border/40 pt-8 sm:flex-row">
-            <p className="text-xs text-muted-foreground">
+          <div className="flex flex-col items-center justify-between gap-4 border-border/40 border-t pt-8 sm:flex-row">
+            <p className="text-muted-foreground text-xs">
               {content.footer.legal.copyright}
             </p>
             <div className="flex gap-4">
               {content.footer.legal.links.map((link) => (
                 <Link
-                  className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-muted-foreground text-xs transition-colors hover:text-foreground"
                   key={link.label}
                   to={link.to}
                 >

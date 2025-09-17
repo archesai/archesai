@@ -23,7 +23,10 @@ export const Route = createRootRouteWithContext<{
 }>()({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.fetchQuery({
-      queryFn: ({ signal }) => getServerSession({ signal }),
+      queryFn: ({ signal }) =>
+        getServerSession({
+          signal,
+        }),
       queryKey: getGetSessionQueryKey(),
     });
     return {
@@ -40,7 +43,10 @@ export const Route = createRootRouteWithContext<{
   },
   head: () => ({
     links: [
-      { href: globalsCss, rel: "stylesheet" },
+      {
+        href: globalsCss,
+        rel: "stylesheet",
+      },
       {
         href: "/apple-touch-icon.png",
         rel: "apple-touch-icon",
@@ -58,11 +64,20 @@ export const Route = createRootRouteWithContext<{
         sizes: "16x16",
         type: "image/png",
       },
-      { color: "#fffff", href: "/site.webmanifest", rel: "manifest" },
-      { href: "/favicon.ico", rel: "icon" },
+      {
+        color: "#fffff",
+        href: "/site.webmanifest",
+        rel: "manifest",
+      },
+      {
+        href: "/favicon.ico",
+        rel: "icon",
+      },
     ],
     meta: [
-      { charSet: "utf-8" },
+      {
+        charSet: "utf-8",
+      },
       {
         content: "width=device-width, initial-scale=1",
         name: "viewport",
@@ -102,12 +117,6 @@ function RootDocument({
           {children}
           <Toaster />
         </ThemeProvider>
-        {process.env.NODE_ENV === "prod" && (
-          <>
-            {/* <TanStackRouterDevtools position="bottom-right" />
-            <ReactQueryDevtools buttonPosition="bottom-left" /> */}
-          </>
-        )}
         <Scripts />
       </body>
     </html>

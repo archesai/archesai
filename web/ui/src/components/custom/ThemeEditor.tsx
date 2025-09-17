@@ -137,7 +137,7 @@ export const ThemeEditor = (): React.ReactElement => {
             <DialogHeader>
               <DialogTitle>Theme </DialogTitle>
               <DialogDescription>
-                Copy and paste the following code into your Zudoku config.
+                Copy and paste the following code into your Arches config.
               </DialogDescription>
             </DialogHeader>
             {/* <SyntaxHighlight
@@ -221,7 +221,7 @@ export const ThemeEditor = (): React.ReactElement => {
           <Link href="/docs/customization/colors-theme">Documentation</Link>
         </Button>
       </div>
-      <div className="border-px border-border my-2 border-b border-dashed" />
+      <div className="my-2 border-border border-px border-b border-dashed" />
       <div className="grid grid-cols-[minmax(0,560px)_1fr] gap-2">
         <div className="flex flex-col gap-2">
           <Card>
@@ -236,7 +236,7 @@ export const ThemeEditor = (): React.ReactElement => {
               <div className="flex gap-2">
                 <Button
                   className={cn(
-                    resolvedTheme === "light" && "border-primary border-2",
+                    resolvedTheme === "light" && "border-2 border-primary",
                   )}
                   onClick={() => {
                     setTheme("light");
@@ -251,7 +251,7 @@ export const ThemeEditor = (): React.ReactElement => {
                 </Button>
                 <Button
                   className={cn(
-                    resolvedTheme === "dark" && "border-primary border-2",
+                    resolvedTheme === "dark" && "border-2 border-primary",
                   )}
                   onClick={() => {
                     setTheme("dark");
@@ -269,7 +269,7 @@ export const ThemeEditor = (): React.ReactElement => {
                 {availableRadius.map((r) => (
                   <Button
                     className={cn(
-                      r === radius && "border-primary border-2",
+                      r === radius && "border-2 border-primary",
                       "w-10",
                     )}
                     key={r}
@@ -302,7 +302,7 @@ export const ThemeEditor = (): React.ReactElement => {
                   <Button
                     className={cn(
                       color.name === activeColor?.name &&
-                        "border-primary border-2",
+                        "border-2 border-primary",
                     )}
                     key={color.name}
                     onClick={() => {
@@ -381,7 +381,7 @@ export const App = () => {
               <CardHeader>
                 <CardDescription>Controls </CardDescription>
               </CardHeader>
-              <CardContent className="grid grid-cols-2 gap-2 text-sm font-medium">
+              <CardContent className="grid grid-cols-2 gap-2 font-medium text-sm">
                 <div>On</div>
                 <Switch defaultChecked={true} />
                 <div>Off</div>
@@ -433,7 +433,7 @@ export const App = () => {
 export const ThemeEditorPage = (): React.ReactElement => {
   return (
     <div className="flex flex-col gap-3 pt-6">
-      <div className="text-4xl font-extrabold">Color in Your App.</div>
+      <div className="font-extrabold text-4xl">Color in Your App.</div>
       <div>Hand-picked themes that you can copy and paste into your apps.</div>
 
       <ThemeEditor />

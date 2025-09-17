@@ -56,7 +56,7 @@ export function SidebarLinks({
                           key={rootRoute.href}
                         >
                           {rootRoute.href === currentPath && (
-                            <div className="absolute left-0 top-0 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />
+                            <div className="absolute top-0 left-0 h-full w-0.5 bg-primary group-data-[collapsible=icon]:hidden" />
                           )}
                           <SidebarMenuButton
                             asChild
@@ -64,7 +64,7 @@ export function SidebarLinks({
                             tooltip={rootRoute.title}
                           >
                             <Link
-                              className="text-muted-foreground flex items-center gap-2 group-data-[collapsible=icon]:gap-0"
+                              className="flex items-center gap-2 text-muted-foreground group-data-[collapsible=icon]:gap-0"
                               href={rootRoute.href}
                               onClick={(e) => {
                                 e.preventDefault();
@@ -91,14 +91,14 @@ export function SidebarLinks({
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
                             <SidebarMenuButton
-                              className="text-muted-foreground flex items-center gap-2 group-data-[collapsible=icon]:gap-0"
+                              className="flex items-center gap-2 text-muted-foreground group-data-[collapsible=icon]:gap-0"
                               tooltip={rootRoute.title}
                             >
                               <rootRoute.Icon className="group-data-[collapsible=icon]:mx-auto" />
                               <span className="group-data-[collapsible=icon]:hidden">
                                 {rootRoute.title}
                               </span>
-                              <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
+                              <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[collapsible=icon]:hidden group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent>

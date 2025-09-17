@@ -5,5 +5,5 @@ export const Route = createFileRoute("/_app/runs/$runID/")({
 });
 
 function RouteComponent() {
-  return <></>;
+  return null;
 }

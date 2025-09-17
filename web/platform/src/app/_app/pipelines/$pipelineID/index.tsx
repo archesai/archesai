@@ -5,5 +5,5 @@ export const Route = createFileRoute("/_app/pipelines/$pipelineID/")({
 });
 
 function RouteComponent() {
-  return <></>;
+  return null;
 }

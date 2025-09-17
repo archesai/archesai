@@ -9,7 +9,9 @@ import type { BaseEntity, FilterCondition } from "#types/entities";
 interface DataTableRangeFilterProps<TData extends BaseEntity>
   extends React.ComponentProps<"div"> {
   column: Column<TData>;
-  filter: FilterCondition & { id: string };
+  filter: FilterCondition & {
+    id: string;
+  };
   inputID: string;
   onFilterUpdate: (
     filterID: string,

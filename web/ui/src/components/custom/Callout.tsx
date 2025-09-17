@@ -73,7 +73,7 @@ export const Callout = ({
   return (
     <div
       className={cn(
-        "not-prose text-md my-2 rounded-md border p-4",
+        "not-prose my-2 rounded-md border p-4 text-md",
         icon &&
           "grid grid-cols-[min-content_1fr] grid-rows-[fit-content_1fr] items-baseline gap-x-4 gap-y-2",
         !icon && title && "flex flex-col gap-2",

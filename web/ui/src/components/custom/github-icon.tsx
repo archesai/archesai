@@ -5,6 +5,8 @@ const GithubIcon = (
   props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>,
 ): JSX.Element => (
   <svg
+    aria-label="GitHub"
+    role="img"
     viewBox="0 0 496 512"
     xmlns="http://www.w3.org/2000/svg"
     {...props}

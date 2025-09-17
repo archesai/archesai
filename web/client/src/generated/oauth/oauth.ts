@@ -5,10 +5,7 @@
  * The Arches AI API
  * OpenAPI spec version: v0.0.0
  */
-import {
-  useQuery,
-  useSuspenseQuery
-} from '@tanstack/react-query';
+
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,9 +17,10 @@ import type {
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseQueryOptions,
-  UseSuspenseQueryResult
-} from '@tanstack/react-query';
-
+  UseSuspenseQueryResult,
+} from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { customFetch } from "../../fetcher";
 import type {
   BadRequestResponse,
   OauthAuthorize200,
@@ -30,353 +28,659 @@ import type {
   OauthCallbackParams,
   Problem,
   TokenResponse,
-  UnauthorizedResponse
-} from '../orval.schemas';
-
-import { customFetch } from '../../fetcher';
-
+  UnauthorizedResponse,
+} from "../orval.schemas";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * Redirect user to OAuth provider authorization page
  * @summary Start OAuth authorization flow
  */
-export const getOauthAuthorizeUrl = (provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams,) => {
+export const getOauthAuthorizeUrl = (
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/auth/oauth/${provider}/authorize?${stringifiedParams}` : `/auth/oauth/${provider}/authorize`
-}
+  return stringifiedParams.length > 0
+    ? `/auth/oauth/${provider}/authorize?${stringifiedParams}`
+    : `/auth/oauth/${provider}/authorize`;
+};
 
-export const oauthAuthorize = async (provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams, options?: RequestInit): Promise<OauthAuthorize200> => {
-  
-  return customFetch<OauthAuthorize200>(getOauthAuthorizeUrl(provider,params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+export const oauthAuthorize = async (
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+  options?: RequestInit,
+): Promise<OauthAuthorize200> => {
+  return customFetch<OauthAuthorize200>(
+    getOauthAuthorizeUrl(provider, params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-
-
-export const getOauthAuthorizeQueryKey = (provider?: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams,) => {
-    return [`/auth/oauth/${provider}/authorize`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getOauthAuthorizeQueryOptions = <TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getOauthAuthorizeQueryKey = (
+  provider?: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
 ) => {
+  return [
+    `/auth/oauth/${provider}/authorize`,
+    ...(params ? [params] : []),
+  ] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getOauthAuthorizeQueryOptions = <
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getOauthAuthorizeQueryKey(provider,params);
+  const queryKey =
+    queryOptions?.queryKey ?? getOauthAuthorizeQueryKey(provider, params);
 
-  
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthAuthorize>>> = ({
+    signal,
+  }) => oauthAuthorize(provider, params, { signal, ...requestOptions });
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthAuthorize>>> = ({ signal }) => oauthAuthorize(provider,params, { signal, ...requestOptions });
+  return {
+    enabled: !!provider,
+    queryFn,
+    queryKey,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof oauthAuthorize>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-      
+export type OauthAuthorizeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof oauthAuthorize>>
+>;
+export type OauthAuthorizeQueryError = null | BadRequestResponse | Problem;
 
-      
-
-   return  { queryKey, queryFn, enabled: !!(provider), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type OauthAuthorizeQueryResult = NonNullable<Awaited<ReturnType<typeof oauthAuthorize>>>
-export type OauthAuthorizeQueryError = null | BadRequestResponse | Problem
-
-
-export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params: undefined |  OauthAuthorizeParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>> & Pick<
+export function useOauthAuthorize<
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params: undefined | OauthAuthorizeParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof oauthAuthorize>>,
           TError,
           Awaited<ReturnType<typeof oauthAuthorize>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useOauthAuthorize<
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof oauthAuthorize>>,
           TError,
           Awaited<ReturnType<typeof oauthAuthorize>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useOauthAuthorize<
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Start OAuth authorization flow
  */
 
-export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useOauthAuthorize<
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getOauthAuthorizeQueryOptions(provider, params, options);
 
-  const queryOptions = getOauthAuthorizeQueryOptions(provider,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
 
-
-
-export const getOauthAuthorizeSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getOauthAuthorizeSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthAuthorize>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey =
+    queryOptions?.queryKey ?? getOauthAuthorizeQueryKey(provider, params);
 
-  const queryKey =  queryOptions?.queryKey ?? getOauthAuthorizeQueryKey(provider,params);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthAuthorize>>> = ({
+    signal,
+  }) => oauthAuthorize(provider, params, { signal, ...requestOptions });
 
-  
+  return { queryFn, queryKey, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof oauthAuthorize>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthAuthorize>>> = ({ signal }) => oauthAuthorize(provider,params, { signal, ...requestOptions });
+export type OauthAuthorizeSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof oauthAuthorize>>
+>;
+export type OauthAuthorizeSuspenseQueryError =
+  | null
+  | BadRequestResponse
+  | Problem;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type OauthAuthorizeSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof oauthAuthorize>>>
-export type OauthAuthorizeSuspenseQueryError = null | BadRequestResponse | Problem
-
-
-export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params: undefined |  OauthAuthorizeParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthAuthorizeSuspense<
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params: undefined | OauthAuthorizeParams,
+  options: {
+    query: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthAuthorize>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useOauthAuthorizeSuspense<
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthAuthorize>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useOauthAuthorizeSuspense<
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthAuthorize>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Start OAuth authorization flow
  */
 
-export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useOauthAuthorizeSuspense<
+  TData = Awaited<ReturnType<typeof oauthAuthorize>>,
+  TError = null | BadRequestResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthAuthorizeParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthAuthorize>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getOauthAuthorizeSuspenseQueryOptions(
+    provider,
+    params,
+    options,
+  );
 
-  const queryOptions = getOauthAuthorizeSuspenseQueryOptions(provider,params,options)
+  const query = useSuspenseQuery(
+    queryOptions,
+    queryClient,
+  ) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
 
 /**
  * Handle the callback from OAuth provider and complete authentication
  * @summary Handle OAuth callback
  */
-export const getOauthCallbackUrl = (provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams,) => {
+export const getOauthCallbackUrl = (
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/auth/oauth/${provider}/callback?${stringifiedParams}` : `/auth/oauth/${provider}/callback`
-}
+  return stringifiedParams.length > 0
+    ? `/auth/oauth/${provider}/callback?${stringifiedParams}`
+    : `/auth/oauth/${provider}/callback`;
+};
 
-export const oauthCallback = async (provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: RequestInit): Promise<TokenResponse> => {
-  
-  return customFetch<TokenResponse>(getOauthCallbackUrl(provider,params),
-  {      
+export const oauthCallback = async (
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+  options?: RequestInit,
+): Promise<TokenResponse> => {
+  return customFetch<TokenResponse>(getOauthCallbackUrl(provider, params), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    method: "GET",
+  });
+};
 
-
-
-export const getOauthCallbackQueryKey = (provider?: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams,) => {
-    return [`/auth/oauth/${provider}/callback`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getOauthCallbackQueryOptions = <TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getOauthCallbackQueryKey = (
+  provider?: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
 ) => {
+  return [
+    `/auth/oauth/${provider}/callback`,
+    ...(params ? [params] : []),
+  ] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getOauthCallbackQueryOptions = <
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getOauthCallbackQueryKey(provider,params);
+  const queryKey =
+    queryOptions?.queryKey ?? getOauthCallbackQueryKey(provider, params);
 
-  
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthCallback>>> = ({
+    signal,
+  }) => oauthCallback(provider, params, { signal, ...requestOptions });
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthCallback>>> = ({ signal }) => oauthCallback(provider,params, { signal, ...requestOptions });
+  return {
+    enabled: !!provider,
+    queryFn,
+    queryKey,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof oauthCallback>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-      
+export type OauthCallbackQueryResult = NonNullable<
+  Awaited<ReturnType<typeof oauthCallback>>
+>;
+export type OauthCallbackQueryError =
+  | null
+  | BadRequestResponse
+  | UnauthorizedResponse
+  | Problem;
 
-      
-
-   return  { queryKey, queryFn, enabled: !!(provider), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type OauthCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof oauthCallback>>>
-export type OauthCallbackQueryError = null | BadRequestResponse | UnauthorizedResponse | Problem
-
-
-export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params: undefined |  OauthCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>> & Pick<
+export function useOauthCallback<
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params: undefined | OauthCallbackParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof oauthCallback>>,
           TError,
           Awaited<ReturnType<typeof oauthCallback>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useOauthCallback<
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof oauthCallback>>,
           TError,
           Awaited<ReturnType<typeof oauthCallback>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useOauthCallback<
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Handle OAuth callback
  */
 
-export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useOauthCallback<
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getOauthCallbackQueryOptions(provider, params, options);
 
-  const queryOptions = getOauthCallbackQueryOptions(provider,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
 
-
-
-export const getOauthCallbackSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getOauthCallbackSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthCallback>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey =
+    queryOptions?.queryKey ?? getOauthCallbackQueryKey(provider, params);
 
-  const queryKey =  queryOptions?.queryKey ?? getOauthCallbackQueryKey(provider,params);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthCallback>>> = ({
+    signal,
+  }) => oauthCallback(provider, params, { signal, ...requestOptions });
 
-  
+  return { queryFn, queryKey, ...queryOptions } as UseSuspenseQueryOptions<
+    Awaited<ReturnType<typeof oauthCallback>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthCallback>>> = ({ signal }) => oauthCallback(provider,params, { signal, ...requestOptions });
+export type OauthCallbackSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof oauthCallback>>
+>;
+export type OauthCallbackSuspenseQueryError =
+  | null
+  | BadRequestResponse
+  | UnauthorizedResponse
+  | Problem;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type OauthCallbackSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof oauthCallback>>>
-export type OauthCallbackSuspenseQueryError = null | BadRequestResponse | UnauthorizedResponse | Problem
-
-
-export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params: undefined |  OauthCallbackParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthCallbackSuspense<
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params: undefined | OauthCallbackParams,
+  options: {
+    query: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthCallback>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useOauthCallbackSuspense<
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthCallback>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useOauthCallbackSuspense<
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthCallback>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Handle OAuth callback
  */
 
-export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
- provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useOauthCallbackSuspense<
+  TData = Awaited<ReturnType<typeof oauthCallback>>,
+  TError = null | BadRequestResponse | UnauthorizedResponse | Problem,
+>(
+  provider: "google" | "github" | "microsoft" | undefined | null,
+  params?: OauthCallbackParams,
+  options?: {
+    query?: Partial<
+      UseSuspenseQueryOptions<
+        Awaited<ReturnType<typeof oauthCallback>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getOauthCallbackSuspenseQueryOptions(
+    provider,
+    params,
+    options,
+  );
 
-  const queryOptions = getOauthCallbackSuspenseQueryOptions(provider,params,options)
+  const query = useSuspenseQuery(
+    queryOptions,
+    queryClient,
+  ) as UseSuspenseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-

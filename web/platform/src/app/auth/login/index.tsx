@@ -62,7 +62,9 @@ function LoginPage(): JSX.Element {
           });
           await router.invalidate();
           queryClient.clear();
-          await router.navigate({ to: "/" });
+          await router.navigate({
+            to: "/",
+          });
         }}
         postContent={
           <div className="text-center text-sm">
@@ -83,6 +85,8 @@ function LoginPage(): JSX.Element {
                 variant="outline"
               >
                 <svg
+                  aria-label="Apple"
+                  role="img"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -98,6 +102,8 @@ function LoginPage(): JSX.Element {
                 variant="outline"
               >
                 <svg
+                  aria-label="Google"
+                  role="img"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -109,7 +115,7 @@ function LoginPage(): JSX.Element {
                 Login with Google
               </Button>
             </div>
-            <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+            <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-border after:border-t">
               <span className="relative z-10 bg-card px-2 text-muted-foreground">
                 Or continue with
               </span>

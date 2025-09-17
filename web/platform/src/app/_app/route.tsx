@@ -1,14 +1,16 @@
-import { Separator, SidebarInset, SidebarProvider } from "@archesai/ui";
+import { SidebarInset, SidebarProvider } from "@archesai/ui";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import type { JSX } from "react";
-import { AppSidebarContainer } from "#components/layouts/app-sidebar-container";
-import { PageHeaderContainer } from "#components/layouts/page-header-container";
+import { AppSidebarContainer } from "#components/containers/app-sidebar-container";
+import { PageHeaderContainer } from "#components/containers/page-header-container";
 import { siteRoutes } from "#lib/site-config";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: ({ context }) => {
     if (process.env.ARCHESAI_AUTH_ENABLED && !context.session?.data) {
-      throw redirect({ to: "/auth/login" });
+      throw redirect({
+        to: "/auth/login",
+      });
     }
   },
   component: AppLayout,
@@ -16,16 +18,13 @@ export const Route = createFileRoute("/_app")({
 
 function AppLayout(): JSX.Element {
   return (
-    <SidebarProvider defaultOpen={false}>
-      {/* This is the sidebar that is displayed on the left side of the screen. */}
+    <SidebarProvider defaultOpen={true}>
       <AppSidebarContainer siteRoutes={siteRoutes} />
-      {/* This is the main content area. */}
-      <SidebarInset className="max-h-screen">
+      <SidebarInset className="flex h-screen flex-col">
         <PageHeaderContainer siteRoutes={siteRoutes} />
-        <Separator />
-        <div className="flex flex-1 flex-col overflow-y-auto p-4">
+        <main className="flex-1 overflow-auto p-4">
           <Outlet />
-        </div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

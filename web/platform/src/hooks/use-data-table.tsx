@@ -287,5 +287,10 @@ export function useDataTable<TData extends BaseEntity>(
     },
   });
 
-  return { debounceMs, shallow, table, throttleMs };
+  return {
+    debounceMs,
+    shallow,
+    table,
+    throttleMs,
+  };
 }

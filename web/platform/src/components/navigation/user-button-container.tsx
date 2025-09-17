@@ -22,15 +22,21 @@ export function UserButtonContainer(): JSX.Element {
 
   const handleLogout = async () => {
     // TODO: Implement logout logic
-    await navigate({ to: "/auth/login" });
+    await navigate({
+      to: "/auth/login",
+    });
   };
 
   const handleNavigateToProfile = async () => {
-    await navigate({ to: "/profile" });
+    await navigate({
+      to: "/profile",
+    });
   };
 
   const handleNavigateToBilling = async () => {
-    await navigate({ to: "/organization" });
+    await navigate({
+      to: "/organization",
+    });
   };
 
   if (!user) {

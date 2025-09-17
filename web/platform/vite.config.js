@@ -1,7 +1,9 @@
+import { resolve } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
   plugins: [
@@ -27,7 +29,13 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
+    svgr(),
   ],
+  resolve: {
+    alias: {
+      "@assets": resolve(import.meta.dirname, "../../assets"),
+    },
+  },
   server: {
     allowedHosts: ["platform.archesai.dev", "moose"],
     host: "0.0.0.0",

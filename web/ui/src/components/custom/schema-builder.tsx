@@ -24,11 +24,26 @@ interface FieldDefinition {
 }
 
 const fieldTypes = [
-  { label: "Text", value: "string" },
-  { label: "Number", value: "number" },
-  { label: "True/False", value: "boolean" },
-  { label: "List", value: "array" },
-  { label: "Sub-Item", value: "object" },
+  {
+    label: "Text",
+    value: "string",
+  },
+  {
+    label: "Number",
+    value: "number",
+  },
+  {
+    label: "True/False",
+    value: "boolean",
+  },
+  {
+    label: "List",
+    value: "array",
+  },
+  {
+    label: "Sub-Item",
+    value: "object",
+  },
 ];
 
 const SchemaBuilder: React.FC = () => {
@@ -131,14 +146,20 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
       <div className="flex items-center gap-2">
         <Input
           onChange={(e) => {
-            handleFieldChange({ ...field, fieldName: e.target.value });
+            handleFieldChange({
+              ...field,
+              fieldName: e.target.value,
+            });
           }}
           placeholder="Field Name"
           value={field.fieldName}
         />
         <Select
           onValueChange={(value) => {
-            handleFieldChange({ ...field, fieldType: value });
+            handleFieldChange({
+              ...field,
+              fieldType: value,
+            });
           }}
           value={field.fieldType}
         >
@@ -202,7 +223,10 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             onValueChange={(value) => {
               handleFieldChange({
                 ...field,
-                constraints: { ...field.constraints, elementType: value },
+                constraints: {
+                  ...field.constraints,
+                  elementType: value,
+                },
               });
             }}
             value={field.constraints?.elementType ?? "string"}

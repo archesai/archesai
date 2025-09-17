@@ -120,7 +120,9 @@ export default function ToolDataTable(): JSX.Element {
       // biome-ignore lint/suspicious/noExplicitAny: FIXME
       getQueryOptions={getQueryOptions as any}
       handleSelect={async (tool) => {
-        await navigate({ to: `/tool/single?toolID=${tool.id}` });
+        await navigate({
+          to: `/tool/single?toolID=${tool.id}`,
+        });
       }}
       icon={<PackageCheckIcon />}
     />

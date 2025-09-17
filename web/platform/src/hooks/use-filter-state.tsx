@@ -43,7 +43,9 @@ export function useFilterState<TEntity extends BaseEntity>(): {
   sorting: SortingState;
   wrapInGroup: (operator: "and" | "or") => void;
 } {
-  const search = useSearch({ strict: false }) as unknown;
+  const search = useSearch({
+    strict: false,
+  }) as unknown;
   const navigate = useNavigate();
 
   // Parse current search query
@@ -94,7 +96,9 @@ export function useFilterState<TEntity extends BaseEntity>(): {
       updateSearch(rest);
       return;
     }
-    updateSearch({ filter: newFilter });
+    updateSearch({
+      filter: newFilter,
+    });
   };
 
   const addCondition = (condition: FilterCondition) => {
@@ -221,7 +225,10 @@ export function useFilterState<TEntity extends BaseEntity>(): {
   };
 
   const addSort = (field: keyof TEntity, order: "asc" | "desc") => {
-    const newSort = { desc: order === "desc", id: String(field) };
+    const newSort = {
+      desc: order === "desc",
+      id: String(field),
+    };
     setSorting([...sorting.filter((s) => s.id !== String(field)), newSort]);
   };
 
@@ -232,11 +239,18 @@ export function useFilterState<TEntity extends BaseEntity>(): {
   };
 
   const resetPagination = () => {
-    updateSearch({ page: { number: 1, size: 10 } });
+    updateSearch({
+      page: {
+        number: 1,
+        size: 10,
+      },
+    });
   };
 
   const resetSorting = () => {
-    updateSearch({ sort: [] });
+    updateSearch({
+      sort: [],
+    });
   };
 
   const resetAll = () => {

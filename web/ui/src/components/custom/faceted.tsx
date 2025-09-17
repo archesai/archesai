@@ -41,7 +41,10 @@ const FacetedContext = createContext<FacetedContextValue | null>(null);
 interface FacetedBadgeListProps extends React.ComponentProps<"div"> {
   badgeClassName?: string;
   max?: number;
-  options?: { label: string; value: string }[];
+  options?: {
+    label: string;
+    value: string;
+  }[];
   placeholder?: string;
 }
 
@@ -106,7 +109,11 @@ function Faceted<Multiple extends boolean = false>(
   );
 
   const contextValue = useMemo<FacetedContextValue<typeof multiple>>(
-    () => ({ multiple, onItemSelect, value }),
+    () => ({
+      multiple,
+      onItemSelect,
+      value,
+    }),
     [value, onItemSelect, multiple],
   );
 

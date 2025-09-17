@@ -53,12 +53,24 @@ export function Link({
     <RouterLink
       className={className}
       to={to || "/"}
-      {...(hash !== undefined && { hash })}
-      {...(params !== undefined && { params })}
-      {...(preload !== undefined && { preload })}
-      {...(replace !== undefined && { replace })}
-      {...(search !== undefined && { search })}
-      {...(state !== undefined && { state })}
+      {...(hash !== undefined && {
+        hash,
+      })}
+      {...(params !== undefined && {
+        params,
+      })}
+      {...(preload !== undefined && {
+        preload,
+      })}
+      {...(replace !== undefined && {
+        replace,
+      })}
+      {...(search !== undefined && {
+        search,
+      })}
+      {...(state !== undefined && {
+        state,
+      })}
     >
       {children}
     </RouterLink>

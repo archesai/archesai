@@ -97,8 +97,14 @@ export interface SimpleFilterCondition<TEntity extends BaseEntity> {
     | boolean
     | number
     | string
-    | { from: number | string; to: number | string }
-    | { unit: "days" | "months" | "weeks" | "years"; value: number };
+    | {
+        from: number | string;
+        to: number | string;
+      }
+    | {
+        unit: "days" | "months" | "weeks" | "years";
+        value: number;
+      };
 }
 
 export const DEFAULT_DATA_TABLE_CONFIG: DataTableConfig = {
@@ -120,55 +126,146 @@ export function getDefaultFilterOperator(
   return operators[0]?.value ?? (filterVariant === "text" ? "iLike" : "eq");
 }
 
-export function getFilterOperators(
-  filterVariant: FilterVariant,
-): { label: string; value: FilterOperator }[] {
+export function getFilterOperators(filterVariant: FilterVariant): {
+  label: string;
+  value: FilterOperator;
+}[] {
   const operatorMap: Record<
     FilterVariant,
-    { label: string; value: FilterOperator }[]
+    {
+      label: string;
+      value: FilterOperator;
+    }[]
   > = {
     boolean: [
-      { label: "equals", value: "eq" },
-      { label: "does not equal", value: "ne" },
+      {
+        label: "equals",
+        value: "eq",
+      },
+      {
+        label: "does not equal",
+        value: "ne",
+      },
     ],
     date: [
-      { label: "equals", value: "eq" },
-      { label: "does not equal", value: "ne" },
-      { label: "before", value: "lt" },
-      { label: "before or on", value: "lte" },
-      { label: "after", value: "gt" },
-      { label: "after or on", value: "gte" },
-      { label: "is between", value: "isBetween" },
-      { label: "is relative to today", value: "isRelativeToToday" },
+      {
+        label: "equals",
+        value: "eq",
+      },
+      {
+        label: "does not equal",
+        value: "ne",
+      },
+      {
+        label: "before",
+        value: "lt",
+      },
+      {
+        label: "before or on",
+        value: "lte",
+      },
+      {
+        label: "after",
+        value: "gt",
+      },
+      {
+        label: "after or on",
+        value: "gte",
+      },
+      {
+        label: "is between",
+        value: "isBetween",
+      },
+      {
+        label: "is relative to today",
+        value: "isRelativeToToday",
+      },
     ],
     dateRange: [],
     multiSelect: [
-      { label: "is in", value: "inArray" },
-      { label: "is not in", value: "notInArray" },
+      {
+        label: "is in",
+        value: "inArray",
+      },
+      {
+        label: "is not in",
+        value: "notInArray",
+      },
     ],
     number: [
-      { label: "equals", value: "eq" },
-      { label: "does not equal", value: "ne" },
-      { label: "less than", value: "lt" },
-      { label: "less than or equal", value: "lte" },
-      { label: "greater than", value: "gt" },
-      { label: "greater than or equal", value: "gte" },
-      { label: "is between", value: "isBetween" },
+      {
+        label: "equals",
+        value: "eq",
+      },
+      {
+        label: "does not equal",
+        value: "ne",
+      },
+      {
+        label: "less than",
+        value: "lt",
+      },
+      {
+        label: "less than or equal",
+        value: "lte",
+      },
+      {
+        label: "greater than",
+        value: "gt",
+      },
+      {
+        label: "greater than or equal",
+        value: "gte",
+      },
+      {
+        label: "is between",
+        value: "isBetween",
+      },
     ],
     range: [],
     select: [
-      { label: "equals", value: "eq" },
-      { label: "does not equal", value: "ne" },
-      { label: "is in", value: "inArray" },
-      { label: "is not in", value: "notInArray" },
+      {
+        label: "equals",
+        value: "eq",
+      },
+      {
+        label: "does not equal",
+        value: "ne",
+      },
+      {
+        label: "is in",
+        value: "inArray",
+      },
+      {
+        label: "is not in",
+        value: "notInArray",
+      },
     ],
     text: [
-      { label: "contains", value: "iLike" },
-      { label: "does not contain", value: "notILike" },
-      { label: "equals", value: "eq" },
-      { label: "does not equal", value: "ne" },
-      { label: "is empty", value: "isEmpty" },
-      { label: "is not empty", value: "isNotEmpty" },
+      {
+        label: "contains",
+        value: "iLike",
+      },
+      {
+        label: "does not contain",
+        value: "notILike",
+      },
+      {
+        label: "equals",
+        value: "eq",
+      },
+      {
+        label: "does not equal",
+        value: "ne",
+      },
+      {
+        label: "is empty",
+        value: "isEmpty",
+      },
+      {
+        label: "is not empty",
+        value: "isNotEmpty",
+      },
     ],
   };
 
