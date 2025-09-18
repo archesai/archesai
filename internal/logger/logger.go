@@ -13,6 +13,9 @@ import (
 // New creates a configured logger with stdout output.
 func New(cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
+	if cfg.Pretty {
+		return NewPretty(cfg)
+	}
 	return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: level,
 	}))

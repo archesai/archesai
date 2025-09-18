@@ -8,6 +8,7 @@
     "**/bin": true,
     "**/dist": true,
     "**/node_modules": true,
+    "tmp": true,
     "web/docs/apis": true,
     "web/docs/pages/**": true
   },

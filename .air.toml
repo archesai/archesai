@@ -1,13 +1,13 @@
 root = "."
 testdata_dir = "testdata"
-tmp_dir = "/tmp"
+tmp_dir = "tmp"
 
 [build]
-  args_bin = ["api", "--tui"]
+  args_bin = ["api"]
   bin = "./bin/archesai"
-  cmd = "make build-archesai"
+  cmd = "go build -o ./bin/archesai  ./cmd/archesai/main.go"
   delay = 1000
-  exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules", "web", "deployments", "tools"]
+  exclude_dir = ["assets", "api", "tmp", "deployments", "docs", "node_modules", "scripts", "test", "tmp", "tools", "web"]
   exclude_file = []
   exclude_regex = ["_test.go"]
   exclude_unchanged = false

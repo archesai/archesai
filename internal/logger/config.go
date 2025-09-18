@@ -10,6 +10,6 @@ type Config struct {
 func NewConfig() Config {
 	return Config{
 		Level:  "info",
-		Pretty: true,
+		Pretty: false,
 	}
 }

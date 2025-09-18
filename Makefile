@@ -49,10 +49,10 @@ dev: ## Run all services in development mode
 # Build Commands
 # ------------------------------------------
 
-BINARY_PATH := ./bin
+BINARY_PATH := ./tmp
 
 .PHONY: build
-build: build-api build-web ## Build all binaries
+build: build-api build-platform ## Build all binaries
 	@echo -e "$(GREEN)✓ All builds complete!$(NC)"
 
 .PHONY: build-api
@@ -61,11 +61,11 @@ build-api: ## Build archesai server binary
 	@go build -o $(BINARY_PATH)/archesai  cmd/archesai/main.go
 	@echo -e "$(GREEN)✓ archesai built: $(BINARY_PATH)/archesai $(NC)"
 
-.PHONY: build-web
-build-web: ## Build web assets
-	@echo -e "$(YELLOW)▶ Building web assets...$(NC)"
+.PHONY: build-platform
+build-platform: ## Build platform assets
+	@echo -e "$(YELLOW)▶ Building platform assets...$(NC)"
 	@cd web/platform && pnpm build
-	@echo -e "$(GREEN)✓ Web assets built!$(NC)"
+	@echo -e "$(GREEN)✓ Platform assets built!$(NC)"
 
 .PHONY: build-docs
 build-docs: prepare-docs ## Build documentation site
@@ -82,9 +82,9 @@ run-api: ## Run the API server (production mode)
 	@echo -e "$(YELLOW)▶ Starting API server...$(NC)"
 	@go run cmd/archesai/main.go api
 
-.PHONY: run-web
-run-web: build-web ## Run the web UI (production build)
-	@echo -e "$(YELLOW)▶ Starting web server...$(NC)"
+.PHONY: run-platform
+run-platform: build-platform ## Run the platform UI (production build)
+	@echo -e "$(YELLOW)▶ Starting platform server...$(NC)"
 	@pnpm -F @archesai/platform start
 
 .PHONY: run-docs
@@ -98,9 +98,14 @@ run-worker: ## Run the background worker
 	@go run cmd/archesai/main.go worker
 
 .PHONY: run-tui
-run-tui: build ## Launch the TUI interface
+run-tui: ## Launch the TUI interface
 	@echo -e "$(YELLOW)▶ Launching TUI...$(NC)"
 	@go run cmd/archesai/main.go tui
+
+.PHONY: run-config
+run-config-show:  ## Launch the configuration wizard
+	@echo -e "$(YELLOW)▶ Launching configuration wizard...$(NC)"
+	@go run cmd/archesai/main.go config show
 
 # ------------------------------------------
 # Development Commands (Hot Reload)
@@ -108,12 +113,13 @@ run-tui: build ## Launch the TUI interface
 
 .PHONY: dev-api
 dev-api: ## Run API server with hot reload
-	@echo -e "$(YELLOW)▶ Starting API server with hot reload...$(NC)"
+	@echo -e "$(YELLOW)▶ Starting API server with hot reload on port 3001...$(NC)"
+	@echo -e "$(YELLOW)Press Ctrl+C to stop$(NC)"
 	@go tool air
 
-.PHONY: dev-web
-dev-web: ## Run web platform with hot reload
-	@echo -e "$(YELLOW)▶ Starting web platform with hot reload...$(NC)"
+.PHONY: dev-platform
+dev-platform: ## Run platform with hot reload
+	@echo -e "$(YELLOW)▶ Starting platform with hot reload...$(NC)"
 	@pnpm -F @archesai/platform dev
 
 .PHONY: dev-docs
@@ -130,7 +136,7 @@ dev-all: ## Run all services with hot reload
 	@echo -e "$(GRAY)Press Ctrl+C to stop all services$(NC)"
 	@trap 'echo -e "\n$(YELLOW)Stopping all services...$(NC)"; kill 0' INT; \
 	(make dev-api &) && \
-	(make dev-web &) && \
+	(make dev-platform &) && \
 	(make dev-docs &) && \
 	wait
 
@@ -641,8 +647,8 @@ release-check: ## Check if ready for release
 	@$(MAKE) generate
 	@echo -e "$(BLUE)Running tests...$(NC)"
 	@$(MAKE) test-short
-	@echo -e "$(BLUE)Building web assets...$(NC)"
-	@$(MAKE) build-web
+	@echo -e "$(BLUE)Building platform assets...$(NC)"
+	@$(MAKE) build-platform
 	@echo -e "$(BLUE)Linting code...$(NC)"
 	@$(MAKE) lint
 	@echo -e "$(GREEN)✓ Ready for release!$(NC)"
@@ -741,7 +747,7 @@ release-info: ## Show release information and next steps
 	@echo -e "  • $(GREEN)Binaries$(NC)  - Cross-platform executables"
 	@echo -e "  • $(GREEN)Docker$(NC)    - Multi-arch container images"
 	@echo -e "  • $(GREEN)Checksums$(NC) - SHA256 verification files"
-	@echo -e "  • $(GREEN)Archives$(NC)  - Standard & full (with web assets)"
+	@echo -e "  • $(GREEN)Archives$(NC)  - Standard & full (with platform assets)"
 	@echo ""
 	@echo -e "$(BLUE)Next Steps:$(NC)"
 	@echo -e "  1. Run $(CYAN)make release-check$(NC) to verify readiness"

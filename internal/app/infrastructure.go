@@ -59,16 +59,10 @@ type Repositories struct {
 func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 
 	// Initialize logger
-	loggerCfg := logger.Config{
+	log := logger.New(logger.Config{
 		Level:  string(cfg.Logging.Level),
 		Pretty: cfg.Logging.Pretty,
-	}
-	var log *slog.Logger
-	if loggerCfg.Pretty {
-		log = logger.NewPretty(loggerCfg)
-	} else {
-		log = logger.New(loggerCfg)
-	}
+	})
 	slog.SetDefault(log)
 
 	// Initialize database
