@@ -2,18 +2,35 @@ package health
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"testing"
 	"time"
-
-	"github.com/archesai/archesai/internal/database"
 )
+
+// MockRepository is a mock implementation of Repository for testing
+type MockRepository struct {
+	dbErr    error
+	redisErr error
+	emailErr error
+}
+
+func (m *MockRepository) CheckDatabase(_ context.Context) error {
+	return m.dbErr
+}
+
+func (m *MockRepository) CheckRedis(_ context.Context) error {
+	return m.redisErr
+}
+
+func (m *MockRepository) CheckEmail(_ context.Context) error {
+	return m.emailErr
+}
 
 func TestNewService(t *testing.T) {
 	logger := slog.Default()
-	// Database is an interface, use nil for testing
-	var db *database.Database
-	service := NewService(db, logger)
+	repo := &MockRepository{}
+	service := NewService(repo, logger)
 
 	if service == nil {
 		t.Fatal("Expected non-nil service")
@@ -23,9 +40,8 @@ func TestNewService(t *testing.T) {
 		t.Error("Expected logger to be set correctly")
 	}
 
-	// Can't compare interface values directly
-	if service.db != nil {
-		t.Error("Expected db to be nil for this test")
+	if service.repo != repo {
+		t.Error("Expected repository to be set correctly")
 	}
 
 	if time.Since(service.start) > time.Second {
@@ -36,118 +52,136 @@ func TestNewService(t *testing.T) {
 func TestService_CheckHealth(t *testing.T) {
 	tests := []struct {
 		name        string
-		setupTime   time.Time
-		withDB      bool
+		setupRepo   func() *MockRepository
 		expectError bool
+		wantDB      string
+		wantRedis   string
+		wantEmail   string
 	}{
 		{
-			name:        "health check with nil database",
-			setupTime:   time.Now(),
-			withDB:      true,
+			name: "all services healthy",
+			setupRepo: func() *MockRepository {
+				return &MockRepository{}
+			},
 			expectError: false,
+			wantDB:      StatusHealthy,
+			wantRedis:   StatusHealthy,
+			wantEmail:   StatusHealthy,
 		},
 		{
-			name:        "health check without database",
-			setupTime:   time.Now(),
-			withDB:      false,
-			expectError: false, // We don't error, just report unhealthy
+			name: "database unhealthy",
+			setupRepo: func() *MockRepository {
+				return &MockRepository{
+					dbErr: errors.New("database connection failed"),
+				}
+			},
+			expectError: false,
+			wantDB:      StatusUnhealthy,
+			wantRedis:   StatusHealthy,
+			wantEmail:   StatusHealthy,
 		},
 		{
-			name:        "health check after running for a while",
-			setupTime:   time.Now().Add(-5 * time.Second),
-			withDB:      true,
+			name: "redis unhealthy",
+			setupRepo: func() *MockRepository {
+				return &MockRepository{
+					redisErr: errors.New("redis connection failed"),
+				}
+			},
 			expectError: false,
+			wantDB:      StatusHealthy,
+			wantRedis:   StatusUnhealthy,
+			wantEmail:   StatusHealthy,
+		},
+		{
+			name: "email unhealthy",
+			setupRepo: func() *MockRepository {
+				return &MockRepository{
+					emailErr: errors.New("email service unavailable"),
+				}
+			},
+			expectError: false,
+			wantDB:      StatusHealthy,
+			wantRedis:   StatusHealthy,
+			wantEmail:   StatusUnhealthy,
+		},
+		{
+			name: "all services unhealthy",
+			setupRepo: func() *MockRepository {
+				return &MockRepository{
+					dbErr:    errors.New("database connection failed"),
+					redisErr: errors.New("redis connection failed"),
+					emailErr: errors.New("email service unavailable"),
+				}
+			},
+			expectError: false,
+			wantDB:      StatusUnhealthy,
+			wantRedis:   StatusUnhealthy,
+			wantEmail:   StatusUnhealthy,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			logger := slog.Default()
-			// Database is an interface, can't instantiate directly - using nil for unit tests
-			var db *database.Database
-
+			repo := tt.setupRepo()
 			service := &Service{
-				db:     db,
-				logger: logger,
-				start:  tt.setupTime,
+				repo:   repo,
+				logger: slog.Default(),
+				start:  time.Now(),
 			}
 
-			ctx := context.Background()
-			status, err := service.CheckHealth(ctx)
+			response, err := service.CheckHealth(context.Background())
 
-			if tt.expectError && err == nil {
-				t.Error("Expected error but got nil")
-			}
-			if !tt.expectError && err != nil {
-				t.Errorf("Unexpected error: %v", err)
+			if (err != nil) != tt.expectError {
+				t.Errorf("CheckHealth() error = %v, expectError %v", err, tt.expectError)
+				return
 			}
 
-			if status != nil {
-				// Check database status - always unhealthy in unit tests since we use nil
-				expectedDBStatus := StatusUnhealthy
+			if response == nil {
+				t.Fatal("Expected non-nil response")
+			}
 
-				if status.Services.Database != expectedDBStatus {
-					t.Errorf(
-						"Database status = %v, want %v",
-						status.Services.Database,
-						expectedDBStatus,
-					)
-				}
+			if response.Services.Database != tt.wantDB {
+				t.Errorf("Database status = %v, want %v", response.Services.Database, tt.wantDB)
+			}
 
-				// Email and Redis should always be healthy (TODO in implementation)
-				if status.Services.Email != StatusHealthy {
-					t.Errorf("Email status = %v, want %v", status.Services.Email, StatusHealthy)
-				}
-				if status.Services.Redis != StatusHealthy {
-					t.Errorf("Redis status = %v, want %v", status.Services.Redis, StatusHealthy)
-				}
+			if response.Services.Redis != tt.wantRedis {
+				t.Errorf("Redis status = %v, want %v", response.Services.Redis, tt.wantRedis)
+			}
 
-				// Check timestamp format
-				if status.Timestamp == "" {
-					t.Error("Expected timestamp to be set")
-				}
+			if response.Services.Email != tt.wantEmail {
+				t.Errorf("Email status = %v, want %v", response.Services.Email, tt.wantEmail)
+			}
 
-				// Check uptime
-				expectedUptime := time.Since(tt.setupTime).Seconds()
-				if status.Uptime < 0 || status.Uptime > float32(expectedUptime+1) {
-					t.Errorf("Uptime = %v, expected around %v", status.Uptime, expectedUptime)
-				}
+			if response.Timestamp == "" {
+				t.Error("Expected timestamp to be set")
+			}
+
+			if response.Uptime <= 0 {
+				t.Error("Expected uptime to be greater than 0")
 			}
 		})
 	}
 }
 
-func TestService_checkDatabase(t *testing.T) {
-	tests := []struct {
-		name        string
-		db          *database.Database
-		expectError bool
-	}{
-		{
-			name:        "nil database connection returns error",
-			db:          nil,
-			expectError: true,
-		},
+func TestService_CheckHealthWithUptime(t *testing.T) {
+	repo := &MockRepository{}
+	startTime := time.Now().Add(-5 * time.Minute) // Service started 5 minutes ago
+	service := &Service{
+		repo:   repo,
+		logger: slog.Default(),
+		start:  startTime,
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			logger := slog.Default()
-			service := &Service{
-				db:     tt.db,
-				logger: logger,
-				start:  time.Now(),
-			}
+	response, err := service.CheckHealth(context.Background())
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
 
-			ctx := context.Background()
-			err := service.checkDatabase(ctx)
+	// Uptime should be approximately 300 seconds (5 minutes)
+	expectedUptime := float32(300)
+	tolerance := float32(2) // Allow 2 seconds tolerance
 
-			if tt.expectError && err == nil {
-				t.Error("Expected error but got nil")
-			}
-			if !tt.expectError && err != nil {
-				t.Errorf("Unexpected error: %v", err)
-			}
-		})
+	if response.Uptime < expectedUptime-tolerance || response.Uptime > expectedUptime+tolerance {
+		t.Errorf("Uptime = %v, want approximately %v", response.Uptime, expectedUptime)
 	}
 }

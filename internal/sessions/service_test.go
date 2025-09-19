@@ -20,7 +20,7 @@ func createSessionTestService(t *testing.T) (*Service, *MockRepository) {
 	mockRepo := NewMockRepository(t)
 	log := logger.NewTest()
 
-	service := NewService(mockRepo, nil, log)
+	service := NewService(mockRepo, "test-jwt-secret", log)
 	return service, mockRepo
 }
 
@@ -31,11 +31,11 @@ func TestService_Validate(t *testing.T) {
 
 		token := "valid-token"
 		session := &Session{
-			ID:                   uuid.New(),
-			Token:                token,
-			UserID:               uuid.New(),
-			ActiveOrganizationID: uuid.New(),
-			ExpiresAt:            time.Now().Add(24 * time.Hour),
+			ID:             uuid.New(),
+			Token:          token,
+			UserID:         uuid.New(),
+			OrganizationID: uuid.New(),
+			ExpiresAt:      time.Now().Add(24 * time.Hour),
 		}
 
 		mockRepo.EXPECT().GetByToken(mock.Anything, token).Return(session, nil)
@@ -123,7 +123,7 @@ func TestService_NewService(t *testing.T) {
 		log := logger.NewTest()
 
 		// Create with cache using NewService
-		service := NewService(mockRepo, nil, log)
+		service := NewService(mockRepo, "test-jwt-secret", log)
 
 		assert.NotNil(t, service)
 		// Can't access internal fields, just check the service is created
@@ -262,7 +262,7 @@ func TestService_DeleteUserSessions(t *testing.T) {
 		log := logger.NewTest()
 
 		// Use NewService to get a service with session manager
-		service := NewService(mockRepo, nil, log)
+		service := NewService(mockRepo, "test-jwt-secret", log)
 		userID := uuid.New()
 
 		// Should be called via repository

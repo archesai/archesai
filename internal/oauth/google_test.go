@@ -9,15 +9,27 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
 func TestGoogleOAuthProvider_GetProviderID(t *testing.T) {
-	provider := NewGoogleOAuthProvider("test-client-id", "test-client-secret")
+	provider := NewGoogleProvider(
+		"test-client-id",
+		"test-client-secret",
+		"http://localhost:8080/auth/callback/google",
+		logger.NewTest(),
+	)
 	assert.Equal(t, "google", provider.GetProviderID())
 }
 
 func TestGoogleOAuthProvider_GetAuthURL(t *testing.T) {
-	provider := NewGoogleOAuthProvider("test-client-id", "test-client-secret")
+	provider := NewGoogleProvider(
+		"test-client-id",
+		"test-client-secret",
+		"http://localhost:8080/auth/callback/google",
+		logger.NewTest(),
+	)
 
 	state := "test-state-123"
 	redirectURI := "http://localhost:8080/auth/callback/google"
@@ -46,7 +58,12 @@ func TestGoogleOAuthProvider_GetAuthURL(t *testing.T) {
 }
 
 func TestGoogleOAuthProvider_ExchangeCodeError(t *testing.T) {
-	provider := NewGoogleOAuthProvider("test-client", "test-secret")
+	provider := NewGoogleProvider(
+		"test-client",
+		"test-secret",
+		"http://localhost:8080/auth/callback/google",
+		logger.NewTest(),
+	)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
@@ -56,7 +73,12 @@ func TestGoogleOAuthProvider_ExchangeCodeError(t *testing.T) {
 }
 
 func TestGoogleOAuthProvider_URLValidation(t *testing.T) {
-	provider := NewGoogleOAuthProvider("client", "secret")
+	provider := NewGoogleProvider(
+		"client",
+		"secret",
+		"http://localhost:8080/auth/callback/google",
+		logger.NewTest(),
+	)
 
 	authURL := provider.GetAuthURL("state", "http://localhost")
 	parsedURL, err := url.Parse(authURL)
@@ -73,7 +95,7 @@ func TestGoogleOAuthProvider_URLValidation(t *testing.T) {
 	assert.NotEmpty(t, query.Get("state"))
 }
 
-func TestGoogleOAuthProvider_ExtractIDToken(t *testing.T) {
+func TestGoogleOAuthProvider_ExtractIDTokenFromExtra(t *testing.T) {
 	tests := []struct {
 		name     string
 		token    *oauth2.Token
@@ -114,7 +136,9 @@ func TestGoogleOAuthProvider_ExtractIDToken(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := extractIDToken(tt.token)
+			// Extract ID token from token's Extra field
+			idToken, _ := tt.token.Extra("id_token").(string)
+			result := idToken
 			assert.Equal(t, tt.expected, result)
 		})
 	}

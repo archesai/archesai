@@ -10,7 +10,8 @@ export const Route = createFileRoute("/auth/forgot-password/")({
 });
 
 function ForgotPasswordPage(): JSX.Element {
-  const { mutateAsync: requestPasswordReset } = useRequestPasswordReset();
+  const { mutateAsync: requestPasswordReset, isSuccess } =
+    useRequestPasswordReset();
 
   const formFields: FormFieldConfig<RequestPasswordResetBody>[] = [
     {
@@ -25,6 +26,30 @@ function ForgotPasswordPage(): JSX.Element {
       ),
     },
   ];
+
+  if (isSuccess) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="w-full max-w-md space-y-4 rounded-lg border bg-card p-6">
+          <div className="text-center">
+            <h2 className="font-bold text-2xl">Check Your Email</h2>
+            <p className="mt-2 text-muted-foreground">
+              We've sent a password reset link to your email address. Please
+              check your inbox and follow the instructions.
+            </p>
+          </div>
+          <div className="text-center text-sm">
+            <Link
+              className="underline"
+              to="/auth/login"
+            >
+              Return to Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <GenericForm<RequestPasswordResetBody, never>

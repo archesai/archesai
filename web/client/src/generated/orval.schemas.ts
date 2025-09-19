@@ -171,7 +171,12 @@ export interface TokenResponse {
 }
 
 export type SessionAllOf = {
-  activeOrganizationID: Uuid;
+  /** The organization ID for this session (nullable for users without org) */
+  organizationID?: Uuid;
+  /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
+  authMethod?: string;
+  /** The authentication provider (google, github, microsoft, local) */
+  authProvider?: string;
   /**
    * The expiration date of the session
    * @minLength 1
@@ -809,6 +814,75 @@ export interface LocalAuth {
   refreshTokenTtl: string;
 }
 
+export type MagicLinkAuthDeliveryMethodsEmail = {
+  enabled?: boolean;
+  from?: string;
+};
+
+export type MagicLinkAuthDeliveryMethodsConsole = {
+  /** Enable console output (development only) */
+  enabled?: boolean;
+};
+
+export type MagicLinkAuthDeliveryMethodsOtp = {
+  enabled?: boolean;
+};
+
+export type MagicLinkAuthDeliveryMethodsWebhook = {
+  enabled?: boolean;
+  url?: string;
+};
+
+/**
+ * Available delivery methods
+ */
+export type MagicLinkAuthDeliveryMethods = {
+  email?: MagicLinkAuthDeliveryMethodsEmail;
+  console?: MagicLinkAuthDeliveryMethodsConsole;
+  otp?: MagicLinkAuthDeliveryMethodsOtp;
+  webhook?: MagicLinkAuthDeliveryMethodsWebhook;
+};
+
+/**
+ * Rate limiting configuration
+ */
+export type MagicLinkAuthRateLimit = {
+  /**
+   * Maximum number of attempts within window
+   * @minimum 1
+   */
+  maxAttempts?: number;
+  /**
+   * Time window in minutes
+   * @minimum 1
+   */
+  windowMinutes?: number;
+};
+
+/**
+ * Magic link authentication configuration
+ */
+export interface MagicLinkAuth {
+  /** Enable magic link authentication */
+  enabled: boolean;
+  /**
+   * Token expiry duration in minutes
+   * @minimum 1
+   * @maximum 60
+   */
+  tokenExpiry?: number;
+  /**
+   * Length of OTP code
+   * @minimum 4
+   * @maximum 8
+   */
+  otpLength?: number;
+  /** Available delivery methods */
+  deliveryMethods?: MagicLinkAuthDeliveryMethods;
+  /** Rate limiting configuration */
+  rateLimit?: MagicLinkAuthRateLimit;
+}
+
 /**
  * Twitter OAuth configuration
  */
@@ -833,6 +907,56 @@ export interface TwitterAuth {
 }
 
 /**
+ * Google OAuth configuration
+ */
+export interface GoogleAuth {
+  /** Enable Google OAuth */
+  enabled: boolean;
+  /** Google OAuth client ID */
+  clientId?: string;
+  /** Google OAuth client secret */
+  clientSecret?: string;
+  /** OAuth callback URL */
+  redirectUrl?: string;
+  /** OAuth scopes to request */
+  scopes?: string[];
+}
+
+/**
+ * GitHub OAuth configuration
+ */
+export interface GitHubAuth {
+  /** Enable GitHub OAuth */
+  enabled: boolean;
+  /** GitHub OAuth App client ID */
+  clientId?: string;
+  /** GitHub OAuth App client secret */
+  clientSecret?: string;
+  /** OAuth callback URL */
+  redirectUrl?: string;
+  /** OAuth scopes to request */
+  scopes?: string[];
+}
+
+/**
+ * Microsoft/Azure AD OAuth configuration
+ */
+export interface MicrosoftAuth {
+  /** Enable Microsoft OAuth */
+  enabled: boolean;
+  /** Azure AD Application (client) ID */
+  clientId?: string;
+  /** Azure AD client secret */
+  clientSecret?: string;
+  /** OAuth callback URL */
+  redirectUrl?: string;
+  /** Azure AD tenant ID (use 'common' for multi-tenant) */
+  tenant?: string;
+  /** OAuth scopes to request */
+  scopes?: string[];
+}
+
+/**
  * Authentication configuration for the API server
  */
 export interface AuthConfig {
@@ -840,7 +964,11 @@ export interface AuthConfig {
   enabled: boolean;
   firebase?: FirebaseAuth;
   local?: LocalAuth;
+  magicLink?: MagicLinkAuth;
   twitter?: TwitterAuth;
+  google?: GoogleAuth;
+  github?: GitHubAuth;
+  microsoft?: MicrosoftAuth;
 }
 
 /**
@@ -1392,6 +1520,16 @@ export type NotFoundResponse = Problem;
 export type NoContentResponse = void;
 
 /**
+ * Too many requests - rate limit exceeded
+ */
+export type TooManyRequestsResponse = Problem;
+
+/**
+ * Internal server error
+ */
+export type InternalServerErrorResponse = Problem;
+
+/**
  * A recursive filter node that can be a condition or group
  */
 export type AccountsFilterParameter = { [key: string]: unknown };
@@ -1475,7 +1613,7 @@ export const SessionsSortParameterItemField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  activeOrganizationID: 'activeOrganizationID',
+  organizationID: 'organizationID',
   expiresAt: 'expiresAt',
   ipAddress: 'ipAddress',
   token: 'token',
@@ -2133,11 +2271,8 @@ export type GetSession200 = {
 };
 
 export type UpdateSessionBody = {
-  /**
-   * The active organization ID
-   * @minLength 1
-   */
-  activeOrganizationID: string;
+  /** The organization ID to set as active for this session */
+  organizationID: Uuid;
 };
 
 export type UpdateSession200 = {
@@ -2231,6 +2366,73 @@ error?: string;
  * Human-readable error description
  */
 error_description?: string;
+};
+
+/**
+ * How to deliver the magic link
+ */
+export type RequestMagicLinkBodyDeliveryMethod = typeof RequestMagicLinkBodyDeliveryMethod[keyof typeof RequestMagicLinkBodyDeliveryMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RequestMagicLinkBodyDeliveryMethod = {
+  email: 'email',
+  console: 'console',
+  otp: 'otp',
+  webhook: 'webhook',
+} as const;
+
+export type RequestMagicLinkBody = {
+  /**
+   * Email address or username
+   * @minLength 1
+   */
+  identifier: string;
+  /** How to deliver the magic link */
+  deliveryMethod?: RequestMagicLinkBodyDeliveryMethod;
+  /** URL to redirect to after successful authentication */
+  redirectUrl?: string;
+};
+
+export type RequestMagicLink200 = {
+  message?: string;
+  /**
+   * OTP code (only returned if deliveryMethod is 'otp')
+   * @minLength 6
+   * @maxLength 6
+   */
+  otpCode?: string;
+  /** Token expiry in seconds */
+  expiresIn?: number;
+};
+
+export type VerifyMagicLinkBody = {
+  /**
+   * Magic link token from URL
+   * @minLength 32
+   */
+  token?: string;
+  /**
+   * OTP code (alternative to token)
+   * @minLength 6
+   * @maxLength 6
+   * @pattern ^[0-9]{6}$
+   */
+  code?: string;
+  /** Required when using OTP code */
+  identifier?: string;
+};
+
+export type VerifyMagicLink201 = {
+  /** JWT access token */
+  accessToken?: string;
+  /** JWT refresh token */
+  refreshToken?: string;
+  /** Token type */
+  tokenType?: string;
+  /** Access token expiry in seconds */
+  expiresIn?: number;
+  user?: User;
 };
 
 export type ListTokensParams = {

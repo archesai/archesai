@@ -12,12 +12,29 @@ const getBody = <T>(c: Request | Response): Promise<T> => {
   return c.text() as Promise<T>;
 };
 
-// NOTE: Update just base url
 const getUrl = (contextUrl: string): string => {
-  const baseUrl = "https://api.archesai.dev";
-  const requestUrl = new URL(`${baseUrl}${contextUrl}`);
+  const host = process.env.VITE_ARCHES_API_HOST;
+  if (!host) {
+    throw new Error("host URL is not configured.");
+  }
 
-  return requestUrl.toString();
+  try {
+    const requestUrl = new URL(`http://${host}/api/v1${contextUrl}`);
+    return requestUrl.toString();
+  } catch (error) {
+    throw new Error(`could not parse url: ${error}`);
+  }
+};
+
+import type { Problem } from "./generated/orval.schemas";
+
+const isProblem = (obj: unknown): obj is Problem => {
+  return (
+    obj !== null &&
+    typeof obj === "object" &&
+    "type" in obj &&
+    typeof obj.type === "string"
+  );
 };
 
 export const customFetch = async <T>(
@@ -32,13 +49,65 @@ export const customFetch = async <T>(
     headers: new Headers(options.headers),
   };
 
-  const response = await fetch(requestUrl, requestInit);
-  const data = await getBody<T>(response);
-  if (!response.ok) {
-    throw new Error(
-      `Request failed with status ${response.status.toString()}: ${response.statusText}`,
-    );
-  }
+  try {
+    const response = await fetch(requestUrl, requestInit);
 
-  return data as T;
+    if (!response.ok) {
+      let problem: Problem;
+      try {
+        const errorData = await getBody<unknown>(response.clone());
+        if (isProblem(errorData)) {
+          problem = errorData;
+        } else {
+          throw new Error("Invalid problem format");
+        }
+      } catch {
+        // If we can't parse as Problem schema, create a basic one
+        problem = {
+          detail: `HTTP error ${response.status}`,
+          status: response.status,
+          title: response.statusText || "Unknown Error",
+          type: "about:blank",
+        };
+      }
+
+      throw problem;
+    }
+
+    const data = await getBody<T>(response);
+    return data as T;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    // If it's already a Problem, re-throw it
+    if (isProblem(error)) {
+      throw error;
+    }
+
+    // Check if it's a Node.js network error (ECONNREFUSED, etc.)
+    const isNetworkError =
+      error instanceof Error &&
+      ("code" in error ||
+        "errno" in error ||
+        "syscall" in error ||
+        error.message.includes("ECONNREFUSED") ||
+        error.message.includes("fetch failed"));
+
+    // Handle network errors, timeouts, etc. as Problem format
+    const networkProblem: Problem = {
+      detail: isNetworkError
+        ? `Connection failed: ${error instanceof Error ? error.message : "Unknown network error"}`
+        : error instanceof Error
+          ? error.message
+          : "Unknown network error",
+      status: isNetworkError ? 503 : 500,
+      title: isNetworkError
+        ? "Service Unavailable"
+        : error instanceof Error
+          ? error.name
+          : "Network Error",
+      type: "about:blank",
+    };
+
+    throw networkProblem;
+  }
 };

@@ -17,7 +17,7 @@ schema:
           - createdAt
           - id
           - updatedAt
-          - activeOrganizationID
+          - organizationID
           - expiresAt
           - ipAddress
           - token

@@ -19,15 +19,15 @@ const (
 
 // Defines values for ListSessionsParamsSortField.
 const (
-	ActiveOrganizationID ListSessionsParamsSortField = "activeOrganizationID"
-	CreatedAt            ListSessionsParamsSortField = "createdAt"
-	ExpiresAt            ListSessionsParamsSortField = "expiresAt"
-	ID                   ListSessionsParamsSortField = "id"
-	IPAddress            ListSessionsParamsSortField = "ipAddress"
-	Token                ListSessionsParamsSortField = "token"
-	UpdatedAt            ListSessionsParamsSortField = "updatedAt"
-	UserAgent            ListSessionsParamsSortField = "userAgent"
-	UserID               ListSessionsParamsSortField = "userID"
+	CreatedAt      ListSessionsParamsSortField = "createdAt"
+	ExpiresAt      ListSessionsParamsSortField = "expiresAt"
+	ID             ListSessionsParamsSortField = "id"
+	IPAddress      ListSessionsParamsSortField = "ipAddress"
+	OrganizationID ListSessionsParamsSortField = "organizationID"
+	Token          ListSessionsParamsSortField = "token"
+	UpdatedAt      ListSessionsParamsSortField = "updatedAt"
+	UserAgent      ListSessionsParamsSortField = "userAgent"
+	UserID         ListSessionsParamsSortField = "userID"
 )
 
 // Defines values for ListSessionsParamsSortOrder.
@@ -80,7 +80,11 @@ type Problem struct {
 
 // Session defines model for Session.
 type Session struct {
-	ActiveOrganizationID UUID `json:"activeOrganizationID" yaml:"activeOrganizationID"`
+	// AuthMethod The authentication method used (magic_link, oauth_google, oauth_github, etc.)
+	AuthMethod string `json:"authMethod,omitempty,omitzero" yaml:"authMethod,omitempty"`
+
+	// AuthProvider The authentication provider (google, github, microsoft, local)
+	AuthProvider string `json:"authProvider,omitempty,omitzero" yaml:"authProvider,omitempty"`
 
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
@@ -93,6 +97,9 @@ type Session struct {
 
 	// IPAddress The IP address of the session
 	IPAddress string `json:"ipAddress" yaml:"ipAddress"`
+
+	// OrganizationID The organization ID for this session (nullable for users without org)
+	OrganizationID UUID `json:"organizationID,omitempty,omitzero" yaml:"organizationID,omitempty"`
 
 	// Token The session token
 	Token string `json:"token" yaml:"token"`
@@ -173,7 +180,7 @@ type Unauthorized = Problem
 // ListSessionsParams defines parameters for ListSessions.
 type ListSessionsParams struct {
 	// Filter Filter sessions by field values. Supported fields:
-	// - createdAt, id, updatedAt, activeOrganizationID, expiresAt
+	// - createdAt, id, updatedAt, organizationID, expiresAt
 	// - ipAddress, token, userAgent, userID
 	Filter SessionsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
@@ -204,8 +211,8 @@ type CreateSessionJSONBody struct {
 
 // UpdateSessionJSONBody defines parameters for UpdateSession.
 type UpdateSessionJSONBody struct {
-	// ActiveOrganizationID The active organization ID
-	ActiveOrganizationID string `json:"activeOrganizationID" yaml:"activeOrganizationID"`
+	// OrganizationID The organization ID to set as active for this session
+	OrganizationID UUID `json:"organizationID" yaml:"organizationID"`
 }
 
 // CreateSessionJSONRequestBody defines body for CreateSession for application/json ContentType.

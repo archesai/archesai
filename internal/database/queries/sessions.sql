@@ -5,9 +5,13 @@ INSERT INTO
     user_id,
     token,
     expires_at,
-    active_organization_id,
+    organization_id,
     ip_address,
-    user_agent
+    user_agent,
+    auth_method,
+    auth_provider,
+    created_at,
+    updated_at
   )
 VALUES
   (
@@ -15,9 +19,13 @@ VALUES
     $2,
     $3,
     $4,
-    sqlc.narg ('active_organization_id'),
+    sqlc.narg ('organization_id'),
     sqlc.narg ('ip_address'),
-    sqlc.narg ('user_agent')
+    sqlc.narg ('user_agent'),
+    sqlc.narg ('auth_method'),
+    sqlc.narg ('auth_provider'),
+    NOW(),
+    NOW()
   )
 RETURNING
   *;
@@ -72,10 +80,13 @@ OFFSET
 UPDATE session
 SET
   expires_at = COALESCE(sqlc.narg (expires_at), expires_at),
-  active_organization_id = COALESCE(
-    sqlc.narg (active_organization_id),
-    active_organization_id
-  )
+  organization_id = COALESCE(
+    sqlc.narg (organization_id),
+    organization_id
+  ),
+  auth_method = COALESCE(sqlc.narg (auth_method), auth_method),
+  auth_provider = COALESCE(sqlc.narg (auth_provider), auth_provider),
+  updated_at = NOW()
 WHERE
   id = $1
 RETURNING

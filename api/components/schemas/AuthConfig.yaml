@@ -11,8 +11,16 @@ properties:
     $ref: ./FirebaseAuth.yaml
   local:
     $ref: ./LocalAuth.yaml
+  magicLink:
+    $ref: ./MagicLinkAuth.yaml
   twitter:
     $ref: ./TwitterAuth.yaml
+  google:
+    $ref: ./GoogleAuth.yaml
+  github:
+    $ref: ./GitHubAuth.yaml
+  microsoft:
+    $ref: ./MicrosoftAuth.yaml
 required:
   - enabled
 additionalProperties: false

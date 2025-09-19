@@ -21,10 +21,7 @@ import type { JSX } from "react";
 
 export default function MemberForm({ id }: { id?: string }): JSX.Element {
   const { data: sessionData } = useGetSessionSuspense("current");
-  const memberQuery = useGetMemberSuspense(
-    sessionData.data.activeOrganizationID,
-    id,
-  );
+  const memberQuery = useGetMemberSuspense(sessionData.data.organizationID, id);
 
   const member = id ? memberQuery.data.data : null;
 
@@ -90,14 +87,11 @@ export default function MemberForm({ id }: { id?: string }): JSX.Element {
       fields={formFields}
       isUpdateForm={!!id}
       onSubmitCreate={async (createMemberDto) => {
-        await createMember(
-          sessionData.data.activeOrganizationID,
-          createMemberDto,
-        );
+        await createMember(sessionData.data.organizationID, createMemberDto);
       }}
       onSubmitUpdate={async (data) => {
         if (id) {
-          await updateMember(sessionData.data.activeOrganizationID, id, data);
+          await updateMember(sessionData.data.organizationID, id, data);
         }
       }}
       title="Configuration"

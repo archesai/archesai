@@ -3,21 +3,21 @@ module github.com/archesai/archesai
 go 1.25.1
 
 require (
-	github.com/charmbracelet/bubbletea v1.3.9
+	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
+	github.com/charmbracelet/log v0.4.2
 	github.com/coder/websocket v1.8.14
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/labstack/echo/v4 v4.13.4
-	github.com/lmittmann/tint v1.1.2
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/ollama/ollama v0.11.11
 	github.com/openai/openai-go v1.12.0
 	github.com/pgvector/pgvector-go v0.3.0
 	github.com/pressly/goose/v3 v3.25.0
 	github.com/redis/go-redis/v9 v9.14.0
-	github.com/speakeasy-api/openapi v1.6.5
+	github.com/speakeasy-api/openapi v1.7.1
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
@@ -26,9 +26,9 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/redis v0.38.0
 	golang.org/x/crypto v0.42.0
 	golang.org/x/oauth2 v0.31.0
+	golang.org/x/sync v0.17.0
 	golang.org/x/time v0.13.0
 	gopkg.in/yaml.v3 v3.0.1
-	modernc.org/sqlite v1.39.0
 )
 
 require (
@@ -37,7 +37,7 @@ require (
 	cloud.google.com/go v0.122.0 // indirect
 	cloud.google.com/go/auth v0.16.5 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
-	cloud.google.com/go/compute/metadata v0.8.0 // indirect
+	cloud.google.com/go/compute/metadata v0.8.4 // indirect
 	cloud.google.com/go/iam v1.5.2 // indirect
 	cloud.google.com/go/kms v1.22.0 // indirect
 	cloud.google.com/go/longrunning v0.6.7 // indirect
@@ -204,6 +204,7 @@ require (
 	github.com/go-git/go-git/v5 v5.16.1 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.1 // indirect
+	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
@@ -476,7 +477,6 @@ require (
 	golang.org/x/exp v0.0.0-20250911091902-df9299821621 // indirect
 	golang.org/x/mod v0.28.0 // indirect
 	golang.org/x/net v0.44.0 // indirect
-	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/term v0.35.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
@@ -500,6 +500,7 @@ require (
 	modernc.org/libc v1.66.8 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
+	modernc.org/sqlite v1.39.0 // indirect
 	sigs.k8s.io/kind v0.27.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 	software.sslmate.com/src/go-pkcs12 v0.5.0 // indirect

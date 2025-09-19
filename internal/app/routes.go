@@ -5,18 +5,23 @@ import (
 
 	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/artifacts"
+	"github.com/archesai/archesai/internal/config"
 	"github.com/archesai/archesai/internal/health"
 	"github.com/archesai/archesai/internal/labels"
 	"github.com/archesai/archesai/internal/members"
+	"github.com/archesai/archesai/internal/oauth"
 	"github.com/archesai/archesai/internal/organizations"
 	"github.com/archesai/archesai/internal/pipelines"
 	"github.com/archesai/archesai/internal/runs"
+	"github.com/archesai/archesai/internal/sessions"
 	"github.com/archesai/archesai/internal/tools"
 	"github.com/archesai/archesai/internal/users"
 )
 
 // RegisterRoutes registers all application routes with the Echo server.
 func (a *App) RegisterRoutes(e *echo.Echo) {
+	a.Logger.Info("registering API routes...")
+
 	// API v1 group
 	v1 := e.Group("/api/v1")
 
@@ -26,10 +31,29 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 
 	// Account routes - public endpoints
 	// These endpoints handle registration, password reset, email verification, etc.
+	a.Logger.Info("registering account routes (public)")
 	strictAccountsHandler := accounts.NewStrictHandler(a.AccountsHandler, nil)
 	accounts.RegisterHandlers(v1, strictAccountsHandler)
 
+	// Sessions routes - public endpoints for authentication
+	// These endpoints handle login/logout
+	a.Logger.Info("registering session routes (public)")
+	strictSessionsHandler := sessions.NewStrictHandler(a.SessionsHandler, nil)
+	sessions.RegisterHandlers(v1, strictSessionsHandler)
+
+	// Magic Link routes - public endpoints for passwordless authentication
+	a.Logger.Info("registering magic link routes (public)")
+	v1.POST("/auth/magic-links/request", a.MagicLinkHandler.RequestMagicLink)
+	v1.POST("/auth/magic-links/verify", a.MagicLinkHandler.VerifyMagicLink)
+
+	// OAuth routes - public endpoints for OAuth authentication
+	// Note: OAuth routes don't use the v1 prefix as per the OpenAPI spec
+	a.Logger.Info("registering OAuth routes (public)")
+	strictOAuthHandler := oauth.NewStrictHandler(a.OAuthHandler, nil)
+	oauth.RegisterHandlers(e, strictOAuthHandler)
+
 	// Health routes - public endpoints for monitoring
+	a.Logger.Info("registering health routes (public)")
 	strictHealthHandler := health.NewStrictHandler(a.HealthHandler, nil)
 	health.RegisterHandlers(v1, strictHealthHandler)
 
@@ -38,10 +62,12 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	// ========================================
 
 	// Create a protected group with authentication middleware
+	a.Logger.Info("creating protected routes group")
 	protected := v1.Group("")
 	protected.Use(a.AuthMiddleware.RequireAuth())
 
 	// Users routes - require authentication
+	a.Logger.Info("registering users routes (protected)")
 	strictUsersHandler := users.NewStrictHandler(a.UsersHandler, nil)
 	users.RegisterHandlers(protected, strictUsersHandler)
 
@@ -53,6 +79,7 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	organizations.RegisterHandlers(orgGroup, strictOrganizationsHandler)
 
 	// Pipelines routes - require authentication
+	a.Logger.Info("registering pipelines routes (protected)")
 	strictPipelinesHandler := pipelines.NewStrictHandler(a.PipelinesHandler, nil)
 	pipelines.RegisterHandlers(protected, strictPipelinesHandler)
 
@@ -94,8 +121,10 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	// admin := v1.Group("/admin")
 	// admin.Use(auth.RequireAuth(a.AuthService, auth.MiddlewarePresets.AdminOnly, a.Logger))
 
-	// Register config routes using StrictHandler pattern
-	// TODO: Implement config handler when needed
-	// strictConfigHandler := config.NewStrictHandler(a.ConfigHandler, nil)
-	// config.RegisterHandlers(protected, strictConfigHandler)
+	// Config routes - require authentication
+	a.Logger.Info("registering config routes (protected)")
+	strictConfigHandler := config.NewStrictHandler(a.ConfigHandler, nil)
+	config.RegisterHandlers(protected, strictConfigHandler)
+
+	a.Logger.Info("all routes registered successfully")
 }

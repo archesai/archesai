@@ -15,6 +15,7 @@
   "outputStyle": "default",
   "permissions": {
     "allow": [
+      "Bash(make:*)",
       "Bash(make generate:*)",
       "Bash(make format:*)",
       "Bash(grep:*)",

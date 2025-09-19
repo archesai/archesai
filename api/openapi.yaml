@@ -85,6 +85,11 @@ paths:
     $ref: paths/oauth_authorize.yaml
   /auth/oauth/{provider}/callback:
     $ref: paths/oauth_callback.yaml
+  # Magic Link Authentication
+  /auth/magic-links/request:
+    $ref: paths/auth/magic-link.yaml#/~1auth~1magic-links~1request
+  /auth/magic-links/verify:
+    $ref: paths/auth/magic-link.yaml#/~1auth~1magic-links~1verify
   # API Keys domain
   /tokens:
     $ref: paths/tokens.yaml

@@ -7,28 +7,38 @@ import (
 	"os"
 	"time"
 
-	"github.com/lmittmann/tint"
+	"github.com/charmbracelet/log"
 )
 
 // New creates a configured logger with stdout output.
 func New(cfg Config) *slog.Logger {
-	level := parseLevel(cfg.Level)
+	// FIXME should i do this?
 	if cfg.Pretty {
 		return NewPretty(cfg)
 	}
-	return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+
+	return NewDefault(cfg)
+}
+
+// NewDefault creates a default logger with info level and stdout output.
+func NewDefault(cfg Config) *slog.Logger {
+	level := parseLevel(cfg.Level)
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: level,
-	}))
+	})
+	return slog.New(handler)
 }
 
 // NewPretty creates a pretty-printed logger for development use.
 func NewPretty(cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
-	return slog.New(tint.NewHandler(os.Stdout, &tint.Options{
-		Level:      slog.LevelDebug,
-		TimeFormat: time.Kitchen,
-		AddSource:  level == slog.LevelDebug,
-	}))
+	handler := log.NewWithOptions(os.Stdout, log.Options{
+		ReportTimestamp: true,
+		TimeFunction:    log.NowUTC,
+		TimeFormat:      time.RFC3339,
+		Level:           log.Level(level),
+	})
+	return slog.New(handler)
 }
 
 // NewTest creates a test logger that discards all output.
@@ -39,9 +49,10 @@ func NewTest() *slog.Logger {
 // NewWithWriter creates a logger with a custom writer.
 func NewWithWriter(w io.Writer, cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
-	return slog.New(slog.NewJSONHandler(w, &slog.HandlerOptions{
+	handler := slog.NewJSONHandler(w, &slog.HandlerOptions{
 		Level: level,
-	}))
+	})
+	return slog.New(handler)
 }
 
 // parseLevel converts string log level to slog.Level.

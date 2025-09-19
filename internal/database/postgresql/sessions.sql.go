@@ -19,9 +19,13 @@ INSERT INTO
     user_id,
     token,
     expires_at,
-    active_organization_id,
+    organization_id,
     ip_address,
-    user_agent
+    user_agent,
+    auth_method,
+    auth_provider,
+    created_at,
+    updated_at
   )
 VALUES
   (
@@ -31,20 +35,26 @@ VALUES
     $4,
     $5,
     $6,
-    $7
+    $7,
+    $8,
+    $9,
+    NOW(),
+    NOW()
   )
 RETURNING
-  id, created_at, updated_at, active_organization_id, expires_at, ip_address, token, user_agent, user_id
+  id, created_at, updated_at, organization_id, expires_at, ip_address, token, user_agent, user_id, auth_method, auth_provider, metadata
 `
 
 type CreateSessionParams struct {
-	ID                   uuid.UUID
-	UserID               uuid.UUID
-	Token                string
-	ExpiresAt            time.Time
-	ActiveOrganizationID *uuid.UUID
-	IPAddress            *string
-	UserAgent            *string
+	ID             uuid.UUID
+	UserID         uuid.UUID
+	Token          string
+	ExpiresAt      time.Time
+	OrganizationID *uuid.UUID
+	IPAddress      *string
+	UserAgent      *string
+	AuthMethod     *string
+	AuthProvider   *string
 }
 
 func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
@@ -53,21 +63,26 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 		arg.UserID,
 		arg.Token,
 		arg.ExpiresAt,
-		arg.ActiveOrganizationID,
+		arg.OrganizationID,
 		arg.IPAddress,
 		arg.UserAgent,
+		arg.AuthMethod,
+		arg.AuthProvider,
 	)
 	var i Session
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationID,
+		&i.OrganizationID,
 		&i.ExpiresAt,
 		&i.IPAddress,
 		&i.Token,
 		&i.UserAgent,
 		&i.UserID,
+		&i.AuthMethod,
+		&i.AuthProvider,
+		&i.Metadata,
 	)
 	return i, err
 }
@@ -96,7 +111,7 @@ func (q *Queries) DeleteSessionsByUser(ctx context.Context, userID uuid.UUID) er
 
 const getSession = `-- name: GetSession :one
 SELECT
-  id, created_at, updated_at, active_organization_id, expires_at, ip_address, token, user_agent, user_id
+  id, created_at, updated_at, organization_id, expires_at, ip_address, token, user_agent, user_id, auth_method, auth_provider, metadata
 FROM
   session
 WHERE
@@ -112,19 +127,22 @@ func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationID,
+		&i.OrganizationID,
 		&i.ExpiresAt,
 		&i.IPAddress,
 		&i.Token,
 		&i.UserAgent,
 		&i.UserID,
+		&i.AuthMethod,
+		&i.AuthProvider,
+		&i.Metadata,
 	)
 	return i, err
 }
 
 const getSessionByToken = `-- name: GetSessionByToken :one
 SELECT
-  id, created_at, updated_at, active_organization_id, expires_at, ip_address, token, user_agent, user_id
+  id, created_at, updated_at, organization_id, expires_at, ip_address, token, user_agent, user_id, auth_method, auth_provider, metadata
 FROM
   session
 WHERE
@@ -140,19 +158,22 @@ func (q *Queries) GetSessionByToken(ctx context.Context, token string) (Session,
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationID,
+		&i.OrganizationID,
 		&i.ExpiresAt,
 		&i.IPAddress,
 		&i.Token,
 		&i.UserAgent,
 		&i.UserID,
+		&i.AuthMethod,
+		&i.AuthProvider,
+		&i.Metadata,
 	)
 	return i, err
 }
 
 const listSessions = `-- name: ListSessions :many
 SELECT
-  id, created_at, updated_at, active_organization_id, expires_at, ip_address, token, user_agent, user_id
+  id, created_at, updated_at, organization_id, expires_at, ip_address, token, user_agent, user_id, auth_method, auth_provider, metadata
 FROM
   session
 ORDER BY
@@ -181,12 +202,15 @@ func (q *Queries) ListSessions(ctx context.Context, arg ListSessionsParams) ([]S
 			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.ActiveOrganizationID,
+			&i.OrganizationID,
 			&i.ExpiresAt,
 			&i.IPAddress,
 			&i.Token,
 			&i.UserAgent,
 			&i.UserID,
+			&i.AuthMethod,
+			&i.AuthProvider,
+			&i.Metadata,
 		); err != nil {
 			return nil, err
 		}
@@ -200,7 +224,7 @@ func (q *Queries) ListSessions(ctx context.Context, arg ListSessionsParams) ([]S
 
 const listSessionsByUser = `-- name: ListSessionsByUser :many
 SELECT
-  id, created_at, updated_at, active_organization_id, expires_at, ip_address, token, user_agent, user_id
+  id, created_at, updated_at, organization_id, expires_at, ip_address, token, user_agent, user_id, auth_method, auth_provider, metadata
 FROM
   session
 WHERE
@@ -232,12 +256,15 @@ func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUser
 			&i.ID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.ActiveOrganizationID,
+			&i.OrganizationID,
 			&i.ExpiresAt,
 			&i.IPAddress,
 			&i.Token,
 			&i.UserAgent,
 			&i.UserID,
+			&i.AuthMethod,
+			&i.AuthProvider,
+			&i.Metadata,
 		); err != nil {
 			return nil, err
 		}
@@ -253,35 +280,49 @@ const updateSession = `-- name: UpdateSession :one
 UPDATE session
 SET
   expires_at = COALESCE($2, expires_at),
-  active_organization_id = COALESCE(
+  organization_id = COALESCE(
     $3,
-    active_organization_id
-  )
+    organization_id
+  ),
+  auth_method = COALESCE($4, auth_method),
+  auth_provider = COALESCE($5, auth_provider),
+  updated_at = NOW()
 WHERE
   id = $1
 RETURNING
-  id, created_at, updated_at, active_organization_id, expires_at, ip_address, token, user_agent, user_id
+  id, created_at, updated_at, organization_id, expires_at, ip_address, token, user_agent, user_id, auth_method, auth_provider, metadata
 `
 
 type UpdateSessionParams struct {
-	ID                   uuid.UUID
-	ExpiresAt            *time.Time
-	ActiveOrganizationID *uuid.UUID
+	ID             uuid.UUID
+	ExpiresAt      *time.Time
+	OrganizationID *uuid.UUID
+	AuthMethod     *string
+	AuthProvider   *string
 }
 
 func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error) {
-	row := q.db.QueryRow(ctx, updateSession, arg.ID, arg.ExpiresAt, arg.ActiveOrganizationID)
+	row := q.db.QueryRow(ctx, updateSession,
+		arg.ID,
+		arg.ExpiresAt,
+		arg.OrganizationID,
+		arg.AuthMethod,
+		arg.AuthProvider,
+	)
 	var i Session
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationID,
+		&i.OrganizationID,
 		&i.ExpiresAt,
 		&i.IPAddress,
 		&i.Token,
 		&i.UserAgent,
 		&i.UserID,
+		&i.AuthMethod,
+		&i.AuthProvider,
+		&i.Metadata,
 	)
 	return i, err
 }

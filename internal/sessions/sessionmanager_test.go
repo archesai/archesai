@@ -31,15 +31,15 @@ func TestSessionManager_CreateSession(t *testing.T) {
 
 		// Expectations
 		mockRepo.EXPECT().Create(ctx, mock.AnythingOfType("*sessions.Session")).Return(&Session{
-			ID:                   uuid.New(),
-			UserID:               userID,
-			Token:                "generated-token",
-			ActiveOrganizationID: orgID,
-			ExpiresAt:            time.Now().Add(24 * time.Hour),
-			IPAddress:            ipAddress,
-			UserAgent:            userAgent,
-			CreatedAt:            time.Now(),
-			UpdatedAt:            time.Now(),
+			ID:             uuid.New(),
+			UserID:         userID,
+			Token:          "generated-token",
+			OrganizationID: orgID,
+			ExpiresAt:      time.Now().Add(24 * time.Hour),
+			IPAddress:      ipAddress,
+			UserAgent:      userAgent,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
 		}, nil)
 
 		// Execute
@@ -49,7 +49,7 @@ func TestSessionManager_CreateSession(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, session)
 		assert.Equal(t, userID, session.UserID)
-		assert.Equal(t, orgID, session.ActiveOrganizationID)
+		assert.Equal(t, orgID, session.OrganizationID)
 		assert.Equal(t, ipAddress, session.IPAddress)
 		assert.Equal(t, userAgent, session.UserAgent)
 		assert.NotEmpty(t, session.Token)
@@ -62,15 +62,15 @@ func TestSessionManager_CreateSession(t *testing.T) {
 
 		// Expectations
 		mockRepo.EXPECT().Create(ctx, mock.AnythingOfType("*sessions.Session")).Return(&Session{
-			ID:                   uuid.New(),
-			UserID:               userID,
-			Token:                "generated-token",
-			ActiveOrganizationID: orgID,
-			ExpiresAt:            time.Now().Add(24 * time.Hour),
-			IPAddress:            ipAddress,
-			UserAgent:            userAgent,
-			CreatedAt:            time.Now(),
-			UpdatedAt:            time.Now(),
+			ID:             uuid.New(),
+			UserID:         userID,
+			Token:          "generated-token",
+			OrganizationID: orgID,
+			ExpiresAt:      time.Now().Add(24 * time.Hour),
+			IPAddress:      ipAddress,
+			UserAgent:      userAgent,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
 		}, nil)
 
 		// Execute

@@ -22,9 +22,18 @@ allOf:
   - $ref: ./Base.yaml
   - type: object
     properties:
-      activeOrganizationID:
+      organizationID:
+        description: The organization ID for this session (nullable for users without org)
         allOf:
           - $ref: ./UUID.yaml
+      authMethod:
+        description: The authentication method used (magic_link, oauth_google, oauth_github, etc.)
+        type: string
+        example: magic_link
+      authProvider:
+        description: The authentication provider (google, github, microsoft, local)
+        type: string
+        example: local
       expiresAt:
         description: The expiration date of the session
         type: string
@@ -50,7 +59,6 @@ allOf:
         allOf:
           - $ref: ./UUID.yaml
     required:
-      - activeOrganizationID
       - expiresAt
       - ipAddress
       - token

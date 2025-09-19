@@ -24,6 +24,8 @@ import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/inde
 import { Route as AppOrganizationIndexRouteImport } from './app/_app/organization/index'
 import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
 import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
+import { Route as AuthMagicLinkVerifyRouteImport } from './app/auth/magic-link/verify'
+import { Route as AuthOauthCallbackIndexRouteImport } from './app/auth/oauth/callback/index'
 import { Route as AppRunsRunIDIndexRouteImport } from './app/_app/runs/$runID/index'
 import { Route as AppProfileThemesIndexRouteImport } from './app/_app/profile/themes/index'
 import { Route as AppPipelinesPipelineIDIndexRouteImport } from './app/_app/pipelines/$pipelineID/index'
@@ -98,6 +100,11 @@ const AppArtifactsIndexRoute = AppArtifactsIndexRouteImport.update({
   path: '/artifacts/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AuthMagicLinkVerifyRoute = AuthMagicLinkVerifyRouteImport.update({
+  id: '/magic-link/verify',
+  path: '/magic-link/verify',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const AppPipelinesCreateIndexLazyRoute =
   AppPipelinesCreateIndexLazyRouteImport.update({
     id: '/pipelines/create/',
@@ -106,6 +113,11 @@ const AppPipelinesCreateIndexLazyRoute =
   } as any).lazy(() =>
     import('./app/_app/pipelines/create/index.lazy').then((d) => d.Route),
   )
+const AuthOauthCallbackIndexRoute = AuthOauthCallbackIndexRouteImport.update({
+  id: '/oauth/callback/',
+  path: '/oauth/callback/',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const AppRunsRunIDIndexRoute = AppRunsRunIDIndexRouteImport.update({
   id: '/runs/$runID/',
   path: '/runs/$runID/',
@@ -138,6 +150,7 @@ const AppArtifactsArtifactIDIndexRoute =
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/auth/magic-link/verify': typeof AuthMagicLinkVerifyRoute
   '/artifacts': typeof AppArtifactsIndexRoute
   '/labels': typeof AppLabelsIndexRoute
   '/organization': typeof AppOrganizationIndexRoute
@@ -153,11 +166,13 @@ export interface FileRoutesByFullPath {
   '/pipelines/$pipelineID': typeof AppPipelinesPipelineIDIndexRoute
   '/profile/themes': typeof AppProfileThemesIndexRoute
   '/runs/$runID': typeof AppRunsRunIDIndexRoute
+  '/auth/oauth/callback': typeof AuthOauthCallbackIndexRoute
   '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/auth/magic-link/verify': typeof AuthMagicLinkVerifyRoute
   '/artifacts': typeof AppArtifactsIndexRoute
   '/labels': typeof AppLabelsIndexRoute
   '/organization': typeof AppOrganizationIndexRoute
@@ -173,6 +188,7 @@ export interface FileRoutesByTo {
   '/pipelines/$pipelineID': typeof AppPipelinesPipelineIDIndexRoute
   '/profile/themes': typeof AppProfileThemesIndexRoute
   '/runs/$runID': typeof AppRunsRunIDIndexRoute
+  '/auth/oauth/callback': typeof AuthOauthCallbackIndexRoute
   '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
 }
 export interface FileRoutesById {
@@ -180,6 +196,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/_app/': typeof AppIndexRoute
+  '/auth/magic-link/verify': typeof AuthMagicLinkVerifyRoute
   '/_app/artifacts/': typeof AppArtifactsIndexRoute
   '/_app/labels/': typeof AppLabelsIndexRoute
   '/_app/organization/': typeof AppOrganizationIndexRoute
@@ -195,6 +212,7 @@ export interface FileRoutesById {
   '/_app/pipelines/$pipelineID/': typeof AppPipelinesPipelineIDIndexRoute
   '/_app/profile/themes/': typeof AppProfileThemesIndexRoute
   '/_app/runs/$runID/': typeof AppRunsRunIDIndexRoute
+  '/auth/oauth/callback/': typeof AuthOauthCallbackIndexRoute
   '/_app/pipelines/create/': typeof AppPipelinesCreateIndexLazyRoute
 }
 export interface FileRouteTypes {
@@ -202,6 +220,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/auth'
     | '/'
+    | '/auth/magic-link/verify'
     | '/artifacts'
     | '/labels'
     | '/organization'
@@ -217,11 +236,13 @@ export interface FileRouteTypes {
     | '/pipelines/$pipelineID'
     | '/profile/themes'
     | '/runs/$runID'
+    | '/auth/oauth/callback'
     | '/pipelines/create'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/'
+    | '/auth/magic-link/verify'
     | '/artifacts'
     | '/labels'
     | '/organization'
@@ -237,12 +258,14 @@ export interface FileRouteTypes {
     | '/pipelines/$pipelineID'
     | '/profile/themes'
     | '/runs/$runID'
+    | '/auth/oauth/callback'
     | '/pipelines/create'
   id:
     | '__root__'
     | '/_app'
     | '/auth'
     | '/_app/'
+    | '/auth/magic-link/verify'
     | '/_app/artifacts/'
     | '/_app/labels/'
     | '/_app/organization/'
@@ -258,6 +281,7 @@ export interface FileRouteTypes {
     | '/_app/pipelines/$pipelineID/'
     | '/_app/profile/themes/'
     | '/_app/runs/$runID/'
+    | '/auth/oauth/callback/'
     | '/_app/pipelines/create/'
   fileRoutesById: FileRoutesById
 }
@@ -359,12 +383,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppArtifactsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/auth/magic-link/verify': {
+      id: '/auth/magic-link/verify'
+      path: '/magic-link/verify'
+      fullPath: '/auth/magic-link/verify'
+      preLoaderRoute: typeof AuthMagicLinkVerifyRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/_app/pipelines/create/': {
       id: '/_app/pipelines/create/'
       path: '/pipelines/create'
       fullPath: '/pipelines/create'
       preLoaderRoute: typeof AppPipelinesCreateIndexLazyRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/auth/oauth/callback/': {
+      id: '/auth/oauth/callback/'
+      path: '/oauth/callback'
+      fullPath: '/auth/oauth/callback'
+      preLoaderRoute: typeof AuthOauthCallbackIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/_app/runs/$runID/': {
       id: '/_app/runs/$runID/'
@@ -443,15 +481,19 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 )
 
 interface AuthRouteRouteChildren {
+  AuthMagicLinkVerifyRoute: typeof AuthMagicLinkVerifyRoute
   AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
   AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
+  AuthOauthCallbackIndexRoute: typeof AuthOauthCallbackIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthMagicLinkVerifyRoute: AuthMagicLinkVerifyRoute,
   AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthRegisterIndexRoute: AuthRegisterIndexRoute,
+  AuthOauthCallbackIndexRoute: AuthOauthCallbackIndexRoute,
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(

@@ -19,7 +19,7 @@ import MemberForm from "#components/forms/member-form";
 
 export default function MemberDataTable(): JSX.Element {
   const { data: sessionData } = useGetSessionSuspense("current");
-  const organizationID = sessionData.data.activeOrganizationID;
+  const organizationID = sessionData.data.organizationID;
 
   const getQueryOptions = (query: SearchQuery) => {
     return getListMembersSuspenseQueryOptions(organizationID, {

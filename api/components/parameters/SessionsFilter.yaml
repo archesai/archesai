@@ -7,5 +7,5 @@ schema:
   $ref: ../schemas/FilterNode.yaml
 description: |
   Filter sessions by field values. Supported fields:
-  - createdAt, id, updatedAt, activeOrganizationID, expiresAt
+  - createdAt, id, updatedAt, organizationID, expiresAt
   - ipAddress, token, userAgent, userID

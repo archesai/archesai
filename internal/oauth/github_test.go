@@ -8,15 +8,27 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
 func TestGitHubOAuthProvider_GetProviderID(t *testing.T) {
-	provider := NewGitHubOAuthProvider("test-client-id", "test-client-secret")
+	provider := NewGitHubProvider(
+		"client",
+		"secret",
+		"http://localhost:8080/auth/callback/github",
+		logger.NewTest(),
+	)
 	assert.Equal(t, "github", provider.GetProviderID())
 }
 
 func TestGitHubOAuthProvider_GetAuthURL(t *testing.T) {
-	provider := NewGitHubOAuthProvider("test-client-id", "test-client-secret")
+	provider := NewGitHubProvider(
+		"test-client-id",
+		"secret",
+		"http://localhost:8080/auth/callback/github",
+		logger.NewTest(),
+	)
 
 	state := "test-state-456"
 	redirectURI := "http://localhost:8080/auth/callback/github"
@@ -42,7 +54,12 @@ func TestGitHubOAuthProvider_GetAuthURL(t *testing.T) {
 }
 
 func TestGitHubOAuthProvider_ExchangeCodeError(t *testing.T) {
-	provider := NewGitHubOAuthProvider("test-client", "test-secret")
+	provider := NewGitHubProvider(
+		"client",
+		"secret",
+		"http://localhost:8080/auth/callback/github",
+		logger.NewTest(),
+	)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
@@ -53,17 +70,27 @@ func TestGitHubOAuthProvider_ExchangeCodeError(t *testing.T) {
 
 // TestGitHubOAuthProvider_RefreshToken tests that GitHub doesn't support refresh tokens.
 func TestGitHubOAuthProvider_RefreshToken(t *testing.T) {
-	provider := NewGitHubOAuthProvider("test-client", "test-secret")
+	provider := NewGitHubProvider(
+		"client",
+		"secret",
+		"http://localhost:8080/auth/callback/github",
+		logger.NewTest(),
+	)
 
 	ctx := context.Background()
 	_, err := provider.RefreshToken(ctx, "any-token")
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "does not support refresh tokens")
+	assert.Contains(t, err.Error(), "GitHub OAuth apps don't support refresh tokens")
 }
 
 func TestGitHubOAuthProvider_URLValidation(t *testing.T) {
-	provider := NewGitHubOAuthProvider("client", "secret")
+	provider := NewGitHubProvider(
+		"client",
+		"secret",
+		"http://localhost:8080/auth/callback/github",
+		logger.NewTest(),
+	)
 
 	authURL := provider.GetAuthURL("state", "http://localhost")
 	parsedURL, err := url.Parse(authURL)

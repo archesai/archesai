@@ -214,6 +214,82 @@
           "required": ["enabled"],
           "type": "object"
         },
+        "github": {
+          "additionalProperties": false,
+          "description": "GitHub OAuth configuration",
+          "properties": {
+            "clientId": {
+              "description": "GitHub OAuth App client ID",
+              "example": "Iv1.abc123def456ghi7",
+              "type": "string"
+            },
+            "clientSecret": {
+              "description": "GitHub OAuth App client secret",
+              "example": "abc123def456ghi789jkl012mno345pqr678stu901",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable GitHub OAuth",
+              "example": false,
+              "type": "boolean"
+            },
+            "redirectUrl": {
+              "description": "OAuth callback URL",
+              "example": "http://localhost:8080/auth/oauth/github/callback",
+              "type": "string"
+            },
+            "scopes": {
+              "default": ["user:email"],
+              "description": "OAuth scopes to request",
+              "example": ["user:email", "read:user"],
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object"
+        },
+        "google": {
+          "additionalProperties": false,
+          "description": "Google OAuth configuration",
+          "properties": {
+            "clientId": {
+              "description": "Google OAuth client ID",
+              "example": "123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
+              "type": "string"
+            },
+            "clientSecret": {
+              "description": "Google OAuth client secret",
+              "example": "GOCSPX-abc123def456ghi789jkl012",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable Google OAuth",
+              "example": false,
+              "type": "boolean"
+            },
+            "redirectUrl": {
+              "description": "OAuth callback URL",
+              "example": "http://localhost:8080/auth/oauth/google/callback",
+              "type": "string"
+            },
+            "scopes": {
+              "default": ["openid", "profile", "email"],
+              "description": "OAuth scopes to request",
+              "example": ["openid", "profile", "email"],
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object"
+        },
         "local": {
           "additionalProperties": false,
           "description": "Local username/password authentication",
@@ -254,6 +330,163 @@
             "accessTokenTtl",
             "refreshTokenTtl"
           ],
+          "type": "object"
+        },
+        "magicLink": {
+          "additionalProperties": false,
+          "description": "Magic link authentication configuration",
+          "properties": {
+            "deliveryMethods": {
+              "additionalProperties": false,
+              "description": "Available delivery methods",
+              "properties": {
+                "console": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": false,
+                      "description": "Enable console output (development only)",
+                      "example": false,
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "email": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "example": true,
+                      "type": "boolean"
+                    },
+                    "from": {
+                      "example": "noreply@archesai.com",
+                      "format": "email",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "otp": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "example": true,
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "webhook": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": false,
+                      "example": false,
+                      "type": "boolean"
+                    },
+                    "url": {
+                      "example": "https://hooks.example.com/magic-link",
+                      "format": "uri",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable magic link authentication",
+              "example": true,
+              "type": "boolean"
+            },
+            "otpLength": {
+              "default": 6,
+              "description": "Length of OTP code",
+              "example": 6,
+              "maximum": 8,
+              "minimum": 4,
+              "type": "integer"
+            },
+            "rateLimit": {
+              "additionalProperties": false,
+              "description": "Rate limiting configuration",
+              "properties": {
+                "maxAttempts": {
+                  "default": 5,
+                  "description": "Maximum number of attempts within window",
+                  "example": 5,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "windowMinutes": {
+                  "default": 15,
+                  "description": "Time window in minutes",
+                  "example": 15,
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "tokenExpiry": {
+              "default": 15,
+              "description": "Token expiry duration in minutes",
+              "example": 15,
+              "maximum": 60,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object"
+        },
+        "microsoft": {
+          "additionalProperties": false,
+          "description": "Microsoft/Azure AD OAuth configuration",
+          "properties": {
+            "clientId": {
+              "description": "Azure AD Application (client) ID",
+              "example": "12345678-1234-1234-1234-123456789012",
+              "type": "string"
+            },
+            "clientSecret": {
+              "description": "Azure AD client secret",
+              "example": "abc~def123GHI456jkl789MNO012pqr345",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable Microsoft OAuth",
+              "example": false,
+              "type": "boolean"
+            },
+            "redirectUrl": {
+              "description": "OAuth callback URL",
+              "example": "http://localhost:8080/auth/oauth/microsoft/callback",
+              "type": "string"
+            },
+            "scopes": {
+              "default": ["openid", "profile", "email", "User.Read"],
+              "description": "OAuth scopes to request",
+              "example": ["openid", "profile", "email", "User.Read"],
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "tenant": {
+              "default": "common",
+              "description": "Azure AD tenant ID (use 'common' for multi-tenant)",
+              "example": "common",
+              "type": "string"
+            }
+          },
+          "required": ["enabled"],
           "type": "object"
         },
         "twitter": {

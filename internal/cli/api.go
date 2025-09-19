@@ -47,10 +47,10 @@ func init() {
 
 	// Bind to viper
 	if err := viper.BindPFlag("server.host", apiCmd.Flags().Lookup("host")); err != nil {
-		log.Fatalf("Failed to bind host flag: %v", err)
+		log.Fatalf("failed to bind host flag: %v", err)
 	}
 	if err := viper.BindPFlag("server.port", apiCmd.Flags().Lookup("port")); err != nil {
-		log.Fatalf("Failed to bind port flag: %v", err)
+		log.Fatalf("failed to bind port flag: %v", err)
 	}
 }
 
@@ -76,7 +76,7 @@ func runAPI(cmd *cobra.Command, _ []string) error {
 	}
 	defer func() {
 		if err := appContainer.Close(); err != nil {
-			slog.Error("Failed to close container: %v", "error", err)
+			slog.Error("failed to close container: %v", "error", err)
 		}
 	}()
 
@@ -86,25 +86,25 @@ func runAPI(cmd *cobra.Command, _ []string) error {
 
 	// Run server in goroutine
 	go func() {
-		log.Printf("🚀 API server starting on %s:%d", cfg.API.Host, int(cfg.API.Port))
+		log.Printf("api server starting on %s:%d", cfg.API.Host, int(cfg.API.Port))
 		if err := appContainer.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Failed to start server: %v", err)
+			log.Fatalf("failed to start server: %v", err)
 		}
 	}()
 
 	// Wait for interrupt signal
 	<-quit
-	log.Println("Shutting down server...")
+	log.Println("shutting down server...")
 
 	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := appContainer.Server.Shutdown(ctx); err != nil {
-		log.Printf("Server forced to shutdown: %v", err)
+		log.Printf("server forced to shutdown: %v", err)
 		return err
 	}
 
-	log.Println("Server gracefully stopped")
+	log.Println("server gracefully stopped")
 	return nil
 }

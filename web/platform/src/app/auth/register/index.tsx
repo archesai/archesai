@@ -82,7 +82,7 @@ function RegisterPage(): JSX.Element {
             },
           });
           await router.navigate({
-            to: "/",
+            to: "/auth/login",
           });
         }}
         postContent={

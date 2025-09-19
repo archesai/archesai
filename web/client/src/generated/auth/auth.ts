@@ -21,13 +21,19 @@ import type {
   ConfirmEmailVerification200,
   ConfirmEmailVerificationBody,
   ConfirmPasswordResetBody,
+  InternalServerErrorResponse,
   NoContentResponse,
   NotFoundResponse,
   RegisterBody,
   RequestEmailChangeBody,
+  RequestMagicLink200,
+  RequestMagicLinkBody,
   RequestPasswordResetBody,
   TokenResponse,
-  UnauthorizedResponse
+  TooManyRequestsResponse,
+  UnauthorizedResponse,
+  VerifyMagicLink201,
+  VerifyMagicLinkBody
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -537,6 +543,150 @@ export const useConfirmEmailChange = <TError = UnauthorizedResponse | NotFoundRe
       > => {
 
       const mutationOptions = getConfirmEmailChangeMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * Request a magic link to be sent via email or generate an OTP code
+ * @summary Request a magic link
+ */
+export const getRequestMagicLinkUrl = () => {
+
+
+  
+
+  return `/auth/magic-links/request`
+}
+
+export const requestMagicLink = async (requestMagicLinkBody: RequestMagicLinkBody, options?: RequestInit): Promise<RequestMagicLink200> => {
+  
+  return customFetch<RequestMagicLink200>(getRequestMagicLinkUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      requestMagicLinkBody,)
+  }
+);}
+
+
+
+
+export const getRequestMagicLinkMutationOptions = <TError = BadRequestResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMagicLink>>, TError,{data: RequestMagicLinkBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof requestMagicLink>>, TError,{data: RequestMagicLinkBody}, TContext> => {
+
+const mutationKey = ['requestMagicLink'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestMagicLink>>, {data: RequestMagicLinkBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  requestMagicLink(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RequestMagicLinkMutationResult = NonNullable<Awaited<ReturnType<typeof requestMagicLink>>>
+    export type RequestMagicLinkMutationBody = RequestMagicLinkBody
+    export type RequestMagicLinkMutationError = BadRequestResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Request a magic link
+ */
+export const useRequestMagicLink = <TError = BadRequestResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMagicLink>>, TError,{data: RequestMagicLinkBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof requestMagicLink>>,
+        TError,
+        {data: RequestMagicLinkBody},
+        TContext
+      > => {
+
+      const mutationOptions = getRequestMagicLinkMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * Verify a magic link token or OTP code and create a session
+ * @summary Verify a magic link token
+ */
+export const getVerifyMagicLinkUrl = () => {
+
+
+  
+
+  return `/auth/magic-links/verify`
+}
+
+export const verifyMagicLink = async (verifyMagicLinkBody: VerifyMagicLinkBody, options?: RequestInit): Promise<VerifyMagicLink201> => {
+  
+  return customFetch<VerifyMagicLink201>(getVerifyMagicLinkUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      verifyMagicLinkBody,)
+  }
+);}
+
+
+
+
+export const getVerifyMagicLinkMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyMagicLink>>, TError,{data: VerifyMagicLinkBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof verifyMagicLink>>, TError,{data: VerifyMagicLinkBody}, TContext> => {
+
+const mutationKey = ['verifyMagicLink'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof verifyMagicLink>>, {data: VerifyMagicLinkBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  verifyMagicLink(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VerifyMagicLinkMutationResult = NonNullable<Awaited<ReturnType<typeof verifyMagicLink>>>
+    export type VerifyMagicLinkMutationBody = VerifyMagicLinkBody
+    export type VerifyMagicLinkMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Verify a magic link token
+ */
+export const useVerifyMagicLink = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyMagicLink>>, TError,{data: VerifyMagicLinkBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof verifyMagicLink>>,
+        TError,
+        {data: VerifyMagicLinkBody},
+        TContext
+      > => {
+
+      const mutationOptions = getVerifyMagicLinkMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

@@ -49,15 +49,15 @@ func (sm *SessionManager) Create(
 
 	// Create session entity
 	session := &Session{
-		ID:                   uuid.New(),
-		UserID:               userID,
-		Token:                token,
-		ActiveOrganizationID: orgID,
-		ExpiresAt:            time.Now().Add(sm.ttl),
-		IPAddress:            ipAddress,
-		UserAgent:            userAgent,
-		CreatedAt:            time.Now(),
-		UpdatedAt:            time.Now(),
+		ID:             uuid.New(),
+		UserID:         userID,
+		Token:          token,
+		OrganizationID: orgID,
+		ExpiresAt:      time.Now().Add(sm.ttl),
+		IPAddress:      ipAddress,
+		UserAgent:      userAgent,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	// Store in database first

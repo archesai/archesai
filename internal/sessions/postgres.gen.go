@@ -34,12 +34,14 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Session) (*Sess
 	params := postgresql.CreateSessionParams{
 		ID: entity.ID,
 
-		ActiveOrganizationID: &entity.ActiveOrganizationID,
-		ExpiresAt:            entity.ExpiresAt,
-		IPAddress:            stringPtr(entity.IPAddress),
-		Token:                entity.Token,
-		UserAgent:            stringPtr(entity.UserAgent),
-		UserID:               entity.UserID,
+		OrganizationID: &entity.OrganizationID,
+		AuthMethod:     stringPtr(entity.AuthMethod),
+		AuthProvider:   stringPtr(entity.AuthProvider),
+		ExpiresAt:      entity.ExpiresAt,
+		IPAddress:      stringPtr(entity.IPAddress),
+		Token:          entity.Token,
+		UserAgent:      stringPtr(entity.UserAgent),
+		UserID:         entity.UserID,
 	}
 
 	result, err := r.queries.CreateSession(ctx, params)
@@ -68,8 +70,9 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *S
 	params := postgresql.UpdateSessionParams{
 		ID: id,
 
-		ActiveOrganizationID: &entity.ActiveOrganizationID,
-		ExpiresAt:            &entity.ExpiresAt,
+		AuthMethod:   stringPtr(entity.AuthMethod),
+		AuthProvider: stringPtr(entity.AuthProvider),
+		ExpiresAt:    &entity.ExpiresAt,
 	}
 
 	result, err := r.queries.UpdateSession(ctx, params)
@@ -177,7 +180,11 @@ func mapSessionFromDB(db *postgresql.Session) *Session {
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
 
-		ActiveOrganizationID: uuidFromPtr(db.ActiveOrganizationID),
+		OrganizationID: uuidFromPtr(db.OrganizationID),
+
+		AuthMethod: stringFromPtr(db.AuthMethod),
+
+		AuthProvider: stringFromPtr(db.AuthProvider),
 
 		ExpiresAt: db.ExpiresAt,
 

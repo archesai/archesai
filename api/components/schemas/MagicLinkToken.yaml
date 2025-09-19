@@ -1,0 +1,87 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Schema for MagicLinkToken entity
+x-codegen:
+  repository:
+    operations: [create, read, delete, list]
+    indices: [token_hash, code, identifier]
+    additional_methods:
+      - name: GetByTokenHash
+        params: [tokenHash]
+        returns: single
+      - name: GetByCode
+        params: [code]
+        returns: single
+      - name: MarkUsed
+        params: [id]
+        returns: void
+      - name: DeleteExpired
+        params: []
+        returns: void
+type: object
+properties:
+  id:
+    allOf:
+      - $ref: ./UUID.yaml
+  userID:
+    description: User ID if token is for existing user
+    allOf:
+      - $ref: ./UUID.yaml
+  tokenHash:
+    description: SHA256 hash of the magic link token
+    type: string
+    minLength: 64
+    maxLength: 64
+    example: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3'
+  code:
+    description: Optional 6-digit OTP code
+    type: string
+    minLength: 6
+    maxLength: 6
+    pattern: '^[0-9]{6}$'
+    example: '123456'
+  identifier:
+    description: Email or username for authentication
+    type: string
+    minLength: 1
+    example: 'user@example.com'
+  deliveryMethod:
+    description: How the magic link was delivered
+    type: string
+    enum:
+      - email
+      - console
+      - webhook
+      - otp
+      - file
+    example: email
+  expiresAt:
+    description: When the token expires
+    type: string
+    format: date-time
+    example: '2023-10-05T14:48:00Z'
+  usedAt:
+    description: When the token was used (null if unused)
+    type: string
+    format: date-time
+    nullable: true
+    example: '2023-10-05T14:48:00Z'
+  ipAddress:
+    description: IP address of the request
+    type: string
+    example: '192.168.1.1'
+  userAgent:
+    description: User agent of the request
+    type: string
+    example: 'Mozilla/5.0'
+  createdAt:
+    description: When the token was created
+    type: string
+    format: date-time
+    example: '2023-10-05T14:48:00Z'
+required:
+  - id
+  - tokenHash
+  - identifier
+  - expiresAt
+  - createdAt
+additionalProperties: false

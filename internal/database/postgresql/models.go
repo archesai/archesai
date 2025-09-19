@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/pgvector/pgvector-go"
 )
 
@@ -83,6 +84,20 @@ type LabelToArtifact struct {
 	ArtifactID uuid.UUID
 }
 
+type MagicLinkToken struct {
+	ID             uuid.UUID
+	UserID         *uuid.UUID
+	TokenHash      string
+	Code           *string
+	Identifier     string
+	DeliveryMethod *string
+	ExpiresAt      pgtype.Timestamp
+	UsedAt         pgtype.Timestamp
+	IPAddress      *string
+	UserAgent      *string
+	CreatedAt      pgtype.Timestamp
+}
+
 type Member struct {
 	ID             uuid.UUID
 	CreatedAt      time.Time
@@ -147,15 +162,18 @@ type RunToArtifact struct {
 }
 
 type Session struct {
-	ID                   uuid.UUID
-	CreatedAt            time.Time
-	UpdatedAt            time.Time
-	ActiveOrganizationID *uuid.UUID
-	ExpiresAt            time.Time
-	IPAddress            *string
-	Token                string
-	UserAgent            *string
-	UserID               uuid.UUID
+	ID             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	OrganizationID *uuid.UUID
+	ExpiresAt      time.Time
+	IPAddress      *string
+	Token          string
+	UserAgent      *string
+	UserID         uuid.UUID
+	AuthMethod     *string
+	AuthProvider   *string
+	Metadata       []byte
 }
 
 type Tool struct {

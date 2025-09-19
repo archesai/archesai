@@ -7,25 +7,33 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/pressly/goose/v3"
-
-	"github.com/archesai/archesai/internal/database"
 )
 
 //go:embed postgresql/*.sql
 var migrations embed.FS
 
+const (
+	dbTypePostgreSQL = "postgresql"
+	dbTypePostgres   = "postgres"
+	dbTypeSQLite     = "sqlite"
+	dbTypeSQLite3    = "sqlite3"
+)
+
 // MigrationRunner handles database migrations.
 type MigrationRunner struct {
-	db     database.Database
+	db     *sql.DB
+	dbType string
 	logger *slog.Logger
 }
 
 // NewMigrationRunner creates a new migration runner.
-func NewMigrationRunner(db database.Database, logger *slog.Logger) *MigrationRunner {
+func NewMigrationRunner(db *sql.DB, dbType string, logger *slog.Logger) *MigrationRunner {
 	return &MigrationRunner{
 		db:     db,
+		dbType: dbType,
 		logger: logger,
 	}
 }
@@ -36,11 +44,6 @@ func (m *MigrationRunner) Up() error {
 		return fmt.Errorf("failed to set environment variables: %w", err)
 	}
 
-	sqlDB, err := m.getSQLDB()
-	if err != nil {
-		return fmt.Errorf("failed to get SQL database: %w", err)
-	}
-
 	goose.SetBaseFS(migrations)
 
 	// Set the dialect based on database type
@@ -49,7 +52,7 @@ func (m *MigrationRunner) Up() error {
 		return fmt.Errorf("failed to set dialect: %w", err)
 	}
 
-	if err := goose.Up(sqlDB, "migrations"); err != nil {
+	if err := goose.Up(m.db, "migrations"); err != nil {
 		return fmt.Errorf("failed to apply migrations: %w", err)
 	}
 
@@ -63,11 +66,6 @@ func (m *MigrationRunner) Down() error {
 		return fmt.Errorf("failed to set environment variables: %w", err)
 	}
 
-	sqlDB, err := m.getSQLDB()
-	if err != nil {
-		return fmt.Errorf("failed to get SQL database: %w", err)
-	}
-
 	goose.SetBaseFS(migrations)
 
 	dialect := m.getDialect()
@@ -75,7 +73,7 @@ func (m *MigrationRunner) Down() error {
 		return fmt.Errorf("failed to set dialect: %w", err)
 	}
 
-	if err := goose.Down(sqlDB, "migrations"); err != nil {
+	if err := goose.Down(m.db, "migrations"); err != nil {
 		return fmt.Errorf("failed to rollback migration: %w", err)
 	}
 
@@ -85,11 +83,6 @@ func (m *MigrationRunner) Down() error {
 
 // Version returns the current migration version.
 func (m *MigrationRunner) Version() (int64, error) {
-	sqlDB, err := m.getSQLDB()
-	if err != nil {
-		return 0, fmt.Errorf("failed to get SQL database: %w", err)
-	}
-
 	goose.SetBaseFS(migrations)
 
 	dialect := m.getDialect()
@@ -97,7 +90,7 @@ func (m *MigrationRunner) Version() (int64, error) {
 		return 0, fmt.Errorf("failed to set dialect: %w", err)
 	}
 
-	version, err := goose.GetDBVersion(sqlDB)
+	version, err := goose.GetDBVersion(m.db)
 	if err != nil {
 		return 0, fmt.Errorf("failed to get version: %w", err)
 	}
@@ -111,11 +104,6 @@ func (m *MigrationRunner) Force(version int64) error {
 		return fmt.Errorf("failed to set environment variables: %w", err)
 	}
 
-	sqlDB, err := m.getSQLDB()
-	if err != nil {
-		return fmt.Errorf("failed to get SQL database: %w", err)
-	}
-
 	goose.SetBaseFS(migrations)
 
 	dialect := m.getDialect()
@@ -124,12 +112,12 @@ func (m *MigrationRunner) Force(version int64) error {
 	}
 
 	// Force the version by resetting and then applying up to the target version
-	if err := goose.Reset(sqlDB, "migrations"); err != nil {
+	if err := goose.Reset(m.db, "migrations"); err != nil {
 		return fmt.Errorf("failed to reset migrations: %w", err)
 	}
 
 	if version > 0 {
-		if err := goose.UpTo(sqlDB, "migrations", version); err != nil {
+		if err := goose.UpTo(m.db, "migrations", version); err != nil {
 			return fmt.Errorf("failed to migrate to version %d: %w", version, err)
 		}
 	}
@@ -140,57 +128,76 @@ func (m *MigrationRunner) Force(version int64) error {
 
 // setEnvironmentVariables sets database-specific environment variables for migrations.
 func (m *MigrationRunner) setEnvironmentVariables() error {
-	switch m.db.Type() {
-	case database.TypePostgreSQL:
+	switch m.dbType {
+	case dbTypePostgreSQL, dbTypePostgres:
 		_ = os.Setenv("TIMESTAMP_TYPE", "TIMESTAMPTZ")
 		_ = os.Setenv("TIMESTAMP_DEFAULT", "CURRENT_TIMESTAMP")
 		_ = os.Setenv("REAL_TYPE", "DOUBLE PRECISION")
-	case database.TypeSQLite:
+	case dbTypeSQLite, dbTypeSQLite3:
 		_ = os.Setenv("TIMESTAMP_TYPE", "TEXT")
 		_ = os.Setenv("TIMESTAMP_DEFAULT", "(strftime('%Y-%m-%d %H:%M:%f', 'now'))")
 		_ = os.Setenv("REAL_TYPE", "REAL")
 	default:
-		return fmt.Errorf("unsupported database type: %s", m.db.Type())
+		return fmt.Errorf("unsupported database type: %s", m.dbType)
 	}
 	return nil
 }
 
 // getDialect returns the goose dialect string for the database type.
 func (m *MigrationRunner) getDialect() string {
-	switch m.db.Type() {
-	case database.TypePostgreSQL:
-		return "postgres"
-	case database.TypeSQLite:
-		return "sqlite3"
+	switch m.dbType {
+	case dbTypePostgreSQL, dbTypePostgres:
+		return dbTypePostgres
+	case dbTypeSQLite, dbTypeSQLite3:
+		return dbTypeSQLite3
 	default:
 		return ""
 	}
 }
 
-// getSQLDB gets a database/sql connection.
-func (m *MigrationRunner) getSQLDB() (*sql.DB, error) {
-	switch m.db.Type() {
-	case database.TypePostgreSQL:
-		cfg, ok := m.db.(*database.PGDatabase)
-		if !ok {
-			return nil, fmt.Errorf("database is not PostgreSQL")
-		}
-		return cfg.GetSQLDB(), nil
-	case database.TypeSQLite:
-		sqlDB, ok := m.db.Underlying().(*sql.DB)
-		if !ok {
-			return nil, fmt.Errorf("SQLite database does not have *sql.DB underlying connection")
-		}
-		return sqlDB, nil
-	default:
-		return nil, fmt.Errorf("unsupported database type: %s", m.db.Type())
+// RunMigrations is a convenience function to run migrations on a database.
+// It attempts to detect the database type from the driver name.
+func RunMigrations(db *sql.DB, dbType string, logger *slog.Logger) error {
+	// If dbType is not provided, try to detect it
+	if dbType == "" {
+		dbType = detectDatabaseType(db)
 	}
+	runner := NewMigrationRunner(db, dbType, logger)
+	return runner.Up()
 }
 
-// RunMigrations is a convenience function to run migrations on a database.
-func RunMigrations(db database.Database, logger *slog.Logger) error {
-	runner := NewMigrationRunner(db, logger)
-	return runner.Up()
+// detectDatabaseType attempts to detect the database type from the connection.
+func detectDatabaseType(db *sql.DB) string {
+	// Try to get driver name from the database stats
+	driverName := db.Driver()
+	if driverName != nil {
+		driverType := fmt.Sprintf("%T", driverName)
+		if strings.Contains(strings.ToLower(driverType), "postgres") ||
+			strings.Contains(strings.ToLower(driverType), "pgx") {
+			return dbTypePostgreSQL
+		}
+		if strings.Contains(strings.ToLower(driverType), dbTypeSQLite) {
+			return dbTypeSQLite
+		}
+	}
+
+	// Try a simple query to detect the database type
+	var version string
+
+	// Try PostgreSQL version query
+	err := db.QueryRow("SELECT version()").Scan(&version)
+	if err == nil && strings.Contains(strings.ToLower(version), dbTypePostgreSQL) {
+		return dbTypePostgreSQL
+	}
+
+	// Try SQLite version query
+	err = db.QueryRow("SELECT sqlite_version()").Scan(&version)
+	if err == nil {
+		return dbTypeSQLite
+	}
+
+	// Default to PostgreSQL if we can't detect
+	return dbTypePostgreSQL
 }
 
 // MigrationConfig holds configuration for migrations.
@@ -201,8 +208,13 @@ type MigrationConfig struct {
 }
 
 // RunMigrationsWithConfig runs migrations with specific configuration.
-func RunMigrationsWithConfig(db database.Database, cfg MigrationConfig, logger *slog.Logger) error {
-	runner := NewMigrationRunner(db, logger)
+func RunMigrationsWithConfig(
+	db *sql.DB,
+	dbType string,
+	cfg MigrationConfig,
+	logger *slog.Logger,
+) error {
+	runner := NewMigrationRunner(db, dbType, logger)
 
 	if cfg.Force >= 0 {
 		return runner.Force(cfg.Force)

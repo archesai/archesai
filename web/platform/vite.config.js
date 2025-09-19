@@ -33,7 +33,7 @@ export default defineConfig({
   ],
   publicDir: resolve(import.meta.dirname, "../../assets"),
   server: {
-    allowedHosts: ["moose"],
+    allowedHosts: [],
     host: "0.0.0.0",
     port: 3000,
   },

@@ -7,11 +7,14 @@ import { siteRoutes } from "#lib/site-config";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: ({ context }) => {
-    if (process.env.ARCHESAI_AUTH_ENABLED && !context.session?.data) {
+    if (!context.session?.data) {
       throw redirect({
         to: "/auth/login",
       });
     }
+    return {
+      session: context.session,
+    };
   },
   component: AppLayout,
 });

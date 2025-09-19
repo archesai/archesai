@@ -8,15 +8,27 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/archesai/archesai/internal/logger"
 )
 
 func TestMicrosoftOAuthProvider_GetProviderID(t *testing.T) {
-	provider := NewMicrosoftOAuthProvider("test-client-id", "test-client-secret")
+	provider := NewMicrosoftProvider(
+		"test-client-id",
+		"test-client-secret",
+		"http://localhost:8080/auth/callback/microsoft",
+		logger.NewTest(),
+	)
 	assert.Equal(t, "microsoft", provider.GetProviderID())
 }
 
 func TestMicrosoftOAuthProvider_GetAuthURL(t *testing.T) {
-	provider := NewMicrosoftOAuthProvider("test-client-id", "test-client-secret")
+	provider := NewMicrosoftProvider(
+		"test-client-id",
+		"test-client-secret",
+		"http://localhost:8080/auth/callback/microsoft",
+		logger.NewTest(),
+	)
 
 	state := "test-state-789"
 	redirectURI := "http://localhost:8080/auth/callback/microsoft"
@@ -44,7 +56,12 @@ func TestMicrosoftOAuthProvider_GetAuthURL(t *testing.T) {
 }
 
 func TestMicrosoftOAuthProvider_ExchangeCodeError(t *testing.T) {
-	provider := NewMicrosoftOAuthProvider("test-client", "test-secret")
+	provider := NewMicrosoftProvider(
+		"test-client",
+		"test-secret",
+		"http://localhost:8080/auth/callback/microsoft",
+		logger.NewTest(),
+	)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
@@ -54,7 +71,12 @@ func TestMicrosoftOAuthProvider_ExchangeCodeError(t *testing.T) {
 }
 
 func TestMicrosoftOAuthProvider_URLValidation(t *testing.T) {
-	provider := NewMicrosoftOAuthProvider("client", "secret")
+	provider := NewMicrosoftProvider(
+		"client",
+		"secret",
+		"http://localhost:8080/auth/callback/microsoft",
+		logger.NewTest(),
+	)
 
 	authURL := provider.GetAuthURL("state", "http://localhost")
 	parsedURL, err := url.Parse(authURL)

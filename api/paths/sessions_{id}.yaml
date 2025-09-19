@@ -74,13 +74,12 @@ patch:
         schema:
           type: object
           properties:
-            activeOrganizationID:
-              description: The active organization ID
-              type: string
-              example: example-id-123
-              minLength: 1
+            organizationID:
+              description: The organization ID to set as active for this session
+              allOf:
+                - $ref: ../components/schemas/UUID.yaml
           required:
-            - activeOrganizationID
+            - organizationID
     required: true
   parameters:
     - schema:

@@ -21,7 +21,7 @@ export default function OrganizationForm(): JSX.Element {
   const { mutateAsync: updateOrganization } = useUpdateOrganization();
   const {
     data: { data: organization },
-  } = useGetOrganizationSuspense(session.activeOrganizationID);
+  } = useGetOrganizationSuspense(session.organizationID);
 
   const formFields: FormFieldConfig[] = [
     {
@@ -68,7 +68,7 @@ export default function OrganizationForm(): JSX.Element {
       ) => {
         await updateOrganization({
           data: updateOrganizationDto,
-          id: session.activeOrganizationID,
+          id: session.organizationID,
         });
       }}
       showCard={true}

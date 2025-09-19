@@ -1,89 +1,80 @@
-// Package oauth provides OAuth2 provider implementations for various services.
+// Package oauth provides OAuth2 authentication support for multiple providers.
 package oauth
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
+	"time"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )
 
-const (
-	githubUserURL = "https://api.github.com/user"
-)
-
-// GitHubOAuthProvider implements OAuth2 for GitHub.
-type GitHubOAuthProvider struct {
+// GitHubProvider implements OAuth2 for GitHub
+type GitHubProvider struct {
 	*BaseOAuthProvider
+	providerID string
+	logger     *slog.Logger
 }
 
-// NewGitHubOAuthProvider creates a new GitHub OAuth provider.
-func NewGitHubOAuthProvider(clientID, clientSecret string) Provider {
-	return &GitHubOAuthProvider{
-		BaseOAuthProvider: &BaseOAuthProvider{
-			Config: &oauth2.Config{
-				ClientID:     clientID,
-				ClientSecret: clientSecret,
-				Endpoint:     github.Endpoint,
-				Scopes: []string{
-					"user:email",
-					"read:user",
-				},
-			},
+// NewGitHubProvider creates a new GitHub OAuth provider
+func NewGitHubProvider(
+	clientID, clientSecret, redirectURL string,
+	logger *slog.Logger,
+) *GitHubProvider {
+	config := &oauth2.Config{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		RedirectURL:  redirectURL,
+		Scopes: []string{
+			"read:user",
+			"user:email",
 		},
+		Endpoint: github.Endpoint,
+	}
+
+	return &GitHubProvider{
+		BaseOAuthProvider: &BaseOAuthProvider{
+			Config: config,
+		},
+		providerID: "github",
+		logger:     logger,
 	}
 }
 
-// GetProviderID returns the provider identifier.
-func (p *GitHubOAuthProvider) GetProviderID() string {
-	return "github"
+// GetAuthURL returns the authorization URL for GitHub
+func (p *GitHubProvider) GetAuthURL(state, redirectURI string) string {
+	return p.BaseOAuthProvider.GetAuthURL(state, redirectURI)
 }
 
-// GetAuthURL returns the GitHub authorization URL.
-func (p *GitHubOAuthProvider) GetAuthURL(state string, redirectURI string) string {
-	p.Config.RedirectURL = redirectURI
-	return p.Config.AuthCodeURL(state)
-}
-
-// ExchangeCode exchanges an authorization code for tokens.
-func (p *GitHubOAuthProvider) ExchangeCode(
+// ExchangeCode exchanges an authorization code for tokens
+func (p *GitHubProvider) ExchangeCode(
 	ctx context.Context,
 	code string,
 	redirectURI string,
 ) (*Tokens, error) {
-	p.Config.RedirectURL = redirectURI
-	token, err := p.Config.Exchange(ctx, code)
+	token, err := p.BaseOAuthProvider.ExchangeCode(ctx, code, redirectURI)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange code: %w", err)
 	}
 
 	return &Tokens{
 		AccessToken:  token.AccessToken,
-		RefreshToken: token.RefreshToken, // GitHub doesn't provide refresh tokens
-		ExpiresIn:    int(token.Expiry.Unix()),
-		Scope:        token.Extra("scope").(string),
+		RefreshToken: token.RefreshToken,
+		ExpiresIn:    int(time.Until(token.Expiry).Seconds()),
 	}, nil
 }
 
-// RefreshToken is not supported by GitHub.
-func (p *GitHubOAuthProvider) RefreshToken(_ context.Context, _ string) (*Tokens, error) {
-	// GitHub doesn't support refresh tokens
-	return nil, fmt.Errorf("GitHub does not support refresh tokens")
-}
-
-// GetUserInfo retrieves user information from GitHub.
-func (p *GitHubOAuthProvider) GetUserInfo(
-	ctx context.Context,
-	accessToken string,
-) (*UserInfo, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", githubUserURL, nil)
+// GetUserInfo retrieves user information from GitHub
+func (p *GitHubProvider) GetUserInfo(_ context.Context, accessToken string) (*UserInfo, error) {
+	// Get user info
+	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
-
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
 
@@ -93,91 +84,66 @@ func (p *GitHubOAuthProvider) GetUserInfo(
 		return nil, fmt.Errorf("failed to get user info: %w", err)
 	}
 	defer func() {
-		_ = resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			p.logger.Error("failed to close response body", "error", err)
+		}
 	}()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	var ghUser struct {
+		ID        int    `json:"id"`
+		Login     string `json:"login"`
+		Name      string `json:"name"`
+		Email     string `json:"email"`
+		AvatarURL string `json:"avatar_url"`
+		Location  string `json:"location"`
 	}
 
-	var githubUser struct {
-		ID                int    `json:"id"`
-		Login             string `json:"login"`
-		Email             string `json:"email"`
-		Name              string `json:"name"`
-		AvatarURL         string `json:"avatar_url"`
-		Location          string `json:"location"`
-		PublicRepos       int    `json:"public_repos"`
-		PublicGists       int    `json:"public_gists"`
-		Followers         int    `json:"followers"`
-		Following         int    `json:"following"`
-		CreatedAt         string `json:"created_at"`
-		UpdatedAt         string `json:"updated_at"`
-		PrivateGists      int    `json:"private_gists"`
-		TotalPrivateRepos int    `json:"total_private_repos"`
-		OwnedPrivateRepos int    `json:"owned_private_repos"`
+	if err := json.NewDecoder(resp.Body).Decode(&ghUser); err != nil {
+		return nil, fmt.Errorf("failed to decode user info: %w", err)
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&githubUser); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
-	}
-
-	// GitHub may not return email in the user endpoint if it's private
-	// In production, you might want to make an additional call to /user/emails
-	email := githubUser.Email
-	if email == "" {
-		// Get primary email from emails endpoint
-		email, err = p.getPrimaryEmail(ctx, accessToken)
-		if err != nil {
-			// Non-fatal: user might not have granted email permission
-			email = fmt.Sprintf("%s@users.noreply.github.com", githubUser.Login)
+	// If email is not public, we need to fetch it separately
+	if ghUser.Email == "" {
+		email, err := p.getUserEmail(accessToken)
+		if err == nil {
+			ghUser.Email = email
 		}
 	}
 
+	// Use login as name if name is not set
+	name := ghUser.Name
+	if name == "" {
+		name = ghUser.Login
+	}
+
 	return &UserInfo{
-		ProviderAccountID: fmt.Sprintf("%d", githubUser.ID),
-		Email:             email,
-		EmailVerified:     true, // GitHub requires email verification
-		Name:              githubUser.Name,
-		Picture:           githubUser.AvatarURL,
-		Raw: map[string]interface{}{
-			"id":         githubUser.ID,
-			"login":      githubUser.Login,
-			"email":      email,
-			"name":       githubUser.Name,
-			"avatar_url": githubUser.AvatarURL,
-			"location":   githubUser.Location,
-			"created_at": githubUser.CreatedAt,
-			"updated_at": githubUser.UpdatedAt,
-		},
+		ProviderAccountID: fmt.Sprintf("%d", ghUser.ID),
+		Email:             ghUser.Email,
+		EmailVerified:     true, // GitHub verifies emails
+		Name:              name,
+		Picture:           ghUser.AvatarURL,
 	}, nil
 }
 
-// getPrimaryEmail retrieves the primary email from GitHub's emails endpoint.
-func (p *GitHubOAuthProvider) getPrimaryEmail(
-	ctx context.Context,
-	accessToken string,
-) (string, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", "https://api.github.com/user/emails", nil)
+// getUserEmail fetches the primary email from GitHub
+func (p *GitHubProvider) getUserEmail(accessToken string) (string, error) {
+	req, err := http.NewRequest("GET", "https://api.github.com/user/emails", nil)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to create request: %w", err)
 	}
-
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get user emails: %w", err)
 	}
 	defer func() {
-		_ = resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			p.logger.Error("failed to close response body", "error", err)
+		}
 	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to get emails: status %d", resp.StatusCode)
-	}
 
 	var emails []struct {
 		Email    string `json:"email"`
@@ -186,9 +152,10 @@ func (p *GitHubOAuthProvider) getPrimaryEmail(
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&emails); err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to decode emails: %w", err)
 	}
 
+	// Find primary email
 	for _, email := range emails {
 		if email.Primary && email.Verified {
 			return email.Email, nil
@@ -203,4 +170,16 @@ func (p *GitHubOAuthProvider) getPrimaryEmail(
 	}
 
 	return "", fmt.Errorf("no verified email found")
+}
+
+// RefreshToken refreshes an access token using a refresh token
+func (p *GitHubProvider) RefreshToken(_ context.Context, _ string) (*Tokens, error) {
+	// GitHub doesn't support refresh tokens in OAuth apps
+	// You need to use GitHub Apps for refresh tokens
+	return nil, fmt.Errorf("GitHub OAuth apps don't support refresh tokens")
+}
+
+// GetProviderID returns the provider identifier
+func (p *GitHubProvider) GetProviderID() string {
+	return p.providerID
 }

@@ -1,21 +1,19 @@
-// Package database provides data persistence infrastructure including
-// database connections, query generation, and migrations.
+// Package database provides database type detection and sqlc query generation.
 //
 // The package includes:
-// - Database abstraction layer supporting PostgreSQL and SQLite
+// - Database type constants for PostgreSQL and SQLite
+// - Type detection from connection strings
 // - Type-safe query generation using sqlc
-// - Database migrations using goose
-// - Connection pooling and health checks
-// - Transaction management
 package database
 
 // Generate database queries from SQL files
 //go:generate go tool sqlc generate
 
 import (
-	"context"
 	"database/sql"
 	"strings"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Type represents the database type.
@@ -39,69 +37,6 @@ func (t Type) String() string {
 	}
 }
 
-// Database defines the common interface for all database implementations.
-type Database interface {
-	// Core operations
-	Query(ctx context.Context, query string, args ...interface{}) (Rows, error)
-	QueryRow(ctx context.Context, query string, args ...interface{}) Row
-	Exec(ctx context.Context, query string, args ...interface{}) (Result, error)
-
-	// Transaction support
-	Begin(ctx context.Context) (Transaction, error)
-	BeginTx(ctx context.Context, opts *sql.TxOptions) (Transaction, error)
-
-	// Connection management
-	Ping(ctx context.Context) error
-	Close() error
-	Stats() Stats
-
-	// Database type identification
-	Type() Type
-
-	// Get underlying connection for driver-specific operations
-	// Returns *sql.DB for SQLite, *pgxpool.Pool for PostgreSQL
-	Underlying() interface{}
-}
-
-// Transaction defines the interface for database transactions.
-type Transaction interface {
-	Query(ctx context.Context, query string, args ...interface{}) (Rows, error)
-	QueryRow(ctx context.Context, query string, args ...interface{}) Row
-	Exec(ctx context.Context, query string, args ...interface{}) (Result, error)
-	Commit() error
-	Rollback() error
-}
-
-// Rows defines the interface for query result rows.
-type Rows interface {
-	Next() bool
-	Scan(dest ...interface{}) error
-	Close() error
-	Err() error
-}
-
-// Row defines the interface for a single query result row.
-type Row interface {
-	Scan(dest ...interface{}) error
-}
-
-// Result defines the interface for exec results.
-type Result interface {
-	LastInsertId() (int64, error)
-	RowsAffected() (int64, error)
-}
-
-// Stats represents database connection pool statistics.
-type Stats struct {
-	OpenConnections   int
-	InUse             int
-	Idle              int
-	WaitCount         int64
-	WaitDuration      string
-	MaxIdleClosed     int64
-	MaxLifetimeClosed int64
-}
-
 // ParseTypeFromString converts a string to database Type.
 func ParseTypeFromString(s string) Type {
 	switch s {
@@ -123,4 +58,50 @@ func DetectTypeFromURL(url string) Type {
 		return TypeSQLite
 	}
 	return TypePostgreSQL // Default to PostgreSQL
+}
+
+// Database wraps database connections for both PostgreSQL and SQLite.
+type Database struct {
+	sqlDB   *sql.DB       // Standard SQL connection (used by both)
+	pgxPool *pgxpool.Pool // PostgreSQL specific pool (nil for SQLite)
+	dbType  Type          // Database type
+}
+
+// NewDatabase creates a new database wrapper.
+func NewDatabase(sqlDB *sql.DB, pgxPool *pgxpool.Pool, dbType Type) *Database {
+	return &Database{
+		sqlDB:   sqlDB,
+		pgxPool: pgxPool,
+		dbType:  dbType,
+	}
+}
+
+// SQLDB returns the standard SQL database connection.
+func (d *Database) SQLDB() *sql.DB {
+	return d.sqlDB
+}
+
+// PgxPool returns the PostgreSQL connection pool (nil for SQLite).
+func (d *Database) PgxPool() *pgxpool.Pool {
+	return d.pgxPool
+}
+
+// Type returns the database type.
+func (d *Database) Type() Type {
+	return d.dbType
+}
+
+// TypeString returns the database type as a string.
+func (d *Database) TypeString() string {
+	return d.dbType.String()
+}
+
+// IsPostgreSQL returns true if this is a PostgreSQL database.
+func (d *Database) IsPostgreSQL() bool {
+	return d.dbType == TypePostgreSQL
+}
+
+// IsSQLite returns true if this is a SQLite database.
+func (d *Database) IsSQLite() bool {
+	return d.dbType == TypeSQLite
 }

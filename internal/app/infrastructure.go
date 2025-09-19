@@ -2,11 +2,13 @@
 package app
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log/slog"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/artifacts"
@@ -16,6 +18,7 @@ import (
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/database/sqlite"
 	"github.com/archesai/archesai/internal/events"
+	"github.com/archesai/archesai/internal/health"
 	"github.com/archesai/archesai/internal/invitations"
 	"github.com/archesai/archesai/internal/labels"
 	"github.com/archesai/archesai/internal/logger"
@@ -32,7 +35,7 @@ import (
 // Infrastructure holds all infrastructure components.
 type Infrastructure struct {
 	Logger         *slog.Logger
-	Database       database.Database
+	Database       *database.Database // Database wrapper for both PostgreSQL and SQLite
 	EventPublisher events.Publisher
 	AuthCache      cache.Cache[sessions.Session]
 	UsersCache     cache.Cache[users.User]
@@ -53,11 +56,11 @@ type Repositories struct {
 	Labels        labels.Repository
 	Members       members.Repository
 	Invitations   invitations.Repository
+	Health        health.Repository
 }
 
 // NewInfrastructure creates all infrastructure components.
 func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
-
 	// Initialize logger
 	log := logger.New(logger.Config{
 		Level:  string(cfg.Logging.Level),
@@ -66,11 +69,61 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 	slog.SetDefault(log)
 
 	// Initialize database
-	dbFactory := database.NewFactory(log)
-	db, err := dbFactory.Create(&cfg.Database)
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
+	var sqlDB *sql.DB
+	var pgxPool *pgxpool.Pool
+	var dbType database.Type
+
+	// Determine database type
+	if cfg.Database.Type != "" {
+		dbType = database.ParseTypeFromString(string(cfg.Database.Type))
+	} else {
+		dbType = database.DetectTypeFromURL(cfg.Database.URL)
 	}
+
+	// Connect to database based on type
+	switch dbType {
+	case database.TypePostgreSQL:
+		// For PostgreSQL, create pgxpool and convert to sql.DB
+		poolConfig, err := pgxpool.ParseConfig(cfg.Database.URL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse database URL: %w", err)
+		}
+
+		// Configure connection pool
+		if cfg.Database.MaxConns > 0 {
+			poolConfig.MaxConns = int32(cfg.Database.MaxConns)
+		} else {
+			poolConfig.MaxConns = 25
+		}
+
+		pool, err := pgxpool.NewWithConfig(context.Background(), poolConfig)
+		if err != nil {
+			return nil, fmt.Errorf("failed to connect to PostgreSQL: %w", err)
+		}
+		pgxPool = pool
+		sqlDB = stdlib.OpenDBFromPool(pool)
+		log.Info("connected to PostgreSQL database")
+
+	case database.TypeSQLite:
+		// For SQLite, directly create sql.DB
+		db, err := sql.Open("sqlite3", cfg.Database.URL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to connect to SQLite: %w", err)
+		}
+		sqlDB = db
+		log.Info("connected to SQLite database")
+
+	default:
+		return nil, fmt.Errorf("unsupported database type: %s", dbType)
+	}
+
+	// Test the connection
+	if err := sqlDB.Ping(); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	// Create database wrapper
+	db := database.NewDatabase(sqlDB, pgxPool, dbType)
 
 	infra := &Infrastructure{
 		Logger:   log,
@@ -101,33 +154,22 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 			infra.UsersCache = cache.NewRedisCache[users.User](redisClient.GetRedisClient(), "users")
 		}
 	} else {
-		log.Info("redis is disabled, using in-memory alternatives")
+		// Use in-memory alternatives when Redis is disabled
 		infra.EventPublisher = events.NewNoOpPublisher()
-		infra.AuthCache = cache.NewNoOpCache[sessions.Session]()
-		infra.UsersCache = cache.NewNoOpCache[users.User]()
+		infra.AuthCache = cache.NewMemoryCache[sessions.Session]()
+		infra.UsersCache = cache.NewMemoryCache[users.User]()
 	}
 
 	return infra, nil
 }
 
 // NewRepositories creates all domain repositories based on database type.
-func NewRepositories(db database.Database, cfg *config.Config) (*Repositories, error) {
-	// Determine database type
-	var dbType database.Type
-	if cfg.Database.Type != "" {
-		dbType = database.ParseTypeFromString(string(cfg.Database.Type))
-	} else {
-		dbType = database.DetectTypeFromURL(cfg.Database.URL)
-	}
-
+func NewRepositories(infra *Infrastructure) (*Repositories, error) {
 	repos := &Repositories{}
 
-	switch dbType {
-	case database.TypePostgreSQL:
-		pool, ok := db.Underlying().(*pgxpool.Pool)
-		if !ok || pool == nil {
-			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
-		}
+	if infra.Database.IsPostgreSQL() {
+		// Use pgxpool for PostgreSQL repositories
+		pool := infra.Database.PgxPool()
 
 		// Core repositories
 		repos.Accounts = accounts.NewPostgresRepository(pool)
@@ -148,33 +190,35 @@ func NewRepositories(db database.Database, cfg *config.Config) (*Repositories, e
 		repos.Members = members.NewPostgresRepository(pool)
 		repos.Invitations = invitations.NewPostgresRepository(pool)
 
-	case database.TypeSQLite:
-		sqlDB, ok := db.Underlying().(*sql.DB)
-		if !ok || sqlDB == nil {
-			return nil, fmt.Errorf("failed to get SQLite connection")
-		}
+		// Health repository uses sql.DB
+		repos.Health = health.NewPostgresRepository(infra.Database.SQLDB())
+
+	} else {
+		// Use sql.DB for SQLite repositories
+		db := infra.Database.SQLDB()
 
 		// Core repositories
-		repos.Accounts = accounts.NewSQLiteRepository(sqlDB)
-		repos.Sessions = sessions.NewSQLiteRepository(sqlDB)
-		repos.Users = users.NewSQLiteRepository(sqlDB)
-		repos.Organizations = organizations.NewSQLiteRepository(sqlDB)
+		repos.Accounts = accounts.NewSQLiteRepository(db)
+		repos.Sessions = sessions.NewSQLiteRepository(db)
+		repos.Users = users.NewSQLiteRepository(db)
+		repos.Organizations = organizations.NewSQLiteRepository(db)
 
 		// Pipeline repositories
-		repos.Pipelines = pipelines.NewSQLiteRepository(sqlDB)
-		repos.Runs = runs.NewSQLiteRepository(sqlDB)
-		repos.Tools = tools.NewSQLiteRepository(sqlDB)
+		repos.Pipelines = pipelines.NewSQLiteRepository(db)
+		repos.Runs = runs.NewSQLiteRepository(db)
+		repos.Tools = tools.NewSQLiteRepository(db)
 
 		// Content repositories
-		repos.Artifacts = artifacts.NewSQLiteRepository(sqlDB)
-		repos.Labels = labels.NewSQLiteRepository(sqlDB)
+		repos.Artifacts = artifacts.NewSQLiteRepository(db)
+		repos.Labels = labels.NewSQLiteRepository(db)
 
 		// Organization-related repositories
-		repos.Members = members.NewSQLiteRepository(sqlDB)
-		repos.Invitations = invitations.NewSQLiteRepository(sqlDB)
+		repos.Members = members.NewSQLiteRepository(db)
+		repos.Invitations = invitations.NewSQLiteRepository(db)
 
-	default:
-		return nil, fmt.Errorf("unsupported database type: %v", dbType)
+		// Health repository
+		repos.Health = health.NewSQLiteRepository(db)
+
 	}
 
 	return repos, nil
@@ -182,44 +226,34 @@ func NewRepositories(db database.Database, cfg *config.Config) (*Repositories, e
 
 // GetQueries returns database-specific query objects.
 func GetQueries(
-	db database.Database,
-	cfg *config.Config,
+	infra *Infrastructure,
 ) (pgQueries *postgresql.Queries, sqliteQueries *sqlite.Queries) {
-	// Determine database type
-	var dbType database.Type
-	if cfg.Database.Type != "" {
-		dbType = database.ParseTypeFromString(string(cfg.Database.Type))
+	if infra.Database.IsPostgreSQL() {
+		pgQueries = postgresql.New(infra.Database.PgxPool())
 	} else {
-		dbType = database.DetectTypeFromURL(cfg.Database.URL)
-	}
-
-	switch dbType {
-	case database.TypePostgreSQL:
-		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
-			pgQueries = postgresql.New(pool)
-		}
-	case database.TypeSQLite:
-		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
-			sqliteQueries = sqlite.New(sqlDB)
-		}
+		sqliteQueries = sqlite.New(infra.Database.SQLDB())
 	}
 
 	return pgQueries, sqliteQueries
 }
 
-// Close cleans up all infrastructure resources.
+// Close cleans up all infrastructure resources
 func (i *Infrastructure) Close() error {
-	// Close database
-	if i.Database != nil {
-		if err := i.Database.Close(); err != nil {
+	if i.Database != nil && i.Database.SQLDB() != nil {
+		if err := i.Database.SQLDB().Close(); err != nil {
 			i.Logger.Error("failed to close database", "error", err)
+			return err
 		}
 	}
 
-	// Close Redis if it exists
+	if i.Database != nil && i.Database.PgxPool() != nil {
+		i.Database.PgxPool().Close()
+	}
+
 	if i.redisClient != nil {
 		if err := i.redisClient.Close(); err != nil {
-			i.Logger.Error("failed to close Redis", "error", err)
+			i.Logger.Error("failed to close redis", "error", err)
+			return err
 		}
 	}
 

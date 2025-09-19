@@ -14,7 +14,7 @@ import {
 import type { JSX } from "react";
 import { DefaultCatchBoundary } from "#components/default-catch-boundary";
 import NotFound from "#components/not-found";
-import getServerSession from "#lib/get-headers";
+import getSessionSSR from "#lib/get-session-ssr";
 import globalsCss from "../styles/globals.css?url";
 
 export const Route = createRootRouteWithContext<{
@@ -24,7 +24,7 @@ export const Route = createRootRouteWithContext<{
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.fetchQuery({
       queryFn: ({ signal }) =>
-        getServerSession({
+        getSessionSSR({
           signal,
         }),
       queryKey: getGetSessionQueryKey(),

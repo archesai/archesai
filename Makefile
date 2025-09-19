@@ -369,7 +369,7 @@ format: format-go format-ts format-prettier ## Format all code
 .PHONY: format-go
 format-go: ## Format Go code
 	@echo -e "$(YELLOW)▶ Formatting Go code...$(NC)"
-	@go fmt ./...
+	@golangci-lint fmt
 	@echo -e "$(GREEN)✓ Go code formatted!$(NC)"
 
 .PHONY: format-prettier

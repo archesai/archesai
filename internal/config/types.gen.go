@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -137,8 +138,20 @@ type AuthConfig struct {
 	// Firebase Firebase authentication configuration
 	Firebase FirebaseAuth `json:"firebase,omitempty,omitzero" yaml:"firebase,omitempty" mapstructure:"firebase,omitempty"`
 
+	// Github GitHub OAuth configuration
+	Github GitHubAuth `json:"github,omitempty,omitzero" yaml:"github,omitempty" mapstructure:"github,omitempty"`
+
+	// Google Google OAuth configuration
+	Google GoogleAuth `json:"google,omitempty,omitzero" yaml:"google,omitempty" mapstructure:"google,omitempty"`
+
 	// Local Local username/password authentication
 	Local LocalAuth `json:"local,omitempty,omitzero" yaml:"local,omitempty" mapstructure:"local,omitempty"`
+
+	// MagicLink Magic link authentication configuration
+	MagicLink MagicLinkAuth `json:"magicLink,omitempty,omitzero" yaml:"magicLink,omitempty" mapstructure:"magicLink,omitempty"`
+
+	// Microsoft Microsoft/Azure AD OAuth configuration
+	Microsoft MicrosoftAuth `json:"microsoft,omitempty,omitzero" yaml:"microsoft,omitempty" mapstructure:"microsoft,omitempty"`
 
 	// Twitter Twitter OAuth configuration
 	Twitter TwitterAuth `json:"twitter,omitempty,omitzero" yaml:"twitter,omitempty" mapstructure:"twitter,omitempty"`
@@ -283,6 +296,42 @@ type FirebaseAuth struct {
 
 	// ProjectID Firebase project ID for authentication
 	ProjectID string `json:"projectID,omitempty,omitzero" yaml:"projectID,omitempty" mapstructure:"projectID,omitempty"`
+}
+
+// GitHubAuth GitHub OAuth configuration
+type GitHubAuth struct {
+	// ClientID GitHub OAuth App client ID
+	ClientID string `json:"clientId,omitempty,omitzero" yaml:"clientId,omitempty" mapstructure:"clientId,omitempty"`
+
+	// ClientSecret GitHub OAuth App client secret
+	ClientSecret string `json:"clientSecret,omitempty,omitzero" yaml:"clientSecret,omitempty" mapstructure:"clientSecret,omitempty"`
+
+	// Enabled Enable GitHub OAuth
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
+
+	// RedirectURL OAuth callback URL
+	RedirectURL string `json:"redirectUrl,omitempty,omitzero" yaml:"redirectUrl,omitempty" mapstructure:"redirectUrl,omitempty"`
+
+	// Scopes OAuth scopes to request
+	Scopes []string `json:"scopes,omitempty,omitzero" yaml:"scopes,omitempty" mapstructure:"scopes,omitempty"`
+}
+
+// GoogleAuth Google OAuth configuration
+type GoogleAuth struct {
+	// ClientID Google OAuth client ID
+	ClientID string `json:"clientId,omitempty,omitzero" yaml:"clientId,omitempty" mapstructure:"clientId,omitempty"`
+
+	// ClientSecret Google OAuth client secret
+	ClientSecret string `json:"clientSecret,omitempty,omitzero" yaml:"clientSecret,omitempty" mapstructure:"clientSecret,omitempty"`
+
+	// Enabled Enable Google OAuth
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
+
+	// RedirectURL OAuth callback URL
+	RedirectURL string `json:"redirectUrl,omitempty,omitzero" yaml:"redirectUrl,omitempty" mapstructure:"redirectUrl,omitempty"`
+
+	// Scopes OAuth scopes to request
+	Scopes []string `json:"scopes,omitempty,omitzero" yaml:"scopes,omitempty" mapstructure:"scopes,omitempty"`
 }
 
 // GrafanaConfig Grafana monitoring dashboard configuration
@@ -433,6 +482,67 @@ type LokiConfig struct {
 
 	// Resources Kubernetes resource configuration
 	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
+}
+
+// MagicLinkAuth Magic link authentication configuration
+type MagicLinkAuth struct {
+	// DeliveryMethods Available delivery methods
+	DeliveryMethods struct {
+		Console struct {
+			// Enabled Enable console output (development only)
+			Enabled bool `json:"enabled,omitempty,omitzero" yaml:"enabled,omitempty" mapstructure:"enabled,omitempty"`
+		} `json:"console,omitempty,omitzero" yaml:"console,omitempty" mapstructure:"console,omitempty"`
+		Email struct {
+			Enabled bool                `json:"enabled,omitempty,omitzero" yaml:"enabled,omitempty" mapstructure:"enabled,omitempty"`
+			From    openapi_types.Email `json:"from,omitempty,omitzero" yaml:"from,omitempty" mapstructure:"from,omitempty"`
+		} `json:"email,omitempty,omitzero" yaml:"email,omitempty" mapstructure:"email,omitempty"`
+		Otp struct {
+			Enabled bool `json:"enabled,omitempty,omitzero" yaml:"enabled,omitempty" mapstructure:"enabled,omitempty"`
+		} `json:"otp,omitempty,omitzero" yaml:"otp,omitempty" mapstructure:"otp,omitempty"`
+		Webhook struct {
+			Enabled bool   `json:"enabled,omitempty,omitzero" yaml:"enabled,omitempty" mapstructure:"enabled,omitempty"`
+			URL     string `json:"url,omitempty,omitzero" yaml:"url,omitempty" mapstructure:"url,omitempty"`
+		} `json:"webhook,omitempty,omitzero" yaml:"webhook,omitempty" mapstructure:"webhook,omitempty"`
+	} `json:"deliveryMethods,omitempty,omitzero" yaml:"deliveryMethods,omitempty" mapstructure:"deliveryMethods,omitempty"`
+
+	// Enabled Enable magic link authentication
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
+
+	// OtpLength Length of OTP code
+	OtpLength int `json:"otpLength,omitempty,omitzero" yaml:"otpLength,omitempty" mapstructure:"otpLength,omitempty"`
+
+	// RateLimit Rate limiting configuration
+	RateLimit struct {
+		// MaxAttempts Maximum number of attempts within window
+		MaxAttempts int `json:"maxAttempts,omitempty,omitzero" yaml:"maxAttempts,omitempty" mapstructure:"maxAttempts,omitempty"`
+
+		// WindowMinutes Time window in minutes
+		WindowMinutes int `json:"windowMinutes,omitempty,omitzero" yaml:"windowMinutes,omitempty" mapstructure:"windowMinutes,omitempty"`
+	} `json:"rateLimit,omitempty,omitzero" yaml:"rateLimit,omitempty" mapstructure:"rateLimit,omitempty"`
+
+	// TokenExpiry Token expiry duration in minutes
+	TokenExpiry int `json:"tokenExpiry,omitempty,omitzero" yaml:"tokenExpiry,omitempty" mapstructure:"tokenExpiry,omitempty"`
+}
+
+// MicrosoftAuth Microsoft/Azure AD OAuth configuration
+type MicrosoftAuth struct {
+	// ClientID Azure AD Application (client) ID
+	ClientID string `json:"clientId,omitempty,omitzero" yaml:"clientId,omitempty" mapstructure:"clientId,omitempty"`
+
+	// ClientSecret Azure AD client secret
+	ClientSecret string `json:"clientSecret,omitempty,omitzero" yaml:"clientSecret,omitempty" mapstructure:"clientSecret,omitempty"`
+
+	// Enabled Enable Microsoft OAuth
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
+
+	// RedirectURL OAuth callback URL
+	RedirectURL string `json:"redirectUrl,omitempty,omitzero" yaml:"redirectUrl,omitempty" mapstructure:"redirectUrl,omitempty"`
+
+	// Scopes OAuth scopes to request
+	Scopes []string `json:"scopes,omitempty,omitzero" yaml:"scopes,omitempty" mapstructure:"scopes,omitempty"`
+
+	// Tenant Azure AD tenant ID (use 'common' for multi-tenant)
+	Tenant string `json:"tenant,omitempty,omitzero" yaml:"tenant,omitempty" mapstructure:"tenant,omitempty"`
 }
 
 // MigrationsConfig Database migration configuration
