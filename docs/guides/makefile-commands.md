@@ -13,7 +13,7 @@ Available targets:
   build                      Build all binaries
   build-api                  Build archesai server binary
   build-docs                 Build documentation site
-  build-web                  Build web assets
+  build-platform             Build platform assets
   bundle-openapi             Bundle OpenAPI into single file
   check-deps                 Check for required dependencies
   clean                      Clean build artifacts
@@ -41,7 +41,7 @@ Available targets:
   dev-all                    Run all services with hot reload
   dev-api                    Run API server with hot reload
   dev-docs                   Run documentation with hot reload
-  dev-web                    Run web platform with hot reload
+  dev-platform               Run platform with hot reload
   docker-run                 Build and run with Docker Compose
   docker-stop                Stop Docker Compose services
   f                          Shortcut for format
@@ -79,9 +79,10 @@ Available targets:
   release-tag                Create and push a new release tag (usage: make release-tag VERSION=v1.0.0)
   release-test               Test release configuration without publishing
   run-api                    Run the API server (production mode)
+  run-config-show            Launch the configuration wizard
   run-docs                   Run documentation site (production build)
+  run-platform               Run the platform UI (production build)
   run-tui                    Launch the TUI interface
-  run-web                    Run the web UI (production build)
   run-worker                 Run the background worker
   run-workflow               Run GitHub workflow locally with act (usage: make run-workflow workflow=update-docs)
   skaffold-delete            Delete Skaffold deployment
