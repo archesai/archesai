@@ -7,6 +7,10 @@
 ├── .claude
 │   ├── CLAUDE.md
 │   └── settings.json
+├── .devcontainer
+│   ├── Dockerfile
+│   ├── devcontainer.json
+│   └── init-firewall.sh
 ├── .github
 │   ├── DISCUSSION_TEMPLATE
 │   │   └── ideas.yml
@@ -43,6 +47,7 @@
 │   │   ├── test-coverage.yaml
 │   │   ├── test-go.yaml
 │   │   └── update-docs.yaml
+│   ├── copilot-instructions.md
 │   └── dependabot.yaml
 ├── .vscode
 │   ├── extensions.json
@@ -75,8 +80,10 @@
 │   │   │   └── UsersSort.yaml
 │   │   ├── responses
 │   │   │   ├── BadRequest.yaml
+│   │   │   ├── InternalServerError.yaml
 │   │   │   ├── NoContent.yaml
 │   │   │   ├── NotFound.yaml
+│   │   │   ├── TooManyRequests.yaml
 │   │   │   └── Unauthorized.yaml
 │   │   └── schemas
 │   │       ├── APIConfig.yaml
@@ -99,6 +106,8 @@
 │   │       ├── EmbeddingConfig.yaml
 │   │       ├── FilterNode.yaml
 │   │       ├── FirebaseAuth.yaml
+│   │       ├── GitHubAuth.yaml
+│   │       ├── GoogleAuth.yaml
 │   │       ├── GrafanaConfig.yaml
 │   │       ├── HealthResponse.yaml
 │   │       ├── ImageConfig.yaml
@@ -112,7 +121,10 @@
 │   │       ├── LocalAuth.yaml
 │   │       ├── LoggingConfig.yaml
 │   │       ├── LokiConfig.yaml
+│   │       ├── MagicLinkAuth.yaml
+│   │       ├── MagicLinkToken.yaml
 │   │       ├── Member.yaml
+│   │       ├── MicrosoftAuth.yaml
 │   │       ├── MigrationsConfig.yaml
 │   │       ├── MonitoringConfig.yaml
 │   │       ├── Organization.yaml
@@ -146,6 +158,8 @@
 │   │       ├── XCodegen.yaml
 │   │       └── XCodegenWrapper.yaml
 │   ├── paths
+│   │   ├── auth
+│   │   │   └── magic-link.yaml
 │   │   ├── accounts.yaml
 │   │   ├── accounts_email-change_request.yaml
 │   │   ├── accounts_email-change_verify.yaml
@@ -194,8 +208,11 @@
 │   ├── favicon-32x32.png
 │   ├── favicon.ico
 │   ├── github-hero.svg
+│   ├── large-logo-white.svg
 │   ├── large-logo.svg
 │   ├── site.webmanifest
+│   ├── small-logo-adaptive.svg
+│   ├── small-logo-white.svg
 │   └── small-logo.svg
 ├── cmd
 │   └── archesai
@@ -257,7 +274,6 @@
 │   │   │   │   ├── secrets.yaml
 │   │   │   │   └── serviceaccount.yaml
 │   │   │   ├── Chart.yaml
-│   │   │   ├── values.schema.json
 │   │   │   └── values.yaml
 │   │   └── dev-overrides.yaml
 │   ├── helm-minimal
@@ -411,6 +427,7 @@
 │   │   └── template_funcs.go
 │   ├── config
 │   │   ├── config.go
+│   │   ├── handler.go
 │   │   ├── loader.go
 │   │   └── loader_test.go
 │   ├── database
@@ -452,10 +469,7 @@
 │   │   ├── sqlite
 │   │   │   └── stub.go
 │   │   ├── database.go
-│   │   ├── factory.go
-│   │   ├── postgres.go
-│   │   ├── sqlc.yaml
-│   │   └── sqlite.go
+│   │   └── sqlc.yaml
 │   ├── events
 │   │   ├── events.go
 │   │   ├── noop.go
@@ -465,8 +479,11 @@
 │   │   ├── errors.go
 │   │   ├── handler.go
 │   │   ├── health.go
+│   │   ├── postgres.go
+│   │   ├── repository.go
 │   │   ├── service.go
-│   │   └── service_test.go
+│   │   ├── service_test.go
+│   │   └── sqlite.go
 │   ├── invitations
 │   │   ├── errors.go
 │   │   └── invitations.go
@@ -482,6 +499,10 @@
 │   ├── logger
 │   │   ├── config.go
 │   │   └── logger.go
+│   ├── magiclink
+│   │   ├── handler.go
+│   │   ├── postgres.go
+│   │   └── service.go
 │   ├── members
 │   │   ├── errors.go
 │   │   └── members.go
@@ -492,11 +513,13 @@
 │   │   ├── postgresql
 │   │   │   ├── 20250908082709_init.sql
 │   │   │   ├── 20250908124238_enable_pgvector.sql
-│   │   │   └── 20250915075921_update_api_token_structure.sql
+│   │   │   ├── 20250915075921_update_api_token_structure.sql
+│   │   │   └── 20250919061512_add_magic_link_auth.sql
 │   │   ├── sqlite
 │   │   │   ├── 20250908082709_init.sql
 │   │   │   ├── 20250908124238_enable_pgvector.sql
-│   │   │   └── 20250915075921_update_api_token_structure.sql
+│   │   │   ├── 20250915075921_update_api_token_structure.sql
+│   │   │   └── 20250919061512_add_magic_link_auth.sql
 │   │   └── migrate.go
 │   ├── oauth
 │   │   ├── github.go
@@ -505,8 +528,9 @@
 │   │   ├── google_test.go
 │   │   ├── microsoft.go
 │   │   ├── microsoft_test.go
-│   │   ├── oauth.go
-│   │   └── provider.go
+│   │   ├── provider.go
+│   │   ├── server.go
+│   │   └── service.go
 │   ├── organizations
 │   │   ├── errors.go
 │   │   ├── organizations.go
@@ -546,8 +570,11 @@
 │   │   ├── claims_test.go
 │   │   ├── context.go
 │   │   ├── errors.go
+│   │   ├── handler.go
+│   │   ├── oauth.go
 │   │   ├── permissions.go
 │   │   ├── permissions_test.go
+│   │   ├── server.go
 │   │   ├── service.go
 │   │   ├── service_test.go
 │   │   ├── sessionmanager.go
@@ -570,6 +597,8 @@
 │   │   └── tui.go
 │   └── users
 │       ├── errors.go
+│       ├── oauth.go
+│       ├── service_extra.go
 │       ├── service_test.go
 │       └── users.go
 ├── scripts
@@ -640,18 +669,10 @@
 │   │   └── tsconfig.spec.json
 │   ├── docs
 │   │   ├── public
-│   │   │   ├── pagefind
-│   │   │   │   └── pagefind.js
-│   │   │   ├── preview
-│   │   │   │   ├── dark-api.svg
-│   │   │   │   └── dark-portal.svg
-│   │   │   ├── search
-│   │   │   │   └── search.svg
-│   │   │   ├── background.png
-│   │   │   ├── background.svg
-│   │   │   ├── banner-dark.svg
-│   │   │   └── banner.svg
+│   │   │   └── .gitkeep
 │   │   ├── src
+│   │   │   ├── landing.tsx
+│   │   │   ├── landing_content.ts
 │   │   │   └── sidebar.tsx
 │   │   ├── package.json
 │   │   ├── tsconfig.app.json
@@ -683,6 +704,8 @@
 │   │   │   │   │   │   │   └── index.lazy.tsx
 │   │   │   │   │   │   └── index.tsx
 │   │   │   │   │   ├── profile
+│   │   │   │   │   │   ├── themes
+│   │   │   │   │   │   │   └── index.tsx
 │   │   │   │   │   │   └── index.tsx
 │   │   │   │   │   ├── runs
 │   │   │   │   │   │   ├── $runID
@@ -697,14 +720,18 @@
 │   │   │   │   │   │   └── index.tsx
 │   │   │   │   │   ├── login
 │   │   │   │   │   │   └── index.tsx
+│   │   │   │   │   ├── magic-link
+│   │   │   │   │   │   └── verify.tsx
+│   │   │   │   │   ├── oauth
+│   │   │   │   │   │   └── callback
+│   │   │   │   │   │       └── index.tsx
 │   │   │   │   │   ├── register
 │   │   │   │   │   │   └── index.tsx
 │   │   │   │   │   └── route.tsx
-│   │   │   │   ├── landing
-│   │   │   │   │   ├── -content.ts
-│   │   │   │   │   └── index.tsx
 │   │   │   │   └── __root.tsx
 │   │   │   ├── components
+│   │   │   │   ├── auth
+│   │   │   │   │   └── logout-button.tsx
 │   │   │   │   ├── containers
 │   │   │   │   │   ├── app-sidebar-container.tsx
 │   │   │   │   │   └── page-header-container.tsx
@@ -740,7 +767,10 @@
 │   │   │   │   ├── use-toggle-view.tsx
 │   │   │   │   └── use-websockets.tsx
 │   │   │   ├── lib
-│   │   │   │   ├── get-headers.ts
+│   │   │   │   ├── config.ts
+│   │   │   │   ├── get-session-ssr.ts
+│   │   │   │   ├── schema-validator.test.ts
+│   │   │   │   ├── schema-validator.ts
 │   │   │   │   ├── site-config.ts
 │   │   │   │   └── site-utils.ts
 │   │   │   ├── styles
@@ -849,6 +879,40 @@
 │       │   │   │   ├── toggle-group.tsx
 │       │   │   │   ├── toggle.tsx
 │       │   │   │   └── tooltip.tsx
+│       │   │   ├── zudoku
+│       │   │   │   ├── context
+│       │   │   │   │   ├── ViewportAnchorContext.tsx
+│       │   │   │   │   └── ZudokuContext.tsx
+│       │   │   │   ├── navigation
+│       │   │   │   │   ├── Navigation.tsx
+│       │   │   │   │   ├── NavigationBadge.tsx
+│       │   │   │   │   ├── NavigationCategory.tsx
+│       │   │   │   │   ├── NavigationItem.tsx
+│       │   │   │   │   ├── NavigationWrapper.tsx
+│       │   │   │   │   ├── Toc.tsx
+│       │   │   │   │   └── utils.ts
+│       │   │   │   ├── Banner.tsx
+│       │   │   │   ├── Footer.tsx
+│       │   │   │   ├── Link.tsx
+│       │   │   │   ├── MobileTopNavigation.tsx
+│       │   │   │   ├── Slot.tsx
+│       │   │   │   ├── TopNavigation.tsx
+│       │   │   │   ├── anchor-link.tsx
+│       │   │   │   ├── autocomplete.tsx
+│       │   │   │   ├── category-header.tsx
+│       │   │   │   ├── client-only.tsx
+│       │   │   │   ├── header.tsx
+│       │   │   │   ├── index.ts
+│       │   │   │   ├── layout.tsx
+│       │   │   │   ├── main.tsx
+│       │   │   │   ├── page-progress.tsx
+│       │   │   │   ├── pagination.tsx
+│       │   │   │   ├── search.tsx
+│       │   │   │   ├── spinner.tsx
+│       │   │   │   ├── theme-switch.tsx
+│       │   │   │   ├── top-navigation.tsx
+│       │   │   │   ├── typography.tsx
+│       │   │   │   └── utils.ts
 │       │   │   └── index.ts
 │       │   ├── hooks
 │       │   │   ├── use-callback-ref.tsx
@@ -912,6 +976,7 @@
 ├── LICENSE
 ├── Makefile
 ├── README.md
+├── arches.yaml
 ├── biome.json
 ├── go.mod
 ├── go.sum
@@ -920,7 +985,7 @@
 ├── pnpm-workspace.yaml
 └── tsconfig.json
 
-197 directories, 719 files
+204 directories, 777 files
 ```
 
 ## Domain Package Structure
