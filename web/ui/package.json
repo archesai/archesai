@@ -25,27 +25,6 @@
     "tailwind-merge": "catalog:ui",
     "vaul": "catalog:ui"
   },
-  "devDependencies": {
-    "@fontsource/geist": "catalog:ui",
-    "@fontsource/geist-mono": "catalog:ui",
-    "@tailwindcss/vite": "catalog:vite",
-    "@tanstack/table-core": "catalog:tanstack",
-    "@testing-library/dom": "catalog:test",
-    "@testing-library/react": "catalog:test",
-    "@types/node": "catalog:",
-    "@types/react": "catalog:react19",
-    "@types/react-dom": "catalog:react19",
-    "@vitejs/plugin-react": "catalog:vite",
-    "@vitest/ui": "catalog:test",
-    "jsdom": "catalog:test",
-    "tailwindcss": "catalog:ui",
-    "tw-animate-css": "catalog:ui",
-    "typescript": "catalog:",
-    "vite": "catalog:vite",
-    "vite-plugin-svgr": "catalog:vite",
-    "vitest": "catalog:test",
-    "web-vitals": "catalog:test"
-  },
   "exports": {
     ".": "./src/index.ts",
     "./globals.css": "./src/styles/globals.css",

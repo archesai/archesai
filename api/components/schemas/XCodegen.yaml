@@ -238,6 +238,25 @@ properties:
         type: array
         items:
           type: string
+      custom_operations:
+        description: Custom operations beyond standard CRUD
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              description: Operation name (e.g., Register, Login)
+              type: string
+              pattern: '^[A-Z][a-zA-Z0-9]*$'
+            operation_id:
+              description: OpenAPI operation ID
+              type: string
+            method:
+              description: HTTP method
+              type: string
+              enum: [GET, POST, PUT, PATCH, DELETE]
+          required: [name, operation_id, method]
+          additionalProperties: false
       transaction_support:
         description: Generate transaction support
         type: boolean

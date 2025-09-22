@@ -7,22 +7,25 @@ import (
 
 const sanitizedValue = "***"
 
-// StrictServer implements the config API
-type StrictServer struct {
+// Handler implements the config API
+type Handler struct {
 	config *Config
 	logger *slog.Logger
 }
 
-// NewStrictServer creates a new config server
-func NewStrictServer(config *Config, logger *slog.Logger) *StrictServer {
-	return &StrictServer{
+// Ensure Handler implements StrictServerInterface
+var _ StrictServerInterface = (*Handler)(nil)
+
+// NewHandler creates a new config server
+func NewHandler(config *Config, logger *slog.Logger) *Handler {
+	return &Handler{
 		config: config,
 		logger: logger,
 	}
 }
 
 // GetConfig returns the current configuration
-func (s *StrictServer) GetConfig(
+func (s *Handler) GetConfig(
 	_ context.Context,
 	_ GetConfigRequestObject,
 ) (GetConfigResponseObject, error) {
@@ -33,7 +36,7 @@ func (s *StrictServer) GetConfig(
 }
 
 // sanitizeConfig creates a copy of the config with sensitive data removed FIXME - this should be generated form an x-sensitive
-func (s *StrictServer) sanitizeConfig() *ArchesConfig {
+func (s *Handler) sanitizeConfig() *ArchesConfig {
 	// Deep copy the embedded ArchesConfig
 	cfg := *s.config.ArchesConfig
 

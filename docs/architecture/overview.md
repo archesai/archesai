@@ -148,7 +148,7 @@ Generates:
 - SQLite implementation (`sqlite.gen.go`)
 - Service interface (`service.gen.go`)
 - HTTP server implementation (`server.gen.go`)
-- API client interface (`api.gen.go`)
+- API client interface (`handler.gen.go`)
 - Test mocks (`mocks_test.gen.go`)
 
 #### **SQL-First Database Layer**

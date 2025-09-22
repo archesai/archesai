@@ -39,5 +39,10 @@
     ],
     "ask": [],
     "deny": []
+  },
+  "statusLine": {
+    "command": "~/.config/claude/statusline.sh",
+    "padding": 0,
+    "type": "command"
   }
 }

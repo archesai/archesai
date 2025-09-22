@@ -24,6 +24,7 @@ export default defineConfig({
           useQuery: true,
           useSuspenseInfiniteQuery: false,
           useSuspenseQuery: true,
+          version: 5,
         },
       },
       // schemas: 'src/generated/models',
@@ -31,6 +32,18 @@ export default defineConfig({
       urlEncodeParameters: true,
       workspace: "./src",
       // propertySortOrder: 'Alphabetical'
+    },
+  },
+  archesaiZod: {
+    input: {
+      target: "../../api/openapi.bundled.yaml",
+    },
+    output: {
+      biome: true,
+      client: "zod",
+      mode: "single",
+      target: "./generated/zod.ts",
+      workspace: "./src",
     },
   },
 });

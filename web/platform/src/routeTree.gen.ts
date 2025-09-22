@@ -14,7 +14,6 @@ import { Route as rootRouteImport } from './app/__root'
 import { Route as AuthRouteRouteImport } from './app/auth/route'
 import { Route as AppRouteRouteImport } from './app/_app/route'
 import { Route as AppIndexRouteImport } from './app/_app/index'
-import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
 import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-password/index'
 import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
@@ -23,6 +22,7 @@ import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
 import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
 import { Route as AppOrganizationIndexRouteImport } from './app/_app/organization/index'
 import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
+import { Route as AppConfigurationIndexRouteImport } from './app/_app/configuration/index'
 import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
 import { Route as AuthMagicLinkVerifyRouteImport } from './app/auth/magic-link/verify'
 import { Route as AuthOauthCallbackIndexRouteImport } from './app/auth/oauth/callback/index'
@@ -49,11 +49,6 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRouteRoute,
-} as any)
-const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
-  id: '/register/',
-  path: '/register/',
-  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   id: '/login/',
@@ -93,6 +88,11 @@ const AppOrganizationIndexRoute = AppOrganizationIndexRouteImport.update({
 const AppLabelsIndexRoute = AppLabelsIndexRouteImport.update({
   id: '/labels/',
   path: '/labels/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppConfigurationIndexRoute = AppConfigurationIndexRouteImport.update({
+  id: '/configuration/',
+  path: '/configuration/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppArtifactsIndexRoute = AppArtifactsIndexRouteImport.update({
@@ -152,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/auth/magic-link/verify': typeof AuthMagicLinkVerifyRoute
   '/artifacts': typeof AppArtifactsIndexRoute
+  '/configuration': typeof AppConfigurationIndexRoute
   '/labels': typeof AppLabelsIndexRoute
   '/organization': typeof AppOrganizationIndexRoute
   '/pipelines': typeof AppPipelinesIndexRoute
@@ -160,7 +161,6 @@ export interface FileRoutesByFullPath {
   '/tools': typeof AppToolsIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
-  '/auth/register': typeof AuthRegisterIndexRoute
   '/artifacts/$artifactID': typeof AppArtifactsArtifactIDIndexRoute
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineID': typeof AppPipelinesPipelineIDIndexRoute
@@ -174,6 +174,7 @@ export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/auth/magic-link/verify': typeof AuthMagicLinkVerifyRoute
   '/artifacts': typeof AppArtifactsIndexRoute
+  '/configuration': typeof AppConfigurationIndexRoute
   '/labels': typeof AppLabelsIndexRoute
   '/organization': typeof AppOrganizationIndexRoute
   '/pipelines': typeof AppPipelinesIndexRoute
@@ -182,7 +183,6 @@ export interface FileRoutesByTo {
   '/tools': typeof AppToolsIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
-  '/auth/register': typeof AuthRegisterIndexRoute
   '/artifacts/$artifactID': typeof AppArtifactsArtifactIDIndexRoute
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineID': typeof AppPipelinesPipelineIDIndexRoute
@@ -198,6 +198,7 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/auth/magic-link/verify': typeof AuthMagicLinkVerifyRoute
   '/_app/artifacts/': typeof AppArtifactsIndexRoute
+  '/_app/configuration/': typeof AppConfigurationIndexRoute
   '/_app/labels/': typeof AppLabelsIndexRoute
   '/_app/organization/': typeof AppOrganizationIndexRoute
   '/_app/pipelines/': typeof AppPipelinesIndexRoute
@@ -206,7 +207,6 @@ export interface FileRoutesById {
   '/_app/tools/': typeof AppToolsIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
-  '/auth/register/': typeof AuthRegisterIndexRoute
   '/_app/artifacts/$artifactID/': typeof AppArtifactsArtifactIDIndexRoute
   '/_app/organization/members/': typeof AppOrganizationMembersIndexRoute
   '/_app/pipelines/$pipelineID/': typeof AppPipelinesPipelineIDIndexRoute
@@ -222,6 +222,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/magic-link/verify'
     | '/artifacts'
+    | '/configuration'
     | '/labels'
     | '/organization'
     | '/pipelines'
@@ -230,7 +231,6 @@ export interface FileRouteTypes {
     | '/tools'
     | '/auth/forgot-password'
     | '/auth/login'
-    | '/auth/register'
     | '/artifacts/$artifactID'
     | '/organization/members'
     | '/pipelines/$pipelineID'
@@ -244,6 +244,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/magic-link/verify'
     | '/artifacts'
+    | '/configuration'
     | '/labels'
     | '/organization'
     | '/pipelines'
@@ -252,7 +253,6 @@ export interface FileRouteTypes {
     | '/tools'
     | '/auth/forgot-password'
     | '/auth/login'
-    | '/auth/register'
     | '/artifacts/$artifactID'
     | '/organization/members'
     | '/pipelines/$pipelineID'
@@ -267,6 +267,7 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/auth/magic-link/verify'
     | '/_app/artifacts/'
+    | '/_app/configuration/'
     | '/_app/labels/'
     | '/_app/organization/'
     | '/_app/pipelines/'
@@ -275,7 +276,6 @@ export interface FileRouteTypes {
     | '/_app/tools/'
     | '/auth/forgot-password/'
     | '/auth/login/'
-    | '/auth/register/'
     | '/_app/artifacts/$artifactID/'
     | '/_app/organization/members/'
     | '/_app/pipelines/$pipelineID/'
@@ -312,13 +312,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRouteRoute
-    }
-    '/auth/register/': {
-      id: '/auth/register/'
-      path: '/register'
-      fullPath: '/auth/register'
-      preLoaderRoute: typeof AuthRegisterIndexRouteImport
-      parentRoute: typeof AuthRouteRoute
     }
     '/auth/login/': {
       id: '/auth/login/'
@@ -374,6 +367,13 @@ declare module '@tanstack/react-router' {
       path: '/labels'
       fullPath: '/labels'
       preLoaderRoute: typeof AppLabelsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/configuration/': {
+      id: '/_app/configuration/'
+      path: '/configuration'
+      fullPath: '/configuration'
+      preLoaderRoute: typeof AppConfigurationIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/artifacts/': {
@@ -445,6 +445,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppArtifactsIndexRoute: typeof AppArtifactsIndexRoute
+  AppConfigurationIndexRoute: typeof AppConfigurationIndexRoute
   AppLabelsIndexRoute: typeof AppLabelsIndexRoute
   AppOrganizationIndexRoute: typeof AppOrganizationIndexRoute
   AppPipelinesIndexRoute: typeof AppPipelinesIndexRoute
@@ -462,6 +463,7 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppArtifactsIndexRoute: AppArtifactsIndexRoute,
+  AppConfigurationIndexRoute: AppConfigurationIndexRoute,
   AppLabelsIndexRoute: AppLabelsIndexRoute,
   AppOrganizationIndexRoute: AppOrganizationIndexRoute,
   AppPipelinesIndexRoute: AppPipelinesIndexRoute,
@@ -484,7 +486,6 @@ interface AuthRouteRouteChildren {
   AuthMagicLinkVerifyRoute: typeof AuthMagicLinkVerifyRoute
   AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
-  AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
   AuthOauthCallbackIndexRoute: typeof AuthOauthCallbackIndexRoute
 }
 
@@ -492,7 +493,6 @@ const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthMagicLinkVerifyRoute: AuthMagicLinkVerifyRoute,
   AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
-  AuthRegisterIndexRoute: AuthRegisterIndexRoute,
   AuthOauthCallbackIndexRoute: AuthOauthCallbackIndexRoute,
 }
 

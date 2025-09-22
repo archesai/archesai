@@ -1,13 +1,7 @@
 {
   "dependencies": {
-    "@tanstack/react-query": "catalog:tanstack"
-  },
-  "devDependencies": {
-    "@types/node": "catalog:",
-    "@vitest/ui": "catalog:test",
-    "orval": "catalog:client",
-    "typescript": "catalog:",
-    "vitest": "catalog:test"
+    "@tanstack/react-query": "catalog:tanstack",
+    "zod": "4.1.9"
   },
   "exports": {
     ".": "./src/index.ts",

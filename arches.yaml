@@ -1,1 +1,15 @@
 # yaml-language-server: $schema=api/components/schemas/ArchesConfig.yaml
+api:
+  host: moose
+  port: 3001
+
+logging:
+  level: info
+  pretty: true
+
+auth:
+  enabled: false
+
+database:
+  enabled: true
+  url: postgresql://admin:password@localhost:5432/archesai

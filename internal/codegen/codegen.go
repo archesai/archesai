@@ -13,8 +13,6 @@
 // All generated files follow the pattern *.gen.go and should not be edited manually.
 package codegen
 
-//go:generate go tool oapi-codegen --config=../../.codegen.types.yaml --package codegen --generate skip-prune,models ../../api/components/schemas/XCodegenWrapper.yaml
-
 import (
 	"fmt"
 	"go/ast"
@@ -188,15 +186,15 @@ func Run(configPath string) error {
 func loadTemplates() (map[string]*template.Template, error) {
 	templates := make(map[string]*template.Template)
 	templateFiles := []string{
-		"repository.go.tmpl",
-		"repository_postgres.go.tmpl",
-		"repository_sqlite.go.tmpl",
-		"events.go.tmpl",
+		"config.go.tmpl",
 		"events_nats.go.tmpl",
 		"events_redis.go.tmpl",
+		"events.go.tmpl",
+		"handler.gen.go.tmpl",
+		"repository_postgres.go.tmpl",
+		"repository_sqlite.go.tmpl",
+		"repository.go.tmpl",
 		"service.go.tmpl",
-		"server.gen.go.tmpl",
-		"config.go.tmpl",
 	}
 
 	for _, file := range templateFiles {
@@ -565,7 +563,7 @@ func getHandlerConfig(
 
 	// Use the configured handlers output path
 	outputFiles := []struct{ path, template string }{
-		{filepath.Join(config.Output, domain, "server.impl.gen.go"), "server.gen.go.tmpl"},
+		{filepath.Join(config.Output, domain, "server.impl.gen.go"), "handler.gen.go.tmpl"},
 	}
 	return templateData, outputFiles
 }
@@ -1205,19 +1203,6 @@ func generateService(
 			return fmt.Errorf("failed to write service for %s: %w", schema.Name, err)
 		}
 
-		// Check if a manual handler.go file exists
-		manualHandlerPath := filepath.Join(config.Output, schema.Domain, "handler.go")
-		if _, err := os.Stat(manualHandlerPath); err == nil {
-			log.Debug("Skipping handler generation - manual handler.go exists",
-				slog.String("domain", schema.Domain),
-				slog.String("path", manualHandlerPath))
-		} else {
-			// Generate server.gen.go
-			handlerPath := filepath.Join(config.Output, schema.Domain, "server.gen.go")
-			if err := fileWriter.WriteTemplate(handlerPath, templates["server.gen.go.tmpl"], templateData); err != nil {
-				return fmt.Errorf("failed to write handler for %s: %w", schema.Name, err)
-			}
-		}
 	}
 
 	return nil

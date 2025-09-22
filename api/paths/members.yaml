@@ -25,7 +25,6 @@ post:
                 - owner
                 - member
               example: admin
-              minLength: 1
           required:
             - role
     required: true

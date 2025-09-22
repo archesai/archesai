@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-const developmentKey = "development"
-
 // GenerateDefaultsCode generates Go code for configuration defaults.
 func GenerateDefaultsCode(defaults map[string]interface{}) string {
 	var buf bytes.Buffer
@@ -56,32 +54,40 @@ func generateStruct(buf *bytes.Buffer, data map[string]interface{}, indent int) 
 			continue
 		}
 
-		// Skip development if it only has enabled field (incorrect parsing)
-		if key == developmentKey {
-			if m, ok := value.(map[string]interface{}); ok {
-				if len(m) == 1 {
-					if _, hasEnabled := m["enabled"]; hasEnabled {
-						continue // Skip incorrect development config
-					}
-				}
-			}
-		}
-
 		fieldName := toPascalCase(key)
 		tabs := strings.Repeat("\t", indent)
 
 		switch v := value.(type) {
 		case map[string]interface{}:
-			// Get the correct type name for the nested config
-			typeName := getConfigTypeName(key)
-			if len(v) == 0 {
-				// Empty struct, skip or use empty initializer
-				fmt.Fprintf(buf, "%s%s: %s{},\n", tabs, fieldName, typeName)
+			// Special handling for kubernetes field (anonymous struct)
+			if key == "kubernetes" {
+				if len(v) == 0 {
+					fmt.Fprintf(buf, "%s%s: struct {\n", tabs, fieldName)
+					fmt.Fprintf(buf, "%s\tInfrastructure InfrastructureConfig `json:\"infrastructure,omitempty,omitzero\" yaml:\"infrastructure,omitempty\" mapstructure:\"infrastructure,omitempty\"`\n", tabs)
+					fmt.Fprintf(buf, "%s\tIngress        IngressConfig        `json:\"ingress,omitempty,omitzero\" yaml:\"ingress,omitempty\" mapstructure:\"ingress,omitempty\"`\n", tabs)
+					fmt.Fprintf(buf, "%s\tMonitoring     MonitoringConfig     `json:\"monitoring,omitempty,omitzero\" yaml:\"monitoring,omitempty\" mapstructure:\"monitoring,omitempty\"`\n", tabs)
+					fmt.Fprintf(buf, "%s}{},\n", tabs)
+				} else {
+					fmt.Fprintf(buf, "%s%s: struct {\n", tabs, fieldName)
+					fmt.Fprintf(buf, "%s\tInfrastructure InfrastructureConfig `json:\"infrastructure,omitempty,omitzero\" yaml:\"infrastructure,omitempty\" mapstructure:\"infrastructure,omitempty\"`\n", tabs)
+					fmt.Fprintf(buf, "%s\tIngress        IngressConfig        `json:\"ingress,omitempty,omitzero\" yaml:\"ingress,omitempty\" mapstructure:\"ingress,omitempty\"`\n", tabs)
+					fmt.Fprintf(buf, "%s\tMonitoring     MonitoringConfig     `json:\"monitoring,omitempty,omitzero\" yaml:\"monitoring,omitempty\" mapstructure:\"monitoring,omitempty\"`\n", tabs)
+					fmt.Fprintf(buf, "%s}{\n", tabs)
+					generateStruct(buf, v, indent+1)
+					fmt.Fprintf(buf, "%s},\n", tabs)
+				}
 			} else {
-				// Nested struct
-				fmt.Fprintf(buf, "%s%s: %s{\n", tabs, fieldName, typeName)
-				generateStruct(buf, v, indent+1)
-				fmt.Fprintf(buf, "%s},\n", tabs)
+				// Get the correct type name for the nested config
+				typeName := getConfigTypeName(key)
+				if len(v) == 0 {
+					// Empty struct, skip or use empty initializer
+					fmt.Fprintf(buf, "%s%s: %s{},\n", tabs, fieldName, typeName)
+				} else {
+					// Nested struct
+					fmt.Fprintf(buf, "%s%s: %s{\n", tabs, fieldName, typeName)
+					generateStruct(buf, v, indent+1)
+					fmt.Fprintf(buf, "%s},\n", tabs)
+				}
 			}
 		case string:
 			// Check if it's an enum value that needs a constant
@@ -99,69 +105,68 @@ func generateStruct(buf *bytes.Buffer, data map[string]interface{}, indent int) 
 			} else {
 				fmt.Fprintf(buf, "%s%s: %f,\n", tabs, fieldName, v)
 			}
+		case []interface{}:
+			// Handle empty slices with proper typing
+			if len(v) == 0 {
+				// For known slice types, provide proper initialization
+				if key == "imagePullSecrets" {
+					fmt.Fprintf(buf, "%s%s: []string{},\n", tabs, fieldName)
+				} else {
+					fmt.Fprintf(buf, "%s%s: []interface{}{},\n", tabs, fieldName)
+				}
+			} else {
+				// Non-empty slices - for now just print as interface{}
+				fmt.Fprintf(buf, "%s%s: %v,\n", tabs, fieldName, v)
+			}
 		default:
 			fmt.Fprintf(buf, "%s%s: %v,\n", tabs, fieldName, v)
 		}
 	}
 }
 
+var configTypeMap = map[string]string{
+	"api":            "APIConfig",
+	"email":          "EmailConfig",
+	"image":          "ImageConfig",
+	"resources":      "ResourceConfig",
+	"auth":           "AuthConfig",
+	"local":          "LocalAuth",
+	"twitter":        "TwitterAuth",
+	"firebase":       "FirebaseAuth",
+	"database":       "DatabaseConfig",
+	"logging":        "LoggingConfig",
+	"redis":          "RedisConfig",
+	"storage":        "StorageConfig",
+	"infrastructure": "InfrastructureConfig",
+	"platform":       "PlatformConfig",
+	"ingress":        "IngressConfig",
+	"intelligence":   "IntelligenceConfig",
+	"llm":            "LLMConfig",
+	"embedding":      "EmbeddingConfig",
+	"monitoring":     "MonitoringConfig",
+	"grafana":        "GrafanaConfig",
+	"loki":           "LokiConfig",
+	"billing":        "BillingConfig",
+	"stripe":         "StripeConfig",
+	"kubernetes":     "struct { Infrastructure InfrastructureConfig; Ingress IngressConfig; Monitoring MonitoringConfig }",
+	"images":         "ImagesConfig",
+	"migrations":     "MigrationsConfig",
+	"serviceAccount": "ServiceAccountConfig",
+	"tls":            "TLSConfig",
+	"limits":         "ResourceLimits",
+	"requests":       "ResourceRequests",
+	"runpod":         "RunPodConfig",
+	"scraper":        "ScraperConfig",
+	"speech":         "SpeechConfig",
+	"unstructured":   "UnstructuredConfig",
+}
+
 func getConfigTypeName(key string) string {
-	// Map field names to their config type names
-	switch key {
-	case "api":
-		return "APIConfig"
-	case "cors":
-		return "CORSConfig"
-	case "email":
-		return "EmailConfig"
-	case "image":
-		return "ImageConfig"
-	case "resources":
-		return "ResourceConfig"
-	case "auth":
-		return "AuthConfig"
-	case "local":
-		return "LocalAuth"
-	case "twitter":
-		return "TwitterAuth"
-	case "firebase":
-		return "FirebaseAuth"
-	case "database":
-		return "DatabaseConfig"
-	case "logging":
-		return "LoggingConfig"
-	case "redis":
-		return "RedisConfig"
-	case "storage":
-		return "StorageConfig"
-	case "infrastructure":
-		return "InfrastructureConfig"
-	case developmentKey:
-		return "DevelopmentConfig"
-	case "platform":
-		return "PlatformConfig"
-	case "ingress":
-		return "IngressConfig"
-	case "intelligence":
-		return "IntelligenceConfig"
-	case "llm":
-		return "LLMConfig"
-	case "embedding":
-		return "EmbeddingConfig"
-	case "monitoring":
-		return "MonitoringConfig"
-	case "grafana":
-		return "GrafanaConfig"
-	case "loki":
-		return "LokiConfig"
-	case "billing":
-		return "BillingConfig"
-	case "stripe":
-		return "StripeConfig"
-	default:
-		// Fallback to PascalCase + Config
-		return toPascalCase(key) + "Config"
+	if typeName, exists := configTypeMap[key]; exists {
+		return typeName
 	}
+	// Fallback to PascalCase + Config
+	return toPascalCase(key) + "Config"
 }
 
 var pascalCaseMap = map[string]string{
@@ -187,8 +192,7 @@ var pascalCaseMap = map[string]string{
 	"local":          "Local",
 	"twitter":        "Twitter",
 	"firebase":       "Firebase",
-	developmentKey:   "Development",
-	"url":            "Url",
+	"url":            "URL",
 	"maxConns":       "MaxConns",
 	"minConns":       "MinConns",
 	"runMigrations":  "RunMigrations",
@@ -198,6 +202,7 @@ var pascalCaseMap = map[string]string{
 	"email":          "Email",
 	"image":          "Image",
 	"resources":      "Resources",
+	"tls":            "TLS",
 }
 
 func toPascalCase(s string) string {
@@ -218,7 +223,7 @@ func getEnumConstant(key, value string) string {
 	switch key {
 	case "environment":
 		switch value {
-		case developmentKey:
+		case "development":
 			return "Development"
 		case "staging":
 			return "Staging"
@@ -283,18 +288,15 @@ func (p *Parser) GetCompleteConfigDefaults() (map[string]interface{}, error) {
 
 	// Top-level configs in ArchesConfig
 	configs := map[string]string{
-		"api":            "APIConfig",
-		"auth":           "AuthConfig",
-		"billing":        "BillingConfig",
-		"database":       "DatabaseConfig",
-		"infrastructure": "InfrastructureConfig",
-		"ingress":        "IngressConfig",
-		"intelligence":   "IntelligenceConfig",
-		"logging":        "LoggingConfig",
-		"monitoring":     "MonitoringConfig",
-		"platform":       "PlatformConfig",
-		"redis":          "RedisConfig",
-		"storage":        "StorageConfig",
+		"api":          "APIConfig",
+		"auth":         "AuthConfig",
+		"billing":      "BillingConfig",
+		"database":     "DatabaseConfig",
+		"intelligence": "IntelligenceConfig",
+		"logging":      "LoggingConfig",
+		"platform":     "PlatformConfig",
+		"redis":        "RedisConfig",
+		"storage":      "StorageConfig",
 	}
 
 	// Get defaults for each top-level config
@@ -305,7 +307,6 @@ func (p *Parser) GetCompleteConfigDefaults() (map[string]interface{}, error) {
 	// Handle nested configs within each top-level config
 	// APIConfig has nested: cors, email, image, resources
 	if apiDefaults, ok := completeDefaults["api"].(map[string]interface{}); ok {
-		apiDefaults["cors"] = safeGetDefaults("CORSConfig")
 		apiDefaults["email"] = safeGetDefaults("EmailConfig")
 		apiDefaults["image"] = safeGetDefaults("ImageConfig")
 		apiDefaults["resources"] = safeGetDefaults("ResourceConfig")
@@ -334,10 +335,30 @@ func (p *Parser) GetCompleteConfigDefaults() (map[string]interface{}, error) {
 		billDefaults["stripe"] = safeGetDefaults("StripeConfig")
 	}
 
-	// InfrastructureConfig has nested: development
-	if infraDefaults, ok := completeDefaults["infrastructure"].(map[string]interface{}); ok {
-		infraDefaults["development"] = safeGetDefaults("DevServiceConfig")
+	// Add kubernetes nested structure
+	kubernetes := map[string]interface{}{
+		"infrastructure": safeGetDefaults("InfrastructureConfig"),
+		"ingress":        safeGetDefaults("IngressConfig"),
+		"monitoring":     safeGetDefaults("MonitoringConfig"),
 	}
+
+	// Handle nested configs within kubernetes structure
+	if infraDefaults, ok := kubernetes["infrastructure"].(map[string]interface{}); ok {
+		infraDefaults["images"] = safeGetDefaults("ImagesConfig")
+		infraDefaults["migrations"] = safeGetDefaults("MigrationsConfig")
+		infraDefaults["serviceAccount"] = safeGetDefaults("ServiceAccountConfig")
+	}
+
+	if ingressDefaults, ok := kubernetes["ingress"].(map[string]interface{}); ok {
+		ingressDefaults["tls"] = safeGetDefaults("TLSConfig")
+	}
+
+	if monDefaults, ok := kubernetes["monitoring"].(map[string]interface{}); ok {
+		monDefaults["grafana"] = safeGetDefaults("GrafanaConfig")
+		monDefaults["loki"] = safeGetDefaults("LokiConfig")
+	}
+
+	completeDefaults["kubernetes"] = kubernetes
 
 	return completeDefaults, nil
 }

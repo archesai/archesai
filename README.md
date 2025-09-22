@@ -32,7 +32,6 @@ AI-powered data processing platform with workflow automation and beautiful termi
 <a href="#-quick-start"><strong>Quick Start</strong></a> ·
 <a href="#documentation"><strong>Documentation</strong></a> ·
 <a href="#-features"><strong>Features</strong></a> ·
-<a href="#development"><strong>Development</strong></a> ·
 <a href="#support"><strong>Support</strong></a>
 
 ## Introduction
@@ -96,7 +95,7 @@ For detailed installation and setup instructions, see
 
 #### Core Domains
 
-- [OAuth](internal/oauth) - Authentication & authorization
+- [OAuth](internal/auth) - Authentication & authorization
 - [Organizations](internal/organizations/) - Organization management
 - [Pipelines](internal/pipelines/) - Pipeline automation
 - [Runs](internal/runs/) - Run management
@@ -116,19 +115,6 @@ For detailed installation and setup instructions, see
 - ⚙️ **Workflow Automation**: DAG-based data processing pipelines
 - 🔩 **Code Generation**: OpenAPI and SQL-driven development
 - 🚀 **Modern Stack**: Go, PostgreSQL/SQLite, Redis
-
-## Development
-
-### Essential Commands
-
-```bash
-make generate     # Run after API/SQL changes
-make lint         # Check code quality
-make dev          # Start backend server
-pnpm dev:platform # Start frontend
-```
-
-For detailed development instructions, see [Development Guide](docs/guides/development.md).
 
 ## License
 

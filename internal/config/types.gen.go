@@ -4,9 +4,6 @@
 package config
 
 import (
-	"encoding/json"
-
-	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -60,32 +57,32 @@ const (
 
 // APIConfig Configuration schema for the API server
 type APIConfig struct {
-	// Cors CORS configuration for the API server
-	Cors CORSConfig `json:"cors" yaml:"cors" mapstructure:"cors"`
+	// Cors A comma-separated list of allowed origins for CORS requests
+	Cors string `json:"cors,omitempty,omitzero" yaml:"cors,omitempty" mapstructure:"cors,omitempty"`
 
 	// Docs Enable or disable API documentation
-	Docs bool `json:"docs" yaml:"docs" mapstructure:"docs"`
+	Docs bool `json:"docs,omitempty,omitzero" yaml:"docs,omitempty" mapstructure:"docs,omitempty"`
 
 	// Email Email configuration for sending emails
-	Email EmailConfig `json:"email" yaml:"email" mapstructure:"email"`
+	Email EmailConfig `json:"email,omitempty,omitzero" yaml:"email,omitempty" mapstructure:"email,omitempty"`
 
 	// Environment Deployment environment (development, staging, production)
 	Environment APIConfigEnvironment `json:"environment,omitempty,omitzero" yaml:"environment,omitempty" mapstructure:"environment,omitempty"`
 
 	// Host The host address on which the API server will listen
-	Host string `json:"host" yaml:"host" mapstructure:"host"`
+	Host string `json:"host,omitempty,omitzero" yaml:"host,omitempty" mapstructure:"host,omitempty"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image" yaml:"image" mapstructure:"image"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty" mapstructure:"image,omitempty"`
 
 	// Port The port on which the API server will listen
-	Port float32 `json:"port" yaml:"port" mapstructure:"port"`
+	Port float32 `json:"port,omitempty,omitzero" yaml:"port,omitempty" mapstructure:"port,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources" yaml:"resources" mapstructure:"resources"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 
 	// Validate Enable or disable request validation
-	Validate bool `json:"validate" yaml:"validate" mapstructure:"validate"`
+	Validate bool `json:"validate,omitempty,omitzero" yaml:"validate,omitempty" mapstructure:"validate,omitempty"`
 }
 
 // APIConfigEnvironment Deployment environment (development, staging, production)
@@ -94,40 +91,43 @@ type APIConfigEnvironment string
 // ArchesConfig Arches AI configuration schema
 type ArchesConfig struct {
 	// API Configuration schema for the API server
-	API APIConfig `json:"api" yaml:"api" mapstructure:"api"`
+	API APIConfig `json:"api,omitempty,omitzero" yaml:"api,omitempty" mapstructure:"api,omitempty"`
 
 	// Auth Authentication configuration for the API server
-	Auth AuthConfig `json:"auth" yaml:"auth" mapstructure:"auth"`
+	Auth AuthConfig `json:"auth,omitempty,omitzero" yaml:"auth,omitempty" mapstructure:"auth,omitempty"`
 
 	// Billing Billing configuration for Stripe
-	Billing BillingConfig `json:"billing" yaml:"billing" mapstructure:"billing"`
+	Billing BillingConfig `json:"billing,omitempty,omitzero" yaml:"billing,omitempty" mapstructure:"billing,omitempty"`
 
 	// Database Database configuration for PostgreSQL
-	Database DatabaseConfig `json:"database" yaml:"database" mapstructure:"database"`
-
-	// Infrastructure Infrastructure configuration for Kubernetes deployments
-	Infrastructure InfrastructureConfig `json:"infrastructure" yaml:"infrastructure" mapstructure:"infrastructure"`
-
-	// Ingress Ingress configuration
-	Ingress IngressConfig `json:"ingress" yaml:"ingress" mapstructure:"ingress"`
+	Database DatabaseConfig `json:"database,omitempty,omitzero" yaml:"database,omitempty" mapstructure:"database,omitempty"`
 
 	// Intelligence Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
-	Intelligence IntelligenceConfig `json:"intelligence" yaml:"intelligence" mapstructure:"intelligence"`
+	Intelligence IntelligenceConfig `json:"intelligence,omitempty,omitzero" yaml:"intelligence,omitempty" mapstructure:"intelligence,omitempty"`
+
+	// Kubernetes Kubernetes-specific deployment configuration
+	Kubernetes struct {
+		// Infrastructure Infrastructure configuration for Kubernetes deployments
+		Infrastructure InfrastructureConfig `json:"infrastructure,omitempty,omitzero" yaml:"infrastructure,omitempty" mapstructure:"infrastructure,omitempty"`
+
+		// Ingress Ingress configuration
+		Ingress IngressConfig `json:"ingress,omitempty,omitzero" yaml:"ingress,omitempty" mapstructure:"ingress,omitempty"`
+
+		// Monitoring Monitoring configuration for Grafana and Loki
+		Monitoring MonitoringConfig `json:"monitoring,omitempty,omitzero" yaml:"monitoring,omitempty" mapstructure:"monitoring,omitempty"`
+	} `json:"kubernetes,omitempty,omitzero" yaml:"kubernetes,omitempty" mapstructure:"kubernetes,omitempty"`
 
 	// Logging Logging configuration
-	Logging LoggingConfig `json:"logging" yaml:"logging" mapstructure:"logging"`
-
-	// Monitoring Monitoring configuration for Grafana and Loki
-	Monitoring MonitoringConfig `json:"monitoring" yaml:"monitoring" mapstructure:"monitoring"`
+	Logging LoggingConfig `json:"logging,omitempty,omitzero" yaml:"logging,omitempty" mapstructure:"logging,omitempty"`
 
 	// Platform Platform configuration (host, image, resources)
-	Platform PlatformConfig `json:"platform" yaml:"platform" mapstructure:"platform"`
+	Platform PlatformConfig `json:"platform,omitempty,omitzero" yaml:"platform,omitempty" mapstructure:"platform,omitempty"`
 
 	// Redis Redis configuration
-	Redis RedisConfig `json:"redis" yaml:"redis" mapstructure:"redis"`
+	Redis RedisConfig `json:"redis,omitempty,omitzero" yaml:"redis,omitempty" mapstructure:"redis,omitempty"`
 
 	// Storage Object storage configuration for MinIO or S3-compatible services
-	Storage StorageConfig `json:"storage" yaml:"storage" mapstructure:"storage"`
+	Storage StorageConfig `json:"storage,omitempty,omitzero" yaml:"storage,omitempty" mapstructure:"storage,omitempty"`
 }
 
 // AuthConfig Authentication configuration for the API server
@@ -166,12 +166,6 @@ type BillingConfig struct {
 	Stripe StripeConfig `json:"stripe,omitempty,omitzero" yaml:"stripe,omitempty" mapstructure:"stripe,omitempty"`
 }
 
-// CORSConfig CORS configuration for the API server
-type CORSConfig struct {
-	// Origins A comma-separated list of allowed origins for CORS requests
-	Origins string `json:"origins" yaml:"origins" mapstructure:"origins"`
-}
-
 // DatabaseAuth Database authentication credentials
 type DatabaseAuth struct {
 	// Database Database name
@@ -183,9 +177,6 @@ type DatabaseAuth struct {
 
 // DatabaseConfig Database configuration for PostgreSQL
 type DatabaseConfig struct {
-	// URL Database connection URL/string
-	URL string `json:"URL" yaml:"URL" mapstructure:"URL"`
-
 	// Auth Database authentication credentials
 	Auth DatabaseAuth `json:"auth,omitempty,omitzero" yaml:"auth,omitempty" mapstructure:"auth,omitempty"`
 
@@ -224,40 +215,13 @@ type DatabaseConfig struct {
 
 	// Type Database type (postgresql or sqlite)
 	Type DatabaseConfigType `json:"type,omitempty,omitzero" yaml:"type,omitempty" mapstructure:"type,omitempty"`
+
+	// URL Database connection url/string
+	URL string `json:"url,omitempty,omitzero" yaml:"url,omitempty" mapstructure:"url,omitempty"`
 }
 
 // DatabaseConfigType Database type (postgresql or sqlite)
 type DatabaseConfigType string
-
-// DevServiceConfig Development service port forwarding configuration
-type DevServiceConfig struct {
-	// Enabled Enable dev port forwarding
-	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled"`
-
-	// Port Local port for forwarding
-	Port float32 `json:"port" yaml:"port" mapstructure:"port"`
-}
-
-// DevelopmentConfig Development environment configuration
-type DevelopmentConfig struct {
-	// API Development service port forwarding configuration
-	API DevServiceConfig `json:"api" yaml:"api" mapstructure:"api"`
-
-	// HostIP Host IP address for dev port forwarding
-	HostIP string `json:"hostIP" yaml:"hostIP" mapstructure:"hostIP"`
-
-	// Loki Development service port forwarding configuration
-	Loki DevServiceConfig `json:"loki" yaml:"loki" mapstructure:"loki"`
-
-	// Platform Development service port forwarding configuration
-	Platform DevServiceConfig `json:"platform" yaml:"platform" mapstructure:"platform"`
-
-	// Postgres Development service port forwarding configuration
-	Postgres DevServiceConfig `json:"postgres" yaml:"postgres" mapstructure:"postgres"`
-
-	// Redis Development service port forwarding configuration
-	Redis DevServiceConfig `json:"redis" yaml:"redis" mapstructure:"redis"`
-}
 
 // EmailConfig Email configuration for sending emails
 type EmailConfig struct {
@@ -355,7 +319,7 @@ type ImageConfig struct {
 	PullPolicy ImageConfigPullPolicy `json:"pullPolicy" yaml:"pullPolicy" mapstructure:"pullPolicy"`
 
 	// Repository Container image repository
-	Repository string `json:"repository" yaml:"repository" mapstructure:"repository"`
+	Repository string `json:"repository,omitempty,omitzero" yaml:"repository,omitempty" mapstructure:"repository,omitempty"`
 
 	// Tag Container image tag
 	Tag string `json:"tag" yaml:"tag" mapstructure:"tag"`
@@ -375,9 +339,6 @@ type ImagesConfig struct {
 
 // InfrastructureConfig Infrastructure configuration for Kubernetes deployments
 type InfrastructureConfig struct {
-	// Development Development environment configuration
-	Development DevelopmentConfig `json:"development" yaml:"development" mapstructure:"development"`
-
 	// Images Container image configuration
 	Images ImagesConfig `json:"images" yaml:"images" mapstructure:"images"`
 
@@ -406,22 +367,22 @@ type IngressConfig struct {
 // IntelligenceConfig Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
 type IntelligenceConfig struct {
 	// Embedding Configuration for text embedding generation
-	Embedding EmbeddingConfig `json:"embedding" yaml:"embedding" mapstructure:"embedding"`
+	Embedding EmbeddingConfig `json:"embedding,omitempty,omitzero" yaml:"embedding,omitempty" mapstructure:"embedding,omitempty"`
 
 	// Llm Large Language Model configuration
-	Llm LLMConfig `json:"llm" yaml:"llm" mapstructure:"llm"`
+	Llm LLMConfig `json:"llm,omitempty,omitzero" yaml:"llm,omitempty" mapstructure:"llm,omitempty"`
 
 	// Runpod RunPod serverless GPU configuration
-	Runpod RunPodConfig `json:"runpod" yaml:"runpod" mapstructure:"runpod"`
+	Runpod RunPodConfig `json:"runpod,omitempty,omitzero" yaml:"runpod,omitempty" mapstructure:"runpod,omitempty"`
 
 	// Scraper Web scraping service configuration
-	Scraper ScraperConfig `json:"scraper" yaml:"scraper" mapstructure:"scraper"`
+	Scraper ScraperConfig `json:"scraper,omitempty,omitzero" yaml:"scraper,omitempty" mapstructure:"scraper,omitempty"`
 
 	// Speech Speech recognition and TTS services
-	Speech SpeechConfig `json:"speech" yaml:"speech" mapstructure:"speech"`
+	Speech SpeechConfig `json:"speech,omitempty,omitzero" yaml:"speech,omitempty" mapstructure:"speech,omitempty"`
 
 	// Unstructured Unstructured.io service for document parsing
-	Unstructured UnstructuredConfig `json:"unstructured" yaml:"unstructured" mapstructure:"unstructured"`
+	Unstructured UnstructuredConfig `json:"unstructured,omitempty,omitzero" yaml:"unstructured,omitempty" mapstructure:"unstructured,omitempty"`
 }
 
 // LLMConfig Large Language Model configuration
@@ -590,10 +551,7 @@ type PlatformConfig struct {
 // Problem RFC 7807 (Problem Details) compliant error response
 type Problem struct {
 	// Detail Human-readable explanation specific to this occurrence
-	Detail string `json:"detail" yaml:"detail" mapstructure:"detail"`
-
-	// Errors Additional validation errors for specific fields
-	Errors []ValidationError `json:"errors,omitempty,omitzero" yaml:"errors,omitempty" mapstructure:"errors,omitempty"`
+	Detail string `json:"detail,omitempty,omitzero" yaml:"detail,omitempty" mapstructure:"detail,omitempty"`
 
 	// Instance URI identifying the specific occurrence
 	Instance string `json:"instance,omitempty,omitzero" yaml:"instance,omitempty" mapstructure:"instance,omitempty"`
@@ -605,7 +563,7 @@ type Problem struct {
 	Title string `json:"title" yaml:"title" mapstructure:"title"`
 
 	// Type URI identifying the problem type
-	Type string `json:"type" yaml:"type" mapstructure:"type"`
+	Type string `json:"type,omitempty,omitzero" yaml:"type,omitempty" mapstructure:"type,omitempty"`
 }
 
 // RedisConfig Redis configuration
@@ -758,7 +716,7 @@ type TLSConfig struct {
 	Issuer string `json:"issuer,omitempty,omitzero" yaml:"issuer,omitempty" mapstructure:"issuer,omitempty"`
 
 	// SecretName Kubernetes secret name for TLS certificates
-	SecretName string `json:"secretName" yaml:"secretName" mapstructure:"secretName"`
+	SecretName string `json:"secretName,omitempty,omitzero" yaml:"secretName,omitempty" mapstructure:"secretName,omitempty"`
 }
 
 // TwitterAuth Twitter OAuth configuration
@@ -791,119 +749,5 @@ type UnstructuredConfig struct {
 	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty" mapstructure:"resources,omitempty"`
 }
 
-// ValidationError Individual field validation error
-type ValidationError struct {
-	// Field The field path that failed validation
-	Field string `json:"field" yaml:"field" mapstructure:"field"`
-
-	// Message Human-readable error message
-	Message string `json:"message" yaml:"message" mapstructure:"message"`
-
-	// Value The invalid value that was provided
-	Value ValidationError_Value `json:"value,omitempty,omitzero" yaml:"value,omitempty" mapstructure:"value,omitempty"`
-}
-
-// ValidationErrorValue0 defines model for .
-type ValidationErrorValue0 = string
-
-// ValidationErrorValue1 defines model for .
-type ValidationErrorValue1 = float32
-
-// ValidationErrorValue2 defines model for .
-type ValidationErrorValue2 = bool
-
-// ValidationError_Value The invalid value that was provided
-type ValidationError_Value struct {
-	union json.RawMessage
-}
-
 // BadRequest RFC 7807 (Problem Details) compliant error response
 type BadRequest = Problem
-
-// AsValidationErrorValue0 returns the union data inside the ValidationError_Value as a ValidationErrorValue0
-func (t ValidationError_Value) AsValidationErrorValue0() (ValidationErrorValue0, error) {
-	var body ValidationErrorValue0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValidationErrorValue0 overwrites any union data inside the ValidationError_Value as the provided ValidationErrorValue0
-func (t *ValidationError_Value) FromValidationErrorValue0(v ValidationErrorValue0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValidationErrorValue0 performs a merge with any union data inside the ValidationError_Value, using the provided ValidationErrorValue0
-func (t *ValidationError_Value) MergeValidationErrorValue0(v ValidationErrorValue0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsValidationErrorValue1 returns the union data inside the ValidationError_Value as a ValidationErrorValue1
-func (t ValidationError_Value) AsValidationErrorValue1() (ValidationErrorValue1, error) {
-	var body ValidationErrorValue1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValidationErrorValue1 overwrites any union data inside the ValidationError_Value as the provided ValidationErrorValue1
-func (t *ValidationError_Value) FromValidationErrorValue1(v ValidationErrorValue1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValidationErrorValue1 performs a merge with any union data inside the ValidationError_Value, using the provided ValidationErrorValue1
-func (t *ValidationError_Value) MergeValidationErrorValue1(v ValidationErrorValue1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsValidationErrorValue2 returns the union data inside the ValidationError_Value as a ValidationErrorValue2
-func (t ValidationError_Value) AsValidationErrorValue2() (ValidationErrorValue2, error) {
-	var body ValidationErrorValue2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValidationErrorValue2 overwrites any union data inside the ValidationError_Value as the provided ValidationErrorValue2
-func (t *ValidationError_Value) FromValidationErrorValue2(v ValidationErrorValue2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValidationErrorValue2 performs a merge with any union data inside the ValidationError_Value, using the provided ValidationErrorValue2
-func (t *ValidationError_Value) MergeValidationErrorValue2(v ValidationErrorValue2) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t ValidationError_Value) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ValidationError_Value) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}

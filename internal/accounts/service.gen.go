@@ -15,11 +15,11 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Create(ctx context.Context, request CreateAccountRequestObject) (CreateAccountResponseObject, error)
-	Get(ctx context.Context, request GetAccountRequestObject) (GetAccountResponseObject, error)
-	Update(ctx context.Context, request UpdateAccountRequestObject) (UpdateAccountResponseObject, error)
-	Delete(ctx context.Context, request DeleteAccountRequestObject) (DeleteAccountResponseObject, error)
-	List(ctx context.Context, request ListAccountsRequestObject) (ListAccountsResponseObject, error)
+	CreateAccount(ctx context.Context, request CreateAccountRequestObject) (CreateAccountResponseObject, error)
+	GetAccount(ctx context.Context, request GetAccountRequestObject) (GetAccountResponseObject, error)
+	UpdateAccount(ctx context.Context, request UpdateAccountRequestObject) (UpdateAccountResponseObject, error)
+	DeleteAccount(ctx context.Context, request DeleteAccountRequestObject) (DeleteAccountResponseObject, error)
+	ListAccounts(ctx context.Context, request ListAccountsRequestObject) (ListAccountsResponseObject, error)
 }
 
 // Service implements the business logic
@@ -38,8 +38,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Create creates a new account
-func (s *Service) Create(ctx context.Context, request CreateAccountRequestObject) (CreateAccountResponseObject, error) {
+// CreateAccount creates a new account
+func (s *Service) CreateAccount(ctx context.Context, request CreateAccountRequestObject) (CreateAccountResponseObject, error) {
 	if request.Body == nil {
 		return CreateAccount400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -81,8 +81,8 @@ func (s *Service) Create(ctx context.Context, request CreateAccountRequestObject
 	return CreateAccount201JSONResponse(tokenResponse), nil
 }
 
-// Get gets a account by ID
-func (s *Service) Get(ctx context.Context, request GetAccountRequestObject) (GetAccountResponseObject, error) {
+// GetAccount gets a account by ID
+func (s *Service) GetAccount(ctx context.Context, request GetAccountRequestObject) (GetAccountResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -113,8 +113,8 @@ func (s *Service) Get(ctx context.Context, request GetAccountRequestObject) (Get
 	}, nil
 }
 
-// Update updates a account
-func (s *Service) Update(ctx context.Context, request UpdateAccountRequestObject) (UpdateAccountResponseObject, error) {
+// UpdateAccount updates a account
+func (s *Service) UpdateAccount(ctx context.Context, request UpdateAccountRequestObject) (UpdateAccountResponseObject, error) {
 	if request.Body == nil {
 		return UpdateAccount404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -172,8 +172,8 @@ func (s *Service) Update(ctx context.Context, request UpdateAccountRequestObject
 	}, nil
 }
 
-// Delete deletes a account
-func (s *Service) Delete(ctx context.Context, request DeleteAccountRequestObject) (DeleteAccountResponseObject, error) {
+// DeleteAccount deletes a account
+func (s *Service) DeleteAccount(ctx context.Context, request DeleteAccountRequestObject) (DeleteAccountResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -215,8 +215,8 @@ func (s *Service) Delete(ctx context.Context, request DeleteAccountRequestObject
 	return DeleteAccount200JSONResponse{}, nil
 }
 
-// List lists all accounts
-func (s *Service) List(ctx context.Context, request ListAccountsRequestObject) (ListAccountsResponseObject, error) {
+// ListAccounts lists all accounts
+func (s *Service) ListAccounts(ctx context.Context, request ListAccountsRequestObject) (ListAccountsResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

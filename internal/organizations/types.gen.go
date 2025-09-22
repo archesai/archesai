@@ -4,11 +4,9 @@
 package organizations
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -109,10 +107,7 @@ type Page struct {
 // Problem RFC 7807 (Problem Details) compliant error response
 type Problem struct {
 	// Detail Human-readable explanation specific to this occurrence
-	Detail string `json:"detail" yaml:"detail"`
-
-	// Errors Additional validation errors for specific fields
-	Errors []ValidationError `json:"errors,omitempty,omitzero" yaml:"errors,omitempty"`
+	Detail string `json:"detail,omitempty,omitzero" yaml:"detail,omitempty"`
 
 	// Instance URI identifying the specific occurrence
 	Instance string `json:"instance,omitempty,omitzero" yaml:"instance,omitempty"`
@@ -124,37 +119,11 @@ type Problem struct {
 	Title string `json:"title" yaml:"title"`
 
 	// Type URI identifying the problem type
-	Type string `json:"type" yaml:"type"`
+	Type string `json:"type,omitempty,omitzero" yaml:"type,omitempty"`
 }
 
 // UUID Universally Unique IDentifier
 type UUID = uuid.UUID
-
-// ValidationError Individual field validation error
-type ValidationError struct {
-	// Field The field path that failed validation
-	Field string `json:"field" yaml:"field"`
-
-	// Message Human-readable error message
-	Message string `json:"message" yaml:"message"`
-
-	// Value The invalid value that was provided
-	Value ValidationError_Value `json:"value,omitempty,omitzero" yaml:"value,omitempty"`
-}
-
-// ValidationErrorValue0 defines model for .
-type ValidationErrorValue0 = string
-
-// ValidationErrorValue1 defines model for .
-type ValidationErrorValue1 = float32
-
-// ValidationErrorValue2 defines model for .
-type ValidationErrorValue2 = bool
-
-// ValidationError_Value The invalid value that was provided
-type ValidationError_Value struct {
-	union json.RawMessage
-}
 
 // OrganizationsFilter A recursive filter node that can be a condition or group
 type OrganizationsFilter = FilterNode
@@ -216,91 +185,3 @@ type CreateOrganizationJSONRequestBody CreateOrganizationJSONBody
 
 // UpdateOrganizationJSONRequestBody defines body for UpdateOrganization for application/json ContentType.
 type UpdateOrganizationJSONRequestBody UpdateOrganizationJSONBody
-
-// AsValidationErrorValue0 returns the union data inside the ValidationError_Value as a ValidationErrorValue0
-func (t ValidationError_Value) AsValidationErrorValue0() (ValidationErrorValue0, error) {
-	var body ValidationErrorValue0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValidationErrorValue0 overwrites any union data inside the ValidationError_Value as the provided ValidationErrorValue0
-func (t *ValidationError_Value) FromValidationErrorValue0(v ValidationErrorValue0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValidationErrorValue0 performs a merge with any union data inside the ValidationError_Value, using the provided ValidationErrorValue0
-func (t *ValidationError_Value) MergeValidationErrorValue0(v ValidationErrorValue0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsValidationErrorValue1 returns the union data inside the ValidationError_Value as a ValidationErrorValue1
-func (t ValidationError_Value) AsValidationErrorValue1() (ValidationErrorValue1, error) {
-	var body ValidationErrorValue1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValidationErrorValue1 overwrites any union data inside the ValidationError_Value as the provided ValidationErrorValue1
-func (t *ValidationError_Value) FromValidationErrorValue1(v ValidationErrorValue1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValidationErrorValue1 performs a merge with any union data inside the ValidationError_Value, using the provided ValidationErrorValue1
-func (t *ValidationError_Value) MergeValidationErrorValue1(v ValidationErrorValue1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsValidationErrorValue2 returns the union data inside the ValidationError_Value as a ValidationErrorValue2
-func (t ValidationError_Value) AsValidationErrorValue2() (ValidationErrorValue2, error) {
-	var body ValidationErrorValue2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValidationErrorValue2 overwrites any union data inside the ValidationError_Value as the provided ValidationErrorValue2
-func (t *ValidationError_Value) FromValidationErrorValue2(v ValidationErrorValue2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValidationErrorValue2 performs a merge with any union data inside the ValidationError_Value, using the provided ValidationErrorValue2
-func (t *ValidationError_Value) MergeValidationErrorValue2(v ValidationErrorValue2) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t ValidationError_Value) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ValidationError_Value) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}

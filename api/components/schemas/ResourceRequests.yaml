@@ -5,13 +5,15 @@ properties:
   cpu:
     description: Requested CPU allocation
     type: string
+    default: '100m'
     minLength: 1
-    example: example-string
+    example: '100m'
   memory:
     description: Requested memory allocation
     type: string
+    default: '128Mi'
     minLength: 1
-    example: example-string
+    example: '128Mi'
 required:
   - cpu
   - memory

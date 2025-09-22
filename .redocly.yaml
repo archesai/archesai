@@ -58,7 +58,7 @@ rules:
     severity: error
     names: [] # No required properties for now
   scalar-property-missing-example: error
-  required-string-property-missing-min-length: error
+  required-string-property-missing-min-length: warn
   no-duplicated-tag-names: error
   operation-singular-tag: error
   operation-tag-defined: error

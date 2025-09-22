@@ -6,7 +6,10 @@
 
 ## Project Layout
 
-You can reference these files -> ../docs/architecture/project-layout.md, ../docs/architecture/overview.md
+**IMPORTANT: For token-efficient navigation, use the XML structure:**
+
+- **XML Format (70% fewer tokens)**: @../docs/architecture/project-structure.xml
+  The XML format provides structured metadata (file counts, types, purposes) and is much more efficient for finding specific directories and understanding project organization.
 
 ## Dev Commands
 
@@ -19,19 +22,11 @@ See Makefile Commands
 - **Generate first, code second** - Define in OpenAPI/SQL before implementing
 - **Use generated types** - Don't create manual type definitions
 
-## Code Generation
+## Task Master AI Instructions
 
-After modifying:
+**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
 
-- Run `make generate` to run all of the generators.
-
-## Testing
-
-```bash
-make test
-```
-
-See more at @../docs/guides/testing.md
+@./.taskmaster/CLAUDE.md
 
 ## Tips
 

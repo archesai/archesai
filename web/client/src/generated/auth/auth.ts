@@ -24,12 +24,10 @@ import type {
   InternalServerErrorResponse,
   NoContentResponse,
   NotFoundResponse,
-  RegisterBody,
   RequestEmailChangeBody,
   RequestMagicLink200,
   RequestMagicLinkBody,
   RequestPasswordResetBody,
-  TokenResponse,
   TooManyRequestsResponse,
   UnauthorizedResponse,
   VerifyMagicLink201,
@@ -38,84 +36,16 @@ import type {
 
 import { customFetch } from '../../fetcher';
 
+type AwaitedInput<T> = PromiseLike<T> | T;
+
+      type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 
 /**
- * This endpoint will register you with your e-mail and password
- * @summary Register
- */
-export const getRegisterUrl = () => {
-
-
-  
-
-  return `/accounts/register`
-}
-
-export const register = async (registerBody: RegisterBody, options?: RequestInit): Promise<TokenResponse> => {
-  
-  return customFetch<TokenResponse>(getRegisterUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      registerBody,)
-  }
-);}
-
-
-
-
-export const getRegisterMutationOptions = <TError = UnauthorizedResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: RegisterBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: RegisterBody}, TContext> => {
-
-const mutationKey = ['register'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof register>>, {data: RegisterBody}> = (props) => {
-          const {data} = props ?? {};
-
-          return  register(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type RegisterMutationResult = NonNullable<Awaited<ReturnType<typeof register>>>
-    export type RegisterMutationBody = RegisterBody
-    export type RegisterMutationError = UnauthorizedResponse
-
-    /**
- * @summary Register
- */
-export const useRegister = <TError = UnauthorizedResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: RegisterBody}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof register>>,
-        TError,
-        {data: RegisterBody},
-        TContext
-      > => {
-
-      const mutationOptions = getRegisterMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    /**
  * This endpoint will confirm your e-mail with a token
  * @summary Confirm e-mail verification
  */

@@ -1,23 +1,7 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for Session entity
-x-codegen:
-  repository:
-    operations: [create, read, update, delete, list]
-    indices: [userID, token]
-    update_exclude: [ipAddress, token, userAgent] # These fields are readonly after creation
-    additional_methods:
-      - name: GetByToken
-        params: [token]
-        returns: single
-      - name: DeleteByToken
-        params: [token]
-        returns: void
-      - name: DeleteByUser
-        params: [userID]
-        returns: void
-      - name: DeleteExpired
-        params: []
-        returns: void
+# Sessions are now managed internally by the auth package
+# No x-codegen needed as this is handled by auth module
 allOf:
   - $ref: ./Base.yaml
   - type: object

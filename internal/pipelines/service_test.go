@@ -49,7 +49,7 @@ func TestService_CreatePipeline(t *testing.T) {
 		request := CreatePipelineRequestObject{
 			Body: req,
 		}
-		result, err := service.Create(context.Background(), request)
+		result, err := service.CreatePipeline(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -81,7 +81,7 @@ func TestService_GetPipeline(t *testing.T) {
 		request := GetPipelineRequestObject{
 			ID: pipelineID,
 		}
-		result, err := service.Get(context.Background(), request)
+		result, err := service.GetPipeline(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -100,7 +100,7 @@ func TestService_GetPipeline(t *testing.T) {
 		request := GetPipelineRequestObject{
 			ID: pipelineID,
 		}
-		result, err := service.Get(context.Background(), request)
+		result, err := service.GetPipeline(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -150,7 +150,7 @@ func TestService_UpdatePipeline(t *testing.T) {
 			ID:   pipelineID,
 			Body: req,
 		}
-		result, err := service.Update(context.Background(), request)
+		result, err := service.UpdatePipeline(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -182,7 +182,7 @@ func TestService_DeletePipeline(t *testing.T) {
 		request := DeletePipelineRequestObject{
 			ID: pipelineID,
 		}
-		res, err := service.Delete(context.Background(), request)
+		res, err := service.DeletePipeline(context.Background(), request)
 		assert.NotNil(t, res)
 
 		assert.NoError(t, err)
@@ -196,7 +196,7 @@ func TestService_DeletePipeline(t *testing.T) {
 		request := DeletePipelineRequestObject{
 			ID: pipelineID,
 		}
-		result, err := service.Delete(context.Background(), request)
+		result, err := service.DeletePipeline(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -246,7 +246,7 @@ func TestService_ListPipelines(t *testing.T) {
 				},
 			},
 		}
-		result, err := service.List(context.Background(), request)
+		result, err := service.ListPipelines(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)

@@ -7,9 +7,6 @@
 // 3. Default values from OpenAPI specification
 package config
 
-//go:generate go tool oapi-codegen --config=../../.codegen.types.yaml --package config --include-tags Config ../../api/openapi.bundled.yaml
-//go:generate go tool oapi-codegen --config=../../.codegen.server.yaml --package config --include-tags Config ../../api/openapi.bundled.yaml
-
 // Configuration constants.
 const (
 	// DefaultConfigName is the default config file name.

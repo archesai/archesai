@@ -1,15 +1,36 @@
 {
-  "dependencies": {
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1"
-  },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
+    "@fontsource/geist": "catalog:ui",
+    "@fontsource/geist-mono": "catalog:ui",
+    "@playwright/test": "catalog:test",
     "@redocly/cli": "catalog:",
+    "@tailwindcss/vite": "catalog:vite",
+    "@tanstack/table-core": "catalog:tanstack",
+    "@testing-library/dom": "catalog:test",
+    "@testing-library/react": "catalog:test",
+    "@types/js-yaml": "^4.0.9",
+    "@types/json-schema": "^7.0.15",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@vitejs/plugin-react": "catalog:vite",
+    "@vitest/ui": "catalog:test",
+    "babel-plugin-react-compiler": "catalog:vite",
+    "js-yaml": "^4.1.0",
+    "jsdom": "catalog:test",
     "markdownlint-cli": "catalog:",
+    "orval": "catalog:client",
     "prettier": "catalog:",
+    "rollup-plugin-visualizer": "catalog:vite",
+    "tailwindcss": "catalog:ui",
     "task-master-ai": "catalog:",
-    "typescript": "catalog:"
+    "tw-animate-css": "catalog:ui",
+    "typescript": "catalog:",
+    "vite": "catalog:vite",
+    "vite-plugin-svgr": "catalog:vite",
+    "vitest": "catalog:test",
+    "web-vitals": "catalog:test"
   },
   "engines": {
     "node": ">=24.8.0"

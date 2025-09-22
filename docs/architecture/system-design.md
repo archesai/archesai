@@ -134,7 +134,7 @@ internal/auth/
 ├── service.gen.go             # Generated service interface
 ├── server.gen.go              # Generated HTTP server implementation
 ├── types.gen.go               # Generated OpenAPI types
-├── api.gen.go                 # Generated API client interface
+├── handler.gen.go                 # Generated API client interface
 └── mocks_test.gen.go          # Generated test mocks
 ```
 

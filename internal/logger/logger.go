@@ -34,8 +34,8 @@ func NewPretty(cfg Config) *slog.Logger {
 	level := parseLevel(cfg.Level)
 	handler := log.NewWithOptions(os.Stdout, log.Options{
 		ReportTimestamp: true,
-		TimeFunction:    log.NowUTC,
-		TimeFormat:      time.RFC3339,
+		ReportCaller:    true,
+		TimeFormat:      time.Kitchen,
 		Level:           log.Level(level),
 	})
 	return slog.New(handler)

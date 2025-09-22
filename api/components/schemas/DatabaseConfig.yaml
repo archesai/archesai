@@ -7,8 +7,8 @@ properties:
     type: boolean
     default: true
     example: true
-  URL:
-    description: Database connection URL/string
+  url:
+    description: Database connection url/string
     type: string
     default: postgresql://admin:password@127.0.0.1:5432/archesai
     minLength: 1
@@ -66,5 +66,4 @@ properties:
     $ref: ./ResourceConfig.yaml
 required:
   - enabled
-  - URL
 additionalProperties: false

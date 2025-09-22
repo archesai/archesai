@@ -49,7 +49,7 @@ func TestLabelsService_Create(t *testing.T) {
 		request := CreateLabelRequestObject{
 			Body: req,
 		}
-		result, err := service.Create(context.Background(), request)
+		result, err := service.CreateLabel(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -76,7 +76,7 @@ func TestLabelsService_Create(t *testing.T) {
 		request := CreateLabelRequestObject{
 			Body: req,
 		}
-		result, err := service.Create(context.Background(), request)
+		result, err := service.CreateLabel(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -108,7 +108,7 @@ func TestLabelsService_Create(t *testing.T) {
 		request := CreateLabelRequestObject{
 			Body: req,
 		}
-		result, err := service.Create(context.Background(), request)
+		result, err := service.CreateLabel(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -139,7 +139,7 @@ func TestLabelsService_Get(t *testing.T) {
 		request := GetLabelRequestObject{
 			ID: labelID,
 		}
-		result, err := service.Get(context.Background(), request)
+		result, err := service.GetLabel(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -159,7 +159,7 @@ func TestLabelsService_Get(t *testing.T) {
 		request := GetLabelRequestObject{
 			ID: labelID,
 		}
-		result, err := service.Get(context.Background(), request)
+		result, err := service.GetLabel(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -204,7 +204,7 @@ func TestLabelsService_Update(t *testing.T) {
 			ID:   labelID,
 			Body: req,
 		}
-		result, err := service.Update(context.Background(), request)
+		result, err := service.UpdateLabel(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -228,7 +228,7 @@ func TestLabelsService_Update(t *testing.T) {
 			ID:   labelID,
 			Body: req,
 		}
-		result, err := service.Update(context.Background(), request)
+		result, err := service.UpdateLabel(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -260,7 +260,7 @@ func TestLabelsService_Delete(t *testing.T) {
 		request := DeleteLabelRequestObject{
 			ID: labelID,
 		}
-		_, err := service.Delete(context.Background(), request)
+		_, err := service.DeleteLabel(context.Background(), request)
 
 		assert.NoError(t, err)
 	})
@@ -273,7 +273,7 @@ func TestLabelsService_Delete(t *testing.T) {
 		request := DeleteLabelRequestObject{
 			ID: labelID,
 		}
-		result, err := service.Delete(context.Background(), request)
+		result, err := service.DeleteLabel(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -326,7 +326,7 @@ func TestLabelsService_List(t *testing.T) {
 				},
 			},
 		}
-		result, err := service.List(context.Background(), request)
+		result, err := service.ListLabels(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)

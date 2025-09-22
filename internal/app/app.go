@@ -13,20 +13,23 @@ import (
 
 	"github.com/archesai/archesai/internal/accounts"
 	"github.com/archesai/archesai/internal/artifacts"
+	"github.com/archesai/archesai/internal/auth"
+	"github.com/archesai/archesai/internal/auth/deliverers"
+	"github.com/archesai/archesai/internal/auth/providers"
+	"github.com/archesai/archesai/internal/auth/stores"
+	"github.com/archesai/archesai/internal/auth/tokens"
 	"github.com/archesai/archesai/internal/config"
+	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/health"
 	"github.com/archesai/archesai/internal/invitations"
 	"github.com/archesai/archesai/internal/labels"
-	"github.com/archesai/archesai/internal/magiclink"
 	"github.com/archesai/archesai/internal/members"
 	"github.com/archesai/archesai/internal/middleware"
 	"github.com/archesai/archesai/internal/migrations"
-	"github.com/archesai/archesai/internal/oauth"
 	"github.com/archesai/archesai/internal/organizations"
 	"github.com/archesai/archesai/internal/pipelines"
 	"github.com/archesai/archesai/internal/runs"
 	"github.com/archesai/archesai/internal/server"
-	"github.com/archesai/archesai/internal/sessions"
 	"github.com/archesai/archesai/internal/tools"
 	"github.com/archesai/archesai/internal/users"
 )
@@ -56,26 +59,24 @@ type App struct {
 	RunsService          *runs.Service
 	ToolsService         *tools.Service
 	HealthService        *health.Service
-	SessionsService      *sessions.Service
-	OAuthService         *oauth.Service
-	MagicLinkService     *magiclink.Service
+	AuthService          *auth.Service
 
 	// HTTP handlers
-	AccountsHandler      accounts.StrictServerInterface
-	UsersHandler         users.StrictServerInterface
-	OrganizationsHandler organizations.StrictServerInterface
-	InvitationsHandler   invitations.StrictServerInterface
-	ArtifactsHandler     artifacts.StrictServerInterface
-	LabelsHandler        labels.StrictServerInterface
-	MembersHandler       members.StrictServerInterface
-	PipelinesHandler     pipelines.StrictServerInterface
-	RunsHandler          runs.StrictServerInterface
-	ToolsHandler         tools.StrictServerInterface
-	HealthHandler        *health.Handler
-	SessionsHandler      sessions.StrictServerInterface
-	OAuthHandler         oauth.StrictServerInterface
-	ConfigHandler        config.StrictServerInterface
-	MagicLinkHandler     *magiclink.Handler
+	AccountsHandler      accounts.ServerInterface
+	UsersHandler         users.ServerInterface
+	OrganizationsHandler organizations.ServerInterface
+	InvitationsHandler   invitations.ServerInterface
+	ArtifactsHandler     artifacts.ServerInterface
+	LabelsHandler        labels.ServerInterface
+	MembersHandler       members.ServerInterface
+	PipelinesHandler     pipelines.ServerInterface
+	RunsHandler          runs.ServerInterface
+	ToolsHandler         tools.ServerInterface
+	HealthHandler        health.ServerInterface
+	ConfigHandler        config.ServerInterface
+
+	// Unified authentication handler
+	AuthHandler *auth.Handler
 }
 
 // NewApp creates and initializes all application dependencies.
@@ -109,7 +110,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 
 	// Initialize authentication middleware
-	authMiddleware := middleware.NewAuthMiddleware(cfg.Auth.Local.JwtSecret, log)
+	authMiddleware := middleware.NewAuthMiddleware(cfg.Auth.Local.JwtSecret, cfg, log)
 
 	// Create app instance to populate
 	app := &App{
@@ -130,7 +131,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing accounts domain")
 		app.AccountsService = accounts.NewService(repos.Accounts, nil, log)
-		app.AccountsHandler = accounts.NewStrictServer(app.AccountsService, log)
+		app.AccountsHandler = accounts.NewStrictHandler(app.AccountsService, nil)
 		log.Info("accounts domain ready")
 		return nil
 	})
@@ -139,7 +140,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing users domain")
 		app.UsersService = users.NewService(repos.Users, nil, log)
-		app.UsersHandler = users.NewStrictServer(app.UsersService, log)
+		app.UsersHandler = users.NewStrictHandler(app.UsersService, nil)
 		log.Info("users domain ready")
 		return nil
 	})
@@ -148,7 +149,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing organizations domain")
 		app.OrganizationsService = organizations.NewService(repos.Organizations, nil, log)
-		app.OrganizationsHandler = organizations.NewStrictServer(app.OrganizationsService, log)
+		app.OrganizationsHandler = organizations.NewStrictHandler(app.OrganizationsService, nil)
 		log.Info("organizations domain ready")
 		return nil
 	})
@@ -157,7 +158,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing pipelines domain")
 		app.PipelinesService = pipelines.NewService(repos.Pipelines, nil, log)
-		app.PipelinesHandler = pipelines.NewHandler(app.PipelinesService, log)
+		app.PipelinesHandler = pipelines.NewStrictHandler(app.PipelinesService, nil)
 		log.Info("pipelines domain ready")
 		return nil
 	})
@@ -166,7 +167,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing runs domain")
 		app.RunsService = runs.NewService(repos.Runs, nil, log)
-		app.RunsHandler = runs.NewStrictServer(app.RunsService, log)
+		app.RunsHandler = runs.NewStrictHandler(app.RunsService, nil)
 		log.Info("runs domain ready")
 		return nil
 	})
@@ -175,7 +176,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing tools domain")
 		app.ToolsService = tools.NewService(repos.Tools, nil, log)
-		app.ToolsHandler = tools.NewStrictServer(app.ToolsService, log)
+		app.ToolsHandler = tools.NewStrictHandler(app.ToolsService, nil)
 		log.Info("tools domain ready")
 		return nil
 	})
@@ -184,7 +185,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing artifacts domain")
 		app.ArtifactsService = artifacts.NewService(repos.Artifacts, nil, log)
-		app.ArtifactsHandler = artifacts.NewStrictServer(app.ArtifactsService, log)
+		app.ArtifactsHandler = artifacts.NewStrictHandler(app.ArtifactsService, nil)
 		log.Info("artifacts domain ready")
 		return nil
 	})
@@ -193,7 +194,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing labels domain")
 		app.LabelsService = labels.NewService(repos.Labels, nil, log)
-		app.LabelsHandler = labels.NewStrictServer(app.LabelsService, log)
+		app.LabelsHandler = labels.NewStrictHandler(app.LabelsService, nil)
 		log.Info("labels domain ready")
 		return nil
 	})
@@ -202,7 +203,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing members domain")
 		app.MembersService = members.NewService(repos.Members, nil, log)
-		app.MembersHandler = members.NewStrictServer(app.MembersService, log)
+		app.MembersHandler = members.NewStrictHandler(app.MembersService, nil)
 		log.Info("members domain ready")
 		return nil
 	})
@@ -211,7 +212,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing invitations domain")
 		app.InvitationsService = invitations.NewService(repos.Invitations, nil, log)
-		app.InvitationsHandler = invitations.NewStrictServer(app.InvitationsService, log)
+		app.InvitationsHandler = invitations.NewStrictHandler(app.InvitationsService, nil)
 		log.Info("invitations domain ready")
 		return nil
 	})
@@ -220,58 +221,112 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing health domain")
 		app.HealthService = health.NewService(repos.Health, log)
-		app.HealthHandler = health.NewHandler(app.HealthService, log)
+		healthHandler := health.NewHandler(app.HealthService, log)
+		app.HealthHandler = health.NewStrictHandler(healthHandler, nil)
 		log.Info("health domain ready")
 		return nil
 	})
-
-	// Initialize sessions domain
-	g.Go(func() error {
-		log.Info("initializing sessions domain")
-		app.SessionsService = sessions.NewService(repos.Sessions, cfg.Auth.Local.JwtSecret, log)
-		app.SessionsHandler = sessions.NewStrictServer(app.SessionsService, log)
-		log.Info("sessions domain ready")
-		return nil
-	})
-
-	// Initialize OAuth domain (needs to be after sessions and users)
-	// So we do it after the wait
 
 	// Wait for all parallel initializations to complete
 	if err := g.Wait(); err != nil {
 		return nil, fmt.Errorf("failed to initialize domains: %w", err)
 	}
 
-	// Initialize OAuth service (depends on sessions and users services)
-	log.Info("initializing oauth domain")
-	app.OAuthService = oauth.NewService(cfg, app.SessionsService, app.UsersService, log)
-	app.OAuthHandler = oauth.NewStrictServer(app.OAuthService, log)
-	log.Info("oauth domain ready")
+	// Initialize unified auth service
+	log.Info("initializing unified auth service")
 
-	// Initialize MagicLink service (depends on sessions and users services)
-	log.Info("initializing magic link domain")
-	// Determine protocol based on environment
-	protocol := "http"
-	if cfg.API.Environment == "production" {
-		protocol = "https"
-	}
-	baseURL := fmt.Sprintf("%s://%s", protocol, cfg.API.Host)
-	if cfg.API.Port != 0 && cfg.API.Port != 80 && cfg.API.Port != 443 {
-		baseURL = fmt.Sprintf("%s:%d", baseURL, int(cfg.API.Port))
-	}
-	magicLinkRepo := magiclink.NewPostgresRepository(infra.Database.SQLDB())
-	app.MagicLinkService = magiclink.NewService(magicLinkRepo, log, baseURL)
-	app.MagicLinkHandler = magiclink.NewHandler(
-		app.MagicLinkService,
-		app.SessionsService,
-		app.UsersService,
-		log,
+	// Create session store with cache
+	sessionStore := stores.NewSessionStore(
+		repos.Sessions,
+		nil, // Add cache if available
+		30*24*time.Hour,
 	)
-	log.Info("magic link domain ready")
+
+	// Create token manager
+	tokenManager := tokens.NewManager(cfg.Auth.Local.JwtSecret)
+
+	// Create magic link repository and store
+	magicLinkRepo := stores.NewPostgresMagicLinkRepository(infra.Database.SQLDB())
+	magicLinkStore := stores.NewMagicLinkStore(
+		magicLinkRepo,
+		15*time.Minute,
+		5, // rate limit
+	)
+
+	// Create API token store
+	// We need to create a postgresql.Queries instance for the API token repository
+	var apiTokenStore auth.APITokenStore
+	if infra.Database.IsPostgreSQL() {
+		pgQueries := postgresql.New(infra.Database.PgxPool())
+		apiTokenStore = stores.NewAPITokenRepository(pgQueries)
+	} else {
+		// TODO: Implement SQLite API token store
+		apiTokenStore = nil
+	}
+	apiTokenValidator := tokens.NewAPITokenValidator()
+
+	// Create unified auth service
+	app.AuthService = auth.NewService(
+		cfg,
+		log,
+		app.UsersService,
+		repos.Accounts,
+		sessionStore,
+		tokenManager,
+		magicLinkStore,
+		apiTokenStore,
+		apiTokenValidator,
+	)
+
+	// Register OAuth providers
+	if cfg.Auth.Google.Enabled {
+		app.AuthService.RegisterProvider(auth.ProviderGoogle,
+			providers.NewGoogleProvider(
+				cfg.Auth.Google.ClientID,
+				cfg.Auth.Google.ClientSecret,
+				cfg.Auth.Google.RedirectURL,
+			),
+		)
+	}
+
+	if cfg.Auth.Github.Enabled {
+		app.AuthService.RegisterProvider(auth.ProviderGitHub,
+			providers.NewGitHubProvider(
+				cfg.Auth.Github.ClientID,
+				cfg.Auth.Github.ClientSecret,
+				cfg.Auth.Github.RedirectURL,
+			),
+		)
+	}
+
+	if cfg.Auth.Microsoft.Enabled {
+		app.AuthService.RegisterProvider(auth.ProviderMicrosoft,
+			providers.NewMicrosoftProvider(
+				cfg.Auth.Microsoft.ClientID,
+				cfg.Auth.Microsoft.ClientSecret,
+				cfg.Auth.Microsoft.RedirectURL,
+			),
+		)
+	}
+
+	// Register deliverers
+	app.AuthService.RegisterDeliverer(auth.DeliveryConsole,
+		deliverers.NewConsoleDeliverer(log))
+	app.AuthService.RegisterDeliverer(auth.DeliveryOTP,
+		deliverers.NewOTPDeliverer(log))
+
+	// Create unified auth handler
+	app.AuthHandler = auth.NewHandler(app.AuthService, log)
+	log.Info("unified auth handler ready")
+
+	// Connect auth service to middleware
+	app.AuthMiddleware.SetAuthService(app.AuthService)
+	log.Info("connected auth service to middleware")
 
 	// Initialize config handler
 	log.Info("initializing config handler")
-	app.ConfigHandler = config.NewStrictServer(cfg, log)
+	configHandler := config.NewHandler(cfg, log)
+	app.ConfigHandler = config.NewStrictHandler(configHandler, nil)
 	log.Info("config handler ready")
 
 	// Create the HTTP server

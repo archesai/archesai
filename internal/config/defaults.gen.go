@@ -7,9 +7,7 @@ package config
 func GetDefaultConfig() *ArchesConfig {
 	return &ArchesConfig{
 		API: APIConfig{
-			Cors: CORSConfig{
-				Origins: "https://platform.archesai.com",
-			},
+			Cors: "localhost",
 			Docs: true,
 			Email: EmailConfig{
 				Enabled: false,
@@ -33,20 +31,13 @@ func GetDefaultConfig() *ArchesConfig {
 			Stripe:  StripeConfig{},
 		},
 		Database: DatabaseConfig{
-			URL:           "postgresql://admin:password@127.0.0.1:5432/archesai",
 			Enabled:       true,
 			Managed:       false,
 			MaxConns:      25,
 			MinConns:      5,
 			RunMigrations: false,
 			Type:          Postgresql,
-		},
-		Infrastructure: InfrastructureConfig{
-			Namespace: "arches-system",
-		},
-		Ingress: IngressConfig{
-			Domain:  "archesai.dev",
-			Enabled: false,
+			URL:           "postgresql://admin:password@127.0.0.1:5432/archesai",
 		},
 		Intelligence: IntelligenceConfig{
 			Embedding: EmbeddingConfig{
@@ -56,20 +47,49 @@ func GetDefaultConfig() *ArchesConfig {
 				Type: "ollama",
 			},
 		},
+		Kubernetes: struct {
+			Infrastructure InfrastructureConfig `json:"infrastructure,omitempty,omitzero" yaml:"infrastructure,omitempty" mapstructure:"infrastructure,omitempty"`
+			Ingress        IngressConfig        `json:"ingress,omitempty,omitzero" yaml:"ingress,omitempty" mapstructure:"ingress,omitempty"`
+			Monitoring     MonitoringConfig     `json:"monitoring,omitempty,omitzero" yaml:"monitoring,omitempty" mapstructure:"monitoring,omitempty"`
+		}{
+			Infrastructure: InfrastructureConfig{
+				Images: ImagesConfig{
+					ImagePullSecrets: []string{},
+					ImageRegistry:    "",
+				},
+				Migrations: MigrationsConfig{
+					Enabled: false,
+				},
+				Namespace: "arches-system",
+				ServiceAccount: ServiceAccountConfig{
+					Create: true,
+					Name:   "",
+				},
+			},
+			Ingress: IngressConfig{
+				Domain:  "archesai.dev",
+				Enabled: false,
+				TLS: TLSConfig{
+					Enabled:    true,
+					Issuer:     "letsencrypt-staging",
+					SecretName: "archesai-tls",
+				},
+			},
+			Monitoring: MonitoringConfig{
+				Grafana: GrafanaConfig{
+					Enabled: false,
+					Managed: false,
+				},
+				Loki: LokiConfig{
+					Enabled: false,
+					Host:    "http://localhost:3100",
+					Managed: false,
+				},
+			},
+		},
 		Logging: LoggingConfig{
 			Level:  Info,
 			Pretty: false,
-		},
-		Monitoring: MonitoringConfig{
-			Grafana: GrafanaConfig{
-				Enabled: false,
-				Managed: false,
-			},
-			Loki: LokiConfig{
-				Enabled: false,
-				Host:    "http://localhost:3100",
-				Managed: false,
-			},
 		},
 		Platform: PlatformConfig{
 			Enabled: false,

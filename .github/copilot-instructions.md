@@ -23,7 +23,7 @@ This repo is a Go monorepo with a TypeScript frontend. It uses OpenAPI-first dev
 - Do not edit generated files: `*.gen.go`, `api/openapi.bundled.yaml`, JS client under `web/client/src/generated`, Helm schema.
 - Services: Implement business logic in `internal/<domain>/service.go`. Generated service/repo interfaces live alongside (e.g., `repository.gen.go`, `service.gen.go`).
 - Repositories: Prefer generated repository interfaces; SQL is generated via `internal/database` (sqlc). If you need custom repo methods, define them through codegen templates/x-codegen and re-run `make generate`.
-- Handlers: Use generated Strict types. Instantiate with `NewStrictServer(...)` and expose via `NewStrictHandler` in routes. See `internal/app/app.go` and `internal/app/routes.go` for canonical wiring.
+- Handlers: Use generated Strict types. Instantiate with `NewHandler(...)` and expose via `NewStrictHandler` in routes. See `internal/app/app.go` and `internal/app/routes.go` for canonical wiring.
 
 ## Routing, auth, and middleware
 

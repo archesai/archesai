@@ -10,7 +10,6 @@ properties:
       - ollama
     default: ollama
     example: openai
-    minLength: 1
 required:
   - type
 additionalProperties: false

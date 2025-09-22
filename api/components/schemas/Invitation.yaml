@@ -43,7 +43,6 @@ allOf:
           - owner
           - member
         example: admin
-        minLength: 1
       status:
         description: The status of the invitation, e.g., pending, accepted, declined
         type: string

@@ -20,8 +20,6 @@ x-codegen:
     - email_verified
   service:
     business_methods:
-      - register
-      - login
       - verify_email
 allOf:
   - $ref: ./Base.yaml

@@ -55,7 +55,6 @@ allOf:
           - UNLIMITED
         default: FREE
         example: STANDARD
-        minLength: 1
       credits:
         description: Available credits for this organization
         type: number

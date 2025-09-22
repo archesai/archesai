@@ -4,9 +4,7 @@ type: object
 additionalProperties: false
 required:
   - status
-  - type
   - title
-  - detail
 properties:
   status:
     type: integer
@@ -36,8 +34,3 @@ properties:
     format: uri
     description: URI identifying the specific occurrence
     example: https://api.example.com/auth/users/123
-  errors:
-    description: Additional validation errors for specific fields
-    type: array
-    items:
-      $ref: ./ValidationError.yaml

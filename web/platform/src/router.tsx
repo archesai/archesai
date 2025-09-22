@@ -23,6 +23,7 @@ export function createRouter() {
         placeholderData: keepPreviousData,
         refetchOnReconnect: () => !queryClient.isMutating(),
         refetchOnWindowFocus: false,
+        retry: false,
         staleTime: 1000 * 60 * 2, // 2 minutes,
       },
     },

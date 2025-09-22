@@ -10,7 +10,6 @@ properties:
       - openai
     default: ollama
     example: ollama
-    minLength: 1
   endpoint:
     description: LLM service endpoint URL
     type: string

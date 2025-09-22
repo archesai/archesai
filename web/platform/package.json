@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@archesai/client": "workspace:*",
     "@archesai/ui": "workspace:*",
     "@tanstack/react-query": "catalog:tanstack",
     "@tanstack/react-router": "catalog:tanstack",
@@ -12,23 +11,6 @@
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "socket.io-client": "catalog:"
-  },
-  "devDependencies": {
-    "@playwright/test": "catalog:test",
-    "@tailwindcss/vite": "catalog:vite",
-    "@types/json-schema": "^7.0.15",
-    "@types/node": "catalog:",
-    "@types/react": "catalog:react19",
-    "@types/react-dom": "catalog:react19",
-    "@vitejs/plugin-react": "catalog:vite",
-    "@vitest/ui": "catalog:test",
-    "babel-plugin-react-compiler": "catalog:vite",
-    "rollup-plugin-visualizer": "catalog:vite",
-    "tailwindcss": "catalog:ui",
-    "typescript": "catalog:",
-    "vite": "catalog:vite",
-    "vite-plugin-svgr": "catalog:vite",
-    "vitest": "catalog:test"
   },
   "imports": {
     "#*": "./src/*.tsx",

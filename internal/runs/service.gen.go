@@ -14,11 +14,11 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Create(ctx context.Context, request CreateRunRequestObject) (CreateRunResponseObject, error)
-	Get(ctx context.Context, request GetRunRequestObject) (GetRunResponseObject, error)
-	Update(ctx context.Context, request UpdateRunRequestObject) (UpdateRunResponseObject, error)
-	Delete(ctx context.Context, request DeleteRunRequestObject) (DeleteRunResponseObject, error)
-	List(ctx context.Context, request ListRunsRequestObject) (ListRunsResponseObject, error)
+	CreateRun(ctx context.Context, request CreateRunRequestObject) (CreateRunResponseObject, error)
+	GetRun(ctx context.Context, request GetRunRequestObject) (GetRunResponseObject, error)
+	UpdateRun(ctx context.Context, request UpdateRunRequestObject) (UpdateRunResponseObject, error)
+	DeleteRun(ctx context.Context, request DeleteRunRequestObject) (DeleteRunResponseObject, error)
+	ListRuns(ctx context.Context, request ListRunsRequestObject) (ListRunsResponseObject, error)
 }
 
 // Service implements the business logic
@@ -37,8 +37,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Create creates a new run
-func (s *Service) Create(ctx context.Context, request CreateRunRequestObject) (CreateRunResponseObject, error) {
+// CreateRun creates a new run
+func (s *Service) CreateRun(ctx context.Context, request CreateRunRequestObject) (CreateRunResponseObject, error) {
 	if request.Body == nil {
 		return CreateRun400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -76,8 +76,8 @@ func (s *Service) Create(ctx context.Context, request CreateRunRequestObject) (C
 	}, nil
 }
 
-// Get gets a run by ID
-func (s *Service) Get(ctx context.Context, request GetRunRequestObject) (GetRunResponseObject, error) {
+// GetRun gets a run by ID
+func (s *Service) GetRun(ctx context.Context, request GetRunRequestObject) (GetRunResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -108,8 +108,8 @@ func (s *Service) Get(ctx context.Context, request GetRunRequestObject) (GetRunR
 	}, nil
 }
 
-// Update updates a run
-func (s *Service) Update(ctx context.Context, request UpdateRunRequestObject) (UpdateRunResponseObject, error) {
+// UpdateRun updates a run
+func (s *Service) UpdateRun(ctx context.Context, request UpdateRunRequestObject) (UpdateRunResponseObject, error) {
 	if request.Body == nil {
 		return UpdateRun404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -167,8 +167,8 @@ func (s *Service) Update(ctx context.Context, request UpdateRunRequestObject) (U
 	}, nil
 }
 
-// Delete deletes a run
-func (s *Service) Delete(ctx context.Context, request DeleteRunRequestObject) (DeleteRunResponseObject, error) {
+// DeleteRun deletes a run
+func (s *Service) DeleteRun(ctx context.Context, request DeleteRunRequestObject) (DeleteRunResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Service) Delete(ctx context.Context, request DeleteRunRequestObject) (D
 	return DeleteRun200JSONResponse{}, nil
 }
 
-// List lists all runs
-func (s *Service) List(ctx context.Context, request ListRunsRequestObject) (ListRunsResponseObject, error) {
+// ListRuns lists all runs
+func (s *Service) ListRuns(ctx context.Context, request ListRunsRequestObject) (ListRunsResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

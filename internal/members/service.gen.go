@@ -14,11 +14,11 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Create(ctx context.Context, request CreateMemberRequestObject) (CreateMemberResponseObject, error)
-	Get(ctx context.Context, request GetMemberRequestObject) (GetMemberResponseObject, error)
-	Update(ctx context.Context, request UpdateMemberRequestObject) (UpdateMemberResponseObject, error)
-	Delete(ctx context.Context, request DeleteMemberRequestObject) (DeleteMemberResponseObject, error)
-	List(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error)
+	CreateMember(ctx context.Context, request CreateMemberRequestObject) (CreateMemberResponseObject, error)
+	GetMember(ctx context.Context, request GetMemberRequestObject) (GetMemberResponseObject, error)
+	UpdateMember(ctx context.Context, request UpdateMemberRequestObject) (UpdateMemberResponseObject, error)
+	DeleteMember(ctx context.Context, request DeleteMemberRequestObject) (DeleteMemberResponseObject, error)
+	ListMembers(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error)
 }
 
 // Service implements the business logic
@@ -37,8 +37,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Create creates a new member
-func (s *Service) Create(ctx context.Context, request CreateMemberRequestObject) (CreateMemberResponseObject, error) {
+// CreateMember creates a new member
+func (s *Service) CreateMember(ctx context.Context, request CreateMemberRequestObject) (CreateMemberResponseObject, error) {
 	if request.Body == nil {
 		return CreateMember400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -76,8 +76,8 @@ func (s *Service) Create(ctx context.Context, request CreateMemberRequestObject)
 	}, nil
 }
 
-// Get gets a member by ID
-func (s *Service) Get(ctx context.Context, request GetMemberRequestObject) (GetMemberResponseObject, error) {
+// GetMember gets a member by ID
+func (s *Service) GetMember(ctx context.Context, request GetMemberRequestObject) (GetMemberResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -108,8 +108,8 @@ func (s *Service) Get(ctx context.Context, request GetMemberRequestObject) (GetM
 	}, nil
 }
 
-// Update updates a member
-func (s *Service) Update(ctx context.Context, request UpdateMemberRequestObject) (UpdateMemberResponseObject, error) {
+// UpdateMember updates a member
+func (s *Service) UpdateMember(ctx context.Context, request UpdateMemberRequestObject) (UpdateMemberResponseObject, error) {
 	if request.Body == nil {
 		return UpdateMember404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -167,8 +167,8 @@ func (s *Service) Update(ctx context.Context, request UpdateMemberRequestObject)
 	}, nil
 }
 
-// Delete deletes a member
-func (s *Service) Delete(ctx context.Context, request DeleteMemberRequestObject) (DeleteMemberResponseObject, error) {
+// DeleteMember deletes a member
+func (s *Service) DeleteMember(ctx context.Context, request DeleteMemberRequestObject) (DeleteMemberResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Service) Delete(ctx context.Context, request DeleteMemberRequestObject)
 	return DeleteMember200JSONResponse{}, nil
 }
 
-// List lists all members
-func (s *Service) List(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error) {
+// ListMembers lists all members
+func (s *Service) ListMembers(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

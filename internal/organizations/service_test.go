@@ -35,7 +35,7 @@ func TestService_Interface(t *testing.T) {
 	// Test Get - expect repository error to return not found response
 	mockRepo.EXPECT().Get(ctx, orgID).Return(nil, ErrOrganizationNotFound)
 
-	result, err := service.Get(ctx, GetOrganizationRequestObject{
+	result, err := service.GetOrganization(ctx, GetOrganizationRequestObject{
 		ID: orgID,
 	})
 	assert.NoError(t, err) // Service never returns Go errors

@@ -76,7 +76,7 @@ func TestGetUser(t *testing.T) {
 			request := GetUserRequestObject{
 				ID: tt.userID,
 			}
-			result, err := service.Get(context.Background(), request)
+			result, err := service.GetUser(context.Background(), request)
 
 			assert.NoError(t, err) // Service never returns Go errors
 			assert.NotNil(t, result)
@@ -160,7 +160,7 @@ func TestUpdateUser(t *testing.T) {
 				ID:   tt.userID,
 				Body: tt.req,
 			}
-			result, err := service.Update(context.Background(), request)
+			result, err := service.UpdateUser(context.Background(), request)
 
 			assert.NoError(t, err) // Service never returns Go errors
 			assert.NotNil(t, result)
@@ -228,7 +228,7 @@ func TestDeleteUser(t *testing.T) {
 			request := DeleteUserRequestObject{
 				ID: tt.userID,
 			}
-			result, err := service.Delete(context.Background(), request)
+			result, err := service.DeleteUser(context.Background(), request)
 
 			assert.NoError(t, err) // Service never returns Go errors
 			assert.NotNil(t, result)
@@ -323,7 +323,7 @@ func TestListUsers(t *testing.T) {
 					},
 				},
 			}
-			result, err := service.List(context.Background(), request)
+			result, err := service.ListUsers(context.Background(), request)
 
 			if tt.wantErr {
 				assert.Error(t, err)

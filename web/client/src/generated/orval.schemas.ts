@@ -48,7 +48,6 @@ export interface Base {
 
 /**
  * The authentication provider identifier
- * @minLength 1
  */
 export type AccountAllOfProviderID = typeof AccountAllOfProviderID[keyof typeof AccountAllOfProviderID];
 
@@ -70,10 +69,7 @@ export type AccountAllOf = {
   accountID: string;
   /** The user ID this account belongs to */
   userID: Uuid;
-  /**
-   * The authentication provider identifier
-   * @minLength 1
-   */
+  /** The authentication provider identifier */
   providerID: AccountAllOfProviderID;
   /** The OAuth access token */
   accessToken?: string;
@@ -85,8 +81,6 @@ export type AccountAllOf = {
   refreshTokenExpiresAt?: string;
   /** The OpenID Connect ID token */
   idToken?: string;
-  /** The hashed password (only for local authentication) */
-  password?: string;
   /** The OAuth scope granted */
   scope?: string;
 };
@@ -95,29 +89,6 @@ export type AccountAllOf = {
  * Schema for Account entity (authentication provider account)
  */
 export type Account = Base & AccountAllOf;
-
-/**
- * The invalid value that was provided
- */
-export type ValidationErrorValue = string | number | boolean;
-
-/**
- * Individual field validation error
- */
-export interface ValidationError {
-  /**
-   * The field path that failed validation
-   * @minLength 1
-   */
-  field: string;
-  /**
-   * Human-readable error message
-   * @minLength 1
-   */
-  message: string;
-  /** The invalid value that was provided */
-  value?: ValidationErrorValue;
-}
 
 /**
  * RFC 7807 (Problem Details) compliant error response
@@ -133,7 +104,7 @@ export interface Problem {
    * URI identifying the problem type
    * @minLength 1
    */
-  type: string;
+  type?: string;
   /**
    * Short, human-readable summary
    * @minLength 1
@@ -143,11 +114,9 @@ export interface Problem {
    * Human-readable explanation specific to this occurrence
    * @minLength 1
    */
-  detail: string;
+  detail?: string;
   /** URI identifying the specific occurrence */
   instance?: string;
-  /** Additional validation errors for specific fields */
-  errors?: ValidationError[];
 }
 
 export interface TokenResponse {
@@ -289,7 +258,6 @@ export type ApiKeyResponse = Base & ApiKeyResponseAllOf;
 
 /**
  * The current subscription plan
- * @minLength 1
  */
 export type OrganizationAllOfPlan = typeof OrganizationAllOfPlan[keyof typeof OrganizationAllOfPlan];
 
@@ -326,10 +294,7 @@ export type OrganizationAllOf = {
   logo?: string;
   /** Email address for billing communications */
   billingEmail?: string;
-  /**
-   * The current subscription plan
-   * @minLength 1
-   */
+  /** The current subscription plan */
   plan: OrganizationAllOfPlan;
   /**
    * Available credits for this organization
@@ -349,7 +314,6 @@ export type Organization = Base & OrganizationAllOf;
 
 /**
  * The role of the member
- * @minLength 1
  */
 export type MemberAllOfRole = typeof MemberAllOfRole[keyof typeof MemberAllOfRole];
 
@@ -363,10 +327,7 @@ export const MemberAllOfRole = {
 
 export type MemberAllOf = {
   organizationID: Uuid;
-  /**
-   * The role of the member
-   * @minLength 1
-   */
+  /** The role of the member */
   role: MemberAllOfRole;
   userID: Uuid;
 };
@@ -378,7 +339,6 @@ export type Member = Base & MemberAllOf;
 
 /**
  * The role of the invitation
- * @minLength 1
  */
 export type InvitationAllOfRole = typeof InvitationAllOfRole[keyof typeof InvitationAllOfRole];
 
@@ -403,10 +363,7 @@ export type InvitationAllOf = {
   expiresAt: string;
   inviterID: Uuid;
   organizationID: Uuid;
-  /**
-   * The role of the invitation
-   * @minLength 1
-   */
+  /** The role of the invitation */
   role: InvitationAllOfRole;
   /**
    * The status of the invitation, e.g., pending, accepted, declined
@@ -509,9 +466,6 @@ export type PipelineStepAllOf = {
  */
 export type PipelineStep = Base & PipelineStepAllOf;
 
-/**
- * @minLength 1
- */
 export type RunAllOfStatus = typeof RunAllOfStatus[keyof typeof RunAllOfStatus];
 
 
@@ -543,7 +497,6 @@ export type RunAllOf = {
    * @minLength 1
    */
   startedAt?: string;
-  /** @minLength 1 */
   status: RunAllOfStatus;
   toolID: Uuid;
 };
@@ -634,17 +587,6 @@ export type LabelAllOf = {
 export type Label = Base & LabelAllOf;
 
 /**
- * CORS configuration for the API server
- */
-export interface CORSConfig {
-  /**
-   * A comma-separated list of allowed origins for CORS requests
-   * @minLength 1
-   */
-  origins: string;
-}
-
-/**
  * Email configuration for sending emails
  */
 export interface EmailConfig {
@@ -660,7 +602,6 @@ export interface EmailConfig {
 
 /**
  * Kubernetes image pull policy
- * @minLength 1
  */
 export type ImageConfigPullPolicy = typeof ImageConfigPullPolicy[keyof typeof ImageConfigPullPolicy];
 
@@ -676,16 +617,13 @@ export const ImageConfigPullPolicy = {
  * Container image configuration
  */
 export interface ImageConfig {
-  /**
-   * Kubernetes image pull policy
-   * @minLength 1
-   */
+  /** Kubernetes image pull policy */
   pullPolicy: ImageConfigPullPolicy;
   /**
    * Container image repository
    * @minLength 1
    */
-  repository: string;
+  repository?: string;
   /**
    * Container image tag
    * @minLength 1
@@ -750,23 +688,27 @@ export const APIConfigEnvironment = {
  * Configuration schema for the API server
  */
 export interface APIConfig {
-  cors: CORSConfig;
+  /**
+   * A comma-separated list of allowed origins for CORS requests
+   * @minLength 1
+   */
+  cors?: string;
   /** Enable or disable API documentation */
-  docs: boolean;
-  email: EmailConfig;
+  docs?: boolean;
+  email?: EmailConfig;
   /** Deployment environment (development, staging, production) */
   environment?: APIConfigEnvironment;
   /**
    * The host address on which the API server will listen
    * @minLength 1
    */
-  host: string;
+  host?: string;
   /** The port on which the API server will listen */
-  port: number;
+  port?: number;
   /** Enable or disable request validation */
-  validate: boolean;
-  image: ImageConfig;
-  resources: ResourceConfig;
+  validate?: boolean;
+  image?: ImageConfig;
+  resources?: ResourceConfig;
 }
 
 /**
@@ -1044,10 +986,10 @@ export interface DatabaseConfig {
   /** Enable database */
   enabled: boolean;
   /**
-   * Database connection URL/string
+   * Database connection url/string
    * @minLength 1
    */
-  URL: string;
+  url?: string;
   /** Database type (postgresql or sqlite) */
   type?: DatabaseConfigType;
   /**
@@ -1086,115 +1028,7 @@ export interface DatabaseConfig {
 }
 
 /**
- * Development service port forwarding configuration
- */
-export interface DevServiceConfig {
-  /** Enable dev port forwarding */
-  enabled: boolean;
-  /** Local port for forwarding */
-  port: number;
-}
-
-/**
- * Development environment configuration
- */
-export interface DevelopmentConfig {
-  api: DevServiceConfig;
-  /**
-   * Host IP address for dev port forwarding
-   * @minLength 1
-   */
-  hostIP: string;
-  loki: DevServiceConfig;
-  platform: DevServiceConfig;
-  postgres: DevServiceConfig;
-  redis: DevServiceConfig;
-}
-
-/**
- * Container image configuration
- */
-export interface ImagesConfig {
-  /** List of Kubernetes secrets for pulling private images */
-  imagePullSecrets: string[];
-  /**
-   * Custom container registry URL (leave empty for Docker Hub)
-   * @minLength 1
-   */
-  imageRegistry: string;
-}
-
-/**
- * Database migration configuration
- */
-export interface MigrationsConfig {
-  /** Enable automatic DB migrations */
-  enabled: boolean;
-}
-
-/**
- * Kubernetes service account configuration
- */
-export interface ServiceAccountConfig {
-  /** Create dedicated service account */
-  create: boolean;
-  /**
-   * Custom service account name
-   * @minLength 1
-   */
-  name: string;
-}
-
-/**
- * Infrastructure configuration for Kubernetes deployments
- */
-export interface InfrastructureConfig {
-  development: DevelopmentConfig;
-  images: ImagesConfig;
-  migrations: MigrationsConfig;
-  /**
-   * Kubernetes namespace where all resources will be deployed
-   * @minLength 1
-   */
-  namespace: string;
-  serviceAccount: ServiceAccountConfig;
-}
-
-/**
- * TLS configuration
- */
-export interface TLSConfig {
-  /** Enable TLS/SSL */
-  enabled: boolean;
-  /**
-   * Cert-manager ClusterIssuer
-   * @minLength 1
-   */
-  issuer?: string;
-  /**
-   * Kubernetes secret name for TLS certificates
-   * @minLength 1
-   */
-  secretName: string;
-}
-
-/**
- * Ingress configuration
- */
-export interface IngressConfig {
-  /** Enable ingress */
-  enabled: boolean;
-  /**
-   * Primary domain name for ingress routing
-   * @minLength 1
-   */
-  domain?: string;
-  tls?: TLSConfig;
-}
-
-/**
  * The embedding provider to use for vector embeddings
- * @minLength 1
  */
 export type EmbeddingConfigType = typeof EmbeddingConfigType[keyof typeof EmbeddingConfigType];
 
@@ -1209,16 +1043,12 @@ export const EmbeddingConfigType = {
  * Configuration for text embedding generation
  */
 export interface EmbeddingConfig {
-  /**
-   * The embedding provider to use for vector embeddings
-   * @minLength 1
-   */
+  /** The embedding provider to use for vector embeddings */
   type: EmbeddingConfigType;
 }
 
 /**
  * LLM provider type
- * @minLength 1
  */
 export type LLMConfigType = typeof LLMConfigType[keyof typeof LLMConfigType];
 
@@ -1233,10 +1063,7 @@ export const LLMConfigType = {
  * Large Language Model configuration
  */
 export interface LLMConfig {
-  /**
-   * LLM provider type
-   * @minLength 1
-   */
+  /** LLM provider type */
   type: LLMConfigType;
   /**
    * LLM service endpoint URL
@@ -1309,17 +1136,16 @@ export interface UnstructuredConfig {
  * Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
  */
 export interface IntelligenceConfig {
-  embedding: EmbeddingConfig;
-  llm: LLMConfig;
-  runpod: RunPodConfig;
-  scraper: ScraperConfig;
-  speech: SpeechConfig;
-  unstructured: UnstructuredConfig;
+  embedding?: EmbeddingConfig;
+  llm?: LLMConfig;
+  runpod?: RunPodConfig;
+  scraper?: ScraperConfig;
+  speech?: SpeechConfig;
+  unstructured?: UnstructuredConfig;
 }
 
 /**
  * Minimum log level to output
- * @minLength 1
  */
 export type LoggingConfigLevel = typeof LoggingConfigLevel[keyof typeof LoggingConfigLevel];
 
@@ -1339,50 +1165,10 @@ export const LoggingConfigLevel = {
  * Logging configuration
  */
 export interface LoggingConfig {
-  /**
-   * Minimum log level to output
-   * @minLength 1
-   */
+  /** Minimum log level to output */
   level: LoggingConfigLevel;
   /** Enable pretty-printed logs for development */
   pretty: boolean;
-}
-
-/**
- * Grafana monitoring dashboard configuration
- */
-export interface GrafanaConfig {
-  /** Enable Grafana */
-  enabled: boolean;
-  /** Use managed Grafana deployment */
-  managed?: boolean;
-  image?: ImageConfig;
-  resources?: ResourceConfig;
-}
-
-/**
- * Loki log aggregation service configuration
- */
-export interface LokiConfig {
-  /** Enable Loki */
-  enabled: boolean;
-  /** Use managed Loki deployment */
-  managed?: boolean;
-  /**
-   * Loki host URL
-   * @minLength 1
-   */
-  host?: string;
-  image?: ImageConfig;
-  resources?: ResourceConfig;
-}
-
-/**
- * Monitoring configuration for Grafana and Loki
- */
-export interface MonitoringConfig {
-  grafana: GrafanaConfig;
-  loki: LokiConfig;
 }
 
 /**
@@ -1466,21 +1252,146 @@ export interface StorageConfig {
 }
 
 /**
+ * Container image configuration
+ */
+export interface ImagesConfig {
+  /** List of Kubernetes secrets for pulling private images */
+  imagePullSecrets: string[];
+  /**
+   * Custom container registry URL (leave empty for Docker Hub)
+   * @minLength 1
+   */
+  imageRegistry: string;
+}
+
+/**
+ * Database migration configuration
+ */
+export interface MigrationsConfig {
+  /** Enable automatic DB migrations */
+  enabled: boolean;
+}
+
+/**
+ * Kubernetes service account configuration
+ */
+export interface ServiceAccountConfig {
+  /** Create dedicated service account */
+  create: boolean;
+  /**
+   * Custom service account name
+   * @minLength 1
+   */
+  name: string;
+}
+
+/**
+ * Infrastructure configuration for Kubernetes deployments
+ */
+export interface InfrastructureConfig {
+  images: ImagesConfig;
+  migrations: MigrationsConfig;
+  /**
+   * Kubernetes namespace where all resources will be deployed
+   * @minLength 1
+   */
+  namespace: string;
+  serviceAccount: ServiceAccountConfig;
+}
+
+/**
+ * TLS configuration
+ */
+export interface TLSConfig {
+  /** Enable TLS/SSL */
+  enabled: boolean;
+  /**
+   * Cert-manager ClusterIssuer
+   * @minLength 1
+   */
+  issuer?: string;
+  /**
+   * Kubernetes secret name for TLS certificates
+   * @minLength 1
+   */
+  secretName?: string;
+}
+
+/**
+ * Ingress configuration
+ */
+export interface IngressConfig {
+  /** Enable ingress */
+  enabled: boolean;
+  /**
+   * Primary domain name for ingress routing
+   * @minLength 1
+   */
+  domain?: string;
+  tls?: TLSConfig;
+}
+
+/**
+ * Grafana monitoring dashboard configuration
+ */
+export interface GrafanaConfig {
+  /** Enable Grafana */
+  enabled: boolean;
+  /** Use managed Grafana deployment */
+  managed?: boolean;
+  image?: ImageConfig;
+  resources?: ResourceConfig;
+}
+
+/**
+ * Loki log aggregation service configuration
+ */
+export interface LokiConfig {
+  /** Enable Loki */
+  enabled: boolean;
+  /** Use managed Loki deployment */
+  managed?: boolean;
+  /**
+   * Loki host URL
+   * @minLength 1
+   */
+  host?: string;
+  image?: ImageConfig;
+  resources?: ResourceConfig;
+}
+
+/**
+ * Monitoring configuration for Grafana and Loki
+ */
+export interface MonitoringConfig {
+  grafana: GrafanaConfig;
+  loki: LokiConfig;
+}
+
+/**
+ * Kubernetes-specific deployment configuration
+ */
+export type ArchesConfigKubernetes = {
+  infrastructure?: InfrastructureConfig;
+  ingress?: IngressConfig;
+  monitoring?: MonitoringConfig;
+};
+
+/**
  * Arches AI configuration schema
  */
 export interface ArchesConfig {
-  api: APIConfig;
-  auth: AuthConfig;
-  billing: BillingConfig;
-  database: DatabaseConfig;
-  infrastructure: InfrastructureConfig;
-  ingress: IngressConfig;
-  intelligence: IntelligenceConfig;
-  logging: LoggingConfig;
-  monitoring: MonitoringConfig;
-  platform: PlatformConfig;
-  redis: RedisConfig;
-  storage: StorageConfig;
+  api?: APIConfig;
+  auth?: AuthConfig;
+  billing?: BillingConfig;
+  database?: DatabaseConfig;
+  intelligence?: IntelligenceConfig;
+  logging?: LoggingConfig;
+  platform?: PlatformConfig;
+  redis?: RedisConfig;
+  storage?: StorageConfig;
+  /** Kubernetes-specific deployment configuration */
+  kubernetes?: ArchesConfigKubernetes;
 }
 
 export type HealthResponseServices = {
@@ -1550,9 +1461,6 @@ export type PageQueryParameter = {
   size?: number;
 };
 
-/**
- * @minLength 1
- */
 export type AccountsSortParameterItemField = typeof AccountsSortParameterItemField[keyof typeof AccountsSortParameterItemField];
 
 
@@ -1565,7 +1473,6 @@ export const AccountsSortParameterItemField = {
   accessTokenExpiresAt: 'accessTokenExpiresAt',
   accountID: 'accountID',
   idToken: 'idToken',
-  password: 'password',
   providerID: 'providerID',
   refreshToken: 'refreshToken',
   refreshTokenExpiresAt: 'refreshTokenExpiresAt',
@@ -1573,9 +1480,6 @@ export const AccountsSortParameterItemField = {
   userID: 'userID',
 } as const;
 
-/**
- * @minLength 1
- */
 export type AccountsSortParameterItemOrder = typeof AccountsSortParameterItemOrder[keyof typeof AccountsSortParameterItemOrder];
 
 
@@ -1586,9 +1490,7 @@ export const AccountsSortParameterItemOrder = {
 } as const;
 
 export type AccountsSortParameterItem = {
-  /** @minLength 1 */
   field: AccountsSortParameterItemField;
-  /** @minLength 1 */
   order: AccountsSortParameterItemOrder;
 };
 
@@ -1602,9 +1504,6 @@ export type AccountsSortParameter = AccountsSortParameterItem[];
  */
 export type SessionsFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type SessionsSortParameterItemField = typeof SessionsSortParameterItemField[keyof typeof SessionsSortParameterItemField];
 
 
@@ -1621,9 +1520,6 @@ export const SessionsSortParameterItemField = {
   userID: 'userID',
 } as const;
 
-/**
- * @minLength 1
- */
 export type SessionsSortParameterItemOrder = typeof SessionsSortParameterItemOrder[keyof typeof SessionsSortParameterItemOrder];
 
 
@@ -1634,9 +1530,7 @@ export const SessionsSortParameterItemOrder = {
 } as const;
 
 export type SessionsSortParameterItem = {
-  /** @minLength 1 */
   field: SessionsSortParameterItemField;
-  /** @minLength 1 */
   order: SessionsSortParameterItemOrder;
 };
 
@@ -1650,9 +1544,6 @@ export type SessionsSortParameter = SessionsSortParameterItem[];
  */
 export type UsersFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type UsersSortParameterItemField = typeof UsersSortParameterItemField[keyof typeof UsersSortParameterItemField];
 
 
@@ -1667,9 +1558,6 @@ export const UsersSortParameterItemField = {
   name: 'name',
 } as const;
 
-/**
- * @minLength 1
- */
 export type UsersSortParameterItemOrder = typeof UsersSortParameterItemOrder[keyof typeof UsersSortParameterItemOrder];
 
 
@@ -1680,9 +1568,7 @@ export const UsersSortParameterItemOrder = {
 } as const;
 
 export type UsersSortParameterItem = {
-  /** @minLength 1 */
   field: UsersSortParameterItemField;
-  /** @minLength 1 */
   order: UsersSortParameterItemOrder;
 };
 
@@ -1696,9 +1582,6 @@ export type UsersSortParameter = UsersSortParameterItem[];
  */
 export type OrganizationsFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type OrganizationsSortParameterItemField = typeof OrganizationsSortParameterItemField[keyof typeof OrganizationsSortParameterItemField];
 
 
@@ -1717,9 +1600,6 @@ export const OrganizationsSortParameterItemField = {
   stripeCustomerID: 'stripeCustomerID',
 } as const;
 
-/**
- * @minLength 1
- */
 export type OrganizationsSortParameterItemOrder = typeof OrganizationsSortParameterItemOrder[keyof typeof OrganizationsSortParameterItemOrder];
 
 
@@ -1730,9 +1610,7 @@ export const OrganizationsSortParameterItemOrder = {
 } as const;
 
 export type OrganizationsSortParameterItem = {
-  /** @minLength 1 */
   field: OrganizationsSortParameterItemField;
-  /** @minLength 1 */
   order: OrganizationsSortParameterItemOrder;
 };
 
@@ -1746,9 +1624,6 @@ export type OrganizationsSortParameter = OrganizationsSortParameterItem[];
  */
 export type MembersFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type MembersSortParameterItemField = typeof MembersSortParameterItemField[keyof typeof MembersSortParameterItemField];
 
 
@@ -1762,9 +1637,6 @@ export const MembersSortParameterItemField = {
   userID: 'userID',
 } as const;
 
-/**
- * @minLength 1
- */
 export type MembersSortParameterItemOrder = typeof MembersSortParameterItemOrder[keyof typeof MembersSortParameterItemOrder];
 
 
@@ -1775,9 +1647,7 @@ export const MembersSortParameterItemOrder = {
 } as const;
 
 export type MembersSortParameterItem = {
-  /** @minLength 1 */
   field: MembersSortParameterItemField;
-  /** @minLength 1 */
   order: MembersSortParameterItemOrder;
 };
 
@@ -1791,9 +1661,6 @@ export type MembersSortParameter = MembersSortParameterItem[];
  */
 export type InvitationsFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type InvitationsSortParameterItemField = typeof InvitationsSortParameterItemField[keyof typeof InvitationsSortParameterItemField];
 
 
@@ -1810,9 +1677,6 @@ export const InvitationsSortParameterItemField = {
   status: 'status',
 } as const;
 
-/**
- * @minLength 1
- */
 export type InvitationsSortParameterItemOrder = typeof InvitationsSortParameterItemOrder[keyof typeof InvitationsSortParameterItemOrder];
 
 
@@ -1823,9 +1687,7 @@ export const InvitationsSortParameterItemOrder = {
 } as const;
 
 export type InvitationsSortParameterItem = {
-  /** @minLength 1 */
   field: InvitationsSortParameterItemField;
-  /** @minLength 1 */
   order: InvitationsSortParameterItemOrder;
 };
 
@@ -1839,9 +1701,6 @@ export type InvitationsSortParameter = InvitationsSortParameterItem[];
  */
 export type PipelinesFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type PipelinesSortParameterItemField = typeof PipelinesSortParameterItemField[keyof typeof PipelinesSortParameterItemField];
 
 
@@ -1855,9 +1714,6 @@ export const PipelinesSortParameterItemField = {
   organizationID: 'organizationID',
 } as const;
 
-/**
- * @minLength 1
- */
 export type PipelinesSortParameterItemOrder = typeof PipelinesSortParameterItemOrder[keyof typeof PipelinesSortParameterItemOrder];
 
 
@@ -1868,9 +1724,7 @@ export const PipelinesSortParameterItemOrder = {
 } as const;
 
 export type PipelinesSortParameterItem = {
-  /** @minLength 1 */
   field: PipelinesSortParameterItemField;
-  /** @minLength 1 */
   order: PipelinesSortParameterItemOrder;
 };
 
@@ -1884,9 +1738,6 @@ export type PipelinesSortParameter = PipelinesSortParameterItem[];
  */
 export type RunsFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type RunsSortParameterItemField = typeof RunsSortParameterItemField[keyof typeof RunsSortParameterItemField];
 
 
@@ -1905,9 +1756,6 @@ export const RunsSortParameterItemField = {
   toolID: 'toolID',
 } as const;
 
-/**
- * @minLength 1
- */
 export type RunsSortParameterItemOrder = typeof RunsSortParameterItemOrder[keyof typeof RunsSortParameterItemOrder];
 
 
@@ -1918,9 +1766,7 @@ export const RunsSortParameterItemOrder = {
 } as const;
 
 export type RunsSortParameterItem = {
-  /** @minLength 1 */
   field: RunsSortParameterItemField;
-  /** @minLength 1 */
   order: RunsSortParameterItemOrder;
 };
 
@@ -1934,9 +1780,6 @@ export type RunsSortParameter = RunsSortParameterItem[];
  */
 export type ToolsFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type ToolsSortParameterItemField = typeof ToolsSortParameterItemField[keyof typeof ToolsSortParameterItemField];
 
 
@@ -1952,9 +1795,6 @@ export const ToolsSortParameterItemField = {
   outputMimeType: 'outputMimeType',
 } as const;
 
-/**
- * @minLength 1
- */
 export type ToolsSortParameterItemOrder = typeof ToolsSortParameterItemOrder[keyof typeof ToolsSortParameterItemOrder];
 
 
@@ -1965,9 +1805,7 @@ export const ToolsSortParameterItemOrder = {
 } as const;
 
 export type ToolsSortParameterItem = {
-  /** @minLength 1 */
   field: ToolsSortParameterItemField;
-  /** @minLength 1 */
   order: ToolsSortParameterItemOrder;
 };
 
@@ -1981,9 +1819,6 @@ export type ToolsSortParameter = ToolsSortParameterItem[];
  */
 export type ArtifactsFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type ArtifactsSortParameterItemField = typeof ArtifactsSortParameterItemField[keyof typeof ArtifactsSortParameterItemField];
 
 
@@ -2003,9 +1838,6 @@ export const ArtifactsSortParameterItemField = {
   url: 'url',
 } as const;
 
-/**
- * @minLength 1
- */
 export type ArtifactsSortParameterItemOrder = typeof ArtifactsSortParameterItemOrder[keyof typeof ArtifactsSortParameterItemOrder];
 
 
@@ -2016,9 +1848,7 @@ export const ArtifactsSortParameterItemOrder = {
 } as const;
 
 export type ArtifactsSortParameterItem = {
-  /** @minLength 1 */
   field: ArtifactsSortParameterItemField;
-  /** @minLength 1 */
   order: ArtifactsSortParameterItemOrder;
 };
 
@@ -2032,9 +1862,6 @@ export type ArtifactsSortParameter = ArtifactsSortParameterItem[];
  */
 export type LabelsFilterParameter = { [key: string]: unknown };
 
-/**
- * @minLength 1
- */
 export type LabelsSortParameterItemField = typeof LabelsSortParameterItemField[keyof typeof LabelsSortParameterItemField];
 
 
@@ -2047,9 +1874,6 @@ export const LabelsSortParameterItemField = {
   organizationID: 'organizationID',
 } as const;
 
-/**
- * @minLength 1
- */
 export type LabelsSortParameterItemOrder = typeof LabelsSortParameterItemOrder[keyof typeof LabelsSortParameterItemOrder];
 
 
@@ -2060,9 +1884,7 @@ export const LabelsSortParameterItemOrder = {
 } as const;
 
 export type LabelsSortParameterItem = {
-  /** @minLength 1 */
   field: LabelsSortParameterItemField;
-  /** @minLength 1 */
   order: LabelsSortParameterItemOrder;
 };
 
@@ -2133,25 +1955,6 @@ export type UpdateAccount200 = {
 
 export type DeleteAccount200 = {
   data: Account;
-};
-
-export type RegisterBody = {
-  /**
-   * The email address associated with the account
-   * @minLength 1
-   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-   */
-  email: string;
-  /**
-   * The name of the user creating the account
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The password for the account
-   * @minLength 1
-   */
-  password: string;
 };
 
 export type ConfirmEmailVerificationBody = {
@@ -2551,7 +2354,6 @@ export type UpdateOrganization200 = {
 
 /**
  * The role of the member
- * @minLength 1
  */
 export type CreateMemberBodyRole = typeof CreateMemberBodyRole[keyof typeof CreateMemberBodyRole];
 
@@ -2564,10 +2366,7 @@ export const CreateMemberBodyRole = {
 } as const;
 
 export type CreateMemberBody = {
-  /**
-   * The role of the member
-   * @minLength 1
-   */
+  /** The role of the member */
   role: CreateMemberBodyRole;
 };
 
@@ -2632,7 +2431,6 @@ export type UpdateMember200 = {
 
 /**
  * The role of the invitation
- * @minLength 1
  */
 export type CreateInvitationBodyRole = typeof CreateInvitationBodyRole[keyof typeof CreateInvitationBodyRole];
 
@@ -2650,10 +2448,7 @@ export type CreateInvitationBody = {
    * @minLength 1
    */
   email: string;
-  /**
-   * The role of the invitation
-   * @minLength 1
-   */
+  /** The role of the invitation */
   role: CreateInvitationBodyRole;
 };
 

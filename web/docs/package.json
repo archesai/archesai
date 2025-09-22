@@ -6,15 +6,6 @@
     "react-dom": "catalog:react19",
     "zudoku": "catalog:"
   },
-  "devDependencies": {
-    "@types/node": "catalog:",
-    "@types/react": "catalog:react19",
-    "@types/react-dom": "catalog:react19",
-    "typescript": "catalog:",
-    "vite": "catalog:vite",
-    "vite-plugin-svgr": "catalog:vite",
-    "vitest": "catalog:test"
-  },
   "imports": {
     "#*": "./src/*.tsx"
   },

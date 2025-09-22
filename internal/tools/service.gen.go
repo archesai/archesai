@@ -14,11 +14,11 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Create(ctx context.Context, request CreateToolRequestObject) (CreateToolResponseObject, error)
-	Get(ctx context.Context, request GetToolRequestObject) (GetToolResponseObject, error)
-	Update(ctx context.Context, request UpdateToolRequestObject) (UpdateToolResponseObject, error)
-	Delete(ctx context.Context, request DeleteToolRequestObject) (DeleteToolResponseObject, error)
-	List(ctx context.Context, request ListToolsRequestObject) (ListToolsResponseObject, error)
+	CreateTool(ctx context.Context, request CreateToolRequestObject) (CreateToolResponseObject, error)
+	GetTool(ctx context.Context, request GetToolRequestObject) (GetToolResponseObject, error)
+	UpdateTool(ctx context.Context, request UpdateToolRequestObject) (UpdateToolResponseObject, error)
+	DeleteTool(ctx context.Context, request DeleteToolRequestObject) (DeleteToolResponseObject, error)
+	ListTools(ctx context.Context, request ListToolsRequestObject) (ListToolsResponseObject, error)
 }
 
 // Service implements the business logic
@@ -37,8 +37,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Create creates a new tool
-func (s *Service) Create(ctx context.Context, request CreateToolRequestObject) (CreateToolResponseObject, error) {
+// CreateTool creates a new tool
+func (s *Service) CreateTool(ctx context.Context, request CreateToolRequestObject) (CreateToolResponseObject, error) {
 	if request.Body == nil {
 		return CreateTool400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -76,8 +76,8 @@ func (s *Service) Create(ctx context.Context, request CreateToolRequestObject) (
 	}, nil
 }
 
-// Get gets a tool by ID
-func (s *Service) Get(ctx context.Context, request GetToolRequestObject) (GetToolResponseObject, error) {
+// GetTool gets a tool by ID
+func (s *Service) GetTool(ctx context.Context, request GetToolRequestObject) (GetToolResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -108,8 +108,8 @@ func (s *Service) Get(ctx context.Context, request GetToolRequestObject) (GetToo
 	}, nil
 }
 
-// Update updates a tool
-func (s *Service) Update(ctx context.Context, request UpdateToolRequestObject) (UpdateToolResponseObject, error) {
+// UpdateTool updates a tool
+func (s *Service) UpdateTool(ctx context.Context, request UpdateToolRequestObject) (UpdateToolResponseObject, error) {
 	if request.Body == nil {
 		return UpdateTool404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -167,8 +167,8 @@ func (s *Service) Update(ctx context.Context, request UpdateToolRequestObject) (
 	}, nil
 }
 
-// Delete deletes a tool
-func (s *Service) Delete(ctx context.Context, request DeleteToolRequestObject) (DeleteToolResponseObject, error) {
+// DeleteTool deletes a tool
+func (s *Service) DeleteTool(ctx context.Context, request DeleteToolRequestObject) (DeleteToolResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Service) Delete(ctx context.Context, request DeleteToolRequestObject) (
 	return DeleteTool200JSONResponse{}, nil
 }
 
-// List lists all tools
-func (s *Service) List(ctx context.Context, request ListToolsRequestObject) (ListToolsResponseObject, error) {
+// ListTools lists all tools
+func (s *Service) ListTools(ctx context.Context, request ListToolsRequestObject) (ListToolsResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

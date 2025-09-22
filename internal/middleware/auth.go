@@ -13,6 +13,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+
+	"github.com/archesai/archesai/internal/config"
 )
 
 // contextKey is a custom type for context keys to avoid collisions.
@@ -48,21 +50,36 @@ type User struct {
 }
 
 // AuthMiddleware provides authentication middleware functionality.
+// This is a bridge to the unified auth service middleware.
 type AuthMiddleware struct {
 	jwtSecret []byte
 	logger    *slog.Logger
+	config    *config.Config
+	authSvc   interface{ Middleware() echo.MiddlewareFunc } // Auth service with middleware method
 }
 
 // NewAuthMiddleware creates a new authentication middleware.
-func NewAuthMiddleware(jwtSecret string, logger *slog.Logger) *AuthMiddleware {
+func NewAuthMiddleware(jwtSecret string, cfg *config.Config, logger *slog.Logger) *AuthMiddleware {
 	return &AuthMiddleware{
 		jwtSecret: []byte(jwtSecret),
 		logger:    logger,
+		config:    cfg,
 	}
+}
+
+// SetAuthService sets the auth service for unified authentication.
+func (am *AuthMiddleware) SetAuthService(authSvc interface{ Middleware() echo.MiddlewareFunc }) {
+	am.authSvc = authSvc
 }
 
 // RequireAuth creates middleware that validates JWT tokens.
 func (am *AuthMiddleware) RequireAuth() echo.MiddlewareFunc {
+	// Use unified auth service if available
+	if am.authSvc != nil {
+		return am.authSvc.Middleware()
+	}
+
+	// Fallback to legacy JWT validation
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Extract token from Authorization header

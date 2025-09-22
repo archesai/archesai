@@ -1,8 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
 package: ''
-output: api.gen.go
+output: handler.gen.go
 generate:
   echo-server: true
   strict-server: true
 output-options:
   name-normalizer: ToCamelCaseWithInitialisms
+  user-templates:
+    strict/echo-strict.tmpl: ../../echo-strict.tmpl

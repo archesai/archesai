@@ -14,11 +14,11 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Create(ctx context.Context, request CreateLabelRequestObject) (CreateLabelResponseObject, error)
-	Get(ctx context.Context, request GetLabelRequestObject) (GetLabelResponseObject, error)
-	Update(ctx context.Context, request UpdateLabelRequestObject) (UpdateLabelResponseObject, error)
-	Delete(ctx context.Context, request DeleteLabelRequestObject) (DeleteLabelResponseObject, error)
-	List(ctx context.Context, request ListLabelsRequestObject) (ListLabelsResponseObject, error)
+	CreateLabel(ctx context.Context, request CreateLabelRequestObject) (CreateLabelResponseObject, error)
+	GetLabel(ctx context.Context, request GetLabelRequestObject) (GetLabelResponseObject, error)
+	UpdateLabel(ctx context.Context, request UpdateLabelRequestObject) (UpdateLabelResponseObject, error)
+	DeleteLabel(ctx context.Context, request DeleteLabelRequestObject) (DeleteLabelResponseObject, error)
+	ListLabels(ctx context.Context, request ListLabelsRequestObject) (ListLabelsResponseObject, error)
 }
 
 // Service implements the business logic
@@ -37,8 +37,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Create creates a new label
-func (s *Service) Create(ctx context.Context, request CreateLabelRequestObject) (CreateLabelResponseObject, error) {
+// CreateLabel creates a new label
+func (s *Service) CreateLabel(ctx context.Context, request CreateLabelRequestObject) (CreateLabelResponseObject, error) {
 	if request.Body == nil {
 		return CreateLabel400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -76,8 +76,8 @@ func (s *Service) Create(ctx context.Context, request CreateLabelRequestObject) 
 	}, nil
 }
 
-// Get gets a label by ID
-func (s *Service) Get(ctx context.Context, request GetLabelRequestObject) (GetLabelResponseObject, error) {
+// GetLabel gets a label by ID
+func (s *Service) GetLabel(ctx context.Context, request GetLabelRequestObject) (GetLabelResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -108,8 +108,8 @@ func (s *Service) Get(ctx context.Context, request GetLabelRequestObject) (GetLa
 	}, nil
 }
 
-// Update updates a label
-func (s *Service) Update(ctx context.Context, request UpdateLabelRequestObject) (UpdateLabelResponseObject, error) {
+// UpdateLabel updates a label
+func (s *Service) UpdateLabel(ctx context.Context, request UpdateLabelRequestObject) (UpdateLabelResponseObject, error) {
 	if request.Body == nil {
 		return UpdateLabel404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -167,8 +167,8 @@ func (s *Service) Update(ctx context.Context, request UpdateLabelRequestObject) 
 	}, nil
 }
 
-// Delete deletes a label
-func (s *Service) Delete(ctx context.Context, request DeleteLabelRequestObject) (DeleteLabelResponseObject, error) {
+// DeleteLabel deletes a label
+func (s *Service) DeleteLabel(ctx context.Context, request DeleteLabelRequestObject) (DeleteLabelResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Service) Delete(ctx context.Context, request DeleteLabelRequestObject) 
 	return DeleteLabel200JSONResponse{}, nil
 }
 
-// List lists all labels
-func (s *Service) List(ctx context.Context, request ListLabelsRequestObject) (ListLabelsResponseObject, error) {
+// ListLabels lists all labels
+func (s *Service) ListLabels(ctx context.Context, request ListLabelsRequestObject) (ListLabelsResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

@@ -1,5 +1,4 @@
 import { useGetConfig } from "@archesai/client";
-import { useMemo } from "react";
 
 // Frontend configuration that can come from environment variables
 export const getEnvConfig = () => ({
@@ -12,7 +11,7 @@ export const getEnvConfig = () => ({
 export const useOAuthProviders = () => {
   const { data: config, isLoading, error } = useGetConfig();
 
-  const providers = useMemo(() => {
+  const providers = () => {
     if (!config?.auth) return [];
 
     const availableProviders = [];
@@ -42,7 +41,7 @@ export const useOAuthProviders = () => {
     }
 
     return availableProviders;
-  }, [config]);
+  };
 
   return {
     error,

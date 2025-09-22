@@ -39,7 +39,6 @@ allOf:
           - microsoft
           - apple
         example: google
-        minLength: 1
       accessToken:
         description: The OAuth access token
         type: string
@@ -64,11 +63,6 @@ allOf:
         description: The OpenID Connect ID token
         type: string
         example: 'eyJhbGciOiJSUzI1NiIs...'
-        x-sensitive: true
-      password:
-        description: The hashed password (only for local authentication)
-        type: string
-        example: '$2a$10$...'
         x-sensitive: true
       scope:
         description: The OAuth scope granted

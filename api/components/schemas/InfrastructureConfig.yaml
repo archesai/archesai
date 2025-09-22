@@ -2,8 +2,6 @@
 description: Infrastructure configuration for Kubernetes deployments
 type: object
 properties:
-  development:
-    $ref: ./DevelopmentConfig.yaml
   images:
     $ref: ./ImagesConfig.yaml
   migrations:
@@ -17,7 +15,6 @@ properties:
   serviceAccount:
     $ref: ./ServiceAccountConfig.yaml
 required:
-  - development
   - images
   - migrations
   - namespace

@@ -10,33 +10,25 @@ properties:
     $ref: ./BillingConfig.yaml
   database:
     $ref: ./DatabaseConfig.yaml
-  infrastructure:
-    $ref: ./InfrastructureConfig.yaml
-  ingress:
-    $ref: ./IngressConfig.yaml
   intelligence:
     $ref: ./IntelligenceConfig.yaml
   logging:
     $ref: ./LoggingConfig.yaml
-  monitoring:
-    $ref: ./MonitoringConfig.yaml
   platform:
     $ref: ./PlatformConfig.yaml
   redis:
     $ref: ./RedisConfig.yaml
   storage:
     $ref: ./StorageConfig.yaml
-required:
-  - api
-  - auth
-  - billing
-  - database
-  - infrastructure
-  - ingress
-  - intelligence
-  - logging
-  - monitoring
-  - platform
-  - redis
-  - storage
+  kubernetes:
+    description: Kubernetes-specific deployment configuration
+    type: object
+    properties:
+      infrastructure:
+        $ref: ./InfrastructureConfig.yaml
+      ingress:
+        $ref: ./IngressConfig.yaml
+      monitoring:
+        $ref: ./MonitoringConfig.yaml
+    additionalProperties: false
 additionalProperties: false

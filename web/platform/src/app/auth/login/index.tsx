@@ -27,7 +27,8 @@ function LoginPage(): JSX.Element {
     error?: string;
   };
 
-  const { providers: oauthProviders } = useOAuthProviders();
+  const { providers: getOAuthProviders } = useOAuthProviders();
+  const oauthProviders = getOAuthProviders();
 
   const handleMagicLinkRequest = async (email: string) => {
     try {
@@ -221,7 +222,7 @@ function LoginPage(): JSX.Element {
                 Don&apos;t have an account?{" "}
                 <Link
                   className="underline underline-offset-4"
-                  to="/auth/register"
+                  to="/auth/login"
                 >
                   Sign up
                 </Link>

@@ -34,7 +34,7 @@ packages:
   github.com/archesai/archesai/internal/accounts:
     interfaces:
       Repository:
-  github.com/archesai/archesai/internal/sessions:
+  github.com/archesai/archesai/internal/auth:
     interfaces:
-      Repository:
+      SessionsRepository:
 log-level: warn

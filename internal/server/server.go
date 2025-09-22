@@ -95,6 +95,9 @@ func NewServer(config *config.APIConfig, logger *slog.Logger) *Server {
 		logger: logger,
 	}
 
+	// Set custom error handler for RFC 7807 problem details
+	e.HTTPErrorHandler = server.CustomErrorHandler
+
 	server.SetupMiddleware()
 	server.SetupInfrastructureRoutes()
 

@@ -23,12 +23,10 @@ schema:
           - organizationID
           - outputMimeType
         example: createdAt
-        minLength: 1
       order:
         type: string
         enum:
           - asc
           - desc
         example: asc
-        minLength: 1
 description: The sort parameter

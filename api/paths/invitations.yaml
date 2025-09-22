@@ -31,7 +31,6 @@ post:
                 - owner
                 - member
               example: admin
-              minLength: 1
           required:
             - email
             - role

@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 const getBody = <T>(c: Request | Response): Promise<T> => {
   const contentType = c.headers.get("content-type");
 
@@ -13,7 +15,7 @@ const getBody = <T>(c: Request | Response): Promise<T> => {
 };
 
 const getUrl = (contextUrl: string): string => {
-  const host = process.env.VITE_ARCHES_API_HOST;
+  const host = import.meta.env.VITE_ARCHES_API_HOST;
   if (!host) {
     throw new Error("host URL is not configured.");
   }

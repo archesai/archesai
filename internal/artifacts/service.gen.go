@@ -14,11 +14,11 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Create(ctx context.Context, request CreateArtifactRequestObject) (CreateArtifactResponseObject, error)
-	Get(ctx context.Context, request GetArtifactRequestObject) (GetArtifactResponseObject, error)
-	Update(ctx context.Context, request UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error)
-	Delete(ctx context.Context, request DeleteArtifactRequestObject) (DeleteArtifactResponseObject, error)
-	List(ctx context.Context, request ListArtifactsRequestObject) (ListArtifactsResponseObject, error)
+	CreateArtifact(ctx context.Context, request CreateArtifactRequestObject) (CreateArtifactResponseObject, error)
+	GetArtifact(ctx context.Context, request GetArtifactRequestObject) (GetArtifactResponseObject, error)
+	UpdateArtifact(ctx context.Context, request UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error)
+	DeleteArtifact(ctx context.Context, request DeleteArtifactRequestObject) (DeleteArtifactResponseObject, error)
+	ListArtifacts(ctx context.Context, request ListArtifactsRequestObject) (ListArtifactsResponseObject, error)
 }
 
 // Service implements the business logic
@@ -37,8 +37,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Create creates a new artifact
-func (s *Service) Create(ctx context.Context, request CreateArtifactRequestObject) (CreateArtifactResponseObject, error) {
+// CreateArtifact creates a new artifact
+func (s *Service) CreateArtifact(ctx context.Context, request CreateArtifactRequestObject) (CreateArtifactResponseObject, error) {
 	if request.Body == nil {
 		return CreateArtifact400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -76,8 +76,8 @@ func (s *Service) Create(ctx context.Context, request CreateArtifactRequestObjec
 	}, nil
 }
 
-// Get gets a artifact by ID
-func (s *Service) Get(ctx context.Context, request GetArtifactRequestObject) (GetArtifactResponseObject, error) {
+// GetArtifact gets a artifact by ID
+func (s *Service) GetArtifact(ctx context.Context, request GetArtifactRequestObject) (GetArtifactResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -108,8 +108,8 @@ func (s *Service) Get(ctx context.Context, request GetArtifactRequestObject) (Ge
 	}, nil
 }
 
-// Update updates a artifact
-func (s *Service) Update(ctx context.Context, request UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error) {
+// UpdateArtifact updates a artifact
+func (s *Service) UpdateArtifact(ctx context.Context, request UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error) {
 	if request.Body == nil {
 		return UpdateArtifact404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -167,8 +167,8 @@ func (s *Service) Update(ctx context.Context, request UpdateArtifactRequestObjec
 	}, nil
 }
 
-// Delete deletes a artifact
-func (s *Service) Delete(ctx context.Context, request DeleteArtifactRequestObject) (DeleteArtifactResponseObject, error) {
+// DeleteArtifact deletes a artifact
+func (s *Service) DeleteArtifact(ctx context.Context, request DeleteArtifactRequestObject) (DeleteArtifactResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Service) Delete(ctx context.Context, request DeleteArtifactRequestObjec
 	return DeleteArtifact200JSONResponse{}, nil
 }
 
-// List lists all artifacts
-func (s *Service) List(ctx context.Context, request ListArtifactsRequestObject) (ListArtifactsResponseObject, error) {
+// ListArtifacts lists all artifacts
+func (s *Service) ListArtifacts(ctx context.Context, request ListArtifactsRequestObject) (ListArtifactsResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

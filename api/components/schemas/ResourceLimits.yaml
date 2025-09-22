@@ -5,13 +5,15 @@ properties:
   cpu:
     description: Maximum CPU allocation
     type: string
+    default: '1000m'
     minLength: 1
-    example: example-string
+    example: '1000m'
   memory:
     description: Maximum memory allocation
     type: string
+    default: '1Gi'
     minLength: 1
-    example: example-string
+    example: '1Gi'
 required:
   - cpu
   - memory

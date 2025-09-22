@@ -85,7 +85,7 @@ func TestCreateAccount(t *testing.T) {
 			request := CreateAccountRequestObject{
 				Body: tt.req,
 			}
-			result, err := service.Create(context.Background(), request)
+			result, err := service.CreateAccount(context.Background(), request)
 
 			assert.NoError(t, err) // Service never returns Go errors
 			assert.NotNil(t, result)
@@ -147,7 +147,7 @@ func TestGetAccount(t *testing.T) {
 			request := GetAccountRequestObject{
 				ID: tt.accountID,
 			}
-			result, err := service.Get(context.Background(), request)
+			result, err := service.GetAccount(context.Background(), request)
 
 			assert.NoError(t, err) // Service never returns Go errors
 			assert.NotNil(t, result)
@@ -226,7 +226,7 @@ func TestUpdateAccount(t *testing.T) {
 				ID:   tt.accountID,
 				Body: tt.req,
 			}
-			result, err := service.Update(context.Background(), request)
+			result, err := service.UpdateAccount(context.Background(), request)
 
 			assert.NoError(t, err) // Service never returns Go errors
 			assert.NotNil(t, result)
@@ -288,7 +288,7 @@ func TestDeleteAccount(t *testing.T) {
 			request := DeleteAccountRequestObject{
 				ID: tt.accountID,
 			}
-			result, err := service.Delete(context.Background(), request)
+			result, err := service.DeleteAccount(context.Background(), request)
 
 			assert.NoError(t, err) // Service never returns Go errors
 			assert.NotNil(t, result)
@@ -382,7 +382,7 @@ func TestListAccounts(t *testing.T) {
 					},
 				},
 			}
-			result, err := service.List(context.Background(), request)
+			result, err := service.ListAccounts(context.Background(), request)
 
 			if tt.wantErr {
 				assert.Error(t, err)

@@ -14,11 +14,11 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Create(ctx context.Context, request CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error)
-	Get(ctx context.Context, request GetOrganizationRequestObject) (GetOrganizationResponseObject, error)
-	Update(ctx context.Context, request UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error)
-	Delete(ctx context.Context, request DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error)
-	List(ctx context.Context, request ListOrganizationsRequestObject) (ListOrganizationsResponseObject, error)
+	CreateOrganization(ctx context.Context, request CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error)
+	GetOrganization(ctx context.Context, request GetOrganizationRequestObject) (GetOrganizationResponseObject, error)
+	UpdateOrganization(ctx context.Context, request UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error)
+	DeleteOrganization(ctx context.Context, request DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error)
+	ListOrganizations(ctx context.Context, request ListOrganizationsRequestObject) (ListOrganizationsResponseObject, error)
 }
 
 // Service implements the business logic
@@ -37,8 +37,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Create creates a new organization
-func (s *Service) Create(ctx context.Context, request CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error) {
+// CreateOrganization creates a new organization
+func (s *Service) CreateOrganization(ctx context.Context, request CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error) {
 	if request.Body == nil {
 		return CreateOrganization400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -76,8 +76,8 @@ func (s *Service) Create(ctx context.Context, request CreateOrganizationRequestO
 	}, nil
 }
 
-// Get gets a organization by ID
-func (s *Service) Get(ctx context.Context, request GetOrganizationRequestObject) (GetOrganizationResponseObject, error) {
+// GetOrganization gets a organization by ID
+func (s *Service) GetOrganization(ctx context.Context, request GetOrganizationRequestObject) (GetOrganizationResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -108,8 +108,8 @@ func (s *Service) Get(ctx context.Context, request GetOrganizationRequestObject)
 	}, nil
 }
 
-// Update updates a organization
-func (s *Service) Update(ctx context.Context, request UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error) {
+// UpdateOrganization updates a organization
+func (s *Service) UpdateOrganization(ctx context.Context, request UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error) {
 	if request.Body == nil {
 		return UpdateOrganization404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -167,8 +167,8 @@ func (s *Service) Update(ctx context.Context, request UpdateOrganizationRequestO
 	}, nil
 }
 
-// Delete deletes a organization
-func (s *Service) Delete(ctx context.Context, request DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error) {
+// DeleteOrganization deletes a organization
+func (s *Service) DeleteOrganization(ctx context.Context, request DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Service) Delete(ctx context.Context, request DeleteOrganizationRequestO
 	return DeleteOrganization200JSONResponse{}, nil
 }
 
-// List lists all organizations
-func (s *Service) List(ctx context.Context, request ListOrganizationsRequestObject) (ListOrganizationsResponseObject, error) {
+// ListOrganizations lists all organizations
+func (s *Service) ListOrganizations(ctx context.Context, request ListOrganizationsRequestObject) (ListOrganizationsResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

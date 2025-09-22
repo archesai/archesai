@@ -14,11 +14,11 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Create(ctx context.Context, request CreateInvitationRequestObject) (CreateInvitationResponseObject, error)
-	Get(ctx context.Context, request GetInvitationRequestObject) (GetInvitationResponseObject, error)
-	Update(ctx context.Context, request UpdateInvitationRequestObject) (UpdateInvitationResponseObject, error)
-	Delete(ctx context.Context, request DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error)
-	List(ctx context.Context, request ListInvitationsRequestObject) (ListInvitationsResponseObject, error)
+	CreateInvitation(ctx context.Context, request CreateInvitationRequestObject) (CreateInvitationResponseObject, error)
+	GetInvitation(ctx context.Context, request GetInvitationRequestObject) (GetInvitationResponseObject, error)
+	UpdateInvitation(ctx context.Context, request UpdateInvitationRequestObject) (UpdateInvitationResponseObject, error)
+	DeleteInvitation(ctx context.Context, request DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error)
+	ListInvitations(ctx context.Context, request ListInvitationsRequestObject) (ListInvitationsResponseObject, error)
 }
 
 // Service implements the business logic
@@ -37,8 +37,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Create creates a new invitation
-func (s *Service) Create(ctx context.Context, request CreateInvitationRequestObject) (CreateInvitationResponseObject, error) {
+// CreateInvitation creates a new invitation
+func (s *Service) CreateInvitation(ctx context.Context, request CreateInvitationRequestObject) (CreateInvitationResponseObject, error) {
 	if request.Body == nil {
 		return CreateInvitation400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -76,8 +76,8 @@ func (s *Service) Create(ctx context.Context, request CreateInvitationRequestObj
 	}, nil
 }
 
-// Get gets a invitation by ID
-func (s *Service) Get(ctx context.Context, request GetInvitationRequestObject) (GetInvitationResponseObject, error) {
+// GetInvitation gets a invitation by ID
+func (s *Service) GetInvitation(ctx context.Context, request GetInvitationRequestObject) (GetInvitationResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -108,8 +108,8 @@ func (s *Service) Get(ctx context.Context, request GetInvitationRequestObject) (
 	}, nil
 }
 
-// Update updates a invitation
-func (s *Service) Update(ctx context.Context, request UpdateInvitationRequestObject) (UpdateInvitationResponseObject, error) {
+// UpdateInvitation updates a invitation
+func (s *Service) UpdateInvitation(ctx context.Context, request UpdateInvitationRequestObject) (UpdateInvitationResponseObject, error) {
 	if request.Body == nil {
 		return UpdateInvitation404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -167,8 +167,8 @@ func (s *Service) Update(ctx context.Context, request UpdateInvitationRequestObj
 	}, nil
 }
 
-// Delete deletes a invitation
-func (s *Service) Delete(ctx context.Context, request DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error) {
+// DeleteInvitation deletes a invitation
+func (s *Service) DeleteInvitation(ctx context.Context, request DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Service) Delete(ctx context.Context, request DeleteInvitationRequestObj
 	return DeleteInvitation200JSONResponse{}, nil
 }
 
-// List lists all invitations
-func (s *Service) List(ctx context.Context, request ListInvitationsRequestObject) (ListInvitationsResponseObject, error) {
+// ListInvitations lists all invitations
+func (s *Service) ListInvitations(ctx context.Context, request ListInvitationsRequestObject) (ListInvitationsResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

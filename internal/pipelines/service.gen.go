@@ -14,11 +14,11 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Create(ctx context.Context, request CreatePipelineRequestObject) (CreatePipelineResponseObject, error)
-	Get(ctx context.Context, request GetPipelineRequestObject) (GetPipelineResponseObject, error)
-	Update(ctx context.Context, request UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error)
-	Delete(ctx context.Context, request DeletePipelineRequestObject) (DeletePipelineResponseObject, error)
-	List(ctx context.Context, request ListPipelinesRequestObject) (ListPipelinesResponseObject, error)
+	CreatePipeline(ctx context.Context, request CreatePipelineRequestObject) (CreatePipelineResponseObject, error)
+	GetPipeline(ctx context.Context, request GetPipelineRequestObject) (GetPipelineResponseObject, error)
+	UpdatePipeline(ctx context.Context, request UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error)
+	DeletePipeline(ctx context.Context, request DeletePipelineRequestObject) (DeletePipelineResponseObject, error)
+	ListPipelines(ctx context.Context, request ListPipelinesRequestObject) (ListPipelinesResponseObject, error)
 }
 
 // Service implements the business logic
@@ -37,8 +37,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Create creates a new pipeline
-func (s *Service) Create(ctx context.Context, request CreatePipelineRequestObject) (CreatePipelineResponseObject, error) {
+// CreatePipeline creates a new pipeline
+func (s *Service) CreatePipeline(ctx context.Context, request CreatePipelineRequestObject) (CreatePipelineResponseObject, error) {
 	if request.Body == nil {
 		return CreatePipeline400ApplicationProblemPlusJSONResponse{
 			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
@@ -76,8 +76,8 @@ func (s *Service) Create(ctx context.Context, request CreatePipelineRequestObjec
 	}, nil
 }
 
-// Get gets a pipeline by ID
-func (s *Service) Get(ctx context.Context, request GetPipelineRequestObject) (GetPipelineResponseObject, error) {
+// GetPipeline gets a pipeline by ID
+func (s *Service) GetPipeline(ctx context.Context, request GetPipelineRequestObject) (GetPipelineResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -108,8 +108,8 @@ func (s *Service) Get(ctx context.Context, request GetPipelineRequestObject) (Ge
 	}, nil
 }
 
-// Update updates a pipeline
-func (s *Service) Update(ctx context.Context, request UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error) {
+// UpdatePipeline updates a pipeline
+func (s *Service) UpdatePipeline(ctx context.Context, request UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error) {
 	if request.Body == nil {
 		return UpdatePipeline404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -167,8 +167,8 @@ func (s *Service) Update(ctx context.Context, request UpdatePipelineRequestObjec
 	}, nil
 }
 
-// Delete deletes a pipeline
-func (s *Service) Delete(ctx context.Context, request DeletePipelineRequestObject) (DeletePipelineResponseObject, error) {
+// DeletePipeline deletes a pipeline
+func (s *Service) DeletePipeline(ctx context.Context, request DeletePipelineRequestObject) (DeletePipelineResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Service) Delete(ctx context.Context, request DeletePipelineRequestObjec
 	return DeletePipeline200JSONResponse{}, nil
 }
 
-// List lists all pipelines
-func (s *Service) List(ctx context.Context, request ListPipelinesRequestObject) (ListPipelinesResponseObject, error) {
+// ListPipelines lists all pipelines
+func (s *Service) ListPipelines(ctx context.Context, request ListPipelinesRequestObject) (ListPipelinesResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

@@ -35,10 +35,10 @@ Legend: 🟢 >80% | 🟡 40-80% | 🔴 <40% | ⚫ 0%
 The following critical files have 0% coverage and should be prioritized:
 
 - **`cmd/archesai/main.go`** - Main application entry point
-- **`internal/accounts/api.gen.go`** -
-- **`internal/accounts/api.gen.go`** -
-- **`internal/accounts/api.gen.go`** -
-- **`internal/accounts/api.gen.go`** -
+- **`internal/accounts/handler.gen.go`** -
+- **`internal/accounts/handler.gen.go`** -
+- **`internal/accounts/handler.gen.go`** -
+- **`internal/accounts/handler.gen.go`** -
 
 ## Recommendations
 

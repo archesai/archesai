@@ -3,7 +3,11 @@ description: Configuration schema for the API server
 type: object
 properties:
   cors:
-    $ref: ./CORSConfig.yaml
+    description: A comma-separated list of allowed origins for CORS requests
+    type: string
+    default: 'localhost'
+    minLength: 1
+    example: 'localhost,https://platform.archesai.com'
   docs:
     description: Enable or disable API documentation
     type: boolean
@@ -37,13 +41,5 @@ properties:
     $ref: ./ImageConfig.yaml
   resources:
     $ref: ./ResourceConfig.yaml
-required:
-  - cors
-  - docs
-  - email
-  - host
-  - port
-  - validate
-  - image
-  - resources
+required: []
 additionalProperties: false

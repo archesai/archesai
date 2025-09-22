@@ -101,7 +101,7 @@ The generator creates the following files in each domain:
 - `service.gen.go` - Service interface for business logic
 - `server.gen.go` - HTTP server implementation
 - `types.gen.go` - OpenAPI type definitions
-- `api.gen.go` - API client interface
+- `handler.gen.go` - API client interface
 - `mocks_test.gen.go` - Test mocks for all interfaces
 
 ## x-codegen Annotations

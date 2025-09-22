@@ -5,7 +5,7 @@ autoInstallPeers: true
 
 catalog:
   '@biomejs/biome': 2.2.4
-  '@redocly/cli': 2.1.4
+  '@redocly/cli': 2.1.5
   '@types/node': 24.5.2
   '@xyflow/react': 12.8.5
   markdownlint-cli: 0.45.0
@@ -26,10 +26,10 @@ catalogs:
   tanstack:
     '@tanstack/react-query': 5.89.0
     '@tanstack/react-query-devtools': 5.89.0
-    '@tanstack/react-router': 1.131.47
+    '@tanstack/react-router': 1.131.48
     '@tanstack/react-router-devtools': 1.131.44
-    '@tanstack/react-router-ssr-query': 1.131.47
-    '@tanstack/react-start': 1.131.47
+    '@tanstack/react-router-ssr-query': 1.131.48
+    '@tanstack/react-start': 1.131.48
     '@tanstack/react-table': 8.21.3
     '@tanstack/table-core': 8.21.3
   test:

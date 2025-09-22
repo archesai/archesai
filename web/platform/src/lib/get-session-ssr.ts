@@ -1,11 +1,10 @@
-import { getSession } from "@archesai/client";
+import { getSession, isProblem } from "@archesai/client";
 import { createServerFn } from "@tanstack/react-start";
 import {
   getCookie,
   getWebRequest,
   setResponseStatus,
 } from "@tanstack/react-start/server";
-import { isProblem } from "./schema-validator";
 
 const getSessionSSR = createServerFn({
   method: "GET",
@@ -27,14 +26,7 @@ const getSessionSSR = createServerFn({
     return session;
   } catch (error) {
     if (isProblem(error)) {
-      // Log the full Problem for debugging
-      console.debug("API Problem:", {
-        detail: error.detail,
-        instance: error.instance,
-        status: error.status,
-        title: error.title,
-        type: error.type,
-      });
+      console.debug("API Problem:", error);
       setResponseStatus(error.status || 500);
       return null;
     }

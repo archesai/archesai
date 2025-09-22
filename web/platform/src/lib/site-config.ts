@@ -2,6 +2,7 @@ import {
   BookOpenIcon,
   Building2Icon,
   CpuIcon,
+  FileIcon,
   ImageIcon,
   PackageCheckIcon,
   ServerIcon,
@@ -68,6 +69,13 @@ export const siteRoutes: SiteRoute[] = [
     Icon: UserIcon,
     section: "Settings",
     title: "Account",
+  },
+  {
+    description: "View and explore ArchesAI configuration schema.",
+    href: "/configuration",
+    Icon: FileIcon,
+    section: "Settings",
+    title: "Configuration",
   },
   {
     children: [

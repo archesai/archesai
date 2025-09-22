@@ -27,8 +27,10 @@ func Load() (*Config, error) {
 		}
 	}
 
-	// Unmarshal from viper into empty struct
-	config := &ArchesConfig{}
+	// Start with default config
+	config := GetDefaultConfig()
+
+	// Unmarshal from viper, which will override defaults with any configured values
 	if err := v.Unmarshal(config); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
@@ -53,6 +55,16 @@ func setupViper(v *viper.Viper) {
 
 	// Set defaults from struct
 	setDefaultsFromStruct(v)
+
+	// Explicitly bind environment variables for nested config
+	// This is needed because AutomaticEnv doesn't work with nested structs
+	_ = v.BindEnv("logging.pretty")
+	_ = v.BindEnv("logging.level")
+	_ = v.BindEnv("database.url")
+	_ = v.BindEnv("database.runmigrations")
+	_ = v.BindEnv("api.host")
+	_ = v.BindEnv("api.port")
+	_ = v.BindEnv("auth.enabled")
 }
 
 // setDefaultsFromStruct uses reflection to set viper defaults from a struct with default values.

@@ -13,10 +13,10 @@ import (
 
 // ServiceInterface defines the business logic operations
 type ServiceInterface interface {
-	Get(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error)
-	Update(ctx context.Context, request UpdateUserRequestObject) (UpdateUserResponseObject, error)
-	Delete(ctx context.Context, request DeleteUserRequestObject) (DeleteUserResponseObject, error)
-	List(ctx context.Context, request ListUsersRequestObject) (ListUsersResponseObject, error)
+	GetUser(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error)
+	UpdateUser(ctx context.Context, request UpdateUserRequestObject) (UpdateUserResponseObject, error)
+	DeleteUser(ctx context.Context, request DeleteUserRequestObject) (DeleteUserResponseObject, error)
+	ListUsers(ctx context.Context, request ListUsersRequestObject) (ListUsersResponseObject, error)
 }
 
 // Service implements the business logic
@@ -35,8 +35,8 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 	}
 }
 
-// Get gets a user by ID
-func (s *Service) Get(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error) {
+// GetUser gets a user by ID
+func (s *Service) GetUser(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error) {
 	// Call repository to fetch entity
 	entity, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -67,8 +67,8 @@ func (s *Service) Get(ctx context.Context, request GetUserRequestObject) (GetUse
 	}, nil
 }
 
-// Update updates a user
-func (s *Service) Update(ctx context.Context, request UpdateUserRequestObject) (UpdateUserResponseObject, error) {
+// UpdateUser updates a user
+func (s *Service) UpdateUser(ctx context.Context, request UpdateUserRequestObject) (UpdateUserResponseObject, error) {
 	if request.Body == nil {
 		return UpdateUser404ApplicationProblemPlusJSONResponse{
 			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
@@ -126,8 +126,8 @@ func (s *Service) Update(ctx context.Context, request UpdateUserRequestObject) (
 	}, nil
 }
 
-// Delete deletes a user
-func (s *Service) Delete(ctx context.Context, request DeleteUserRequestObject) (DeleteUserResponseObject, error) {
+// DeleteUser deletes a user
+func (s *Service) DeleteUser(ctx context.Context, request DeleteUserRequestObject) (DeleteUserResponseObject, error) {
 	// Check if entity exists first
 	_, err := s.repo.Get(ctx, request.ID)
 	if err != nil {
@@ -169,8 +169,8 @@ func (s *Service) Delete(ctx context.Context, request DeleteUserRequestObject) (
 	return DeleteUser200JSONResponse{}, nil
 }
 
-// List lists all users
-func (s *Service) List(ctx context.Context, request ListUsersRequestObject) (ListUsersResponseObject, error) {
+// ListUsers lists all users
+func (s *Service) ListUsers(ctx context.Context, request ListUsersRequestObject) (ListUsersResponseObject, error) {
 	// Call repository to fetch entities using the request parameters
 	entities, total, err := s.repo.List(ctx, request.Params)
 	if err != nil {

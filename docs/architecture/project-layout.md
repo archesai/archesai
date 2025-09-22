@@ -4,49 +4,6 @@
 
 ```text
 .
-├── .claude
-│   ├── CLAUDE.md
-│   └── settings.json
-├── .github
-│   ├── DISCUSSION_TEMPLATE
-│   │   └── ideas.yml
-│   ├── ISSUE_TEMPLATE
-│   │   ├── bug_report.yaml
-│   │   └── config.yaml
-│   ├── actions
-│   │   ├── build-project
-│   │   │   └── action.yml
-│   │   ├── create-github-release
-│   │   │   └── action.yml
-│   │   ├── create-release-tag
-│   │   │   └── action.yml
-│   │   ├── docker-retag
-│   │   │   └── action.yml
-│   │   ├── docker-setup
-│   │   │   └── action.yml
-│   │   ├── goreleaser-run
-│   │   │   └── action.yml
-│   │   ├── gpg-import
-│   │   │   └── action.yml
-│   │   └── setup-build-env
-│   │       └── action.yml
-│   ├── workflows
-│   │   ├── claude-code-review.yaml
-│   │   ├── claude.yaml
-│   │   ├── deploy-docs.yaml
-│   │   ├── docker-build-and-push.yaml
-│   │   ├── lint-go.yaml
-│   │   ├── lint-typescript.yaml
-│   │   ├── release-edge.yaml
-│   │   ├── release-nightly.yaml
-│   │   ├── release.yaml
-│   │   ├── test-coverage.yaml
-│   │   ├── test-go.yaml
-│   │   └── update-docs.yaml
-│   └── dependabot.yaml
-├── .vscode
-│   ├── extensions.json
-│   └── settings.json
 ├── api
 │   ├── components
 │   │   ├── parameters
@@ -75,30 +32,31 @@
 │   │   │   └── UsersSort.yaml
 │   │   ├── responses
 │   │   │   ├── BadRequest.yaml
+│   │   │   ├── InternalServerError.yaml
 │   │   │   ├── NoContent.yaml
 │   │   │   ├── NotFound.yaml
+│   │   │   ├── TooManyRequests.yaml
 │   │   │   └── Unauthorized.yaml
 │   │   └── schemas
-│   │       ├── APIConfig.yaml
 │   │       ├── Account.yaml
-│   │       ├── ApiKey.yaml
+│   │       ├── APIConfig.yaml
 │   │       ├── ApiKeyResponse.yaml
+│   │       ├── ApiKey.yaml
 │   │       ├── ArchesConfig.yaml
 │   │       ├── Artifact.yaml
 │   │       ├── AuthConfig.yaml
 │   │       ├── Base.yaml
 │   │       ├── BillingConfig.yaml
-│   │       ├── CORSConfig.yaml
 │   │       ├── CodegenConfig.yaml
 │   │       ├── DatabaseAuth.yaml
 │   │       ├── DatabaseConfig.yaml
-│   │       ├── DevServiceConfig.yaml
-│   │       ├── DevelopmentConfig.yaml
-│   │       ├── Email.yaml
 │   │       ├── EmailConfig.yaml
+│   │       ├── Email.yaml
 │   │       ├── EmbeddingConfig.yaml
 │   │       ├── FilterNode.yaml
 │   │       ├── FirebaseAuth.yaml
+│   │       ├── GitHubAuth.yaml
+│   │       ├── GoogleAuth.yaml
 │   │       ├── GrafanaConfig.yaml
 │   │       ├── HealthResponse.yaml
 │   │       ├── ImageConfig.yaml
@@ -107,28 +65,31 @@
 │   │       ├── IngressConfig.yaml
 │   │       ├── IntelligenceConfig.yaml
 │   │       ├── Invitation.yaml
-│   │       ├── LLMConfig.yaml
 │   │       ├── Label.yaml
+│   │       ├── LLMConfig.yaml
 │   │       ├── LocalAuth.yaml
 │   │       ├── LoggingConfig.yaml
 │   │       ├── LokiConfig.yaml
+│   │       ├── MagicLinkAuth.yaml
+│   │       ├── MagicLinkToken.yaml
 │   │       ├── Member.yaml
+│   │       ├── MicrosoftAuth.yaml
 │   │       ├── MigrationsConfig.yaml
 │   │       ├── MonitoringConfig.yaml
-│   │       ├── Organization.yaml
 │   │       ├── OrganizationReference.yaml
+│   │       ├── Organization.yaml
 │   │       ├── Page.yaml
 │   │       ├── PersistenceConfig.yaml
-│   │       ├── Pipeline.yaml
 │   │       ├── PipelineStep.yaml
+│   │       ├── Pipeline.yaml
 │   │       ├── PlatformConfig.yaml
 │   │       ├── Problem.yaml
 │   │       ├── RedisConfig.yaml
 │   │       ├── ResourceConfig.yaml
 │   │       ├── ResourceLimits.yaml
 │   │       ├── ResourceRequests.yaml
-│   │       ├── Run.yaml
 │   │       ├── RunPodConfig.yaml
+│   │       ├── Run.yaml
 │   │       ├── ScraperConfig.yaml
 │   │       ├── ServiceAccountConfig.yaml
 │   │       ├── Session.yaml
@@ -139,52 +100,54 @@
 │   │       ├── TokenResponse.yaml
 │   │       ├── Tool.yaml
 │   │       ├── TwitterAuth.yaml
-│   │       ├── UUID.yaml
 │   │       ├── UnstructuredConfig.yaml
 │   │       ├── User.yaml
+│   │       ├── UUID.yaml
 │   │       ├── ValidationError.yaml
-│   │       ├── XCodegen.yaml
-│   │       └── XCodegenWrapper.yaml
+│   │       ├── XCodegenWrapper.yaml
+│   │       └── XCodegen.yaml
 │   ├── paths
-│   │   ├── accounts.yaml
 │   │   ├── accounts_email-change_request.yaml
 │   │   ├── accounts_email-change_verify.yaml
 │   │   ├── accounts_email-verification_request.yaml
 │   │   ├── accounts_email-verification_verify.yaml
+│   │   ├── accounts_{id}.yaml
 │   │   ├── accounts_password-reset_request.yaml
 │   │   ├── accounts_password-reset_verify.yaml
-│   │   ├── accounts_register.yaml
-│   │   ├── accounts_{id}.yaml
-│   │   ├── artifacts.yaml
+│   │   ├── accounts.yaml
 │   │   ├── artifacts_{id}.yaml
+│   │   ├── artifacts.yaml
+│   │   ├── auth_magic-link.yaml
+│   │   ├── auth_register.yaml
 │   │   ├── config.yaml
 │   │   ├── health.yaml
-│   │   ├── invitations.yaml
 │   │   ├── invitations_{id}.yaml
-│   │   ├── labels.yaml
+│   │   ├── invitations.yaml
 │   │   ├── labels_{id}.yaml
-│   │   ├── members.yaml
+│   │   ├── labels.yaml
 │   │   ├── members_{id}.yaml
+│   │   ├── members.yaml
 │   │   ├── oauth_authorize.yaml
 │   │   ├── oauth_callback.yaml
-│   │   ├── organizations.yaml
 │   │   ├── organizations_{id}.yaml
-│   │   ├── pipelines.yaml
-│   │   ├── pipelines_{id}.yaml
+│   │   ├── organizations.yaml
 │   │   ├── pipelines_{id}_execution-plans.yaml
 │   │   ├── pipelines_{id}_steps.yaml
-│   │   ├── runs.yaml
+│   │   ├── pipelines_{id}.yaml
+│   │   ├── pipelines.yaml
 │   │   ├── runs_{id}.yaml
-│   │   ├── sessions.yaml
+│   │   ├── runs.yaml
 │   │   ├── sessions_create.yaml
 │   │   ├── sessions_delete.yaml
 │   │   ├── sessions_{id}.yaml
-│   │   ├── tokens.yaml
+│   │   ├── sessions.yaml
 │   │   ├── tokens_{id}.yaml
-│   │   ├── tools.yaml
+│   │   ├── tokens.yaml
 │   │   ├── tools_{id}.yaml
-│   │   ├── users.yaml
-│   │   └── users_{id}.yaml
+│   │   ├── tools.yaml
+│   │   ├── users_{id}.yaml
+│   │   └── users.yaml
+│   ├── openapi.bundled.yaml
 │   └── openapi.yaml
 ├── assets
 │   ├── android-chrome-192x192.png
@@ -195,8 +158,11 @@
 │   ├── favicon.ico
 │   ├── github-hero.svg
 │   ├── large-logo.svg
+│   ├── large-logo-white.svg
 │   ├── site.webmanifest
-│   └── small-logo.svg
+│   ├── small-logo-adaptive.svg
+│   ├── small-logo.svg
+│   └── small-logo-white.svg
 ├── cmd
 │   └── archesai
 │       └── main.go
@@ -204,66 +170,38 @@
 │   ├── development
 │   │   └── skaffold.yaml
 │   ├── docker
+│   │   ├── docker-compose.yaml
 │   │   ├── Dockerfile
-│   │   ├── Dockerfile.goreleaser
-│   │   └── docker-compose.yaml
+│   │   └── Dockerfile.goreleaser
 │   ├── gcp
 │   │   └── clouddeploy.yaml
 │   ├── helm
 │   │   ├── arches
+│   │   │   ├── charts
+│   │   │   │   └── ingress-nginx-4.13.0.tgz
 │   │   │   ├── files
 │   │   │   │   └── certs
-│   │   │   │       └── .gitkeep
 │   │   │   ├── templates
 │   │   │   │   ├── components
-│   │   │   │   │   ├── api
-│   │   │   │   │   │   ├── deployment.yaml
-│   │   │   │   │   │   └── service.yaml
-│   │   │   │   │   ├── database
-│   │   │   │   │   │   ├── deployment.yaml
-│   │   │   │   │   │   ├── pvc.yaml
-│   │   │   │   │   │   └── service.yaml
-│   │   │   │   │   ├── ingress
-│   │   │   │   │   │   ├── cert-issuer.yaml
-│   │   │   │   │   │   ├── ingress.yaml
-│   │   │   │   │   │   └── tls-secret.yaml
-│   │   │   │   │   ├── migrations
-│   │   │   │   │   │   └── migrations.yaml
-│   │   │   │   │   ├── monitoring
-│   │   │   │   │   │   ├── grafana-deployment.yaml
-│   │   │   │   │   │   ├── grafana-service.yaml
-│   │   │   │   │   │   ├── loki-deployment.yaml
-│   │   │   │   │   │   └── loki-service.yaml
-│   │   │   │   │   ├── platform
-│   │   │   │   │   │   ├── deployment.yaml
-│   │   │   │   │   │   └── service.yaml
-│   │   │   │   │   ├── redis
-│   │   │   │   │   │   ├── deployment.yaml
-│   │   │   │   │   │   ├── pvc.yaml
-│   │   │   │   │   │   └── service.yaml
-│   │   │   │   │   ├── scraper
-│   │   │   │   │   │   ├── deployment.yaml
-│   │   │   │   │   │   └── service.yaml
-│   │   │   │   │   ├── storage
-│   │   │   │   │   │   ├── deployment.yaml
-│   │   │   │   │   │   ├── pvc.yaml
-│   │   │   │   │   │   └── service.yaml
-│   │   │   │   │   └── unstructured
-│   │   │   │   │       ├── deployment.yaml
-│   │   │   │   │       └── service.yaml
-│   │   │   │   ├── _helpers.tpl
 │   │   │   │   ├── configmap.yaml
+│   │   │   │   ├── _helpers.tpl
 │   │   │   │   ├── namespace.yaml
 │   │   │   │   ├── secrets.yaml
 │   │   │   │   └── serviceaccount.yaml
 │   │   │   ├── Chart.yaml
-│   │   │   ├── values.schema.json
 │   │   │   └── values.yaml
 │   │   └── dev-overrides.yaml
 │   ├── helm-minimal
+│   │   ├── charts
+│   │   │   └── ingress-nginx-4.13.0.tgz
 │   │   ├── files
-│   │   │   └── certs
-│   │   │       └── .gitkeep
+│   │   │   ├── certs
+│   │   │   │   ├── fullchain.pem
+│   │   │   │   ├── .gitkeep
+│   │   │   │   └── privkey.pem
+│   │   │   └── kustomize
+│   │   │       ├── base
+│   │   │       └── components
 │   │   ├── templates
 │   │   │   └── kustomization.yaml
 │   │   ├── Chart.yaml
@@ -323,6 +261,10 @@
 │   │           └── service.yaml
 │   └── scripts
 │       └── deploy.sh
+├── .devcontainer
+│   ├── devcontainer.json
+│   ├── Dockerfile
+│   └── init-firewall.sh
 ├── docs
 │   ├── api-reference
 │   │   └── overview.md
@@ -330,6 +272,7 @@
 │   │   ├── authentication.md
 │   │   ├── overview.md
 │   │   ├── project-layout.md
+│   │   ├── project-structure.xml
 │   │   └── system-design.md
 │   ├── deployment
 │   │   ├── docker.md
@@ -366,6 +309,7 @@
 │   ├── accounts
 │   │   ├── accounts.go
 │   │   ├── errors.go
+│   │   ├── generate.go
 │   │   ├── password.go
 │   │   └── service_test.go
 │   ├── app
@@ -375,7 +319,42 @@
 │   ├── artifacts
 │   │   ├── artifacts.go
 │   │   ├── errors.go
+│   │   ├── generate.go
 │   │   └── service_test.go
+│   ├── auth
+│   │   ├── deliverers
+│   │   │   ├── console.go
+│   │   │   ├── email.go
+│   │   │   └── otp.go
+│   │   ├── providers
+│   │   │   ├── github.go
+│   │   │   ├── google.go
+│   │   │   └── microsoft.go
+│   │   ├── stores
+│   │   │   ├── api_token_repository.go
+│   │   │   ├── api_token_store.go
+│   │   │   ├── magic_link_repository.go
+│   │   │   ├── magic_link_store.go
+│   │   │   └── session_store.go
+│   │   ├── strategies
+│   │   ├── tokens
+│   │   │   ├── api_validator.go
+│   │   │   ├── manager.go
+│   │   │   └── utils.go
+│   │   ├── claims.go
+│   │   ├── claims_test.go
+│   │   ├── context.go
+│   │   ├── generate.go
+│   │   ├── handler.go
+│   │   ├── middleware.go
+│   │   ├── permissions.go
+│   │   ├── permissions_test.go
+│   │   ├── routes.go
+│   │   ├── service.go
+│   │   ├── sessionmanager_test.go
+│   │   ├── sessions_repository.go
+│   │   ├── sessions_types.go
+│   │   └── tokens_types.go
 │   ├── cache
 │   │   ├── cache.go
 │   │   ├── memory.go
@@ -397,20 +376,23 @@
 │   │   │   ├── events.go.tmpl
 │   │   │   ├── events_nats.go.tmpl
 │   │   │   ├── events_redis.go.tmpl
+│   │   │   ├── handler.gen.go.tmpl
 │   │   │   ├── repository.go.tmpl
 │   │   │   ├── repository_postgres.go.tmpl
 │   │   │   ├── repository_sqlite.go.tmpl
-│   │   │   ├── server.gen.go.tmpl
 │   │   │   └── service.go.tmpl
 │   │   ├── codegen.go
 │   │   ├── defaults.go
 │   │   ├── filewriter.go
+│   │   ├── generate.go
 │   │   ├── helpers.go
 │   │   ├── parser.go
 │   │   ├── sql_generator.go
 │   │   └── template_funcs.go
 │   ├── config
 │   │   ├── config.go
+│   │   ├── generate.go
+│   │   ├── handler.go
 │   │   ├── loader.go
 │   │   └── loader_test.go
 │   ├── database
@@ -424,9 +406,9 @@
 │   │   │   ├── members.sql.go
 │   │   │   ├── models.go
 │   │   │   ├── organizations.sql.go
+│   │   │   ├── pipelines.sql.go
 │   │   │   ├── pipeline-step-dependencies.sql.go
 │   │   │   ├── pipeline-steps.sql.go
-│   │   │   ├── pipelines.sql.go
 │   │   │   ├── querier.go
 │   │   │   ├── runs.sql.go
 │   │   │   ├── sessions.sql.go
@@ -441,9 +423,9 @@
 │   │   │   ├── labels.sql
 │   │   │   ├── members.sql
 │   │   │   ├── organizations.sql
+│   │   │   ├── pipelines.sql
 │   │   │   ├── pipeline-step-dependencies.sql
 │   │   │   ├── pipeline-steps.sql
-│   │   │   ├── pipelines.sql
 │   │   │   ├── runs.sql
 │   │   │   ├── sessions.sql
 │   │   │   ├── tools.sql
@@ -452,10 +434,8 @@
 │   │   ├── sqlite
 │   │   │   └── stub.go
 │   │   ├── database.go
-│   │   ├── factory.go
-│   │   ├── postgres.go
-│   │   ├── sqlc.yaml
-│   │   └── sqlite.go
+│   │   ├── generate.go
+│   │   └── sqlc.yaml
 │   ├── events
 │   │   ├── events.go
 │   │   ├── noop.go
@@ -463,15 +443,21 @@
 │   │   └── redis.go
 │   ├── health
 │   │   ├── errors.go
+│   │   ├── generate.go
 │   │   ├── handler.go
 │   │   ├── health.go
+│   │   ├── postgres.go
+│   │   ├── repository.go
 │   │   ├── service.go
-│   │   └── service_test.go
+│   │   ├── service_test.go
+│   │   └── sqlite.go
 │   ├── invitations
 │   │   ├── errors.go
+│   │   ├── generate.go
 │   │   └── invitations.go
 │   ├── labels
 │   │   ├── errors.go
+│   │   ├── generate.go
 │   │   ├── labels.go
 │   │   └── service_test.go
 │   ├── llm
@@ -484,6 +470,7 @@
 │   │   └── logger.go
 │   ├── members
 │   │   ├── errors.go
+│   │   ├── generate.go
 │   │   └── members.go
 │   ├── middleware
 │   │   ├── auth.go
@@ -492,23 +479,17 @@
 │   │   ├── postgresql
 │   │   │   ├── 20250908082709_init.sql
 │   │   │   ├── 20250908124238_enable_pgvector.sql
-│   │   │   └── 20250915075921_update_api_token_structure.sql
+│   │   │   ├── 20250915075921_update_api_token_structure.sql
+│   │   │   └── 20250919061512_add_magic_link_auth.sql
 │   │   ├── sqlite
 │   │   │   ├── 20250908082709_init.sql
 │   │   │   ├── 20250908124238_enable_pgvector.sql
-│   │   │   └── 20250915075921_update_api_token_structure.sql
+│   │   │   ├── 20250915075921_update_api_token_structure.sql
+│   │   │   └── 20250919061512_add_magic_link_auth.sql
 │   │   └── migrate.go
-│   ├── oauth
-│   │   ├── github.go
-│   │   ├── github_test.go
-│   │   ├── google.go
-│   │   ├── google_test.go
-│   │   ├── microsoft.go
-│   │   ├── microsoft_test.go
-│   │   ├── oauth.go
-│   │   └── provider.go
 │   ├── organizations
 │   │   ├── errors.go
+│   │   ├── generate.go
 │   │   ├── organizations.go
 │   │   └── service_test.go
 │   ├── pipelines
@@ -517,6 +498,7 @@
 │   │   ├── errors.go
 │   │   ├── executor.go
 │   │   ├── executor_test.go
+│   │   ├── generate.go
 │   │   ├── handler.go
 │   │   ├── manager.go
 │   │   ├── pipelines.go
@@ -532,56 +514,63 @@
 │   │   └── redis.go
 │   ├── runs
 │   │   ├── errors.go
+│   │   ├── generate.go
 │   │   └── runs.go
 │   ├── server
 │   │   ├── assets
 │   │   │   └── docs.html
 │   │   ├── docs.go
+│   │   ├── errors.go
 │   │   ├── infra.go
 │   │   ├── middleware.go
 │   │   ├── server.go
 │   │   └── websocket.go
-│   ├── sessions
-│   │   ├── claims.go
-│   │   ├── claims_test.go
-│   │   ├── context.go
-│   │   ├── errors.go
-│   │   ├── permissions.go
-│   │   ├── permissions_test.go
-│   │   ├── service.go
-│   │   ├── service_test.go
-│   │   ├── sessionmanager.go
-│   │   ├── sessionmanager_test.go
-│   │   ├── sessions.go
-│   │   └── tokens.go
 │   ├── storage
 │   │   ├── storage.go
 │   │   └── storage_test.go
 │   ├── testutil
 │   │   └── containers.go
-│   ├── tokens
-│   │   ├── errors.go
-│   │   └── tokens.go
 │   ├── tools
 │   │   ├── errors.go
+│   │   ├── generate.go
 │   │   └── tools.go
 │   ├── tui
 │   │   ├── config_tui.go
 │   │   └── tui.go
 │   └── users
 │       ├── errors.go
+│       ├── generate.go
+│       ├── oauth.go
+│       ├── service_extra.go
 │       ├── service_test.go
 │       └── users.go
 ├── scripts
 │   ├── add-mapstructure-tags.sh
 │   ├── generate-coverage-report.sh
-│   └── generate-helm-schema.py
+│   ├── generate-helm-schema.py
+│   ├── generate-project-structure-xml.sh
+│   ├── update-makefile-docs.sh
+│   └── update-project-layout-docs.sh
+├── .taskmaster
+│   ├── docs
+│   │   └── prd.txt
+│   ├── reports
+│   │   └── task-complexity-report_main.json
+│   ├── tasks
+│   │   └── tasks.json
+│   ├── templates
+│   │   └── example_prd.txt
+│   ├── CLAUDE.md
+│   ├── config.json
+│   └── state.json
 ├── test
 │   └── data
 │       ├── book.pdf
 │       ├── pdf.png
 │       ├── text.png
 │       └── website.png
+├── tmp
+│   └── archesai
 ├── tools
 │   ├── codegen
 │   │   └── main.go
@@ -594,64 +583,88 @@
 │       │   ├── react.json
 │       │   └── spec.json
 │       └── package.json
+├── .vscode
+│   ├── extensions.json
+│   ├── mcp.json
+│   └── settings.json
 ├── web
 │   ├── client
 │   │   ├── src
 │   │   │   ├── generated
 │   │   │   │   ├── accounts
-│   │   │   │   │   └── accounts.ts
 │   │   │   │   ├── artifacts
-│   │   │   │   │   └── artifacts.ts
 │   │   │   │   ├── auth
-│   │   │   │   │   └── auth.ts
 │   │   │   │   ├── config
-│   │   │   │   │   └── config.ts
 │   │   │   │   ├── health
-│   │   │   │   │   └── health.ts
 │   │   │   │   ├── invitations
-│   │   │   │   │   └── invitations.ts
 │   │   │   │   ├── labels
-│   │   │   │   │   └── labels.ts
 │   │   │   │   ├── members
-│   │   │   │   │   └── members.ts
 │   │   │   │   ├── oauth
-│   │   │   │   │   └── oauth.ts
 │   │   │   │   ├── organizations
-│   │   │   │   │   └── organizations.ts
 │   │   │   │   ├── pipelines
-│   │   │   │   │   └── pipelines.ts
 │   │   │   │   ├── runs
-│   │   │   │   │   └── runs.ts
 │   │   │   │   ├── sessions
-│   │   │   │   │   └── sessions.ts
 │   │   │   │   ├── tokens
-│   │   │   │   │   └── tokens.ts
 │   │   │   │   ├── tools
-│   │   │   │   │   └── tools.ts
 │   │   │   │   ├── users
-│   │   │   │   │   └── users.ts
-│   │   │   │   └── orval.schemas.ts
+│   │   │   │   ├── orval.schemas.ts
+│   │   │   │   └── zod.ts
 │   │   │   ├── fetcher.ts
-│   │   │   └── index.ts
+│   │   │   ├── index.ts
+│   │   │   └── validators.ts
 │   │   ├── orval.config.ts
 │   │   ├── package.json
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.lib.json
 │   │   └── tsconfig.spec.json
 │   ├── docs
+│   │   ├── apis
+│   │   │   └── openapi.yaml
+│   │   ├── pages
+│   │   │   ├── api-reference
+│   │   │   │   └── overview.md
+│   │   │   ├── architecture
+│   │   │   │   ├── authentication.md
+│   │   │   │   ├── overview.md
+│   │   │   │   ├── project-layout.md
+│   │   │   │   └── system-design.md
+│   │   │   ├── deployment
+│   │   │   │   ├── docker.md
+│   │   │   │   ├── kubernetes.md
+│   │   │   │   ├── overview.md
+│   │   │   │   └── production.md
+│   │   │   ├── documentation
+│   │   │   ├── features
+│   │   │   │   ├── auth.md
+│   │   │   │   ├── content.md
+│   │   │   │   ├── organizations.md
+│   │   │   │   ├── overview.md
+│   │   │   │   ├── tui.md
+│   │   │   │   └── workflows.md
+│   │   │   ├── guides
+│   │   │   │   ├── code-generation.md
+│   │   │   │   ├── development.md
+│   │   │   │   ├── makefile-commands.md
+│   │   │   │   ├── overview.md
+│   │   │   │   ├── test-coverage-report.md
+│   │   │   │   └── testing.md
+│   │   │   ├── monitoring
+│   │   │   │   └── overview.md
+│   │   │   ├── performance
+│   │   │   │   ├── optimization.md
+│   │   │   │   └── overview.md
+│   │   │   ├── security
+│   │   │   │   ├── best-practices.md
+│   │   │   │   └── overview.md
+│   │   │   ├── troubleshooting
+│   │   │   │   └── common-issues.md
+│   │   │   ├── contributing.md
+│   │   │   └── getting-started.md
 │   │   ├── public
-│   │   │   ├── pagefind
-│   │   │   │   └── pagefind.js
-│   │   │   ├── preview
-│   │   │   │   ├── dark-api.svg
-│   │   │   │   └── dark-portal.svg
-│   │   │   ├── search
-│   │   │   │   └── search.svg
-│   │   │   ├── background.png
-│   │   │   ├── background.svg
-│   │   │   ├── banner-dark.svg
-│   │   │   └── banner.svg
+│   │   │   └── .gitkeep
 │   │   ├── src
+│   │   │   ├── landing_content.ts
+│   │   │   ├── landing.tsx
 │   │   │   └── sidebar.tsx
 │   │   ├── package.json
 │   │   ├── tsconfig.app.json
@@ -665,68 +678,15 @@
 │   │   ├── src
 │   │   │   ├── app
 │   │   │   │   ├── _app
-│   │   │   │   │   ├── artifacts
-│   │   │   │   │   │   ├── $artifactID
-│   │   │   │   │   │   │   ├── -details.tsx
-│   │   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   ├── labels
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   ├── organization
-│   │   │   │   │   │   ├── members
-│   │   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   ├── pipelines
-│   │   │   │   │   │   ├── $pipelineID
-│   │   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   │   ├── create
-│   │   │   │   │   │   │   └── index.lazy.tsx
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   ├── profile
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   ├── runs
-│   │   │   │   │   │   ├── $runID
-│   │   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   ├── tools
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   ├── index.tsx
-│   │   │   │   │   └── route.tsx
 │   │   │   │   ├── auth
-│   │   │   │   │   ├── forgot-password
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   ├── login
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   ├── register
-│   │   │   │   │   │   └── index.tsx
-│   │   │   │   │   └── route.tsx
-│   │   │   │   ├── landing
-│   │   │   │   │   ├── -content.ts
-│   │   │   │   │   └── index.tsx
 │   │   │   │   └── __root.tsx
 │   │   │   ├── components
+│   │   │   │   ├── auth
 │   │   │   │   ├── containers
-│   │   │   │   │   ├── app-sidebar-container.tsx
-│   │   │   │   │   └── page-header-container.tsx
 │   │   │   │   ├── datatables
-│   │   │   │   │   ├── artifact-datatable.tsx
-│   │   │   │   │   ├── data-table-container.tsx
-│   │   │   │   │   ├── label-datatable.tsx
-│   │   │   │   │   ├── member-datatable.tsx
-│   │   │   │   │   ├── pipeline-datatable.tsx
-│   │   │   │   │   ├── run-datatable.tsx
-│   │   │   │   │   └── tool-datatable.tsx
 │   │   │   │   ├── forms
-│   │   │   │   │   ├── artifact-form.tsx
-│   │   │   │   │   ├── label-form.tsx
-│   │   │   │   │   ├── member-form.tsx
-│   │   │   │   │   ├── organization-form.tsx
-│   │   │   │   │   └── user-form.tsx
 │   │   │   │   ├── navigation
-│   │   │   │   │   ├── link.tsx
-│   │   │   │   │   └── user-button-container.tsx
 │   │   │   │   ├── selectors
-│   │   │   │   │   └── data-selector-container.tsx
 │   │   │   │   ├── create-pipeline.tsx
 │   │   │   │   ├── default-catch-boundary.tsx
 │   │   │   │   ├── example.spec.ts
@@ -740,115 +700,30 @@
 │   │   │   │   ├── use-toggle-view.tsx
 │   │   │   │   └── use-websockets.tsx
 │   │   │   ├── lib
-│   │   │   │   ├── get-headers.ts
+│   │   │   │   ├── api
+│   │   │   │   ├── config.ts
+│   │   │   │   ├── get-session-ssr.ts
 │   │   │   │   ├── site-config.ts
 │   │   │   │   └── site-utils.ts
 │   │   │   ├── styles
 │   │   │   │   └── globals.css
-│   │   │   ├── routeTree.gen.ts
-│   │   │   └── router.tsx
+│   │   │   ├── router.tsx
+│   │   │   └── routeTree.gen.ts
 │   │   ├── Dockerfile
 │   │   ├── package.json
 │   │   ├── playwright.config.js
 │   │   ├── tsconfig.app.json
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.spec.json
-│   │   └── vite.config.js
+│   │   └── vite.config.ts
 │   └── ui
 │       ├── src
 │       │   ├── components
 │       │   │   ├── custom
-│       │   │   │   ├── Callout.tsx
-│       │   │   │   ├── Introduction.tsx
-│       │   │   │   ├── ThemeEditor.tsx
-│       │   │   │   ├── arches-logo.tsx
-│       │   │   │   ├── artifact-viewer.tsx
-│       │   │   │   ├── delete-items.tsx
-│       │   │   │   ├── discord-icon.tsx
-│       │   │   │   ├── faceted.tsx
-│       │   │   │   ├── floating-label.tsx
-│       │   │   │   ├── generic-form.tsx
-│       │   │   │   ├── github-icon.tsx
-│       │   │   │   ├── icons.tsx
-│       │   │   │   ├── import-card.tsx
-│       │   │   │   ├── pure-data-selector.tsx
-│       │   │   │   ├── pure-user-button.tsx
-│       │   │   │   ├── run-status-button.tsx
-│       │   │   │   ├── schema-builder.tsx
-│       │   │   │   ├── scroll-button.tsx
-│       │   │   │   ├── sortable.tsx
-│       │   │   │   └── timestamp.tsx
 │       │   │   ├── datatable
-│       │   │   │   ├── components
-│       │   │   │   │   ├── filters
-│       │   │   │   │   │   ├── data-table-date-filter.tsx
-│       │   │   │   │   │   ├── data-table-faceted-filter.tsx
-│       │   │   │   │   │   ├── data-table-range-filter.tsx
-│       │   │   │   │   │   └── data-table-slider-filter.tsx
-│       │   │   │   │   ├── toolbar
-│       │   │   │   │   │   ├── data-table-filter-menu.tsx
-│       │   │   │   │   │   ├── data-table-sort-list.tsx
-│       │   │   │   │   │   └── data-table-toolbar.tsx
-│       │   │   │   │   ├── views
-│       │   │   │   │   │   ├── grid-view.tsx
-│       │   │   │   │   │   └── table-view.tsx
-│       │   │   │   │   ├── data-table-action-bar.tsx
-│       │   │   │   │   ├── data-table-column-header.tsx
-│       │   │   │   │   ├── data-table-pagination.tsx
-│       │   │   │   │   ├── data-table-row-actions.tsx
-│       │   │   │   │   ├── data-table-view-options.tsx
-│       │   │   │   │   ├── tasks-table-action-bar.tsx
-│       │   │   │   │   └── view-toggle.tsx
-│       │   │   │   ├── data-table.spec.tsx
-│       │   │   │   └── pure-data-table.tsx
 │       │   │   ├── primitives
-│       │   │   │   └── link.tsx
 │       │   │   ├── shadcn
-│       │   │   │   ├── accordion.tsx
-│       │   │   │   ├── alert-dialog.tsx
-│       │   │   │   ├── alert.tsx
-│       │   │   │   ├── aspect-ratio.tsx
-│       │   │   │   ├── avatar.tsx
-│       │   │   │   ├── badge.tsx
-│       │   │   │   ├── breadcrumb.tsx
-│       │   │   │   ├── button.tsx
-│       │   │   │   ├── calendar.tsx
-│       │   │   │   ├── card.tsx
-│       │   │   │   ├── carousel.tsx
-│       │   │   │   ├── checkbox.tsx
-│       │   │   │   ├── collapsible.tsx
-│       │   │   │   ├── command.tsx
-│       │   │   │   ├── context-menu.tsx
-│       │   │   │   ├── dialog.tsx
-│       │   │   │   ├── drawer.tsx
-│       │   │   │   ├── dropdown-menu.tsx
-│       │   │   │   ├── form.tsx
-│       │   │   │   ├── hover-card.tsx
-│       │   │   │   ├── input-otp.tsx
-│       │   │   │   ├── input.tsx
-│       │   │   │   ├── label.tsx
-│       │   │   │   ├── menubar.tsx
-│       │   │   │   ├── navigation-menu.tsx
-│       │   │   │   ├── pagination.tsx
-│       │   │   │   ├── popover.tsx
-│       │   │   │   ├── progress.tsx
-│       │   │   │   ├── radio-group.tsx
-│       │   │   │   ├── resizable.tsx
-│       │   │   │   ├── scroll-area.tsx
-│       │   │   │   ├── select.tsx
-│       │   │   │   ├── separator.tsx
-│       │   │   │   ├── sheet.tsx
-│       │   │   │   ├── sidebar.tsx
-│       │   │   │   ├── skeleton.tsx
-│       │   │   │   ├── slider.tsx
-│       │   │   │   ├── sonner.tsx
-│       │   │   │   ├── switch.tsx
-│       │   │   │   ├── table.tsx
-│       │   │   │   ├── tabs.tsx
-│       │   │   │   ├── textarea.tsx
-│       │   │   │   ├── toggle-group.tsx
-│       │   │   │   ├── toggle.tsx
-│       │   │   │   └── tooltip.tsx
+│       │   │   ├── zudoku
 │       │   │   └── index.ts
 │       │   ├── hooks
 │       │   │   ├── use-callback-ref.tsx
@@ -857,17 +732,7 @@
 │       │   │   └── use-mobile.tsx
 │       │   ├── layouts
 │       │   │   ├── app-sidebar
-│       │   │   │   ├── app-sidebar.tsx
-│       │   │   │   ├── organization-button.tsx
-│       │   │   │   └── sidebar-links.tsx
 │       │   │   ├── page-header
-│       │   │   │   ├── components
-│       │   │   │   │   ├── breadcrumbs.tsx
-│       │   │   │   │   ├── command-menu.tsx
-│       │   │   │   │   ├── email-verify.tsx
-│       │   │   │   │   ├── theme-toggle.tsx
-│       │   │   │   │   └── title-and-description.tsx
-│       │   │   │   └── page-header.tsx
 │       │   │   └── index.ts
 │       │   ├── lib
 │       │   │   ├── base-colors.ts
@@ -896,101 +761,34 @@
 │       ├── tsconfig.spec.json
 │       └── vite.config.ts
 ├── .air.toml
+├── arches.yaml
+├── biome.json
 ├── .codegen.archesai.yaml
 ├── .codegen.server.yaml
 ├── .codegen.types.yaml
 ├── .cspell.json
+├── echo-strict.tmpl
 ├── .editorconfig
+├── .env
 ├── .gitignore
 ├── .golangci.yaml
+├── go.mod
 ├── .goreleaser.yaml
+├── go.sum
 ├── .lefthook.yaml
-├── .markdownlint.json
-├── .mockery.yaml
-├── .prettierignore
-├── .redocly.yaml
 ├── LICENSE
 ├── Makefile
-├── README.md
-├── biome.json
-├── go.mod
-├── go.sum
+├── .markdownlint.json
+├── .mcp.json
+├── .mockery.yaml
+├── opencode.json
 ├── package.json
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
+├── .prettierignore
+├── README.md
+├── .redocly.yaml
 └── tsconfig.json
 
-197 directories, 719 files
+179 directories, 607 files
 ```
-
-## Domain Package Structure
-
-Each domain in `/internal` follows this pattern:
-
-```text
-domain/
-├── domain.go          # Package documentation, constants, errors
-├── service.go         # Business logic implementation
-├── handler.go         # HTTP request/response handling
-├── middleware.go      # Domain-specific middleware (optional)
-├── repository.gen.go  # Generated repository interface
-├── postgres.gen.go    # Generated PostgreSQL implementation
-├── sqlite.gen.go      # Generated SQLite implementation
-├── service.gen.go     # Generated service interface
-├── server.gen.go      # Generated HTTP server implementation
-├── types.gen.go       # Generated types from OpenAPI
-├── api.gen.go         # Generated API client interface
-├── service_test.go    # Unit tests with mocked dependencies
-├── handler_test.go    # HTTP handler tests (optional)
-├── mocks_test.gen.go  # Generated test mocks
-└── postgres_test.go   # Integration tests (optional)
-```
-
-## Generated Files
-
-### Go Generated Files
-
-- `*.gen.go` - Do not edit manually
-- `types.gen.go` - OpenAPI struct definitions
-- `api.gen.go` - API client interfaces
-- `repository.gen.go` - Repository interface from x-codegen
-- `postgres.gen.go` - PostgreSQL repository implementation
-- `sqlite.gen.go` - SQLite repository implementation
-- `service.gen.go` - Service interface from x-codegen
-- `server.gen.go` - HTTP server implementation
-- `mocks_test.gen.go` - Test mocks from mockery
-
-### TypeScript Generated Files
-
-- `web/client/src/generated/` - Complete API client
-- Generated from `api/openapi.bundled.yaml`
-
-### SQL Generated Files
-
-- Database queries in `internal/database/queries/*.sql`
-- Generate Go code with `sqlc generate`
-
-## File Naming Conventions
-
-### Go Files
-
-- `domain.go` - Package documentation, constants, errors
-- `service.go` - Business logic implementation
-- `handler.go` - HTTP handlers
-- `middleware.go` - Middleware functions (optional)
-- `*_test.go` - Test files
-- `*.gen.go` - Generated files (don't edit manually)
-- `mocks_test.gen.go` - Generated test mocks
-
-### Config Files
-
-- `.*.yaml` - YAML configs (golangci, mockery, sqlc)
-- `.*.toml` - TOML configs (air)
-- `.*.json` - JSON configs (markdownlint, tsconfig)
-- `.*rc` - RC files (prettierrc)
-
-### Documentation
-
-- `*.md` - Markdown docs
-- `*.mdx` - MDX with components (web/docs)
-- `README.md` - Package/directory docs

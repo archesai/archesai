@@ -14,11 +14,4 @@ properties:
     $ref: ./SpeechConfig.yaml
   unstructured:
     $ref: ./UnstructuredConfig.yaml
-required:
-  - embedding
-  - llm
-  - runpod
-  - scraper
-  - speech
-  - unstructured
 additionalProperties: false

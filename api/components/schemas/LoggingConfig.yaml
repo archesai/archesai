@@ -15,7 +15,6 @@ properties:
       - silent
     default: info
     example: fatal
-    minLength: 1
   pretty:
     description: Enable pretty-printed logs for development
     type: boolean

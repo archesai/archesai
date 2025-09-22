@@ -55,7 +55,7 @@ func TestArtifactsService_Create(t *testing.T) {
 		request := CreateArtifactRequestObject{
 			Body: req,
 		}
-		result, err := service.Create(context.Background(), request)
+		result, err := service.CreateArtifact(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -82,7 +82,7 @@ func TestArtifactsService_Create(t *testing.T) {
 		request := CreateArtifactRequestObject{
 			Body: req,
 		}
-		result, err := service.Create(context.Background(), request)
+		result, err := service.CreateArtifact(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -116,7 +116,7 @@ func TestArtifactsService_Get(t *testing.T) {
 		request := GetArtifactRequestObject{
 			ID: artifactID,
 		}
-		result, err := service.Get(context.Background(), request)
+		result, err := service.GetArtifact(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -135,7 +135,7 @@ func TestArtifactsService_Get(t *testing.T) {
 		request := GetArtifactRequestObject{
 			ID: artifactID,
 		}
-		result, err := service.Get(context.Background(), request)
+		result, err := service.GetArtifact(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -185,7 +185,7 @@ func TestArtifactsService_Update(t *testing.T) {
 			ID:   artifactID,
 			Body: req,
 		}
-		result, err := service.Update(context.Background(), request)
+		result, err := service.UpdateArtifact(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)
@@ -209,7 +209,7 @@ func TestArtifactsService_Update(t *testing.T) {
 			ID:   artifactID,
 			Body: req,
 		}
-		result, err := service.Update(context.Background(), request)
+		result, err := service.UpdateArtifact(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -240,7 +240,7 @@ func TestArtifactsService_Delete(t *testing.T) {
 		request := DeleteArtifactRequestObject{
 			ID: artifactID,
 		}
-		_, err := service.Delete(context.Background(), request)
+		_, err := service.DeleteArtifact(context.Background(), request)
 
 		assert.NoError(t, err)
 	})
@@ -253,7 +253,7 @@ func TestArtifactsService_Delete(t *testing.T) {
 		request := DeleteArtifactRequestObject{
 			ID: artifactID,
 		}
-		result, err := service.Delete(context.Background(), request)
+		result, err := service.DeleteArtifact(context.Background(), request)
 
 		assert.NoError(t, err) // Service never returns Go errors
 		assert.NotNil(t, result)
@@ -308,7 +308,7 @@ func TestArtifactsService_List(t *testing.T) {
 				},
 			},
 		}
-		result, err := service.List(context.Background(), request)
+		result, err := service.ListArtifacts(context.Background(), request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, result)

@@ -21,5 +21,4 @@ properties:
     example: Example Name
 required:
   - enabled
-  - secretName
 additionalProperties: false

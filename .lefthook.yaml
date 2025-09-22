@@ -13,6 +13,13 @@ pre-commit:
       run: make format
       stage_fixed: true
 
+    update-docs:
+      run: |
+        bash scripts/generate-project-structure-xml.sh
+        bash scripts/update-makefile-docs.sh
+        bash scripts/update-project-layout-docs.sh
+      stage_fixed: true
+
 commit-msg:
   commands:
     commitizen:

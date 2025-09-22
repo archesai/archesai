@@ -1,5 +1,5 @@
 import { SidebarInset, SidebarProvider } from "@archesai/ui";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import type { JSX } from "react";
 import { AppSidebarContainer } from "#components/containers/app-sidebar-container";
 import { PageHeaderContainer } from "#components/containers/page-header-container";
@@ -7,11 +7,11 @@ import { siteRoutes } from "#lib/site-config";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: ({ context }) => {
-    if (!context.session?.data) {
-      throw redirect({
-        to: "/auth/login",
-      });
-    }
+    // if (!context.session?.data) {
+    //   throw redirect({
+    //     to: "/auth/login",
+    //   });
+    // } // FIXME
     return {
       session: context.session,
     };

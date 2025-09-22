@@ -1,22 +1,7 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for MagicLinkToken entity
-x-codegen:
-  repository:
-    operations: [create, read, delete, list]
-    indices: [token_hash, code, identifier]
-    additional_methods:
-      - name: GetByTokenHash
-        params: [tokenHash]
-        returns: single
-      - name: GetByCode
-        params: [code]
-        returns: single
-      - name: MarkUsed
-        params: [id]
-        returns: void
-      - name: DeleteExpired
-        params: []
-        returns: void
+# MagicLinkTokens are now managed internally by the auth package
+# No x-codegen needed as this is handled by auth module
 type: object
 properties:
   id:

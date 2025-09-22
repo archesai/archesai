@@ -91,6 +91,15 @@ const (
 	XCodegenRepositoryOperationsUpdate     XCodegenRepositoryOperations = "update"
 )
 
+// Defines values for XCodegenServiceCustomOperationsMethod.
+const (
+	DELETE XCodegenServiceCustomOperationsMethod = "DELETE"
+	GET    XCodegenServiceCustomOperationsMethod = "GET"
+	PATCH  XCodegenServiceCustomOperationsMethod = "PATCH"
+	POST   XCodegenServiceCustomOperationsMethod = "POST"
+	PUT    XCodegenServiceCustomOperationsMethod = "PUT"
+)
+
 // Defines values for XCodegenServiceErrorHandling.
 const (
 	ErrorReturn XCodegenServiceErrorHandling = "error_return"
@@ -422,6 +431,18 @@ type XCodegen struct {
 		// BusinessMethods Business logic methods
 		BusinessMethods []string `json:"business_methods,omitempty,omitzero" yaml:"business_methods,omitempty"`
 
+		// CustomOperations Custom operations beyond standard CRUD
+		CustomOperations []struct {
+			// Method HTTP method
+			Method XCodegenServiceCustomOperationsMethod `json:"method" yaml:"method"`
+
+			// Name Operation name (e.g., Register, Login)
+			Name string `json:"name" yaml:"name"`
+
+			// OperationID OpenAPI operation ID
+			OperationID string `json:"operation_id" yaml:"operation_id"`
+		} `json:"custom_operations,omitempty,omitzero" yaml:"custom_operations,omitempty"`
+
 		// ErrorHandling Error handling strategy
 		ErrorHandling XCodegenServiceErrorHandling `json:"error_handling,omitempty,omitzero" yaml:"error_handling,omitempty"`
 
@@ -468,6 +489,9 @@ type XCodegenRepositoryAdditionalMethodsReturns string
 
 // XCodegenRepositoryOperations defines model for XCodegen.Repository.Operations.
 type XCodegenRepositoryOperations string
+
+// XCodegenServiceCustomOperationsMethod HTTP method
+type XCodegenServiceCustomOperationsMethod string
 
 // XCodegenServiceErrorHandling Error handling strategy
 type XCodegenServiceErrorHandling string

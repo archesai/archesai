@@ -57,7 +57,7 @@ func (s *Server) SetupMiddleware() {
 
 	// CORS middleware
 	s.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: strings.Split(s.config.Cors.Origins, ","),
+		AllowOrigins: strings.Split(s.config.Cors, ","),
 		AllowMethods: []string{
 			http.MethodGet,
 			http.MethodHead,

@@ -42,7 +42,6 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Account) (*Acco
 		RefreshToken:          stringPtr(entity.RefreshToken),
 		RefreshTokenExpiresAt: &entity.RefreshTokenExpiresAt,
 		IDToken:               stringPtr(entity.IDToken),
-		Password:              stringPtr(entity.Password),
 		Scope:                 stringPtr(entity.Scope),
 	}
 
@@ -77,7 +76,6 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *A
 		RefreshToken:          stringPtr(entity.RefreshToken),
 		RefreshTokenExpiresAt: &entity.RefreshTokenExpiresAt,
 		IDToken:               stringPtr(entity.IDToken),
-		Password:              stringPtr(entity.Password),
 		Scope:                 stringPtr(entity.Scope),
 	}
 
@@ -183,8 +181,6 @@ func mapAccountFromDB(db *postgresql.Account) *Account {
 		RefreshTokenExpiresAt: timeFromPtr(db.RefreshTokenExpiresAt),
 
 		IDToken: stringFromPtr(db.IDToken),
-
-		Password: stringFromPtr(db.Password),
 
 		Scope: stringFromPtr(db.Scope),
 	}

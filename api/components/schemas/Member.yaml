@@ -29,7 +29,6 @@ allOf:
           - owner
           - member
         example: admin
-        minLength: 1
       userID:
         allOf:
           - $ref: ./UUID.yaml
