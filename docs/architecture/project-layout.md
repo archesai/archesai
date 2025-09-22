@@ -310,7 +310,6 @@
 │   │   ├── accounts.go
 │   │   ├── errors.go
 │   │   ├── generate.go
-│   │   ├── password.go
 │   │   └── service_test.go
 │   ├── app
 │   │   ├── app.go
@@ -767,7 +766,6 @@
 ├── .codegen.server.yaml
 ├── .codegen.types.yaml
 ├── .cspell.json
-├── echo-strict.tmpl
 ├── .editorconfig
 ├── .env
 ├── .gitignore
@@ -790,5 +788,5 @@
 ├── .redocly.yaml
 └── tsconfig.json
 
-179 directories, 607 files
+179 directories, 605 files
 ```

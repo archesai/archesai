@@ -15,8 +15,8 @@ generators:
   # Repository pattern - Generate interfaces and implementations
   repository:
     interface: 'repository.gen.go' # Domain interfaces (ports)
-    postgres: 'postgres.gen.go' # PostgreSQL implementation with SQLC
-    sqlite: 'sqlite.gen.go' # SQLite implementation with SQLC
+    postgres: 'repository_postgres.gen.go' # PostgreSQL implementation with SQLC
+    sqlite: 'repository_sqlite.gen.go' # SQLite implementation with SQLC
 
   # Cache adapters - Generate cache interfaces and implementations
   # cache:

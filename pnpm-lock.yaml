@@ -317,9 +317,6 @@ importers:
 
   web/platform:
     dependencies:
-      '@archesai/client':
-        specifier: workspace:*
-        version: link:../client
       '@archesai/ui':
         specifier: workspace:*
         version: link:../ui

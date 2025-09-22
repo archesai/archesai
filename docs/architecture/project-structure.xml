@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-09-21T22:55:51-04:00
+  Generated: 2025-09-21T23:45:17-04:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -98,7 +98,7 @@
     <dir name="troubleshooting" files="1"/>
   </dir>
   <dir name="internal" dirs="28">
-    <dir name="accounts" files="12" patterns="*.gen.go"/>
+    <dir name="accounts" files="11" patterns="*.gen.go"/>
     <dir name="app" files="3"/>
     <dir name="artifacts" files="11" patterns="*.gen.go"/>
     <dir name="auth" purpose="Authentication and authorization" files="17" dirs="5" patterns="*.gen.go" key-files="handler.go,service.go">

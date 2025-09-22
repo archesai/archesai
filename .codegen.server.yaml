@@ -6,5 +6,3 @@ generate:
   strict-server: true
 output-options:
   name-normalizer: ToCamelCaseWithInitialisms
-  user-templates:
-    strict/echo-strict.tmpl: ../../echo-strict.tmpl
