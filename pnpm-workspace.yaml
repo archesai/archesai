@@ -26,10 +26,10 @@ catalogs:
   tanstack:
     '@tanstack/react-query': 5.89.0
     '@tanstack/react-query-devtools': 5.89.0
-    '@tanstack/react-router': 1.131.48
+    '@tanstack/react-router': 1.131.50
     '@tanstack/react-router-devtools': 1.131.44
-    '@tanstack/react-router-ssr-query': 1.131.48
-    '@tanstack/react-start': 1.131.48
+    '@tanstack/react-router-ssr-query': 1.131.50
+    '@tanstack/react-start': 1.131.50
     '@tanstack/react-table': 8.21.3
     '@tanstack/table-core': 8.21.3
   test:
@@ -55,11 +55,11 @@ catalogs:
     embla-carousel-react: 8.6.0
     input-otp: 1.4.2
     lucide-react: 0.544.0
-    motion: 12.23.15
+    motion: 12.23.16
     next-themes: 0.4.6
     radix-ui: 1.4.3
-    react-day-picker: 9.10.0
-    react-hook-form: 7.62.0
+    react-day-picker: 9.11.0
+    react-hook-form: 7.63.0
     react-resizable-panels: 3.0.6
     sonner: 2.0.7
     tailwind-merge: 3.3.1

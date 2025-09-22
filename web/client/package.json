@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@tanstack/react-query": "catalog:tanstack",
-    "zod": "4.1.9"
+    "zod": "4.1.11"
   },
   "exports": {
     ".": "./src/index.ts",

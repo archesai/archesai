@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@archesai/client": "workspace:*",
     "@archesai/ui": "workspace:*",
     "@tanstack/react-query": "catalog:tanstack",
     "@tanstack/react-router": "catalog:tanstack",
