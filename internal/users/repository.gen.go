@@ -17,5 +17,6 @@ type Repository interface {
 	List(ctx context.Context, params ListUsersParams) ([]*User, int64, error)
 
 	// Additional operations
+	// GetByEmail retrieves a single user by email
 	GetByEmail(ctx context.Context, email string) (*User, error)
 }

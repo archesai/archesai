@@ -9,28 +9,88 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
 
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Request e-mail change
+	// (POST /accounts/email-change/request)
+	RequestEmailChange(ctx echo.Context) error
+	// Verify e-mail change
+	// (POST /accounts/email-change/verify)
+	ConfirmEmailChange(ctx echo.Context) error
+	// Request e-mail verification
+	// (POST /accounts/email-verification/request)
+	RequestEmailVerification(ctx echo.Context) error
+	// Confirm e-mail verification
+	// (POST /accounts/email-verification/verify)
+	ConfirmEmailVerification(ctx echo.Context) error
+	// Request password reset
+	// (POST /accounts/password-reset/request)
+	RequestPasswordReset(ctx echo.Context) error
+	// Verify password reset
+	// (POST /accounts/password-reset/verify)
+	ConfirmPasswordReset(ctx echo.Context) error
+	// Request a magic link
+	// (POST /auth/magic-links/request)
+	RequestMagicLink(ctx echo.Context) error
+	// Verify a magic link token
+	// (POST /auth/magic-links/verify)
+	VerifyMagicLink(ctx echo.Context) error
+	// Start OAuth authorization flow
+	// (GET /auth/oauth/{provider}/authorize)
+	OauthAuthorize(ctx echo.Context, provider string, params OauthAuthorizeParams) error
+	// Handle OAuth callback
+	// (GET /auth/oauth/{provider}/callback)
+	OauthCallback(ctx echo.Context, provider string, params OauthCallbackParams) error
+	// List sessions
+	// (GET /sessions)
+	ListSessions(ctx echo.Context, params ListSessionsParams) error
+	// Create session (Login)
+	// (POST /sessions)
+	CreateSession(ctx echo.Context) error
+	// Delete session (Logout)
+	// (DELETE /sessions/{id})
+	DeleteSession(ctx echo.Context, id uuid.UUID) error
+	// Find a session
+	// (GET /sessions/{id})
+	GetSession(ctx echo.Context, id uuid.UUID) error
+	// Update Session
+	// (PATCH /sessions/{id})
+	UpdateSession(ctx echo.Context, id uuid.UUID) error
 	// List tokens
 	// (GET /tokens)
-	ListTokens(ctx echo.Context, params ListTokensParams) error
+	ListAPIKeys(ctx echo.Context, params ListAPIKeysParams) error
 	// Create a token
 	// (POST /tokens)
-	CreateToken(ctx echo.Context) error
+	CreateAPIKey(ctx echo.Context) error
 	// Delete API key
 	// (DELETE /tokens/{id})
-	ApikeysDelete(ctx echo.Context, id UUID) error
+	DeleteAPIKey(ctx echo.Context, id uuid.UUID) error
 	// Get API key details
 	// (GET /tokens/{id})
-	ApikeysFindByID(ctx echo.Context, id UUID) error
+	GetAPIKey(ctx echo.Context, id uuid.UUID) error
 	// Update API key
 	// (PATCH /tokens/{id})
-	ApikeysUpdate(ctx echo.Context, id UUID) error
+	UpdateAPIKey(ctx echo.Context, id uuid.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -38,49 +98,256 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
-// ListTokens converts echo context to params.
-func (w *ServerInterfaceWrapper) ListTokens(ctx echo.Context) error {
+// RequestEmailChange converts echo context to params.
+func (w *ServerInterfaceWrapper) RequestEmailChange(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.RequestEmailChange(ctx)
+	return err
+}
+
+// ConfirmEmailChange converts echo context to params.
+func (w *ServerInterfaceWrapper) ConfirmEmailChange(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ConfirmEmailChange(ctx)
+	return err
+}
+
+// RequestEmailVerification converts echo context to params.
+func (w *ServerInterfaceWrapper) RequestEmailVerification(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.RequestEmailVerification(ctx)
+	return err
+}
+
+// ConfirmEmailVerification converts echo context to params.
+func (w *ServerInterfaceWrapper) ConfirmEmailVerification(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ConfirmEmailVerification(ctx)
+	return err
+}
+
+// RequestPasswordReset converts echo context to params.
+func (w *ServerInterfaceWrapper) RequestPasswordReset(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.RequestPasswordReset(ctx)
+	return err
+}
+
+// ConfirmPasswordReset converts echo context to params.
+func (w *ServerInterfaceWrapper) ConfirmPasswordReset(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ConfirmPasswordReset(ctx)
+	return err
+}
+
+// RequestMagicLink converts echo context to params.
+func (w *ServerInterfaceWrapper) RequestMagicLink(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.RequestMagicLink(ctx)
+	return err
+}
+
+// VerifyMagicLink converts echo context to params.
+func (w *ServerInterfaceWrapper) VerifyMagicLink(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.VerifyMagicLink(ctx)
+	return err
+}
+
+// OauthAuthorize converts echo context to params.
+func (w *ServerInterfaceWrapper) OauthAuthorize(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "provider" -------------
+	var provider string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "provider", ctx.Param("provider"), &provider, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter provider: %s", err))
+	}
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params ListTokensParams
-	// ------------- Optional query parameter "limit" -------------
+	var params OauthAuthorizeParams
 
-	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	// ------------- Optional query parameter "redirect_uri" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "redirect_uri", ctx.QueryParams(), &params.Redirect_uri)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter redirect_uri: %s", err))
 	}
 
-	// ------------- Optional query parameter "offset" -------------
+	// ------------- Optional query parameter "scope" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	err = runtime.BindQueryParameter("form", true, false, "scope", ctx.QueryParams(), &params.Scope)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter scope: %s", err))
 	}
+
+	// ------------- Optional query parameter "state" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "state", ctx.QueryParams(), &params.State)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter state: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.ListTokens(ctx, params)
+	err = w.Handler.OauthAuthorize(ctx, provider, params)
 	return err
 }
 
-// CreateToken converts echo context to params.
-func (w *ServerInterfaceWrapper) CreateToken(ctx echo.Context) error {
+// OauthCallback converts echo context to params.
+func (w *ServerInterfaceWrapper) OauthCallback(ctx echo.Context) error {
 	var err error
+	// ------------- Path parameter "provider" -------------
+	var provider string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "provider", ctx.Param("provider"), &provider, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter provider: %s", err))
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OauthCallbackParams
+
+	// ------------- Optional query parameter "code" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "code", ctx.QueryParams(), &params.Code)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter code: %s", err))
+	}
+
+	// ------------- Optional query parameter "state" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "state", ctx.QueryParams(), &params.State)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter state: %s", err))
+	}
+
+	// ------------- Optional query parameter "error" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "error", ctx.QueryParams(), &params.Error)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter error: %s", err))
+	}
+
+	// ------------- Optional query parameter "error_description" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "error_description", ctx.QueryParams(), &params.Error_description)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter error_description: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.OauthCallback(ctx, provider, params)
+	return err
+}
+
+// ListSessions converts echo context to params.
+func (w *ServerInterfaceWrapper) ListSessions(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListSessionsParams
+
+	// ------------- Optional query parameter "filter" -------------
+
+	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
+	}
+
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+
+	// ------------- Optional query parameter "sort" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+	}
 
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.CreateToken(ctx)
+	err = w.Handler.ListSessions(ctx, params)
 	return err
 }
 
-// ApikeysDelete converts echo context to params.
-func (w *ServerInterfaceWrapper) ApikeysDelete(ctx echo.Context) error {
+// CreateSession converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateSession(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.CreateSession(ctx)
+	return err
+}
+
+// DeleteSession converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteSession(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -90,15 +357,15 @@ func (w *ServerInterfaceWrapper) ApikeysDelete(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.ApikeysDelete(ctx, id)
+	err = w.Handler.DeleteSession(ctx, id)
 	return err
 }
 
-// ApikeysFindByID converts echo context to params.
-func (w *ServerInterfaceWrapper) ApikeysFindByID(ctx echo.Context) error {
+// GetSession converts echo context to params.
+func (w *ServerInterfaceWrapper) GetSession(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -108,15 +375,81 @@ func (w *ServerInterfaceWrapper) ApikeysFindByID(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.ApikeysFindByID(ctx, id)
+	err = w.Handler.GetSession(ctx, id)
 	return err
 }
 
-// ApikeysUpdate converts echo context to params.
-func (w *ServerInterfaceWrapper) ApikeysUpdate(ctx echo.Context) error {
+// UpdateSession converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateSession(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	ctx.Set(SessionCookieScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.UpdateSession(ctx, id)
+	return err
+}
+
+// ListAPIKeys converts echo context to params.
+func (w *ServerInterfaceWrapper) ListAPIKeys(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListAPIKeysParams
+
+	// ------------- Optional query parameter "filter" -------------
+
+	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
+	}
+
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+
+	// ------------- Optional query parameter "sort" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ListAPIKeys(ctx, params)
+	return err
+}
+
+// CreateAPIKey converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateAPIKey(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.CreateAPIKey(ctx)
+	return err
+}
+
+// DeleteAPIKey converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteAPIKey(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -126,7 +459,43 @@ func (w *ServerInterfaceWrapper) ApikeysUpdate(ctx echo.Context) error {
 	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.ApikeysUpdate(ctx, id)
+	err = w.Handler.DeleteAPIKey(ctx, id)
+	return err
+}
+
+// GetAPIKey converts echo context to params.
+func (w *ServerInterfaceWrapper) GetAPIKey(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id uuid.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetAPIKey(ctx, id)
+	return err
+}
+
+// UpdateAPIKey converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateAPIKey(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id uuid.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	ctx.Set(BearerAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.UpdateAPIKey(ctx, id)
 	return err
 }
 
@@ -157,237 +526,874 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
-	router.GET(baseURL+"/tokens", wrapper.ListTokens)
-	router.POST(baseURL+"/tokens", wrapper.CreateToken)
-	router.DELETE(baseURL+"/tokens/:id", wrapper.ApikeysDelete)
-	router.GET(baseURL+"/tokens/:id", wrapper.ApikeysFindByID)
-	router.PATCH(baseURL+"/tokens/:id", wrapper.ApikeysUpdate)
+	router.POST(baseURL+"/accounts/email-change/request", wrapper.RequestEmailChange)
+	router.POST(baseURL+"/accounts/email-change/verify", wrapper.ConfirmEmailChange)
+	router.POST(baseURL+"/accounts/email-verification/request", wrapper.RequestEmailVerification)
+	router.POST(baseURL+"/accounts/email-verification/verify", wrapper.ConfirmEmailVerification)
+	router.POST(baseURL+"/accounts/password-reset/request", wrapper.RequestPasswordReset)
+	router.POST(baseURL+"/accounts/password-reset/verify", wrapper.ConfirmPasswordReset)
+	router.POST(baseURL+"/auth/magic-links/request", wrapper.RequestMagicLink)
+	router.POST(baseURL+"/auth/magic-links/verify", wrapper.VerifyMagicLink)
+	router.GET(baseURL+"/auth/oauth/:provider/authorize", wrapper.OauthAuthorize)
+	router.GET(baseURL+"/auth/oauth/:provider/callback", wrapper.OauthCallback)
+	router.GET(baseURL+"/sessions", wrapper.ListSessions)
+	router.POST(baseURL+"/sessions", wrapper.CreateSession)
+	router.DELETE(baseURL+"/sessions/:id", wrapper.DeleteSession)
+	router.GET(baseURL+"/sessions/:id", wrapper.GetSession)
+	router.PATCH(baseURL+"/sessions/:id", wrapper.UpdateSession)
+	router.GET(baseURL+"/tokens", wrapper.ListAPIKeys)
+	router.POST(baseURL+"/tokens", wrapper.CreateAPIKey)
+	router.DELETE(baseURL+"/tokens/:id", wrapper.DeleteAPIKey)
+	router.GET(baseURL+"/tokens/:id", wrapper.GetAPIKey)
+	router.PATCH(baseURL+"/tokens/:id", wrapper.UpdateAPIKey)
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
 
-type NotFoundApplicationProblemPlusJSONResponse Problem
+type NotFoundResponse ProblemDetails
 
-type UnauthorizedApplicationProblemPlusJSONResponse Problem
+type UnauthorizedResponse ProblemDetails
 
-type ListTokensRequestObject struct {
-	Params ListTokensParams
+type RequestEmailChangeRequestObject struct {
+	Body *RequestEmailChangeRequestBody
 }
 
-type ListTokensResponseObject interface {
-	VisitListTokensResponse(w http.ResponseWriter) error
+type RequestEmailChangeResponseObject interface {
+	VisitRequestEmailChangeResponse(w http.ResponseWriter) error
+}
+type RequestEmailChange201JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
 }
 
-type ListTokens200JSONResponse struct {
-	Data []APIKey `json:"data"`
-	Meta struct {
-		Total float32 `json:"total"`
-	} `json:"meta"`
-}
-
-func (response ListTokens200JSONResponse) VisitListTokensResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type ListTokens401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
-
-func (response ListTokens401ApplicationProblemPlusJSONResponse) VisitListTokensResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(401)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type CreateTokenRequestObject struct {
-	Body *CreateTokenJSONRequestBody
-}
-
-type CreateTokenResponseObject interface {
-	VisitCreateTokenResponse(w http.ResponseWriter) error
-}
-
-type CreateToken201JSONResponse APIKeyResponse
-
-func (response CreateToken201JSONResponse) VisitCreateTokenResponse(w http.ResponseWriter) error {
+func (response RequestEmailChange201JSONResponse) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateToken400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type RequestEmailChange400Response = BadRequestResponse
 
-func (response CreateToken400ApplicationProblemPlusJSONResponse) VisitCreateTokenResponse(w http.ResponseWriter) error {
+func (response RequestEmailChange400Response) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateToken401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type RequestEmailChange401Response = UnauthorizedResponse
 
-func (response CreateToken401ApplicationProblemPlusJSONResponse) VisitCreateTokenResponse(w http.ResponseWriter) error {
+func (response RequestEmailChange401Response) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysDeleteRequestObject struct {
-	ID UUID `json:"id"`
+type ConfirmEmailChangeRequestObject struct {
+	Body *ConfirmEmailChangeRequestBody
 }
 
-type ApikeysDeleteResponseObject interface {
-	VisitApikeysDeleteResponse(w http.ResponseWriter) error
+type ConfirmEmailChangeResponseObject interface {
+	VisitConfirmEmailChangeResponse(w http.ResponseWriter) error
+}
+type ConfirmEmailChange201JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
 }
 
-type ApikeysDelete204Response struct {
+func (response ConfirmEmailChange201JSONResponse) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response ApikeysDelete204Response) VisitApikeysDeleteResponse(w http.ResponseWriter) error {
-	w.WriteHeader(204)
-	return nil
-}
+type ConfirmEmailChange400Response = BadRequestResponse
 
-type ApikeysDelete400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
-
-func (response ApikeysDelete400ApplicationProblemPlusJSONResponse) VisitApikeysDeleteResponse(w http.ResponseWriter) error {
+func (response ConfirmEmailChange400Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysDelete401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type ConfirmEmailChange401Response = UnauthorizedResponse
 
-func (response ApikeysDelete401ApplicationProblemPlusJSONResponse) VisitApikeysDeleteResponse(w http.ResponseWriter) error {
+func (response ConfirmEmailChange401Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysDelete404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type RequestEmailVerificationRequestObject struct {
 }
 
-func (response ApikeysDelete404ApplicationProblemPlusJSONResponse) VisitApikeysDeleteResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
+type RequestEmailVerificationResponseObject interface {
+	VisitRequestEmailVerificationResponse(w http.ResponseWriter) error
+}
+type RequestEmailVerification201JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
+}
+
+func (response RequestEmailVerification201JSONResponse) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysFindByIDRequestObject struct {
-	ID UUID `json:"id"`
+type RequestEmailVerification400Response = BadRequestResponse
+
+func (response RequestEmailVerification400Response) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysFindByIDResponseObject interface {
-	VisitApikeysFindByIDResponse(w http.ResponseWriter) error
+type RequestEmailVerification401Response = UnauthorizedResponse
+
+func (response RequestEmailVerification401Response) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysFindByID200JSONResponse APIKey
+type ConfirmEmailVerificationRequestObject struct {
+	Body *ConfirmEmailVerificationRequestBody
+}
 
-func (response ApikeysFindByID200JSONResponse) VisitApikeysFindByIDResponse(w http.ResponseWriter) error {
+type ConfirmEmailVerificationResponseObject interface {
+	VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error
+}
+type ConfirmEmailVerification201JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
+}
+
+func (response ConfirmEmailVerification201JSONResponse) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmEmailVerification400Response = BadRequestResponse
+
+func (response ConfirmEmailVerification400Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmEmailVerification401Response = UnauthorizedResponse
+
+func (response ConfirmEmailVerification401Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestPasswordResetRequestObject struct {
+	Body *RequestPasswordResetRequestBody
+}
+
+type RequestPasswordResetResponseObject interface {
+	VisitRequestPasswordResetResponse(w http.ResponseWriter) error
+}
+type RequestPasswordReset201JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
+}
+
+func (response RequestPasswordReset201JSONResponse) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestPasswordReset400Response = BadRequestResponse
+
+func (response RequestPasswordReset400Response) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestPasswordReset401Response = UnauthorizedResponse
+
+func (response RequestPasswordReset401Response) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmPasswordResetRequestObject struct {
+	Body *ConfirmPasswordResetRequestBody
+}
+
+type ConfirmPasswordResetResponseObject interface {
+	VisitConfirmPasswordResetResponse(w http.ResponseWriter) error
+}
+type ConfirmPasswordReset201JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
+}
+
+func (response ConfirmPasswordReset201JSONResponse) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmPasswordReset400Response = BadRequestResponse
+
+func (response ConfirmPasswordReset400Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmPasswordReset401Response = UnauthorizedResponse
+
+func (response ConfirmPasswordReset401Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestMagicLinkRequestObject struct {
+	Body *RequestMagicLinkRequestBody
+}
+
+type RequestMagicLinkResponseObject interface {
+	VisitRequestMagicLinkResponse(w http.ResponseWriter) error
+}
+type RequestMagicLink201JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
+}
+
+func (response RequestMagicLink201JSONResponse) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestMagicLink400Response = BadRequestResponse
+
+func (response RequestMagicLink400Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestMagicLink401Response = UnauthorizedResponse
+
+func (response RequestMagicLink401Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type VerifyMagicLinkRequestObject struct {
+	Body *VerifyMagicLinkRequestBody
+}
+
+type VerifyMagicLinkResponseObject interface {
+	VisitVerifyMagicLinkResponse(w http.ResponseWriter) error
+}
+type VerifyMagicLink201JSONResponse struct {
+	// Data Schema for Session entity
+	Data Session `json:"data"`
+}
+
+func (response VerifyMagicLink201JSONResponse) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type VerifyMagicLink400Response = BadRequestResponse
+
+func (response VerifyMagicLink400Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type VerifyMagicLink401Response = UnauthorizedResponse
+
+func (response VerifyMagicLink401Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type OauthAuthorizeRequestObject struct {
+	Provider string `json:"provider"`
+	Params   OauthAuthorizeParams
+}
+
+type OauthAuthorizeResponseObject interface {
+	VisitOauthAuthorizeResponse(w http.ResponseWriter) error
+}
+
+type OauthAuthorize200JSONResponse struct {
+	Data []Auth `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
+}
+
+func (response OauthAuthorize200JSONResponse) VisitOauthAuthorizeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysFindByID400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type OauthAuthorize400Response = BadRequestResponse
 
-func (response ApikeysFindByID400ApplicationProblemPlusJSONResponse) VisitApikeysFindByIDResponse(w http.ResponseWriter) error {
+func (response OauthAuthorize400Response) VisitOauthAuthorizeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysFindByID401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type OauthAuthorize401Response = UnauthorizedResponse
 
-func (response ApikeysFindByID401ApplicationProblemPlusJSONResponse) VisitApikeysFindByIDResponse(w http.ResponseWriter) error {
+func (response OauthAuthorize401Response) VisitOauthAuthorizeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysFindByID404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
-}
+type OauthAuthorize404Response = NotFoundResponse
 
-func (response ApikeysFindByID404ApplicationProblemPlusJSONResponse) VisitApikeysFindByIDResponse(w http.ResponseWriter) error {
+func (response OauthAuthorize404Response) VisitOauthAuthorizeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysUpdateRequestObject struct {
-	ID   UUID `json:"id"`
-	Body *ApikeysUpdateJSONRequestBody
+type OauthCallbackRequestObject struct {
+	Provider string `json:"provider"`
+	Params   OauthCallbackParams
 }
 
-type ApikeysUpdateResponseObject interface {
-	VisitApikeysUpdateResponse(w http.ResponseWriter) error
+type OauthCallbackResponseObject interface {
+	VisitOauthCallbackResponse(w http.ResponseWriter) error
 }
 
-type ApikeysUpdate200JSONResponse APIKey
+type OauthCallback200JSONResponse struct {
+	Data Session `json:"data"`
+}
 
-func (response ApikeysUpdate200JSONResponse) VisitApikeysUpdateResponse(w http.ResponseWriter) error {
+func (response OauthCallback200JSONResponse) VisitOauthCallbackResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysUpdate400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type OauthCallback400Response = BadRequestResponse
 
-func (response ApikeysUpdate400ApplicationProblemPlusJSONResponse) VisitApikeysUpdateResponse(w http.ResponseWriter) error {
+func (response OauthCallback400Response) VisitOauthCallbackResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysUpdate401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type OauthCallback401Response = UnauthorizedResponse
 
-func (response ApikeysUpdate401ApplicationProblemPlusJSONResponse) VisitApikeysUpdateResponse(w http.ResponseWriter) error {
+func (response OauthCallback401Response) VisitOauthCallbackResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ApikeysUpdate404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type OauthCallback404Response = NotFoundResponse
+
+func (response OauthCallback404Response) VisitOauthCallbackResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response ApikeysUpdate404ApplicationProblemPlusJSONResponse) VisitApikeysUpdateResponse(w http.ResponseWriter) error {
+type ListSessionsRequestObject struct {
+	Params ListSessionsParams
+}
+
+type ListSessionsResponseObject interface {
+	VisitListSessionsResponse(w http.ResponseWriter) error
+}
+
+type ListSessions200JSONResponse struct {
+	Data []Auth `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
+}
+
+func (response ListSessions200JSONResponse) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListSessions400Response = BadRequestResponse
+
+func (response ListSessions400Response) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListSessions401Response = UnauthorizedResponse
+
+func (response ListSessions401Response) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListSessions404Response = NotFoundResponse
+
+func (response ListSessions404Response) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateSessionRequestObject struct {
+	Body *CreateSessionRequestBody
+}
+
+type CreateSessionResponseObject interface {
+	VisitCreateSessionResponse(w http.ResponseWriter) error
+}
+type CreateSession201JSONResponse struct {
+	// Data Schema for Session entity
+	Data Session `json:"data"`
+}
+
+func (response CreateSession201JSONResponse) VisitCreateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateSession400Response = BadRequestResponse
+
+func (response CreateSession400Response) VisitCreateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateSession401Response = UnauthorizedResponse
+
+func (response CreateSession401Response) VisitCreateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteSessionRequestObject struct {
+	ID uuid.UUID `json:"id"`
+}
+
+type DeleteSessionResponseObject interface {
+	VisitDeleteSessionResponse(w http.ResponseWriter) error
+}
+type DeleteSession200JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
+}
+
+func (response DeleteSession200JSONResponse) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteSession400Response = BadRequestResponse
+
+func (response DeleteSession400Response) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteSession401Response = UnauthorizedResponse
+
+func (response DeleteSession401Response) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteSession404Response = NotFoundResponse
+
+func (response DeleteSession404Response) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSessionRequestObject struct {
+	ID uuid.UUID `json:"id"`
+}
+
+type GetSessionResponseObject interface {
+	VisitGetSessionResponse(w http.ResponseWriter) error
+}
+
+type GetSession200JSONResponse struct {
+	Data []Auth `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
+}
+
+func (response GetSession200JSONResponse) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSession400Response = BadRequestResponse
+
+func (response GetSession400Response) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSession401Response = UnauthorizedResponse
+
+func (response GetSession401Response) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSession404Response = NotFoundResponse
+
+func (response GetSession404Response) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateSessionRequestObject struct {
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateSessionRequestBody
+}
+
+type UpdateSessionResponseObject interface {
+	VisitUpdateSessionResponse(w http.ResponseWriter) error
+}
+type UpdateSession200JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
+}
+
+func (response UpdateSession200JSONResponse) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateSession400Response = BadRequestResponse
+
+func (response UpdateSession400Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateSession401Response = UnauthorizedResponse
+
+func (response UpdateSession401Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateSession404Response = NotFoundResponse
+
+func (response UpdateSession404Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAPIKeysRequestObject struct {
+	Params ListAPIKeysParams
+}
+
+type ListAPIKeysResponseObject interface {
+	VisitListAPIKeysResponse(w http.ResponseWriter) error
+}
+
+type ListAPIKeys200JSONResponse struct {
+	Data []Auth `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
+}
+
+func (response ListAPIKeys200JSONResponse) VisitListAPIKeysResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAPIKeys400Response = BadRequestResponse
+
+func (response ListAPIKeys400Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAPIKeys401Response = UnauthorizedResponse
+
+func (response ListAPIKeys401Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAPIKeys404Response = NotFoundResponse
+
+func (response ListAPIKeys404Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateAPIKeyRequestObject struct {
+	Body *CreateApikeyRequestBody
+}
+
+type CreateAPIKeyResponseObject interface {
+	VisitCreateAPIKeyResponse(w http.ResponseWriter) error
+}
+type CreateAPIKey201JSONResponse struct {
+	// Data Schema for APIKey entity
+	Data APIKey `json:"data"`
+}
+
+func (response CreateAPIKey201JSONResponse) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateAPIKey400Response = BadRequestResponse
+
+func (response CreateAPIKey400Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateAPIKey401Response = UnauthorizedResponse
+
+func (response CreateAPIKey401Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteAPIKeyRequestObject struct {
+	ID uuid.UUID `json:"id"`
+}
+
+type DeleteAPIKeyResponseObject interface {
+	VisitDeleteAPIKeyResponse(w http.ResponseWriter) error
+}
+type DeleteAPIKey200JSONResponse struct {
+	// Data Schema for auth entity
+	Data Auth `json:"data"`
+}
+
+func (response DeleteAPIKey200JSONResponse) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteAPIKey400Response = BadRequestResponse
+
+func (response DeleteAPIKey400Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteAPIKey401Response = UnauthorizedResponse
+
+func (response DeleteAPIKey401Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteAPIKey404Response = NotFoundResponse
+
+func (response DeleteAPIKey404Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAPIKeyRequestObject struct {
+	ID uuid.UUID `json:"id"`
+}
+
+type GetAPIKeyResponseObject interface {
+	VisitGetAPIKeyResponse(w http.ResponseWriter) error
+}
+
+type GetAPIKey200JSONResponse struct {
+	Data APIKey `json:"data"`
+}
+
+func (response GetAPIKey200JSONResponse) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAPIKey400Response = BadRequestResponse
+
+func (response GetAPIKey400Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAPIKey401Response = UnauthorizedResponse
+
+func (response GetAPIKey401Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAPIKey404Response = NotFoundResponse
+
+func (response GetAPIKey404Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAPIKeyRequestObject struct {
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateApikeyRequestBody
+}
+
+type UpdateAPIKeyResponseObject interface {
+	VisitUpdateAPIKeyResponse(w http.ResponseWriter) error
+}
+type UpdateAPIKey200JSONResponse struct {
+	// Data Schema for APIKey entity
+	Data APIKey `json:"data"`
+}
+
+func (response UpdateAPIKey200JSONResponse) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAPIKey400Response = BadRequestResponse
+
+func (response UpdateAPIKey400Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAPIKey401Response = UnauthorizedResponse
+
+func (response UpdateAPIKey401Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAPIKey404Response = NotFoundResponse
+
+func (response UpdateAPIKey404Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -396,21 +1402,66 @@ func (response ApikeysUpdate404ApplicationProblemPlusJSONResponse) VisitApikeysU
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// Request e-mail change
+	// (POST /accounts/email-change/request)
+	RequestEmailChange(ctx context.Context, request RequestEmailChangeRequestObject) (RequestEmailChangeResponseObject, error)
+	// Verify e-mail change
+	// (POST /accounts/email-change/verify)
+	ConfirmEmailChange(ctx context.Context, request ConfirmEmailChangeRequestObject) (ConfirmEmailChangeResponseObject, error)
+	// Request e-mail verification
+	// (POST /accounts/email-verification/request)
+	RequestEmailVerification(ctx context.Context, request RequestEmailVerificationRequestObject) (RequestEmailVerificationResponseObject, error)
+	// Confirm e-mail verification
+	// (POST /accounts/email-verification/verify)
+	ConfirmEmailVerification(ctx context.Context, request ConfirmEmailVerificationRequestObject) (ConfirmEmailVerificationResponseObject, error)
+	// Request password reset
+	// (POST /accounts/password-reset/request)
+	RequestPasswordReset(ctx context.Context, request RequestPasswordResetRequestObject) (RequestPasswordResetResponseObject, error)
+	// Verify password reset
+	// (POST /accounts/password-reset/verify)
+	ConfirmPasswordReset(ctx context.Context, request ConfirmPasswordResetRequestObject) (ConfirmPasswordResetResponseObject, error)
+	// Request a magic link
+	// (POST /auth/magic-links/request)
+	RequestMagicLink(ctx context.Context, request RequestMagicLinkRequestObject) (RequestMagicLinkResponseObject, error)
+	// Verify a magic link token
+	// (POST /auth/magic-links/verify)
+	VerifyMagicLink(ctx context.Context, request VerifyMagicLinkRequestObject) (VerifyMagicLinkResponseObject, error)
+	// Start OAuth authorization flow
+	// (GET /auth/oauth/{provider}/authorize)
+	OauthAuthorize(ctx context.Context, request OauthAuthorizeRequestObject) (OauthAuthorizeResponseObject, error)
+	// Handle OAuth callback
+	// (GET /auth/oauth/{provider}/callback)
+	OauthCallback(ctx context.Context, request OauthCallbackRequestObject) (OauthCallbackResponseObject, error)
+	// List sessions
+	// (GET /sessions)
+	ListSessions(ctx context.Context, request ListSessionsRequestObject) (ListSessionsResponseObject, error)
+	// Create session (Login)
+	// (POST /sessions)
+	CreateSession(ctx context.Context, request CreateSessionRequestObject) (CreateSessionResponseObject, error)
+	// Delete session (Logout)
+	// (DELETE /sessions/{id})
+	DeleteSession(ctx context.Context, request DeleteSessionRequestObject) (DeleteSessionResponseObject, error)
+	// Find a session
+	// (GET /sessions/{id})
+	GetSession(ctx context.Context, request GetSessionRequestObject) (GetSessionResponseObject, error)
+	// Update Session
+	// (PATCH /sessions/{id})
+	UpdateSession(ctx context.Context, request UpdateSessionRequestObject) (UpdateSessionResponseObject, error)
 	// List tokens
 	// (GET /tokens)
-	ListTokens(ctx context.Context, request ListTokensRequestObject) (ListTokensResponseObject, error)
+	ListAPIKeys(ctx context.Context, request ListAPIKeysRequestObject) (ListAPIKeysResponseObject, error)
 	// Create a token
 	// (POST /tokens)
-	CreateToken(ctx context.Context, request CreateTokenRequestObject) (CreateTokenResponseObject, error)
+	CreateAPIKey(ctx context.Context, request CreateAPIKeyRequestObject) (CreateAPIKeyResponseObject, error)
 	// Delete API key
 	// (DELETE /tokens/{id})
-	ApikeysDelete(ctx context.Context, request ApikeysDeleteRequestObject) (ApikeysDeleteResponseObject, error)
+	DeleteAPIKey(ctx context.Context, request DeleteAPIKeyRequestObject) (DeleteAPIKeyResponseObject, error)
 	// Get API key details
 	// (GET /tokens/{id})
-	ApikeysFindByID(ctx context.Context, request ApikeysFindByIDRequestObject) (ApikeysFindByIDResponseObject, error)
+	GetAPIKey(ctx context.Context, request GetAPIKeyRequestObject) (GetAPIKeyResponseObject, error)
 	// Update API key
 	// (PATCH /tokens/{id})
-	ApikeysUpdate(ctx context.Context, request ApikeysUpdateRequestObject) (ApikeysUpdateResponseObject, error)
+	UpdateAPIKey(ctx context.Context, request UpdateAPIKeyRequestObject) (UpdateAPIKeyResponseObject, error)
 }
 
 type StrictHandlerFunc = strictecho.StrictEchoHandlerFunc
@@ -425,135 +1476,527 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// ListTokens operation middleware
-func (sh *strictHandler) ListTokens(ctx echo.Context, params ListTokensParams) error {
-	var request ListTokensRequestObject
+// RequestEmailChange operation middleware
+func (sh *strictHandler) RequestEmailChange(ctx echo.Context) error {
+	var request RequestEmailChangeRequestObject
+	var body RequestEmailChangeRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
 
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.RequestEmailChange(ctx.Request().Context(), request.(RequestEmailChangeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RequestEmailChange")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(RequestEmailChangeResponseObject); ok {
+		return validResponse.VisitRequestEmailChangeResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// ConfirmEmailChange operation middleware
+func (sh *strictHandler) ConfirmEmailChange(ctx echo.Context) error {
+	var request ConfirmEmailChangeRequestObject
+	var body ConfirmEmailChangeRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ConfirmEmailChange(ctx.Request().Context(), request.(ConfirmEmailChangeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ConfirmEmailChange")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ConfirmEmailChangeResponseObject); ok {
+		return validResponse.VisitConfirmEmailChangeResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// RequestEmailVerification operation middleware
+func (sh *strictHandler) RequestEmailVerification(ctx echo.Context) error {
+	var request RequestEmailVerificationRequestObject
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.RequestEmailVerification(ctx.Request().Context(), request.(RequestEmailVerificationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RequestEmailVerification")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(RequestEmailVerificationResponseObject); ok {
+		return validResponse.VisitRequestEmailVerificationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// ConfirmEmailVerification operation middleware
+func (sh *strictHandler) ConfirmEmailVerification(ctx echo.Context) error {
+	var request ConfirmEmailVerificationRequestObject
+	var body ConfirmEmailVerificationRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ConfirmEmailVerification(ctx.Request().Context(), request.(ConfirmEmailVerificationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ConfirmEmailVerification")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ConfirmEmailVerificationResponseObject); ok {
+		return validResponse.VisitConfirmEmailVerificationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// RequestPasswordReset operation middleware
+func (sh *strictHandler) RequestPasswordReset(ctx echo.Context) error {
+	var request RequestPasswordResetRequestObject
+	var body RequestPasswordResetRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.RequestPasswordReset(ctx.Request().Context(), request.(RequestPasswordResetRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RequestPasswordReset")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(RequestPasswordResetResponseObject); ok {
+		return validResponse.VisitRequestPasswordResetResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// ConfirmPasswordReset operation middleware
+func (sh *strictHandler) ConfirmPasswordReset(ctx echo.Context) error {
+	var request ConfirmPasswordResetRequestObject
+	var body ConfirmPasswordResetRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ConfirmPasswordReset(ctx.Request().Context(), request.(ConfirmPasswordResetRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ConfirmPasswordReset")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ConfirmPasswordResetResponseObject); ok {
+		return validResponse.VisitConfirmPasswordResetResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// RequestMagicLink operation middleware
+func (sh *strictHandler) RequestMagicLink(ctx echo.Context) error {
+	var request RequestMagicLinkRequestObject
+	var body RequestMagicLinkRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.RequestMagicLink(ctx.Request().Context(), request.(RequestMagicLinkRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RequestMagicLink")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(RequestMagicLinkResponseObject); ok {
+		return validResponse.VisitRequestMagicLinkResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// VerifyMagicLink operation middleware
+func (sh *strictHandler) VerifyMagicLink(ctx echo.Context) error {
+	var request VerifyMagicLinkRequestObject
+	var body VerifyMagicLinkRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.VerifyMagicLink(ctx.Request().Context(), request.(VerifyMagicLinkRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "VerifyMagicLink")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(VerifyMagicLinkResponseObject); ok {
+		return validResponse.VisitVerifyMagicLinkResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// OauthAuthorize operation middleware
+func (sh *strictHandler) OauthAuthorize(ctx echo.Context, provider string, params OauthAuthorizeParams) error {
+	var request OauthAuthorizeRequestObject
+	request.Provider = provider
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.ListTokens(ctx.Request().Context(), request.(ListTokensRequestObject))
+		return sh.ssi.OauthAuthorize(ctx.Request().Context(), request.(OauthAuthorizeRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListTokens")
+		handler = middleware(handler, "OauthAuthorize")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(ListTokensResponseObject); ok {
-		return validResponse.VisitListTokensResponse(ctx.Response())
+	} else if validResponse, ok := response.(OauthAuthorizeResponseObject); ok {
+		return validResponse.VisitOauthAuthorizeResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// CreateToken operation middleware
-func (sh *strictHandler) CreateToken(ctx echo.Context) error {
-	var request CreateTokenRequestObject
+// OauthCallback operation middleware
+func (sh *strictHandler) OauthCallback(ctx echo.Context, provider string, params OauthCallbackParams) error {
+	var request OauthCallbackRequestObject
+	request.Provider = provider
+	request.Params = params
 
-	var body CreateTokenJSONRequestBody
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.OauthCallback(ctx.Request().Context(), request.(OauthCallbackRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OauthCallback")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(OauthCallbackResponseObject); ok {
+		return validResponse.VisitOauthCallbackResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// ListSessions operation middleware
+func (sh *strictHandler) ListSessions(ctx echo.Context, params ListSessionsParams) error {
+	var request ListSessionsRequestObject
+	request.Params = params
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ListSessions(ctx.Request().Context(), request.(ListSessionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListSessions")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ListSessionsResponseObject); ok {
+		return validResponse.VisitListSessionsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// CreateSession operation middleware
+func (sh *strictHandler) CreateSession(ctx echo.Context) error {
+	var request CreateSessionRequestObject
+	var body CreateSessionRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
 	request.Body = &body
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.CreateToken(ctx.Request().Context(), request.(CreateTokenRequestObject))
+		return sh.ssi.CreateSession(ctx.Request().Context(), request.(CreateSessionRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "CreateToken")
+		handler = middleware(handler, "CreateSession")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(CreateTokenResponseObject); ok {
-		return validResponse.VisitCreateTokenResponse(ctx.Response())
+	} else if validResponse, ok := response.(CreateSessionResponseObject); ok {
+		return validResponse.VisitCreateSessionResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// ApikeysDelete operation middleware
-func (sh *strictHandler) ApikeysDelete(ctx echo.Context, id UUID) error {
-	var request ApikeysDeleteRequestObject
-
+// DeleteSession operation middleware
+func (sh *strictHandler) DeleteSession(ctx echo.Context, id uuid.UUID) error {
+	var request DeleteSessionRequestObject
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.ApikeysDelete(ctx.Request().Context(), request.(ApikeysDeleteRequestObject))
+		return sh.ssi.DeleteSession(ctx.Request().Context(), request.(DeleteSessionRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ApikeysDelete")
+		handler = middleware(handler, "DeleteSession")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(ApikeysDeleteResponseObject); ok {
-		return validResponse.VisitApikeysDeleteResponse(ctx.Response())
+	} else if validResponse, ok := response.(DeleteSessionResponseObject); ok {
+		return validResponse.VisitDeleteSessionResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// ApikeysFindByID operation middleware
-func (sh *strictHandler) ApikeysFindByID(ctx echo.Context, id UUID) error {
-	var request ApikeysFindByIDRequestObject
-
+// GetSession operation middleware
+func (sh *strictHandler) GetSession(ctx echo.Context, id uuid.UUID) error {
+	var request GetSessionRequestObject
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.ApikeysFindByID(ctx.Request().Context(), request.(ApikeysFindByIDRequestObject))
+		return sh.ssi.GetSession(ctx.Request().Context(), request.(GetSessionRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ApikeysFindByID")
+		handler = middleware(handler, "GetSession")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(ApikeysFindByIDResponseObject); ok {
-		return validResponse.VisitApikeysFindByIDResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetSessionResponseObject); ok {
+		return validResponse.VisitGetSessionResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}
 	return nil
 }
 
-// ApikeysUpdate operation middleware
-func (sh *strictHandler) ApikeysUpdate(ctx echo.Context, id UUID) error {
-	var request ApikeysUpdateRequestObject
-
+// UpdateSession operation middleware
+func (sh *strictHandler) UpdateSession(ctx echo.Context, id uuid.UUID) error {
+	var request UpdateSessionRequestObject
 	request.ID = id
-
-	var body ApikeysUpdateJSONRequestBody
+	var body UpdateSessionRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
 	request.Body = &body
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.ApikeysUpdate(ctx.Request().Context(), request.(ApikeysUpdateRequestObject))
+		return sh.ssi.UpdateSession(ctx.Request().Context(), request.(UpdateSessionRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ApikeysUpdate")
+		handler = middleware(handler, "UpdateSession")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(ApikeysUpdateResponseObject); ok {
-		return validResponse.VisitApikeysUpdateResponse(ctx.Response())
+	} else if validResponse, ok := response.(UpdateSessionResponseObject); ok {
+		return validResponse.VisitUpdateSessionResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// ListAPIKeys operation middleware
+func (sh *strictHandler) ListAPIKeys(ctx echo.Context, params ListAPIKeysParams) error {
+	var request ListAPIKeysRequestObject
+	request.Params = params
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.ListAPIKeys(ctx.Request().Context(), request.(ListAPIKeysRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListAPIKeys")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(ListAPIKeysResponseObject); ok {
+		return validResponse.VisitListAPIKeysResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// CreateAPIKey operation middleware
+func (sh *strictHandler) CreateAPIKey(ctx echo.Context) error {
+	var request CreateAPIKeyRequestObject
+	var body CreateApikeyRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateAPIKey(ctx.Request().Context(), request.(CreateAPIKeyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateAPIKey")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(CreateAPIKeyResponseObject); ok {
+		return validResponse.VisitCreateAPIKeyResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// DeleteAPIKey operation middleware
+func (sh *strictHandler) DeleteAPIKey(ctx echo.Context, id uuid.UUID) error {
+	var request DeleteAPIKeyRequestObject
+	request.ID = id
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteAPIKey(ctx.Request().Context(), request.(DeleteAPIKeyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteAPIKey")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(DeleteAPIKeyResponseObject); ok {
+		return validResponse.VisitDeleteAPIKeyResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetAPIKey operation middleware
+func (sh *strictHandler) GetAPIKey(ctx echo.Context, id uuid.UUID) error {
+	var request GetAPIKeyRequestObject
+	request.ID = id
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetAPIKey(ctx.Request().Context(), request.(GetAPIKeyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetAPIKey")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetAPIKeyResponseObject); ok {
+		return validResponse.VisitGetAPIKeyResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// UpdateAPIKey operation middleware
+func (sh *strictHandler) UpdateAPIKey(ctx echo.Context, id uuid.UUID) error {
+	var request UpdateAPIKeyRequestObject
+	request.ID = id
+	var body UpdateApikeyRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateAPIKey(ctx.Request().Context(), request.(UpdateAPIKeyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateAPIKey")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(UpdateAPIKeyResponseObject); ok {
+		return validResponse.VisitUpdateAPIKeyResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

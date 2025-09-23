@@ -17,6 +17,8 @@ type Repository interface {
 	List(ctx context.Context, params ListLabelsParams) ([]*Label, int64, error)
 
 	// Additional operations
+	// ListByOrganization retrieves multiple labels by organizationID
 	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Label, error)
+	// GetByName retrieves a single label by name and organizationID
 	GetByName(ctx context.Context, name string, organizationID uuid.UUID) (*Label, error)
 }

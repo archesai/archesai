@@ -10,6 +10,6 @@ get:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/HealthResponse.yaml
+            $ref: ../components/schemas/Health.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml

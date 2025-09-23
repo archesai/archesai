@@ -61,10 +61,10 @@ func (r *SQLiteRepository) List(ctx context.Context, params ListUsersParams) ([]
 	return nil, 0, fmt.Errorf("ListUsers not yet implemented - requires custom mapping")
 }
 
-// GetByEmail retrieves user by email
+// GetByEmail retrieves a single user by email
 func (r *SQLiteRepository) GetByEmail(ctx context.Context, email string) (*User, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement GetByEmail - fetch single record
 	return nil, fmt.Errorf("GetByEmail not yet implemented - requires custom mapping")
 
 }

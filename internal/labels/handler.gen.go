@@ -9,10 +9,25 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
+
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -24,13 +39,13 @@ type ServerInterface interface {
 	CreateLabel(ctx echo.Context) error
 	// Delete a label
 	// (DELETE /labels/{id})
-	DeleteLabel(ctx echo.Context, id UUID) error
+	DeleteLabel(ctx echo.Context, id uuid.UUID) error
 	// Find a label
 	// (GET /labels/{id})
-	GetLabel(ctx echo.Context, id UUID) error
+	GetLabel(ctx echo.Context, id uuid.UUID) error
 	// Update a label
 	// (PATCH /labels/{id})
-	UpdateLabel(ctx echo.Context, id UUID) error
+	UpdateLabel(ctx echo.Context, id uuid.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -42,10 +57,9 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) ListLabels(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(BearerAuthScopes, []string{})
-
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListLabelsParams
+
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -67,6 +81,8 @@ func (w *ServerInterfaceWrapper) ListLabels(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
 	}
 
+	ctx.Set(BearerAuthScopes, []string{})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.ListLabels(ctx, params)
 	return err
@@ -87,7 +103,7 @@ func (w *ServerInterfaceWrapper) CreateLabel(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteLabel(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -105,7 +121,7 @@ func (w *ServerInterfaceWrapper) DeleteLabel(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetLabel(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -123,7 +139,7 @@ func (w *ServerInterfaceWrapper) GetLabel(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateLabel(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -164,7 +180,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
 	router.GET(baseURL+"/labels", wrapper.ListLabels)
 	router.POST(baseURL+"/labels", wrapper.CreateLabel)
 	router.DELETE(baseURL+"/labels/:id", wrapper.DeleteLabel)
@@ -173,11 +188,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
 
-type NotFoundApplicationProblemPlusJSONResponse Problem
+type NotFoundResponse ProblemDetails
 
-type UnauthorizedApplicationProblemPlusJSONResponse Problem
+type UnauthorizedResponse ProblemDetails
 
 type ListLabelsRequestObject struct {
 	Params ListLabelsParams
@@ -190,8 +205,7 @@ type ListLabelsResponseObject interface {
 type ListLabels200JSONResponse struct {
 	Data []Label `json:"data"`
 	Meta struct {
-		// Total Total number of items in the collection
-		Total float32 `json:"total"`
+		Total int64 `json:"total"`
 	} `json:"meta"`
 }
 
@@ -202,38 +216,42 @@ func (response ListLabels200JSONResponse) VisitListLabelsResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListLabels400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type ListLabels400Response = BadRequestResponse
 
-func (response ListLabels400ApplicationProblemPlusJSONResponse) VisitListLabelsResponse(w http.ResponseWriter) error {
+func (response ListLabels400Response) VisitListLabelsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListLabels401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type ListLabels401Response = UnauthorizedResponse
 
-func (response ListLabels401ApplicationProblemPlusJSONResponse) VisitListLabelsResponse(w http.ResponseWriter) error {
+func (response ListLabels401Response) VisitListLabelsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ListLabels404Response = NotFoundResponse
+
+func (response ListLabels404Response) VisitListLabelsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type CreateLabelRequestObject struct {
-	Body *CreateLabelJSONRequestBody
+	Body *CreateLabelRequestBody
 }
 
 type CreateLabelResponseObject interface {
 	VisitCreateLabelResponse(w http.ResponseWriter) error
 }
-
 type CreateLabel201JSONResponse struct {
-	// Data Schema for Label entity
+	// Data Schema for labels entity
 	Data Label `json:"data"`
 }
 
@@ -244,22 +262,18 @@ func (response CreateLabel201JSONResponse) VisitCreateLabelResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateLabel400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type CreateLabel400Response = BadRequestResponse
 
-func (response CreateLabel400ApplicationProblemPlusJSONResponse) VisitCreateLabelResponse(w http.ResponseWriter) error {
+func (response CreateLabel400Response) VisitCreateLabelResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateLabel401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type CreateLabel401Response = UnauthorizedResponse
 
-func (response CreateLabel401ApplicationProblemPlusJSONResponse) VisitCreateLabelResponse(w http.ResponseWriter) error {
+func (response CreateLabel401Response) VisitCreateLabelResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -267,15 +281,14 @@ func (response CreateLabel401ApplicationProblemPlusJSONResponse) VisitCreateLabe
 }
 
 type DeleteLabelRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type DeleteLabelResponseObject interface {
 	VisitDeleteLabelResponse(w http.ResponseWriter) error
 }
-
 type DeleteLabel200JSONResponse struct {
-	// Data Schema for Label entity
+	// Data Schema for labels entity
 	Data Label `json:"data"`
 }
 
@@ -286,11 +299,27 @@ func (response DeleteLabel200JSONResponse) VisitDeleteLabelResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteLabel404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type DeleteLabel400Response = BadRequestResponse
+
+func (response DeleteLabel400Response) VisitDeleteLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response DeleteLabel404ApplicationProblemPlusJSONResponse) VisitDeleteLabelResponse(w http.ResponseWriter) error {
+type DeleteLabel401Response = UnauthorizedResponse
+
+func (response DeleteLabel401Response) VisitDeleteLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteLabel404Response = NotFoundResponse
+
+func (response DeleteLabel404Response) VisitDeleteLabelResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -298,7 +327,7 @@ func (response DeleteLabel404ApplicationProblemPlusJSONResponse) VisitDeleteLabe
 }
 
 type GetLabelRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type GetLabelResponseObject interface {
@@ -306,8 +335,10 @@ type GetLabelResponseObject interface {
 }
 
 type GetLabel200JSONResponse struct {
-	// Data Schema for Label entity
-	Data Label `json:"data"`
+	Data []Label `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
 }
 
 func (response GetLabel200JSONResponse) VisitGetLabelResponse(w http.ResponseWriter) error {
@@ -317,11 +348,27 @@ func (response GetLabel200JSONResponse) VisitGetLabelResponse(w http.ResponseWri
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetLabel404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type GetLabel400Response = BadRequestResponse
+
+func (response GetLabel400Response) VisitGetLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response GetLabel404ApplicationProblemPlusJSONResponse) VisitGetLabelResponse(w http.ResponseWriter) error {
+type GetLabel401Response = UnauthorizedResponse
+
+func (response GetLabel401Response) VisitGetLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetLabel404Response = NotFoundResponse
+
+func (response GetLabel404Response) VisitGetLabelResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -329,16 +376,15 @@ func (response GetLabel404ApplicationProblemPlusJSONResponse) VisitGetLabelRespo
 }
 
 type UpdateLabelRequestObject struct {
-	ID   UUID `json:"id"`
-	Body *UpdateLabelJSONRequestBody
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateLabelRequestBody
 }
 
 type UpdateLabelResponseObject interface {
 	VisitUpdateLabelResponse(w http.ResponseWriter) error
 }
-
 type UpdateLabel200JSONResponse struct {
-	// Data Schema for Label entity
+	// Data Schema for labels entity
 	Data Label `json:"data"`
 }
 
@@ -349,11 +395,27 @@ func (response UpdateLabel200JSONResponse) VisitUpdateLabelResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateLabel404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type UpdateLabel400Response = BadRequestResponse
+
+func (response UpdateLabel400Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response UpdateLabel404ApplicationProblemPlusJSONResponse) VisitUpdateLabelResponse(w http.ResponseWriter) error {
+type UpdateLabel401Response = UnauthorizedResponse
+
+func (response UpdateLabel401Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateLabel404Response = NotFoundResponse
+
+func (response UpdateLabel404Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -394,7 +456,6 @@ type strictHandler struct {
 // ListLabels operation middleware
 func (sh *strictHandler) ListLabels(ctx echo.Context, params ListLabelsParams) error {
 	var request ListLabelsRequestObject
-
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -419,8 +480,7 @@ func (sh *strictHandler) ListLabels(ctx echo.Context, params ListLabelsParams) e
 // CreateLabel operation middleware
 func (sh *strictHandler) CreateLabel(ctx echo.Context) error {
 	var request CreateLabelRequestObject
-
-	var body CreateLabelJSONRequestBody
+	var body CreateLabelRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
@@ -446,9 +506,8 @@ func (sh *strictHandler) CreateLabel(ctx echo.Context) error {
 }
 
 // DeleteLabel operation middleware
-func (sh *strictHandler) DeleteLabel(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) DeleteLabel(ctx echo.Context, id uuid.UUID) error {
 	var request DeleteLabelRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -471,9 +530,8 @@ func (sh *strictHandler) DeleteLabel(ctx echo.Context, id UUID) error {
 }
 
 // GetLabel operation middleware
-func (sh *strictHandler) GetLabel(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) GetLabel(ctx echo.Context, id uuid.UUID) error {
 	var request GetLabelRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -496,12 +554,10 @@ func (sh *strictHandler) GetLabel(ctx echo.Context, id UUID) error {
 }
 
 // UpdateLabel operation middleware
-func (sh *strictHandler) UpdateLabel(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) UpdateLabel(ctx echo.Context, id uuid.UUID) error {
 	var request UpdateLabelRequestObject
-
 	request.ID = id
-
-	var body UpdateLabelJSONRequestBody
+	var body UpdateLabelRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}

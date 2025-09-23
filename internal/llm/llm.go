@@ -45,13 +45,13 @@ type Message struct {
 type ChatCompletionRequest struct {
 	Model            string    `json:"model"`
 	Messages         []Message `json:"messages"`
-	Temperature      float32   `json:"temperature,omitempty"`
-	TopP             float32   `json:"top_p,omitempty"`
-	N                int       `json:"n,omitempty"`
+	Temperature      float64   `json:"temperature,omitempty"`
+	TopP             int32     `json:"top_p,omitempty"`
+	N                int32     `json:"n,omitempty"`
 	Stop             []string  `json:"stop,omitempty"`
-	MaxTokens        int       `json:"max_tokens,omitempty"`
-	PresencePenalty  float32   `json:"presence_penalty,omitempty"`
-	FrequencyPenalty float32   `json:"frequency_penalty,omitempty"`
+	MaxTokens        int32     `json:"max_tokens,omitempty"`
+	PresencePenalty  float64   `json:"presence_penalty,omitempty"`
+	FrequencyPenalty float64   `json:"frequency_penalty,omitempty"`
 	User             string    `json:"user,omitempty"`
 	Tools            []Tool    `json:"tools,omitempty"`
 	Stream           bool      `json:"stream,omitempty"`

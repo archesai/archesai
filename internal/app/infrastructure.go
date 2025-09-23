@@ -37,7 +37,7 @@ type Infrastructure struct {
 	Logger         *slog.Logger
 	Database       *database.Database // Database wrapper for both PostgreSQL and SQLite
 	EventPublisher events.Publisher
-	AuthCache      cache.Cache[auth.SessionEntity]
+	AuthCache      cache.Cache[auth.Session]
 	UsersCache     cache.Cache[users.User]
 	// Single Redis client shared across components
 	redisClient *redis.Client
@@ -46,7 +46,7 @@ type Infrastructure struct {
 // Repositories holds all domain repositories.
 type Repositories struct {
 	Accounts      accounts.Repository
-	Sessions      auth.SessionsRepository
+	Sessions      auth.Repository
 	Users         users.Repository
 	Organizations organizations.Repository
 	Pipelines     pipelines.Repository
@@ -91,7 +91,7 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 
 		// Configure connection pool
 		if cfg.Database.MaxConns > 0 {
-			poolConfig.MaxConns = int32(cfg.Database.MaxConns)
+			poolConfig.MaxConns = cfg.Database.MaxConns
 		} else {
 			poolConfig.MaxConns = 25
 		}
@@ -144,19 +144,19 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 		if err != nil {
 			log.Warn("failed to connect to Redis, using in-memory alternatives", "error", err)
 			infra.EventPublisher = events.NewNoOpPublisher()
-			infra.AuthCache = cache.NewMemoryCache[auth.SessionEntity]()
+			infra.AuthCache = cache.NewMemoryCache[auth.Session]()
 			infra.UsersCache = cache.NewMemoryCache[users.User]()
 		} else {
 			log.Info("connected to redis", "host", cfg.Redis.Host, "port", cfg.Redis.Port)
 			infra.redisClient = redisClient
 			infra.EventPublisher = events.NewRedisPublisher(redisClient.GetRedisClient())
-			infra.AuthCache = cache.NewRedisCache[auth.SessionEntity](redisClient.GetRedisClient(), "auth:session")
+			infra.AuthCache = cache.NewRedisCache[auth.Session](redisClient.GetRedisClient(), "auth:session")
 			infra.UsersCache = cache.NewRedisCache[users.User](redisClient.GetRedisClient(), "users")
 		}
 	} else {
 		// Use in-memory alternatives when Redis is disabled
 		infra.EventPublisher = events.NewNoOpPublisher()
-		infra.AuthCache = cache.NewMemoryCache[auth.SessionEntity]()
+		infra.AuthCache = cache.NewMemoryCache[auth.Session]()
 		infra.UsersCache = cache.NewMemoryCache[users.User]()
 	}
 
@@ -173,7 +173,7 @@ func NewRepositories(infra *Infrastructure) (*Repositories, error) {
 
 		// Core repositories
 		repos.Accounts = accounts.NewPostgresRepository(pool)
-		repos.Sessions = auth.NewPostgresSessionsRepository(pool)
+		repos.Sessions = auth.NewPostgresRepository(pool)
 		repos.Users = users.NewPostgresRepository(pool)
 		repos.Organizations = organizations.NewPostgresRepository(pool)
 
@@ -199,7 +199,7 @@ func NewRepositories(infra *Infrastructure) (*Repositories, error) {
 
 		// Core repositories
 		repos.Accounts = accounts.NewSQLiteRepository(db)
-		repos.Sessions = auth.NewSQLiteSessionsRepository(db)
+		repos.Sessions = auth.NewSQLiteRepository(db)
 		repos.Users = users.NewSQLiteRepository(db)
 		repos.Organizations = organizations.NewSQLiteRepository(db)
 

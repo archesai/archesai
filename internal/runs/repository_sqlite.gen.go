@@ -64,7 +64,7 @@ func (r *SQLiteRepository) List(ctx context.Context, params ListRunsParams) ([]*
 // ListByPipeline retrieves multiple runs by pipelineID
 func (r *SQLiteRepository) ListByPipeline(ctx context.Context, pipelineID uuid.UUID) ([]*Run, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement ListByPipeline - fetch multiple records
 	return nil, fmt.Errorf("ListByPipeline not yet implemented - requires custom mapping")
 
 }
@@ -72,7 +72,7 @@ func (r *SQLiteRepository) ListByPipeline(ctx context.Context, pipelineID uuid.U
 // ListByOrganization retrieves multiple runs by organizationID
 func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Run, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement ListByOrganization - fetch multiple records
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }
@@ -80,7 +80,7 @@ func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationI
 // ListByTool retrieves multiple runs by toolID
 func (r *SQLiteRepository) ListByTool(ctx context.Context, toolID uuid.UUID) ([]*Run, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement ListByTool - fetch multiple records
 	return nil, fmt.Errorf("ListByTool not yet implemented - requires custom mapping")
 
 }

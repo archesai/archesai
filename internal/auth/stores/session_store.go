@@ -15,15 +15,15 @@ import (
 
 // SessionStore handles session operations with caching.
 type SessionStore struct {
-	repo  auth.SessionsRepository
-	cache genericcache.Cache[auth.SessionEntity]
+	repo  auth.SessionRepository
+	cache genericcache.Cache[auth.Session]
 	ttl   time.Duration
 }
 
 // NewSessionStore creates a new session store.
 func NewSessionStore(
-	repo auth.SessionsRepository,
-	cache genericcache.Cache[auth.SessionEntity],
+	repo auth.SessionRepository,
+	cache genericcache.Cache[auth.Session],
 	ttl time.Duration,
 ) *SessionStore {
 	if ttl == 0 {
@@ -46,7 +46,7 @@ func (s *SessionStore) Create(
 	orgID, _ := metadata["organization_id"].(uuid.UUID)
 	authMethod, _ := metadata["auth_method"].(string)
 	authProvider, _ := metadata["auth_provider"].(string)
-	ipAddress, _ := metadata["ip_address"].(string)
+	IPAddress, _ := metadata["ip_address"].(string)
 	userAgent, _ := metadata["user_agent"].(string)
 
 	// Generate secure session token
@@ -56,16 +56,16 @@ func (s *SessionStore) Create(
 	}
 
 	// Create session entity
-	session := &auth.SessionEntity{
+	session := &auth.Session{
 		ID:             uuid.New(),
 		UserID:         userID,
 		Token:          token,
-		OrganizationID: orgID,
+		OrganizationID: &orgID,
 		ExpiresAt:      time.Now().Add(s.ttl),
-		IPAddress:      ipAddress,
+		IpAddress:      IPAddress,
 		UserAgent:      userAgent,
-		AuthMethod:     authMethod,
-		AuthProvider:   authProvider,
+		AuthMethod:     &authMethod,
+		AuthProvider:   &authProvider,
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
 	}
@@ -123,7 +123,7 @@ func (s *SessionStore) Get(ctx context.Context, sessionID uuid.UUID) (*auth.Sess
 // GetByToken retrieves a session by token.
 func (s *SessionStore) GetByToken(ctx context.Context, token string) (*auth.Session, error) {
 	// Cache doesn't support token-based lookup, use database directly
-	session, err := s.repo.GetByToken(ctx, token)
+	session, err := s.repo.Get(ctx, token)
 	if err != nil {
 		return nil, err
 	}
@@ -149,10 +149,10 @@ func (s *SessionStore) Update(
 	sessionID uuid.UUID,
 	updates *auth.Session,
 ) (*auth.Session, error) {
-	sessionsUpdate := &auth.SessionEntity{
+	sessionsUpdate := &auth.Session{
 		UpdatedAt:      updates.UpdatedAt,
 		ExpiresAt:      updates.ExpiresAt,
-		IPAddress:      updates.IPAddress,
+		IpAddress:      updates.IpAddress,
 		UserAgent:      updates.UserAgent,
 		AuthMethod:     updates.AuthMethod,
 		AuthProvider:   updates.AuthProvider,
@@ -224,9 +224,7 @@ func (s *SessionStore) List(ctx context.Context, userID uuid.UUID) ([]*auth.Sess
 // ListByUser returns all active sessions for a user.
 func (s *SessionStore) ListByUser(ctx context.Context, userID uuid.UUID) ([]*auth.Session, error) {
 	// For now, use database directly
-	params := auth.ListSessionsParams{
-		Page: auth.PageQuery{},
-	}
+	params := auth.ListSessionsParams{}
 
 	dbSessions, _, err := s.repo.List(ctx, params)
 	if err != nil {
@@ -292,7 +290,7 @@ func (s *SessionStore) Validate(ctx context.Context, token string) (*auth.Sessio
 
 // Helper functions
 
-func (s *SessionStore) isSessionExpired(session *auth.SessionEntity) bool {
+func (s *SessionStore) isSessionExpired(session *auth.Session) bool {
 	if session == nil {
 		return true
 	}
@@ -307,7 +305,7 @@ func generateSessionToken() (string, error) {
 	return base64.URLEncoding.EncodeToString(b), nil
 }
 
-func convertToAuthSession(s *auth.SessionEntity) *auth.Session {
+func convertToAuthSession(s *auth.Session) *auth.Session {
 	if s == nil {
 		return nil
 	}
@@ -317,7 +315,7 @@ func convertToAuthSession(s *auth.SessionEntity) *auth.Session {
 		Token:          s.Token,
 		OrganizationID: s.OrganizationID,
 		ExpiresAt:      s.ExpiresAt,
-		IPAddress:      s.IPAddress,
+		IpAddress:      s.IpAddress,
 		UserAgent:      s.UserAgent,
 		AuthMethod:     s.AuthMethod,
 		AuthProvider:   s.AuthProvider,

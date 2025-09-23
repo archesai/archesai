@@ -64,15 +64,15 @@ func (r *SQLiteRepository) List(ctx context.Context, params ListLabelsParams) ([
 // ListByOrganization retrieves multiple labels by organizationID
 func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Label, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement ListByOrganization - fetch multiple records
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }
 
-// GetByName retrieves label by nameorganizationID
+// GetByName retrieves a single label by name and organizationID
 func (r *SQLiteRepository) GetByName(ctx context.Context, name string, organizationID uuid.UUID) (*Label, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement GetByName - fetch single record
 	return nil, fmt.Errorf("GetByName not yet implemented - requires custom mapping")
 
 }

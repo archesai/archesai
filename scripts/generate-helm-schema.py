@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Generate values.schema.json for Helm from ArchesConfig.yaml
+Generate values.schema.json for Helm from Config.yaml
 This script properly resolves all $ref references recursively
 """
 
@@ -72,9 +72,9 @@ def main():
         print(f"Error: Schemas directory not found: {schemas_dir}")
         sys.exit(1)
 
-    arches_config_path = schemas_dir / "ArchesConfig.yaml"
+    arches_config_path = schemas_dir / "Config.yaml"
     if not arches_config_path.exists():
-        print(f"Error: ArchesConfig.yaml not found: {arches_config_path}")
+        print(f"Error: Config.yaml not found: {arches_config_path}")
         sys.exit(1)
 
     arches_config = load_yaml(arches_config_path)

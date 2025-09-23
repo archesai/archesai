@@ -16,14 +16,14 @@ import (
 	"github.com/archesai/archesai/internal/database/postgresql"
 )
 
-// APITokenRepository implements auth.APITokenStore using PostgreSQL
-type APITokenRepository struct {
+// APIKeyRepository implements auth.APIKeyStore using PostgreSQL
+type APIKeyRepository struct {
 	db *postgresql.Queries
 }
 
-// NewAPITokenRepository creates a new API token repository
-func NewAPITokenRepository(db *postgresql.Queries) *APITokenRepository {
-	return &APITokenRepository{
+// NewAPIKeyRepository creates a new API token repository
+func NewAPIKeyRepository(db *postgresql.Queries) *APIKeyRepository {
+	return &APIKeyRepository{
 		db: db,
 	}
 }
@@ -32,13 +32,13 @@ func NewAPITokenRepository(db *postgresql.Queries) *APITokenRepository {
 const tokenPrefix = "sk_live_"
 
 // CreateToken creates a new API token
-func (r *APITokenRepository) CreateToken(
+func (r *APIKeyRepository) CreateToken(
 	ctx context.Context,
 	userID, organizationID uuid.UUID,
 	name string,
 	scopes []string,
 	expiresIn time.Duration,
-) (*auth.APITokenResponse, error) {
+) (*auth.APIKey, error) {
 	// Generate the raw token
 	rawToken, err := generateSecureToken()
 	if err != nil {
@@ -61,7 +61,7 @@ func (r *APITokenRepository) CreateToken(
 
 	// Create the token in database
 	tokenID := uuid.New()
-	params := postgresql.CreateApiTokenParams{
+	params := postgresql.CreateAPIKeyParams{
 		ID:             tokenID,
 		UserID:         userID,
 		OrganizationID: organizationID,
@@ -73,7 +73,7 @@ func (r *APITokenRepository) CreateToken(
 		ExpiresAt:      expiresAt,
 	}
 
-	dbToken, err := r.db.CreateApiToken(ctx, params)
+	dbToken, err := r.db.CreateAPIKey(ctx, params)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create token: %w", err)
 	}
@@ -84,10 +84,10 @@ func (r *APITokenRepository) CreateToken(
 		expiresAtTime = *dbToken.ExpiresAt
 	}
 
-	return &auth.APITokenResponse{
-		ID:        dbToken.ID,
-		Name:      name,
-		Key:       fullToken, // Use Key field, not Token
+	return &auth.APIKey{
+		ID:   dbToken.ID,
+		Name: name,
+		// Key:       fullToken, // Use Key field, not Token
 		Prefix:    prefix,
 		Scopes:    dbToken.Scopes,
 		RateLimit: int(dbToken.RateLimit),
@@ -97,15 +97,15 @@ func (r *APITokenRepository) CreateToken(
 }
 
 // ValidateToken validates an API token and returns its details
-func (r *APITokenRepository) ValidateToken(
+func (r *APIKeyRepository) ValidateToken(
 	ctx context.Context,
 	tokenString string,
-) (*auth.APIToken, error) {
+) (*auth.APIKey, error) {
 	// Hash the provided token
 	hash := hashToken(tokenString)
 
 	// Look up the token by hash
-	dbToken, err := r.db.GetApiTokenByKeyHash(ctx, hash)
+	dbToken, err := r.db.GetAPIKeyByKeyHash(ctx, hash)
 	if err != nil {
 		return nil, fmt.Errorf("invalid token")
 	}
@@ -116,9 +116,9 @@ func (r *APITokenRepository) ValidateToken(
 	}
 
 	// Update last used timestamp
-	_ = r.db.UpdateApiTokenLastUsed(ctx, dbToken.ID)
+	_ = r.db.UpdateAPIKeyLastUsed(ctx, dbToken.ID)
 
-	// Convert to auth.APIToken
+	// Convert to auth.APIKey
 	name := ""
 	if dbToken.Name != nil {
 		name = *dbToken.Name
@@ -129,24 +129,24 @@ func (r *APITokenRepository) ValidateToken(
 		prefix = *dbToken.Prefix
 	}
 
-	return &auth.APIToken{
+	return &auth.APIKey{
 		ID:             dbToken.ID,
-		UserID:         dbToken.UserID,
-		OrganizationID: dbToken.OrganizationID,
+		UserID:         &dbToken.UserID,
+		OrganizationID: &dbToken.OrganizationID,
 		Name:           name,
 		Prefix:         prefix,
 		Scopes:         dbToken.Scopes,
-		ExpiresAt:      dbToken.ExpiresAt,
+		ExpiresAt:      *dbToken.ExpiresAt,
 		CreatedAt:      dbToken.CreatedAt,
 	}, nil
 }
 
 // GetToken retrieves a token by ID
-func (r *APITokenRepository) GetToken(
+func (r *APIKeyRepository) GetToken(
 	ctx context.Context,
 	tokenID uuid.UUID,
-) (*auth.APIToken, error) {
-	dbToken, err := r.db.GetApiToken(ctx, tokenID)
+) (*auth.APIKey, error) {
+	dbToken, err := r.db.GetAPIKey(ctx, tokenID)
 	if err != nil {
 		return nil, fmt.Errorf("token not found")
 	}
@@ -161,25 +161,25 @@ func (r *APITokenRepository) GetToken(
 		prefix = *dbToken.Prefix
 	}
 
-	return &auth.APIToken{
+	return &auth.APIKey{
 		ID:             dbToken.ID,
-		UserID:         dbToken.UserID,
-		OrganizationID: dbToken.OrganizationID,
+		UserID:         &dbToken.UserID,
+		OrganizationID: &dbToken.OrganizationID,
 		Name:           name,
 		Prefix:         prefix,
 		Scopes:         dbToken.Scopes,
-		ExpiresAt:      dbToken.ExpiresAt,
+		ExpiresAt:      *dbToken.ExpiresAt,
 		CreatedAt:      dbToken.CreatedAt,
 	}, nil
 }
 
 // ListTokensByUser lists all tokens for a user
-func (r *APITokenRepository) ListTokensByUser(
+func (r *APIKeyRepository) ListTokensByUser(
 	ctx context.Context,
 	userID uuid.UUID,
-) ([]*auth.APIToken, error) {
+) ([]*auth.APIKey, error) {
 	// Default pagination
-	dbTokens, err := r.db.ListApiTokensByUser(ctx, postgresql.ListApiTokensByUserParams{
+	dbTokens, err := r.db.ListAPIKeysByUser(ctx, postgresql.ListAPIKeysByUserParams{
 		UserID: userID,
 		Limit:  100,
 		Offset: 0,
@@ -188,7 +188,7 @@ func (r *APITokenRepository) ListTokensByUser(
 		return nil, fmt.Errorf("failed to list tokens: %w", err)
 	}
 
-	tokens := make([]*auth.APIToken, len(dbTokens))
+	tokens := make([]*auth.APIKey, len(dbTokens))
 	for i, dbToken := range dbTokens {
 		name := ""
 		if dbToken.Name != nil {
@@ -200,14 +200,14 @@ func (r *APITokenRepository) ListTokensByUser(
 			prefix = *dbToken.Prefix
 		}
 
-		tokens[i] = &auth.APIToken{
+		tokens[i] = &auth.APIKey{
 			ID:             dbToken.ID,
-			UserID:         dbToken.UserID,
-			OrganizationID: dbToken.OrganizationID,
+			UserID:         &dbToken.UserID,
+			OrganizationID: &dbToken.OrganizationID,
 			Name:           name,
 			Prefix:         prefix,
 			Scopes:         dbToken.Scopes,
-			ExpiresAt:      dbToken.ExpiresAt,
+			ExpiresAt:      *dbToken.ExpiresAt,
 			CreatedAt:      dbToken.CreatedAt,
 		}
 	}
@@ -216,11 +216,11 @@ func (r *APITokenRepository) ListTokensByUser(
 }
 
 // RevokeToken revokes an API token
-func (r *APITokenRepository) RevokeToken(
+func (r *APIKeyRepository) RevokeToken(
 	ctx context.Context,
 	tokenID uuid.UUID,
 ) error {
-	err := r.db.DeleteApiToken(ctx, tokenID)
+	err := r.db.DeleteAPIKey(ctx, tokenID)
 	if err != nil {
 		return fmt.Errorf("failed to revoke token: %w", err)
 	}
@@ -228,11 +228,11 @@ func (r *APITokenRepository) RevokeToken(
 }
 
 // RevokeUserTokens revokes all tokens for a user
-func (r *APITokenRepository) RevokeUserTokens(
+func (r *APIKeyRepository) RevokeUserTokens(
 	ctx context.Context,
 	userID uuid.UUID,
 ) error {
-	err := r.db.DeleteApiTokensByUser(ctx, userID)
+	err := r.db.DeleteAPIKeysByUser(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to revoke user tokens: %w", err)
 	}
@@ -240,8 +240,8 @@ func (r *APITokenRepository) RevokeUserTokens(
 }
 
 // CleanupExpired removes expired tokens
-func (r *APITokenRepository) CleanupExpired(ctx context.Context) error {
-	return r.db.DeleteExpiredApiTokens(ctx)
+func (r *APIKeyRepository) CleanupExpired(ctx context.Context) error {
+	return r.db.DeleteExpiredAPIKeys(ctx)
 }
 
 // generateSecureToken generates a cryptographically secure random token
@@ -260,7 +260,7 @@ func hashToken(token string) string {
 }
 
 // ParseAPIKey extracts the key from various header formats
-func (r *APITokenRepository) ParseAPIKey(authHeader string) string {
+func (r *APIKeyRepository) ParseAPIKey(authHeader string) string {
 	authHeader = strings.TrimSpace(authHeader)
 
 	// Check for Bearer token format

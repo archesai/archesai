@@ -5,22 +5,12 @@ package accounts
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
 )
-
-// ServiceInterface defines the business logic operations
-type ServiceInterface interface {
-	CreateAccount(ctx context.Context, request CreateAccountRequestObject) (CreateAccountResponseObject, error)
-	GetAccount(ctx context.Context, request GetAccountRequestObject) (GetAccountResponseObject, error)
-	UpdateAccount(ctx context.Context, request UpdateAccountRequestObject) (UpdateAccountResponseObject, error)
-	DeleteAccount(ctx context.Context, request DeleteAccountRequestObject) (DeleteAccountResponseObject, error)
-	ListAccounts(ctx context.Context, request ListAccountsRequestObject) (ListAccountsResponseObject, error)
-}
 
 // Service implements the business logic
 type Service struct {
@@ -39,212 +29,93 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 }
 
 // CreateAccount creates a new account
-func (s *Service) CreateAccount(ctx context.Context, request CreateAccountRequestObject) (CreateAccountResponseObject, error) {
-	if request.Body == nil {
-		return CreateAccount400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) CreateAccount(ctx context.Context, entity *Account) (*Account, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Create entity from request
-	entity := &Account{
-		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	// Set timestamps if not already set
+	if entity.CreatedAt.IsZero() {
+		entity.CreatedAt = time.Now()
+	}
+	if entity.UpdatedAt.IsZero() {
+		entity.UpdatedAt = time.Now()
 	}
 
-	// Call repository to persist
 	created, err := s.repo.Create(ctx, entity)
 	if err != nil {
 		s.logger.Error("Failed to create account", "error", err)
-		return CreateAccount400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to create account",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, err
 	}
-	// Return token response for accounts and sessions
-	tokenResponse := TokenResponse{
-		AccessToken:  fmt.Sprintf("token_%s", created.ID.String()),
-		ExpiresIn:    3600,
-		RefreshToken: fmt.Sprintf("refresh_%s", created.ID.String()),
-		TokenType:    "Bearer",
-	}
-	return CreateAccount201JSONResponse(tokenResponse), nil
+
+	return created, nil
 }
 
 // GetAccount gets a account by ID
-func (s *Service) GetAccount(ctx context.Context, request GetAccountRequestObject) (GetAccountResponseObject, error) {
-	// Call repository to fetch entity
-	entity, err := s.repo.Get(ctx, request.ID)
+func (s *Service) GetAccount(ctx context.Context, id uuid.UUID) (*Account, error) {
+	entity, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrAccountNotFound) {
-			return GetAccount404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Account not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return nil, err
 		}
-
-		s.logger.Error("Failed to get account", "error", err, "id", request.ID)
-		return GetAccount404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to retrieve account",
-				Status: 404,
-				Title:  "Not Found",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get account", "error", err, "id", id)
+		return nil, err
 	}
 
-	return GetAccount200JSONResponse{
-		Data: *entity,
-	}, nil
+	return entity, nil
 }
 
 // UpdateAccount updates a account
-func (s *Service) UpdateAccount(ctx context.Context, request UpdateAccountRequestObject) (UpdateAccountResponseObject, error) {
-	if request.Body == nil {
-		return UpdateAccount404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) UpdateAccount(ctx context.Context, id uuid.UUID, entity *Account) (*Account, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Get existing entity to verify it exists
-	existing, err := s.repo.Get(ctx, request.ID)
+	// Set updated timestamp
+	entity.UpdatedAt = time.Now()
+
+	updated, err := s.repo.Update(ctx, id, entity)
 	if err != nil {
-		if errors.Is(err, ErrAccountNotFound) {
-			return UpdateAccount404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Account not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
-		}
-		s.logger.Error("Failed to get account for update", "error", err, "id", request.ID)
-		return UpdateAccount404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to update account", "error", err, "id", id)
+		return nil, err
 	}
 
-	// Update the entity with current timestamp
-	existing.UpdatedAt = time.Now()
-
-	// Call repository to persist changes
-	updated, err := s.repo.Update(ctx, request.ID, existing)
-	if err != nil {
-		s.logger.Error("Failed to update account", "error", err, "id", request.ID)
-		return UpdateAccount404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to update account",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
-	}
-
-	return UpdateAccount200JSONResponse{
-		Data: *updated,
-	}, nil
+	return updated, nil
 }
 
 // DeleteAccount deletes a account
-func (s *Service) DeleteAccount(ctx context.Context, request DeleteAccountRequestObject) (DeleteAccountResponseObject, error) {
+func (s *Service) DeleteAccount(ctx context.Context, id uuid.UUID) error {
 	// Check if entity exists first
-	_, err := s.repo.Get(ctx, request.ID)
+	_, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrAccountNotFound) {
-			return DeleteAccount404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Account not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return err
 		}
-		s.logger.Error("Failed to get account for deletion", "error", err, "id", request.ID)
-		return DeleteAccount404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get account for deletion", "error", err, "id", id)
+		return err
 	}
 
-	// Delete the entity
-	err = s.repo.Delete(ctx, request.ID)
+	err = s.repo.Delete(ctx, id)
 	if err != nil {
-		s.logger.Error("Failed to delete account", "error", err, "id", request.ID)
-		return DeleteAccount404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to delete account",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to delete account", "error", err, "id", id)
+		return err
 	}
 
-	return DeleteAccount200JSONResponse{}, nil
+	return nil
 }
 
 // ListAccounts lists all accounts
-func (s *Service) ListAccounts(ctx context.Context, request ListAccountsRequestObject) (ListAccountsResponseObject, error) {
-	// Call repository to fetch entities using the request parameters
-	entities, total, err := s.repo.List(ctx, request.Params)
+func (s *Service) ListAccounts(ctx context.Context, filter *ListAccountsParamsFilter, page *ListAccountsParamsPage, sort *ListAccountsParamsSort) ([]*Account, int64, error) {
+	params := ListAccountsParams{
+		Filter: filter,
+		Page:   page,
+		Sort:   sort,
+	}
+	entities, total, err := s.repo.List(ctx, params)
 	if err != nil {
 		s.logger.Error("Failed to list accounts", "error", err)
-		return ListAccounts400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to list accounts",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, 0, err
 	}
 
-	// Convert entities to response format
-	var responseData []Account
-	for _, entity := range entities {
-		if entity != nil {
-			responseData = append(responseData, *entity)
-		}
-	}
-
-	return ListAccounts200JSONResponse{
-		Data: responseData,
-		Meta: struct {
-			Total float32 `json:"total"`
-		}{
-			Total: float32(total),
-		},
-	}, nil
+	return entities, total, nil
 }

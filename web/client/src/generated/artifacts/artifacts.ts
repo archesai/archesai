@@ -38,8 +38,7 @@ import type {
   NotFoundResponse,
   UnauthorizedResponse,
   UpdateArtifact200,
-  UpdateArtifactBody,
-  Uuid
+  UpdateArtifactBody
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -292,7 +291,7 @@ export function useListArtifactsSuspense<TData = Awaited<ReturnType<typeof listA
  * Delete an artifact
  * @summary Delete an artifact
  */
-export const getDeleteArtifactUrl = (id: Uuid | undefined | null,) => {
+export const getDeleteArtifactUrl = (id: string | undefined | null,) => {
 
 
   
@@ -300,7 +299,7 @@ export const getDeleteArtifactUrl = (id: Uuid | undefined | null,) => {
   return `/artifacts/${id}`
 }
 
-export const deleteArtifact = async (id: Uuid | undefined | null, options?: RequestInit): Promise<DeleteArtifact200> => {
+export const deleteArtifact = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteArtifact200> => {
   
   return customFetch<DeleteArtifact200>(getDeleteArtifactUrl(id),
   {      
@@ -315,8 +314,8 @@ export const deleteArtifact = async (id: Uuid | undefined | null, options?: Requ
 
 
 export const getDeleteArtifactMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: Uuid | undefined | null}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: string | undefined | null}, TContext> => {
 
 const mutationKey = ['deleteArtifact'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -328,7 +327,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteArtifact>>, {id: Uuid | undefined | null}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteArtifact>>, {id: string | undefined | null}> = (props) => {
           const {id} = props ?? {};
 
           return  deleteArtifact(id,requestOptions)
@@ -347,11 +346,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Delete an artifact
  */
 export const useDeleteArtifact = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteArtifact>>,
         TError,
-        {id: Uuid | undefined | null},
+        {id: string | undefined | null},
         TContext
       > => {
 
@@ -363,7 +362,7 @@ export const useDeleteArtifact = <TError = NotFoundResponse,
  * Find an artifact
  * @summary Find an artifact
  */
-export const getGetArtifactUrl = (id: Uuid | undefined | null,) => {
+export const getGetArtifactUrl = (id: string | undefined | null,) => {
 
 
   
@@ -371,7 +370,7 @@ export const getGetArtifactUrl = (id: Uuid | undefined | null,) => {
   return `/artifacts/${id}`
 }
 
-export const getArtifact = async (id: Uuid | undefined | null, options?: RequestInit): Promise<GetArtifact200> => {
+export const getArtifact = async (id: string | undefined | null, options?: RequestInit): Promise<GetArtifact200> => {
   
   return customFetch<GetArtifact200>(getGetArtifactUrl(id),
   {      
@@ -384,12 +383,12 @@ export const getArtifact = async (id: Uuid | undefined | null, options?: Request
 
 
 
-export const getGetArtifactQueryKey = (id?: Uuid | undefined | null,) => {
+export const getGetArtifactQueryKey = (id?: string | undefined | null,) => {
     return [`/artifacts/${id}`] as const;
     }
 
     
-export const getGetArtifactQueryOptions = <TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetArtifactQueryOptions = <TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -412,7 +411,7 @@ export type GetArtifactQueryError = NotFoundResponse
 
 
 export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>> & Pick<
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getArtifact>>,
           TError,
@@ -422,7 +421,7 @@ export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, 
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>> & Pick<
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getArtifact>>,
           TError,
@@ -432,7 +431,7 @@ export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, 
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -440,7 +439,7 @@ export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, 
  */
 
 export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -455,7 +454,7 @@ export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, 
 
 
 
-export const getGetArtifactSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetArtifactSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -478,15 +477,15 @@ export type GetArtifactSuspenseQueryError = NotFoundResponse
 
 
 export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -494,7 +493,7 @@ export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArti
  */
 
 export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -513,7 +512,7 @@ export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArti
  * Update an artifact
  * @summary Update an artifact
  */
-export const getUpdateArtifactUrl = (id: Uuid | undefined | null,) => {
+export const getUpdateArtifactUrl = (id: string | undefined | null,) => {
 
 
   
@@ -521,7 +520,7 @@ export const getUpdateArtifactUrl = (id: Uuid | undefined | null,) => {
   return `/artifacts/${id}`
 }
 
-export const updateArtifact = async (id: Uuid | undefined | null,
+export const updateArtifact = async (id: string | undefined | null,
     updateArtifactBody: UpdateArtifactBody, options?: RequestInit): Promise<UpdateArtifact200> => {
   
   return customFetch<UpdateArtifact200>(getUpdateArtifactUrl(id),
@@ -538,8 +537,8 @@ export const updateArtifact = async (id: Uuid | undefined | null,
 
 
 export const getUpdateArtifactMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateArtifact>>, TError,{id: Uuid | undefined | null;data: UpdateArtifactBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateArtifact>>, TError,{id: Uuid | undefined | null;data: UpdateArtifactBody}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateArtifact>>, TError,{id: string | undefined | null;data: UpdateArtifactBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateArtifact>>, TError,{id: string | undefined | null;data: UpdateArtifactBody}, TContext> => {
 
 const mutationKey = ['updateArtifact'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -551,7 +550,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateArtifact>>, {id: Uuid | undefined | null;data: UpdateArtifactBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateArtifact>>, {id: string | undefined | null;data: UpdateArtifactBody}> = (props) => {
           const {id,data} = props ?? {};
 
           return  updateArtifact(id,data,requestOptions)
@@ -570,11 +569,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Update an artifact
  */
 export const useUpdateArtifact = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateArtifact>>, TError,{id: Uuid | undefined | null;data: UpdateArtifactBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateArtifact>>, TError,{id: string | undefined | null;data: UpdateArtifactBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateArtifact>>,
         TError,
-        {id: Uuid | undefined | null;data: UpdateArtifactBody},
+        {id: string | undefined | null;data: UpdateArtifactBody},
         TContext
       > => {
 

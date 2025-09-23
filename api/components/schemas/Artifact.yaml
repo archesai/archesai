@@ -1,6 +1,7 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
 description: Schema for Artifact entity
 x-codegen:
+  domain: artifacts
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID, producerID]
@@ -19,7 +20,8 @@ allOf:
         description: >-
           The number of credits required to access this artifact. This is used for
           metering and billing purposes.
-        type: number
+        type: integer
+        format: int32
         example: 42
       description:
         description: The artifact's description
@@ -37,8 +39,11 @@ allOf:
         example: Example Name
         minLength: 1
       organizationID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The organization that owns this artifact
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       previewImage:
         description: >-
           The URL of the preview image for this artifact. This is used for
@@ -47,8 +52,11 @@ allOf:
         example: example-string
         minLength: 1
       producerID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The ID of the entity that produced this artifact
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       text:
         description: The artifact text
         type: string
@@ -58,5 +66,4 @@ allOf:
       - credits
       - mimeType
       - organizationID
-      - text
-    additionalProperties: false
+unevaluatedProperties: false

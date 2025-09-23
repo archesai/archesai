@@ -17,6 +17,8 @@ type Repository interface {
 	List(ctx context.Context, params ListAccountsParams) ([]*Account, int64, error)
 
 	// Additional operations
-	GetByProviderID(ctx context.Context, provider string, providerAccountID string) (*Account, error)
+	// GetByProviderID retrieves a single account by provider and providerAccountID
+	GetByProviderID(ctx context.Context, provider AccountProviderID, providerAccountID string) (*Account, error)
+	// ListByUserID retrieves multiple accounts by userID
 	ListByUserID(ctx context.Context, userID uuid.UUID) ([]*Account, error)
 }

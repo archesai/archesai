@@ -27,17 +27,17 @@ const (
 
 // Service is the unified authentication service
 type Service struct {
-	config            *config.Config
-	logger            *slog.Logger
-	usersService      *users.Service
-	accountsRepo      accounts.Repository
-	sessionsStore     SessionStore
-	tokenManager      TokenManager
-	magicLinkStore    MagicLinkStore
-	apiTokenStore     APITokenStore
-	apiTokenValidator APITokenValidator
-	oauthProviders    map[Provider]OAuthProvider
-	deliverers        map[DeliveryMethod]Deliverer
+	config          *config.Config
+	logger          *slog.Logger
+	usersService    *users.Service
+	accountsRepo    accounts.Repository
+	sessionsStore   SessionStore
+	tokenManager    TokenManager
+	magicLinkStore  MagicLinkStore
+	apiKeyStore     APIKeyStore
+	apiKeyValidator APIKeyValidator
+	oauthProviders  map[Provider]OAuthProvider
+	deliverers      map[DeliveryMethod]Deliverer
 }
 
 // SessionStore manages session persistence
@@ -53,7 +53,7 @@ type SessionStore interface {
 type TokenManager interface {
 	GenerateAccessToken(userID, sessionID uuid.UUID) (string, error)
 	GenerateRefreshToken(userID, sessionID uuid.UUID) (string, error)
-	GenerateAPIToken(userID uuid.UUID, name string, scopes []string) (string, error)
+	GenerateAPIKey(userID uuid.UUID, name string, scopes []string) (string, error)
 	ValidateToken(token string) (*TokenClaims, error)
 	RefreshToken(refreshToken string) (string, string, error)
 }
@@ -65,7 +65,7 @@ type MagicLinkStore interface {
 		identifier string,
 		deliveryMethod DeliveryMethod,
 		userID *uuid.UUID,
-		ipAddress string,
+		IPAddress string,
 		userAgent string,
 	) (*MagicLinkToken, error)
 	VerifyToken(ctx context.Context, token string) (*MagicLinkToken, error)
@@ -79,26 +79,6 @@ type OAuthProvider interface {
 	ExchangeCode(ctx context.Context, code string) (*OAuthTokens, error)
 	GetUserInfo(ctx context.Context, accessToken string) (*OAuthUserInfo, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*OAuthTokens, error)
-}
-
-// Session represents an authenticated session
-type Session struct {
-	ID             uuid.UUID
-	UserID         uuid.UUID
-	Token          string
-	OrganizationID uuid.UUID
-	Method         Method
-	Provider       Provider
-	AuthMethod     string
-	AuthProvider   string
-	IPAddress      string
-	UserAgent      string
-	AccessToken    string
-	RefreshToken   string
-	ExpiresAt      time.Time
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	Metadata       map[string]interface{}
 }
 
 // TokenClaims represents JWT token claims
@@ -161,21 +141,21 @@ func NewService(
 	sessionsStore SessionStore,
 	tokenManager TokenManager,
 	magicLinkStore MagicLinkStore,
-	apiTokenStore APITokenStore,
-	apiTokenValidator APITokenValidator,
+	apiKeyStore APIKeyStore,
+	apiKeyValidator APIKeyValidator,
 ) *Service {
 	s := &Service{
-		config:            cfg,
-		logger:            logger,
-		usersService:      usersService,
-		accountsRepo:      accountsRepo,
-		sessionsStore:     sessionsStore,
-		tokenManager:      tokenManager,
-		magicLinkStore:    magicLinkStore,
-		apiTokenStore:     apiTokenStore,
-		apiTokenValidator: apiTokenValidator,
-		oauthProviders:    make(map[Provider]OAuthProvider),
-		deliverers:        make(map[DeliveryMethod]Deliverer),
+		config:          cfg,
+		logger:          logger,
+		usersService:    usersService,
+		accountsRepo:    accountsRepo,
+		sessionsStore:   sessionsStore,
+		tokenManager:    tokenManager,
+		magicLinkStore:  magicLinkStore,
+		apiKeyStore:     apiKeyStore,
+		apiKeyValidator: apiKeyValidator,
+		oauthProviders:  make(map[Provider]OAuthProvider),
+		deliverers:      make(map[DeliveryMethod]Deliverer),
 	}
 
 	// Default deliverers will be registered in app initialization
@@ -319,10 +299,10 @@ func (s *Service) AuthenticateWithOAuth(
 		UserID:       user.ID,
 		AccountID:    userInfo.ID,
 		ProviderID:   s.mapProviderToAccountProvider(provider),
-		AccessToken:  tokens.AccessToken,
-		RefreshToken: tokens.RefreshToken,
-		IDToken:      tokens.IDToken,
-		Scope:        tokens.Scope,
+		AccessToken:  &tokens.AccessToken,
+		RefreshToken: &tokens.RefreshToken,
+		IDToken:      &tokens.IDToken,
+		Scope:        &tokens.Scope,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
@@ -355,15 +335,15 @@ func (s *Service) SetPassword(_ context.Context, userID uuid.UUID, password stri
 	return fmt.Errorf("password management not yet fully implemented")
 }
 
-// CreateAPIToken creates a new API token
-func (s *Service) CreateAPIToken(
+// CreateAPIKey creates a new API token
+func (s *Service) CreateAPIKey(
 	_ context.Context,
 	userID uuid.UUID,
 	name string,
 	scopes []string,
 ) (string, error) {
 	// Generate API token
-	token, err := s.tokenManager.GenerateAPIToken(userID, name, scopes)
+	token, err := s.tokenManager.GenerateAPIKey(userID, name, scopes)
 	if err != nil {
 		return "", fmt.Errorf("failed to generate API token: %w", err)
 	}
@@ -464,18 +444,13 @@ func (s *Service) createSession(
 		UserID:         userID,
 		Token:          stored.Token,
 		OrganizationID: stored.OrganizationID,
-		Method:         Method(method),
-		Provider:       provider,
-		AuthMethod:     method,
 		AuthProvider:   string(provider),
-		IPAddress:      stored.IPAddress,
+		AuthMethod:     &method,
+		IpAddress:      stored.IpAddress,
 		UserAgent:      stored.UserAgent,
-		AccessToken:    accessToken,
-		RefreshToken:   refreshToken,
 		ExpiresAt:      stored.ExpiresAt,
 		CreatedAt:      stored.CreatedAt,
 		UpdatedAt:      stored.UpdatedAt,
-		Metadata:       metadata,
 	}
 
 	return session, nil
@@ -496,36 +471,36 @@ func (s *Service) mapProviderToAccountProvider(provider Provider) accounts.Accou
 	}
 }
 
-// APITokenStore manages API token persistence
-type APITokenStore interface {
+// APIKeyStore manages API token persistence
+type APIKeyStore interface {
 	CreateToken(
 		ctx context.Context,
 		userID, organizationID uuid.UUID,
 		name string,
 		scopes []string,
 		expiresIn time.Duration,
-	) (*APITokenResponse, error)
-	ValidateToken(ctx context.Context, key string) (*APIToken, error)
+	) (*APIKey, error)
+	ValidateToken(ctx context.Context, key string) (*APIKey, error)
 	RevokeToken(ctx context.Context, keyID uuid.UUID) error
-	ListTokensByUser(ctx context.Context, userID uuid.UUID) ([]*APIToken, error)
+	ListTokensByUser(ctx context.Context, userID uuid.UUID) ([]*APIKey, error)
 	ParseAPIKey(authHeader string) string
 }
 
-// APITokenValidator validates API tokens with rate limiting and scope checking
-type APITokenValidator interface {
-	ValidateAPIKey(ctx context.Context, key string) (*APIToken, error)
+// APIKeyValidator validates API tokens with rate limiting and scope checking
+type APIKeyValidator interface {
+	ValidateAPIKey(ctx context.Context, key string) (*APIKey, error)
 	ValidateAPIKeyWithScopes(
 		ctx context.Context,
 		key string,
 		requiredScopes []string,
-	) (*APIToken, error)
+	) (*APIKey, error)
 	ValidateAPIKeyForOrganization(
 		ctx context.Context,
 		key string,
 		organizationID uuid.UUID,
-	) (*APIToken, error)
+	) (*APIKey, error)
 	ExtractAPIKeyFromHeaders(headers map[string]string) string
-	CheckRateLimit(ctx context.Context, token *APIToken, window time.Duration) error
+	CheckRateLimit(ctx context.Context, token *APIKey, window time.Duration) error
 	ValidateScopes(tokenScopes, requiredScopes []string) error
 }
 
@@ -543,33 +518,6 @@ const (
 // Deliverer delivers magic links via various methods
 type Deliverer interface {
 	Deliver(ctx context.Context, token *MagicLinkToken, baseURL string) error
-}
-
-// APIToken represents an API token with metadata
-type APIToken struct {
-	ID             uuid.UUID
-	UserID         uuid.UUID
-	OrganizationID uuid.UUID
-	Name           string
-	Prefix         string
-	Scopes         []string
-	RateLimit      int
-	ExpiresAt      *time.Time
-	LastUsedAt     *time.Time
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-}
-
-// APITokenResponse is returned when creating API tokens
-type APITokenResponse struct {
-	ID        uuid.UUID
-	Name      string
-	Prefix    string
-	Scopes    []string
-	RateLimit int
-	ExpiresAt time.Time
-	CreatedAt time.Time
-	Key       string // Only returned on creation
 }
 
 // TokenPair represents an access/refresh token pair

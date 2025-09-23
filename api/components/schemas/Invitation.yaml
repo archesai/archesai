@@ -1,6 +1,7 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
 description: Schema for Invitation entity
 x-codegen:
+  domain: invitations
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID, email, inviterID]
@@ -30,11 +31,17 @@ allOf:
         minLength: 1
         example: '2023-12-31T23:59:59Z'
       inviterID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The ID of the user who sent this invitation
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       organizationID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The organization the user is being invited to join
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       role:
         description: The role of the invitation
         type: string
@@ -55,4 +62,4 @@ allOf:
       - organizationID
       - role
       - status
-    additionalProperties: false
+unevaluatedProperties: false

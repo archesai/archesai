@@ -1,29 +1,13 @@
 get:
-  operationId: listTokens
+  operationId: listAPIKeys
   summary: List tokens
   tags:
-    - Tokens
+    - Auth
   description: List user's tokens (without showing the actual key values)
   parameters:
-    - schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-        example: 10
-      in: query
-      name: limit
-      required: false
-      description: Maximum number of items to return
-    - schema:
-        type: integer
-        minimum: 0
-        default: 0
-        example: 0
-      in: query
-      name: offset
-      required: false
-      description: Number of items to skip
+    - $ref: ../components/parameters/APIKeysFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/APIKeysSort.yaml
   security:
     - bearerAuth: []
   responses:
@@ -41,7 +25,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/ApiKey.yaml
+                  $ref: ../components/schemas/APIKey.yaml
               meta:
                 type: object
                 additionalProperties: false
@@ -55,10 +39,10 @@ get:
       $ref: ../components/responses/Unauthorized.yaml
 
 post:
-  operationId: createToken
+  operationId: createAPIKey
   summary: Create a token
   tags:
-    - Tokens
+    - Auth
   description: Create a token
   security:
     - bearerAuth: []
@@ -102,7 +86,7 @@ post:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/ApiKeyResponse.yaml
+            $ref: ../components/schemas/APIKey.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

@@ -6,8 +6,11 @@ delete:
   description: Delete an organization
   parameters:
     - schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       in: path
       name: id
       required: true
@@ -37,8 +40,11 @@ get:
   description: Get an organization
   parameters:
     - schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       in: path
       name: id
       required: true
@@ -78,12 +84,18 @@ patch:
               example: example@archesai.com
               format: email
             organizationID:
-              allOf:
-                - $ref: ../components/schemas/UUID.yaml
+              description: UUID identifier
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
   parameters:
     - schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       in: path
       name: id
       required: true

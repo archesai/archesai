@@ -12,15 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// ServiceInterface defines the business logic operations
-type ServiceInterface interface {
-	CreateOrganization(ctx context.Context, request CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error)
-	GetOrganization(ctx context.Context, request GetOrganizationRequestObject) (GetOrganizationResponseObject, error)
-	UpdateOrganization(ctx context.Context, request UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error)
-	DeleteOrganization(ctx context.Context, request DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error)
-	ListOrganizations(ctx context.Context, request ListOrganizationsRequestObject) (ListOrganizationsResponseObject, error)
-}
-
 // Service implements the business logic
 type Service struct {
 	repo   Repository
@@ -38,208 +29,93 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 }
 
 // CreateOrganization creates a new organization
-func (s *Service) CreateOrganization(ctx context.Context, request CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error) {
-	if request.Body == nil {
-		return CreateOrganization400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) CreateOrganization(ctx context.Context, entity *Organization) (*Organization, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Create entity from request
-	entity := &Organization{
-		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	// Set timestamps if not already set
+	if entity.CreatedAt.IsZero() {
+		entity.CreatedAt = time.Now()
+	}
+	if entity.UpdatedAt.IsZero() {
+		entity.UpdatedAt = time.Now()
 	}
 
-	// Call repository to persist
 	created, err := s.repo.Create(ctx, entity)
 	if err != nil {
 		s.logger.Error("Failed to create organization", "error", err)
-		return CreateOrganization400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to create organization",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, err
 	}
-	// Check if response type has Data field (wrapped response)
-	return CreateOrganization201JSONResponse{
-		Data: *created,
-	}, nil
+
+	return created, nil
 }
 
 // GetOrganization gets a organization by ID
-func (s *Service) GetOrganization(ctx context.Context, request GetOrganizationRequestObject) (GetOrganizationResponseObject, error) {
-	// Call repository to fetch entity
-	entity, err := s.repo.Get(ctx, request.ID)
+func (s *Service) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
+	entity, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrOrganizationNotFound) {
-			return GetOrganization404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Organization not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return nil, err
 		}
-
-		s.logger.Error("Failed to get organization", "error", err, "id", request.ID)
-		return GetOrganization404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to retrieve organization",
-				Status: 404,
-				Title:  "Not Found",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get organization", "error", err, "id", id)
+		return nil, err
 	}
 
-	return GetOrganization200JSONResponse{
-		Data: *entity,
-	}, nil
+	return entity, nil
 }
 
 // UpdateOrganization updates a organization
-func (s *Service) UpdateOrganization(ctx context.Context, request UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error) {
-	if request.Body == nil {
-		return UpdateOrganization404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) UpdateOrganization(ctx context.Context, id uuid.UUID, entity *Organization) (*Organization, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Get existing entity to verify it exists
-	existing, err := s.repo.Get(ctx, request.ID)
+	// Set updated timestamp
+	entity.UpdatedAt = time.Now()
+
+	updated, err := s.repo.Update(ctx, id, entity)
 	if err != nil {
-		if errors.Is(err, ErrOrganizationNotFound) {
-			return UpdateOrganization404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Organization not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
-		}
-		s.logger.Error("Failed to get organization for update", "error", err, "id", request.ID)
-		return UpdateOrganization404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to update organization", "error", err, "id", id)
+		return nil, err
 	}
 
-	// Update the entity with current timestamp
-	existing.UpdatedAt = time.Now()
-
-	// Call repository to persist changes
-	updated, err := s.repo.Update(ctx, request.ID, existing)
-	if err != nil {
-		s.logger.Error("Failed to update organization", "error", err, "id", request.ID)
-		return UpdateOrganization404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to update organization",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
-	}
-
-	return UpdateOrganization200JSONResponse{
-		Data: *updated,
-	}, nil
+	return updated, nil
 }
 
 // DeleteOrganization deletes a organization
-func (s *Service) DeleteOrganization(ctx context.Context, request DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error) {
+func (s *Service) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
 	// Check if entity exists first
-	_, err := s.repo.Get(ctx, request.ID)
+	_, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrOrganizationNotFound) {
-			return DeleteOrganization404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Organization not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return err
 		}
-		s.logger.Error("Failed to get organization for deletion", "error", err, "id", request.ID)
-		return DeleteOrganization404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get organization for deletion", "error", err, "id", id)
+		return err
 	}
 
-	// Delete the entity
-	err = s.repo.Delete(ctx, request.ID)
+	err = s.repo.Delete(ctx, id)
 	if err != nil {
-		s.logger.Error("Failed to delete organization", "error", err, "id", request.ID)
-		return DeleteOrganization404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to delete organization",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to delete organization", "error", err, "id", id)
+		return err
 	}
 
-	return DeleteOrganization200JSONResponse{}, nil
+	return nil
 }
 
 // ListOrganizations lists all organizations
-func (s *Service) ListOrganizations(ctx context.Context, request ListOrganizationsRequestObject) (ListOrganizationsResponseObject, error) {
-	// Call repository to fetch entities using the request parameters
-	entities, total, err := s.repo.List(ctx, request.Params)
+func (s *Service) ListOrganizations(ctx context.Context, filter *ListOrganizationsParamsFilter, page *ListOrganizationsParamsPage, sort *ListOrganizationsParamsSort) ([]*Organization, int64, error) {
+	params := ListOrganizationsParams{
+		Filter: filter,
+		Page:   page,
+		Sort:   sort,
+	}
+	entities, total, err := s.repo.List(ctx, params)
 	if err != nil {
 		s.logger.Error("Failed to list organizations", "error", err)
-		return ListOrganizations400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to list organizations",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, 0, err
 	}
 
-	// Convert entities to response format
-	var responseData []Organization
-	for _, entity := range entities {
-		if entity != nil {
-			responseData = append(responseData, *entity)
-		}
-	}
-
-	return ListOrganizations200JSONResponse{
-		Data: responseData,
-		Meta: struct {
-			Total float32 `json:"total"`
-		}{
-			Total: float32(total),
-		},
-	}, nil
+	return entities, total, nil
 }

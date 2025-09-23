@@ -40,8 +40,8 @@ func (s *Service) FindOrCreateFromOAuth(
 		}
 
 		// Update image if provided and different
-		if userInfo.Picture != "" && existingUser.Image != userInfo.Picture {
-			existingUser.Image = userInfo.Picture
+		if userInfo.Picture != "" {
+			existingUser.Image = &userInfo.Picture
 		}
 
 		// Update the user
@@ -61,10 +61,10 @@ func (s *Service) FindOrCreateFromOAuth(
 
 	newUser := &User{
 		ID:            uuid.New(),
-		Email:         Email(userInfo.Email),  // Convert string to Email type
+		Email:         userInfo.Email,         // Convert string to Email type
 		EmailVerified: userInfo.EmailVerified, // OAuth providers usually verify emails
 		Name:          userInfo.Name,
-		Image:         userInfo.Picture, // Map Picture to Image field
+		Image:         &userInfo.Picture, // Map Picture to Image field
 		CreatedAt:     time.Now(),
 		UpdatedAt:     time.Now(),
 	}

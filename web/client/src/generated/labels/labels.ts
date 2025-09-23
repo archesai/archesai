@@ -38,8 +38,7 @@ import type {
   NotFoundResponse,
   UnauthorizedResponse,
   UpdateLabel200,
-  UpdateLabelBody,
-  Uuid
+  UpdateLabelBody
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -292,7 +291,7 @@ export function useListLabelsSuspense<TData = Awaited<ReturnType<typeof listLabe
  * Delete a label
  * @summary Delete a label
  */
-export const getDeleteLabelUrl = (id: Uuid | undefined | null,) => {
+export const getDeleteLabelUrl = (id: string | undefined | null,) => {
 
 
   
@@ -300,7 +299,7 @@ export const getDeleteLabelUrl = (id: Uuid | undefined | null,) => {
   return `/labels/${id}`
 }
 
-export const deleteLabel = async (id: Uuid | undefined | null, options?: RequestInit): Promise<DeleteLabel200> => {
+export const deleteLabel = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteLabel200> => {
   
   return customFetch<DeleteLabel200>(getDeleteLabelUrl(id),
   {      
@@ -315,8 +314,8 @@ export const deleteLabel = async (id: Uuid | undefined | null, options?: Request
 
 
 export const getDeleteLabelMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteLabel>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteLabel>>, TError,{id: Uuid | undefined | null}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteLabel>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteLabel>>, TError,{id: string | undefined | null}, TContext> => {
 
 const mutationKey = ['deleteLabel'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -328,7 +327,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteLabel>>, {id: Uuid | undefined | null}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteLabel>>, {id: string | undefined | null}> = (props) => {
           const {id} = props ?? {};
 
           return  deleteLabel(id,requestOptions)
@@ -347,11 +346,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Delete a label
  */
 export const useDeleteLabel = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteLabel>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteLabel>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteLabel>>,
         TError,
-        {id: Uuid | undefined | null},
+        {id: string | undefined | null},
         TContext
       > => {
 
@@ -363,7 +362,7 @@ export const useDeleteLabel = <TError = NotFoundResponse,
  * Find a label
  * @summary Find a label
  */
-export const getGetLabelUrl = (id: Uuid | undefined | null,) => {
+export const getGetLabelUrl = (id: string | undefined | null,) => {
 
 
   
@@ -371,7 +370,7 @@ export const getGetLabelUrl = (id: Uuid | undefined | null,) => {
   return `/labels/${id}`
 }
 
-export const getLabel = async (id: Uuid | undefined | null, options?: RequestInit): Promise<GetLabel200> => {
+export const getLabel = async (id: string | undefined | null, options?: RequestInit): Promise<GetLabel200> => {
   
   return customFetch<GetLabel200>(getGetLabelUrl(id),
   {      
@@ -384,12 +383,12 @@ export const getLabel = async (id: Uuid | undefined | null, options?: RequestIni
 
 
 
-export const getGetLabelQueryKey = (id?: Uuid | undefined | null,) => {
+export const getGetLabelQueryKey = (id?: string | undefined | null,) => {
     return [`/labels/${id}`] as const;
     }
 
     
-export const getGetLabelQueryOptions = <TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetLabelQueryOptions = <TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -412,7 +411,7 @@ export type GetLabelQueryError = NotFoundResponse
 
 
 export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>> & Pick<
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getLabel>>,
           TError,
@@ -422,7 +421,7 @@ export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>> & Pick<
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getLabel>>,
           TError,
@@ -432,7 +431,7 @@ export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -440,7 +439,7 @@ export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError
  */
 
 export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -455,7 +454,7 @@ export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError
 
 
 
-export const getGetLabelSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetLabelSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -478,15 +477,15 @@ export type GetLabelSuspenseQueryError = NotFoundResponse
 
 
 export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -494,7 +493,7 @@ export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>
  */
 
 export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -513,7 +512,7 @@ export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>
  * Update a label
  * @summary Update a label
  */
-export const getUpdateLabelUrl = (id: Uuid | undefined | null,) => {
+export const getUpdateLabelUrl = (id: string | undefined | null,) => {
 
 
   
@@ -521,7 +520,7 @@ export const getUpdateLabelUrl = (id: Uuid | undefined | null,) => {
   return `/labels/${id}`
 }
 
-export const updateLabel = async (id: Uuid | undefined | null,
+export const updateLabel = async (id: string | undefined | null,
     updateLabelBody: UpdateLabelBody, options?: RequestInit): Promise<UpdateLabel200> => {
   
   return customFetch<UpdateLabel200>(getUpdateLabelUrl(id),
@@ -538,8 +537,8 @@ export const updateLabel = async (id: Uuid | undefined | null,
 
 
 export const getUpdateLabelMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLabel>>, TError,{id: Uuid | undefined | null;data: UpdateLabelBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateLabel>>, TError,{id: Uuid | undefined | null;data: UpdateLabelBody}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLabel>>, TError,{id: string | undefined | null;data: UpdateLabelBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateLabel>>, TError,{id: string | undefined | null;data: UpdateLabelBody}, TContext> => {
 
 const mutationKey = ['updateLabel'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -551,7 +550,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateLabel>>, {id: Uuid | undefined | null;data: UpdateLabelBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateLabel>>, {id: string | undefined | null;data: UpdateLabelBody}> = (props) => {
           const {id,data} = props ?? {};
 
           return  updateLabel(id,data,requestOptions)
@@ -570,11 +569,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Update a label
  */
 export const useUpdateLabel = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLabel>>, TError,{id: Uuid | undefined | null;data: UpdateLabelBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLabel>>, TError,{id: string | undefined | null;data: UpdateLabelBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateLabel>>,
         TError,
-        {id: Uuid | undefined | null;data: UpdateLabelBody},
+        {id: string | undefined | null;data: UpdateLabelBody},
         TContext
       > => {
 

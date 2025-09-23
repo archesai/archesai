@@ -1,4 +1,6 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: codegen
 description: Schema for codegen.yaml configuration file
 type: object
 properties:
@@ -6,44 +8,13 @@ properties:
     type: string
     description: Path to the OpenAPI specification file
     example: 'api/openapi.bundled.yaml'
+    default: 'api/openapi.bundled.yaml'
 
   output:
     type: string
     description: Output directory for generated files
     default: 'internal'
     example: 'internal'
-
-  domains:
-    type: object
-    description: Domains to generate
-    additionalProperties:
-      type: object
-      properties:
-        tags:
-          type: array
-          items:
-            type: string
-        schemas:
-          type: array
-          items:
-            type: string
-
-  settings:
-    type: object
-    description: Global generation settings
-    properties:
-      overwrite:
-        type: boolean
-        description: Whether to overwrite existing files
-        default: false
-      generate_tests:
-        type: boolean
-        description: Whether to generate test files
-        default: false
-      header:
-        type: string
-        description: File header comment
-    additionalProperties: false
 
   generators:
     type: object
@@ -101,18 +72,10 @@ properties:
             example: 'events_nats.gen.go'
         additionalProperties: false
       service:
-        type: object
-        description: Service generation paths
-        properties:
-          interface:
-            type: string
-            description: Path for service interface
-            example: 'service.gen.go'
-          implementation:
-            type: string
-            description: Path for service implementation
-            example: 'service_impl.gen.go'
-        additionalProperties: false
+        type: string
+        description: Path for service layer generation
+        default: 'service.gen.go'
+        example: 'service.gen.go'
       sql:
         type: object
         description: SQL generation configuration
@@ -131,38 +94,16 @@ properties:
             enum: ['postgresql', 'sqlite', 'mysql']
             default: 'postgresql'
         additionalProperties: false
-      handlers:
+      types:
         type: string
-        description: Path for HTTP handler generation
-        example: 'handlers.gen.go'
-      adapters:
+        description: Path for OpenAPI type definitions
+        example: 'types.gen.go'
+        default: 'types.gen.go'
+      echo_server:
         type: string
-        description: Path for type adapters/mappers
-        example: 'adapters.gen.go'
-      tests:
-        oneOf:
-          - type: boolean
-            description: Enable/disable test generation with default paths
-          - type: object
-            description: Test generation paths
-            properties:
-              unit:
-                type: string
-                description: Path for unit tests
-                example: 'service_test.gen.go'
-              integration:
-                type: string
-                description: Path for integration tests
-                example: 'integration_test.gen.go'
-              mocks:
-                type: string
-                description: Path for mock implementations
-                example: 'mocks_test.gen.go'
-            additionalProperties: false
-      defaults:
-        type: string
-        description: Path for configuration defaults (relative to project root)
-        example: './internal/config/defaults.gen.go'
+        description: Path for Echo server handlers
+        example: 'handler.gen.go'
+        default: 'handler.gen.go'
     additionalProperties: false
 
 required:

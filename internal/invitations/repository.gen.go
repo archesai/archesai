@@ -17,7 +17,10 @@ type Repository interface {
 	List(ctx context.Context, params ListInvitationsParams) ([]*Invitation, int64, error)
 
 	// Additional operations
+	// ListByOrganization retrieves multiple invitations by organizationID
 	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Invitation, error)
+	// GetByEmail retrieves a single invitation by email and organizationID
 	GetByEmail(ctx context.Context, email string, organizationID uuid.UUID) (*Invitation, error)
-	ListByInviter(ctx context.Context, inviterID string) ([]*Invitation, error)
+	// ListByInviter retrieves multiple invitations by inviterID
+	ListByInviter(ctx context.Context, inviterID uuid.UUID) ([]*Invitation, error)
 }

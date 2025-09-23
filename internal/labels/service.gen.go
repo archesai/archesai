@@ -12,15 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// ServiceInterface defines the business logic operations
-type ServiceInterface interface {
-	CreateLabel(ctx context.Context, request CreateLabelRequestObject) (CreateLabelResponseObject, error)
-	GetLabel(ctx context.Context, request GetLabelRequestObject) (GetLabelResponseObject, error)
-	UpdateLabel(ctx context.Context, request UpdateLabelRequestObject) (UpdateLabelResponseObject, error)
-	DeleteLabel(ctx context.Context, request DeleteLabelRequestObject) (DeleteLabelResponseObject, error)
-	ListLabels(ctx context.Context, request ListLabelsRequestObject) (ListLabelsResponseObject, error)
-}
-
 // Service implements the business logic
 type Service struct {
 	repo   Repository
@@ -38,208 +29,93 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 }
 
 // CreateLabel creates a new label
-func (s *Service) CreateLabel(ctx context.Context, request CreateLabelRequestObject) (CreateLabelResponseObject, error) {
-	if request.Body == nil {
-		return CreateLabel400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) CreateLabel(ctx context.Context, entity *Label) (*Label, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Create entity from request
-	entity := &Label{
-		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	// Set timestamps if not already set
+	if entity.CreatedAt.IsZero() {
+		entity.CreatedAt = time.Now()
+	}
+	if entity.UpdatedAt.IsZero() {
+		entity.UpdatedAt = time.Now()
 	}
 
-	// Call repository to persist
 	created, err := s.repo.Create(ctx, entity)
 	if err != nil {
 		s.logger.Error("Failed to create label", "error", err)
-		return CreateLabel400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to create label",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, err
 	}
-	// Check if response type has Data field (wrapped response)
-	return CreateLabel201JSONResponse{
-		Data: *created,
-	}, nil
+
+	return created, nil
 }
 
 // GetLabel gets a label by ID
-func (s *Service) GetLabel(ctx context.Context, request GetLabelRequestObject) (GetLabelResponseObject, error) {
-	// Call repository to fetch entity
-	entity, err := s.repo.Get(ctx, request.ID)
+func (s *Service) GetLabel(ctx context.Context, id uuid.UUID) (*Label, error) {
+	entity, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrLabelNotFound) {
-			return GetLabel404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Label not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return nil, err
 		}
-
-		s.logger.Error("Failed to get label", "error", err, "id", request.ID)
-		return GetLabel404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to retrieve label",
-				Status: 404,
-				Title:  "Not Found",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get label", "error", err, "id", id)
+		return nil, err
 	}
 
-	return GetLabel200JSONResponse{
-		Data: *entity,
-	}, nil
+	return entity, nil
 }
 
 // UpdateLabel updates a label
-func (s *Service) UpdateLabel(ctx context.Context, request UpdateLabelRequestObject) (UpdateLabelResponseObject, error) {
-	if request.Body == nil {
-		return UpdateLabel404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) UpdateLabel(ctx context.Context, id uuid.UUID, entity *Label) (*Label, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Get existing entity to verify it exists
-	existing, err := s.repo.Get(ctx, request.ID)
+	// Set updated timestamp
+	entity.UpdatedAt = time.Now()
+
+	updated, err := s.repo.Update(ctx, id, entity)
 	if err != nil {
-		if errors.Is(err, ErrLabelNotFound) {
-			return UpdateLabel404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Label not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
-		}
-		s.logger.Error("Failed to get label for update", "error", err, "id", request.ID)
-		return UpdateLabel404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to update label", "error", err, "id", id)
+		return nil, err
 	}
 
-	// Update the entity with current timestamp
-	existing.UpdatedAt = time.Now()
-
-	// Call repository to persist changes
-	updated, err := s.repo.Update(ctx, request.ID, existing)
-	if err != nil {
-		s.logger.Error("Failed to update label", "error", err, "id", request.ID)
-		return UpdateLabel404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to update label",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
-	}
-
-	return UpdateLabel200JSONResponse{
-		Data: *updated,
-	}, nil
+	return updated, nil
 }
 
 // DeleteLabel deletes a label
-func (s *Service) DeleteLabel(ctx context.Context, request DeleteLabelRequestObject) (DeleteLabelResponseObject, error) {
+func (s *Service) DeleteLabel(ctx context.Context, id uuid.UUID) error {
 	// Check if entity exists first
-	_, err := s.repo.Get(ctx, request.ID)
+	_, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrLabelNotFound) {
-			return DeleteLabel404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Label not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return err
 		}
-		s.logger.Error("Failed to get label for deletion", "error", err, "id", request.ID)
-		return DeleteLabel404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get label for deletion", "error", err, "id", id)
+		return err
 	}
 
-	// Delete the entity
-	err = s.repo.Delete(ctx, request.ID)
+	err = s.repo.Delete(ctx, id)
 	if err != nil {
-		s.logger.Error("Failed to delete label", "error", err, "id", request.ID)
-		return DeleteLabel404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to delete label",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to delete label", "error", err, "id", id)
+		return err
 	}
 
-	return DeleteLabel200JSONResponse{}, nil
+	return nil
 }
 
 // ListLabels lists all labels
-func (s *Service) ListLabels(ctx context.Context, request ListLabelsRequestObject) (ListLabelsResponseObject, error) {
-	// Call repository to fetch entities using the request parameters
-	entities, total, err := s.repo.List(ctx, request.Params)
+func (s *Service) ListLabels(ctx context.Context, filter *ListLabelsParamsFilter, page *ListLabelsParamsPage, sort *ListLabelsParamsSort) ([]*Label, int64, error) {
+	params := ListLabelsParams{
+		Filter: filter,
+		Page:   page,
+		Sort:   sort,
+	}
+	entities, total, err := s.repo.List(ctx, params)
 	if err != nil {
 		s.logger.Error("Failed to list labels", "error", err)
-		return ListLabels400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to list labels",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, 0, err
 	}
 
-	// Convert entities to response format
-	var responseData []Label
-	for _, entity := range entities {
-		if entity != nil {
-			responseData = append(responseData, *entity)
-		}
-	}
-
-	return ListLabels200JSONResponse{
-		Data: responseData,
-		Meta: struct {
-			Total float32 `json:"total"`
-		}{
-			Total: float32(total),
-		},
-	}, nil
+	return entities, total, nil
 }

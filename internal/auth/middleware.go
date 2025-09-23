@@ -11,8 +11,8 @@ import (
 
 // Additional context keys for middleware
 const (
-	// AuthAPITokenContextKey is the context key for API token
-	AuthAPITokenContextKey = "auth_api_token"
+	// AuthAPIKeyContextKey is the context key for API token
+	AuthAPIKeyContextKey = "auth_api_token"
 	// AuthMethodContextKey is the context key for the auth method used
 	AuthMethodContextKey = "auth_method"
 )
@@ -113,8 +113,8 @@ func RequireOrganizationMember(orgID uuid.UUID) echo.MiddlewareFunc {
 			}
 
 			// Check API token
-			if token, ok := c.Get(AuthAPITokenContextKey).(*APIToken); ok {
-				if token.OrganizationID != orgID {
+			if token, ok := c.Get(AuthAPIKeyContextKey).(*APIKey); ok {
+				if token.OrganizationID != &orgID {
 					return echo.NewHTTPError(http.StatusForbidden, "organization access required")
 				}
 			}
@@ -145,8 +145,8 @@ func (s *Service) RequireScopes(scopes ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Check API token scopes
-			if token, ok := c.Get(AuthAPITokenContextKey).(*APIToken); ok {
-				if err := s.apiTokenValidator.ValidateScopes(token.Scopes, scopes); err != nil {
+			if token, ok := c.Get(AuthAPIKeyContextKey).(*APIKey); ok {
+				if err := s.apiKeyValidator.ValidateScopes(token.Scopes, scopes); err != nil {
 					return echo.NewHTTPError(http.StatusForbidden, "insufficient scopes")
 				}
 			}
@@ -174,7 +174,7 @@ func (s *Service) authenticateJWT(c echo.Context, token string, next echo.Handle
 	}
 
 	// Get user information (you may want to cache this)
-	user, err := s.usersService.GetByID(c.Request().Context(), claims.UserID)
+	user, err := s.usersService.GetUser(c.Request().Context(), claims.UserID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "user not found")
 	}
@@ -190,20 +190,20 @@ func (s *Service) authenticateJWT(c echo.Context, token string, next echo.Handle
 // authenticateAPIKey handles API key authentication.
 func (s *Service) authenticateAPIKey(c echo.Context, apiKey string, next echo.HandlerFunc) error {
 	// Validate API key
-	token, err := s.apiTokenStore.ValidateToken(c.Request().Context(), apiKey)
+	token, err := s.apiKeyStore.ValidateToken(c.Request().Context(), apiKey)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "invalid api key")
 	}
 
 	// Get user information
-	user, err := s.usersService.GetByID(c.Request().Context(), token.UserID)
+	user, err := s.usersService.GetUser(c.Request().Context(), *token.UserID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "user not found")
 	}
 
 	// Set context values
 	c.Set(string(AuthUserContextKey), user)
-	c.Set(AuthAPITokenContextKey, token)
+	c.Set(AuthAPIKeyContextKey, token)
 	c.Set(AuthMethodContextKey, "api_key")
 
 	return next(c)
@@ -217,7 +217,7 @@ func (s *Service) extractAPIKey(c echo.Context) string {
 		"Api-Key":       c.Request().Header.Get("Api-Key"),
 	}
 
-	return s.apiTokenValidator.ExtractAPIKeyFromHeaders(headers)
+	return s.apiKeyValidator.ExtractAPIKeyFromHeaders(headers)
 }
 
 // GetAuthenticatedUser returns the authenticated user from context.
@@ -233,8 +233,8 @@ func GetAuthenticatedUserID(c echo.Context) (uuid.UUID, bool) {
 	}
 
 	// Try API token
-	if token, ok := c.Get(AuthAPITokenContextKey).(*APIToken); ok {
-		return token.UserID, true
+	if token, ok := c.Get(AuthAPIKeyContextKey).(*APIKey); ok {
+		return *token.UserID, true
 	}
 
 	return uuid.Nil, false
@@ -246,9 +246,9 @@ func GetJWTClaims(c echo.Context) (*EnhancedClaims, bool) {
 	return claims, ok
 }
 
-// GetAPIToken returns API token from context.
-func GetAPIToken(c echo.Context) (*APIToken, bool) {
-	token, ok := c.Get(AuthAPITokenContextKey).(*APIToken)
+// GetAPIKey returns API token from context.
+func GetAPIKey(c echo.Context) (*APIKey, bool) {
+	token, ok := c.Get(AuthAPIKeyContextKey).(*APIKey)
 	return token, ok
 }
 
@@ -276,8 +276,8 @@ func GetOrganizationID(c echo.Context) (uuid.UUID, bool) {
 	}
 
 	// Try API token
-	if token, ok := c.Get(AuthAPITokenContextKey).(*APIToken); ok {
-		return token.OrganizationID, true
+	if token, ok := c.Get(AuthAPIKeyContextKey).(*APIKey); ok {
+		return *token.OrganizationID, true
 	}
 
 	return uuid.Nil, false

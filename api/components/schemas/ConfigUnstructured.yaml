@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: config
+description: Unstructured.io service for document parsing
+type: object
+properties:
+  enabled:
+    description: Enable unstructured document parsing
+    type: boolean
+    default: false
+    example: true
+  managed:
+    description: Use managed unstructured deployment
+    type: boolean
+    default: false
+    example: true
+  image:
+    $ref: ./ConfigImage.yaml
+  resources:
+    $ref: ./ConfigResource.yaml
+required:
+  - enabled
+additionalProperties: false

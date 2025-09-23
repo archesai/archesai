@@ -4,9 +4,7 @@ package members
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -15,14 +13,12 @@ import (
 
 // PostgresRepository implements Repository using PostgreSQL.
 type PostgresRepository struct {
-	db      *pgxpool.Pool
 	queries *postgresql.Queries
 }
 
 // NewPostgresRepository creates a new PostgreSQL repository.
 func NewPostgresRepository(db *pgxpool.Pool) Repository {
 	return &PostgresRepository{
-		db:      db,
 		queries: postgresql.New(db),
 	}
 }
@@ -65,7 +61,7 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *M
 	params := postgresql.UpdateMemberParams{
 		ID: id,
 
-		Role: stringPtr(string(entity.Role)),
+		Role: func() *string { s := string(entity.Role); return &s }(),
 	}
 
 	result, err := r.queries.UpdateMember(ctx, params)
@@ -98,7 +94,7 @@ func (r *PostgresRepository) List(ctx context.Context, params ListMembersParams)
 	limit := int32(10) // default
 
 	// Check if params has Page field with Number and Size
-	if params.Page.Number > 0 && params.Page.Size > 0 {
+	if params.Page != nil && params.Page.Number > 0 && params.Page.Size > 0 {
 		offset = int32((params.Page.Number - 1) * params.Page.Size)
 		limit = int32(params.Page.Size)
 	}
@@ -125,30 +121,29 @@ func (r *PostgresRepository) List(ctx context.Context, params ListMembersParams)
 	return items, count, nil
 }
 
+// Additional methods
+
 // ListByOrganization retrieves multiple members by organizationID
 func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Member, error) {
-	// TODO: Implement ListByOrganization - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("ListByOrganization not implemented - add SQLC query")
+	// TODO: Implement ListByOrganization - fetch multiple members
+	return nil, fmt.Errorf("ListByOrganization not yet implemented")
 
 }
 
 // ListByUser retrieves multiple members by userID
 func (r *PostgresRepository) ListByUser(ctx context.Context, userID uuid.UUID) ([]*Member, error) {
-	// TODO: Implement ListByUser - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("ListByUser not implemented - add SQLC query")
+	// TODO: Implement ListByUser - fetch multiple members
+	return nil, fmt.Errorf("ListByUser not yet implemented")
 
 }
 
-// GetByUserAndOrganization retrieves member by userIDorganizationID
+// GetByUserAndOrganization retrieves a single member by userID and organizationID
 func (r *PostgresRepository) GetByUserAndOrganization(ctx context.Context, userID uuid.UUID, organizationID uuid.UUID) (*Member, error) {
-	// TODO: Implement GetByUserAndOrganization - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("GetByUserAndOrganization not implemented - add SQLC query")
+	// TODO: Implement GetByUserAndOrganization - fetch single member
+	return nil, fmt.Errorf("GetByUserAndOrganization not yet implemented")
 
 }
 
@@ -172,79 +167,4 @@ func mapMemberFromDB(db *postgresql.Member) *Member {
 	}
 
 	return result
-}
-
-// Helper functions for conversions
-func stringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func nilIfEmpty(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func stringFromPtr(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
-func boolPtr(b bool) *bool {
-	return &b
-}
-
-func int32Ptr(i int32) *int32 {
-	return &i
-}
-
-func float32Ptr(f float32) *float32 {
-	return &f
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
-}
-
-func marshalJSON(v interface{}) *string {
-	if v == nil {
-		return nil
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil
-	}
-	s := string(data)
-	return &s
-}
-
-func unmarshalJSON(s *string) map[string]interface{} {
-	if s == nil {
-		return nil
-	}
-	var result map[string]interface{}
-	if err := json.Unmarshal([]byte(*s), &result); err != nil {
-		return nil
-	}
-	return result
-}
-
-func uuidFromPtr(u *uuid.UUID) uuid.UUID {
-	if u == nil {
-		return uuid.Nil
-	}
-	return *u
-}
-
-func timeFromPtr(t *time.Time) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	return *t
 }

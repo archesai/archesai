@@ -17,7 +17,10 @@ type Repository interface {
 	List(ctx context.Context, params ListMembersParams) ([]*Member, int64, error)
 
 	// Additional operations
+	// ListByOrganization retrieves multiple members by organizationID
 	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Member, error)
+	// ListByUser retrieves multiple members by userID
 	ListByUser(ctx context.Context, userID uuid.UUID) ([]*Member, error)
+	// GetByUserAndOrganization retrieves a single member by userID and organizationID
 	GetByUserAndOrganization(ctx context.Context, userID uuid.UUID, organizationID uuid.UUID) (*Member, error)
 }

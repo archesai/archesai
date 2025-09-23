@@ -28,6 +28,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  Account,
   BadRequestResponse,
   CreateAccountBody,
   DeleteAccount200,
@@ -36,11 +37,9 @@ import type {
   ListAccountsParams,
   NotFoundResponse,
   Problem,
-  TokenResponse,
   UnauthorizedResponse,
   UpdateAccount200,
-  UpdateAccountBody,
-  Uuid
+  UpdateAccountBody
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -229,9 +228,9 @@ export const getCreateAccountUrl = () => {
   return `/accounts`
 }
 
-export const createAccount = async (createAccountBody: CreateAccountBody, options?: RequestInit): Promise<TokenResponse> => {
+export const createAccount = async (createAccountBody: CreateAccountBody, options?: RequestInit): Promise<Account> => {
   
-  return customFetch<TokenResponse>(getCreateAccountUrl(),
+  return customFetch<Account>(getCreateAccountUrl(),
   {      
     ...options,
     method: 'POST',
@@ -293,7 +292,7 @@ export const useCreateAccount = <TError = BadRequestResponse | Problem,
  * Get an account
  * @summary Find an account
  */
-export const getGetAccountUrl = (id: Uuid | undefined | null,) => {
+export const getGetAccountUrl = (id: string | undefined | null,) => {
 
 
   
@@ -301,7 +300,7 @@ export const getGetAccountUrl = (id: Uuid | undefined | null,) => {
   return `/accounts/${id}`
 }
 
-export const getAccount = async (id: Uuid | undefined | null, options?: RequestInit): Promise<GetAccount200> => {
+export const getAccount = async (id: string | undefined | null, options?: RequestInit): Promise<GetAccount200> => {
   
   return customFetch<GetAccount200>(getGetAccountUrl(id),
   {      
@@ -314,12 +313,12 @@ export const getAccount = async (id: Uuid | undefined | null, options?: RequestI
 
 
 
-export const getGetAccountQueryKey = (id?: Uuid | undefined | null,) => {
+export const getGetAccountQueryKey = (id?: string | undefined | null,) => {
     return [`/accounts/${id}`] as const;
     }
 
     
-export const getGetAccountQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetAccountQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -342,7 +341,7 @@ export type GetAccountQueryError = NotFoundResponse
 
 
 export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAccount>>,
           TError,
@@ -352,7 +351,7 @@ export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TE
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAccount>>,
           TError,
@@ -362,7 +361,7 @@ export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TE
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -370,7 +369,7 @@ export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TE
  */
 
 export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -385,7 +384,7 @@ export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TE
 
 
 
-export const getGetAccountSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetAccountSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -408,15 +407,15 @@ export type GetAccountSuspenseQueryError = NotFoundResponse
 
 
 export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -424,7 +423,7 @@ export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccou
  */
 
 export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -443,7 +442,7 @@ export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccou
  * Update an account
  * @summary Update an account
  */
-export const getUpdateAccountUrl = (id: Uuid | undefined | null,) => {
+export const getUpdateAccountUrl = (id: string | undefined | null,) => {
 
 
   
@@ -451,7 +450,7 @@ export const getUpdateAccountUrl = (id: Uuid | undefined | null,) => {
   return `/accounts/${id}`
 }
 
-export const updateAccount = async (id: Uuid | undefined | null,
+export const updateAccount = async (id: string | undefined | null,
     updateAccountBody: UpdateAccountBody, options?: RequestInit): Promise<UpdateAccount200> => {
   
   return customFetch<UpdateAccount200>(getUpdateAccountUrl(id),
@@ -468,8 +467,8 @@ export const updateAccount = async (id: Uuid | undefined | null,
 
 
 export const getUpdateAccountMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAccount>>, TError,{id: Uuid | undefined | null;data: UpdateAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateAccount>>, TError,{id: Uuid | undefined | null;data: UpdateAccountBody}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAccount>>, TError,{id: string | undefined | null;data: UpdateAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateAccount>>, TError,{id: string | undefined | null;data: UpdateAccountBody}, TContext> => {
 
 const mutationKey = ['updateAccount'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -481,7 +480,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAccount>>, {id: Uuid | undefined | null;data: UpdateAccountBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAccount>>, {id: string | undefined | null;data: UpdateAccountBody}> = (props) => {
           const {id,data} = props ?? {};
 
           return  updateAccount(id,data,requestOptions)
@@ -500,11 +499,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Update an account
  */
 export const useUpdateAccount = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAccount>>, TError,{id: Uuid | undefined | null;data: UpdateAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAccount>>, TError,{id: string | undefined | null;data: UpdateAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateAccount>>,
         TError,
-        {id: Uuid | undefined | null;data: UpdateAccountBody},
+        {id: string | undefined | null;data: UpdateAccountBody},
         TContext
       > => {
 
@@ -516,7 +515,7 @@ export const useUpdateAccount = <TError = NotFoundResponse,
  * Delete an account
  * @summary Delete an account
  */
-export const getDeleteAccountUrl = (id: Uuid | undefined | null,) => {
+export const getDeleteAccountUrl = (id: string | undefined | null,) => {
 
 
   
@@ -524,7 +523,7 @@ export const getDeleteAccountUrl = (id: Uuid | undefined | null,) => {
   return `/accounts/${id}`
 }
 
-export const deleteAccount = async (id: Uuid | undefined | null, options?: RequestInit): Promise<DeleteAccount200> => {
+export const deleteAccount = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteAccount200> => {
   
   return customFetch<DeleteAccount200>(getDeleteAccountUrl(id),
   {      
@@ -539,8 +538,8 @@ export const deleteAccount = async (id: Uuid | undefined | null, options?: Reque
 
 
 export const getDeleteAccountMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: Uuid | undefined | null}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: string | undefined | null}, TContext> => {
 
 const mutationKey = ['deleteAccount'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -552,7 +551,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAccount>>, {id: Uuid | undefined | null}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAccount>>, {id: string | undefined | null}> = (props) => {
           const {id} = props ?? {};
 
           return  deleteAccount(id,requestOptions)
@@ -571,11 +570,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Delete an account
  */
 export const useDeleteAccount = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteAccount>>,
         TError,
-        {id: Uuid | undefined | null},
+        {id: string | undefined | null},
         TContext
       > => {
 

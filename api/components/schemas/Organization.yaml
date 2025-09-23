@@ -1,6 +1,7 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
 description: Schema for Organization entity
 x-codegen:
+  domain: organizations
   repository:
     operations: [create, read, update, delete, list]
     indices: [slug, stripeCustomerID]
@@ -57,14 +58,11 @@ allOf:
         example: STANDARD
       credits:
         description: Available credits for this organization
-        type: number
+        type: integer
+        format: int32
         minimum: 0
         default: 0
         example: 1000
-      metadata:
-        description: Custom metadata in JSON format
-        type: object
-        additionalProperties: true
       stripeCustomerID:
         description: Stripe customer identifier
         type: string
@@ -75,5 +73,4 @@ allOf:
       - slug
       - plan
       - credits
-      - metadata
-    additionalProperties: false
+unevaluatedProperties: false

@@ -64,7 +64,7 @@ func (r *SQLiteRepository) List(ctx context.Context, params ListPipelinesParams)
 // ListByOrganization retrieves multiple pipelines by organizationID
 func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Pipeline, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement ListByOrganization - fetch multiple records
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }

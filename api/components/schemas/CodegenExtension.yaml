@@ -1,0 +1,407 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: codegen
+description: Configuration for code generation from OpenAPI schemas
+type: object
+properties:
+  repository:
+    description: Repository generation configuration
+    type: object
+    properties:
+      name:
+        description: Custom name for the repository interface (e.g., SessionRepository)
+        type: string
+        minLength: 1
+      operations:
+        description: CRUD operations to generate for service/handler layers (repository always gets all)
+        type: array
+        items:
+          type: string
+          enum:
+            [
+              create,
+              read,
+              update,
+              delete,
+              list,
+              bulk_create,
+              bulk_update,
+              bulk_delete,
+            ]
+        default: [create, read, update, delete, list]
+      indices:
+        description: Fields to create indices on
+        type: array
+        items:
+          type: string
+      unique_constraints:
+        description: Unique constraints across multiple fields
+        type: array
+        items:
+          type: array
+          items:
+            type: string
+      update_exclude:
+        description: Fields to exclude from update operations (readonly after creation)
+        type: array
+        items:
+          type: string
+      additional_methods:
+        description: Custom repository methods to generate
+        type: array
+        items:
+          description: Custom repository method definition
+          type: object
+          properties:
+            name:
+              description: Method name (e.g., GetUserByEmail)
+              type: string
+              pattern: '^[A-Z][a-zA-Z0-9]*$'
+            params:
+              description: Method parameters
+              type: array
+              items:
+                type: string
+            returns:
+              description: Return type
+              type: string
+              enum: [single, multiple, count, exists, void]
+              default: single
+            query:
+              description: Custom SQL query (optional)
+              type: string
+            cache:
+              description: Cache this method's results
+              type: boolean
+              default: false
+          required: [name, params, returns]
+          additionalProperties: false
+      soft_delete:
+        description: Enable soft delete functionality
+        type: boolean
+        default: false
+      timestamps:
+        description: Automatically manage created_at and updated_at
+        type: boolean
+        default: true
+      postgres:
+        description: PostgreSQL-specific configuration
+        type: object
+        properties:
+          table_name:
+            description: Override default table name
+            type: string
+          schema:
+            description: Database schema name
+            type: string
+            default: public
+        additionalProperties: false
+      sqlite:
+        description: SQLite-specific configuration
+        type: object
+        properties:
+          table_name:
+            description: Override default table name
+            type: string
+        additionalProperties: false
+    additionalProperties: false
+  cache:
+    description: Cache layer generation configuration
+    type: object
+    properties:
+      enabled:
+        description: Enable caching for this entity
+        type: boolean
+        default: false
+      ttl:
+        description: Time-to-live in seconds
+        type: integer
+        minimum: 0
+        default: 300
+      key_pattern:
+        description: Redis key pattern (e.g., "user:{id}")
+        type: string
+        pattern: '^[a-z_]+:\{[a-z_]+\}$'
+      invalidate_on:
+        description: Operations that invalidate cache
+        type: array
+        items:
+          type: string
+          enum: [create, update, delete, bulk_create, bulk_update, bulk_delete]
+        default: [update, delete]
+      warm_on_startup:
+        description: Pre-warm cache on application startup
+        type: boolean
+        default: false
+      redis:
+        description: Redis-specific configuration
+        type: object
+        properties:
+          database:
+            description: Redis database number
+            type: integer
+            minimum: 0
+            maximum: 15
+            default: 0
+          prefix:
+            description: Key prefix for namespacing
+            type: string
+        additionalProperties: false
+    additionalProperties: false
+  events:
+    description: List of domain events to generate
+    type: array
+    items:
+      type: string
+      pattern: '^[a-z_]+$'
+    example: [created, updated, deleted]
+  handler:
+    description: HTTP handler generation configuration
+    type: object
+    properties:
+      generate:
+        description: Whether to generate handler
+        type: boolean
+        default: true
+      middleware:
+        description: Middleware to apply
+        type: array
+        items:
+          type: string
+          enum: [auth, rate_limit, cors, logging, tracing, metrics]
+        default: [auth, logging]
+      path_prefix:
+        description: URL path prefix
+        type: string
+        pattern: '^/[a-z][a-z0-9-/]*$'
+      validation:
+        description: Request validation configuration
+        type: object
+        properties:
+          strict:
+            description: Use strict validation
+            type: boolean
+            default: true
+          custom_validators:
+            description: Custom validator functions
+            type: array
+            items:
+              type: string
+        additionalProperties: false
+      response_wrapper:
+        description: Wrap responses in standard envelope
+        type: boolean
+        default: true
+      pagination:
+        description: Pagination configuration for list endpoints
+        type: object
+        properties:
+          default_limit:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 20
+          max_limit:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        additionalProperties: false
+    additionalProperties: false
+  adapter:
+    description: Type adapter generation configuration
+    type: object
+    properties:
+      generate_mappers:
+        description: Generate type mappers between layers
+        type: boolean
+        default: true
+      custom_mappings:
+        description: Custom field mappings
+        type: object
+        additionalProperties:
+          type: string
+      ignore_fields:
+        description: Fields to ignore in mapping
+        type: array
+        items:
+          type: string
+      deep_copy:
+        description: Generate deep copy methods
+        type: boolean
+        default: false
+    additionalProperties: false
+  service:
+    description: Service layer generation configuration
+    type: object
+    properties:
+      generate:
+        description: Generate service layer
+        type: boolean
+        default: true
+      business_methods:
+        description: Business logic methods
+        type: array
+        items:
+          type: string
+      custom_operations:
+        description: Custom operations beyond standard CRUD
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              description: Operation name (e.g., Register, Login)
+              type: string
+              pattern: '^[A-Z][a-zA-Z0-9]*$'
+            operation_id:
+              description: OpenAPI operation ID
+              type: string
+            method:
+              description: HTTP method
+              type: string
+              enum: [GET, POST, PUT, PATCH, DELETE]
+          required: [name, operation_id, method]
+          additionalProperties: false
+      transaction_support:
+        description: Generate transaction support
+        type: boolean
+        default: true
+      error_handling:
+        description: Error handling strategy
+        type: string
+        enum: [panic, error_return, result_type]
+        default: error_return
+      logging:
+        description: Logging configuration
+        type: object
+        properties:
+          level:
+            type: string
+            enum: [debug, info, warn, error]
+            default: info
+          structured:
+            type: boolean
+            default: true
+        additionalProperties: false
+      metrics:
+        description: Generate metrics collection
+        type: boolean
+        default: false
+      tracing:
+        description: Generate distributed tracing
+        type: boolean
+        default: false
+    additionalProperties: false
+  database:
+    description: Database configuration
+    type: object
+    properties:
+      table:
+        description: Database table name
+        type: string
+        example: accounts
+      indices:
+        description: Database indices to create
+        type: array
+        items:
+          type: object
+          properties:
+            fields:
+              description: Fields to index
+              type: array
+              items:
+                type: string
+              example: [user_id, created_at]
+            name:
+              description: Index name (optional, will be generated if not provided)
+              type: string
+              example: idx_accounts_user_id
+            unique:
+              description: Whether this is a unique index
+              type: boolean
+              default: false
+            where:
+              description: Partial index condition (PostgreSQL)
+              type: string
+              example: status != 'deleted'
+            method:
+              description: Index method (btree, hash, gin, gist)
+              type: string
+              enum: [btree, hash, gin, gist]
+              default: btree
+          required:
+            - fields
+      relations:
+        description: Foreign key relationships
+        type: array
+        items:
+          type: object
+          properties:
+            field:
+              description: Field name in this table
+              type: string
+              example: userID
+            references:
+              description: Reference in format "table.column"
+              type: string
+              example: user.id
+            onDelete:
+              description: ON DELETE action
+              type: string
+              enum: [CASCADE, SET NULL, RESTRICT, NO ACTION]
+              example: CASCADE
+            onUpdate:
+              description: ON UPDATE action
+              type: string
+              enum: [CASCADE, SET NULL, RESTRICT, NO ACTION]
+              example: CASCADE
+          required:
+            - field
+            - references
+      queries:
+        description: Custom SQL queries for SQLC
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              description: Query name for SQLC
+              type: string
+              example: GetAccountByUser
+            type:
+              description: Query type for SQLC
+              type: string
+              enum: [one, many, exec, batchexec, batchmany, batchone]
+              example: one
+            sql:
+              description: SQL query
+              type: string
+              example: |
+                SELECT * FROM account
+                WHERE user_id = $1 AND provider_id = $2
+                LIMIT 1
+            description:
+              description: Description of what the query does
+              type: string
+              example: Get account by user ID and provider
+          required:
+            - name
+            - type
+            - sql
+      timestamps:
+        description: Whether to add created_at and updated_at columns
+        type: boolean
+        default: true
+      softDelete:
+        description: Whether to add deleted_at column for soft deletes
+        type: boolean
+        default: false
+    additionalProperties: false
+  domain:
+    description: Domain categorization for the schema
+    type: string
+    pattern: '^[a-z_]+$'
+    example: user
+    minLength: 1
+additionalProperties: false

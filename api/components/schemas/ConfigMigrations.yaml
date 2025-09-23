@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: config
+description: Database migration configuration
+type: object
+properties:
+  enabled:
+    description: Enable automatic DB migrations
+    type: boolean
+    default: false
+    example: true
+required:
+  - enabled
+additionalProperties: false

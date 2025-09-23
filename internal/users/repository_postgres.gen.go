@@ -4,26 +4,21 @@ package users
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/oapi-codegen/runtime/types"
 )
 
 // PostgresRepository implements Repository using PostgreSQL.
 type PostgresRepository struct {
-	db      *pgxpool.Pool
 	queries *postgresql.Queries
 }
 
 // NewPostgresRepository creates a new PostgreSQL repository.
 func NewPostgresRepository(db *pgxpool.Pool) Repository {
 	return &PostgresRepository{
-		db:      db,
 		queries: postgresql.New(db),
 	}
 }
@@ -35,9 +30,9 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *User) (*User, e
 	params := postgresql.CreateUserParams{
 		ID: entity.ID,
 
-		Email:         string(entity.Email),
+		Email:         entity.Email,
 		EmailVerified: entity.EmailVerified,
-		Image:         stringPtr(entity.Image),
+		Image:         entity.Image,
 		Name:          entity.Name,
 	}
 
@@ -67,10 +62,10 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *U
 	params := postgresql.UpdateUserParams{
 		ID: id,
 
-		Email:         stringPtr(string(entity.Email)),
-		EmailVerified: boolPtr(entity.EmailVerified),
-		Image:         stringPtr(entity.Image),
-		Name:          stringPtr(entity.Name),
+		Email:         &entity.Email,
+		EmailVerified: &entity.EmailVerified,
+		Image:         entity.Image,
+		Name:          &entity.Name,
 	}
 
 	result, err := r.queries.UpdateUser(ctx, params)
@@ -103,7 +98,7 @@ func (r *PostgresRepository) List(ctx context.Context, params ListUsersParams) (
 	limit := int32(10) // default
 
 	// Check if params has Page field with Number and Size
-	if params.Page.Number > 0 && params.Page.Size > 0 {
+	if params.Page != nil && params.Page.Number > 0 && params.Page.Size > 0 {
 		offset = int32((params.Page.Number - 1) * params.Page.Size)
 		limit = int32(params.Page.Size)
 	}
@@ -130,12 +125,13 @@ func (r *PostgresRepository) List(ctx context.Context, params ListUsersParams) (
 	return items, count, nil
 }
 
-// GetByEmail retrieves user by email
-func (r *PostgresRepository) GetByEmail(ctx context.Context, email string) (*User, error) {
-	// TODO: Implement GetByEmail - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
+// Additional methods
 
-	return nil, fmt.Errorf("GetByEmail not implemented - add SQLC query")
+// GetByEmail retrieves a single user by email
+func (r *PostgresRepository) GetByEmail(ctx context.Context, email string) (*User, error) {
+
+	// TODO: Implement GetByEmail - fetch single user
+	return nil, fmt.Errorf("GetByEmail not yet implemented")
 
 }
 
@@ -151,89 +147,14 @@ func mapUserFromDB(db *postgresql.User) *User {
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
 
-		Email: types.Email(db.Email),
+		Email: db.Email,
 
 		EmailVerified: db.EmailVerified,
 
-		Image: stringFromPtr(db.Image),
+		Image: db.Image,
 
 		Name: db.Name,
 	}
 
 	return result
-}
-
-// Helper functions for conversions
-func stringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func nilIfEmpty(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func stringFromPtr(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
-func boolPtr(b bool) *bool {
-	return &b
-}
-
-func int32Ptr(i int32) *int32 {
-	return &i
-}
-
-func float32Ptr(f float32) *float32 {
-	return &f
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
-}
-
-func marshalJSON(v interface{}) *string {
-	if v == nil {
-		return nil
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil
-	}
-	s := string(data)
-	return &s
-}
-
-func unmarshalJSON(s *string) map[string]interface{} {
-	if s == nil {
-		return nil
-	}
-	var result map[string]interface{}
-	if err := json.Unmarshal([]byte(*s), &result); err != nil {
-		return nil
-	}
-	return result
-}
-
-func uuidFromPtr(u *uuid.UUID) uuid.UUID {
-	if u == nil {
-		return uuid.Nil
-	}
-	return *u
-}
-
-func timeFromPtr(t *time.Time) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	return *t
 }

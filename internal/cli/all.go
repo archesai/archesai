@@ -72,7 +72,7 @@ func runAll(_ *cobra.Command, _ []string) error {
 		cfg.API.Host = viper.GetString("server.host")
 	}
 	if viper.IsSet("server.port") {
-		cfg.API.Port = float32(viper.GetInt("server.port"))
+		cfg.API.Port = float64(viper.GetInt("server.port"))
 	}
 
 	// Create application container

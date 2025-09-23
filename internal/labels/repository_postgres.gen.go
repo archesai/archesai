@@ -4,9 +4,7 @@ package labels
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -15,14 +13,12 @@ import (
 
 // PostgresRepository implements Repository using PostgreSQL.
 type PostgresRepository struct {
-	db      *pgxpool.Pool
 	queries *postgresql.Queries
 }
 
 // NewPostgresRepository creates a new PostgreSQL repository.
 func NewPostgresRepository(db *pgxpool.Pool) Repository {
 	return &PostgresRepository{
-		db:      db,
 		queries: postgresql.New(db),
 	}
 }
@@ -64,7 +60,7 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *L
 	params := postgresql.UpdateLabelParams{
 		ID: id,
 
-		Name: stringPtr(entity.Name),
+		Name: &entity.Name,
 	}
 
 	result, err := r.queries.UpdateLabel(ctx, params)
@@ -97,7 +93,7 @@ func (r *PostgresRepository) List(ctx context.Context, params ListLabelsParams) 
 	limit := int32(10) // default
 
 	// Check if params has Page field with Number and Size
-	if params.Page.Number > 0 && params.Page.Size > 0 {
+	if params.Page != nil && params.Page.Number > 0 && params.Page.Size > 0 {
 		offset = int32((params.Page.Number - 1) * params.Page.Size)
 		limit = int32(params.Page.Size)
 	}
@@ -124,21 +120,21 @@ func (r *PostgresRepository) List(ctx context.Context, params ListLabelsParams) 
 	return items, count, nil
 }
 
+// Additional methods
+
 // ListByOrganization retrieves multiple labels by organizationID
 func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Label, error) {
-	// TODO: Implement ListByOrganization - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("ListByOrganization not implemented - add SQLC query")
+	// TODO: Implement ListByOrganization - fetch multiple labels
+	return nil, fmt.Errorf("ListByOrganization not yet implemented")
 
 }
 
-// GetByName retrieves label by nameorganizationID
+// GetByName retrieves a single label by name and organizationID
 func (r *PostgresRepository) GetByName(ctx context.Context, name string, organizationID uuid.UUID) (*Label, error) {
-	// TODO: Implement GetByName - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("GetByName not implemented - add SQLC query")
+	// TODO: Implement GetByName - fetch single label
+	return nil, fmt.Errorf("GetByName not yet implemented")
 
 }
 
@@ -160,79 +156,4 @@ func mapLabelFromDB(db *postgresql.Label) *Label {
 	}
 
 	return result
-}
-
-// Helper functions for conversions
-func stringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func nilIfEmpty(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func stringFromPtr(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
-func boolPtr(b bool) *bool {
-	return &b
-}
-
-func int32Ptr(i int32) *int32 {
-	return &i
-}
-
-func float32Ptr(f float32) *float32 {
-	return &f
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
-}
-
-func marshalJSON(v interface{}) *string {
-	if v == nil {
-		return nil
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil
-	}
-	s := string(data)
-	return &s
-}
-
-func unmarshalJSON(s *string) map[string]interface{} {
-	if s == nil {
-		return nil
-	}
-	var result map[string]interface{}
-	if err := json.Unmarshal([]byte(*s), &result); err != nil {
-		return nil
-	}
-	return result
-}
-
-func uuidFromPtr(u *uuid.UUID) uuid.UUID {
-	if u == nil {
-		return uuid.Nil
-	}
-	return *u
-}
-
-func timeFromPtr(t *time.Time) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	return *t
 }

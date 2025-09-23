@@ -17,5 +17,6 @@ type Repository interface {
 	List(ctx context.Context, params ListPipelinesParams) ([]*Pipeline, int64, error)
 
 	// Additional operations
+	// ListByOrganization retrieves multiple pipelines by organizationID
 	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Pipeline, error)
 }

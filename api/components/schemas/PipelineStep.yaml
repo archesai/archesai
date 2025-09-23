@@ -1,15 +1,23 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: pipelines
 description: Schema for PipelineStep entity
 allOf:
   - $ref: ./Base.yaml
   - type: object
     properties:
       pipelineID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The pipeline this step belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       toolID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The tool used in this step
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       name:
         description: Name of the step
         type: string
@@ -52,8 +60,10 @@ allOf:
         description: IDs of steps this step depends on
         type: array
         items:
-          allOf:
-            - $ref: ./UUID.yaml
+          description: UUID of a step this step depends on
+          type: string
+          format: uuid
+          minLength: 36
         example: ['123e4567-e89b-12d3-a456-426614174000']
       status:
         description: Current status of the step
@@ -71,4 +81,4 @@ allOf:
       - pipelineID
       - toolID
       - name
-    additionalProperties: false
+unevaluatedProperties: false

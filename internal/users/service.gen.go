@@ -9,15 +9,8 @@ import (
 	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
+	"github.com/google/uuid"
 )
-
-// ServiceInterface defines the business logic operations
-type ServiceInterface interface {
-	GetUser(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error)
-	UpdateUser(ctx context.Context, request UpdateUserRequestObject) (UpdateUserResponseObject, error)
-	DeleteUser(ctx context.Context, request DeleteUserRequestObject) (DeleteUserResponseObject, error)
-	ListUsers(ctx context.Context, request ListUsersRequestObject) (ListUsersResponseObject, error)
-}
 
 // Service implements the business logic
 type Service struct {
@@ -36,169 +29,70 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 }
 
 // GetUser gets a user by ID
-func (s *Service) GetUser(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error) {
-	// Call repository to fetch entity
-	entity, err := s.repo.Get(ctx, request.ID)
+func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+	entity, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrUserNotFound) {
-			return GetUser404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "User not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return nil, err
 		}
-
-		s.logger.Error("Failed to get user", "error", err, "id", request.ID)
-		return GetUser404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to retrieve user",
-				Status: 404,
-				Title:  "Not Found",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get user", "error", err, "id", id)
+		return nil, err
 	}
 
-	return GetUser200JSONResponse{
-		Data: *entity,
-	}, nil
+	return entity, nil
 }
 
 // UpdateUser updates a user
-func (s *Service) UpdateUser(ctx context.Context, request UpdateUserRequestObject) (UpdateUserResponseObject, error) {
-	if request.Body == nil {
-		return UpdateUser404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, entity *User) (*User, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Get existing entity to verify it exists
-	existing, err := s.repo.Get(ctx, request.ID)
+	// Set updated timestamp
+	entity.UpdatedAt = time.Now()
+
+	updated, err := s.repo.Update(ctx, id, entity)
 	if err != nil {
-		if errors.Is(err, ErrUserNotFound) {
-			return UpdateUser404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "User not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
-		}
-		s.logger.Error("Failed to get user for update", "error", err, "id", request.ID)
-		return UpdateUser404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to update user", "error", err, "id", id)
+		return nil, err
 	}
 
-	// Update the entity with current timestamp
-	existing.UpdatedAt = time.Now()
-
-	// Call repository to persist changes
-	updated, err := s.repo.Update(ctx, request.ID, existing)
-	if err != nil {
-		s.logger.Error("Failed to update user", "error", err, "id", request.ID)
-		return UpdateUser404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to update user",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
-	}
-
-	return UpdateUser200JSONResponse{
-		Data: *updated,
-	}, nil
+	return updated, nil
 }
 
 // DeleteUser deletes a user
-func (s *Service) DeleteUser(ctx context.Context, request DeleteUserRequestObject) (DeleteUserResponseObject, error) {
+func (s *Service) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	// Check if entity exists first
-	_, err := s.repo.Get(ctx, request.ID)
+	_, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrUserNotFound) {
-			return DeleteUser404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "User not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return err
 		}
-		s.logger.Error("Failed to get user for deletion", "error", err, "id", request.ID)
-		return DeleteUser404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get user for deletion", "error", err, "id", id)
+		return err
 	}
 
-	// Delete the entity
-	err = s.repo.Delete(ctx, request.ID)
+	err = s.repo.Delete(ctx, id)
 	if err != nil {
-		s.logger.Error("Failed to delete user", "error", err, "id", request.ID)
-		return DeleteUser404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to delete user",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to delete user", "error", err, "id", id)
+		return err
 	}
 
-	return DeleteUser200JSONResponse{}, nil
+	return nil
 }
 
 // ListUsers lists all users
-func (s *Service) ListUsers(ctx context.Context, request ListUsersRequestObject) (ListUsersResponseObject, error) {
-	// Call repository to fetch entities using the request parameters
-	entities, total, err := s.repo.List(ctx, request.Params)
+func (s *Service) ListUsers(ctx context.Context, filter *ListUsersParamsFilter, page *ListUsersParamsPage, sort *ListUsersParamsSort) ([]*User, int64, error) {
+	params := ListUsersParams{
+		Filter: filter,
+		Page:   page,
+		Sort:   sort,
+	}
+	entities, total, err := s.repo.List(ctx, params)
 	if err != nil {
 		s.logger.Error("Failed to list users", "error", err)
-		return ListUsers400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to list users",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, 0, err
 	}
 
-	// Convert entities to response format
-	var responseData []User
-	for _, entity := range entities {
-		if entity != nil {
-			responseData = append(responseData, *entity)
-		}
-	}
-
-	return ListUsers200JSONResponse{
-		Data: responseData,
-		Meta: struct {
-			Total float32 `json:"total"`
-		}{
-			Total: float32(total),
-		},
-	}, nil
+	return entities, total, nil
 }

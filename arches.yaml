@@ -1,7 +1,11 @@
-# yaml-language-server: $schema=api/components/schemas/ArchesConfig.yaml
+# yaml-language-server: $schema=api/components/schemas/Config.yaml
 api:
-  host: moose
+  cors: localhost
+  docs: true
+  environment: development
+  host: '0.0.0.0'
   port: 3001
+  validate: true
 
 logging:
   level: info
@@ -13,3 +17,7 @@ auth:
 database:
   enabled: true
   url: postgresql://admin:password@localhost:5432/archesai
+# EACH SESSION IS BASICALLY A DEV SESSION
+# MCP HOOKED UP TO THE MAKEFILE
+# CAN GENERATE ENTIRE API WITH PERMISSION FROMS SCHEMA
+# CONTAINER CAN RESTART WITH ADDITIONAL CODE IT HAS GENERATED

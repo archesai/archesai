@@ -190,10 +190,10 @@ func (m *Manager) ValidateRefreshToken(tokenString string) (*auth.RefreshClaims,
 	return claims, nil
 }
 
-// GenerateAPIToken generates an API token (not implemented - use APITokenStore).
-func (m *Manager) GenerateAPIToken(_ uuid.UUID, _ string, _ []string) (string, error) {
-	// API tokens are managed by APITokenStore, not JWT
-	return "", fmt.Errorf("API token generation should use APITokenStore")
+// GenerateAPIKey generates an API token (not implemented - use APIKeyStore).
+func (m *Manager) GenerateAPIKey(_ uuid.UUID, _ string, _ []string) (string, error) {
+	// API tokens are managed by APIKeyStore, not JWT
+	return "", fmt.Errorf("API token generation should use APIKeyStore")
 }
 
 // RefreshToken handles token refresh (interface method).

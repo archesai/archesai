@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: config
+description: Local username/password authentication
+type: object
+properties:
+  enabled:
+    description: Enable local authentication
+    type: boolean
+    default: true
+    example: true
+  jwtSecret:
+    description: Secret key for JWT token signing
+    type: string
+    default: change-me-in-production
+    minLength: 32
+    example: your-256-bit-secret-key-here-change-in-production
+  accessTokenTtl:
+    description: Access token time-to-live duration (e.g., "15m", "1h")
+    type: string
+    pattern: '^(\d+[smhd])+$'
+    minLength: 2
+    default: 15m
+    example: 15m
+  refreshTokenTtl:
+    description: Refresh token time-to-live duration (e.g., "7d", "168h")
+    type: string
+    pattern: '^(\d+[smhd])+$'
+    minLength: 2
+    default: 168h
+    example: 168h
+required:
+  - enabled
+  - jwtSecret
+  - accessTokenTtl
+  - refreshTokenTtl
+additionalProperties: false

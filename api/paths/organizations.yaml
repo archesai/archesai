@@ -17,8 +17,11 @@ post:
               minLength: 1
               format: email
             organizationID:
-              allOf:
-                - $ref: ../components/schemas/UUID.yaml
+              description: UUID identifier
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
           required:
             - billingEmail
             - organizationID

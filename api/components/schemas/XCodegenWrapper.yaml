@@ -1,6 +1,0 @@
-components:
-  schemas:
-    XCodegen:
-      $ref: ./XCodegen.yaml
-    CodegenConfig:
-      $ref: ./CodegenConfig.yaml

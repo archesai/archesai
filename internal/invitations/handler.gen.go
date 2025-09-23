@@ -9,28 +9,43 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
 
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// List invitations
 	// (GET /organizations/{id}/invitations)
-	ListInvitations(ctx echo.Context, id UUID, params ListInvitationsParams) error
+	ListInvitations(ctx echo.Context, id uuid.UUID, params ListInvitationsParams) error
 	// Create an invitation
 	// (POST /organizations/{id}/invitations)
-	CreateInvitation(ctx echo.Context, id UUID) error
+	CreateInvitation(ctx echo.Context, id uuid.UUID) error
 	// Delete an invitation
 	// (DELETE /organizations/{id}/invitations/{invitationID})
-	DeleteInvitation(ctx echo.Context, id UUID, invitationID UUID) error
+	DeleteInvitation(ctx echo.Context, id uuid.UUID, invitationID uuid.UUID) error
 	// Get an invitation
 	// (GET /organizations/{id}/invitations/{invitationID})
-	GetInvitation(ctx echo.Context, id UUID, invitationID UUID) error
+	GetInvitation(ctx echo.Context, id uuid.UUID, invitationID uuid.UUID) error
 	// Update an invitation
 	// (PATCH /organizations/{id}/invitations/{invitationID})
-	UpdateInvitation(ctx echo.Context, id UUID, invitationID UUID) error
+	UpdateInvitation(ctx echo.Context, id uuid.UUID, invitationID uuid.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -42,17 +57,16 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) ListInvitations(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{})
-
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListInvitationsParams
+
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -74,6 +88,8 @@ func (w *ServerInterfaceWrapper) ListInvitations(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
 	}
 
+	ctx.Set(BearerAuthScopes, []string{})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.ListInvitations(ctx, id, params)
 	return err
@@ -83,7 +99,7 @@ func (w *ServerInterfaceWrapper) ListInvitations(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) CreateInvitation(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -101,15 +117,14 @@ func (w *ServerInterfaceWrapper) CreateInvitation(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteInvitation(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
-
 	// ------------- Path parameter "invitationID" -------------
-	var invitationID UUID
+	var invitationID uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "invitationID", ctx.Param("invitationID"), &invitationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -127,15 +142,14 @@ func (w *ServerInterfaceWrapper) DeleteInvitation(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetInvitation(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
-
 	// ------------- Path parameter "invitationID" -------------
-	var invitationID UUID
+	var invitationID uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "invitationID", ctx.Param("invitationID"), &invitationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -153,15 +167,14 @@ func (w *ServerInterfaceWrapper) GetInvitation(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateInvitation(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
-
 	// ------------- Path parameter "invitationID" -------------
-	var invitationID UUID
+	var invitationID uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "invitationID", ctx.Param("invitationID"), &invitationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -202,7 +215,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
 	router.GET(baseURL+"/organizations/:id/invitations", wrapper.ListInvitations)
 	router.POST(baseURL+"/organizations/:id/invitations", wrapper.CreateInvitation)
 	router.DELETE(baseURL+"/organizations/:id/invitations/:invitationID", wrapper.DeleteInvitation)
@@ -211,14 +223,14 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
 
-type NotFoundApplicationProblemPlusJSONResponse Problem
+type NotFoundResponse ProblemDetails
 
-type UnauthorizedApplicationProblemPlusJSONResponse Problem
+type UnauthorizedResponse ProblemDetails
 
 type ListInvitationsRequestObject struct {
-	ID     UUID `json:"id"`
+	ID     uuid.UUID `json:"id"`
 	Params ListInvitationsParams
 }
 
@@ -229,8 +241,7 @@ type ListInvitationsResponseObject interface {
 type ListInvitations200JSONResponse struct {
 	Data []Invitation `json:"data"`
 	Meta struct {
-		// Total Total number of items in the collection
-		Total float32 `json:"total"`
+		Total int64 `json:"total"`
 	} `json:"meta"`
 }
 
@@ -241,39 +252,43 @@ func (response ListInvitations200JSONResponse) VisitListInvitationsResponse(w ht
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListInvitations400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type ListInvitations400Response = BadRequestResponse
 
-func (response ListInvitations400ApplicationProblemPlusJSONResponse) VisitListInvitationsResponse(w http.ResponseWriter) error {
+func (response ListInvitations400Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListInvitations401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type ListInvitations401Response = UnauthorizedResponse
 
-func (response ListInvitations401ApplicationProblemPlusJSONResponse) VisitListInvitationsResponse(w http.ResponseWriter) error {
+func (response ListInvitations401Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ListInvitations404Response = NotFoundResponse
+
+func (response ListInvitations404Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type CreateInvitationRequestObject struct {
-	ID   UUID `json:"id"`
-	Body *CreateInvitationJSONRequestBody
+	ID   uuid.UUID `json:"id"`
+	Body *CreateInvitationRequestBody
 }
 
 type CreateInvitationResponseObject interface {
 	VisitCreateInvitationResponse(w http.ResponseWriter) error
 }
-
 type CreateInvitation201JSONResponse struct {
-	// Data Schema for Invitation entity
+	// Data Schema for invitations entity
 	Data Invitation `json:"data"`
 }
 
@@ -284,22 +299,18 @@ func (response CreateInvitation201JSONResponse) VisitCreateInvitationResponse(w 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateInvitation400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type CreateInvitation400Response = BadRequestResponse
 
-func (response CreateInvitation400ApplicationProblemPlusJSONResponse) VisitCreateInvitationResponse(w http.ResponseWriter) error {
+func (response CreateInvitation400Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateInvitation401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type CreateInvitation401Response = UnauthorizedResponse
 
-func (response CreateInvitation401ApplicationProblemPlusJSONResponse) VisitCreateInvitationResponse(w http.ResponseWriter) error {
+func (response CreateInvitation401Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -307,16 +318,15 @@ func (response CreateInvitation401ApplicationProblemPlusJSONResponse) VisitCreat
 }
 
 type DeleteInvitationRequestObject struct {
-	ID           UUID `json:"id"`
-	InvitationID UUID `json:"invitationID"`
+	ID           uuid.UUID `json:"id"`
+	InvitationID uuid.UUID `json:"invitationID"`
 }
 
 type DeleteInvitationResponseObject interface {
 	VisitDeleteInvitationResponse(w http.ResponseWriter) error
 }
-
 type DeleteInvitation200JSONResponse struct {
-	// Data Schema for Invitation entity
+	// Data Schema for invitations entity
 	Data Invitation `json:"data"`
 }
 
@@ -327,11 +337,27 @@ func (response DeleteInvitation200JSONResponse) VisitDeleteInvitationResponse(w 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteInvitation404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type DeleteInvitation400Response = BadRequestResponse
+
+func (response DeleteInvitation400Response) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response DeleteInvitation404ApplicationProblemPlusJSONResponse) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
+type DeleteInvitation401Response = UnauthorizedResponse
+
+func (response DeleteInvitation401Response) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteInvitation404Response = NotFoundResponse
+
+func (response DeleteInvitation404Response) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -339,8 +365,8 @@ func (response DeleteInvitation404ApplicationProblemPlusJSONResponse) VisitDelet
 }
 
 type GetInvitationRequestObject struct {
-	ID           UUID `json:"id"`
-	InvitationID UUID `json:"invitationID"`
+	ID           uuid.UUID `json:"id"`
+	InvitationID uuid.UUID `json:"invitationID"`
 }
 
 type GetInvitationResponseObject interface {
@@ -348,8 +374,10 @@ type GetInvitationResponseObject interface {
 }
 
 type GetInvitation200JSONResponse struct {
-	// Data Schema for Invitation entity
-	Data Invitation `json:"data"`
+	Data []Invitation `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
 }
 
 func (response GetInvitation200JSONResponse) VisitGetInvitationResponse(w http.ResponseWriter) error {
@@ -359,11 +387,27 @@ func (response GetInvitation200JSONResponse) VisitGetInvitationResponse(w http.R
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetInvitation404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type GetInvitation400Response = BadRequestResponse
+
+func (response GetInvitation400Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response GetInvitation404ApplicationProblemPlusJSONResponse) VisitGetInvitationResponse(w http.ResponseWriter) error {
+type GetInvitation401Response = UnauthorizedResponse
+
+func (response GetInvitation401Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetInvitation404Response = NotFoundResponse
+
+func (response GetInvitation404Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -371,17 +415,16 @@ func (response GetInvitation404ApplicationProblemPlusJSONResponse) VisitGetInvit
 }
 
 type UpdateInvitationRequestObject struct {
-	ID           UUID `json:"id"`
-	InvitationID UUID `json:"invitationID"`
-	Body         *UpdateInvitationJSONRequestBody
+	ID           uuid.UUID `json:"id"`
+	InvitationID uuid.UUID `json:"invitationID"`
+	Body         *UpdateInvitationRequestBody
 }
 
 type UpdateInvitationResponseObject interface {
 	VisitUpdateInvitationResponse(w http.ResponseWriter) error
 }
-
 type UpdateInvitation200JSONResponse struct {
-	// Data Schema for Invitation entity
+	// Data Schema for invitations entity
 	Data Invitation `json:"data"`
 }
 
@@ -392,11 +435,27 @@ func (response UpdateInvitation200JSONResponse) VisitUpdateInvitationResponse(w 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateInvitation404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type UpdateInvitation400Response = BadRequestResponse
+
+func (response UpdateInvitation400Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response UpdateInvitation404ApplicationProblemPlusJSONResponse) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+type UpdateInvitation401Response = UnauthorizedResponse
+
+func (response UpdateInvitation401Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateInvitation404Response = NotFoundResponse
+
+func (response UpdateInvitation404Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -435,9 +494,8 @@ type strictHandler struct {
 }
 
 // ListInvitations operation middleware
-func (sh *strictHandler) ListInvitations(ctx echo.Context, id UUID, params ListInvitationsParams) error {
+func (sh *strictHandler) ListInvitations(ctx echo.Context, id uuid.UUID, params ListInvitationsParams) error {
 	var request ListInvitationsRequestObject
-
 	request.ID = id
 	request.Params = params
 
@@ -461,12 +519,10 @@ func (sh *strictHandler) ListInvitations(ctx echo.Context, id UUID, params ListI
 }
 
 // CreateInvitation operation middleware
-func (sh *strictHandler) CreateInvitation(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) CreateInvitation(ctx echo.Context, id uuid.UUID) error {
 	var request CreateInvitationRequestObject
-
 	request.ID = id
-
-	var body CreateInvitationJSONRequestBody
+	var body CreateInvitationRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
@@ -492,9 +548,8 @@ func (sh *strictHandler) CreateInvitation(ctx echo.Context, id UUID) error {
 }
 
 // DeleteInvitation operation middleware
-func (sh *strictHandler) DeleteInvitation(ctx echo.Context, id UUID, invitationID UUID) error {
+func (sh *strictHandler) DeleteInvitation(ctx echo.Context, id uuid.UUID, invitationID uuid.UUID) error {
 	var request DeleteInvitationRequestObject
-
 	request.ID = id
 	request.InvitationID = invitationID
 
@@ -518,9 +573,8 @@ func (sh *strictHandler) DeleteInvitation(ctx echo.Context, id UUID, invitationI
 }
 
 // GetInvitation operation middleware
-func (sh *strictHandler) GetInvitation(ctx echo.Context, id UUID, invitationID UUID) error {
+func (sh *strictHandler) GetInvitation(ctx echo.Context, id uuid.UUID, invitationID uuid.UUID) error {
 	var request GetInvitationRequestObject
-
 	request.ID = id
 	request.InvitationID = invitationID
 
@@ -544,13 +598,11 @@ func (sh *strictHandler) GetInvitation(ctx echo.Context, id UUID, invitationID U
 }
 
 // UpdateInvitation operation middleware
-func (sh *strictHandler) UpdateInvitation(ctx echo.Context, id UUID, invitationID UUID) error {
+func (sh *strictHandler) UpdateInvitation(ctx echo.Context, id uuid.UUID, invitationID uuid.UUID) error {
 	var request UpdateInvitationRequestObject
-
 	request.ID = id
 	request.InvitationID = invitationID
-
-	var body UpdateInvitationJSONRequestBody
+	var body UpdateInvitationRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}

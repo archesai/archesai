@@ -178,8 +178,8 @@ func TestService_CheckHealthWithUptime(t *testing.T) {
 	}
 
 	// Uptime should be approximately 300 seconds (5 minutes)
-	expectedUptime := float32(300)
-	tolerance := float32(2) // Allow 2 seconds tolerance
+	expectedUptime := float64(300)
+	tolerance := float64(2) // Allow 2 seconds tolerance
 
 	if response.Uptime < expectedUptime-tolerance || response.Uptime > expectedUptime+tolerance {
 		t.Errorf("Uptime = %v, want approximately %v", response.Uptime, expectedUptime)

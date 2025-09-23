@@ -22,25 +22,25 @@ func TestSessionStore_CreateSession(t *testing.T) {
 	ctx := context.Background()
 	userID := uuid.New()
 	orgID := uuid.New()
-	ipAddress := "192.168.1.1"
+	IPAddress := "192.168.1.1"
 	userAgent := "Test Browser"
 
 	t.Run("successful creation with cache", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewNoOpCache[auth.SessionEntity]()
+		mockCache := genericcache.NewNoOpCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
 		mockRepo.EXPECT().
-			Create(ctx, mock.AnythingOfType("*auth.SessionEntity")).
-			Return(&auth.SessionEntity{
+			Create(ctx, mock.AnythingOfType("*auth.Session")).
+			Return(&auth.Session{
 				ID:             uuid.New(),
 				UserID:         userID,
 				Token:          "generated-token",
-				OrganizationID: orgID,
+				OrganizationID: &orgID,
 				ExpiresAt:      time.Now().Add(24 * time.Hour),
-				IPAddress:      ipAddress,
+				IpAddress:      IPAddress,
 				UserAgent:      userAgent,
 				CreatedAt:      time.Now(),
 				UpdatedAt:      time.Now(),
@@ -49,7 +49,7 @@ func TestSessionStore_CreateSession(t *testing.T) {
 		// Execute
 		metadata := map[string]interface{}{
 			"organization_id": orgID,
-			"ip_address":      ipAddress,
+			"ip_address":      IPAddress,
 			"user_agent":      userAgent,
 		}
 		session, err := store.Create(ctx, userID, metadata)
@@ -59,7 +59,7 @@ func TestSessionStore_CreateSession(t *testing.T) {
 		assert.NotNil(t, session)
 		assert.Equal(t, userID, session.UserID)
 		assert.Equal(t, orgID, session.OrganizationID)
-		assert.Equal(t, ipAddress, session.IPAddress)
+		assert.Equal(t, IPAddress, session.IpAddress)
 		assert.Equal(t, userAgent, session.UserAgent)
 		assert.NotEmpty(t, session.Token)
 	})
@@ -71,14 +71,14 @@ func TestSessionStore_CreateSession(t *testing.T) {
 
 		// Expectations
 		mockRepo.EXPECT().
-			Create(ctx, mock.AnythingOfType("*auth.SessionEntity")).
-			Return(&auth.SessionEntity{
+			Create(ctx, mock.AnythingOfType("*auth.Session")).
+			Return(&auth.Session{
 				ID:             uuid.New(),
 				UserID:         userID,
 				Token:          "generated-token",
-				OrganizationID: orgID,
+				OrganizationID: &orgID,
 				ExpiresAt:      time.Now().Add(24 * time.Hour),
-				IPAddress:      ipAddress,
+				IpAddress:      IPAddress,
 				UserAgent:      userAgent,
 				CreatedAt:      time.Now(),
 				UpdatedAt:      time.Now(),
@@ -87,7 +87,7 @@ func TestSessionStore_CreateSession(t *testing.T) {
 		// Execute
 		metadata := map[string]interface{}{
 			"organization_id": orgID,
-			"ip_address":      ipAddress,
+			"ip_address":      IPAddress,
 			"user_agent":      userAgent,
 		}
 		session, err := store.Create(ctx, userID, metadata)
@@ -104,7 +104,7 @@ func TestSessionStore_GetSession(t *testing.T) {
 	sessionID := uuid.New()
 	userID := uuid.New()
 
-	validSession := &auth.SessionEntity{
+	validSession := &auth.Session{
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     testTokenConst,
@@ -113,7 +113,7 @@ func TestSessionStore_GetSession(t *testing.T) {
 		UpdatedAt: time.Now(),
 	}
 
-	expiredSession := &auth.SessionEntity{
+	expiredSession := &auth.Session{
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     "expired-token",
@@ -125,7 +125,7 @@ func TestSessionStore_GetSession(t *testing.T) {
 	t.Run("cache hit with valid session", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
 		// Pre-populate cache
@@ -144,7 +144,7 @@ func TestSessionStore_GetSession(t *testing.T) {
 	t.Run("cache miss falls back to database", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -162,7 +162,7 @@ func TestSessionStore_GetSession(t *testing.T) {
 	t.Run("expired session returns error", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -185,7 +185,7 @@ func TestSessionStore_GetSessionByToken(t *testing.T) {
 	sessionID := uuid.New()
 	userID := uuid.New()
 
-	validSession := &auth.SessionEntity{
+	validSession := &auth.Session{
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     token,
@@ -197,7 +197,7 @@ func TestSessionStore_GetSessionByToken(t *testing.T) {
 	t.Run("successful retrieval from database", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations - since cache is empty, it will call the repo
@@ -216,7 +216,7 @@ func TestSessionStore_GetSessionByToken(t *testing.T) {
 	t.Run("cache miss with database fallback", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
@@ -248,10 +248,10 @@ func TestSessionStore_UpdateSession(t *testing.T) {
 	t.Run("successful update with cache", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
-		updatedSessionEntity := &auth.SessionEntity{
+		updatedSession := &auth.Session{
 			ID:        sessionID,
 			UserID:    userID,
 			Token:     "updated-token",
@@ -259,10 +259,10 @@ func TestSessionStore_UpdateSession(t *testing.T) {
 			UpdatedAt: time.Now(),
 		}
 
-		// Expectations - Update method expects SessionEntity internally
+		// Expectations - Update method expects Session internally
 		mockRepo.EXPECT().
-			Update(ctx, sessionID, mock.AnythingOfType("*auth.SessionEntity")).
-			Return(updatedSessionEntity, nil)
+			Update(ctx, sessionID, mock.AnythingOfType("*auth.Session")).
+			Return(updatedSession, nil)
 
 		// Execute
 		session, err := store.Update(ctx, sessionID, updates)
@@ -280,7 +280,7 @@ func TestSessionStore_DeleteSession(t *testing.T) {
 	userID := uuid.New()
 	token := testTokenConst
 
-	existingSession := &auth.SessionEntity{
+	existingSession := &auth.Session{
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     token,
@@ -290,7 +290,7 @@ func TestSessionStore_DeleteSession(t *testing.T) {
 	t.Run("successful deletion with cache", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
 		// Pre-populate cache
@@ -330,7 +330,7 @@ func TestSessionStore_ListByUser(t *testing.T) {
 	ctx := context.Background()
 	userID := uuid.New()
 
-	validSession1 := &auth.SessionEntity{
+	validSession1 := &auth.Session{
 		ID:        uuid.New(),
 		UserID:    userID,
 		Token:     "token1",
@@ -338,7 +338,7 @@ func TestSessionStore_ListByUser(t *testing.T) {
 		CreatedAt: time.Now(),
 	}
 
-	validSession2 := &auth.SessionEntity{
+	validSession2 := &auth.Session{
 		ID:        uuid.New(),
 		UserID:    userID,
 		Token:     "token2",
@@ -346,7 +346,7 @@ func TestSessionStore_ListByUser(t *testing.T) {
 		CreatedAt: time.Now(),
 	}
 
-	expiredSession := &auth.SessionEntity{
+	expiredSession := &auth.Session{
 		ID:        uuid.New(),
 		UserID:    userID,
 		Token:     "expired-token",
@@ -357,16 +357,14 @@ func TestSessionStore_ListByUser(t *testing.T) {
 	t.Run("returns only active sessions", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
 		// The implementation actually passes empty params
-		params := auth.ListSessionsParams{
-			Page: auth.PageQuery{},
-		}
+		params := auth.ListSessionsParams{}
 
 		// Expectations
-		mockRepo.EXPECT().List(ctx, params).Return([]*auth.SessionEntity{
+		mockRepo.EXPECT().List(ctx, params).Return([]*auth.Session{
 			validSession1,
 			validSession2,
 			expiredSession,
@@ -399,7 +397,7 @@ func TestSessionStore_Validate(t *testing.T) {
 	sessionID := uuid.New()
 	userID := uuid.New()
 
-	validSession := &auth.SessionEntity{
+	validSession := &auth.Session{
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     token,
@@ -411,10 +409,10 @@ func TestSessionStore_Validate(t *testing.T) {
 	t.Run("valid session updates last activity", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
-		updatedSession := &auth.SessionEntity{
+		updatedSession := &auth.Session{
 			ID:        sessionID,
 			UserID:    userID,
 			Token:     token,
@@ -426,7 +424,7 @@ func TestSessionStore_Validate(t *testing.T) {
 		// Expectations
 		mockRepo.EXPECT().GetByToken(ctx, token).Return(validSession, nil)
 		mockRepo.EXPECT().
-			Update(ctx, sessionID, mock.AnythingOfType("*auth.SessionEntity")).
+			Update(ctx, sessionID, mock.AnythingOfType("*auth.Session")).
 			Return(updatedSession, nil)
 
 		// Execute
@@ -442,10 +440,10 @@ func TestSessionStore_Validate(t *testing.T) {
 	t.Run("expired session returns error", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
-		expiredSession := &auth.SessionEntity{
+		expiredSession := &auth.Session{
 			ID:        sessionID,
 			UserID:    userID,
 			Token:     token,
@@ -474,7 +472,7 @@ func TestSessionStore_RefreshSession(t *testing.T) {
 	userID := uuid.New()
 	token := testTokenConst
 
-	validSession := &auth.SessionEntity{
+	validSession := &auth.Session{
 		ID:        sessionID,
 		UserID:    userID,
 		Token:     token,
@@ -486,14 +484,14 @@ func TestSessionStore_RefreshSession(t *testing.T) {
 	t.Run("successful refresh extends expiry", func(t *testing.T) {
 		// Setup
 		mockRepo := auth.NewMockSessionsRepository(t)
-		mockCache := genericcache.NewMemoryCache[auth.SessionEntity]()
+		mockCache := genericcache.NewMemoryCache[auth.Session]()
 		store := stores.NewSessionStore(mockRepo, mockCache, 24*time.Hour)
 
 		// Expectations
 		mockRepo.EXPECT().Get(ctx, sessionID).Return(validSession, nil)
 		mockRepo.EXPECT().
-			Update(ctx, sessionID, mock.AnythingOfType("*auth.SessionEntity")).
-			Return(&auth.SessionEntity{
+			Update(ctx, sessionID, mock.AnythingOfType("*auth.Session")).
+			Return(&auth.Session{
 				ID:        sessionID,
 				UserID:    userID,
 				Token:     token,

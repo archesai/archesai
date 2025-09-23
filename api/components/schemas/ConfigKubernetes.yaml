@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: config
+type: object
+description: Kubernetes-specific deployment configuration
+properties:
+  infrastructure:
+    $ref: ./ConfigInfrastructure.yaml
+  ingress:
+    $ref: ./ConfigIngress.yaml
+  monitoring:
+    $ref: ./ConfigMonitoring.yaml
+additionalProperties: false

@@ -26,14 +26,12 @@ export interface Page {
   size?: number;
 }
 
-/**
- * Universally Unique IDentifier
- * @minLength 36
- */
-export type Uuid = string;
-
 export interface Base {
-  id: Uuid;
+  /**
+   * Unique identifier for the resource
+   * @minLength 36
+   */
+  id: string;
   /**
    * The date and time when the resource was created
    * @minLength 1
@@ -67,8 +65,11 @@ export type AccountAllOf = {
    * @minLength 1
    */
   accountID: string;
-  /** The user ID this account belongs to */
-  userID: Uuid;
+  /**
+   * The user ID this account belongs to
+   * @minLength 36
+   */
+  userID: string;
   /** The authentication provider identifier */
   providerID: AccountAllOfProviderID;
   /** The OAuth access token */
@@ -119,29 +120,12 @@ export interface Problem {
   instance?: string;
 }
 
-export interface TokenResponse {
-  /**
-   * JWT access token for API authentication
-   * @minLength 1
-   */
-  access_token: string;
-  /**
-   * Refresh token for obtaining new access tokens
-   * @minLength 1
-   */
-  refresh_token: string;
-  /**
-   * Type of token (always "Bearer")
-   * @minLength 1
-   */
-  token_type: string;
-  /** Access token expiration time in seconds */
-  expires_in: number;
-}
-
 export type SessionAllOf = {
-  /** The organization ID for this session (nullable for users without org) */
-  organizationID?: Uuid;
+  /**
+   * The organization ID for this session (nullable for users without org)
+   * @minLength 36
+   */
+  organizationID?: string;
   /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
   authMethod?: string;
   /** The authentication provider (google, github, microsoft, local) */
@@ -166,7 +150,11 @@ export type SessionAllOf = {
    * @minLength 1
    */
   userAgent: string;
-  userID: Uuid;
+  /**
+   * The user who owns this session
+   * @minLength 36
+   */
+  userID: string;
 };
 
 /**
@@ -174,17 +162,20 @@ export type SessionAllOf = {
  */
 export type Session = Base & SessionAllOf;
 
-/**
- * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
- */
-export type Email = string;
-
 export type UserAllOf = {
-  /** The user's email address */
-  email: Email;
+  /**
+   * The user's email address
+   * @minLength 5
+   * @maxLength 255
+   */
+  email: string;
   /** Whether the user's email has been verified */
   emailVerified: boolean;
-  /** The user's avatar image URL */
+  /**
+   * The user's avatar image URL
+   * @minLength 5
+   * @maxLength 2048
+   */
   image?: string;
   /**
    * The user's display name
@@ -199,9 +190,17 @@ export type UserAllOf = {
  */
 export type User = Base & UserAllOf;
 
-export type ApiKeyAllOf = {
-  userID?: Uuid;
-  organizationID?: Uuid;
+export type APIKeyAllOf = {
+  /**
+   * The user who owns this API key
+   * @minLength 36
+   */
+  userID?: string;
+  /**
+   * The organization this API key belongs to
+   * @minLength 36
+   */
+  organizationID?: string;
   /**
    * Hashed version of the API key for secure storage
    * @minLength 1
@@ -229,32 +228,7 @@ export type ApiKeyAllOf = {
 /**
  * Schema for API Key entity
  */
-export type ApiKey = Base & ApiKeyAllOf;
-
-export type ApiKeyResponseAllOf = {
-  /** @minLength 1 */
-  name: string;
-  /**
-   * The actual API key (only returned once on creation)
-   * @minLength 1
-   */
-  key: string;
-  /** @minLength 1 */
-  prefix: string;
-  scopes: string[];
-  /** Requests per minute allowed for this API key */
-  rateLimit: number;
-  /**
-   * When this API key expires
-   * @minLength 1
-   */
-  expiresAt: string;
-};
-
-/**
- * Response schema for API Key creation
- */
-export type ApiKeyResponse = Base & ApiKeyResponseAllOf;
+export type APIKey = Base & APIKeyAllOf;
 
 /**
  * The current subscription plan
@@ -270,11 +244,6 @@ export const OrganizationAllOfPlan = {
   PREMIUM: 'PREMIUM',
   UNLIMITED: 'UNLIMITED',
 } as const;
-
-/**
- * Custom metadata in JSON format
- */
-export type OrganizationAllOfMetadata = { [key: string]: unknown };
 
 export type OrganizationAllOf = {
   /**
@@ -301,8 +270,6 @@ export type OrganizationAllOf = {
    * @minimum 0
    */
   credits: number;
-  /** Custom metadata in JSON format */
-  metadata: OrganizationAllOfMetadata;
   /** Stripe customer identifier */
   stripeCustomerID?: string;
 };
@@ -322,14 +289,22 @@ export type MemberAllOfRole = typeof MemberAllOfRole[keyof typeof MemberAllOfRol
 export const MemberAllOfRole = {
   admin: 'admin',
   owner: 'owner',
-  member: 'member',
+  user: 'user',
 } as const;
 
 export type MemberAllOf = {
-  organizationID: Uuid;
+  /**
+   * The organization this member belongs to
+   * @minLength 36
+   */
+  organizationID: string;
   /** The role of the member */
   role: MemberAllOfRole;
-  userID: Uuid;
+  /**
+   * The user who is a member of the organization
+   * @minLength 36
+   */
+  userID: string;
 };
 
 /**
@@ -361,8 +336,16 @@ export type InvitationAllOf = {
    * @minLength 1
    */
   expiresAt: string;
-  inviterID: Uuid;
-  organizationID: Uuid;
+  /**
+   * The ID of the user who sent this invitation
+   * @minLength 36
+   */
+  inviterID: string;
+  /**
+   * The organization the user is being invited to join
+   * @minLength 36
+   */
+  organizationID: string;
   /** The role of the invitation */
   role: InvitationAllOfRole;
   /**
@@ -377,18 +360,18 @@ export type InvitationAllOf = {
  */
 export type Invitation = Base & InvitationAllOf;
 
-export interface OrganizationReference {
-  /** The organization identifier */
-  organizationID: Uuid;
-}
-
 export type PipelineAllOf = {
+  /**
+   * The organization identifier
+   * @minLength 36
+   */
+  organizationID: string;
   /**
    * The pipeline's display name
    * @minLength 1
    * @maxLength 255
    */
-  name: string;
+  name?: string;
   /**
    * Detailed description of the pipeline's purpose
    * @maxLength 1000
@@ -399,7 +382,7 @@ export type PipelineAllOf = {
 /**
  * Schema for Pipeline entity
  */
-export type Pipeline = Base & OrganizationReference & PipelineAllOf;
+export type Pipeline = Base & PipelineAllOf;
 
 /**
  * Configuration parameters for the tool
@@ -423,8 +406,16 @@ export const PipelineStepAllOfStatus = {
 } as const;
 
 export type PipelineStepAllOf = {
-  pipelineID: Uuid;
-  toolID: Uuid;
+  /**
+   * The pipeline this step belongs to
+   * @minLength 36
+   */
+  pipelineID: string;
+  /**
+   * The tool used in this step
+   * @minLength 36
+   */
+  toolID: string;
   /**
    * Name of the step
    * @minLength 1
@@ -456,7 +447,7 @@ export type PipelineStepAllOf = {
    */
   timeout?: number;
   /** IDs of steps this step depends on */
-  dependencies?: Uuid[];
+  dependencies?: string[];
   /** Current status of the step */
   status?: PipelineStepAllOfStatus;
 };
@@ -488,8 +479,16 @@ export type RunAllOf = {
    * @minLength 1
    */
   error?: string;
-  organizationID: Uuid;
-  pipelineID: Uuid;
+  /**
+   * The organization this run belongs to
+   * @minLength 36
+   */
+  organizationID: string;
+  /**
+   * The pipeline this run is executing
+   * @minLength 36
+   */
+  pipelineID: string;
   /** The percent progress of the run */
   progress: number;
   /**
@@ -498,7 +497,11 @@ export type RunAllOf = {
    */
   startedAt?: string;
   status: RunAllOfStatus;
-  toolID: Uuid;
+  /**
+   * The tool being used in this run
+   * @minLength 36
+   */
+  toolID: string;
 };
 
 /**
@@ -522,7 +525,11 @@ export type ToolAllOf = {
    * @minLength 1
    */
   name: string;
-  organizationID: Uuid;
+  /**
+   * The organization that owns this tool
+   * @minLength 36
+   */
+  organizationID: string;
   /**
    * The MIME type of the output for the tool, e.g. text/plain
    * @minLength 1
@@ -553,18 +560,26 @@ export type ArtifactAllOf = {
    * @minLength 1
    */
   name?: string;
-  organizationID: Uuid;
+  /**
+   * The organization that owns this artifact
+   * @minLength 36
+   */
+  organizationID: string;
   /**
    * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
    * @minLength 1
    */
   previewImage?: string;
-  producerID?: Uuid;
+  /**
+   * The ID of the entity that produced this artifact
+   * @minLength 36
+   */
+  producerID?: string;
   /**
    * The artifact text
    * @minLength 1
    */
-  text: string;
+  text?: string;
 };
 
 /**
@@ -578,7 +593,11 @@ export type LabelAllOf = {
    * @minLength 1
    */
   name: string;
-  organizationID: Uuid;
+  /**
+   * The organization this label belongs to
+   * @minLength 36
+   */
+  organizationID: string;
 };
 
 /**
@@ -589,7 +608,7 @@ export type Label = Base & LabelAllOf;
 /**
  * Email configuration for sending emails
  */
-export interface EmailConfig {
+export interface ConfigEmail {
   /** Enable email functionality */
   enabled: boolean;
   /** Email service provider (e.g., "gmail", "sendgrid", etc.) */
@@ -603,11 +622,11 @@ export interface EmailConfig {
 /**
  * Kubernetes image pull policy
  */
-export type ImageConfigPullPolicy = typeof ImageConfigPullPolicy[keyof typeof ImageConfigPullPolicy];
+export type ConfigImagePullPolicy = typeof ConfigImagePullPolicy[keyof typeof ConfigImagePullPolicy];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ImageConfigPullPolicy = {
+export const ConfigImagePullPolicy = {
   Always: 'Always',
   IfNotPresent: 'IfNotPresent',
   Never: 'Never',
@@ -616,9 +635,9 @@ export const ImageConfigPullPolicy = {
 /**
  * Container image configuration
  */
-export interface ImageConfig {
+export interface ConfigImage {
   /** Kubernetes image pull policy */
-  pullPolicy: ImageConfigPullPolicy;
+  pullPolicy: ConfigImagePullPolicy;
   /**
    * Container image repository
    * @minLength 1
@@ -634,7 +653,7 @@ export interface ImageConfig {
 /**
  * Resource limits
  */
-export interface ResourceLimits {
+export type ConfigResourceLimits = {
   /**
    * Maximum CPU allocation
    * @minLength 1
@@ -645,12 +664,12 @@ export interface ResourceLimits {
    * @minLength 1
    */
   memory: string;
-}
+};
 
 /**
  * Resource requests
  */
-export interface ResourceRequests {
+export type ConfigResourceRequests = {
   /**
    * Requested CPU allocation
    * @minLength 1
@@ -661,60 +680,49 @@ export interface ResourceRequests {
    * @minLength 1
    */
   memory: string;
-}
+};
 
 /**
  * Kubernetes resource configuration
  */
-export interface ResourceConfig {
-  limits: ResourceLimits;
-  requests: ResourceRequests;
+export interface ConfigResource {
+  /** Resource limits */
+  limits: ConfigResourceLimits;
+  /** Resource requests */
+  requests: ConfigResourceRequests;
 }
-
-/**
- * Deployment environment (development, staging, production)
- */
-export type APIConfigEnvironment = typeof APIConfigEnvironment[keyof typeof APIConfigEnvironment];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const APIConfigEnvironment = {
-  development: 'development',
-  staging: 'staging',
-  production: 'production',
-} as const;
 
 /**
  * Configuration schema for the API server
  */
-export interface APIConfig {
+export interface ConfigAPI {
   /**
    * A comma-separated list of allowed origins for CORS requests
    * @minLength 1
    */
-  cors?: string;
+  cors: string;
   /** Enable or disable API documentation */
-  docs?: boolean;
-  email?: EmailConfig;
+  docs: boolean;
+  email?: ConfigEmail;
   /** Deployment environment (development, staging, production) */
-  environment?: APIConfigEnvironment;
+  environment: string;
   /**
    * The host address on which the API server will listen
    * @minLength 1
    */
-  host?: string;
+  readonly host: string;
   /** The port on which the API server will listen */
-  port?: number;
+  port: number;
   /** Enable or disable request validation */
-  validate?: boolean;
-  image?: ImageConfig;
-  resources?: ResourceConfig;
+  validate: boolean;
+  image?: ConfigImage;
+  resources?: ConfigResource;
 }
 
 /**
  * Firebase authentication configuration
  */
-export interface FirebaseAuth {
+export interface ConfigAuthFirebase {
   /** Enable Firebase authentication */
   enabled: boolean;
   /** Firebase service account client email address */
@@ -734,7 +742,7 @@ export interface FirebaseAuth {
 /**
  * Local username/password authentication
  */
-export interface LocalAuth {
+export interface ConfigAuthLocal {
   /** Enable local authentication */
   enabled: boolean;
   /**
@@ -756,21 +764,21 @@ export interface LocalAuth {
   refreshTokenTtl: string;
 }
 
-export type MagicLinkAuthDeliveryMethodsEmail = {
+export type ConfigAuthMagicLinkDeliveryMethodsEmail = {
   enabled?: boolean;
   from?: string;
 };
 
-export type MagicLinkAuthDeliveryMethodsConsole = {
+export type ConfigAuthMagicLinkDeliveryMethodsConsole = {
   /** Enable console output (development only) */
   enabled?: boolean;
 };
 
-export type MagicLinkAuthDeliveryMethodsOtp = {
+export type ConfigAuthMagicLinkDeliveryMethodsOtp = {
   enabled?: boolean;
 };
 
-export type MagicLinkAuthDeliveryMethodsWebhook = {
+export type ConfigAuthMagicLinkDeliveryMethodsWebhook = {
   enabled?: boolean;
   url?: string;
 };
@@ -778,17 +786,17 @@ export type MagicLinkAuthDeliveryMethodsWebhook = {
 /**
  * Available delivery methods
  */
-export type MagicLinkAuthDeliveryMethods = {
-  email?: MagicLinkAuthDeliveryMethodsEmail;
-  console?: MagicLinkAuthDeliveryMethodsConsole;
-  otp?: MagicLinkAuthDeliveryMethodsOtp;
-  webhook?: MagicLinkAuthDeliveryMethodsWebhook;
+export type ConfigAuthMagicLinkDeliveryMethods = {
+  email?: ConfigAuthMagicLinkDeliveryMethodsEmail;
+  console?: ConfigAuthMagicLinkDeliveryMethodsConsole;
+  otp?: ConfigAuthMagicLinkDeliveryMethodsOtp;
+  webhook?: ConfigAuthMagicLinkDeliveryMethodsWebhook;
 };
 
 /**
  * Rate limiting configuration
  */
-export type MagicLinkAuthRateLimit = {
+export type ConfigAuthMagicLinkRateLimit = {
   /**
    * Maximum number of attempts within window
    * @minimum 1
@@ -804,7 +812,7 @@ export type MagicLinkAuthRateLimit = {
 /**
  * Magic link authentication configuration
  */
-export interface MagicLinkAuth {
+export interface ConfigAuthMagicLink {
   /** Enable magic link authentication */
   enabled: boolean;
   /**
@@ -820,15 +828,15 @@ export interface MagicLinkAuth {
    */
   otpLength?: number;
   /** Available delivery methods */
-  deliveryMethods?: MagicLinkAuthDeliveryMethods;
+  deliveryMethods?: ConfigAuthMagicLinkDeliveryMethods;
   /** Rate limiting configuration */
-  rateLimit?: MagicLinkAuthRateLimit;
+  rateLimit?: ConfigAuthMagicLinkRateLimit;
 }
 
 /**
  * Twitter OAuth configuration
  */
-export interface TwitterAuth {
+export interface ConfigAuthTwitter {
   /** Enable Twitter OAuth */
   enabled: boolean;
   /**
@@ -851,7 +859,7 @@ export interface TwitterAuth {
 /**
  * Google OAuth configuration
  */
-export interface GoogleAuth {
+export interface ConfigAuthGoogle {
   /** Enable Google OAuth */
   enabled: boolean;
   /** Google OAuth client ID */
@@ -867,7 +875,7 @@ export interface GoogleAuth {
 /**
  * GitHub OAuth configuration
  */
-export interface GitHubAuth {
+export interface ConfigAuthGithub {
   /** Enable GitHub OAuth */
   enabled: boolean;
   /** GitHub OAuth App client ID */
@@ -883,7 +891,7 @@ export interface GitHubAuth {
 /**
  * Microsoft/Azure AD OAuth configuration
  */
-export interface MicrosoftAuth {
+export interface ConfigAuthMicrosoft {
   /** Enable Microsoft OAuth */
   enabled: boolean;
   /** Azure AD Application (client) ID */
@@ -901,22 +909,22 @@ export interface MicrosoftAuth {
 /**
  * Authentication configuration for the API server
  */
-export interface AuthConfig {
+export interface ConfigAuth {
   /** Enable authentication */
   enabled: boolean;
-  firebase?: FirebaseAuth;
-  local?: LocalAuth;
-  magicLink?: MagicLinkAuth;
-  twitter?: TwitterAuth;
-  google?: GoogleAuth;
-  github?: GitHubAuth;
-  microsoft?: MicrosoftAuth;
+  firebase?: ConfigAuthFirebase;
+  local?: ConfigAuthLocal;
+  magicLink?: ConfigAuthMagicLink;
+  twitter?: ConfigAuthTwitter;
+  google?: ConfigAuthGoogle;
+  github?: ConfigAuthGithub;
+  microsoft?: ConfigAuthMicrosoft;
 }
 
 /**
  * Stripe payment configuration
  */
-export interface StripeConfig {
+export interface ConfigStripe {
   /**
    * Stripe secret API key
    * @minLength 1
@@ -932,32 +940,16 @@ export interface StripeConfig {
 /**
  * Billing configuration for Stripe
  */
-export interface BillingConfig {
+export interface ConfigBilling {
   /** Enable billing functionality */
   enabled: boolean;
-  stripe?: StripeConfig;
-}
-
-/**
- * Database authentication credentials
- */
-export interface DatabaseAuth {
-  /**
-   * Database name
-   * @minLength 1
-   */
-  database: string;
-  /**
-   * Database user password
-   * @minLength 1
-   */
-  password: string;
+  stripe?: ConfigStripe;
 }
 
 /**
  * Persistent storage configuration
  */
-export interface PersistenceConfig {
+export interface ConfigPersistence {
   /** Enable persistent storage */
   enabled: boolean;
   /**
@@ -970,11 +962,11 @@ export interface PersistenceConfig {
 /**
  * Database type (postgresql or sqlite)
  */
-export type DatabaseConfigType = typeof DatabaseConfigType[keyof typeof DatabaseConfigType];
+export type ConfigDatabaseType = typeof ConfigDatabaseType[keyof typeof ConfigDatabaseType];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DatabaseConfigType = {
+export const ConfigDatabaseType = {
   postgresql: 'postgresql',
   sqlite: 'sqlite',
 } as const;
@@ -982,26 +974,26 @@ export const DatabaseConfigType = {
 /**
  * Database configuration for PostgreSQL
  */
-export interface DatabaseConfig {
+export interface ConfigDatabase {
   /** Enable database */
   enabled: boolean;
   /**
    * Database connection url/string
    * @minLength 1
    */
-  url?: string;
+  url: string;
   /** Database type (postgresql or sqlite) */
-  type?: DatabaseConfigType;
+  type: ConfigDatabaseType;
   /**
    * Maximum number of connections in pool (PostgreSQL)
    * @minimum 1
    */
-  maxConns?: number;
+  maxConns: number;
   /**
    * Minimum number of connections in pool (PostgreSQL)
    * @minimum 0
    */
-  minConns?: number;
+  minConns: number;
   /**
    * Maximum connection lifetime (e.g., "30m")
    * @pattern ^(\d+[smh])+$
@@ -1018,43 +1010,22 @@ export interface DatabaseConfig {
    */
   healthCheckPeriod?: string;
   /** Automatically run database migrations on startup */
-  runMigrations?: boolean;
+  runMigrations: boolean;
   /** Use managed database deployment */
-  managed?: boolean;
-  auth?: DatabaseAuth;
-  image?: ImageConfig;
-  persistence?: PersistenceConfig;
-  resources?: ResourceConfig;
-}
-
-/**
- * The embedding provider to use for vector embeddings
- */
-export type EmbeddingConfigType = typeof EmbeddingConfigType[keyof typeof EmbeddingConfigType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const EmbeddingConfigType = {
-  openai: 'openai',
-  ollama: 'ollama',
-} as const;
-
-/**
- * Configuration for text embedding generation
- */
-export interface EmbeddingConfig {
-  /** The embedding provider to use for vector embeddings */
-  type: EmbeddingConfigType;
+  managed: boolean;
+  image?: ConfigImage;
+  persistence?: ConfigPersistence;
+  resources?: ConfigResource;
 }
 
 /**
  * LLM provider type
  */
-export type LLMConfigType = typeof LLMConfigType[keyof typeof LLMConfigType];
+export type ConfigLLMType = typeof ConfigLLMType[keyof typeof ConfigLLMType];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LLMConfigType = {
+export const ConfigLLMType = {
   ollama: 'ollama',
   openai: 'openai',
 } as const;
@@ -1062,9 +1033,9 @@ export const LLMConfigType = {
 /**
  * Large Language Model configuration
  */
-export interface LLMConfig {
+export interface ConfigLLM {
   /** LLM provider type */
-  type: LLMConfigType;
+  type: ConfigLLMType;
   /**
    * LLM service endpoint URL
    * @minLength 1
@@ -1080,7 +1051,7 @@ export interface LLMConfig {
 /**
  * RunPod serverless GPU configuration
  */
-export interface RunPodConfig {
+export interface ConfigRunPod {
   /** Enable RunPod integration */
   enabled: boolean;
   /**
@@ -1093,7 +1064,7 @@ export interface RunPodConfig {
 /**
  * Web scraping service configuration
  */
-export interface ScraperConfig {
+export interface ConfigScraper {
   /** Enable scraper service */
   enabled: boolean;
   /** Use managed scraper deployment */
@@ -1103,14 +1074,14 @@ export interface ScraperConfig {
    * @minLength 1
    */
   endpoint?: string;
-  image?: ImageConfig;
-  resources?: ResourceConfig;
+  image?: ConfigImage;
+  resources?: ConfigResource;
 }
 
 /**
  * Speech recognition and TTS services
  */
-export interface SpeechConfig {
+export interface ConfigSpeech {
   /** Enable speech services */
   enabled: boolean;
   /**
@@ -1123,35 +1094,35 @@ export interface SpeechConfig {
 /**
  * Unstructured.io service for document parsing
  */
-export interface UnstructuredConfig {
+export interface ConfigUnstructured {
   /** Enable unstructured document parsing */
   enabled: boolean;
   /** Use managed unstructured deployment */
   managed?: boolean;
-  image?: ImageConfig;
-  resources?: ResourceConfig;
+  image?: ConfigImage;
+  resources?: ConfigResource;
 }
 
 /**
  * Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
  */
-export interface IntelligenceConfig {
-  embedding?: EmbeddingConfig;
-  llm?: LLMConfig;
-  runpod?: RunPodConfig;
-  scraper?: ScraperConfig;
-  speech?: SpeechConfig;
-  unstructured?: UnstructuredConfig;
+export interface ConfigIntelligence {
+  embedding?: ConfigLLM;
+  llm?: ConfigLLM;
+  runpod?: ConfigRunPod;
+  scraper?: ConfigScraper;
+  speech?: ConfigSpeech;
+  unstructured?: ConfigUnstructured;
 }
 
 /**
  * Minimum log level to output
  */
-export type LoggingConfigLevel = typeof LoggingConfigLevel[keyof typeof LoggingConfigLevel];
+export type ConfigLoggingLevel = typeof ConfigLoggingLevel[keyof typeof ConfigLoggingLevel];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LoggingConfigLevel = {
+export const ConfigLoggingLevel = {
   fatal: 'fatal',
   error: 'error',
   warn: 'warn',
@@ -1164,9 +1135,9 @@ export const LoggingConfigLevel = {
 /**
  * Logging configuration
  */
-export interface LoggingConfig {
+export interface ConfigLogging {
   /** Minimum log level to output */
-  level: LoggingConfigLevel;
+  level: ConfigLoggingLevel;
   /** Enable pretty-printed logs for development */
   pretty: boolean;
 }
@@ -1174,7 +1145,7 @@ export interface LoggingConfig {
 /**
  * Platform configuration (host, image, resources)
  */
-export interface PlatformConfig {
+export interface ConfigPlatform {
   /** Enable platform service */
   enabled: boolean;
   /** Use managed platform deployment */
@@ -1184,14 +1155,14 @@ export interface PlatformConfig {
    * @minLength 1
    */
   host?: string;
-  image?: ImageConfig;
-  resources?: ResourceConfig;
+  image?: ConfigImage;
+  resources?: ConfigResource;
 }
 
 /**
  * Redis configuration
  */
-export interface RedisConfig {
+export interface ConfigRedis {
   /** Enable Redis */
   enabled: boolean;
   /** Use managed Redis deployment */
@@ -1213,15 +1184,15 @@ export interface RedisConfig {
   host: string;
   /** Redis port number */
   port: number;
-  image?: ImageConfig;
-  persistence?: PersistenceConfig;
-  resources?: ResourceConfig;
+  image?: ConfigImage;
+  persistence?: ConfigPersistence;
+  resources?: ConfigResource;
 }
 
 /**
  * Object storage configuration for MinIO or S3-compatible services
  */
-export interface StorageConfig {
+export interface ConfigStorage {
   /** Enable object storage */
   enabled: boolean;
   /** Use managed storage deployment */
@@ -1246,15 +1217,15 @@ export interface StorageConfig {
    * @minLength 1
    */
   secretkey: string;
-  image?: ImageConfig;
-  persistence?: PersistenceConfig;
-  resources?: ResourceConfig;
+  image?: ConfigImage;
+  persistence?: ConfigPersistence;
+  resources?: ConfigResource;
 }
 
 /**
  * Container image configuration
  */
-export interface ImagesConfig {
+export interface ConfigImages {
   /** List of Kubernetes secrets for pulling private images */
   imagePullSecrets: string[];
   /**
@@ -1267,7 +1238,7 @@ export interface ImagesConfig {
 /**
  * Database migration configuration
  */
-export interface MigrationsConfig {
+export interface ConfigMigrations {
   /** Enable automatic DB migrations */
   enabled: boolean;
 }
@@ -1275,7 +1246,7 @@ export interface MigrationsConfig {
 /**
  * Kubernetes service account configuration
  */
-export interface ServiceAccountConfig {
+export interface ConfigServiceAccount {
   /** Create dedicated service account */
   create: boolean;
   /**
@@ -1288,21 +1259,21 @@ export interface ServiceAccountConfig {
 /**
  * Infrastructure configuration for Kubernetes deployments
  */
-export interface InfrastructureConfig {
-  images: ImagesConfig;
-  migrations: MigrationsConfig;
+export interface ConfigInfrastructure {
+  images: ConfigImages;
+  migrations: ConfigMigrations;
   /**
    * Kubernetes namespace where all resources will be deployed
    * @minLength 1
    */
   namespace: string;
-  serviceAccount: ServiceAccountConfig;
+  serviceAccount: ConfigServiceAccount;
 }
 
 /**
  * TLS configuration
  */
-export interface TLSConfig {
+export interface ConfigTLS {
   /** Enable TLS/SSL */
   enabled: boolean;
   /**
@@ -1320,7 +1291,7 @@ export interface TLSConfig {
 /**
  * Ingress configuration
  */
-export interface IngressConfig {
+export interface ConfigIngress {
   /** Enable ingress */
   enabled: boolean;
   /**
@@ -1328,25 +1299,25 @@ export interface IngressConfig {
    * @minLength 1
    */
   domain?: string;
-  tls?: TLSConfig;
+  tls?: ConfigTLS;
 }
 
 /**
  * Grafana monitoring dashboard configuration
  */
-export interface GrafanaConfig {
+export interface ConfigGrafana {
   /** Enable Grafana */
   enabled: boolean;
   /** Use managed Grafana deployment */
   managed?: boolean;
-  image?: ImageConfig;
-  resources?: ResourceConfig;
+  image?: ConfigImage;
+  resources?: ConfigResource;
 }
 
 /**
  * Loki log aggregation service configuration
  */
-export interface LokiConfig {
+export interface ConfigLoki {
   /** Enable Loki */
   enabled: boolean;
   /** Use managed Loki deployment */
@@ -1356,45 +1327,44 @@ export interface LokiConfig {
    * @minLength 1
    */
   host?: string;
-  image?: ImageConfig;
-  resources?: ResourceConfig;
+  image?: ConfigImage;
+  resources?: ConfigResource;
 }
 
 /**
  * Monitoring configuration for Grafana and Loki
  */
-export interface MonitoringConfig {
-  grafana: GrafanaConfig;
-  loki: LokiConfig;
+export interface ConfigMonitoring {
+  grafana: ConfigGrafana;
+  loki: ConfigLoki;
 }
 
 /**
  * Kubernetes-specific deployment configuration
  */
-export type ArchesConfigKubernetes = {
-  infrastructure?: InfrastructureConfig;
-  ingress?: IngressConfig;
-  monitoring?: MonitoringConfig;
-};
+export interface ConfigKubernetes {
+  infrastructure?: ConfigInfrastructure;
+  ingress?: ConfigIngress;
+  monitoring?: ConfigMonitoring;
+}
 
 /**
  * Arches AI configuration schema
  */
-export interface ArchesConfig {
-  api?: APIConfig;
-  auth?: AuthConfig;
-  billing?: BillingConfig;
-  database?: DatabaseConfig;
-  intelligence?: IntelligenceConfig;
-  logging?: LoggingConfig;
-  platform?: PlatformConfig;
-  redis?: RedisConfig;
-  storage?: StorageConfig;
-  /** Kubernetes-specific deployment configuration */
-  kubernetes?: ArchesConfigKubernetes;
+export interface Config {
+  api?: ConfigAPI;
+  auth?: ConfigAuth;
+  billing?: ConfigBilling;
+  database?: ConfigDatabase;
+  intelligence?: ConfigIntelligence;
+  logging?: ConfigLogging;
+  platform?: ConfigPlatform;
+  redis?: ConfigRedis;
+  storage?: ConfigStorage;
+  kubernetes?: ConfigKubernetes;
 }
 
-export type HealthResponseServices = {
+export type HealthServices = {
   /** @minLength 1 */
   database: string;
   /** @minLength 1 */
@@ -1403,8 +1373,8 @@ export type HealthResponseServices = {
   redis: string;
 };
 
-export interface HealthResponse {
-  services: HealthResponseServices;
+export interface Health {
+  services: HealthServices;
   /** @minLength 1 */
   timestamp: string;
   uptime: number;
@@ -1576,6 +1546,48 @@ export type UsersSortParameterItem = {
  * The sort parameter
  */
 export type UsersSortParameter = UsersSortParameterItem[];
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type APIKeysFilterParameter = { [key: string]: unknown };
+
+export type APIKeysSortParameterItemField = typeof APIKeysSortParameterItemField[keyof typeof APIKeysSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const APIKeysSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  userID: 'userID',
+  organizationID: 'organizationID',
+  keyHash: 'keyHash',
+  name: 'name',
+  prefix: 'prefix',
+  rateLimit: 'rateLimit',
+  lastUsedAt: 'lastUsedAt',
+  expiresAt: 'expiresAt',
+} as const;
+
+export type APIKeysSortParameterItemOrder = typeof APIKeysSortParameterItemOrder[keyof typeof APIKeysSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const APIKeysSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type APIKeysSortParameterItem = {
+  field: APIKeysSortParameterItemField;
+  order: APIKeysSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type APIKeysSortParameter = APIKeysSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
@@ -2074,8 +2086,11 @@ export type GetSession200 = {
 };
 
 export type UpdateSessionBody = {
-  /** The organization ID to set as active for this session */
-  organizationID: Uuid;
+  /**
+   * The organization ID to set as active for this session
+   * @minLength 36
+   */
+  organizationID: string;
 };
 
 export type UpdateSession200 = {
@@ -2226,42 +2241,31 @@ export type VerifyMagicLinkBody = {
   identifier?: string;
 };
 
-export type VerifyMagicLink201 = {
-  /** JWT access token */
-  accessToken?: string;
-  /** JWT refresh token */
-  refreshToken?: string;
-  /** Token type */
-  tokenType?: string;
-  /** Access token expiry in seconds */
-  expiresIn?: number;
-  user?: User;
+export type ListAPIKeysParams = {
+/**
+ * A recursive filter node that can be a condition or group
+ */
+filter?: APIKeysFilterParameter;
+/**
+ * Pagination (page number & size)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: APIKeysSortParameter;
 };
 
-export type ListTokensParams = {
-/**
- * Maximum number of items to return
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
-};
-
-export type ListTokens200Meta = {
+export type ListAPIKeys200Meta = {
   total: number;
 };
 
-export type ListTokens200 = {
-  data: ApiKey[];
-  meta: ListTokens200Meta;
+export type ListAPIKeys200 = {
+  data: APIKey[];
+  meta: ListAPIKeys200Meta;
 };
 
-export type CreateTokenBody = {
+export type CreateAPIKeyBody = {
   /**
    * Human-readable name for the API key
    * @minLength 1
@@ -2280,7 +2284,7 @@ export type CreateTokenBody = {
   expiresAt?: string;
 };
 
-export type ApikeysUpdateBody = {
+export type UpdateAPIKeyBody = {
   /**
    * Human-readable name for the API key
    * @minLength 1
@@ -2302,7 +2306,11 @@ export type CreateOrganizationBody = {
    * @minLength 1
    */
   billingEmail: string;
-  organizationID: Uuid;
+  /**
+   * UUID identifier
+   * @minLength 36
+   */
+  organizationID: string;
 };
 
 export type CreateOrganization201 = {
@@ -2345,7 +2353,11 @@ export type GetOrganization200 = {
 export type UpdateOrganizationBody = {
   /** The billing email to use for the organization */
   billingEmail?: string;
-  organizationID?: Uuid;
+  /**
+   * UUID identifier
+   * @minLength 36
+   */
+  organizationID?: string;
 };
 
 export type UpdateOrganization200 = {
@@ -2584,7 +2596,11 @@ export type GetPipelineSteps200 = {
 export type CreatePipelineStepBodyConfig = { [key: string]: unknown };
 
 export type CreatePipelineStepBody = {
-  toolID: Uuid;
+  /**
+   * UUID identifier
+   * @minLength 36
+   */
+  toolID: string;
   /**
    * Name of the step
    * @minLength 1
@@ -2604,7 +2620,7 @@ export type CreatePipelineStepBody = {
    */
   position?: number;
   /** IDs of steps this step depends on */
-  dependencies?: Uuid[];
+  dependencies?: string[];
 };
 
 export type CreatePipelineStep201 = {
@@ -2614,12 +2630,15 @@ export type CreatePipelineStep201 = {
 export type GetPipelineExecutionPlan200DataLevelsItem = {
   /** Execution level (0-based) */
   level: number;
-  /** Step IDs that can run in parallel at this level */
-  steps: Uuid[];
+  steps: string[];
 };
 
 export type GetPipelineExecutionPlan200Data = {
-  pipelineID: Uuid;
+  /**
+   * UUID identifier
+   * @minLength 36
+   */
+  pipelineID: string;
   levels: GetPipelineExecutionPlan200DataLevelsItem[];
   /** Total number of steps in the pipeline */
   totalSteps: number;
@@ -2644,7 +2663,11 @@ export type ValidatePipelineExecutionPlan200 = {
 };
 
 export type CreateRunBody = {
-  pipelineID: Uuid;
+  /**
+   * UUID identifier
+   * @minLength 36
+   */
+  pipelineID: string;
 };
 
 export type CreateRun201 = {
@@ -2685,7 +2708,11 @@ export type GetRun200 = {
 };
 
 export type UpdateRunBody = {
-  pipelineID?: Uuid;
+  /**
+   * UUID identifier
+   * @minLength 36
+   */
+  pipelineID?: string;
 };
 
 export type UpdateRun200 = {

@@ -160,14 +160,12 @@ deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
 generate: ## Generate all code
 	@echo -e "$(BLUE)━━━ Code Generation Pipeline ━━━$(NC)"
 	@START_TOTAL=$$(date +%s%3N); \
-	echo -e "$(CYAN)[0/7] OpenAPI Bundling$(NC)" && START=$$(date +%s%3N) && $(MAKE) bundle-openapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI bundling complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[1/7] Database Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-sqlc && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Database generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[2/7] OpenAPI Type Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen-types && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI type generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[3/7] Server Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-oapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Server code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[4/7] Repository Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Repository code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[5/7] Mock Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-mocks && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mock generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[6/7] Client Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-js-client && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Client generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[7/7] Helm Schema Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-helm-schema && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Helm schema generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[0/5] OpenAPI Bundling$(NC)" && START=$$(date +%s%3N) && $(MAKE) bundle-openapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI bundling complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[1/5] Database Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-sqlc && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Database generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[2/5] Unified Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Unified code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[3/5] Mock Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-mocks && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mock generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[4/5] Client Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-js-client && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Client generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
+	echo -e "$(CYAN)[5/5] Helm Schema Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-helm-schema && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Helm schema generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
 	START=$$(date +%s%3N) && $(MAKE) add-mapstructure-tags && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mapstructure tags added $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
 	END_TOTAL=$$(date +%s%3N); \
 	echo -e "$(GREEN)✓ All code generation complete in $$((END_TOTAL-START_TOTAL))ms!$(NC)"
@@ -184,22 +182,15 @@ generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 	@go run tools/pg-to-sqlite/main.go
 	@echo -e "$(GREEN)✓ Schema conversion complete!$(NC)"
 
-.PHONY: generate-oapi
-generate-oapi: ## Generate OpenAPI server code
-	@echo -e "$(YELLOW)▶ Generating OpenAPI server code...$(NC)"
-	@find internal -name "*.go" -exec grep -l "go:generate" {} \; | \
-		xargs -I{} dirname {} | sort -u | \
-		xargs -P $$(nproc 2>/dev/null || echo 4) -I{} sh -c 'cd {} && go generate 2>/dev/null'
-	@echo -e "$(GREEN)✓ OpenAPI generation complete!$(NC)"
-
 .PHONY: generate-codegen-types
 generate-codegen-types: ## Generate types for codegen configuration
 	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
-	@cd internal/codegen && go generate
-	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
+	@go run ./tools/codegen/main.go -openapi ./internal/codegen/xcodegen.yaml -config ./internal/codegen/codegen.yaml -output ./internal
+	@echo -e "$(YELLOW)WARN Codegen types not implemented!$(NC)"
+
 
 .PHONY: generate-codegen
-generate-codegen: generate-codegen-types ## Generate codegen
+generate-codegen: generate-codegen-types bundle-openapi ## Generate codegen
 	@echo -e "$(YELLOW)▶ Generating code from OpenAPI schemas...$(NC)"
 	@go run tools/codegen/main.go
 	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
@@ -211,7 +202,7 @@ add-mapstructure-tags: ## Add mapstructure tags to config types for Viper compat
 	@echo -e "$(GREEN)✓ Mapstructure tags added!$(NC)"
 
 .PHONY: generate-mocks
-generate-mocks: generate-oapi ## Generate test mocks using mockery
+generate-mocks: generate-codegen ## Generate test mocks using mockery
 	@echo -e "$(YELLOW)▶ Generating test mocks...$(NC)"
 	@go tool mockery
 	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"

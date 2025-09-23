@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: config
+description: Email configuration for sending emails
+type: object
+properties:
+  enabled:
+    description: Enable email functionality
+    type: boolean
+    default: false
+    example: true
+  service:
+    description: Email service provider (e.g., "gmail", "sendgrid", etc.)
+    type: string
+    example: example-string
+  user:
+    description: Username for the email service
+    type: string
+    example: example-string
+  password:
+    description: Password for the email service
+    type: string
+    example: example-string
+required:
+  - enabled
+additionalProperties: false

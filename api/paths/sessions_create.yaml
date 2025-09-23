@@ -33,9 +33,14 @@ post:
   responses:
     '200':
       description: Successful login
+      headers:
+        Set-Cookie:
+          description: Session cookies for authentication
+          schema:
+            type: string
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/TokenResponse.yaml
+            $ref: ../components/schemas/Session.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml

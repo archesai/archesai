@@ -16,27 +16,27 @@ INSERT INTO
   organization (
     id,
     name,
+    slug,
     billing_email,
     plan,
     credits,
     logo,
-    metadata,
     stripe_customer_id
   )
 VALUES
   ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING
-  id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
 `
 
 type CreateOrganizationParams struct {
 	ID               uuid.UUID
 	Name             string
+	Slug             string
 	BillingEmail     *string
 	Plan             string
 	Credits          int32
 	Logo             *string
-	Metadata         *string
 	StripeCustomerID *string
 }
 
@@ -44,11 +44,11 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 	row := q.db.QueryRow(ctx, createOrganization,
 		arg.ID,
 		arg.Name,
+		arg.Slug,
 		arg.BillingEmail,
 		arg.Plan,
 		arg.Credits,
 		arg.Logo,
-		arg.Metadata,
 		arg.StripeCustomerID,
 	)
 	var i Organization
@@ -59,10 +59,10 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 		&i.BillingEmail,
 		&i.Credits,
 		&i.Logo,
-		&i.Metadata,
 		&i.Name,
 		&i.Plan,
 		&i.StripeCustomerID,
+		&i.Slug,
 	)
 	return i, err
 }
@@ -80,7 +80,7 @@ func (q *Queries) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
 
 const getOrganization = `-- name: GetOrganization :one
 SELECT
-  id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
 FROM
   organization
 WHERE
@@ -99,17 +99,75 @@ func (q *Queries) GetOrganization(ctx context.Context, id uuid.UUID) (Organizati
 		&i.BillingEmail,
 		&i.Credits,
 		&i.Logo,
-		&i.Metadata,
 		&i.Name,
 		&i.Plan,
 		&i.StripeCustomerID,
+		&i.Slug,
+	)
+	return i, err
+}
+
+const getOrganizationBySlug = `-- name: GetOrganizationBySlug :one
+SELECT
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
+FROM
+  organization
+WHERE
+  slug = $1
+LIMIT
+  1
+`
+
+func (q *Queries) GetOrganizationBySlug(ctx context.Context, slug string) (Organization, error) {
+	row := q.db.QueryRow(ctx, getOrganizationBySlug, slug)
+	var i Organization
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.BillingEmail,
+		&i.Credits,
+		&i.Logo,
+		&i.Name,
+		&i.Plan,
+		&i.StripeCustomerID,
+		&i.Slug,
+	)
+	return i, err
+}
+
+const getOrganizationByStripeCustomerID = `-- name: GetOrganizationByStripeCustomerID :one
+SELECT
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
+FROM
+  organization
+WHERE
+  stripe_customer_id = $1
+LIMIT
+  1
+`
+
+func (q *Queries) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (Organization, error) {
+	row := q.db.QueryRow(ctx, getOrganizationByStripeCustomerID, stripeCustomerID)
+	var i Organization
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.BillingEmail,
+		&i.Credits,
+		&i.Logo,
+		&i.Name,
+		&i.Plan,
+		&i.StripeCustomerID,
+		&i.Slug,
 	)
 	return i, err
 }
 
 const listOrganizations = `-- name: ListOrganizations :many
 SELECT
-  id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
 FROM
   organization
 ORDER BY
@@ -141,10 +199,10 @@ func (q *Queries) ListOrganizations(ctx context.Context, arg ListOrganizationsPa
 			&i.BillingEmail,
 			&i.Credits,
 			&i.Logo,
-			&i.Metadata,
 			&i.Name,
 			&i.Plan,
 			&i.StripeCustomerID,
+			&i.Slug,
 		); err != nil {
 			return nil, err
 		}
@@ -160,11 +218,11 @@ const updateOrganization = `-- name: UpdateOrganization :one
 UPDATE organization
 SET
   name = COALESCE($2, name),
-  billing_email = COALESCE($3, billing_email),
-  plan = COALESCE($4, plan),
-  credits = COALESCE($5, credits),
-  logo = COALESCE($6, logo),
-  metadata = COALESCE($7, metadata),
+  slug = COALESCE($3, slug),
+  billing_email = COALESCE($4, billing_email),
+  plan = COALESCE($5, plan),
+  credits = COALESCE($6, credits),
+  logo = COALESCE($7, logo),
   stripe_customer_id = COALESCE(
     $8,
     stripe_customer_id
@@ -172,17 +230,17 @@ SET
 WHERE
   id = $1
 RETURNING
-  id, created_at, updated_at, billing_email, credits, logo, metadata, name, plan, stripe_customer_id
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
 `
 
 type UpdateOrganizationParams struct {
 	ID               uuid.UUID
 	Name             *string
+	Slug             *string
 	BillingEmail     *string
 	Plan             *string
 	Credits          *int32
 	Logo             *string
-	Metadata         *string
 	StripeCustomerID *string
 }
 
@@ -190,11 +248,11 @@ func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganization
 	row := q.db.QueryRow(ctx, updateOrganization,
 		arg.ID,
 		arg.Name,
+		arg.Slug,
 		arg.BillingEmail,
 		arg.Plan,
 		arg.Credits,
 		arg.Logo,
-		arg.Metadata,
 		arg.StripeCustomerID,
 	)
 	var i Organization
@@ -205,10 +263,10 @@ func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganization
 		&i.BillingEmail,
 		&i.Credits,
 		&i.Logo,
-		&i.Metadata,
 		&i.Name,
 		&i.Plan,
 		&i.StripeCustomerID,
+		&i.Slug,
 	)
 	return i, err
 }

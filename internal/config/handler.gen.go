@@ -13,6 +13,20 @@ import (
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
 
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Get the configuration
@@ -65,12 +79,15 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
 	router.GET(baseURL+"/config", wrapper.GetConfig)
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
+
+type NotFoundResponse ProblemDetails
+
+type UnauthorizedResponse ProblemDetails
 
 type GetConfigRequestObject struct {
 }
@@ -79,7 +96,9 @@ type GetConfigResponseObject interface {
 	VisitGetConfigResponse(w http.ResponseWriter) error
 }
 
-type GetConfig200JSONResponse ArchesConfig
+type GetConfig200JSONResponse struct {
+	Data Config `json:"data"`
+}
 
 func (response GetConfig200JSONResponse) VisitGetConfigResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -88,13 +107,29 @@ func (response GetConfig200JSONResponse) VisitGetConfigResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetConfig400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type GetConfig400Response = BadRequestResponse
 
-func (response GetConfig400ApplicationProblemPlusJSONResponse) VisitGetConfigResponse(w http.ResponseWriter) error {
+func (response GetConfig400Response) VisitGetConfigResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetConfig401Response = UnauthorizedResponse
+
+func (response GetConfig401Response) VisitGetConfigResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetConfig404Response = NotFoundResponse
+
+func (response GetConfig404Response) VisitGetConfigResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }

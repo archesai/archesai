@@ -78,10 +78,15 @@ post:
   responses:
     '201':
       description: Account created successfully
+      headers:
+        Set-Cookie:
+          description: Session cookies for authentication
+          schema:
+            type: string
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/TokenResponse.yaml
+            $ref: ../components/schemas/Account.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '409':

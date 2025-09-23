@@ -304,7 +304,6 @@ The generator uses Go templates located in `internal/codegen/templates/`:
 - `service.go.tmpl` - Service interface template
 - `handler.go.tmpl` - HTTP handler template
 - `events.go.tmpl` - Event publisher interface
-- `config.go.tmpl` - Configuration defaults
 
 ## Troubleshooting
 
@@ -347,7 +346,7 @@ Ensure OpenAPI types match Go types:
 format: uuid      -> uuid.UUID
 format: date-time -> time.Time
 format: email     -> openapi_types.Email
-type: integer     -> int32 or int64
+type: integer     -> int or int64
 type: number      -> float32 or float64
 ```
 

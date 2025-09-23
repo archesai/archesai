@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 /auth/magic-links/request:
   post:
     operationId: requestMagicLink
@@ -96,29 +95,15 @@
     responses:
       '201':
         description: Successfully authenticated
+        headers:
+          Set-Cookie:
+            description: Session cookies for authentication
+            schema:
+              type: string
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                accessToken:
-                  description: JWT access token
-                  type: string
-                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-                refreshToken:
-                  description: JWT refresh token
-                  type: string
-                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-                tokenType:
-                  description: Token type
-                  type: string
-                  example: 'Bearer'
-                expiresIn:
-                  description: Access token expiry in seconds
-                  type: integer
-                  example: 3600
-                user:
-                  $ref: '../components/schemas/User.yaml'
+              $ref: '../components/schemas/Session.yaml'
       '400':
         $ref: '../components/responses/BadRequest.yaml'
       '401':

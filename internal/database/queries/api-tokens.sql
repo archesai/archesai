@@ -1,4 +1,4 @@
--- name: CreateApiToken :one
+-- name: CreateAPIKey :one
 INSERT INTO
   api_token (
     id,
@@ -16,7 +16,7 @@ VALUES
 RETURNING
   *;
 
--- name: GetApiToken :one
+-- name: GetAPIKey :one
 SELECT
   *
 FROM
@@ -26,7 +26,7 @@ WHERE
 LIMIT
   1;
 
--- name: GetApiTokenByKeyHash :one
+-- name: GetAPIKeyByKeyHash :one
 SELECT
   *
 FROM
@@ -36,7 +36,7 @@ WHERE
 LIMIT
   1;
 
--- name: ListApiTokens :many
+-- name: ListAPIKeys :many
 SELECT
   *
 FROM
@@ -48,7 +48,7 @@ LIMIT
 OFFSET
   $2;
 
--- name: ListApiTokensByUser :many
+-- name: ListAPIKeysByUser :many
 SELECT
   *
 FROM
@@ -62,7 +62,7 @@ LIMIT
 OFFSET
   $3;
 
--- name: UpdateApiToken :one
+-- name: UpdateAPIKey :one
 UPDATE api_token
 SET
   name = COALESCE(sqlc.narg (name), name),
@@ -75,17 +75,17 @@ WHERE
 RETURNING
   *;
 
--- name: DeleteApiToken :exec
+-- name: DeleteAPIKey :exec
 DELETE FROM api_token
 WHERE
   id = $1;
 
--- name: DeleteApiTokensByUser :exec
+-- name: DeleteAPIKeysByUser :exec
 DELETE FROM api_token
 WHERE
   user_id = $1;
 
--- name: ListApiTokensByOrganization :many
+-- name: ListAPIKeysByOrganization :many
 SELECT
   *
 FROM
@@ -99,14 +99,14 @@ LIMIT
 OFFSET
   $3;
 
--- name: UpdateApiTokenLastUsed :exec
+-- name: UpdateAPIKeyLastUsed :exec
 UPDATE api_token
 SET
   last_used_at = CURRENT_TIMESTAMP
 WHERE
   id = $1;
 
--- name: DeleteExpiredApiTokens :exec
+-- name: DeleteExpiredAPIKeys :exec
 DELETE FROM api_token
 WHERE
   expires_at IS NOT NULL

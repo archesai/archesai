@@ -12,15 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// ServiceInterface defines the business logic operations
-type ServiceInterface interface {
-	CreateMember(ctx context.Context, request CreateMemberRequestObject) (CreateMemberResponseObject, error)
-	GetMember(ctx context.Context, request GetMemberRequestObject) (GetMemberResponseObject, error)
-	UpdateMember(ctx context.Context, request UpdateMemberRequestObject) (UpdateMemberResponseObject, error)
-	DeleteMember(ctx context.Context, request DeleteMemberRequestObject) (DeleteMemberResponseObject, error)
-	ListMembers(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error)
-}
-
 // Service implements the business logic
 type Service struct {
 	repo   Repository
@@ -38,208 +29,93 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 }
 
 // CreateMember creates a new member
-func (s *Service) CreateMember(ctx context.Context, request CreateMemberRequestObject) (CreateMemberResponseObject, error) {
-	if request.Body == nil {
-		return CreateMember400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) CreateMember(ctx context.Context, entity *Member) (*Member, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Create entity from request
-	entity := &Member{
-		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	// Set timestamps if not already set
+	if entity.CreatedAt.IsZero() {
+		entity.CreatedAt = time.Now()
+	}
+	if entity.UpdatedAt.IsZero() {
+		entity.UpdatedAt = time.Now()
 	}
 
-	// Call repository to persist
 	created, err := s.repo.Create(ctx, entity)
 	if err != nil {
 		s.logger.Error("Failed to create member", "error", err)
-		return CreateMember400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to create member",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, err
 	}
-	// Check if response type has Data field (wrapped response)
-	return CreateMember201JSONResponse{
-		Data: *created,
-	}, nil
+
+	return created, nil
 }
 
 // GetMember gets a member by ID
-func (s *Service) GetMember(ctx context.Context, request GetMemberRequestObject) (GetMemberResponseObject, error) {
-	// Call repository to fetch entity
-	entity, err := s.repo.Get(ctx, request.ID)
+func (s *Service) GetMember(ctx context.Context, id uuid.UUID) (*Member, error) {
+	entity, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrMemberNotFound) {
-			return GetMember404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Member not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return nil, err
 		}
-
-		s.logger.Error("Failed to get member", "error", err, "id", request.ID)
-		return GetMember404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to retrieve member",
-				Status: 404,
-				Title:  "Not Found",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get member", "error", err, "id", id)
+		return nil, err
 	}
 
-	return GetMember200JSONResponse{
-		Data: *entity,
-	}, nil
+	return entity, nil
 }
 
 // UpdateMember updates a member
-func (s *Service) UpdateMember(ctx context.Context, request UpdateMemberRequestObject) (UpdateMemberResponseObject, error) {
-	if request.Body == nil {
-		return UpdateMember404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) UpdateMember(ctx context.Context, id uuid.UUID, entity *Member) (*Member, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Get existing entity to verify it exists
-	existing, err := s.repo.Get(ctx, request.ID)
+	// Set updated timestamp
+	entity.UpdatedAt = time.Now()
+
+	updated, err := s.repo.Update(ctx, id, entity)
 	if err != nil {
-		if errors.Is(err, ErrMemberNotFound) {
-			return UpdateMember404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Member not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
-		}
-		s.logger.Error("Failed to get member for update", "error", err, "id", request.ID)
-		return UpdateMember404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to update member", "error", err, "id", id)
+		return nil, err
 	}
 
-	// Update the entity with current timestamp
-	existing.UpdatedAt = time.Now()
-
-	// Call repository to persist changes
-	updated, err := s.repo.Update(ctx, request.ID, existing)
-	if err != nil {
-		s.logger.Error("Failed to update member", "error", err, "id", request.ID)
-		return UpdateMember404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to update member",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
-	}
-
-	return UpdateMember200JSONResponse{
-		Data: *updated,
-	}, nil
+	return updated, nil
 }
 
 // DeleteMember deletes a member
-func (s *Service) DeleteMember(ctx context.Context, request DeleteMemberRequestObject) (DeleteMemberResponseObject, error) {
+func (s *Service) DeleteMember(ctx context.Context, id uuid.UUID) error {
 	// Check if entity exists first
-	_, err := s.repo.Get(ctx, request.ID)
+	_, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrMemberNotFound) {
-			return DeleteMember404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Member not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return err
 		}
-		s.logger.Error("Failed to get member for deletion", "error", err, "id", request.ID)
-		return DeleteMember404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get member for deletion", "error", err, "id", id)
+		return err
 	}
 
-	// Delete the entity
-	err = s.repo.Delete(ctx, request.ID)
+	err = s.repo.Delete(ctx, id)
 	if err != nil {
-		s.logger.Error("Failed to delete member", "error", err, "id", request.ID)
-		return DeleteMember404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to delete member",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to delete member", "error", err, "id", id)
+		return err
 	}
 
-	return DeleteMember200JSONResponse{}, nil
+	return nil
 }
 
 // ListMembers lists all members
-func (s *Service) ListMembers(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error) {
-	// Call repository to fetch entities using the request parameters
-	entities, total, err := s.repo.List(ctx, request.Params)
+func (s *Service) ListMembers(ctx context.Context, filter *ListMembersParamsFilter, page *ListMembersParamsPage, sort *ListMembersParamsSort) ([]*Member, int64, error) {
+	params := ListMembersParams{
+		Filter: filter,
+		Page:   page,
+		Sort:   sort,
+	}
+	entities, total, err := s.repo.List(ctx, params)
 	if err != nil {
 		s.logger.Error("Failed to list members", "error", err)
-		return ListMembers400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to list members",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, 0, err
 	}
 
-	// Convert entities to response format
-	var responseData []Member
-	for _, entity := range entities {
-		if entity != nil {
-			responseData = append(responseData, *entity)
-		}
-	}
-
-	return ListMembers200JSONResponse{
-		Data: responseData,
-		Meta: struct {
-			Total float32 `json:"total"`
-		}{
-			Total: float32(total),
-		},
-	}, nil
+	return entities, total, nil
 }

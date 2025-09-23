@@ -17,7 +17,10 @@ type Repository interface {
 	List(ctx context.Context, params ListRunsParams) ([]*Run, int64, error)
 
 	// Additional operations
+	// ListByPipeline retrieves multiple runs by pipelineID
 	ListByPipeline(ctx context.Context, pipelineID uuid.UUID) ([]*Run, error)
+	// ListByOrganization retrieves multiple runs by organizationID
 	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Run, error)
+	// ListByTool retrieves multiple runs by toolID
 	ListByTool(ctx context.Context, toolID uuid.UUID) ([]*Run, error)
 }

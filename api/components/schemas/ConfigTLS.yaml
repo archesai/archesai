@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: config
+description: TLS configuration
+type: object
+properties:
+  enabled:
+    description: Enable TLS/SSL
+    type: boolean
+    default: true
+    example: true
+  issuer:
+    description: Cert-manager ClusterIssuer
+    type: string
+    default: letsencrypt-staging
+    minLength: 1
+    example: example-string
+  secretName:
+    description: Kubernetes secret name for TLS certificates
+    type: string
+    default: archesai-tls
+    minLength: 1
+    example: Example Name
+required:
+  - enabled
+additionalProperties: false

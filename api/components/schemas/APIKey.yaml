@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: auth
+description: Schema for API Key entity
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      userID:
+        description: The user who owns this API key
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+      organizationID:
+        description: The organization this API key belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+      keyHash:
+        type: string
+        minLength: 1
+        example: hashed_sk_live_abc123...
+        description: Hashed version of the API key for secure storage
+      name:
+        type: string
+        minLength: 1
+        example: Production API Key
+      prefix:
+        type: string
+        minLength: 1
+        example: sk_live_
+      scopes:
+        type: array
+        items:
+          type: string
+        example: ['read:users', 'write:workflows']
+      rateLimit:
+        type: integer
+        example: 1000
+        description: Requests per minute allowed for this API key
+      lastUsedAt:
+        type: string
+        format: date-time
+        minLength: 1
+        example: '2024-01-15T09:30:00Z'
+        description: When this API key was last used
+      expiresAt:
+        type: string
+        format: date-time
+        minLength: 1
+        example: '2025-01-15T09:30:00Z'
+        description: When this API key expires
+    required:
+      - name
+      - prefix
+      - scopes
+      - rateLimit
+      - expiresAt
+unevaluatedProperties: false

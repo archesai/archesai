@@ -46,7 +46,7 @@ func (s *MagicLinkStore) CreateToken(
 	identifier string,
 	deliveryMethod auth.DeliveryMethod,
 	userID *uuid.UUID,
-	ipAddress string,
+	IPAddress string,
 	userAgent string,
 ) (*auth.MagicLinkToken, error) {
 	// Check rate limit
@@ -86,7 +86,7 @@ func (s *MagicLinkStore) CreateToken(
 		Identifier:     identifier,
 		DeliveryMethod: string(deliveryMethod),
 		ExpiresAt:      time.Now().Add(s.ttl),
-		IPAddress:      ipAddress,
+		IPAddress:      IPAddress,
 		UserAgent:      userAgent,
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),

@@ -9,10 +9,25 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
+
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -24,13 +39,13 @@ type ServerInterface interface {
 	CreateArtifact(ctx echo.Context) error
 	// Delete an artifact
 	// (DELETE /artifacts/{id})
-	DeleteArtifact(ctx echo.Context, id UUID) error
+	DeleteArtifact(ctx echo.Context, id uuid.UUID) error
 	// Find an artifact
 	// (GET /artifacts/{id})
-	GetArtifact(ctx echo.Context, id UUID) error
+	GetArtifact(ctx echo.Context, id uuid.UUID) error
 	// Update an artifact
 	// (PATCH /artifacts/{id})
-	UpdateArtifact(ctx echo.Context, id UUID) error
+	UpdateArtifact(ctx echo.Context, id uuid.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -42,10 +57,9 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) ListArtifacts(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(BearerAuthScopes, []string{})
-
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListArtifactsParams
+
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -67,6 +81,8 @@ func (w *ServerInterfaceWrapper) ListArtifacts(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
 	}
 
+	ctx.Set(BearerAuthScopes, []string{})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.ListArtifacts(ctx, params)
 	return err
@@ -87,7 +103,7 @@ func (w *ServerInterfaceWrapper) CreateArtifact(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteArtifact(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -105,7 +121,7 @@ func (w *ServerInterfaceWrapper) DeleteArtifact(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetArtifact(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -123,7 +139,7 @@ func (w *ServerInterfaceWrapper) GetArtifact(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateArtifact(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -164,7 +180,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
 	router.GET(baseURL+"/artifacts", wrapper.ListArtifacts)
 	router.POST(baseURL+"/artifacts", wrapper.CreateArtifact)
 	router.DELETE(baseURL+"/artifacts/:id", wrapper.DeleteArtifact)
@@ -173,11 +188,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
 
-type NotFoundApplicationProblemPlusJSONResponse Problem
+type NotFoundResponse ProblemDetails
 
-type UnauthorizedApplicationProblemPlusJSONResponse Problem
+type UnauthorizedResponse ProblemDetails
 
 type ListArtifactsRequestObject struct {
 	Params ListArtifactsParams
@@ -190,8 +205,7 @@ type ListArtifactsResponseObject interface {
 type ListArtifacts200JSONResponse struct {
 	Data []Artifact `json:"data"`
 	Meta struct {
-		// Total Total number of items in the collection
-		Total float32 `json:"total"`
+		Total int64 `json:"total"`
 	} `json:"meta"`
 }
 
@@ -202,38 +216,42 @@ func (response ListArtifacts200JSONResponse) VisitListArtifactsResponse(w http.R
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListArtifacts400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type ListArtifacts400Response = BadRequestResponse
 
-func (response ListArtifacts400ApplicationProblemPlusJSONResponse) VisitListArtifactsResponse(w http.ResponseWriter) error {
+func (response ListArtifacts400Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListArtifacts401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type ListArtifacts401Response = UnauthorizedResponse
 
-func (response ListArtifacts401ApplicationProblemPlusJSONResponse) VisitListArtifactsResponse(w http.ResponseWriter) error {
+func (response ListArtifacts401Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ListArtifacts404Response = NotFoundResponse
+
+func (response ListArtifacts404Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type CreateArtifactRequestObject struct {
-	Body *CreateArtifactJSONRequestBody
+	Body *CreateArtifactRequestBody
 }
 
 type CreateArtifactResponseObject interface {
 	VisitCreateArtifactResponse(w http.ResponseWriter) error
 }
-
 type CreateArtifact201JSONResponse struct {
-	// Data Schema for Artifact entity
+	// Data Schema for artifacts entity
 	Data Artifact `json:"data"`
 }
 
@@ -244,22 +262,18 @@ func (response CreateArtifact201JSONResponse) VisitCreateArtifactResponse(w http
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateArtifact400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type CreateArtifact400Response = BadRequestResponse
 
-func (response CreateArtifact400ApplicationProblemPlusJSONResponse) VisitCreateArtifactResponse(w http.ResponseWriter) error {
+func (response CreateArtifact400Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateArtifact401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type CreateArtifact401Response = UnauthorizedResponse
 
-func (response CreateArtifact401ApplicationProblemPlusJSONResponse) VisitCreateArtifactResponse(w http.ResponseWriter) error {
+func (response CreateArtifact401Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -267,15 +281,14 @@ func (response CreateArtifact401ApplicationProblemPlusJSONResponse) VisitCreateA
 }
 
 type DeleteArtifactRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type DeleteArtifactResponseObject interface {
 	VisitDeleteArtifactResponse(w http.ResponseWriter) error
 }
-
 type DeleteArtifact200JSONResponse struct {
-	// Data Schema for Artifact entity
+	// Data Schema for artifacts entity
 	Data Artifact `json:"data"`
 }
 
@@ -286,11 +299,27 @@ func (response DeleteArtifact200JSONResponse) VisitDeleteArtifactResponse(w http
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteArtifact404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type DeleteArtifact400Response = BadRequestResponse
+
+func (response DeleteArtifact400Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response DeleteArtifact404ApplicationProblemPlusJSONResponse) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+type DeleteArtifact401Response = UnauthorizedResponse
+
+func (response DeleteArtifact401Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteArtifact404Response = NotFoundResponse
+
+func (response DeleteArtifact404Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -298,7 +327,7 @@ func (response DeleteArtifact404ApplicationProblemPlusJSONResponse) VisitDeleteA
 }
 
 type GetArtifactRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type GetArtifactResponseObject interface {
@@ -306,8 +335,10 @@ type GetArtifactResponseObject interface {
 }
 
 type GetArtifact200JSONResponse struct {
-	// Data Schema for Artifact entity
-	Data Artifact `json:"data"`
+	Data []Artifact `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
 }
 
 func (response GetArtifact200JSONResponse) VisitGetArtifactResponse(w http.ResponseWriter) error {
@@ -317,11 +348,27 @@ func (response GetArtifact200JSONResponse) VisitGetArtifactResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetArtifact404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type GetArtifact400Response = BadRequestResponse
+
+func (response GetArtifact400Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response GetArtifact404ApplicationProblemPlusJSONResponse) VisitGetArtifactResponse(w http.ResponseWriter) error {
+type GetArtifact401Response = UnauthorizedResponse
+
+func (response GetArtifact401Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetArtifact404Response = NotFoundResponse
+
+func (response GetArtifact404Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -329,16 +376,15 @@ func (response GetArtifact404ApplicationProblemPlusJSONResponse) VisitGetArtifac
 }
 
 type UpdateArtifactRequestObject struct {
-	ID   UUID `json:"id"`
-	Body *UpdateArtifactJSONRequestBody
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateArtifactRequestBody
 }
 
 type UpdateArtifactResponseObject interface {
 	VisitUpdateArtifactResponse(w http.ResponseWriter) error
 }
-
 type UpdateArtifact200JSONResponse struct {
-	// Data Schema for Artifact entity
+	// Data Schema for artifacts entity
 	Data Artifact `json:"data"`
 }
 
@@ -349,11 +395,27 @@ func (response UpdateArtifact200JSONResponse) VisitUpdateArtifactResponse(w http
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateArtifact404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type UpdateArtifact400Response = BadRequestResponse
+
+func (response UpdateArtifact400Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response UpdateArtifact404ApplicationProblemPlusJSONResponse) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+type UpdateArtifact401Response = UnauthorizedResponse
+
+func (response UpdateArtifact401Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateArtifact404Response = NotFoundResponse
+
+func (response UpdateArtifact404Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -394,7 +456,6 @@ type strictHandler struct {
 // ListArtifacts operation middleware
 func (sh *strictHandler) ListArtifacts(ctx echo.Context, params ListArtifactsParams) error {
 	var request ListArtifactsRequestObject
-
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -419,8 +480,7 @@ func (sh *strictHandler) ListArtifacts(ctx echo.Context, params ListArtifactsPar
 // CreateArtifact operation middleware
 func (sh *strictHandler) CreateArtifact(ctx echo.Context) error {
 	var request CreateArtifactRequestObject
-
-	var body CreateArtifactJSONRequestBody
+	var body CreateArtifactRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
@@ -446,9 +506,8 @@ func (sh *strictHandler) CreateArtifact(ctx echo.Context) error {
 }
 
 // DeleteArtifact operation middleware
-func (sh *strictHandler) DeleteArtifact(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) DeleteArtifact(ctx echo.Context, id uuid.UUID) error {
 	var request DeleteArtifactRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -471,9 +530,8 @@ func (sh *strictHandler) DeleteArtifact(ctx echo.Context, id UUID) error {
 }
 
 // GetArtifact operation middleware
-func (sh *strictHandler) GetArtifact(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) GetArtifact(ctx echo.Context, id uuid.UUID) error {
 	var request GetArtifactRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -496,12 +554,10 @@ func (sh *strictHandler) GetArtifact(ctx echo.Context, id UUID) error {
 }
 
 // UpdateArtifact operation middleware
-func (sh *strictHandler) UpdateArtifact(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) UpdateArtifact(ctx echo.Context, id uuid.UUID) error {
 	var request UpdateArtifactRequestObject
-
 	request.ID = id
-
-	var body UpdateArtifactJSONRequestBody
+	var body UpdateArtifactRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}

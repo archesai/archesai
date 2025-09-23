@@ -2,7 +2,7 @@ get:
   operationId: listSessions
   summary: List sessions
   tags:
-    - Sessions
+    - Auth
   description: List user sessions
   parameters:
     - $ref: ../components/parameters/SessionsFilter.yaml
@@ -45,7 +45,7 @@ post:
   operationId: createSession
   summary: Create session (Login)
   tags:
-    - Sessions
+    - Auth
   description: Authenticate user and Create a session
   requestBody:
     content:
@@ -78,10 +78,15 @@ post:
   responses:
     '201':
       description: Session created successfully
+      headers:
+        Set-Cookie:
+          description: Session cookies for authentication
+          schema:
+            type: string
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/TokenResponse.yaml
+            $ref: ../components/schemas/Session.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

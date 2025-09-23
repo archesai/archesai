@@ -2,7 +2,7 @@ get:
   operationId: oauthAuthorize
   summary: Start OAuth authorization flow
   tags:
-    - OAuth
+    - Auth
   description: Redirect user to OAuth provider authorization page
   parameters:
     - schema:

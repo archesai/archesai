@@ -12,15 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// ServiceInterface defines the business logic operations
-type ServiceInterface interface {
-	CreatePipeline(ctx context.Context, request CreatePipelineRequestObject) (CreatePipelineResponseObject, error)
-	GetPipeline(ctx context.Context, request GetPipelineRequestObject) (GetPipelineResponseObject, error)
-	UpdatePipeline(ctx context.Context, request UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error)
-	DeletePipeline(ctx context.Context, request DeletePipelineRequestObject) (DeletePipelineResponseObject, error)
-	ListPipelines(ctx context.Context, request ListPipelinesRequestObject) (ListPipelinesResponseObject, error)
-}
-
 // Service implements the business logic
 type Service struct {
 	repo   Repository
@@ -38,208 +29,93 @@ func NewService(repo Repository, db *postgresql.Queries, logger *slog.Logger) *S
 }
 
 // CreatePipeline creates a new pipeline
-func (s *Service) CreatePipeline(ctx context.Context, request CreatePipelineRequestObject) (CreatePipelineResponseObject, error) {
-	if request.Body == nil {
-		return CreatePipeline400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) CreatePipeline(ctx context.Context, entity *Pipeline) (*Pipeline, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Create entity from request
-	entity := &Pipeline{
-		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	// Set timestamps if not already set
+	if entity.CreatedAt.IsZero() {
+		entity.CreatedAt = time.Now()
+	}
+	if entity.UpdatedAt.IsZero() {
+		entity.UpdatedAt = time.Now()
 	}
 
-	// Call repository to persist
 	created, err := s.repo.Create(ctx, entity)
 	if err != nil {
 		s.logger.Error("Failed to create pipeline", "error", err)
-		return CreatePipeline400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to create pipeline",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, err
 	}
-	// Check if response type has Data field (wrapped response)
-	return CreatePipeline201JSONResponse{
-		Data: *created,
-	}, nil
+
+	return created, nil
 }
 
 // GetPipeline gets a pipeline by ID
-func (s *Service) GetPipeline(ctx context.Context, request GetPipelineRequestObject) (GetPipelineResponseObject, error) {
-	// Call repository to fetch entity
-	entity, err := s.repo.Get(ctx, request.ID)
+func (s *Service) GetPipeline(ctx context.Context, id uuid.UUID) (*Pipeline, error) {
+	entity, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrPipelineNotFound) {
-			return GetPipeline404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Pipeline not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return nil, err
 		}
-
-		s.logger.Error("Failed to get pipeline", "error", err, "id", request.ID)
-		return GetPipeline404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to retrieve pipeline",
-				Status: 404,
-				Title:  "Not Found",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get pipeline", "error", err, "id", id)
+		return nil, err
 	}
 
-	return GetPipeline200JSONResponse{
-		Data: *entity,
-	}, nil
+	return entity, nil
 }
 
 // UpdatePipeline updates a pipeline
-func (s *Service) UpdatePipeline(ctx context.Context, request UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error) {
-	if request.Body == nil {
-		return UpdatePipeline404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Request body is required",
-				Status: 400,
-				Title:  "Bad Request",
-				Type:   "about:blank",
-			},
-		}, nil
+func (s *Service) UpdatePipeline(ctx context.Context, id uuid.UUID, entity *Pipeline) (*Pipeline, error) {
+	if entity == nil {
+		return nil, errors.New("entity is required")
 	}
 
-	// Get existing entity to verify it exists
-	existing, err := s.repo.Get(ctx, request.ID)
+	// Set updated timestamp
+	entity.UpdatedAt = time.Now()
+
+	updated, err := s.repo.Update(ctx, id, entity)
 	if err != nil {
-		if errors.Is(err, ErrPipelineNotFound) {
-			return UpdatePipeline404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Pipeline not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
-		}
-		s.logger.Error("Failed to get pipeline for update", "error", err, "id", request.ID)
-		return UpdatePipeline404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to update pipeline", "error", err, "id", id)
+		return nil, err
 	}
 
-	// Update the entity with current timestamp
-	existing.UpdatedAt = time.Now()
-
-	// Call repository to persist changes
-	updated, err := s.repo.Update(ctx, request.ID, existing)
-	if err != nil {
-		s.logger.Error("Failed to update pipeline", "error", err, "id", request.ID)
-		return UpdatePipeline404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to update pipeline",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
-	}
-
-	return UpdatePipeline200JSONResponse{
-		Data: *updated,
-	}, nil
+	return updated, nil
 }
 
 // DeletePipeline deletes a pipeline
-func (s *Service) DeletePipeline(ctx context.Context, request DeletePipelineRequestObject) (DeletePipelineResponseObject, error) {
+func (s *Service) DeletePipeline(ctx context.Context, id uuid.UUID) error {
 	// Check if entity exists first
-	_, err := s.repo.Get(ctx, request.ID)
+	_, err := s.repo.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, ErrPipelineNotFound) {
-			return DeletePipeline404ApplicationProblemPlusJSONResponse{
-				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-					Detail: "Pipeline not found",
-					Status: 404,
-					Title:  "Not Found",
-					Type:   "about:blank",
-				},
-			}, nil
+			return err
 		}
-		s.logger.Error("Failed to get pipeline for deletion", "error", err, "id", request.ID)
-		return DeletePipeline404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Internal server error",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to get pipeline for deletion", "error", err, "id", id)
+		return err
 	}
 
-	// Delete the entity
-	err = s.repo.Delete(ctx, request.ID)
+	err = s.repo.Delete(ctx, id)
 	if err != nil {
-		s.logger.Error("Failed to delete pipeline", "error", err, "id", request.ID)
-		return DeletePipeline404ApplicationProblemPlusJSONResponse{
-			NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
-				Detail: "Failed to delete pipeline",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		s.logger.Error("Failed to delete pipeline", "error", err, "id", id)
+		return err
 	}
 
-	return DeletePipeline200JSONResponse{}, nil
+	return nil
 }
 
 // ListPipelines lists all pipelines
-func (s *Service) ListPipelines(ctx context.Context, request ListPipelinesRequestObject) (ListPipelinesResponseObject, error) {
-	// Call repository to fetch entities using the request parameters
-	entities, total, err := s.repo.List(ctx, request.Params)
+func (s *Service) ListPipelines(ctx context.Context, filter *ListPipelinesParamsFilter, page *ListPipelinesParamsPage, sort *ListPipelinesParamsSort) ([]*Pipeline, int64, error) {
+	params := ListPipelinesParams{
+		Filter: filter,
+		Page:   page,
+		Sort:   sort,
+	}
+	entities, total, err := s.repo.List(ctx, params)
 	if err != nil {
 		s.logger.Error("Failed to list pipelines", "error", err)
-		return ListPipelines400ApplicationProblemPlusJSONResponse{
-			BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
-				Detail: "Failed to list pipelines",
-				Status: 500,
-				Title:  "Internal Server Error",
-				Type:   "about:blank",
-			},
-		}, nil
+		return nil, 0, err
 	}
 
-	// Convert entities to response format
-	var responseData []Pipeline
-	for _, entity := range entities {
-		if entity != nil {
-			responseData = append(responseData, *entity)
-		}
-	}
-
-	return ListPipelines200JSONResponse{
-		Data: responseData,
-		Meta: struct {
-			Total float32 `json:"total"`
-		}{
-			Total: float32(total),
-		},
-	}, nil
+	return entities, total, nil
 }

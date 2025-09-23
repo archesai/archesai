@@ -56,7 +56,6 @@ Available targets:
   generate-helm-schema       Generate Helm values.schema.json from ArchesConfig.yaml
   generate-js-client         Generate JavaScript/TypeScript client from OpenAPI
   generate-mocks             Generate test mocks using mockery
-  generate-oapi              Generate OpenAPI server code
   generate-schema-sqlite     Convert PostgreSQL schema to SQLite
   generate-sqlc              Generate database code with sqlc
   help                       Show this help message

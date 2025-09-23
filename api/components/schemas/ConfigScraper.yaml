@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: config
+description: Web scraping service configuration
+type: object
+properties:
+  enabled:
+    description: Enable scraper service
+    type: boolean
+    default: false
+    example: true
+  managed:
+    description: Use managed scraper deployment
+    type: boolean
+    default: false
+    example: true
+  endpoint:
+    description: Web scraper service endpoint URL
+    type: string
+    minLength: 1
+    example: example-string
+  image:
+    $ref: ./ConfigImage.yaml
+  resources:
+    $ref: ./ConfigResource.yaml
+required:
+  - enabled
+additionalProperties: false

@@ -64,15 +64,15 @@ func (r *SQLiteRepository) List(ctx context.Context, params ListArtifactsParams)
 // ListByOrganization retrieves multiple artifacts by organizationID
 func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Artifact, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement ListByOrganization - fetch multiple records
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }
 
 // ListByProducer retrieves multiple artifacts by producerID
-func (r *SQLiteRepository) ListByProducer(ctx context.Context, producerID string) ([]*Artifact, error) {
+func (r *SQLiteRepository) ListByProducer(ctx context.Context, producerID *uuid.UUID) ([]*Artifact, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement ListByProducer - fetch multiple records
 	return nil, fmt.Errorf("ListByProducer not yet implemented - requires custom mapping")
 
 }

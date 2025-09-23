@@ -114,10 +114,10 @@ type Organization struct {
 	BillingEmail     *string
 	Credits          int32
 	Logo             *string
-	Metadata         *string
 	Name             string
 	Plan             string
 	StripeCustomerID *string
+	Slug             string
 }
 
 type Pipeline struct {

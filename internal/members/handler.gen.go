@@ -9,10 +9,25 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
+
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -24,13 +39,13 @@ type ServerInterface interface {
 	CreateMember(ctx echo.Context, id string) error
 	// Delete a member
 	// (DELETE /organizations/{id}/members/{memberID})
-	DeleteMember(ctx echo.Context, id UUID, memberID UUID) error
+	DeleteMember(ctx echo.Context, id uuid.UUID, memberID uuid.UUID) error
 	// Get a member
 	// (GET /organizations/{id}/members/{memberID})
-	GetMember(ctx echo.Context, id UUID, memberID UUID) error
+	GetMember(ctx echo.Context, id uuid.UUID, memberID uuid.UUID) error
 	// Update a member
 	// (PATCH /organizations/{id}/members/{memberID})
-	UpdateMember(ctx echo.Context, id UUID, memberID UUID) error
+	UpdateMember(ctx echo.Context, id uuid.UUID, memberID uuid.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -49,10 +64,9 @@ func (w *ServerInterfaceWrapper) ListMembers(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{})
-
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListMembersParams
+
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -73,6 +87,8 @@ func (w *ServerInterfaceWrapper) ListMembers(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
 	}
+
+	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.ListMembers(ctx, id, params)
@@ -101,15 +117,14 @@ func (w *ServerInterfaceWrapper) CreateMember(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteMember(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
-
 	// ------------- Path parameter "memberID" -------------
-	var memberID UUID
+	var memberID uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "memberID", ctx.Param("memberID"), &memberID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -127,15 +142,14 @@ func (w *ServerInterfaceWrapper) DeleteMember(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetMember(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
-
 	// ------------- Path parameter "memberID" -------------
-	var memberID UUID
+	var memberID uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "memberID", ctx.Param("memberID"), &memberID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -153,15 +167,14 @@ func (w *ServerInterfaceWrapper) GetMember(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateMember(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
-
 	// ------------- Path parameter "memberID" -------------
-	var memberID UUID
+	var memberID uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "memberID", ctx.Param("memberID"), &memberID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -202,7 +215,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
 	router.GET(baseURL+"/organizations/:id/members", wrapper.ListMembers)
 	router.POST(baseURL+"/organizations/:id/members", wrapper.CreateMember)
 	router.DELETE(baseURL+"/organizations/:id/members/:memberID", wrapper.DeleteMember)
@@ -211,11 +223,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
 
-type NotFoundApplicationProblemPlusJSONResponse Problem
+type NotFoundResponse ProblemDetails
 
-type UnauthorizedApplicationProblemPlusJSONResponse Problem
+type UnauthorizedResponse ProblemDetails
 
 type ListMembersRequestObject struct {
 	ID     string `json:"id"`
@@ -229,8 +241,7 @@ type ListMembersResponseObject interface {
 type ListMembers200JSONResponse struct {
 	Data []Member `json:"data"`
 	Meta struct {
-		// Total Total number of items in the collection
-		Total float32 `json:"total"`
+		Total int64 `json:"total"`
 	} `json:"meta"`
 }
 
@@ -241,39 +252,43 @@ func (response ListMembers200JSONResponse) VisitListMembersResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListMembers400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type ListMembers400Response = BadRequestResponse
 
-func (response ListMembers400ApplicationProblemPlusJSONResponse) VisitListMembersResponse(w http.ResponseWriter) error {
+func (response ListMembers400Response) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListMembers401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type ListMembers401Response = UnauthorizedResponse
 
-func (response ListMembers401ApplicationProblemPlusJSONResponse) VisitListMembersResponse(w http.ResponseWriter) error {
+func (response ListMembers401Response) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ListMembers404Response = NotFoundResponse
+
+func (response ListMembers404Response) VisitListMembersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type CreateMemberRequestObject struct {
 	ID   string `json:"id"`
-	Body *CreateMemberJSONRequestBody
+	Body *CreateMemberRequestBody
 }
 
 type CreateMemberResponseObject interface {
 	VisitCreateMemberResponse(w http.ResponseWriter) error
 }
-
 type CreateMember201JSONResponse struct {
-	// Data Schema for Member entity
+	// Data Schema for members entity
 	Data Member `json:"data"`
 }
 
@@ -284,22 +299,18 @@ func (response CreateMember201JSONResponse) VisitCreateMemberResponse(w http.Res
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateMember400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type CreateMember400Response = BadRequestResponse
 
-func (response CreateMember400ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+func (response CreateMember400Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateMember401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type CreateMember401Response = UnauthorizedResponse
 
-func (response CreateMember401ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+func (response CreateMember401Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -307,16 +318,15 @@ func (response CreateMember401ApplicationProblemPlusJSONResponse) VisitCreateMem
 }
 
 type DeleteMemberRequestObject struct {
-	ID       UUID `json:"id"`
-	MemberID UUID `json:"memberID"`
+	ID       uuid.UUID `json:"id"`
+	MemberID uuid.UUID `json:"memberID"`
 }
 
 type DeleteMemberResponseObject interface {
 	VisitDeleteMemberResponse(w http.ResponseWriter) error
 }
-
 type DeleteMember200JSONResponse struct {
-	// Data Schema for Member entity
+	// Data Schema for members entity
 	Data Member `json:"data"`
 }
 
@@ -327,11 +337,27 @@ func (response DeleteMember200JSONResponse) VisitDeleteMemberResponse(w http.Res
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteMember404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type DeleteMember400Response = BadRequestResponse
+
+func (response DeleteMember400Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response DeleteMember404ApplicationProblemPlusJSONResponse) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+type DeleteMember401Response = UnauthorizedResponse
+
+func (response DeleteMember401Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteMember404Response = NotFoundResponse
+
+func (response DeleteMember404Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -339,8 +365,8 @@ func (response DeleteMember404ApplicationProblemPlusJSONResponse) VisitDeleteMem
 }
 
 type GetMemberRequestObject struct {
-	ID       UUID `json:"id"`
-	MemberID UUID `json:"memberID"`
+	ID       uuid.UUID `json:"id"`
+	MemberID uuid.UUID `json:"memberID"`
 }
 
 type GetMemberResponseObject interface {
@@ -348,8 +374,10 @@ type GetMemberResponseObject interface {
 }
 
 type GetMember200JSONResponse struct {
-	// Data Schema for Member entity
-	Data Member `json:"data"`
+	Data []Member `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
 }
 
 func (response GetMember200JSONResponse) VisitGetMemberResponse(w http.ResponseWriter) error {
@@ -359,11 +387,27 @@ func (response GetMember200JSONResponse) VisitGetMemberResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetMember404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type GetMember400Response = BadRequestResponse
+
+func (response GetMember400Response) VisitGetMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response GetMember404ApplicationProblemPlusJSONResponse) VisitGetMemberResponse(w http.ResponseWriter) error {
+type GetMember401Response = UnauthorizedResponse
+
+func (response GetMember401Response) VisitGetMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetMember404Response = NotFoundResponse
+
+func (response GetMember404Response) VisitGetMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -371,17 +415,16 @@ func (response GetMember404ApplicationProblemPlusJSONResponse) VisitGetMemberRes
 }
 
 type UpdateMemberRequestObject struct {
-	ID       UUID `json:"id"`
-	MemberID UUID `json:"memberID"`
-	Body     *UpdateMemberJSONRequestBody
+	ID       uuid.UUID `json:"id"`
+	MemberID uuid.UUID `json:"memberID"`
+	Body     *UpdateMemberRequestBody
 }
 
 type UpdateMemberResponseObject interface {
 	VisitUpdateMemberResponse(w http.ResponseWriter) error
 }
-
 type UpdateMember200JSONResponse struct {
-	// Data Schema for Member entity
+	// Data Schema for members entity
 	Data Member `json:"data"`
 }
 
@@ -392,11 +435,27 @@ func (response UpdateMember200JSONResponse) VisitUpdateMemberResponse(w http.Res
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateMember404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type UpdateMember400Response = BadRequestResponse
+
+func (response UpdateMember400Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response UpdateMember404ApplicationProblemPlusJSONResponse) VisitUpdateMemberResponse(w http.ResponseWriter) error {
+type UpdateMember401Response = UnauthorizedResponse
+
+func (response UpdateMember401Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateMember404Response = NotFoundResponse
+
+func (response UpdateMember404Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -437,7 +496,6 @@ type strictHandler struct {
 // ListMembers operation middleware
 func (sh *strictHandler) ListMembers(ctx echo.Context, id string, params ListMembersParams) error {
 	var request ListMembersRequestObject
-
 	request.ID = id
 	request.Params = params
 
@@ -463,10 +521,8 @@ func (sh *strictHandler) ListMembers(ctx echo.Context, id string, params ListMem
 // CreateMember operation middleware
 func (sh *strictHandler) CreateMember(ctx echo.Context, id string) error {
 	var request CreateMemberRequestObject
-
 	request.ID = id
-
-	var body CreateMemberJSONRequestBody
+	var body CreateMemberRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
@@ -492,9 +548,8 @@ func (sh *strictHandler) CreateMember(ctx echo.Context, id string) error {
 }
 
 // DeleteMember operation middleware
-func (sh *strictHandler) DeleteMember(ctx echo.Context, id UUID, memberID UUID) error {
+func (sh *strictHandler) DeleteMember(ctx echo.Context, id uuid.UUID, memberID uuid.UUID) error {
 	var request DeleteMemberRequestObject
-
 	request.ID = id
 	request.MemberID = memberID
 
@@ -518,9 +573,8 @@ func (sh *strictHandler) DeleteMember(ctx echo.Context, id UUID, memberID UUID) 
 }
 
 // GetMember operation middleware
-func (sh *strictHandler) GetMember(ctx echo.Context, id UUID, memberID UUID) error {
+func (sh *strictHandler) GetMember(ctx echo.Context, id uuid.UUID, memberID uuid.UUID) error {
 	var request GetMemberRequestObject
-
 	request.ID = id
 	request.MemberID = memberID
 
@@ -544,13 +598,11 @@ func (sh *strictHandler) GetMember(ctx echo.Context, id UUID, memberID UUID) err
 }
 
 // UpdateMember operation middleware
-func (sh *strictHandler) UpdateMember(ctx echo.Context, id UUID, memberID UUID) error {
+func (sh *strictHandler) UpdateMember(ctx echo.Context, id uuid.UUID, memberID uuid.UUID) error {
 	var request UpdateMemberRequestObject
-
 	request.ID = id
 	request.MemberID = memberID
-
-	var body UpdateMemberJSONRequestBody
+	var body UpdateMemberRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}

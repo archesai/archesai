@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: config
+description: Infrastructure configuration for Kubernetes deployments
+type: object
+properties:
+  images:
+    $ref: ./ConfigImages.yaml
+  migrations:
+    $ref: ./ConfigMigrations.yaml
+  namespace:
+    description: Kubernetes namespace where all resources will be deployed
+    type: string
+    default: arches-system
+    minLength: 1
+    example: Example Name
+  serviceAccount:
+    $ref: ./ConfigServiceAccount.yaml
+required:
+  - images
+  - migrations
+  - namespace
+  - serviceAccount
+additionalProperties: false

@@ -17,5 +17,6 @@ type Repository interface {
 	List(ctx context.Context, params ListToolsParams) ([]*Tool, int64, error)
 
 	// Additional operations
+	// ListByOrganization retrieves multiple tools by organizationID
 	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Tool, error)
 }

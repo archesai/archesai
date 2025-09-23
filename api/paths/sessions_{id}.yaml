@@ -2,12 +2,15 @@ delete:
   operationId: deleteSession
   summary: Delete session (Logout)
   tags:
-    - Sessions
+    - Auth
   description: Delete a specific session (logout from that session)
   parameters:
     - schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       in: path
       name: id
       required: true
@@ -35,12 +38,15 @@ get:
   operationId: getSession
   summary: Find a session
   tags:
-    - Sessions
+    - Auth
   description: Find a session
   parameters:
     - schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       in: path
       name: id
       required: true
@@ -66,7 +72,7 @@ patch:
   operationId: updateSession
   summary: Update Session
   tags:
-    - Sessions
+    - Auth
   description: This endpoint will update the active organization for the current session
   requestBody:
     content:
@@ -76,15 +82,20 @@ patch:
           properties:
             organizationID:
               description: The organization ID to set as active for this session
-              allOf:
-                - $ref: ../components/schemas/UUID.yaml
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
           required:
             - organizationID
     required: true
   parameters:
     - schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       in: path
       name: id
       required: true

@@ -39,73 +39,63 @@
 │   │   │   └── Unauthorized.yaml
 │   │   └── schemas
 │   │       ├── Account.yaml
-│   │       ├── APIConfig.yaml
-│   │       ├── ApiKeyResponse.yaml
-│   │       ├── ApiKey.yaml
-│   │       ├── ArchesConfig.yaml
+│   │       ├── APIKey.yaml
 │   │       ├── Artifact.yaml
-│   │       ├── AuthConfig.yaml
 │   │       ├── Base.yaml
-│   │       ├── BillingConfig.yaml
 │   │       ├── CodegenConfig.yaml
-│   │       ├── DatabaseAuth.yaml
-│   │       ├── DatabaseConfig.yaml
-│   │       ├── EmailConfig.yaml
-│   │       ├── Email.yaml
-│   │       ├── EmbeddingConfig.yaml
+│   │       ├── CodegenExtension.yaml
+│   │       ├── ConfigAPI.yaml
+│   │       ├── ConfigAuthFirebase.yaml
+│   │       ├── ConfigAuthGithub.yaml
+│   │       ├── ConfigAuthGoogle.yaml
+│   │       ├── ConfigAuthLocal.yaml
+│   │       ├── ConfigAuthMagicLink.yaml
+│   │       ├── ConfigAuthMicrosoft.yaml
+│   │       ├── ConfigAuthTwitter.yaml
+│   │       ├── ConfigAuth.yaml
+│   │       ├── ConfigBilling.yaml
+│   │       ├── ConfigDatabase.yaml
+│   │       ├── ConfigEmail.yaml
+│   │       ├── ConfigGrafana.yaml
+│   │       ├── ConfigImages.yaml
+│   │       ├── ConfigImage.yaml
+│   │       ├── ConfigInfrastructure.yaml
+│   │       ├── ConfigIngress.yaml
+│   │       ├── ConfigIntelligence.yaml
+│   │       ├── ConfigKubernetes.yaml
+│   │       ├── ConfigLLM.yaml
+│   │       ├── ConfigLogging.yaml
+│   │       ├── ConfigLoki.yaml
+│   │       ├── ConfigMigrations.yaml
+│   │       ├── ConfigMonitoring.yaml
+│   │       ├── ConfigPersistence.yaml
+│   │       ├── ConfigPlatform.yaml
+│   │       ├── ConfigRedis.yaml
+│   │       ├── ConfigResource.yaml
+│   │       ├── ConfigRunPod.yaml
+│   │       ├── ConfigScraper.yaml
+│   │       ├── ConfigServiceAccount.yaml
+│   │       ├── ConfigSpeech.yaml
+│   │       ├── ConfigStorage.yaml
+│   │       ├── ConfigStripe.yaml
+│   │       ├── ConfigTLS.yaml
+│   │       ├── ConfigUnstructured.yaml
+│   │       ├── Config.yaml
 │   │       ├── FilterNode.yaml
-│   │       ├── FirebaseAuth.yaml
-│   │       ├── GitHubAuth.yaml
-│   │       ├── GoogleAuth.yaml
-│   │       ├── GrafanaConfig.yaml
-│   │       ├── HealthResponse.yaml
-│   │       ├── ImageConfig.yaml
-│   │       ├── ImagesConfig.yaml
-│   │       ├── InfrastructureConfig.yaml
-│   │       ├── IngressConfig.yaml
-│   │       ├── IntelligenceConfig.yaml
+│   │       ├── Health.yaml
 │   │       ├── Invitation.yaml
 │   │       ├── Label.yaml
-│   │       ├── LLMConfig.yaml
-│   │       ├── LocalAuth.yaml
-│   │       ├── LoggingConfig.yaml
-│   │       ├── LokiConfig.yaml
-│   │       ├── MagicLinkAuth.yaml
 │   │       ├── MagicLinkToken.yaml
 │   │       ├── Member.yaml
-│   │       ├── MicrosoftAuth.yaml
-│   │       ├── MigrationsConfig.yaml
-│   │       ├── MonitoringConfig.yaml
-│   │       ├── OrganizationReference.yaml
 │   │       ├── Organization.yaml
 │   │       ├── Page.yaml
-│   │       ├── PersistenceConfig.yaml
 │   │       ├── PipelineStep.yaml
 │   │       ├── Pipeline.yaml
-│   │       ├── PlatformConfig.yaml
 │   │       ├── Problem.yaml
-│   │       ├── RedisConfig.yaml
-│   │       ├── ResourceConfig.yaml
-│   │       ├── ResourceLimits.yaml
-│   │       ├── ResourceRequests.yaml
-│   │       ├── RunPodConfig.yaml
 │   │       ├── Run.yaml
-│   │       ├── ScraperConfig.yaml
-│   │       ├── ServiceAccountConfig.yaml
 │   │       ├── Session.yaml
-│   │       ├── SpeechConfig.yaml
-│   │       ├── StorageConfig.yaml
-│   │       ├── StripeConfig.yaml
-│   │       ├── TLSConfig.yaml
-│   │       ├── TokenResponse.yaml
 │   │       ├── Tool.yaml
-│   │       ├── TwitterAuth.yaml
-│   │       ├── UnstructuredConfig.yaml
-│   │       ├── User.yaml
-│   │       ├── UUID.yaml
-│   │       ├── ValidationError.yaml
-│   │       ├── XCodegenWrapper.yaml
-│   │       └── XCodegen.yaml
+│   │       └── User.yaml
 │   ├── paths
 │   │   ├── accounts_email-change_request.yaml
 │   │   ├── accounts_email-change_verify.yaml
@@ -118,7 +108,6 @@
 │   │   ├── artifacts_{id}.yaml
 │   │   ├── artifacts.yaml
 │   │   ├── auth_magic-link.yaml
-│   │   ├── auth_register.yaml
 │   │   ├── config.yaml
 │   │   ├── health.yaml
 │   │   ├── invitations_{id}.yaml
@@ -309,7 +298,6 @@
 │   ├── accounts
 │   │   ├── accounts.go
 │   │   ├── errors.go
-│   │   ├── generate.go
 │   │   └── service_test.go
 │   ├── app
 │   │   ├── app.go
@@ -318,7 +306,6 @@
 │   ├── artifacts
 │   │   ├── artifacts.go
 │   │   ├── errors.go
-│   │   ├── generate.go
 │   │   └── service_test.go
 │   ├── auth
 │   │   ├── deliverers
@@ -335,7 +322,6 @@
 │   │   │   ├── magic_link_repository.go
 │   │   │   ├── magic_link_store.go
 │   │   │   └── session_store.go
-│   │   ├── strategies
 │   │   ├── tokens
 │   │   │   ├── api_validator.go
 │   │   │   ├── manager.go
@@ -343,8 +329,6 @@
 │   │   ├── claims.go
 │   │   ├── claims_test.go
 │   │   ├── context.go
-│   │   ├── generate.go
-│   │   ├── handler.go
 │   │   ├── middleware.go
 │   │   ├── permissions.go
 │   │   ├── permissions_test.go
@@ -370,30 +354,16 @@
 │   │   ├── web.go
 │   │   └── worker.go
 │   ├── codegen
-│   │   ├── templates
-│   │   │   ├── config.go.tmpl
-│   │   │   ├── events.go.tmpl
-│   │   │   ├── events_nats.go.tmpl
-│   │   │   ├── events_redis.go.tmpl
-│   │   │   ├── handler.gen.go.tmpl
-│   │   │   ├── repository.go.tmpl
-│   │   │   ├── repository_postgres.go.tmpl
-│   │   │   ├── repository_sqlite.go.tmpl
-│   │   │   └── service.go.tmpl
 │   │   ├── codegen.go
-│   │   ├── defaults.go
-│   │   ├── filewriter.go
-│   │   ├── generate.go
-│   │   ├── helpers.go
-│   │   ├── parser.go
-│   │   ├── sql_generator.go
-│   │   └── template_funcs.go
+│   │   ├── generators.go
+│   │   ├── generator_sql.go
+│   │   ├── template_inputs.go
+│   │   └── xcodegen.yaml
 │   ├── config
 │   │   ├── config.go
-│   │   ├── generate.go
-│   │   ├── handler.go
 │   │   ├── loader.go
-│   │   └── loader_test.go
+│   │   ├── loader_test.go
+│   │   └── service.go
 │   ├── database
 │   │   ├── postgresql
 │   │   │   ├── accounts.sql.go
@@ -442,8 +412,6 @@
 │   │   └── redis.go
 │   ├── health
 │   │   ├── errors.go
-│   │   ├── generate.go
-│   │   ├── handler.go
 │   │   ├── health.go
 │   │   ├── postgres.go
 │   │   ├── repository.go
@@ -452,11 +420,9 @@
 │   │   └── sqlite.go
 │   ├── invitations
 │   │   ├── errors.go
-│   │   ├── generate.go
 │   │   └── invitations.go
 │   ├── labels
 │   │   ├── errors.go
-│   │   ├── generate.go
 │   │   ├── labels.go
 │   │   └── service_test.go
 │   ├── llm
@@ -469,7 +435,6 @@
 │   │   └── logger.go
 │   ├── members
 │   │   ├── errors.go
-│   │   ├── generate.go
 │   │   └── members.go
 │   ├── middleware
 │   │   ├── auth.go
@@ -479,25 +444,32 @@
 │   │   │   ├── 20250908082709_init.sql
 │   │   │   ├── 20250908124238_enable_pgvector.sql
 │   │   │   ├── 20250915075921_update_api_token_structure.sql
-│   │   │   └── 20250919061512_add_magic_link_auth.sql
+│   │   │   ├── 20250919061512_add_magic_link_auth.sql
+│   │   │   ├── 20250923025434_add_organization_slug.sql
+│   │   │   └── 20250923031239_drop_organization_metadata.sql
 │   │   ├── sqlite
 │   │   │   ├── 20250908082709_init.sql
 │   │   │   ├── 20250908124238_enable_pgvector.sql
 │   │   │   ├── 20250915075921_update_api_token_structure.sql
-│   │   │   └── 20250919061512_add_magic_link_auth.sql
+│   │   │   ├── 20250919061512_add_magic_link_auth.sql
+│   │   │   ├── 20250923025434_add_organization_slug.sql
+│   │   │   └── 20250923031239_drop_organization_metadata.sql
 │   │   └── migrate.go
 │   ├── organizations
 │   │   ├── errors.go
-│   │   ├── generate.go
 │   │   ├── organizations.go
 │   │   └── service_test.go
+│   ├── parsers
+│   │   ├── jsonschema.go
+│   │   ├── openapi.go
+│   │   ├── parser.go
+│   │   └── updater.go
 │   ├── pipelines
 │   │   ├── dag.go
 │   │   ├── dag_test.go
 │   │   ├── errors.go
 │   │   ├── executor.go
 │   │   ├── executor_test.go
-│   │   ├── generate.go
 │   │   ├── handler.go
 │   │   ├── manager.go
 │   │   ├── pipelines.go
@@ -513,7 +485,6 @@
 │   │   └── redis.go
 │   ├── runs
 │   │   ├── errors.go
-│   │   ├── generate.go
 │   │   └── runs.go
 │   ├── server
 │   │   ├── assets
@@ -527,18 +498,34 @@
 │   ├── storage
 │   │   ├── storage.go
 │   │   └── storage_test.go
+│   ├── templates
+│   │   ├── tmpl
+│   │   │   ├── echo_server.tmpl
+│   │   │   ├── events_nats.tmpl
+│   │   │   ├── events_redis.tmpl
+│   │   │   ├── events.tmpl
+│   │   │   ├── header.tmpl
+│   │   │   ├── repository_postgres.tmpl
+│   │   │   ├── repository_sqlite.tmpl
+│   │   │   ├── repository.tmpl
+│   │   │   ├── service.tmpl
+│   │   │   ├── struct.tmpl
+│   │   │   ├── types.tmpl
+│   │   │   └── validation.tmpl
+│   │   ├── data.go
+│   │   ├── filewriter.go
+│   │   ├── funcs.go
+│   │   └── templates.go
 │   ├── testutil
 │   │   └── containers.go
 │   ├── tools
 │   │   ├── errors.go
-│   │   ├── generate.go
 │   │   └── tools.go
 │   ├── tui
 │   │   ├── config_tui.go
 │   │   └── tui.go
 │   └── users
 │       ├── errors.go
-│       ├── generate.go
 │       ├── oauth.go
 │       ├── service_extra.go
 │       ├── service_test.go
@@ -598,12 +585,9 @@
 │   │   │   │   ├── invitations
 │   │   │   │   ├── labels
 │   │   │   │   ├── members
-│   │   │   │   ├── oauth
 │   │   │   │   ├── organizations
 │   │   │   │   ├── pipelines
 │   │   │   │   ├── runs
-│   │   │   │   ├── sessions
-│   │   │   │   ├── tokens
 │   │   │   │   ├── tools
 │   │   │   │   ├── users
 │   │   │   │   ├── orval.schemas.ts
@@ -762,9 +746,7 @@
 ├── .air.toml
 ├── arches.yaml
 ├── biome.json
-├── .codegen.archesai.yaml
-├── .codegen.server.yaml
-├── .codegen.types.yaml
+├── code-generation-refactor.task.md
 ├── .cspell.json
 ├── .editorconfig
 ├── .env
@@ -786,7 +768,8 @@
 ├── .prettierignore
 ├── README.md
 ├── .redocly.yaml
-└── tsconfig.json
+├── tsconfig.json
+└── update_required_fields.py
 
-179 directories, 605 files
+177 directories, 590 files
 ```

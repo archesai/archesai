@@ -8,14 +8,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config wraps the generated ArchesConfig for easy access.
-type Config struct {
-	*ArchesConfig
+// Configuration wraps the generated Config for easy access.
+type Configuration struct {
+	*Config
 	v *viper.Viper
 }
 
-// Load reads configuration from environment variables and returns a Config.
-func Load() (*Config, error) {
+// Load reads configuration from environment variables and returns a Configuration.
+func Load() (*Configuration, error) {
 	// Setup Viper and populate with defaults
 	v := viper.New()
 	setupViper(v)
@@ -28,16 +28,16 @@ func Load() (*Config, error) {
 	}
 
 	// Start with default config
-	config := GetDefaultConfig()
+	config := New()
 
 	// Unmarshal from viper, which will override defaults with any configured values
 	if err := v.Unmarshal(config); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	return &Config{
-		ArchesConfig: config,
-		v:            v,
+	return &Configuration{
+		Config: config,
+		v:      v,
 	}, nil
 }
 
@@ -69,7 +69,7 @@ func setupViper(v *viper.Viper) {
 
 // setDefaultsFromStruct uses reflection to set viper defaults from a struct with default values.
 func setDefaultsFromStruct(v *viper.Viper) {
-	defaults := GetDefaultConfig()
+	defaults := New()
 	setStructDefaults(v, defaults, "")
 }
 
@@ -126,6 +126,6 @@ func setStructDefaults(v *viper.Viper, data interface{}, prefix string) {
 }
 
 // GetViperInstance returns the underlying viper instance for advanced usage.
-func (c *Config) GetViperInstance() *viper.Viper {
+func (c *Configuration) GetViperInstance() *viper.Viper {
 	return c.v
 }

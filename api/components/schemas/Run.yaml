@@ -1,6 +1,7 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
 description: Schema for Run entity
 x-codegen:
+  domain: runs
   repository:
     operations: [create, read, update, delete, list]
     indices: [pipelineID, organizationID, toolID]
@@ -30,11 +31,17 @@ allOf:
         example: example-string
         minLength: 1
       organizationID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The organization this run belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       pipelineID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The pipeline this run is executing
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       progress:
         description: The percent progress of the run
         type: number
@@ -54,12 +61,15 @@ allOf:
           - QUEUED
         example: COMPLETED
       toolID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The tool being used in this run
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
     required:
       - organizationID
       - pipelineID
       - progress
       - status
       - toolID
-    additionalProperties: false
+unevaluatedProperties: false

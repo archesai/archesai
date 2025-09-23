@@ -8,8 +8,11 @@ get:
       name: id
       required: true
       schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       description: The unique identifier of the resource
   security:
     - bearerAuth: []
@@ -39,8 +42,11 @@ patch:
       name: id
       required: true
       schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       description: The unique identifier of the resource
   security:
     - bearerAuth: []
@@ -90,8 +96,11 @@ delete:
       name: id
       required: true
       schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       description: The unique identifier of the resource
   security:
     - bearerAuth: []

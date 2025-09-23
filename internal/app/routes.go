@@ -35,7 +35,7 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 
 	// Unified Auth routes - all authentication methods in one handler
 	a.Logger.Info("registering unified auth routes (public)")
-	auth.RegisterRoutes(e, a.AuthHandler)
+	auth.RegisterHandlers(v1, a.AuthHandler)
 
 	// Health routes - public endpoints for monitoring
 	a.Logger.Info("registering health routes (public)")

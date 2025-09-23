@@ -64,7 +64,7 @@ func (r *SQLiteRepository) List(ctx context.Context, params ListMembersParams) (
 // ListByOrganization retrieves multiple members by organizationID
 func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Member, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement ListByOrganization - fetch multiple records
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
 
 }
@@ -72,15 +72,15 @@ func (r *SQLiteRepository) ListByOrganization(ctx context.Context, organizationI
 // ListByUser retrieves multiple members by userID
 func (r *SQLiteRepository) ListByUser(ctx context.Context, userID uuid.UUID) ([]*Member, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement ListByUser - fetch multiple records
 	return nil, fmt.Errorf("ListByUser not yet implemented - requires custom mapping")
 
 }
 
-// GetByUserAndOrganization retrieves member by userIDorganizationID
+// GetByUserAndOrganization retrieves a single member by userID and organizationID
 func (r *SQLiteRepository) GetByUserAndOrganization(ctx context.Context, userID uuid.UUID, organizationID uuid.UUID) (*Member, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement GetByUserAndOrganization - fetch single record
 	return nil, fmt.Errorf("GetByUserAndOrganization not yet implemented - requires custom mapping")
 
 }

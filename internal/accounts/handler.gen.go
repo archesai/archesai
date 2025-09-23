@@ -9,10 +9,25 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
+
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -24,13 +39,13 @@ type ServerInterface interface {
 	CreateAccount(ctx echo.Context) error
 	// Delete an account
 	// (DELETE /accounts/{id})
-	DeleteAccount(ctx echo.Context, id UUID) error
+	DeleteAccount(ctx echo.Context, id uuid.UUID) error
 	// Find an account
 	// (GET /accounts/{id})
-	GetAccount(ctx echo.Context, id UUID) error
+	GetAccount(ctx echo.Context, id uuid.UUID) error
 	// Update an account
 	// (PATCH /accounts/{id})
-	UpdateAccount(ctx echo.Context, id UUID) error
+	UpdateAccount(ctx echo.Context, id uuid.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -42,10 +57,9 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) ListAccounts(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(BearerAuthScopes, []string{})
-
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListAccountsParams
+
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -66,6 +80,8 @@ func (w *ServerInterfaceWrapper) ListAccounts(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
 	}
+
+	ctx.Set(BearerAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.ListAccounts(ctx, params)
@@ -89,7 +105,7 @@ func (w *ServerInterfaceWrapper) CreateAccount(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteAccount(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -107,7 +123,7 @@ func (w *ServerInterfaceWrapper) DeleteAccount(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetAccount(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -125,7 +141,7 @@ func (w *ServerInterfaceWrapper) GetAccount(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateAccount(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -166,7 +182,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
 	router.GET(baseURL+"/accounts", wrapper.ListAccounts)
 	router.POST(baseURL+"/accounts", wrapper.CreateAccount)
 	router.DELETE(baseURL+"/accounts/:id", wrapper.DeleteAccount)
@@ -175,11 +190,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
 
-type NotFoundApplicationProblemPlusJSONResponse Problem
+type NotFoundResponse ProblemDetails
 
-type UnauthorizedApplicationProblemPlusJSONResponse Problem
+type UnauthorizedResponse ProblemDetails
 
 type ListAccountsRequestObject struct {
 	Params ListAccountsParams
@@ -192,7 +207,7 @@ type ListAccountsResponseObject interface {
 type ListAccounts200JSONResponse struct {
 	Data []Account `json:"data"`
 	Meta struct {
-		Total float32 `json:"total"`
+		Total int64 `json:"total"`
 	} `json:"meta"`
 }
 
@@ -203,37 +218,44 @@ func (response ListAccounts200JSONResponse) VisitListAccountsResponse(w http.Res
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListAccounts400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type ListAccounts400Response = BadRequestResponse
 
-func (response ListAccounts400ApplicationProblemPlusJSONResponse) VisitListAccountsResponse(w http.ResponseWriter) error {
+func (response ListAccounts400Response) VisitListAccountsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListAccounts401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type ListAccounts401Response = UnauthorizedResponse
 
-func (response ListAccounts401ApplicationProblemPlusJSONResponse) VisitListAccountsResponse(w http.ResponseWriter) error {
+func (response ListAccounts401Response) VisitListAccountsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ListAccounts404Response = NotFoundResponse
+
+func (response ListAccounts404Response) VisitListAccountsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type CreateAccountRequestObject struct {
-	Body *CreateAccountJSONRequestBody
+	Body *CreateAccountRequestBody
 }
 
 type CreateAccountResponseObject interface {
 	VisitCreateAccountResponse(w http.ResponseWriter) error
 }
-
-type CreateAccount201JSONResponse TokenResponse
+type CreateAccount201JSONResponse struct {
+	// Data Schema for Account entity
+	Data Account `json:"data"`
+}
 
 func (response CreateAccount201JSONResponse) VisitCreateAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -242,36 +264,33 @@ func (response CreateAccount201JSONResponse) VisitCreateAccountResponse(w http.R
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateAccount400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type CreateAccount400Response = BadRequestResponse
 
-func (response CreateAccount400ApplicationProblemPlusJSONResponse) VisitCreateAccountResponse(w http.ResponseWriter) error {
+func (response CreateAccount400Response) VisitCreateAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateAccount409ApplicationProblemPlusJSONResponse Problem
+type CreateAccount401Response = UnauthorizedResponse
 
-func (response CreateAccount409ApplicationProblemPlusJSONResponse) VisitCreateAccountResponse(w http.ResponseWriter) error {
+func (response CreateAccount401Response) VisitCreateAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(409)
+	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteAccountRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type DeleteAccountResponseObject interface {
 	VisitDeleteAccountResponse(w http.ResponseWriter) error
 }
-
 type DeleteAccount200JSONResponse struct {
-	// Data Schema for Account entity (authentication provider account)
+	// Data Schema for accounts entity
 	Data Account `json:"data"`
 }
 
@@ -282,11 +301,27 @@ func (response DeleteAccount200JSONResponse) VisitDeleteAccountResponse(w http.R
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteAccount404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type DeleteAccount400Response = BadRequestResponse
+
+func (response DeleteAccount400Response) VisitDeleteAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response DeleteAccount404ApplicationProblemPlusJSONResponse) VisitDeleteAccountResponse(w http.ResponseWriter) error {
+type DeleteAccount401Response = UnauthorizedResponse
+
+func (response DeleteAccount401Response) VisitDeleteAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteAccount404Response = NotFoundResponse
+
+func (response DeleteAccount404Response) VisitDeleteAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -294,7 +329,7 @@ func (response DeleteAccount404ApplicationProblemPlusJSONResponse) VisitDeleteAc
 }
 
 type GetAccountRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type GetAccountResponseObject interface {
@@ -302,8 +337,10 @@ type GetAccountResponseObject interface {
 }
 
 type GetAccount200JSONResponse struct {
-	// Data Schema for Account entity (authentication provider account)
-	Data Account `json:"data"`
+	Data []Account `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
 }
 
 func (response GetAccount200JSONResponse) VisitGetAccountResponse(w http.ResponseWriter) error {
@@ -313,11 +350,27 @@ func (response GetAccount200JSONResponse) VisitGetAccountResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetAccount404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type GetAccount400Response = BadRequestResponse
+
+func (response GetAccount400Response) VisitGetAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response GetAccount404ApplicationProblemPlusJSONResponse) VisitGetAccountResponse(w http.ResponseWriter) error {
+type GetAccount401Response = UnauthorizedResponse
+
+func (response GetAccount401Response) VisitGetAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAccount404Response = NotFoundResponse
+
+func (response GetAccount404Response) VisitGetAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -325,16 +378,15 @@ func (response GetAccount404ApplicationProblemPlusJSONResponse) VisitGetAccountR
 }
 
 type UpdateAccountRequestObject struct {
-	ID   UUID `json:"id"`
-	Body *UpdateAccountJSONRequestBody
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateAccountRequestBody
 }
 
 type UpdateAccountResponseObject interface {
 	VisitUpdateAccountResponse(w http.ResponseWriter) error
 }
-
 type UpdateAccount200JSONResponse struct {
-	// Data Schema for Account entity (authentication provider account)
+	// Data Schema for accounts entity
 	Data Account `json:"data"`
 }
 
@@ -345,11 +397,27 @@ func (response UpdateAccount200JSONResponse) VisitUpdateAccountResponse(w http.R
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateAccount404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type UpdateAccount400Response = BadRequestResponse
+
+func (response UpdateAccount400Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response UpdateAccount404ApplicationProblemPlusJSONResponse) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+type UpdateAccount401Response = UnauthorizedResponse
+
+func (response UpdateAccount401Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAccount404Response = NotFoundResponse
+
+func (response UpdateAccount404Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -390,7 +458,6 @@ type strictHandler struct {
 // ListAccounts operation middleware
 func (sh *strictHandler) ListAccounts(ctx echo.Context, params ListAccountsParams) error {
 	var request ListAccountsRequestObject
-
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -415,8 +482,7 @@ func (sh *strictHandler) ListAccounts(ctx echo.Context, params ListAccountsParam
 // CreateAccount operation middleware
 func (sh *strictHandler) CreateAccount(ctx echo.Context) error {
 	var request CreateAccountRequestObject
-
-	var body CreateAccountJSONRequestBody
+	var body CreateAccountRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
@@ -442,9 +508,8 @@ func (sh *strictHandler) CreateAccount(ctx echo.Context) error {
 }
 
 // DeleteAccount operation middleware
-func (sh *strictHandler) DeleteAccount(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) DeleteAccount(ctx echo.Context, id uuid.UUID) error {
 	var request DeleteAccountRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -467,9 +532,8 @@ func (sh *strictHandler) DeleteAccount(ctx echo.Context, id UUID) error {
 }
 
 // GetAccount operation middleware
-func (sh *strictHandler) GetAccount(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) GetAccount(ctx echo.Context, id uuid.UUID) error {
 	var request GetAccountRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -492,12 +556,10 @@ func (sh *strictHandler) GetAccount(ctx echo.Context, id UUID) error {
 }
 
 // UpdateAccount operation middleware
-func (sh *strictHandler) UpdateAccount(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) UpdateAccount(ctx echo.Context, id uuid.UUID) error {
 	var request UpdateAccountRequestObject
-
 	request.ID = id
-
-	var body UpdateAccountJSONRequestBody
+	var body UpdateAccountRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}

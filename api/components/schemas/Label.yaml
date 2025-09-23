@@ -1,6 +1,7 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
 description: Schema for Label entity
 x-codegen:
+  domain: labels
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID, name]
@@ -21,9 +22,12 @@ allOf:
         minLength: 1
         example: Example Name
       organizationID:
-        allOf:
-          - $ref: ./UUID.yaml
+        description: The organization this label belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
     required:
       - name
       - organizationID
-    additionalProperties: false
+unevaluatedProperties: false

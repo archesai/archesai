@@ -4,9 +4,7 @@ package runs
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -15,14 +13,12 @@ import (
 
 // PostgresRepository implements Repository using PostgreSQL.
 type PostgresRepository struct {
-	db      *pgxpool.Pool
 	queries *postgresql.Queries
 }
 
 // NewPostgresRepository creates a new PostgreSQL repository.
 func NewPostgresRepository(db *pgxpool.Pool) Repository {
 	return &PostgresRepository{
-		db:      db,
 		queries: postgresql.New(db),
 	}
 }
@@ -36,7 +32,7 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Run) (*Run, err
 
 		OrganizationID: entity.OrganizationID,
 		PipelineID:     entity.PipelineID,
-		Progress:       float64(entity.Progress),
+		Progress:       entity.Progress,
 		Status:         string(entity.Status),
 		ToolID:         entity.ToolID,
 	}
@@ -67,13 +63,11 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *R
 	params := postgresql.UpdateRunParams{
 		ID: id,
 
-		CompletedAt: &entity.CompletedAt,
-		Error:       stringPtr(entity.Error),
-		PipelineID:  &entity.PipelineID,
-		Progress:    float64Ptr(float64(entity.Progress)),
-		StartedAt:   &entity.StartedAt,
-		Status:      stringPtr(string(entity.Status)),
-		ToolID:      &entity.ToolID,
+		CompletedAt: entity.CompletedAt,
+		Error:       entity.Error,
+		Progress:    &entity.Progress,
+		StartedAt:   entity.StartedAt,
+		Status:      func() *string { s := string(entity.Status); return &s }(),
 	}
 
 	result, err := r.queries.UpdateRun(ctx, params)
@@ -106,7 +100,7 @@ func (r *PostgresRepository) List(ctx context.Context, params ListRunsParams) ([
 	limit := int32(10) // default
 
 	// Check if params has Page field with Number and Size
-	if params.Page.Number > 0 && params.Page.Size > 0 {
+	if params.Page != nil && params.Page.Number > 0 && params.Page.Size > 0 {
 		offset = int32((params.Page.Number - 1) * params.Page.Size)
 		limit = int32(params.Page.Size)
 	}
@@ -133,30 +127,29 @@ func (r *PostgresRepository) List(ctx context.Context, params ListRunsParams) ([
 	return items, count, nil
 }
 
+// Additional methods
+
 // ListByPipeline retrieves multiple runs by pipelineID
 func (r *PostgresRepository) ListByPipeline(ctx context.Context, pipelineID uuid.UUID) ([]*Run, error) {
-	// TODO: Implement ListByPipeline - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("ListByPipeline not implemented - add SQLC query")
+	// TODO: Implement ListByPipeline - fetch multiple runs
+	return nil, fmt.Errorf("ListByPipeline not yet implemented")
 
 }
 
 // ListByOrganization retrieves multiple runs by organizationID
 func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Run, error) {
-	// TODO: Implement ListByOrganization - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("ListByOrganization not implemented - add SQLC query")
+	// TODO: Implement ListByOrganization - fetch multiple runs
+	return nil, fmt.Errorf("ListByOrganization not yet implemented")
 
 }
 
 // ListByTool retrieves multiple runs by toolID
 func (r *PostgresRepository) ListByTool(ctx context.Context, toolID uuid.UUID) ([]*Run, error) {
-	// TODO: Implement ListByTool - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("ListByTool not implemented - add SQLC query")
+	// TODO: Implement ListByTool - fetch multiple runs
+	return nil, fmt.Errorf("ListByTool not yet implemented")
 
 }
 
@@ -172,17 +165,17 @@ func mapRunFromDB(db *postgresql.Run) *Run {
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
 
-		CompletedAt: timeFromPtr(db.CompletedAt),
+		CompletedAt: db.CompletedAt,
 
-		Error: stringFromPtr(db.Error),
+		Error: db.Error,
 
 		OrganizationID: db.OrganizationID,
 
 		PipelineID: db.PipelineID,
 
-		Progress: float32(db.Progress),
+		Progress: db.Progress,
 
-		StartedAt: timeFromPtr(db.StartedAt),
+		StartedAt: db.StartedAt,
 
 		Status: RunStatus(db.Status),
 
@@ -190,79 +183,4 @@ func mapRunFromDB(db *postgresql.Run) *Run {
 	}
 
 	return result
-}
-
-// Helper functions for conversions
-func stringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func nilIfEmpty(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func stringFromPtr(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
-func boolPtr(b bool) *bool {
-	return &b
-}
-
-func int32Ptr(i int32) *int32 {
-	return &i
-}
-
-func float32Ptr(f float32) *float32 {
-	return &f
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
-}
-
-func marshalJSON(v interface{}) *string {
-	if v == nil {
-		return nil
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil
-	}
-	s := string(data)
-	return &s
-}
-
-func unmarshalJSON(s *string) map[string]interface{} {
-	if s == nil {
-		return nil
-	}
-	var result map[string]interface{}
-	if err := json.Unmarshal([]byte(*s), &result); err != nil {
-		return nil
-	}
-	return result
-}
-
-func uuidFromPtr(u *uuid.UUID) uuid.UUID {
-	if u == nil {
-		return uuid.Nil
-	}
-	return *u
-}
-
-func timeFromPtr(t *time.Time) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	return *t
 }

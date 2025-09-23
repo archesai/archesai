@@ -6,31 +6,59 @@
  * OpenAPI spec version: v0.0.0
  */
 import {
-  useMutation
+  useMutation,
+  useQuery,
+  useSuspenseQuery
 } from '@tanstack/react-query';
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
-  UseMutationResult
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
+  UseSuspenseQueryOptions,
+  UseSuspenseQueryResult
 } from '@tanstack/react-query';
 
 import type {
+  APIKey,
   BadRequestResponse,
   ConfirmEmailChangeBody,
   ConfirmEmailVerification200,
   ConfirmEmailVerificationBody,
   ConfirmPasswordResetBody,
+  CreateAPIKeyBody,
+  CreateSessionBody,
+  DeleteSession200,
+  GetSession200,
   InternalServerErrorResponse,
+  ListAPIKeys200,
+  ListAPIKeysParams,
+  ListSessions200,
+  ListSessionsParams,
   NoContentResponse,
   NotFoundResponse,
+  OauthAuthorize200,
+  OauthAuthorizeParams,
+  OauthCallbackParams,
+  Problem,
   RequestEmailChangeBody,
   RequestMagicLink200,
   RequestMagicLinkBody,
   RequestPasswordResetBody,
+  Session,
   TooManyRequestsResponse,
   UnauthorizedResponse,
-  VerifyMagicLink201,
+  UpdateAPIKeyBody,
+  UpdateSession200,
+  UpdateSessionBody,
   VerifyMagicLinkBody
 } from '../orval.schemas';
 
@@ -477,6 +505,875 @@ export const useConfirmEmailChange = <TError = UnauthorizedResponse | NotFoundRe
       return useMutation(mutationOptions , queryClient);
     }
     /**
+ * List user sessions
+ * @summary List sessions
+ */
+export const getListSessionsUrl = (params?: ListSessionsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
+      return;
+    }
+      
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/sessions?${stringifiedParams}` : `/sessions`
+}
+
+export const listSessions = async (params?: ListSessionsParams, options?: RequestInit): Promise<ListSessions200> => {
+  
+  return customFetch<ListSessions200>(getListSessionsUrl(params),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+export const getListSessionsQueryKey = (params?: ListSessionsParams,) => {
+    return [`/sessions`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getListSessionsQueryOptions = <TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSessionsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSessions>>> = ({ signal }) => listSessions(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof listSessions>>>
+export type ListSessionsQueryError = BadRequestResponse | UnauthorizedResponse
+
+
+export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListSessionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listSessions>>,
+          TError,
+          Awaited<ReturnType<typeof listSessions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listSessions>>,
+          TError,
+          Awaited<ReturnType<typeof listSessions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List sessions
+ */
+
+export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListSessionsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getListSessionsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSessionsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSessions>>> = ({ signal }) => listSessions(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListSessionsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listSessions>>>
+export type ListSessionsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
+
+
+export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params: undefined |  ListSessionsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List sessions
+ */
+
+export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse>(
+ params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListSessionsSuspenseQueryOptions(params,options)
+
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * Authenticate user and Create a session
+ * @summary Create session (Login)
+ */
+export const getCreateSessionUrl = () => {
+
+
+  
+
+  return `/sessions`
+}
+
+export const createSession = async (createSessionBody: CreateSessionBody, options?: RequestInit): Promise<Session> => {
+  
+  return customFetch<Session>(getCreateSessionUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createSessionBody,)
+  }
+);}
+
+
+
+
+export const getCreateSessionMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSession>>, TError,{data: CreateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createSession>>, TError,{data: CreateSessionBody}, TContext> => {
+
+const mutationKey = ['createSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createSession>>, {data: CreateSessionBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createSession(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createSession>>>
+    export type CreateSessionMutationBody = CreateSessionBody
+    export type CreateSessionMutationError = BadRequestResponse | UnauthorizedResponse
+
+    /**
+ * @summary Create session (Login)
+ */
+export const useCreateSession = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSession>>, TError,{data: CreateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createSession>>,
+        TError,
+        {data: CreateSessionBody},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * Delete a specific session (logout from that session)
+ * @summary Delete session (Logout)
+ */
+export const getDeleteSessionUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/sessions/${id}`
+}
+
+export const deleteSession = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteSession200> => {
+  
+  return customFetch<DeleteSession200>(getDeleteSessionUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
+    
+    
+  }
+);}
+
+
+
+
+export const getDeleteSessionMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: string | undefined | null}, TContext> => {
+
+const mutationKey = ['deleteSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteSession>>, {id: string | undefined | null}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteSession(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteSessionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteSession>>>
+    
+    export type DeleteSessionMutationError = UnauthorizedResponse | NotFoundResponse
+
+    /**
+ * @summary Delete session (Logout)
+ */
+export const useDeleteSession = <TError = UnauthorizedResponse | NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteSession>>,
+        TError,
+        {id: string | undefined | null},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * Find a session
+ * @summary Find a session
+ */
+export const getGetSessionUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/sessions/${id}`
+}
+
+export const getSession = async (id: string | undefined | null, options?: RequestInit): Promise<GetSession200> => {
+  
+  return customFetch<GetSession200>(getGetSessionUrl(id),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+export const getGetSessionQueryKey = (id?: string | undefined | null,) => {
+    return [`/sessions/${id}`] as const;
+    }
+
+    
+export const getGetSessionQueryOptions = <TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSession>>> = ({ signal }) => getSession(id, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionQueryResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
+export type GetSessionQueryError = NotFoundResponse
+
+
+export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSession>>,
+          TError,
+          Awaited<ReturnType<typeof getSession>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSession>>,
+          TError,
+          Awaited<ReturnType<typeof getSession>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Find a session
+ */
+
+export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetSessionSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSessionQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSession>>> = ({ signal }) => getSession(id, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSessionSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
+export type GetSessionSuspenseQueryError = NotFoundResponse
+
+
+export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Find a session
+ */
+
+export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSessionSuspenseQueryOptions(id,options)
+
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * This endpoint will update the active organization for the current session
+ * @summary Update Session
+ */
+export const getUpdateSessionUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/sessions/${id}`
+}
+
+export const updateSession = async (id: string | undefined | null,
+    updateSessionBody: UpdateSessionBody, options?: RequestInit): Promise<UpdateSession200> => {
+  
+  return customFetch<UpdateSession200>(getUpdateSessionUrl(id),
+  {      
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateSessionBody,)
+  }
+);}
+
+
+
+
+export const getUpdateSessionMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSession>>, TError,{id: string | undefined | null;data: UpdateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateSession>>, TError,{id: string | undefined | null;data: UpdateSessionBody}, TContext> => {
+
+const mutationKey = ['updateSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateSession>>, {id: string | undefined | null;data: UpdateSessionBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateSession(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateSessionMutationResult = NonNullable<Awaited<ReturnType<typeof updateSession>>>
+    export type UpdateSessionMutationBody = UpdateSessionBody
+    export type UpdateSessionMutationError = UnauthorizedResponse | NotFoundResponse
+
+    /**
+ * @summary Update Session
+ */
+export const useUpdateSession = <TError = UnauthorizedResponse | NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSession>>, TError,{id: string | undefined | null;data: UpdateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateSession>>,
+        TError,
+        {id: string | undefined | null;data: UpdateSessionBody},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * Redirect user to OAuth provider authorization page
+ * @summary Start OAuth authorization flow
+ */
+export const getOauthAuthorizeUrl = (provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/auth/oauth/${provider}/authorize?${stringifiedParams}` : `/auth/oauth/${provider}/authorize`
+}
+
+export const oauthAuthorize = async (provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams, options?: RequestInit): Promise<OauthAuthorize200> => {
+  
+  return customFetch<OauthAuthorize200>(getOauthAuthorizeUrl(provider,params),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+export const getOauthAuthorizeQueryKey = (provider?: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams,) => {
+    return [`/auth/oauth/${provider}/authorize`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getOauthAuthorizeQueryOptions = <TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOauthAuthorizeQueryKey(provider,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthAuthorize>>> = ({ signal }) => oauthAuthorize(provider,params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(provider), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OauthAuthorizeQueryResult = NonNullable<Awaited<ReturnType<typeof oauthAuthorize>>>
+export type OauthAuthorizeQueryError = null | BadRequestResponse | Problem
+
+
+export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params: undefined |  OauthAuthorizeParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof oauthAuthorize>>,
+          TError,
+          Awaited<ReturnType<typeof oauthAuthorize>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof oauthAuthorize>>,
+          TError,
+          Awaited<ReturnType<typeof oauthAuthorize>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Start OAuth authorization flow
+ */
+
+export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOauthAuthorizeQueryOptions(provider,params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getOauthAuthorizeSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOauthAuthorizeQueryKey(provider,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthAuthorize>>> = ({ signal }) => oauthAuthorize(provider,params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OauthAuthorizeSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof oauthAuthorize>>>
+export type OauthAuthorizeSuspenseQueryError = null | BadRequestResponse | Problem
+
+
+export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params: undefined |  OauthAuthorizeParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Start OAuth authorization flow
+ */
+
+export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = null | BadRequestResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOauthAuthorizeSuspenseQueryOptions(provider,params,options)
+
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * Handle the callback from OAuth provider and complete authentication
+ * @summary Handle OAuth callback
+ */
+export const getOauthCallbackUrl = (provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/auth/oauth/${provider}/callback?${stringifiedParams}` : `/auth/oauth/${provider}/callback`
+}
+
+export const oauthCallback = async (provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams, options?: RequestInit): Promise<Session> => {
+  
+  return customFetch<Session>(getOauthCallbackUrl(provider,params),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+export const getOauthCallbackQueryKey = (provider?: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams,) => {
+    return [`/auth/oauth/${provider}/callback`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getOauthCallbackQueryOptions = <TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOauthCallbackQueryKey(provider,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthCallback>>> = ({ signal }) => oauthCallback(provider,params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(provider), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OauthCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof oauthCallback>>>
+export type OauthCallbackQueryError = null | BadRequestResponse | UnauthorizedResponse | Problem
+
+
+export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params: undefined |  OauthCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof oauthCallback>>,
+          TError,
+          Awaited<ReturnType<typeof oauthCallback>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof oauthCallback>>,
+          TError,
+          Awaited<ReturnType<typeof oauthCallback>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Handle OAuth callback
+ */
+
+export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOauthCallbackQueryOptions(provider,params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getOauthCallbackSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOauthCallbackQueryKey(provider,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof oauthCallback>>> = ({ signal }) => oauthCallback(provider,params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OauthCallbackSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof oauthCallback>>>
+export type OauthCallbackSuspenseQueryError = null | BadRequestResponse | UnauthorizedResponse | Problem
+
+
+export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params: undefined |  OauthCallbackParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Handle OAuth callback
+ */
+
+export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = null | BadRequestResponse | UnauthorizedResponse | Problem>(
+ provider: 'google' | 'github' | 'microsoft' | undefined | null,
+    params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOauthCallbackSuspenseQueryOptions(provider,params,options)
+
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * Request a magic link to be sent via email or generate an OTP code
  * @summary Request a magic link
  */
@@ -560,9 +1457,9 @@ export const getVerifyMagicLinkUrl = () => {
   return `/auth/magic-links/verify`
 }
 
-export const verifyMagicLink = async (verifyMagicLinkBody: VerifyMagicLinkBody, options?: RequestInit): Promise<VerifyMagicLink201> => {
+export const verifyMagicLink = async (verifyMagicLinkBody: VerifyMagicLinkBody, options?: RequestInit): Promise<Session> => {
   
-  return customFetch<VerifyMagicLink201>(getVerifyMagicLinkUrl(),
+  return customFetch<Session>(getVerifyMagicLinkUrl(),
   {      
     ...options,
     method: 'POST',
@@ -617,6 +1514,535 @@ export const useVerifyMagicLink = <TError = BadRequestResponse | UnauthorizedRes
       > => {
 
       const mutationOptions = getVerifyMagicLinkMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * List user's tokens (without showing the actual key values)
+ * @summary List tokens
+ */
+export const getListAPIKeysUrl = (params?: ListAPIKeysParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
+      return;
+    }
+      
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/tokens?${stringifiedParams}` : `/tokens`
+}
+
+export const listAPIKeys = async (params?: ListAPIKeysParams, options?: RequestInit): Promise<ListAPIKeys200> => {
+  
+  return customFetch<ListAPIKeys200>(getListAPIKeysUrl(params),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+export const getListAPIKeysQueryKey = (params?: ListAPIKeysParams,) => {
+    return [`/tokens`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getListAPIKeysQueryOptions = <TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(params?: ListAPIKeysParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAPIKeysQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAPIKeys>>> = ({ signal }) => listAPIKeys(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListAPIKeysQueryResult = NonNullable<Awaited<ReturnType<typeof listAPIKeys>>>
+export type ListAPIKeysQueryError = UnauthorizedResponse
+
+
+export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(
+ params: undefined |  ListAPIKeysParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listAPIKeys>>,
+          TError,
+          Awaited<ReturnType<typeof listAPIKeys>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(
+ params?: ListAPIKeysParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listAPIKeys>>,
+          TError,
+          Awaited<ReturnType<typeof listAPIKeys>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(
+ params?: ListAPIKeysParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List tokens
+ */
+
+export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(
+ params?: ListAPIKeysParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListAPIKeysQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getListAPIKeysSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(params?: ListAPIKeysParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAPIKeysQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAPIKeys>>> = ({ signal }) => listAPIKeys(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListAPIKeysSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listAPIKeys>>>
+export type ListAPIKeysSuspenseQueryError = UnauthorizedResponse
+
+
+export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(
+ params: undefined |  ListAPIKeysParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(
+ params?: ListAPIKeysParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(
+ params?: ListAPIKeysParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List tokens
+ */
+
+export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = UnauthorizedResponse>(
+ params?: ListAPIKeysParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListAPIKeysSuspenseQueryOptions(params,options)
+
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * Create a token
+ * @summary Create a token
+ */
+export const getCreateAPIKeyUrl = () => {
+
+
+  
+
+  return `/tokens`
+}
+
+export const createAPIKey = async (createAPIKeyBody: CreateAPIKeyBody, options?: RequestInit): Promise<APIKey> => {
+  
+  return customFetch<APIKey>(getCreateAPIKeyUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createAPIKeyBody,)
+  }
+);}
+
+
+
+
+export const getCreateAPIKeyMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAPIKey>>, TError,{data: CreateAPIKeyBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createAPIKey>>, TError,{data: CreateAPIKeyBody}, TContext> => {
+
+const mutationKey = ['createAPIKey'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAPIKey>>, {data: CreateAPIKeyBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createAPIKey(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateAPIKeyMutationResult = NonNullable<Awaited<ReturnType<typeof createAPIKey>>>
+    export type CreateAPIKeyMutationBody = CreateAPIKeyBody
+    export type CreateAPIKeyMutationError = BadRequestResponse | UnauthorizedResponse
+
+    /**
+ * @summary Create a token
+ */
+export const useCreateAPIKey = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAPIKey>>, TError,{data: CreateAPIKeyBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createAPIKey>>,
+        TError,
+        {data: CreateAPIKeyBody},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateAPIKeyMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * Get details of a specific API key (without the actual key value)
+ * @summary Get API key details
+ */
+export const getGetAPIKeyUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/tokens/${id}`
+}
+
+export const getAPIKey = async (id: string | undefined | null, options?: RequestInit): Promise<APIKey> => {
+  
+  return customFetch<APIKey>(getGetAPIKeyUrl(id),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+export const getGetAPIKeyQueryKey = (id?: string | undefined | null,) => {
+    return [`/tokens/${id}`] as const;
+    }
+
+    
+export const getGetAPIKeyQueryOptions = <TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAPIKeyQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAPIKey>>> = ({ signal }) => getAPIKey(id, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAPIKeyQueryResult = NonNullable<Awaited<ReturnType<typeof getAPIKey>>>
+export type GetAPIKeyQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse
+
+
+export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAPIKey>>,
+          TError,
+          Awaited<ReturnType<typeof getAPIKey>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAPIKey>>,
+          TError,
+          Awaited<ReturnType<typeof getAPIKey>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get API key details
+ */
+
+export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAPIKeyQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetAPIKeySuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAPIKeyQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAPIKey>>> = ({ signal }) => getAPIKey(id, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAPIKeySuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getAPIKey>>>
+export type GetAPIKeySuspenseQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse
+
+
+export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get API key details
+ */
+
+export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse>(
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAPIKeySuspenseQueryOptions(id,options)
+
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * Update an API key's name, scopes, or rate limit
+ * @summary Update API key
+ */
+export const getUpdateAPIKeyUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/tokens/${id}`
+}
+
+export const updateAPIKey = async (id: string | undefined | null,
+    updateAPIKeyBody: UpdateAPIKeyBody, options?: RequestInit): Promise<APIKey> => {
+  
+  return customFetch<APIKey>(getUpdateAPIKeyUrl(id),
+  {      
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateAPIKeyBody,)
+  }
+);}
+
+
+
+
+export const getUpdateAPIKeyMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAPIKey>>, TError,{id: string | undefined | null;data: UpdateAPIKeyBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateAPIKey>>, TError,{id: string | undefined | null;data: UpdateAPIKeyBody}, TContext> => {
+
+const mutationKey = ['updateAPIKey'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAPIKey>>, {id: string | undefined | null;data: UpdateAPIKeyBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateAPIKey(id,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateAPIKeyMutationResult = NonNullable<Awaited<ReturnType<typeof updateAPIKey>>>
+    export type UpdateAPIKeyMutationBody = UpdateAPIKeyBody
+    export type UpdateAPIKeyMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse
+
+    /**
+ * @summary Update API key
+ */
+export const useUpdateAPIKey = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAPIKey>>, TError,{id: string | undefined | null;data: UpdateAPIKeyBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateAPIKey>>,
+        TError,
+        {id: string | undefined | null;data: UpdateAPIKeyBody},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateAPIKeyMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * Delete an API key permanently. This action cannot be undone.
+ * @summary Delete API key
+ */
+export const getDeleteAPIKeyUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/tokens/${id}`
+}
+
+export const deleteAPIKey = async (id: string | undefined | null, options?: RequestInit): Promise<null> => {
+  
+  return customFetch<null>(getDeleteAPIKeyUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
+    
+    
+  }
+);}
+
+
+
+
+export const getDeleteAPIKeyMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAPIKey>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAPIKey>>, TError,{id: string | undefined | null}, TContext> => {
+
+const mutationKey = ['deleteAPIKey'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAPIKey>>, {id: string | undefined | null}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteAPIKey(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAPIKeyMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAPIKey>>>
+    
+    export type DeleteAPIKeyMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse
+
+    /**
+ * @summary Delete API key
+ */
+export const useDeleteAPIKey = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAPIKey>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAPIKey>>,
+        TError,
+        {id: string | undefined | null},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteAPIKeyMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

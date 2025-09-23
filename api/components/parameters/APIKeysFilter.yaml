@@ -1,0 +1,11 @@
+in: query
+name: filter
+required: false
+style: deepObject
+explode: true
+schema:
+  $ref: ../schemas/FilterNode.yaml
+description: |
+  Filter API keys by field values. Supported fields:
+  - createdAt, id, updatedAt, userID, organizationID
+  - keyHash, name, prefix, rateLimit, lastUsedAt, expiresAt

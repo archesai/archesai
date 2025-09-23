@@ -1,16 +1,21 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: auth
 description: Schema for MagicLinkToken entity
-# MagicLinkTokens are now managed internally by the auth package
-# No x-codegen needed as this is handled by auth module
 type: object
 properties:
   id:
-    allOf:
-      - $ref: ./UUID.yaml
+    description: Unique identifier for the magic link token
+    type: string
+    format: uuid
+    example: 550e8400-e29b-41d4-a716-446655440000
+    minLength: 36
   userID:
     description: User ID if token is for existing user
-    allOf:
-      - $ref: ./UUID.yaml
+    type: string
+    format: uuid
+    example: 550e8400-e29b-41d4-a716-446655440000
+    minLength: 36
   tokenHash:
     description: SHA256 hash of the magic link token
     type: string

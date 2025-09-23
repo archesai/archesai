@@ -10,8 +10,11 @@ get:
       required: true
       description: Pipeline ID
       schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
   security:
     - bearerAuth: []
   responses:
@@ -46,8 +49,11 @@ post:
       required: true
       description: Pipeline ID
       schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
   requestBody:
     content:
       application/json:
@@ -55,8 +61,11 @@ post:
           type: object
           properties:
             toolID:
-              allOf:
-                - $ref: ../components/schemas/UUID.yaml
+              description: UUID identifier
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
             name:
               description: Name of the step
               type: string
@@ -81,8 +90,11 @@ post:
               description: IDs of steps this step depends on
               type: array
               items:
-                allOf:
-                  - $ref: ../components/schemas/UUID.yaml
+                description: UUID identifier
+                type: string
+                format: uuid
+                example: 550e8400-e29b-41d4-a716-446655440000
+                minLength: 36
           required:
             - toolID
             - name

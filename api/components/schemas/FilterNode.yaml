@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
 description: A recursive filter node that can be a condition or group
 type: object
-x-go-type: interface{}

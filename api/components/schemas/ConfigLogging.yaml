@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+x-codegen:
+  domain: config
+description: Logging configuration
+type: object
+properties:
+  level:
+    description: Minimum log level to output
+    type: string
+    enum:
+      - fatal
+      - error
+      - warn
+      - info
+      - debug
+      - trace
+      - silent
+    default: info
+    example: fatal
+  pretty:
+    description: Enable pretty-printed logs for development
+    type: boolean
+    default: false
+    example: true
+required:
+  - level
+  - pretty
+additionalProperties: false

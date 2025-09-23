@@ -3,11 +3,11 @@ INSERT INTO
   organization (
     id,
     name,
+    slug,
     billing_email,
     plan,
     credits,
     logo,
-    metadata,
     stripe_customer_id
   )
 VALUES
@@ -41,11 +41,11 @@ OFFSET
 UPDATE organization
 SET
   name = COALESCE(sqlc.narg (name), name),
+  slug = COALESCE(sqlc.narg (slug), slug),
   billing_email = COALESCE(sqlc.narg (billing_email), billing_email),
   plan = COALESCE(sqlc.narg (plan), plan),
   credits = COALESCE(sqlc.narg (credits), credits),
   logo = COALESCE(sqlc.narg (logo), logo),
-  metadata = COALESCE(sqlc.narg (metadata), metadata),
   stripe_customer_id = COALESCE(
     sqlc.narg (stripe_customer_id),
     stripe_customer_id
@@ -59,3 +59,23 @@ RETURNING
 DELETE FROM organization
 WHERE
   id = $1;
+
+-- name: GetOrganizationBySlug :one
+SELECT
+  *
+FROM
+  organization
+WHERE
+  slug = $1
+LIMIT
+  1;
+
+-- name: GetOrganizationByStripeCustomerID :one
+SELECT
+  *
+FROM
+  organization
+WHERE
+  stripe_customer_id = $1
+LIMIT
+  1;

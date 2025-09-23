@@ -1,0 +1,59 @@
+{{- /*
+Validation helper templates
+Usage: {{template "validateStruct" .}} or {{template "validateField" .}}
+*/ -}}
+
+{{define "validateStruct"}}
+// Validate validates the {{.Name}} struct.
+func ({{lower .Name}}_var *{{.Name}}) Validate() error {
+	var errors []string
+
+{{- range .Fields}}
+{{- if .Required}}
+	if {{lower $.Name}}_var.{{.Name}} == nil {
+		errors = append(errors, "{{.Name}} is required")
+	}
+{{- end}}
+{{- if .MinLength}}
+	if {{lower $.Name}}_var.{{.Name}} != nil && len(*{{lower $.Name}}_var.{{.Name}}) < {{.MinLength}} {
+		errors = append(errors, "{{.Name}} must be at least {{.MinLength}} characters")
+	}
+{{- end}}
+{{- if .MaxLength}}
+	if {{lower $.Name}}_var.{{.Name}} != nil && len(*{{lower $.Name}}_var.{{.Name}}) > {{.MaxLength}} {
+		errors = append(errors, "{{.Name}} must be at most {{.MaxLength}} characters")
+	}
+{{- end}}
+{{- if .Pattern}}
+	if {{lower $.Name}}_var.{{.Name}} != nil {
+		if matched, _ := regexp.MatchString(`{{.Pattern}}`, *{{lower $.Name}}_var.{{.Name}}); !matched {
+			errors = append(errors, "{{.Name}} format is invalid")
+		}
+	}
+{{- end}}
+{{- end}}
+
+	if len(errors) > 0 {
+		return fmt.Errorf("validation failed: %s", strings.Join(errors, ", "))
+	}
+	return nil
+}
+{{end}}
+
+{{define "validateField"}}
+{{- if .Required}}
+	if {{.VarName}} == nil {
+		return fmt.Errorf("{{.Name}} is required")
+	}
+{{- end}}
+{{- if .MinLength}}
+	if {{.VarName}} != nil && len(*{{.VarName}}) < {{.MinLength}} {
+		return fmt.Errorf("{{.Name}} must be at least {{.MinLength}} characters")
+	}
+{{- end}}
+{{- if .MaxLength}}
+	if {{.VarName}} != nil && len(*{{.VarName}}) > {{.MaxLength}} {
+		return fmt.Errorf("{{.Name}} must be at most {{.MaxLength}} characters")
+	}
+{{- end}}
+{{end}}

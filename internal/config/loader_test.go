@@ -14,7 +14,7 @@ func TestLoad(t *testing.T) {
 		setup   func()
 		cleanup func()
 		wantErr bool
-		check   func(*Config) error
+		check   func(*Configuration) error
 	}{
 		{
 			name: "load with defaults",
@@ -25,12 +25,12 @@ func TestLoad(t *testing.T) {
 			},
 			cleanup: func() {},
 			wantErr: false,
-			check: func(c *Config) error {
+			check: func(c *Configuration) error {
 				if c == nil {
 					return errorf("expected non-nil config")
 				}
 				if c.API.Host != "0.0.0.0" {
-					return errorf("expected default host 0.0.0.0, got %s", c.API.Host)
+					return errorf("expected default host 0.0.0.0, got %v", c.API.Host)
 				}
 				return nil
 			},
@@ -50,15 +50,15 @@ func TestLoad(t *testing.T) {
 				_ = os.Unsetenv("ARCHES_AUTH_ENABLED")
 			},
 			wantErr: false,
-			check: func(c *Config) error {
+			check: func(c *Configuration) error {
 				if c.API.Host != "127.0.0.1" {
-					return errorf("expected host 127.0.0.1, got %s", c.API.Host)
+					return errorf("expected host 127.0.0.1, got %v", c.API.Host)
 				}
 				if c.API.Port != 8080 {
-					return errorf("expected port 8080, got %f", c.API.Port)
+					return errorf("expected port 8080, got %v", c.API.Port)
 				}
 				if c.Database.URL != "postgres://test" {
-					return errorf("expected database URL postgres://test, got %s", c.Database.URL)
+					return errorf("expected database URL postgres://test, got %v", c.Database.URL)
 				}
 				if c.Auth.Enabled != false {
 					return errorf("expected auth disabled")
@@ -91,21 +91,21 @@ logging:
 				_ = os.Remove("config.yaml")
 			},
 			wantErr: false,
-			check: func(c *Config) error {
+			check: func(c *Configuration) error {
 				if c.API.Host != "192.168.1.1" {
-					return errorf("expected host 192.168.1.1, got %s", c.API.Host)
+					return errorf("expected host 192.168.1.1, got %v", c.API.Host)
 				}
 				if c.API.Port != 9090 {
-					return errorf("expected port 9090, got %f", c.API.Port)
+					return errorf("expected port 9090, got %v", c.API.Port)
 				}
 				if c.API.Environment != "production" {
-					return errorf("expected environment production, got %s", c.API.Environment)
+					return errorf("expected environment production, got %v", c.API.Environment)
 				}
 				if c.Database.MaxConns != 50 {
-					return errorf("expected max_conns 50, got %d", c.Database.MaxConns)
+					return errorf("expected max_conns 50, got %v", c.Database.MaxConns)
 				}
 				if c.Logging.Level != "debug" {
-					return errorf("expected log level debug, got %s", c.Logging.Level)
+					return errorf("expected log level debug, got %v", c.Logging.Level)
 				}
 				if !c.Logging.Pretty {
 					return errorf("expected pretty logging enabled")

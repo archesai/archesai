@@ -22,8 +22,13 @@ func NewService(repo Repository, logger *slog.Logger) *Service {
 	}
 }
 
+// GetHealth performs health checks on all services (expected by generated handler).
+func (s *Service) GetHealth(ctx context.Context) (*Health, error) {
+	return s.CheckHealth(ctx)
+}
+
 // CheckHealth performs health checks on all services.
-func (s *Service) CheckHealth(ctx context.Context) (*HealthResponse, error) {
+func (s *Service) CheckHealth(ctx context.Context) (*Health, error) {
 	// Check database
 	dbStatus := StatusHealthy
 	if err := s.repo.CheckDatabase(ctx); err != nil {
@@ -45,19 +50,18 @@ func (s *Service) CheckHealth(ctx context.Context) (*HealthResponse, error) {
 		emailStatus = StatusUnhealthy
 	}
 
-	// Build response
-	response := &HealthResponse{
+	response := &Health{
 		Services: struct {
-			Database string `json:"database" yaml:"database"`
-			Email    string `json:"email" yaml:"email"`
-			Redis    string `json:"redis" yaml:"redis"`
+			Database string "json:\"database\" yaml:\"database\""
+			Email    string "json:\"email\" yaml:\"email\""
+			Redis    string "json:\"redis\" yaml:\"redis\""
 		}{
 			Database: dbStatus,
 			Email:    emailStatus,
 			Redis:    redisStatus,
 		},
 		Timestamp: time.Now().Format(time.RFC3339),
-		Uptime:    float32(time.Since(s.start).Seconds()),
+		Uptime:    float64(time.Since(s.start).Seconds()),
 	}
 
 	return response, nil

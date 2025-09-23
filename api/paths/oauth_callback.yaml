@@ -2,7 +2,7 @@ get:
   operationId: oauthCallback
   summary: Handle OAuth callback
   tags:
-    - OAuth
+    - Auth
   description: Handle the callback from OAuth provider and complete authentication
   parameters:
     - schema:
@@ -43,19 +43,23 @@ get:
       description: Human-readable error description
   responses:
     '200':
-      description: OAuth authentication successful
+      description: OAuth authentication successful when Accept header is application/json
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/TokenResponse.yaml
+            $ref: ../components/schemas/Session.yaml
     '302':
       description: Redirect to frontend with authentication result
       headers:
-        Location:
-          description: Redirect URL with success/error status
+        Set-Cookie:
+          description: Session cookies for authentication
           schema:
             type: string
-            example: http://localhost:3000/auth/success?token=jwt_token_here
+        Location:
+          description: Redirect URL to frontend
+          schema:
+            type: string
+            example: http://localhost:3000/auth/success
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

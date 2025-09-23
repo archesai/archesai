@@ -4,9 +4,7 @@ package accounts
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -15,14 +13,12 @@ import (
 
 // PostgresRepository implements Repository using PostgreSQL.
 type PostgresRepository struct {
-	db      *pgxpool.Pool
 	queries *postgresql.Queries
 }
 
 // NewPostgresRepository creates a new PostgreSQL repository.
 func NewPostgresRepository(db *pgxpool.Pool) Repository {
 	return &PostgresRepository{
-		db:      db,
 		queries: postgresql.New(db),
 	}
 }
@@ -34,15 +30,15 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Account) (*Acco
 	params := postgresql.CreateAccountParams{
 		ID: entity.ID,
 
+		AccessToken:           entity.AccessToken,
+		AccessTokenExpiresAt:  entity.AccessTokenExpiresAt,
 		AccountID:             entity.AccountID,
-		UserID:                entity.UserID,
+		IDToken:               entity.IDToken,
 		ProviderID:            string(entity.ProviderID),
-		AccessToken:           stringPtr(entity.AccessToken),
-		AccessTokenExpiresAt:  &entity.AccessTokenExpiresAt,
-		RefreshToken:          stringPtr(entity.RefreshToken),
-		RefreshTokenExpiresAt: &entity.RefreshTokenExpiresAt,
-		IDToken:               stringPtr(entity.IDToken),
-		Scope:                 stringPtr(entity.Scope),
+		RefreshToken:          entity.RefreshToken,
+		RefreshTokenExpiresAt: entity.RefreshTokenExpiresAt,
+		Scope:                 entity.Scope,
+		UserID:                entity.UserID,
 	}
 
 	result, err := r.queries.CreateAccount(ctx, params)
@@ -71,12 +67,12 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *A
 	params := postgresql.UpdateAccountParams{
 		ID: id,
 
-		AccessToken:           stringPtr(entity.AccessToken),
-		AccessTokenExpiresAt:  &entity.AccessTokenExpiresAt,
-		RefreshToken:          stringPtr(entity.RefreshToken),
-		RefreshTokenExpiresAt: &entity.RefreshTokenExpiresAt,
-		IDToken:               stringPtr(entity.IDToken),
-		Scope:                 stringPtr(entity.Scope),
+		AccessToken:           entity.AccessToken,
+		AccessTokenExpiresAt:  entity.AccessTokenExpiresAt,
+		IDToken:               entity.IDToken,
+		RefreshToken:          entity.RefreshToken,
+		RefreshTokenExpiresAt: entity.RefreshTokenExpiresAt,
+		Scope:                 entity.Scope,
 	}
 
 	result, err := r.queries.UpdateAccount(ctx, params)
@@ -109,7 +105,7 @@ func (r *PostgresRepository) List(ctx context.Context, params ListAccountsParams
 	limit := int32(10) // default
 
 	// Check if params has Page field with Number and Size
-	if params.Page.Number > 0 && params.Page.Size > 0 {
+	if params.Page != nil && params.Page.Number > 0 && params.Page.Size > 0 {
 		offset = int32((params.Page.Number - 1) * params.Page.Size)
 		limit = int32(params.Page.Size)
 	}
@@ -136,21 +132,21 @@ func (r *PostgresRepository) List(ctx context.Context, params ListAccountsParams
 	return items, count, nil
 }
 
-// GetByProviderID retrieves account by providerproviderAccountID
-func (r *PostgresRepository) GetByProviderID(ctx context.Context, provider string, providerAccountID string) (*Account, error) {
-	// TODO: Implement GetByProviderID - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
+// Additional methods
 
-	return nil, fmt.Errorf("GetByProviderID not implemented - add SQLC query")
+// GetByProviderID retrieves a single account by provider and providerAccountID
+func (r *PostgresRepository) GetByProviderID(ctx context.Context, provider AccountProviderID, providerAccountID string) (*Account, error) {
+
+	// TODO: Implement GetByProviderID - fetch single account
+	return nil, fmt.Errorf("GetByProviderID not yet implemented")
 
 }
 
 // ListByUserID retrieves multiple accounts by userID
 func (r *PostgresRepository) ListByUserID(ctx context.Context, userID uuid.UUID) ([]*Account, error) {
-	// TODO: Implement ListByUserID - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("ListByUserID not implemented - add SQLC query")
+	// TODO: Implement ListByUserID - fetch multiple accounts
+	return nil, fmt.Errorf("ListByUserID not yet implemented")
 
 }
 
@@ -166,99 +162,24 @@ func mapAccountFromDB(db *postgresql.Account) *Account {
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
 
+		AccessToken: db.AccessToken,
+
+		AccessTokenExpiresAt: db.AccessTokenExpiresAt,
+
 		AccountID: db.AccountID,
 
-		UserID: db.UserID,
+		IDToken: db.IDToken,
 
 		ProviderID: AccountProviderID(db.ProviderID),
 
-		AccessToken: stringFromPtr(db.AccessToken),
+		RefreshToken: db.RefreshToken,
 
-		AccessTokenExpiresAt: timeFromPtr(db.AccessTokenExpiresAt),
+		RefreshTokenExpiresAt: db.RefreshTokenExpiresAt,
 
-		RefreshToken: stringFromPtr(db.RefreshToken),
+		Scope: db.Scope,
 
-		RefreshTokenExpiresAt: timeFromPtr(db.RefreshTokenExpiresAt),
-
-		IDToken: stringFromPtr(db.IDToken),
-
-		Scope: stringFromPtr(db.Scope),
+		UserID: db.UserID,
 	}
 
 	return result
-}
-
-// Helper functions for conversions
-func stringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func nilIfEmpty(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func stringFromPtr(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
-func boolPtr(b bool) *bool {
-	return &b
-}
-
-func int32Ptr(i int32) *int32 {
-	return &i
-}
-
-func float32Ptr(f float32) *float32 {
-	return &f
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
-}
-
-func marshalJSON(v interface{}) *string {
-	if v == nil {
-		return nil
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil
-	}
-	s := string(data)
-	return &s
-}
-
-func unmarshalJSON(s *string) map[string]interface{} {
-	if s == nil {
-		return nil
-	}
-	var result map[string]interface{}
-	if err := json.Unmarshal([]byte(*s), &result); err != nil {
-		return nil
-	}
-	return result
-}
-
-func uuidFromPtr(u *uuid.UUID) uuid.UUID {
-	if u == nil {
-		return uuid.Nil
-	}
-	return *u
-}
-
-func timeFromPtr(t *time.Time) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	return *t
 }

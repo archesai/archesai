@@ -17,6 +17,8 @@ type Repository interface {
 	List(ctx context.Context, params ListOrganizationsParams) ([]*Organization, int64, error)
 
 	// Additional operations
+	// GetBySlug retrieves a single organization by slug
 	GetBySlug(ctx context.Context, slug string) (*Organization, error)
-	GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*Organization, error)
+	// GetByStripeCustomerID retrieves a single organization by stripeCustomerID
+	GetByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (*Organization, error)
 }

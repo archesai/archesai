@@ -44,7 +44,7 @@ var configShowCmd = &cobra.Command{
 		case "json":
 			encoder := json.NewEncoder(os.Stdout)
 			encoder.SetIndent("", "  ")
-			return encoder.Encode(cfg.ArchesConfig)
+			return encoder.Encode(cfg.Config)
 		case "yaml":
 			encoder := yaml.NewEncoder(os.Stdout)
 			encoder.SetIndent(2)
@@ -53,7 +53,7 @@ var configShowCmd = &cobra.Command{
 					fmt.Fprintf(os.Stderr, "Warning: failed to close encoder: %v\n", err)
 				}
 			}()
-			return encoder.Encode(cfg.ArchesConfig)
+			return encoder.Encode(cfg.Config)
 		default:
 			return fmt.Errorf("unsupported output format: %s", outputFormat)
 		}
@@ -97,7 +97,7 @@ var configInitCmd = &cobra.Command{
 		}
 
 		// Get default config
-		defaultConfig := config.GetDefaultConfig()
+		defaultConfig := config.New()
 
 		// Create directory if needed
 		if err := os.MkdirAll(filepath.Dir(configPath), 0755); err != nil {

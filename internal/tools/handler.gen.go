@@ -9,10 +9,25 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
+
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -24,13 +39,13 @@ type ServerInterface interface {
 	CreateTool(ctx echo.Context) error
 	// Delete a tool
 	// (DELETE /tools/{id})
-	DeleteTool(ctx echo.Context, id UUID) error
+	DeleteTool(ctx echo.Context, id uuid.UUID) error
 	// Find a tool
 	// (GET /tools/{id})
-	GetTool(ctx echo.Context, id UUID) error
+	GetTool(ctx echo.Context, id uuid.UUID) error
 	// Update a tool
 	// (PATCH /tools/{id})
-	UpdateTool(ctx echo.Context, id UUID) error
+	UpdateTool(ctx echo.Context, id uuid.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -42,10 +57,9 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) ListTools(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(BearerAuthScopes, []string{})
-
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListToolsParams
+
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -67,6 +81,8 @@ func (w *ServerInterfaceWrapper) ListTools(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
 	}
 
+	ctx.Set(BearerAuthScopes, []string{})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.ListTools(ctx, params)
 	return err
@@ -87,7 +103,7 @@ func (w *ServerInterfaceWrapper) CreateTool(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteTool(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -105,7 +121,7 @@ func (w *ServerInterfaceWrapper) DeleteTool(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetTool(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -123,7 +139,7 @@ func (w *ServerInterfaceWrapper) GetTool(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateTool(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -164,7 +180,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
 	router.GET(baseURL+"/tools", wrapper.ListTools)
 	router.POST(baseURL+"/tools", wrapper.CreateTool)
 	router.DELETE(baseURL+"/tools/:id", wrapper.DeleteTool)
@@ -173,11 +188,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
 
-type NotFoundApplicationProblemPlusJSONResponse Problem
+type NotFoundResponse ProblemDetails
 
-type UnauthorizedApplicationProblemPlusJSONResponse Problem
+type UnauthorizedResponse ProblemDetails
 
 type ListToolsRequestObject struct {
 	Params ListToolsParams
@@ -190,8 +205,7 @@ type ListToolsResponseObject interface {
 type ListTools200JSONResponse struct {
 	Data []Tool `json:"data"`
 	Meta struct {
-		// Total Total number of items in the collection
-		Total float32 `json:"total"`
+		Total int64 `json:"total"`
 	} `json:"meta"`
 }
 
@@ -202,38 +216,42 @@ func (response ListTools200JSONResponse) VisitListToolsResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListTools400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type ListTools400Response = BadRequestResponse
 
-func (response ListTools400ApplicationProblemPlusJSONResponse) VisitListToolsResponse(w http.ResponseWriter) error {
+func (response ListTools400Response) VisitListToolsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListTools401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type ListTools401Response = UnauthorizedResponse
 
-func (response ListTools401ApplicationProblemPlusJSONResponse) VisitListToolsResponse(w http.ResponseWriter) error {
+func (response ListTools401Response) VisitListToolsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ListTools404Response = NotFoundResponse
+
+func (response ListTools404Response) VisitListToolsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type CreateToolRequestObject struct {
-	Body *CreateToolJSONRequestBody
+	Body *CreateToolRequestBody
 }
 
 type CreateToolResponseObject interface {
 	VisitCreateToolResponse(w http.ResponseWriter) error
 }
-
 type CreateTool201JSONResponse struct {
-	// Data Schema for Tool entity
+	// Data Schema for tools entity
 	Data Tool `json:"data"`
 }
 
@@ -244,22 +262,18 @@ func (response CreateTool201JSONResponse) VisitCreateToolResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateTool400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type CreateTool400Response = BadRequestResponse
 
-func (response CreateTool400ApplicationProblemPlusJSONResponse) VisitCreateToolResponse(w http.ResponseWriter) error {
+func (response CreateTool400Response) VisitCreateToolResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateTool401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type CreateTool401Response = UnauthorizedResponse
 
-func (response CreateTool401ApplicationProblemPlusJSONResponse) VisitCreateToolResponse(w http.ResponseWriter) error {
+func (response CreateTool401Response) VisitCreateToolResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -267,15 +281,14 @@ func (response CreateTool401ApplicationProblemPlusJSONResponse) VisitCreateToolR
 }
 
 type DeleteToolRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type DeleteToolResponseObject interface {
 	VisitDeleteToolResponse(w http.ResponseWriter) error
 }
-
 type DeleteTool200JSONResponse struct {
-	// Data Schema for Tool entity
+	// Data Schema for tools entity
 	Data Tool `json:"data"`
 }
 
@@ -286,11 +299,27 @@ func (response DeleteTool200JSONResponse) VisitDeleteToolResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteTool404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type DeleteTool400Response = BadRequestResponse
+
+func (response DeleteTool400Response) VisitDeleteToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response DeleteTool404ApplicationProblemPlusJSONResponse) VisitDeleteToolResponse(w http.ResponseWriter) error {
+type DeleteTool401Response = UnauthorizedResponse
+
+func (response DeleteTool401Response) VisitDeleteToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteTool404Response = NotFoundResponse
+
+func (response DeleteTool404Response) VisitDeleteToolResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -298,7 +327,7 @@ func (response DeleteTool404ApplicationProblemPlusJSONResponse) VisitDeleteToolR
 }
 
 type GetToolRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type GetToolResponseObject interface {
@@ -306,8 +335,10 @@ type GetToolResponseObject interface {
 }
 
 type GetTool200JSONResponse struct {
-	// Data Schema for Tool entity
-	Data Tool `json:"data"`
+	Data []Tool `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
 }
 
 func (response GetTool200JSONResponse) VisitGetToolResponse(w http.ResponseWriter) error {
@@ -317,11 +348,27 @@ func (response GetTool200JSONResponse) VisitGetToolResponse(w http.ResponseWrite
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetTool404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type GetTool400Response = BadRequestResponse
+
+func (response GetTool400Response) VisitGetToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response GetTool404ApplicationProblemPlusJSONResponse) VisitGetToolResponse(w http.ResponseWriter) error {
+type GetTool401Response = UnauthorizedResponse
+
+func (response GetTool401Response) VisitGetToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetTool404Response = NotFoundResponse
+
+func (response GetTool404Response) VisitGetToolResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -329,16 +376,15 @@ func (response GetTool404ApplicationProblemPlusJSONResponse) VisitGetToolRespons
 }
 
 type UpdateToolRequestObject struct {
-	ID   UUID `json:"id"`
-	Body *UpdateToolJSONRequestBody
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateToolRequestBody
 }
 
 type UpdateToolResponseObject interface {
 	VisitUpdateToolResponse(w http.ResponseWriter) error
 }
-
 type UpdateTool200JSONResponse struct {
-	// Data Schema for Tool entity
+	// Data Schema for tools entity
 	Data Tool `json:"data"`
 }
 
@@ -349,11 +395,27 @@ func (response UpdateTool200JSONResponse) VisitUpdateToolResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateTool404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type UpdateTool400Response = BadRequestResponse
+
+func (response UpdateTool400Response) VisitUpdateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response UpdateTool404ApplicationProblemPlusJSONResponse) VisitUpdateToolResponse(w http.ResponseWriter) error {
+type UpdateTool401Response = UnauthorizedResponse
+
+func (response UpdateTool401Response) VisitUpdateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateTool404Response = NotFoundResponse
+
+func (response UpdateTool404Response) VisitUpdateToolResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -394,7 +456,6 @@ type strictHandler struct {
 // ListTools operation middleware
 func (sh *strictHandler) ListTools(ctx echo.Context, params ListToolsParams) error {
 	var request ListToolsRequestObject
-
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -419,8 +480,7 @@ func (sh *strictHandler) ListTools(ctx echo.Context, params ListToolsParams) err
 // CreateTool operation middleware
 func (sh *strictHandler) CreateTool(ctx echo.Context) error {
 	var request CreateToolRequestObject
-
-	var body CreateToolJSONRequestBody
+	var body CreateToolRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
@@ -446,9 +506,8 @@ func (sh *strictHandler) CreateTool(ctx echo.Context) error {
 }
 
 // DeleteTool operation middleware
-func (sh *strictHandler) DeleteTool(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) DeleteTool(ctx echo.Context, id uuid.UUID) error {
 	var request DeleteToolRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -471,9 +530,8 @@ func (sh *strictHandler) DeleteTool(ctx echo.Context, id UUID) error {
 }
 
 // GetTool operation middleware
-func (sh *strictHandler) GetTool(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) GetTool(ctx echo.Context, id uuid.UUID) error {
 	var request GetToolRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -496,12 +554,10 @@ func (sh *strictHandler) GetTool(ctx echo.Context, id UUID) error {
 }
 
 // UpdateTool operation middleware
-func (sh *strictHandler) UpdateTool(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) UpdateTool(ctx echo.Context, id uuid.UUID) error {
 	var request UpdateToolRequestObject
-
 	request.ID = id
-
-	var body UpdateToolJSONRequestBody
+	var body UpdateToolRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}

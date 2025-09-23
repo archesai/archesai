@@ -10,8 +10,11 @@ get:
       required: true
       description: Pipeline ID
       schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
   security:
     - bearerAuth: []
   responses:
@@ -26,8 +29,11 @@ get:
                 type: object
                 properties:
                   pipelineID:
-                    allOf:
-                      - $ref: ../components/schemas/UUID.yaml
+                    description: UUID identifier
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                    minLength: 36
                   levels:
                     type: array
                     items:
@@ -40,9 +46,11 @@ get:
                         steps:
                           type: array
                           items:
-                            allOf:
-                              - $ref: ../components/schemas/UUID.yaml
-                          description: Step IDs that can run in parallel at this level
+                            type: string
+                            format: uuid
+                            example: 550e8400-e29b-41d4-a716-446655440000
+                            minLength: 36
+                            description: Step IDs that can run in parallel at this level
                       required:
                         - level
                         - steps
@@ -85,8 +93,11 @@ post:
       required: true
       description: Pipeline ID
       schema:
-        allOf:
-          - $ref: ../components/schemas/UUID.yaml
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
   security:
     - bearerAuth: []
   responses:

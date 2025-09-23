@@ -76,7 +76,7 @@ type App struct {
 	ConfigHandler        config.ServerInterface
 
 	// Unified authentication handler
-	AuthHandler *auth.Handler
+	AuthHandler auth.ServerInterface
 }
 
 // NewApp creates and initializes all application dependencies.
@@ -110,7 +110,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 
 	// Initialize authentication middleware
-	authMiddleware := middleware.NewAuthMiddleware(cfg.Auth.Local.JwtSecret, cfg, log)
+	authMiddleware := middleware.NewAuthMiddleware(cfg.Auth.Local.JWTSecret, cfg, log)
 
 	// Create app instance to populate
 	app := &App{
@@ -243,7 +243,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	)
 
 	// Create token manager
-	tokenManager := tokens.NewManager(cfg.Auth.Local.JwtSecret)
+	tokenManager := tokens.NewManager(cfg.Auth.Local.JWTSecret)
 
 	// Create magic link repository and store
 	magicLinkRepo := stores.NewPostgresMagicLinkRepository(infra.Database.SQLDB())
@@ -255,15 +255,15 @@ func NewApp(cfg *config.Config) (*App, error) {
 
 	// Create API token store
 	// We need to create a postgresql.Queries instance for the API token repository
-	var apiTokenStore auth.APITokenStore
+	var apiKeyStore auth.APIKeyStore
 	if infra.Database.IsPostgreSQL() {
 		pgQueries := postgresql.New(infra.Database.PgxPool())
-		apiTokenStore = stores.NewAPITokenRepository(pgQueries)
+		apiKeyStore = stores.NewAPIKeyRepository(pgQueries)
 	} else {
 		// TODO: Implement SQLite API token store
-		apiTokenStore = nil
+		apiKeyStore = nil
 	}
-	apiTokenValidator := tokens.NewAPITokenValidator()
+	apiKeyValidator := tokens.NewAPIKeyValidator()
 
 	// Create unified auth service
 	app.AuthService = auth.NewService(
@@ -274,17 +274,17 @@ func NewApp(cfg *config.Config) (*App, error) {
 		sessionStore,
 		tokenManager,
 		magicLinkStore,
-		apiTokenStore,
-		apiTokenValidator,
+		apiKeyStore,
+		apiKeyValidator,
 	)
 
 	// Register OAuth providers
 	if cfg.Auth.Google.Enabled {
 		app.AuthService.RegisterProvider(auth.ProviderGoogle,
 			providers.NewGoogleProvider(
-				cfg.Auth.Google.ClientID,
-				cfg.Auth.Google.ClientSecret,
-				cfg.Auth.Google.RedirectURL,
+				*cfg.Auth.Google.ClientID,
+				*cfg.Auth.Google.ClientSecret,
+				*cfg.Auth.Google.RedirectURL,
 			),
 		)
 	}
@@ -292,9 +292,9 @@ func NewApp(cfg *config.Config) (*App, error) {
 	if cfg.Auth.Github.Enabled {
 		app.AuthService.RegisterProvider(auth.ProviderGitHub,
 			providers.NewGitHubProvider(
-				cfg.Auth.Github.ClientID,
-				cfg.Auth.Github.ClientSecret,
-				cfg.Auth.Github.RedirectURL,
+				*cfg.Auth.Github.ClientID,
+				*cfg.Auth.Github.ClientSecret,
+				*cfg.Auth.Github.RedirectURL,
 			),
 		)
 	}
@@ -302,9 +302,9 @@ func NewApp(cfg *config.Config) (*App, error) {
 	if cfg.Auth.Microsoft.Enabled {
 		app.AuthService.RegisterProvider(auth.ProviderMicrosoft,
 			providers.NewMicrosoftProvider(
-				cfg.Auth.Microsoft.ClientID,
-				cfg.Auth.Microsoft.ClientSecret,
-				cfg.Auth.Microsoft.RedirectURL,
+				*cfg.Auth.Microsoft.ClientID,
+				*cfg.Auth.Microsoft.ClientSecret,
+				*cfg.Auth.Microsoft.RedirectURL,
 			),
 		)
 	}
@@ -331,7 +331,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 
 	// Create the HTTP server
 	log.Info("creating HTTP server")
-	app.Server = server.NewServer(&cfg.API, log)
+	app.Server = server.NewServer(cfg.API, log)
 
 	// Register all application routes
 	app.registerRoutes()

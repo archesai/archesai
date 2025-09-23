@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const createApiToken = `-- name: CreateApiToken :one
+const createAPIKey = `-- name: CreateAPIKey :one
 INSERT INTO
   api_token (
     id,
@@ -31,7 +31,7 @@ RETURNING
   id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 `
 
-type CreateApiTokenParams struct {
+type CreateAPIKeyParams struct {
 	ID             uuid.UUID
 	UserID         uuid.UUID
 	OrganizationID uuid.UUID
@@ -43,8 +43,8 @@ type CreateApiTokenParams struct {
 	ExpiresAt      *time.Time
 }
 
-func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (APIToken, error) {
-	row := q.db.QueryRow(ctx, createApiToken,
+func (q *Queries) CreateAPIKey(ctx context.Context, arg CreateAPIKeyParams) (APIToken, error) {
+	row := q.db.QueryRow(ctx, createAPIKey,
 		arg.ID,
 		arg.UserID,
 		arg.OrganizationID,
@@ -73,41 +73,41 @@ func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) 
 	return i, err
 }
 
-const deleteApiToken = `-- name: DeleteApiToken :exec
+const deleteAPIKey = `-- name: DeleteAPIKey :exec
 DELETE FROM api_token
 WHERE
   id = $1
 `
 
-func (q *Queries) DeleteApiToken(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteApiToken, id)
+func (q *Queries) DeleteAPIKey(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteAPIKey, id)
 	return err
 }
 
-const deleteApiTokensByUser = `-- name: DeleteApiTokensByUser :exec
+const deleteAPIKeysByUser = `-- name: DeleteAPIKeysByUser :exec
 DELETE FROM api_token
 WHERE
   user_id = $1
 `
 
-func (q *Queries) DeleteApiTokensByUser(ctx context.Context, userID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteApiTokensByUser, userID)
+func (q *Queries) DeleteAPIKeysByUser(ctx context.Context, userID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteAPIKeysByUser, userID)
 	return err
 }
 
-const deleteExpiredApiTokens = `-- name: DeleteExpiredApiTokens :exec
+const deleteExpiredAPIKeys = `-- name: DeleteExpiredAPIKeys :exec
 DELETE FROM api_token
 WHERE
   expires_at IS NOT NULL
   AND expires_at < CURRENT_TIMESTAMP
 `
 
-func (q *Queries) DeleteExpiredApiTokens(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, deleteExpiredApiTokens)
+func (q *Queries) DeleteExpiredAPIKeys(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteExpiredAPIKeys)
 	return err
 }
 
-const getApiToken = `-- name: GetApiToken :one
+const getAPIKey = `-- name: GetAPIKey :one
 SELECT
   id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 FROM
@@ -118,8 +118,8 @@ LIMIT
   1
 `
 
-func (q *Queries) GetApiToken(ctx context.Context, id uuid.UUID) (APIToken, error) {
-	row := q.db.QueryRow(ctx, getApiToken, id)
+func (q *Queries) GetAPIKey(ctx context.Context, id uuid.UUID) (APIToken, error) {
+	row := q.db.QueryRow(ctx, getAPIKey, id)
 	var i APIToken
 	err := row.Scan(
 		&i.ID,
@@ -138,7 +138,7 @@ func (q *Queries) GetApiToken(ctx context.Context, id uuid.UUID) (APIToken, erro
 	return i, err
 }
 
-const getApiTokenByKeyHash = `-- name: GetApiTokenByKeyHash :one
+const getAPIKeyByKeyHash = `-- name: GetAPIKeyByKeyHash :one
 SELECT
   id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 FROM
@@ -149,8 +149,8 @@ LIMIT
   1
 `
 
-func (q *Queries) GetApiTokenByKeyHash(ctx context.Context, keyHash string) (APIToken, error) {
-	row := q.db.QueryRow(ctx, getApiTokenByKeyHash, keyHash)
+func (q *Queries) GetAPIKeyByKeyHash(ctx context.Context, keyHash string) (APIToken, error) {
+	row := q.db.QueryRow(ctx, getAPIKeyByKeyHash, keyHash)
 	var i APIToken
 	err := row.Scan(
 		&i.ID,
@@ -169,7 +169,7 @@ func (q *Queries) GetApiTokenByKeyHash(ctx context.Context, keyHash string) (API
 	return i, err
 }
 
-const listApiTokens = `-- name: ListApiTokens :many
+const listAPIKeys = `-- name: ListAPIKeys :many
 SELECT
   id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 FROM
@@ -182,13 +182,13 @@ OFFSET
   $2
 `
 
-type ListApiTokensParams struct {
+type ListAPIKeysParams struct {
 	Limit  int32
 	Offset int32
 }
 
-func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([]APIToken, error) {
-	rows, err := q.db.Query(ctx, listApiTokens, arg.Limit, arg.Offset)
+func (q *Queries) ListAPIKeys(ctx context.Context, arg ListAPIKeysParams) ([]APIToken, error) {
+	rows, err := q.db.Query(ctx, listAPIKeys, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([
 	return items, nil
 }
 
-const listApiTokensByOrganization = `-- name: ListApiTokensByOrganization :many
+const listAPIKeysByOrganization = `-- name: ListAPIKeysByOrganization :many
 SELECT
   id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 FROM
@@ -235,14 +235,14 @@ OFFSET
   $3
 `
 
-type ListApiTokensByOrganizationParams struct {
+type ListAPIKeysByOrganizationParams struct {
 	OrganizationID uuid.UUID
 	Limit          int32
 	Offset         int32
 }
 
-func (q *Queries) ListApiTokensByOrganization(ctx context.Context, arg ListApiTokensByOrganizationParams) ([]APIToken, error) {
-	rows, err := q.db.Query(ctx, listApiTokensByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+func (q *Queries) ListAPIKeysByOrganization(ctx context.Context, arg ListAPIKeysByOrganizationParams) ([]APIToken, error) {
+	rows, err := q.db.Query(ctx, listAPIKeysByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -274,7 +274,7 @@ func (q *Queries) ListApiTokensByOrganization(ctx context.Context, arg ListApiTo
 	return items, nil
 }
 
-const listApiTokensByUser = `-- name: ListApiTokensByUser :many
+const listAPIKeysByUser = `-- name: ListAPIKeysByUser :many
 SELECT
   id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 FROM
@@ -289,14 +289,14 @@ OFFSET
   $3
 `
 
-type ListApiTokensByUserParams struct {
+type ListAPIKeysByUserParams struct {
 	UserID uuid.UUID
 	Limit  int32
 	Offset int32
 }
 
-func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]APIToken, error) {
-	rows, err := q.db.Query(ctx, listApiTokensByUser, arg.UserID, arg.Limit, arg.Offset)
+func (q *Queries) ListAPIKeysByUser(ctx context.Context, arg ListAPIKeysByUserParams) ([]APIToken, error) {
+	rows, err := q.db.Query(ctx, listAPIKeysByUser, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -328,7 +328,7 @@ func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUs
 	return items, nil
 }
 
-const updateApiToken = `-- name: UpdateApiToken :one
+const updateAPIKey = `-- name: UpdateAPIKey :one
 UPDATE api_token
 SET
   name = COALESCE($1, name),
@@ -342,7 +342,7 @@ RETURNING
   id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
 `
 
-type UpdateApiTokenParams struct {
+type UpdateAPIKeyParams struct {
 	Name      *string
 	Scopes    []string
 	RateLimit *int32
@@ -350,8 +350,8 @@ type UpdateApiTokenParams struct {
 	ID        uuid.UUID
 }
 
-func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (APIToken, error) {
-	row := q.db.QueryRow(ctx, updateApiToken,
+func (q *Queries) UpdateAPIKey(ctx context.Context, arg UpdateAPIKeyParams) (APIToken, error) {
+	row := q.db.QueryRow(ctx, updateAPIKey,
 		arg.Name,
 		arg.Scopes,
 		arg.RateLimit,
@@ -376,7 +376,7 @@ func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) 
 	return i, err
 }
 
-const updateApiTokenLastUsed = `-- name: UpdateApiTokenLastUsed :exec
+const updateAPIKeyLastUsed = `-- name: UpdateAPIKeyLastUsed :exec
 UPDATE api_token
 SET
   last_used_at = CURRENT_TIMESTAMP
@@ -384,7 +384,7 @@ WHERE
   id = $1
 `
 
-func (q *Queries) UpdateApiTokenLastUsed(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, updateApiTokenLastUsed, id)
+func (q *Queries) UpdateAPIKeyLastUsed(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, updateAPIKeyLastUsed, id)
 	return err
 }

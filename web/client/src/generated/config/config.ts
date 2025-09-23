@@ -24,8 +24,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  ArchesConfig,
-  BadRequestResponse
+  BadRequestResponse,
+  Config
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -51,9 +51,9 @@ export const getGetConfigUrl = () => {
   return `/config`
 }
 
-export const getConfig = async ( options?: RequestInit): Promise<ArchesConfig> => {
+export const getConfig = async ( options?: RequestInit): Promise<Config> => {
   
-  return customFetch<ArchesConfig>(getGetConfigUrl(),
+  return customFetch<Config>(getGetConfigUrl(),
   {      
     ...options,
     method: 'GET'

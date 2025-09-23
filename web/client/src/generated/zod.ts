@@ -34,17 +34,17 @@ export const listAccountsQueryParams = zod.object({
 })
 
 export const listAccountsResponseDataItemIdMin = 36;
-export const listAccountsResponseDataItemUserIDMinOne = 36;
+export const listAccountsResponseDataItemUserIDMin = 36;
 
 
 export const listAccountsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listAccountsResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listAccountsResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "accountID": zod.string().min(1).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(listAccountsResponseDataItemUserIDMinOne).describe('Universally Unique IDentifier').describe('The user ID this account belongs to'),
+  "userID": zod.uuid().min(listAccountsResponseDataItemUserIDMin).describe('The user ID this account belongs to'),
   "providerID": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
   "accessToken": zod.string().optional().describe('The OAuth access token'),
   "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
@@ -78,25 +78,25 @@ export const createAccountBody = zod.object({
  * Get an account
  * @summary Find an account
  */
-export const getAccountPathIdMinOne = 36;
+export const getAccountPathIdMin = 36;
 
 
 export const getAccountParams = zod.object({
-  "id": zod.uuid().min(getAccountPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource')
+  "id": zod.uuid().min(getAccountPathIdMin).describe('The unique identifier of the resource')
 })
 
 export const getAccountResponseDataIdMin = 36;
-export const getAccountResponseDataUserIDMinOne = 36;
+export const getAccountResponseDataUserIDMin = 36;
 
 
 export const getAccountResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getAccountResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getAccountResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "accountID": zod.string().min(1).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(getAccountResponseDataUserIDMinOne).describe('Universally Unique IDentifier').describe('The user ID this account belongs to'),
+  "userID": zod.uuid().min(getAccountResponseDataUserIDMin).describe('The user ID this account belongs to'),
   "providerID": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
   "accessToken": zod.string().optional().describe('The OAuth access token'),
   "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
@@ -112,11 +112,11 @@ export const getAccountResponse = zod.object({
  * Update an account
  * @summary Update an account
  */
-export const updateAccountPathIdMinOne = 36;
+export const updateAccountPathIdMin = 36;
 
 
 export const updateAccountParams = zod.object({
-  "id": zod.uuid().min(updateAccountPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource')
+  "id": zod.uuid().min(updateAccountPathIdMin).describe('The unique identifier of the resource')
 })
 
 export const updateAccountBody = zod.object({
@@ -126,17 +126,17 @@ export const updateAccountBody = zod.object({
 })
 
 export const updateAccountResponseDataIdMin = 36;
-export const updateAccountResponseDataUserIDMinOne = 36;
+export const updateAccountResponseDataUserIDMin = 36;
 
 
 export const updateAccountResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateAccountResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateAccountResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "accountID": zod.string().min(1).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(updateAccountResponseDataUserIDMinOne).describe('Universally Unique IDentifier').describe('The user ID this account belongs to'),
+  "userID": zod.uuid().min(updateAccountResponseDataUserIDMin).describe('The user ID this account belongs to'),
   "providerID": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
   "accessToken": zod.string().optional().describe('The OAuth access token'),
   "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
@@ -152,25 +152,25 @@ export const updateAccountResponse = zod.object({
  * Delete an account
  * @summary Delete an account
  */
-export const deleteAccountPathIdMinOne = 36;
+export const deleteAccountPathIdMin = 36;
 
 
 export const deleteAccountParams = zod.object({
-  "id": zod.uuid().min(deleteAccountPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource')
+  "id": zod.uuid().min(deleteAccountPathIdMin).describe('The unique identifier of the resource')
 })
 
 export const deleteAccountResponseDataIdMin = 36;
-export const deleteAccountResponseDataUserIDMinOne = 36;
+export const deleteAccountResponseDataUserIDMin = 36;
 
 
 export const deleteAccountResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteAccountResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteAccountResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "accountID": zod.string().min(1).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(deleteAccountResponseDataUserIDMinOne).describe('Universally Unique IDentifier').describe('The user ID this account belongs to'),
+  "userID": zod.uuid().min(deleteAccountResponseDataUserIDMin).describe('The user ID this account belongs to'),
   "providerID": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
   "accessToken": zod.string().optional().describe('The OAuth access token'),
   "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
@@ -191,36 +191,41 @@ export const confirmEmailVerificationBody = zod.object({
 })
 
 export const confirmEmailVerificationResponseSessionIdMin = 36;
-export const confirmEmailVerificationResponseSessionOrganizationIDMinOne = 36;
-export const confirmEmailVerificationResponseSessionUserIDMinOne = 36;
+export const confirmEmailVerificationResponseSessionOrganizationIDMin = 36;
+export const confirmEmailVerificationResponseSessionUserIDMin = 36;
 export const confirmEmailVerificationResponseUserIdMin = 36;
-export const confirmEmailVerificationResponseUserEmailRegExpOne = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const confirmEmailVerificationResponseUserEmailVerifiedDefault = false;export const confirmEmailVerificationResponseUserNameMax = 255;
+export const confirmEmailVerificationResponseUserEmailMin = 5;
+
+export const confirmEmailVerificationResponseUserEmailMax = 255;
+export const confirmEmailVerificationResponseUserEmailVerifiedDefault = false;export const confirmEmailVerificationResponseUserImageMin = 5;
+
+export const confirmEmailVerificationResponseUserImageMax = 2048;
+export const confirmEmailVerificationResponseUserNameMax = 255;
 
 
 export const confirmEmailVerificationResponse = zod.object({
   "session": zod.object({
-  "id": zod.uuid().min(confirmEmailVerificationResponseSessionIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(confirmEmailVerificationResponseSessionIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(confirmEmailVerificationResponseSessionOrganizationIDMinOne).describe('Universally Unique IDentifier').optional().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.uuid().min(confirmEmailVerificationResponseSessionOrganizationIDMin).optional().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(1).describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
   "userAgent": zod.string().min(1).describe('The user agent of the session'),
-  "userID": zod.uuid().min(confirmEmailVerificationResponseSessionUserIDMinOne).describe('Universally Unique IDentifier')
+  "userID": zod.uuid().min(confirmEmailVerificationResponseSessionUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity'),
   "user": zod.object({
-  "id": zod.uuid().min(confirmEmailVerificationResponseUserIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(confirmEmailVerificationResponseUserIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "email": zod.email().regex(confirmEmailVerificationResponseUserEmailRegExpOne).describe('The user\'s email address'),
+  "email": zod.email().min(confirmEmailVerificationResponseUserEmailMin).max(confirmEmailVerificationResponseUserEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.string().optional().describe('The user\'s avatar image URL'),
+  "image": zod.url().min(confirmEmailVerificationResponseUserImageMin).max(confirmEmailVerificationResponseUserImageMax).optional().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(confirmEmailVerificationResponseUserNameMax).describe('The user\'s display name')
 })).describe('Schema for User entity')
 })
@@ -299,24 +304,24 @@ export const listSessionsQueryParams = zod.object({
 })
 
 export const listSessionsResponseDataItemIdMin = 36;
-export const listSessionsResponseDataItemOrganizationIDMinOne = 36;
-export const listSessionsResponseDataItemUserIDMinOne = 36;
+export const listSessionsResponseDataItemOrganizationIDMin = 36;
+export const listSessionsResponseDataItemUserIDMin = 36;
 
 
 export const listSessionsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listSessionsResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listSessionsResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(listSessionsResponseDataItemOrganizationIDMinOne).describe('Universally Unique IDentifier').optional().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.uuid().min(listSessionsResponseDataItemOrganizationIDMin).optional().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(1).describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
   "userAgent": zod.string().min(1).describe('The user agent of the session'),
-  "userID": zod.uuid().min(listSessionsResponseDataItemUserIDMinOne).describe('Universally Unique IDentifier')
+  "userID": zod.uuid().min(listSessionsResponseDataItemUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')),
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
@@ -342,32 +347,32 @@ export const createSessionBody = zod.object({
  * Delete a specific session (logout from that session)
  * @summary Delete session (Logout)
  */
-export const deleteSessionPathIdMinOne = 36;
+export const deleteSessionPathIdMin = 36;
 
 
 export const deleteSessionParams = zod.object({
-  "id": zod.uuid().min(deleteSessionPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the session.')
+  "id": zod.uuid().min(deleteSessionPathIdMin).describe('The unique identifier of the session.')
 })
 
 export const deleteSessionResponseDataIdMin = 36;
-export const deleteSessionResponseDataOrganizationIDMinOne = 36;
-export const deleteSessionResponseDataUserIDMinOne = 36;
+export const deleteSessionResponseDataOrganizationIDMin = 36;
+export const deleteSessionResponseDataUserIDMin = 36;
 
 
 export const deleteSessionResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteSessionResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteSessionResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(deleteSessionResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier').optional().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.uuid().min(deleteSessionResponseDataOrganizationIDMin).optional().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(1).describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
   "userAgent": zod.string().min(1).describe('The user agent of the session'),
-  "userID": zod.uuid().min(deleteSessionResponseDataUserIDMinOne).describe('Universally Unique IDentifier')
+  "userID": zod.uuid().min(deleteSessionResponseDataUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 })
 
@@ -376,32 +381,32 @@ export const deleteSessionResponse = zod.object({
  * Find a session
  * @summary Find a session
  */
-export const getSessionPathIdMinOne = 36;
+export const getSessionPathIdMin = 36;
 
 
 export const getSessionParams = zod.object({
-  "id": zod.uuid().min(getSessionPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(getSessionPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const getSessionResponseDataIdMin = 36;
-export const getSessionResponseDataOrganizationIDMinOne = 36;
-export const getSessionResponseDataUserIDMinOne = 36;
+export const getSessionResponseDataOrganizationIDMin = 36;
+export const getSessionResponseDataUserIDMin = 36;
 
 
 export const getSessionResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getSessionResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getSessionResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(getSessionResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier').optional().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.uuid().min(getSessionResponseDataOrganizationIDMin).optional().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(1).describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
   "userAgent": zod.string().min(1).describe('The user agent of the session'),
-  "userID": zod.uuid().min(getSessionResponseDataUserIDMinOne).describe('Universally Unique IDentifier')
+  "userID": zod.uuid().min(getSessionResponseDataUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 })
 
@@ -410,39 +415,39 @@ export const getSessionResponse = zod.object({
  * This endpoint will update the active organization for the current session
  * @summary Update Session
  */
-export const updateSessionPathIdMinOne = 36;
+export const updateSessionPathIdMin = 36;
 
 
 export const updateSessionParams = zod.object({
-  "id": zod.uuid().min(updateSessionPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(updateSessionPathIdMin).describe('The unique identifier of the resource.')
 })
 
-export const updateSessionBodyOrganizationIDMinOne = 36;
+export const updateSessionBodyOrganizationIDMin = 36;
 
 
 export const updateSessionBody = zod.object({
-  "organizationID": zod.uuid().min(updateSessionBodyOrganizationIDMinOne).describe('Universally Unique IDentifier').describe('The organization ID to set as active for this session')
+  "organizationID": zod.uuid().min(updateSessionBodyOrganizationIDMin).describe('The organization ID to set as active for this session')
 })
 
 export const updateSessionResponseDataIdMin = 36;
-export const updateSessionResponseDataOrganizationIDMinOne = 36;
-export const updateSessionResponseDataUserIDMinOne = 36;
+export const updateSessionResponseDataOrganizationIDMin = 36;
+export const updateSessionResponseDataUserIDMin = 36;
 
 
 export const updateSessionResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateSessionResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateSessionResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(updateSessionResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier').optional().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.uuid().min(updateSessionResponseDataOrganizationIDMin).optional().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(1).describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
   "userAgent": zod.string().min(1).describe('The user agent of the session'),
-  "userID": zod.uuid().min(updateSessionResponseDataUserIDMinOne).describe('Universally Unique IDentifier')
+  "userID": zod.uuid().min(updateSessionResponseDataUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 })
 
@@ -472,19 +477,24 @@ export const listUsersQueryParams = zod.object({
 })
 
 export const listUsersResponseDataItemIdMin = 36;
-export const listUsersResponseDataItemEmailRegExpOne = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const listUsersResponseDataItemEmailVerifiedDefault = false;export const listUsersResponseDataItemNameMax = 255;
+export const listUsersResponseDataItemEmailMin = 5;
+
+export const listUsersResponseDataItemEmailMax = 255;
+export const listUsersResponseDataItemEmailVerifiedDefault = false;export const listUsersResponseDataItemImageMin = 5;
+
+export const listUsersResponseDataItemImageMax = 2048;
+export const listUsersResponseDataItemNameMax = 255;
 
 
 export const listUsersResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listUsersResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listUsersResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "email": zod.email().regex(listUsersResponseDataItemEmailRegExpOne).describe('The user\'s email address'),
+  "email": zod.email().min(listUsersResponseDataItemEmailMin).max(listUsersResponseDataItemEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.string().optional().describe('The user\'s avatar image URL'),
+  "image": zod.url().min(listUsersResponseDataItemImageMin).max(listUsersResponseDataItemImageMax).optional().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(listUsersResponseDataItemNameMax).describe('The user\'s display name')
 })).describe('Schema for User entity')),
   "meta": zod.object({
@@ -497,27 +507,32 @@ export const listUsersResponse = zod.object({
  * Delete a user
  * @summary Delete a user
  */
-export const deleteUserPathIdMinOne = 36;
+export const deleteUserPathIdMin = 36;
 
 
 export const deleteUserParams = zod.object({
-  "id": zod.uuid().min(deleteUserPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(deleteUserPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const deleteUserResponseDataIdMin = 36;
-export const deleteUserResponseDataEmailRegExpOne = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const deleteUserResponseDataEmailVerifiedDefault = false;export const deleteUserResponseDataNameMax = 255;
+export const deleteUserResponseDataEmailMin = 5;
+
+export const deleteUserResponseDataEmailMax = 255;
+export const deleteUserResponseDataEmailVerifiedDefault = false;export const deleteUserResponseDataImageMin = 5;
+
+export const deleteUserResponseDataImageMax = 2048;
+export const deleteUserResponseDataNameMax = 255;
 
 
 export const deleteUserResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteUserResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteUserResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "email": zod.email().regex(deleteUserResponseDataEmailRegExpOne).describe('The user\'s email address'),
+  "email": zod.email().min(deleteUserResponseDataEmailMin).max(deleteUserResponseDataEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.string().optional().describe('The user\'s avatar image URL'),
+  "image": zod.url().min(deleteUserResponseDataImageMin).max(deleteUserResponseDataImageMax).optional().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(deleteUserResponseDataNameMax).describe('The user\'s display name')
 })).describe('Schema for User entity')
 })
@@ -527,27 +542,32 @@ export const deleteUserResponse = zod.object({
  * Get a user
  * @summary Get a user
  */
-export const getUserPathIdMinOne = 36;
+export const getUserPathIdMin = 36;
 
 
 export const getUserParams = zod.object({
-  "id": zod.uuid().min(getUserPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(getUserPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const getUserResponseDataIdMin = 36;
-export const getUserResponseDataEmailRegExpOne = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const getUserResponseDataEmailVerifiedDefault = false;export const getUserResponseDataNameMax = 255;
+export const getUserResponseDataEmailMin = 5;
+
+export const getUserResponseDataEmailMax = 255;
+export const getUserResponseDataEmailVerifiedDefault = false;export const getUserResponseDataImageMin = 5;
+
+export const getUserResponseDataImageMax = 2048;
+export const getUserResponseDataNameMax = 255;
 
 
 export const getUserResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getUserResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getUserResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "email": zod.email().regex(getUserResponseDataEmailRegExpOne).describe('The user\'s email address'),
+  "email": zod.email().min(getUserResponseDataEmailMin).max(getUserResponseDataEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.string().optional().describe('The user\'s avatar image URL'),
+  "image": zod.url().min(getUserResponseDataImageMin).max(getUserResponseDataImageMax).optional().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(getUserResponseDataNameMax).describe('The user\'s display name')
 })).describe('Schema for User entity')
 })
@@ -557,11 +577,11 @@ export const getUserResponse = zod.object({
  * Update an user
  * @summary Update an user
  */
-export const updateUserPathIdMinOne = 36;
+export const updateUserPathIdMin = 36;
 
 
 export const updateUserParams = zod.object({
-  "id": zod.uuid().min(updateUserPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(updateUserPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const updateUserBody = zod.object({
@@ -570,19 +590,24 @@ export const updateUserBody = zod.object({
 })
 
 export const updateUserResponseDataIdMin = 36;
-export const updateUserResponseDataEmailRegExpOne = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const updateUserResponseDataEmailVerifiedDefault = false;export const updateUserResponseDataNameMax = 255;
+export const updateUserResponseDataEmailMin = 5;
+
+export const updateUserResponseDataEmailMax = 255;
+export const updateUserResponseDataEmailVerifiedDefault = false;export const updateUserResponseDataImageMin = 5;
+
+export const updateUserResponseDataImageMax = 2048;
+export const updateUserResponseDataNameMax = 255;
 
 
 export const updateUserResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateUserResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateUserResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "email": zod.email().regex(updateUserResponseDataEmailRegExpOne).describe('The user\'s email address'),
+  "email": zod.email().min(updateUserResponseDataEmailMin).max(updateUserResponseDataEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.string().optional().describe('The user\'s avatar image URL'),
+  "image": zod.url().min(updateUserResponseDataImageMin).max(updateUserResponseDataImageMax).optional().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(updateUserResponseDataNameMax).describe('The user\'s display name')
 })).describe('Schema for User entity')
 })
@@ -622,14 +647,25 @@ export const oauthCallbackQueryParams = zod.object({
   "error_description": zod.string().optional().describe('Human-readable error description')
 })
 
-export const oauthCallbackResponseTokenTypeDefault = "Bearer";
+export const oauthCallbackResponseIdMin = 36;
+export const oauthCallbackResponseOrganizationIDMin = 36;
+export const oauthCallbackResponseUserIDMin = 36;
+
 
 export const oauthCallbackResponse = zod.object({
-  "access_token": zod.string().min(1).describe('JWT access token for API authentication'),
-  "refresh_token": zod.string().min(1).describe('Refresh token for obtaining new access tokens'),
-  "token_type": zod.string().min(1).describe('Type of token (always \"Bearer\")'),
-  "expires_in": zod.number().describe('Access token expiration time in seconds')
-})
+  "id": zod.uuid().min(oauthCallbackResponseIdMin).describe('Unique identifier for the resource'),
+  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
+  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
+}).and(zod.object({
+  "organizationID": zod.uuid().min(oauthCallbackResponseOrganizationIDMin).optional().describe('The organization ID for this session (nullable for users without org)'),
+  "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
+  "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
+  "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
+  "ipAddress": zod.string().min(1).describe('The IP address of the session'),
+  "token": zod.string().min(1).describe('The session token'),
+  "userAgent": zod.string().min(1).describe('The user agent of the session'),
+  "userID": zod.uuid().min(oauthCallbackResponseUserIDMin).describe('The user who owns this session')
+})).describe('Schema for Session entity')
 
 
 /**
@@ -679,30 +715,39 @@ export const verifyMagicLinkBody = zod.object({
  * List user's tokens (without showing the actual key values)
  * @summary List tokens
  */
-export const listTokensQueryLimitDefault = 20;
-export const listTokensQueryLimitMax = 100;
-export const listTokensQueryOffsetDefault = 0;
-export const listTokensQueryOffsetMin = 0;
+export const listAPIKeysQueryPageNumberDefault = 1;
+export const listAPIKeysQueryPageNumberMax = 9007199254740991;
+export const listAPIKeysQueryPageSizeDefault = 10;
+export const listAPIKeysQueryPageSizeMax = 100;
 
 
-export const listTokensQueryParams = zod.object({
-  "limit": zod.number().min(1).max(listTokensQueryLimitMax).default(listTokensQueryLimitDefault).describe('Maximum number of items to return'),
-  "offset": zod.number().min(listTokensQueryOffsetMin).optional().describe('Number of items to skip')
+export const listAPIKeysQueryParams = zod.object({
+  "filter": zod.object({
+
+}).optional().describe('Filter API keys by field values. Supported fields:\n- createdAt, id, updatedAt, userID, organizationID\n- keyHash, name, prefix, rateLimit, lastUsedAt, expiresAt\n'),
+  "page": zod.object({
+  "number": zod.number().min(1).max(listAPIKeysQueryPageNumberMax).default(listAPIKeysQueryPageNumberDefault),
+  "size": zod.number().min(1).max(listAPIKeysQueryPageSizeMax).default(listAPIKeysQueryPageSizeDefault)
+}).optional().describe('The page parameter'),
+  "sort": zod.array(zod.object({
+  "field": zod.enum(['createdAt', 'id', 'updatedAt', 'userID', 'organizationID', 'keyHash', 'name', 'prefix', 'rateLimit', 'lastUsedAt', 'expiresAt']),
+  "order": zod.enum(['asc', 'desc'])
+})).optional().describe('The sort parameter')
 })
 
-export const listTokensResponseDataItemIdMin = 36;
-export const listTokensResponseDataItemUserIDMinOne = 36;
-export const listTokensResponseDataItemOrganizationIDMinOne = 36;
+export const listAPIKeysResponseDataItemIdMin = 36;
+export const listAPIKeysResponseDataItemUserIDMin = 36;
+export const listAPIKeysResponseDataItemOrganizationIDMin = 36;
 
 
-export const listTokensResponse = zod.object({
+export const listAPIKeysResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listTokensResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listAPIKeysResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "userID": zod.uuid().min(listTokensResponseDataItemUserIDMinOne).describe('Universally Unique IDentifier').optional(),
-  "organizationID": zod.uuid().min(listTokensResponseDataItemOrganizationIDMinOne).describe('Universally Unique IDentifier').optional(),
+  "userID": zod.uuid().min(listAPIKeysResponseDataItemUserIDMin).optional().describe('The user who owns this API key'),
+  "organizationID": zod.uuid().min(listAPIKeysResponseDataItemOrganizationIDMin).optional().describe('The organization this API key belongs to'),
   "keyHash": zod.string().min(1).optional().describe('Hashed version of the API key for secure storage'),
   "name": zod.string().min(1),
   "prefix": zod.string().min(1),
@@ -721,15 +766,15 @@ export const listTokensResponse = zod.object({
  * Create a token
  * @summary Create a token
  */
-export const createTokenBodyNameMax = 255;
-export const createTokenBodyRateLimitDefault = 60;
-export const createTokenBodyRateLimitMax = 10000;
+export const createAPIKeyBodyNameMax = 255;
+export const createAPIKeyBodyRateLimitDefault = 60;
+export const createAPIKeyBodyRateLimitMax = 10000;
 
 
-export const createTokenBody = zod.object({
-  "name": zod.string().min(1).max(createTokenBodyNameMax).describe('Human-readable name for the API key'),
+export const createAPIKeyBody = zod.object({
+  "name": zod.string().min(1).max(createAPIKeyBodyNameMax).describe('Human-readable name for the API key'),
   "scopes": zod.array(zod.string()).describe('List of scopes/permissions for this API key'),
-  "rateLimit": zod.number().min(1).max(createTokenBodyRateLimitMax).default(createTokenBodyRateLimitDefault).describe('Requests per minute limit (default 60)'),
+  "rateLimit": zod.number().min(1).max(createAPIKeyBodyRateLimitMax).default(createAPIKeyBodyRateLimitDefault).describe('Requests per minute limit (default 60)'),
   "expiresAt": zod.iso.datetime({}).optional().describe('When the API key expires (optional, no expiry if omitted)')
 })
 
@@ -738,25 +783,25 @@ export const createTokenBody = zod.object({
  * Get details of a specific API key (without the actual key value)
  * @summary Get API key details
  */
-export const apikeysFindByIDPathIdMinOne = 36;
+export const getAPIKeyPathIdMin = 36;
 
 
-export const apikeysFindByIDParams = zod.object({
-  "id": zod.uuid().min(apikeysFindByIDPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the API key')
+export const getAPIKeyParams = zod.object({
+  "id": zod.uuid().min(getAPIKeyPathIdMin).describe('The unique identifier of the API key')
 })
 
-export const apikeysFindByIDResponseIdMin = 36;
-export const apikeysFindByIDResponseUserIDMinOne = 36;
-export const apikeysFindByIDResponseOrganizationIDMinOne = 36;
+export const getAPIKeyResponseIdMin = 36;
+export const getAPIKeyResponseUserIDMin = 36;
+export const getAPIKeyResponseOrganizationIDMin = 36;
 
 
-export const apikeysFindByIDResponse = zod.object({
-  "id": zod.uuid().min(apikeysFindByIDResponseIdMin).describe('Universally Unique IDentifier'),
+export const getAPIKeyResponse = zod.object({
+  "id": zod.uuid().min(getAPIKeyResponseIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "userID": zod.uuid().min(apikeysFindByIDResponseUserIDMinOne).describe('Universally Unique IDentifier').optional(),
-  "organizationID": zod.uuid().min(apikeysFindByIDResponseOrganizationIDMinOne).describe('Universally Unique IDentifier').optional(),
+  "userID": zod.uuid().min(getAPIKeyResponseUserIDMin).optional().describe('The user who owns this API key'),
+  "organizationID": zod.uuid().min(getAPIKeyResponseOrganizationIDMin).optional().describe('The organization this API key belongs to'),
   "keyHash": zod.string().min(1).optional().describe('Hashed version of the API key for secure storage'),
   "name": zod.string().min(1),
   "prefix": zod.string().min(1),
@@ -771,34 +816,34 @@ export const apikeysFindByIDResponse = zod.object({
  * Update an API key's name, scopes, or rate limit
  * @summary Update API key
  */
-export const apikeysUpdatePathIdMinOne = 36;
+export const updateAPIKeyPathIdMin = 36;
 
 
-export const apikeysUpdateParams = zod.object({
-  "id": zod.uuid().min(apikeysUpdatePathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the API key')
+export const updateAPIKeyParams = zod.object({
+  "id": zod.uuid().min(updateAPIKeyPathIdMin).describe('The unique identifier of the API key')
 })
 
-export const apikeysUpdateBodyRateLimitMax = 10000;
+export const updateAPIKeyBodyRateLimitMax = 10000;
 
 
-export const apikeysUpdateBody = zod.object({
+export const updateAPIKeyBody = zod.object({
   "name": zod.string().min(1).optional().describe('Human-readable name for the API key'),
   "scopes": zod.array(zod.string()).optional().describe('Array of permission scopes'),
-  "rateLimit": zod.number().min(1).max(apikeysUpdateBodyRateLimitMax).optional().describe('Requests per minute allowed for this API key')
+  "rateLimit": zod.number().min(1).max(updateAPIKeyBodyRateLimitMax).optional().describe('Requests per minute allowed for this API key')
 })
 
-export const apikeysUpdateResponseIdMin = 36;
-export const apikeysUpdateResponseUserIDMinOne = 36;
-export const apikeysUpdateResponseOrganizationIDMinOne = 36;
+export const updateAPIKeyResponseIdMin = 36;
+export const updateAPIKeyResponseUserIDMin = 36;
+export const updateAPIKeyResponseOrganizationIDMin = 36;
 
 
-export const apikeysUpdateResponse = zod.object({
-  "id": zod.uuid().min(apikeysUpdateResponseIdMin).describe('Universally Unique IDentifier'),
+export const updateAPIKeyResponse = zod.object({
+  "id": zod.uuid().min(updateAPIKeyResponseIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "userID": zod.uuid().min(apikeysUpdateResponseUserIDMinOne).describe('Universally Unique IDentifier').optional(),
-  "organizationID": zod.uuid().min(apikeysUpdateResponseOrganizationIDMinOne).describe('Universally Unique IDentifier').optional(),
+  "userID": zod.uuid().min(updateAPIKeyResponseUserIDMin).optional().describe('The user who owns this API key'),
+  "organizationID": zod.uuid().min(updateAPIKeyResponseOrganizationIDMin).optional().describe('The organization this API key belongs to'),
   "keyHash": zod.string().min(1).optional().describe('Hashed version of the API key for secure storage'),
   "name": zod.string().min(1),
   "prefix": zod.string().min(1),
@@ -813,11 +858,11 @@ export const apikeysUpdateResponse = zod.object({
  * Delete an API key permanently. This action cannot be undone.
  * @summary Delete API key
  */
-export const apikeysDeletePathIdMinOne = 36;
+export const deleteAPIKeyPathIdMin = 36;
 
 
-export const apikeysDeleteParams = zod.object({
-  "id": zod.uuid().min(apikeysDeletePathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the API key')
+export const deleteAPIKeyParams = zod.object({
+  "id": zod.uuid().min(deleteAPIKeyPathIdMin).describe('The unique identifier of the API key')
 })
 
 
@@ -825,12 +870,12 @@ export const apikeysDeleteParams = zod.object({
  * Create an organization
  * @summary Create an organization
  */
-export const createOrganizationBodyOrganizationIDMinOne = 36;
+export const createOrganizationBodyOrganizationIDMin = 36;
 
 
 export const createOrganizationBody = zod.object({
   "billingEmail": zod.email().min(1).describe('The billing email to use for the organization'),
-  "organizationID": zod.uuid().min(createOrganizationBodyOrganizationIDMinOne).describe('Universally Unique IDentifier')
+  "organizationID": zod.uuid().min(createOrganizationBodyOrganizationIDMin).describe('UUID identifier')
 })
 
 
@@ -871,7 +916,7 @@ export const listOrganizationsResponseDataItemCreditsMin = 0;
 
 export const listOrganizationsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listOrganizationsResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listOrganizationsResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
@@ -881,7 +926,6 @@ export const listOrganizationsResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(listOrganizationsResponseDataItemCreditsMin).describe('Available credits for this organization'),
-  "metadata": zod.record(zod.string(), zod.any()).describe('Custom metadata in JSON format'),
   "stripeCustomerID": zod.string().optional().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')),
   "meta": zod.object({
@@ -894,11 +938,11 @@ export const listOrganizationsResponse = zod.object({
  * Delete an organization
  * @summary Delete an organization
  */
-export const deleteOrganizationPathIdMinOne = 36;
+export const deleteOrganizationPathIdMin = 36;
 
 
 export const deleteOrganizationParams = zod.object({
-  "id": zod.uuid().min(deleteOrganizationPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(deleteOrganizationPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const deleteOrganizationResponseDataIdMin = 36;
@@ -914,7 +958,7 @@ export const deleteOrganizationResponseDataCreditsMin = 0;
 
 export const deleteOrganizationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteOrganizationResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteOrganizationResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
@@ -924,7 +968,6 @@ export const deleteOrganizationResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(deleteOrganizationResponseDataCreditsMin).describe('Available credits for this organization'),
-  "metadata": zod.record(zod.string(), zod.any()).describe('Custom metadata in JSON format'),
   "stripeCustomerID": zod.string().optional().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')
 })
@@ -934,11 +977,11 @@ export const deleteOrganizationResponse = zod.object({
  * Get an organization
  * @summary Get an organization
  */
-export const getOrganizationPathIdMinOne = 36;
+export const getOrganizationPathIdMin = 36;
 
 
 export const getOrganizationParams = zod.object({
-  "id": zod.uuid().min(getOrganizationPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(getOrganizationPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const getOrganizationResponseDataIdMin = 36;
@@ -954,7 +997,7 @@ export const getOrganizationResponseDataCreditsMin = 0;
 
 export const getOrganizationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getOrganizationResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getOrganizationResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
@@ -964,7 +1007,6 @@ export const getOrganizationResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(getOrganizationResponseDataCreditsMin).describe('Available credits for this organization'),
-  "metadata": zod.record(zod.string(), zod.any()).describe('Custom metadata in JSON format'),
   "stripeCustomerID": zod.string().optional().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')
 })
@@ -974,19 +1016,19 @@ export const getOrganizationResponse = zod.object({
  * Update an organization
  * @summary Update an organization
  */
-export const updateOrganizationPathIdMinOne = 36;
+export const updateOrganizationPathIdMin = 36;
 
 
 export const updateOrganizationParams = zod.object({
-  "id": zod.uuid().min(updateOrganizationPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(updateOrganizationPathIdMin).describe('The unique identifier of the resource.')
 })
 
-export const updateOrganizationBodyOrganizationIDMinOne = 36;
+export const updateOrganizationBodyOrganizationIDMin = 36;
 
 
 export const updateOrganizationBody = zod.object({
   "billingEmail": zod.email().optional().describe('The billing email to use for the organization'),
-  "organizationID": zod.uuid().min(updateOrganizationBodyOrganizationIDMinOne).describe('Universally Unique IDentifier').optional()
+  "organizationID": zod.uuid().min(updateOrganizationBodyOrganizationIDMin).optional().describe('UUID identifier')
 })
 
 export const updateOrganizationResponseDataIdMin = 36;
@@ -1002,7 +1044,7 @@ export const updateOrganizationResponseDataCreditsMin = 0;
 
 export const updateOrganizationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateOrganizationResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateOrganizationResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
@@ -1012,7 +1054,6 @@ export const updateOrganizationResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(updateOrganizationResponseDataCreditsMin).describe('Available credits for this organization'),
-  "metadata": zod.record(zod.string(), zod.any()).describe('Custom metadata in JSON format'),
   "stripeCustomerID": zod.string().optional().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')
 })
@@ -1060,19 +1101,19 @@ export const listMembersQueryParams = zod.object({
 })
 
 export const listMembersResponseDataItemIdMin = 36;
-export const listMembersResponseDataItemOrganizationIDMinOne = 36;
-export const listMembersResponseDataItemUserIDMinOne = 36;
+export const listMembersResponseDataItemOrganizationIDMin = 36;
+export const listMembersResponseDataItemUserIDMin = 36;
 
 
 export const listMembersResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listMembersResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listMembersResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(listMembersResponseDataItemOrganizationIDMinOne).describe('Universally Unique IDentifier'),
-  "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the member'),
-  "userID": zod.uuid().min(listMembersResponseDataItemUserIDMinOne).describe('Universally Unique IDentifier')
+  "organizationID": zod.uuid().min(listMembersResponseDataItemOrganizationIDMin).describe('The organization this member belongs to'),
+  "role": zod.enum(['admin', 'owner', 'user']).describe('The role of the member'),
+  "userID": zod.uuid().min(listMembersResponseDataItemUserIDMin).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')),
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
@@ -1084,29 +1125,29 @@ export const listMembersResponse = zod.object({
  * Delete a member
  * @summary Delete a member
  */
-export const deleteMemberPathIdMinOne = 36;
-export const deleteMemberPathMemberIDMinOne = 36;
+export const deleteMemberPathIdMin = 36;
+export const deleteMemberPathMemberIDMin = 36;
 
 
 export const deleteMemberParams = zod.object({
-  "id": zod.uuid().min(deleteMemberPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the organization.'),
-  "memberID": zod.uuid().min(deleteMemberPathMemberIDMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the member.')
+  "id": zod.uuid().min(deleteMemberPathIdMin).describe('The unique identifier of the organization.'),
+  "memberID": zod.uuid().min(deleteMemberPathMemberIDMin).describe('The unique identifier of the member.')
 })
 
 export const deleteMemberResponseDataIdMin = 36;
-export const deleteMemberResponseDataOrganizationIDMinOne = 36;
-export const deleteMemberResponseDataUserIDMinOne = 36;
+export const deleteMemberResponseDataOrganizationIDMin = 36;
+export const deleteMemberResponseDataUserIDMin = 36;
 
 
 export const deleteMemberResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteMemberResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteMemberResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(deleteMemberResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
-  "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the member'),
-  "userID": zod.uuid().min(deleteMemberResponseDataUserIDMinOne).describe('Universally Unique IDentifier')
+  "organizationID": zod.uuid().min(deleteMemberResponseDataOrganizationIDMin).describe('The organization this member belongs to'),
+  "role": zod.enum(['admin', 'owner', 'user']).describe('The role of the member'),
+  "userID": zod.uuid().min(deleteMemberResponseDataUserIDMin).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')
 })
 
@@ -1115,29 +1156,29 @@ export const deleteMemberResponse = zod.object({
  * Get a member
  * @summary Get a member
  */
-export const getMemberPathIdMinOne = 36;
-export const getMemberPathMemberIDMinOne = 36;
+export const getMemberPathIdMin = 36;
+export const getMemberPathMemberIDMin = 36;
 
 
 export const getMemberParams = zod.object({
-  "id": zod.uuid().min(getMemberPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the organization.'),
-  "memberID": zod.uuid().min(getMemberPathMemberIDMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the member.')
+  "id": zod.uuid().min(getMemberPathIdMin).describe('The unique identifier of the organization.'),
+  "memberID": zod.uuid().min(getMemberPathMemberIDMin).describe('The unique identifier of the member.')
 })
 
 export const getMemberResponseDataIdMin = 36;
-export const getMemberResponseDataOrganizationIDMinOne = 36;
-export const getMemberResponseDataUserIDMinOne = 36;
+export const getMemberResponseDataOrganizationIDMin = 36;
+export const getMemberResponseDataUserIDMin = 36;
 
 
 export const getMemberResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getMemberResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getMemberResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(getMemberResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
-  "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the member'),
-  "userID": zod.uuid().min(getMemberResponseDataUserIDMinOne).describe('Universally Unique IDentifier')
+  "organizationID": zod.uuid().min(getMemberResponseDataOrganizationIDMin).describe('The organization this member belongs to'),
+  "role": zod.enum(['admin', 'owner', 'user']).describe('The role of the member'),
+  "userID": zod.uuid().min(getMemberResponseDataUserIDMin).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')
 })
 
@@ -1146,13 +1187,13 @@ export const getMemberResponse = zod.object({
  * Update a member
  * @summary Update a member
  */
-export const updateMemberPathIdMinOne = 36;
-export const updateMemberPathMemberIDMinOne = 36;
+export const updateMemberPathIdMin = 36;
+export const updateMemberPathMemberIDMin = 36;
 
 
 export const updateMemberParams = zod.object({
-  "id": zod.uuid().min(updateMemberPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the organization.'),
-  "memberID": zod.uuid().min(updateMemberPathMemberIDMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the member.')
+  "id": zod.uuid().min(updateMemberPathIdMin).describe('The unique identifier of the organization.'),
+  "memberID": zod.uuid().min(updateMemberPathMemberIDMin).describe('The unique identifier of the member.')
 })
 
 export const updateMemberBody = zod.object({
@@ -1160,19 +1201,19 @@ export const updateMemberBody = zod.object({
 })
 
 export const updateMemberResponseDataIdMin = 36;
-export const updateMemberResponseDataOrganizationIDMinOne = 36;
-export const updateMemberResponseDataUserIDMinOne = 36;
+export const updateMemberResponseDataOrganizationIDMin = 36;
+export const updateMemberResponseDataUserIDMin = 36;
 
 
 export const updateMemberResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateMemberResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateMemberResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(updateMemberResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
-  "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the member'),
-  "userID": zod.uuid().min(updateMemberResponseDataUserIDMinOne).describe('Universally Unique IDentifier')
+  "organizationID": zod.uuid().min(updateMemberResponseDataOrganizationIDMin).describe('The organization this member belongs to'),
+  "role": zod.enum(['admin', 'owner', 'user']).describe('The role of the member'),
+  "userID": zod.uuid().min(updateMemberResponseDataUserIDMin).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')
 })
 
@@ -1181,11 +1222,11 @@ export const updateMemberResponse = zod.object({
  * Create an invitation
  * @summary Create an invitation
  */
-export const createInvitationPathIdMinOne = 36;
+export const createInvitationPathIdMin = 36;
 
 
 export const createInvitationParams = zod.object({
-  "id": zod.uuid().min(createInvitationPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the organization.')
+  "id": zod.uuid().min(createInvitationPathIdMin).describe('The unique identifier of the organization.')
 })
 
 export const createInvitationBody = zod.object({
@@ -1198,11 +1239,11 @@ export const createInvitationBody = zod.object({
  * List invitations
  * @summary List invitations
  */
-export const listInvitationsPathIdMinOne = 36;
+export const listInvitationsPathIdMin = 36;
 
 
 export const listInvitationsParams = zod.object({
-  "id": zod.uuid().min(listInvitationsPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the organization.')
+  "id": zod.uuid().min(listInvitationsPathIdMin).describe('The unique identifier of the organization.')
 })
 
 export const listInvitationsQueryPageNumberDefault = 1;
@@ -1226,20 +1267,20 @@ export const listInvitationsQueryParams = zod.object({
 })
 
 export const listInvitationsResponseDataItemIdMin = 36;
-export const listInvitationsResponseDataItemInviterIDMinOne = 36;
-export const listInvitationsResponseDataItemOrganizationIDMinOne = 36;
+export const listInvitationsResponseDataItemInviterIDMin = 36;
+export const listInvitationsResponseDataItemOrganizationIDMin = 36;
 
 
 export const listInvitationsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listInvitationsResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listInvitationsResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "email": zod.string().min(1).describe('The email of the invitated user'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The date and time when the invitation expires'),
-  "inviterID": zod.uuid().min(listInvitationsResponseDataItemInviterIDMinOne).describe('Universally Unique IDentifier'),
-  "organizationID": zod.uuid().min(listInvitationsResponseDataItemOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "inviterID": zod.uuid().min(listInvitationsResponseDataItemInviterIDMin).describe('The ID of the user who sent this invitation'),
+  "organizationID": zod.uuid().min(listInvitationsResponseDataItemOrganizationIDMin).describe('The organization the user is being invited to join'),
   "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the invitation'),
   "status": zod.string().min(1).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')),
@@ -1253,30 +1294,30 @@ export const listInvitationsResponse = zod.object({
  * Delete an invitation
  * @summary Delete an invitation
  */
-export const deleteInvitationPathIdMinOne = 36;
-export const deleteInvitationPathInvitationIDMinOne = 36;
+export const deleteInvitationPathIdMin = 36;
+export const deleteInvitationPathInvitationIDMin = 36;
 
 
 export const deleteInvitationParams = zod.object({
-  "id": zod.uuid().min(deleteInvitationPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the organization.'),
-  "invitationID": zod.uuid().min(deleteInvitationPathInvitationIDMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the invitation.')
+  "id": zod.uuid().min(deleteInvitationPathIdMin).describe('The unique identifier of the organization.'),
+  "invitationID": zod.uuid().min(deleteInvitationPathInvitationIDMin).describe('The unique identifier of the invitation.')
 })
 
 export const deleteInvitationResponseDataIdMin = 36;
-export const deleteInvitationResponseDataInviterIDMinOne = 36;
-export const deleteInvitationResponseDataOrganizationIDMinOne = 36;
+export const deleteInvitationResponseDataInviterIDMin = 36;
+export const deleteInvitationResponseDataOrganizationIDMin = 36;
 
 
 export const deleteInvitationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteInvitationResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteInvitationResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "email": zod.string().min(1).describe('The email of the invitated user'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The date and time when the invitation expires'),
-  "inviterID": zod.uuid().min(deleteInvitationResponseDataInviterIDMinOne).describe('Universally Unique IDentifier'),
-  "organizationID": zod.uuid().min(deleteInvitationResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "inviterID": zod.uuid().min(deleteInvitationResponseDataInviterIDMin).describe('The ID of the user who sent this invitation'),
+  "organizationID": zod.uuid().min(deleteInvitationResponseDataOrganizationIDMin).describe('The organization the user is being invited to join'),
   "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the invitation'),
   "status": zod.string().min(1).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')
@@ -1287,30 +1328,30 @@ export const deleteInvitationResponse = zod.object({
  * Get an invitation
  * @summary Get an invitation
  */
-export const getInvitationPathIdMinOne = 36;
-export const getInvitationPathInvitationIDMinOne = 36;
+export const getInvitationPathIdMin = 36;
+export const getInvitationPathInvitationIDMin = 36;
 
 
 export const getInvitationParams = zod.object({
-  "id": zod.uuid().min(getInvitationPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the organization.'),
-  "invitationID": zod.uuid().min(getInvitationPathInvitationIDMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the invitation.')
+  "id": zod.uuid().min(getInvitationPathIdMin).describe('The unique identifier of the organization.'),
+  "invitationID": zod.uuid().min(getInvitationPathInvitationIDMin).describe('The unique identifier of the invitation.')
 })
 
 export const getInvitationResponseDataIdMin = 36;
-export const getInvitationResponseDataInviterIDMinOne = 36;
-export const getInvitationResponseDataOrganizationIDMinOne = 36;
+export const getInvitationResponseDataInviterIDMin = 36;
+export const getInvitationResponseDataOrganizationIDMin = 36;
 
 
 export const getInvitationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getInvitationResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getInvitationResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "email": zod.string().min(1).describe('The email of the invitated user'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The date and time when the invitation expires'),
-  "inviterID": zod.uuid().min(getInvitationResponseDataInviterIDMinOne).describe('Universally Unique IDentifier'),
-  "organizationID": zod.uuid().min(getInvitationResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "inviterID": zod.uuid().min(getInvitationResponseDataInviterIDMin).describe('The ID of the user who sent this invitation'),
+  "organizationID": zod.uuid().min(getInvitationResponseDataOrganizationIDMin).describe('The organization the user is being invited to join'),
   "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the invitation'),
   "status": zod.string().min(1).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')
@@ -1321,13 +1362,13 @@ export const getInvitationResponse = zod.object({
  * Update an invitation
  * @summary Update an invitation
  */
-export const updateInvitationPathIdMinOne = 36;
-export const updateInvitationPathInvitationIDMinOne = 36;
+export const updateInvitationPathIdMin = 36;
+export const updateInvitationPathInvitationIDMin = 36;
 
 
 export const updateInvitationParams = zod.object({
-  "id": zod.uuid().min(updateInvitationPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the organization.'),
-  "invitationID": zod.uuid().min(updateInvitationPathInvitationIDMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the invitation.')
+  "id": zod.uuid().min(updateInvitationPathIdMin).describe('The unique identifier of the organization.'),
+  "invitationID": zod.uuid().min(updateInvitationPathInvitationIDMin).describe('The unique identifier of the invitation.')
 })
 
 export const updateInvitationBody = zod.object({
@@ -1336,20 +1377,20 @@ export const updateInvitationBody = zod.object({
 })
 
 export const updateInvitationResponseDataIdMin = 36;
-export const updateInvitationResponseDataInviterIDMinOne = 36;
-export const updateInvitationResponseDataOrganizationIDMinOne = 36;
+export const updateInvitationResponseDataInviterIDMin = 36;
+export const updateInvitationResponseDataOrganizationIDMin = 36;
 
 
 export const updateInvitationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateInvitationResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateInvitationResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "email": zod.string().min(1).describe('The email of the invitated user'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The date and time when the invitation expires'),
-  "inviterID": zod.uuid().min(updateInvitationResponseDataInviterIDMinOne).describe('Universally Unique IDentifier'),
-  "organizationID": zod.uuid().min(updateInvitationResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "inviterID": zod.uuid().min(updateInvitationResponseDataInviterIDMin).describe('The ID of the user who sent this invitation'),
+  "organizationID": zod.uuid().min(updateInvitationResponseDataOrganizationIDMin).describe('The organization the user is being invited to join'),
   "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the invitation'),
   "status": zod.string().min(1).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')
@@ -1398,13 +1439,12 @@ export const listPipelinesResponseDataItemDescriptionMax = 1000;
 
 export const listPipelinesResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listPipelinesResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listPipelinesResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(listPipelinesResponseDataItemOrganizationIDMin).describe('Universally Unique IDentifier')
-})).and(zod.object({
-  "name": zod.string().min(1).max(listPipelinesResponseDataItemNameMax).describe('The pipeline\'s display name'),
+  "organizationID": zod.uuid().min(listPipelinesResponseDataItemOrganizationIDMin).describe('The organization identifier'),
+  "name": zod.string().min(1).max(listPipelinesResponseDataItemNameMax).optional().describe('The pipeline\'s display name'),
   "description": zod.string().max(listPipelinesResponseDataItemDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')),
   "meta": zod.object({
@@ -1417,11 +1457,11 @@ export const listPipelinesResponse = zod.object({
  * Delete a pipeline
  * @summary Delete a pipeline
  */
-export const deletePipelinePathIdMinOne = 36;
+export const deletePipelinePathIdMin = 36;
 
 
 export const deletePipelineParams = zod.object({
-  "id": zod.uuid().min(deletePipelinePathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(deletePipelinePathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const deletePipelineResponseDataIdMin = 36;
@@ -1432,13 +1472,12 @@ export const deletePipelineResponseDataDescriptionMax = 1000;
 
 export const deletePipelineResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deletePipelineResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deletePipelineResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(deletePipelineResponseDataOrganizationIDMin).describe('Universally Unique IDentifier')
-})).and(zod.object({
-  "name": zod.string().min(1).max(deletePipelineResponseDataNameMax).describe('The pipeline\'s display name'),
+  "organizationID": zod.uuid().min(deletePipelineResponseDataOrganizationIDMin).describe('The organization identifier'),
+  "name": zod.string().min(1).max(deletePipelineResponseDataNameMax).optional().describe('The pipeline\'s display name'),
   "description": zod.string().max(deletePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')
 })
@@ -1448,11 +1487,11 @@ export const deletePipelineResponse = zod.object({
  * Find a pipeline
  * @summary Find a pipeline
  */
-export const getPipelinePathIdMinOne = 36;
+export const getPipelinePathIdMin = 36;
 
 
 export const getPipelineParams = zod.object({
-  "id": zod.uuid().min(getPipelinePathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(getPipelinePathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const getPipelineResponseDataIdMin = 36;
@@ -1463,13 +1502,12 @@ export const getPipelineResponseDataDescriptionMax = 1000;
 
 export const getPipelineResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getPipelineResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getPipelineResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(getPipelineResponseDataOrganizationIDMin).describe('Universally Unique IDentifier')
-})).and(zod.object({
-  "name": zod.string().min(1).max(getPipelineResponseDataNameMax).describe('The pipeline\'s display name'),
+  "organizationID": zod.uuid().min(getPipelineResponseDataOrganizationIDMin).describe('The organization identifier'),
+  "name": zod.string().min(1).max(getPipelineResponseDataNameMax).optional().describe('The pipeline\'s display name'),
   "description": zod.string().max(getPipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')
 })
@@ -1479,11 +1517,11 @@ export const getPipelineResponse = zod.object({
  * Update a pipeline
  * @summary Update a pipeline
  */
-export const updatePipelinePathIdMinOne = 36;
+export const updatePipelinePathIdMin = 36;
 
 
 export const updatePipelineParams = zod.object({
-  "id": zod.uuid().min(updatePipelinePathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(updatePipelinePathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const updatePipelineBody = zod.object({
@@ -1499,13 +1537,12 @@ export const updatePipelineResponseDataDescriptionMax = 1000;
 
 export const updatePipelineResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updatePipelineResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updatePipelineResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "organizationID": zod.uuid().min(updatePipelineResponseDataOrganizationIDMin).describe('Universally Unique IDentifier')
-})).and(zod.object({
-  "name": zod.string().min(1).max(updatePipelineResponseDataNameMax).describe('The pipeline\'s display name'),
+  "organizationID": zod.uuid().min(updatePipelineResponseDataOrganizationIDMin).describe('The organization identifier'),
+  "name": zod.string().min(1).max(updatePipelineResponseDataNameMax).optional().describe('The pipeline\'s display name'),
   "description": zod.string().max(updatePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')
 })
@@ -1515,16 +1552,16 @@ export const updatePipelineResponse = zod.object({
  * Retrieve all steps and their dependencies for a pipeline
  * @summary Get all steps for a pipeline
  */
-export const getPipelineStepsPathIdMinOne = 36;
+export const getPipelineStepsPathIdMin = 36;
 
 
 export const getPipelineStepsParams = zod.object({
-  "id": zod.uuid().min(getPipelineStepsPathIdMinOne).describe('Universally Unique IDentifier').describe('Pipeline ID')
+  "id": zod.uuid().min(getPipelineStepsPathIdMin).describe('Pipeline ID')
 })
 
 export const getPipelineStepsResponseDataItemIdMin = 36;
-export const getPipelineStepsResponseDataItemPipelineIDMinOne = 36;
-export const getPipelineStepsResponseDataItemToolIDMinOne = 36;
+export const getPipelineStepsResponseDataItemPipelineIDMin = 36;
+export const getPipelineStepsResponseDataItemToolIDMin = 36;
 export const getPipelineStepsResponseDataItemNameMax = 255;
 export const getPipelineStepsResponseDataItemDescriptionMax = 1000;
 export const getPipelineStepsResponseDataItemPositionMin = 0;
@@ -1534,24 +1571,24 @@ export const getPipelineStepsResponseDataItemRetriesMin = 0;
 export const getPipelineStepsResponseDataItemRetriesMax = 10;
 export const getPipelineStepsResponseDataItemTimeoutDefault = 3600;
 export const getPipelineStepsResponseDataItemTimeoutMax = 86400;
-export const getPipelineStepsResponseDataItemDependenciesItemMinOne = 36;
+export const getPipelineStepsResponseDataItemDependenciesItemMin = 36;
 export const getPipelineStepsResponseDataItemStatusDefault = "pending";
 
 export const getPipelineStepsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(getPipelineStepsResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getPipelineStepsResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
-  "pipelineID": zod.uuid().min(getPipelineStepsResponseDataItemPipelineIDMinOne).describe('Universally Unique IDentifier'),
-  "toolID": zod.uuid().min(getPipelineStepsResponseDataItemToolIDMinOne).describe('Universally Unique IDentifier'),
+  "pipelineID": zod.uuid().min(getPipelineStepsResponseDataItemPipelineIDMin).describe('The pipeline this step belongs to'),
+  "toolID": zod.uuid().min(getPipelineStepsResponseDataItemToolIDMin).describe('The tool used in this step'),
   "name": zod.string().min(1).max(getPipelineStepsResponseDataItemNameMax).describe('Name of the step'),
   "description": zod.string().max(getPipelineStepsResponseDataItemDescriptionMax).optional().describe('Description of what this step does'),
   "config": zod.record(zod.string(), zod.any()).optional().describe('Configuration parameters for the tool'),
   "position": zod.number().min(getPipelineStepsResponseDataItemPositionMin).optional().describe('Position in the pipeline for ordering'),
   "retries": zod.number().min(getPipelineStepsResponseDataItemRetriesMin).max(getPipelineStepsResponseDataItemRetriesMax).optional().describe('Number of retries on failure'),
   "timeout": zod.number().min(1).max(getPipelineStepsResponseDataItemTimeoutMax).default(getPipelineStepsResponseDataItemTimeoutDefault).describe('Timeout in seconds'),
-  "dependencies": zod.array(zod.uuid().min(getPipelineStepsResponseDataItemDependenciesItemMinOne).describe('Universally Unique IDentifier')).optional().describe('IDs of steps this step depends on'),
+  "dependencies": zod.array(zod.uuid().min(getPipelineStepsResponseDataItemDependenciesItemMin).describe('UUID of a step this step depends on')).optional().describe('IDs of steps this step depends on'),
   "status": zod.enum(['pending', 'ready', 'running', 'completed', 'failed', 'skipped']).default(getPipelineStepsResponseDataItemStatusDefault).describe('Current status of the step')
 })).describe('Schema for PipelineStep entity'))
 })
@@ -1561,27 +1598,27 @@ export const getPipelineStepsResponse = zod.object({
  * Create a step in the pipeline
  * @summary Add a step to a pipeline
  */
-export const createPipelineStepPathIdMinOne = 36;
+export const createPipelineStepPathIdMin = 36;
 
 
 export const createPipelineStepParams = zod.object({
-  "id": zod.uuid().min(createPipelineStepPathIdMinOne).describe('Universally Unique IDentifier').describe('Pipeline ID')
+  "id": zod.uuid().min(createPipelineStepPathIdMin).describe('Pipeline ID')
 })
 
-export const createPipelineStepBodyToolIDMinOne = 36;
+export const createPipelineStepBodyToolIDMin = 36;
 export const createPipelineStepBodyNameMax = 255;
 export const createPipelineStepBodyDescriptionMax = 1000;
 export const createPipelineStepBodyPositionMin = 0;
-export const createPipelineStepBodyDependenciesItemMinOne = 36;
+export const createPipelineStepBodyDependenciesItemMin = 36;
 
 
 export const createPipelineStepBody = zod.object({
-  "toolID": zod.uuid().min(createPipelineStepBodyToolIDMinOne).describe('Universally Unique IDentifier'),
+  "toolID": zod.uuid().min(createPipelineStepBodyToolIDMin).describe('UUID identifier'),
   "name": zod.string().min(1).max(createPipelineStepBodyNameMax).describe('Name of the step'),
   "description": zod.string().max(createPipelineStepBodyDescriptionMax).optional().describe('Description of what this step does'),
   "config": zod.record(zod.string(), zod.any()).optional().describe('Configuration for the tool'),
   "position": zod.number().min(createPipelineStepBodyPositionMin).optional().describe('Position in the pipeline (for ordering)'),
-  "dependencies": zod.array(zod.uuid().min(createPipelineStepBodyDependenciesItemMinOne).describe('Universally Unique IDentifier')).optional().describe('IDs of steps this step depends on')
+  "dependencies": zod.array(zod.uuid().min(createPipelineStepBodyDependenciesItemMin).describe('UUID identifier')).optional().describe('IDs of steps this step depends on')
 })
 
 
@@ -1589,23 +1626,23 @@ export const createPipelineStepBody = zod.object({
  * Get the DAG execution plan showing which steps can run in parallel
  * @summary Get execution plan for a pipeline
  */
-export const getPipelineExecutionPlanPathIdMinOne = 36;
+export const getPipelineExecutionPlanPathIdMin = 36;
 
 
 export const getPipelineExecutionPlanParams = zod.object({
-  "id": zod.uuid().min(getPipelineExecutionPlanPathIdMinOne).describe('Universally Unique IDentifier').describe('Pipeline ID')
+  "id": zod.uuid().min(getPipelineExecutionPlanPathIdMin).describe('Pipeline ID')
 })
 
-export const getPipelineExecutionPlanResponseDataPipelineIDMinOne = 36;
-export const getPipelineExecutionPlanResponseDataLevelsItemStepsItemMinOne = 36;
+export const getPipelineExecutionPlanResponseDataPipelineIDMin = 36;
+export const getPipelineExecutionPlanResponseDataLevelsItemStepsItemMin = 36;
 
 
 export const getPipelineExecutionPlanResponse = zod.object({
   "data": zod.object({
-  "pipelineID": zod.uuid().min(getPipelineExecutionPlanResponseDataPipelineIDMinOne).describe('Universally Unique IDentifier'),
+  "pipelineID": zod.uuid().min(getPipelineExecutionPlanResponseDataPipelineIDMin).describe('UUID identifier'),
   "levels": zod.array(zod.object({
   "level": zod.number().describe('Execution level (0-based)'),
-  "steps": zod.array(zod.uuid().min(getPipelineExecutionPlanResponseDataLevelsItemStepsItemMinOne).describe('Universally Unique IDentifier')).describe('Step IDs that can run in parallel at this level')
+  "steps": zod.array(zod.uuid().min(getPipelineExecutionPlanResponseDataLevelsItemStepsItemMin).describe('Step IDs that can run in parallel at this level'))
 })),
   "totalSteps": zod.number().describe('Total number of steps in the pipeline'),
   "isValid": zod.boolean().describe('Whether the pipeline DAG is valid (no cycles)'),
@@ -1618,11 +1655,11 @@ export const getPipelineExecutionPlanResponse = zod.object({
  * Validate that a pipeline can be executed without issues
  * @summary Validate a pipeline configuration
  */
-export const validatePipelineExecutionPlanPathIdMinOne = 36;
+export const validatePipelineExecutionPlanPathIdMin = 36;
 
 
 export const validatePipelineExecutionPlanParams = zod.object({
-  "id": zod.uuid().min(validatePipelineExecutionPlanPathIdMinOne).describe('Universally Unique IDentifier').describe('Pipeline ID')
+  "id": zod.uuid().min(validatePipelineExecutionPlanPathIdMin).describe('Pipeline ID')
 })
 
 export const validatePipelineExecutionPlanResponse = zod.object({
@@ -1637,11 +1674,11 @@ export const validatePipelineExecutionPlanResponse = zod.object({
  * Create a run
  * @summary Create a run
  */
-export const createRunBodyPipelineIDMinOne = 36;
+export const createRunBodyPipelineIDMin = 36;
 
 
 export const createRunBody = zod.object({
-  "pipelineID": zod.uuid().min(createRunBodyPipelineIDMinOne).describe('Universally Unique IDentifier')
+  "pipelineID": zod.uuid().min(createRunBodyPipelineIDMin).describe('UUID identifier')
 })
 
 
@@ -1670,25 +1707,25 @@ export const listRunsQueryParams = zod.object({
 })
 
 export const listRunsResponseDataItemIdMin = 36;
-export const listRunsResponseDataItemOrganizationIDMinOne = 36;
-export const listRunsResponseDataItemPipelineIDMinOne = 36;
-export const listRunsResponseDataItemToolIDMinOne = 36;
+export const listRunsResponseDataItemOrganizationIDMin = 36;
+export const listRunsResponseDataItemPipelineIDMin = 36;
+export const listRunsResponseDataItemToolIDMin = 36;
 
 
 export const listRunsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listRunsResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listRunsResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "completedAt": zod.iso.datetime({}).min(1).optional().describe('The timestamp when the run completed'),
   "error": zod.string().min(1).optional().describe('The error message'),
-  "organizationID": zod.uuid().min(listRunsResponseDataItemOrganizationIDMinOne).describe('Universally Unique IDentifier'),
-  "pipelineID": zod.uuid().min(listRunsResponseDataItemPipelineIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(listRunsResponseDataItemOrganizationIDMin).describe('The organization this run belongs to'),
+  "pipelineID": zod.uuid().min(listRunsResponseDataItemPipelineIDMin).describe('The pipeline this run is executing'),
   "progress": zod.number().describe('The percent progress of the run'),
   "startedAt": zod.iso.datetime({}).min(1).optional().describe('The timestamp when the run started'),
   "status": zod.enum(['COMPLETED', 'FAILED', 'PROCESSING', 'QUEUED']),
-  "toolID": zod.uuid().min(listRunsResponseDataItemToolIDMinOne).describe('Universally Unique IDentifier')
+  "toolID": zod.uuid().min(listRunsResponseDataItemToolIDMin).describe('The tool being used in this run')
 })).describe('Schema for Run entity')),
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
@@ -1700,33 +1737,33 @@ export const listRunsResponse = zod.object({
  * Delete a run
  * @summary Delete a run
  */
-export const deleteRunPathIdMinOne = 36;
+export const deleteRunPathIdMin = 36;
 
 
 export const deleteRunParams = zod.object({
-  "id": zod.uuid().min(deleteRunPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(deleteRunPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const deleteRunResponseDataIdMin = 36;
-export const deleteRunResponseDataOrganizationIDMinOne = 36;
-export const deleteRunResponseDataPipelineIDMinOne = 36;
-export const deleteRunResponseDataToolIDMinOne = 36;
+export const deleteRunResponseDataOrganizationIDMin = 36;
+export const deleteRunResponseDataPipelineIDMin = 36;
+export const deleteRunResponseDataToolIDMin = 36;
 
 
 export const deleteRunResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteRunResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteRunResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "completedAt": zod.iso.datetime({}).min(1).optional().describe('The timestamp when the run completed'),
   "error": zod.string().min(1).optional().describe('The error message'),
-  "organizationID": zod.uuid().min(deleteRunResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
-  "pipelineID": zod.uuid().min(deleteRunResponseDataPipelineIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(deleteRunResponseDataOrganizationIDMin).describe('The organization this run belongs to'),
+  "pipelineID": zod.uuid().min(deleteRunResponseDataPipelineIDMin).describe('The pipeline this run is executing'),
   "progress": zod.number().describe('The percent progress of the run'),
   "startedAt": zod.iso.datetime({}).min(1).optional().describe('The timestamp when the run started'),
   "status": zod.enum(['COMPLETED', 'FAILED', 'PROCESSING', 'QUEUED']),
-  "toolID": zod.uuid().min(deleteRunResponseDataToolIDMinOne).describe('Universally Unique IDentifier')
+  "toolID": zod.uuid().min(deleteRunResponseDataToolIDMin).describe('The tool being used in this run')
 })).describe('Schema for Run entity')
 })
 
@@ -1735,33 +1772,33 @@ export const deleteRunResponse = zod.object({
  * Find a run
  * @summary Find a run
  */
-export const getRunPathIdMinOne = 36;
+export const getRunPathIdMin = 36;
 
 
 export const getRunParams = zod.object({
-  "id": zod.uuid().min(getRunPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(getRunPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const getRunResponseDataIdMin = 36;
-export const getRunResponseDataOrganizationIDMinOne = 36;
-export const getRunResponseDataPipelineIDMinOne = 36;
-export const getRunResponseDataToolIDMinOne = 36;
+export const getRunResponseDataOrganizationIDMin = 36;
+export const getRunResponseDataPipelineIDMin = 36;
+export const getRunResponseDataToolIDMin = 36;
 
 
 export const getRunResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getRunResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getRunResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "completedAt": zod.iso.datetime({}).min(1).optional().describe('The timestamp when the run completed'),
   "error": zod.string().min(1).optional().describe('The error message'),
-  "organizationID": zod.uuid().min(getRunResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
-  "pipelineID": zod.uuid().min(getRunResponseDataPipelineIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(getRunResponseDataOrganizationIDMin).describe('The organization this run belongs to'),
+  "pipelineID": zod.uuid().min(getRunResponseDataPipelineIDMin).describe('The pipeline this run is executing'),
   "progress": zod.number().describe('The percent progress of the run'),
   "startedAt": zod.iso.datetime({}).min(1).optional().describe('The timestamp when the run started'),
   "status": zod.enum(['COMPLETED', 'FAILED', 'PROCESSING', 'QUEUED']),
-  "toolID": zod.uuid().min(getRunResponseDataToolIDMinOne).describe('Universally Unique IDentifier')
+  "toolID": zod.uuid().min(getRunResponseDataToolIDMin).describe('The tool being used in this run')
 })).describe('Schema for Run entity')
 })
 
@@ -1770,40 +1807,40 @@ export const getRunResponse = zod.object({
  * Update a run
  * @summary Update a run
  */
-export const updateRunPathIdMinOne = 36;
+export const updateRunPathIdMin = 36;
 
 
 export const updateRunParams = zod.object({
-  "id": zod.uuid().min(updateRunPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(updateRunPathIdMin).describe('The unique identifier of the resource.')
 })
 
-export const updateRunBodyPipelineIDMinOne = 36;
+export const updateRunBodyPipelineIDMin = 36;
 
 
 export const updateRunBody = zod.object({
-  "pipelineID": zod.uuid().min(updateRunBodyPipelineIDMinOne).describe('Universally Unique IDentifier').optional()
+  "pipelineID": zod.uuid().min(updateRunBodyPipelineIDMin).optional().describe('UUID identifier')
 })
 
 export const updateRunResponseDataIdMin = 36;
-export const updateRunResponseDataOrganizationIDMinOne = 36;
-export const updateRunResponseDataPipelineIDMinOne = 36;
-export const updateRunResponseDataToolIDMinOne = 36;
+export const updateRunResponseDataOrganizationIDMin = 36;
+export const updateRunResponseDataPipelineIDMin = 36;
+export const updateRunResponseDataToolIDMin = 36;
 
 
 export const updateRunResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateRunResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateRunResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "completedAt": zod.iso.datetime({}).min(1).optional().describe('The timestamp when the run completed'),
   "error": zod.string().min(1).optional().describe('The error message'),
-  "organizationID": zod.uuid().min(updateRunResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
-  "pipelineID": zod.uuid().min(updateRunResponseDataPipelineIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(updateRunResponseDataOrganizationIDMin).describe('The organization this run belongs to'),
+  "pipelineID": zod.uuid().min(updateRunResponseDataPipelineIDMin).describe('The pipeline this run is executing'),
   "progress": zod.number().describe('The percent progress of the run'),
   "startedAt": zod.iso.datetime({}).min(1).optional().describe('The timestamp when the run started'),
   "status": zod.enum(['COMPLETED', 'FAILED', 'PROCESSING', 'QUEUED']),
-  "toolID": zod.uuid().min(updateRunResponseDataToolIDMinOne).describe('Universally Unique IDentifier')
+  "toolID": zod.uuid().min(updateRunResponseDataToolIDMin).describe('The tool being used in this run')
 })).describe('Schema for Run entity')
 })
 
@@ -1843,19 +1880,19 @@ export const listToolsQueryParams = zod.object({
 })
 
 export const listToolsResponseDataItemIdMin = 36;
-export const listToolsResponseDataItemOrganizationIDMinOne = 36;
+export const listToolsResponseDataItemOrganizationIDMin = 36;
 
 
 export const listToolsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listToolsResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listToolsResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "description": zod.string().min(1).describe('The tool description'),
   "inputMimeType": zod.string().min(1).describe('The MIME type of the input for the tool, e.g. text/plain'),
   "name": zod.string().min(1).describe('The name of the tool'),
-  "organizationID": zod.uuid().min(listToolsResponseDataItemOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(listToolsResponseDataItemOrganizationIDMin).describe('The organization that owns this tool'),
   "outputMimeType": zod.string().min(1).describe('The MIME type of the output for the tool, e.g. text/plain')
 })).describe('Schema for Tool entity')),
   "meta": zod.object({
@@ -1868,27 +1905,27 @@ export const listToolsResponse = zod.object({
  * Delete a tool
  * @summary Delete a tool
  */
-export const deleteToolPathIdMinOne = 36;
+export const deleteToolPathIdMin = 36;
 
 
 export const deleteToolParams = zod.object({
-  "id": zod.uuid().min(deleteToolPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(deleteToolPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const deleteToolResponseDataIdMin = 36;
-export const deleteToolResponseDataOrganizationIDMinOne = 36;
+export const deleteToolResponseDataOrganizationIDMin = 36;
 
 
 export const deleteToolResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteToolResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteToolResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "description": zod.string().min(1).describe('The tool description'),
   "inputMimeType": zod.string().min(1).describe('The MIME type of the input for the tool, e.g. text/plain'),
   "name": zod.string().min(1).describe('The name of the tool'),
-  "organizationID": zod.uuid().min(deleteToolResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(deleteToolResponseDataOrganizationIDMin).describe('The organization that owns this tool'),
   "outputMimeType": zod.string().min(1).describe('The MIME type of the output for the tool, e.g. text/plain')
 })).describe('Schema for Tool entity')
 })
@@ -1898,27 +1935,27 @@ export const deleteToolResponse = zod.object({
  * Find a tool
  * @summary Find a tool
  */
-export const getToolPathIdMinOne = 36;
+export const getToolPathIdMin = 36;
 
 
 export const getToolParams = zod.object({
-  "id": zod.uuid().min(getToolPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(getToolPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const getToolResponseDataIdMin = 36;
-export const getToolResponseDataOrganizationIDMinOne = 36;
+export const getToolResponseDataOrganizationIDMin = 36;
 
 
 export const getToolResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getToolResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getToolResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "description": zod.string().min(1).describe('The tool description'),
   "inputMimeType": zod.string().min(1).describe('The MIME type of the input for the tool, e.g. text/plain'),
   "name": zod.string().min(1).describe('The name of the tool'),
-  "organizationID": zod.uuid().min(getToolResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(getToolResponseDataOrganizationIDMin).describe('The organization that owns this tool'),
   "outputMimeType": zod.string().min(1).describe('The MIME type of the output for the tool, e.g. text/plain')
 })).describe('Schema for Tool entity')
 })
@@ -1928,11 +1965,11 @@ export const getToolResponse = zod.object({
  * Update a tool
  * @summary Update a tool
  */
-export const updateToolPathIdMinOne = 36;
+export const updateToolPathIdMin = 36;
 
 
 export const updateToolParams = zod.object({
-  "id": zod.uuid().min(updateToolPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(updateToolPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const updateToolBody = zod.object({
@@ -1941,19 +1978,19 @@ export const updateToolBody = zod.object({
 })
 
 export const updateToolResponseDataIdMin = 36;
-export const updateToolResponseDataOrganizationIDMinOne = 36;
+export const updateToolResponseDataOrganizationIDMin = 36;
 
 
 export const updateToolResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateToolResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateToolResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "description": zod.string().min(1).describe('The tool description'),
   "inputMimeType": zod.string().min(1).describe('The MIME type of the input for the tool, e.g. text/plain'),
   "name": zod.string().min(1).describe('The name of the tool'),
-  "organizationID": zod.uuid().min(updateToolResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(updateToolResponseDataOrganizationIDMin).describe('The organization that owns this tool'),
   "outputMimeType": zod.string().min(1).describe('The MIME type of the output for the tool, e.g. text/plain')
 })).describe('Schema for Tool entity')
 })
@@ -1994,13 +2031,13 @@ export const listArtifactsQueryParams = zod.object({
 })
 
 export const listArtifactsResponseDataItemIdMin = 36;
-export const listArtifactsResponseDataItemOrganizationIDMinOne = 36;
-export const listArtifactsResponseDataItemProducerIDMinOne = 36;
+export const listArtifactsResponseDataItemOrganizationIDMin = 36;
+export const listArtifactsResponseDataItemProducerIDMin = 36;
 
 
 export const listArtifactsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listArtifactsResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listArtifactsResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
@@ -2008,10 +2045,10 @@ export const listArtifactsResponse = zod.object({
   "description": zod.string().min(1).optional().describe('The artifact\'s description'),
   "mimeType": zod.string().min(1).describe('The MIME type of the artifact, e.g. image/png'),
   "name": zod.string().min(1).optional().describe('The name of the artifact, used for display purposes'),
-  "organizationID": zod.uuid().min(listArtifactsResponseDataItemOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(listArtifactsResponseDataItemOrganizationIDMin).describe('The organization that owns this artifact'),
   "previewImage": zod.string().min(1).optional().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
-  "producerID": zod.uuid().min(listArtifactsResponseDataItemProducerIDMinOne).describe('Universally Unique IDentifier').optional(),
-  "text": zod.string().min(1).describe('The artifact text')
+  "producerID": zod.uuid().min(listArtifactsResponseDataItemProducerIDMin).optional().describe('The ID of the entity that produced this artifact'),
+  "text": zod.string().min(1).optional().describe('The artifact text')
 })).describe('Schema for Artifact entity')),
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
@@ -2023,21 +2060,21 @@ export const listArtifactsResponse = zod.object({
  * Delete an artifact
  * @summary Delete an artifact
  */
-export const deleteArtifactPathIdMinOne = 36;
+export const deleteArtifactPathIdMin = 36;
 
 
 export const deleteArtifactParams = zod.object({
-  "id": zod.uuid().min(deleteArtifactPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(deleteArtifactPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const deleteArtifactResponseDataIdMin = 36;
-export const deleteArtifactResponseDataOrganizationIDMinOne = 36;
-export const deleteArtifactResponseDataProducerIDMinOne = 36;
+export const deleteArtifactResponseDataOrganizationIDMin = 36;
+export const deleteArtifactResponseDataProducerIDMin = 36;
 
 
 export const deleteArtifactResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteArtifactResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteArtifactResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
@@ -2045,10 +2082,10 @@ export const deleteArtifactResponse = zod.object({
   "description": zod.string().min(1).optional().describe('The artifact\'s description'),
   "mimeType": zod.string().min(1).describe('The MIME type of the artifact, e.g. image/png'),
   "name": zod.string().min(1).optional().describe('The name of the artifact, used for display purposes'),
-  "organizationID": zod.uuid().min(deleteArtifactResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(deleteArtifactResponseDataOrganizationIDMin).describe('The organization that owns this artifact'),
   "previewImage": zod.string().min(1).optional().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
-  "producerID": zod.uuid().min(deleteArtifactResponseDataProducerIDMinOne).describe('Universally Unique IDentifier').optional(),
-  "text": zod.string().min(1).describe('The artifact text')
+  "producerID": zod.uuid().min(deleteArtifactResponseDataProducerIDMin).optional().describe('The ID of the entity that produced this artifact'),
+  "text": zod.string().min(1).optional().describe('The artifact text')
 })).describe('Schema for Artifact entity')
 })
 
@@ -2057,21 +2094,21 @@ export const deleteArtifactResponse = zod.object({
  * Find an artifact
  * @summary Find an artifact
  */
-export const getArtifactPathIdMinOne = 36;
+export const getArtifactPathIdMin = 36;
 
 
 export const getArtifactParams = zod.object({
-  "id": zod.uuid().min(getArtifactPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(getArtifactPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const getArtifactResponseDataIdMin = 36;
-export const getArtifactResponseDataOrganizationIDMinOne = 36;
-export const getArtifactResponseDataProducerIDMinOne = 36;
+export const getArtifactResponseDataOrganizationIDMin = 36;
+export const getArtifactResponseDataProducerIDMin = 36;
 
 
 export const getArtifactResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getArtifactResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getArtifactResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
@@ -2079,10 +2116,10 @@ export const getArtifactResponse = zod.object({
   "description": zod.string().min(1).optional().describe('The artifact\'s description'),
   "mimeType": zod.string().min(1).describe('The MIME type of the artifact, e.g. image/png'),
   "name": zod.string().min(1).optional().describe('The name of the artifact, used for display purposes'),
-  "organizationID": zod.uuid().min(getArtifactResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(getArtifactResponseDataOrganizationIDMin).describe('The organization that owns this artifact'),
   "previewImage": zod.string().min(1).optional().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
-  "producerID": zod.uuid().min(getArtifactResponseDataProducerIDMinOne).describe('Universally Unique IDentifier').optional(),
-  "text": zod.string().min(1).describe('The artifact text')
+  "producerID": zod.uuid().min(getArtifactResponseDataProducerIDMin).optional().describe('The ID of the entity that produced this artifact'),
+  "text": zod.string().min(1).optional().describe('The artifact text')
 })).describe('Schema for Artifact entity')
 })
 
@@ -2091,11 +2128,11 @@ export const getArtifactResponse = zod.object({
  * Update an artifact
  * @summary Update an artifact
  */
-export const updateArtifactPathIdMinOne = 36;
+export const updateArtifactPathIdMin = 36;
 
 
 export const updateArtifactParams = zod.object({
-  "id": zod.uuid().min(updateArtifactPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(updateArtifactPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const updateArtifactBody = zod.object({
@@ -2105,13 +2142,13 @@ export const updateArtifactBody = zod.object({
 })
 
 export const updateArtifactResponseDataIdMin = 36;
-export const updateArtifactResponseDataOrganizationIDMinOne = 36;
-export const updateArtifactResponseDataProducerIDMinOne = 36;
+export const updateArtifactResponseDataOrganizationIDMin = 36;
+export const updateArtifactResponseDataProducerIDMin = 36;
 
 
 export const updateArtifactResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateArtifactResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateArtifactResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
@@ -2119,10 +2156,10 @@ export const updateArtifactResponse = zod.object({
   "description": zod.string().min(1).optional().describe('The artifact\'s description'),
   "mimeType": zod.string().min(1).describe('The MIME type of the artifact, e.g. image/png'),
   "name": zod.string().min(1).optional().describe('The name of the artifact, used for display purposes'),
-  "organizationID": zod.uuid().min(updateArtifactResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier'),
+  "organizationID": zod.uuid().min(updateArtifactResponseDataOrganizationIDMin).describe('The organization that owns this artifact'),
   "previewImage": zod.string().min(1).optional().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
-  "producerID": zod.uuid().min(updateArtifactResponseDataProducerIDMinOne).describe('Universally Unique IDentifier').optional(),
-  "text": zod.string().min(1).describe('The artifact text')
+  "producerID": zod.uuid().min(updateArtifactResponseDataProducerIDMin).optional().describe('The ID of the entity that produced this artifact'),
+  "text": zod.string().min(1).optional().describe('The artifact text')
 })).describe('Schema for Artifact entity')
 })
 
@@ -2161,17 +2198,17 @@ export const listLabelsQueryParams = zod.object({
 })
 
 export const listLabelsResponseDataItemIdMin = 36;
-export const listLabelsResponseDataItemOrganizationIDMinOne = 36;
+export const listLabelsResponseDataItemOrganizationIDMin = 36;
 
 
 export const listLabelsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listLabelsResponseDataItemIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(listLabelsResponseDataItemIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "name": zod.string().min(1).describe('The name of the label'),
-  "organizationID": zod.uuid().min(listLabelsResponseDataItemOrganizationIDMinOne).describe('Universally Unique IDentifier')
+  "organizationID": zod.uuid().min(listLabelsResponseDataItemOrganizationIDMin).describe('The organization this label belongs to')
 })).describe('Schema for Label entity')),
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
@@ -2183,25 +2220,25 @@ export const listLabelsResponse = zod.object({
  * Delete a label
  * @summary Delete a label
  */
-export const deleteLabelPathIdMinOne = 36;
+export const deleteLabelPathIdMin = 36;
 
 
 export const deleteLabelParams = zod.object({
-  "id": zod.uuid().min(deleteLabelPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(deleteLabelPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const deleteLabelResponseDataIdMin = 36;
-export const deleteLabelResponseDataOrganizationIDMinOne = 36;
+export const deleteLabelResponseDataOrganizationIDMin = 36;
 
 
 export const deleteLabelResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(deleteLabelResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(deleteLabelResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "name": zod.string().min(1).describe('The name of the label'),
-  "organizationID": zod.uuid().min(deleteLabelResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier')
+  "organizationID": zod.uuid().min(deleteLabelResponseDataOrganizationIDMin).describe('The organization this label belongs to')
 })).describe('Schema for Label entity')
 })
 
@@ -2210,25 +2247,25 @@ export const deleteLabelResponse = zod.object({
  * Find a label
  * @summary Find a label
  */
-export const getLabelPathIdMinOne = 36;
+export const getLabelPathIdMin = 36;
 
 
 export const getLabelParams = zod.object({
-  "id": zod.uuid().min(getLabelPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(getLabelPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const getLabelResponseDataIdMin = 36;
-export const getLabelResponseDataOrganizationIDMinOne = 36;
+export const getLabelResponseDataOrganizationIDMin = 36;
 
 
 export const getLabelResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getLabelResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(getLabelResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "name": zod.string().min(1).describe('The name of the label'),
-  "organizationID": zod.uuid().min(getLabelResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier')
+  "organizationID": zod.uuid().min(getLabelResponseDataOrganizationIDMin).describe('The organization this label belongs to')
 })).describe('Schema for Label entity')
 })
 
@@ -2237,11 +2274,11 @@ export const getLabelResponse = zod.object({
  * Update a label
  * @summary Update a label
  */
-export const updateLabelPathIdMinOne = 36;
+export const updateLabelPathIdMin = 36;
 
 
 export const updateLabelParams = zod.object({
-  "id": zod.uuid().min(updateLabelPathIdMinOne).describe('Universally Unique IDentifier').describe('The unique identifier of the resource.')
+  "id": zod.uuid().min(updateLabelPathIdMin).describe('The unique identifier of the resource.')
 })
 
 export const updateLabelBody = zod.object({
@@ -2249,17 +2286,17 @@ export const updateLabelBody = zod.object({
 })
 
 export const updateLabelResponseDataIdMin = 36;
-export const updateLabelResponseDataOrganizationIDMinOne = 36;
+export const updateLabelResponseDataOrganizationIDMin = 36;
 
 
 export const updateLabelResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateLabelResponseDataIdMin).describe('Universally Unique IDentifier'),
+  "id": zod.uuid().min(updateLabelResponseDataIdMin).describe('Unique identifier for the resource'),
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "name": zod.string().min(1).describe('The name of the label'),
-  "organizationID": zod.uuid().min(updateLabelResponseDataOrganizationIDMinOne).describe('Universally Unique IDentifier')
+  "organizationID": zod.uuid().min(updateLabelResponseDataOrganizationIDMin).describe('The organization this label belongs to')
 })).describe('Schema for Label entity')
 })
 
@@ -2289,22 +2326,22 @@ export const getConfigResponseDatabaseMinConnsMin = 0;
 export const getConfigResponseDatabaseConnMaxLifetimeRegExp = new RegExp('^(\\d+[smh])+$');
 export const getConfigResponseDatabaseConnMaxIdleTimeRegExp = new RegExp('^(\\d+[smh])+$');
 export const getConfigResponseDatabaseHealthCheckPeriodRegExp = new RegExp('^(\\d+[smh])+$');
-export const getConfigResponseDatabaseRunMigrationsDefault = false;export const getConfigResponseDatabaseManagedDefault = false;export const getConfigResponseDatabaseAuthDatabaseDefault = "archesai";export const getConfigResponseDatabaseAuthPasswordDefault = "password";export const getConfigResponseDatabaseImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDatabaseImageTagDefault = "latest";export const getConfigResponseDatabasePersistenceEnabledDefault = true;export const getConfigResponseDatabasePersistenceSizeDefault = "10Gi";export const getConfigResponseDatabaseResourcesLimitsCpuDefault = "1000m";export const getConfigResponseDatabaseResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseDatabaseResourcesRequestsCpuDefault = "100m";export const getConfigResponseDatabaseResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseIntelligenceEmbeddingTypeDefault = "ollama";export const getConfigResponseIntelligenceLlmTypeDefault = "ollama";export const getConfigResponseIntelligenceRunpodEnabledDefault = false;export const getConfigResponseIntelligenceScraperEnabledDefault = false;export const getConfigResponseIntelligenceScraperManagedDefault = false;export const getConfigResponseIntelligenceScraperImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseIntelligenceScraperImageTagDefault = "latest";export const getConfigResponseIntelligenceScraperResourcesLimitsCpuDefault = "1000m";export const getConfigResponseIntelligenceScraperResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseIntelligenceScraperResourcesRequestsCpuDefault = "100m";export const getConfigResponseIntelligenceScraperResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseIntelligenceSpeechEnabledDefault = false;export const getConfigResponseIntelligenceUnstructuredEnabledDefault = false;export const getConfigResponseIntelligenceUnstructuredManagedDefault = false;export const getConfigResponseIntelligenceUnstructuredImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseIntelligenceUnstructuredImageTagDefault = "latest";export const getConfigResponseIntelligenceUnstructuredResourcesLimitsCpuDefault = "1000m";export const getConfigResponseIntelligenceUnstructuredResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseIntelligenceUnstructuredResourcesRequestsCpuDefault = "100m";export const getConfigResponseIntelligenceUnstructuredResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseLoggingLevelDefault = "info";export const getConfigResponseLoggingPrettyDefault = false;export const getConfigResponsePlatformEnabledDefault = false;export const getConfigResponsePlatformManagedDefault = false;export const getConfigResponsePlatformHostDefault = "localhost";export const getConfigResponsePlatformImagePullPolicyDefault = "IfNotPresent";export const getConfigResponsePlatformImageTagDefault = "latest";export const getConfigResponsePlatformResourcesLimitsCpuDefault = "1000m";export const getConfigResponsePlatformResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponsePlatformResourcesRequestsCpuDefault = "100m";export const getConfigResponsePlatformResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseRedisEnabledDefault = false;export const getConfigResponseRedisManagedDefault = false;export const getConfigResponseRedisAuthDefault = "password";export const getConfigResponseRedisHostDefault = "localhost";export const getConfigResponseRedisPortDefault = 6379;export const getConfigResponseRedisImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseRedisImageTagDefault = "latest";export const getConfigResponseRedisPersistenceEnabledDefault = true;export const getConfigResponseRedisPersistenceSizeDefault = "10Gi";export const getConfigResponseRedisResourcesLimitsCpuDefault = "1000m";export const getConfigResponseRedisResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseRedisResourcesRequestsCpuDefault = "100m";export const getConfigResponseRedisResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseStorageEnabledDefault = false;export const getConfigResponseStorageManagedDefault = false;export const getConfigResponseStorageAccesskeyDefault = "minioadmin";export const getConfigResponseStorageBucketDefault = "archesai";export const getConfigResponseStorageEndpointDefault = "http://localhost:9000";export const getConfigResponseStorageSecretkeyDefault = "minioadmin";export const getConfigResponseStorageImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseStorageImageTagDefault = "latest";export const getConfigResponseStoragePersistenceEnabledDefault = true;export const getConfigResponseStoragePersistenceSizeDefault = "10Gi";export const getConfigResponseStorageResourcesLimitsCpuDefault = "1000m";export const getConfigResponseStorageResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseStorageResourcesRequestsCpuDefault = "100m";export const getConfigResponseStorageResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseKubernetesInfrastructureImagesImagePullSecretsDefault = [];export const getConfigResponseKubernetesInfrastructureImagesImageRegistryDefault = "";export const getConfigResponseKubernetesInfrastructureMigrationsEnabledDefault = false;export const getConfigResponseKubernetesInfrastructureNamespaceDefault = "arches-system";export const getConfigResponseKubernetesInfrastructureServiceAccountCreateDefault = true;export const getConfigResponseKubernetesInfrastructureServiceAccountNameDefault = "";export const getConfigResponseKubernetesIngressEnabledDefault = false;export const getConfigResponseKubernetesIngressDomainDefault = "archesai.dev";export const getConfigResponseKubernetesIngressTlsEnabledDefault = true;export const getConfigResponseKubernetesIngressTlsIssuerDefault = "letsencrypt-staging";export const getConfigResponseKubernetesIngressTlsSecretNameDefault = "archesai-tls";export const getConfigResponseKubernetesMonitoringGrafanaEnabledDefault = false;export const getConfigResponseKubernetesMonitoringGrafanaManagedDefault = false;export const getConfigResponseKubernetesMonitoringGrafanaImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseKubernetesMonitoringGrafanaImageTagDefault = "latest";export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsCpuDefault = "1000m";export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsCpuDefault = "100m";export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseKubernetesMonitoringLokiEnabledDefault = false;export const getConfigResponseKubernetesMonitoringLokiManagedDefault = false;export const getConfigResponseKubernetesMonitoringLokiHostDefault = "http://localhost:3100";export const getConfigResponseKubernetesMonitoringLokiImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseKubernetesMonitoringLokiImageTagDefault = "latest";export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsCpuDefault = "1000m";export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsCpuDefault = "100m";export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDatabaseRunMigrationsDefault = false;export const getConfigResponseDatabaseManagedDefault = false;export const getConfigResponseDatabaseImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDatabaseImageTagDefault = "latest";export const getConfigResponseDatabasePersistenceEnabledDefault = true;export const getConfigResponseDatabasePersistenceSizeDefault = "10Gi";export const getConfigResponseDatabaseResourcesLimitsCpuDefault = "1000m";export const getConfigResponseDatabaseResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseDatabaseResourcesRequestsCpuDefault = "100m";export const getConfigResponseDatabaseResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseIntelligenceEmbeddingTypeDefault = "ollama";export const getConfigResponseIntelligenceLlmTypeDefault = "ollama";export const getConfigResponseIntelligenceRunpodEnabledDefault = false;export const getConfigResponseIntelligenceScraperEnabledDefault = false;export const getConfigResponseIntelligenceScraperManagedDefault = false;export const getConfigResponseIntelligenceScraperImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseIntelligenceScraperImageTagDefault = "latest";export const getConfigResponseIntelligenceScraperResourcesLimitsCpuDefault = "1000m";export const getConfigResponseIntelligenceScraperResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseIntelligenceScraperResourcesRequestsCpuDefault = "100m";export const getConfigResponseIntelligenceScraperResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseIntelligenceSpeechEnabledDefault = false;export const getConfigResponseIntelligenceUnstructuredEnabledDefault = false;export const getConfigResponseIntelligenceUnstructuredManagedDefault = false;export const getConfigResponseIntelligenceUnstructuredImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseIntelligenceUnstructuredImageTagDefault = "latest";export const getConfigResponseIntelligenceUnstructuredResourcesLimitsCpuDefault = "1000m";export const getConfigResponseIntelligenceUnstructuredResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseIntelligenceUnstructuredResourcesRequestsCpuDefault = "100m";export const getConfigResponseIntelligenceUnstructuredResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseLoggingLevelDefault = "info";export const getConfigResponseLoggingPrettyDefault = false;export const getConfigResponsePlatformEnabledDefault = false;export const getConfigResponsePlatformManagedDefault = false;export const getConfigResponsePlatformHostDefault = "localhost";export const getConfigResponsePlatformImagePullPolicyDefault = "IfNotPresent";export const getConfigResponsePlatformImageTagDefault = "latest";export const getConfigResponsePlatformResourcesLimitsCpuDefault = "1000m";export const getConfigResponsePlatformResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponsePlatformResourcesRequestsCpuDefault = "100m";export const getConfigResponsePlatformResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseRedisEnabledDefault = false;export const getConfigResponseRedisManagedDefault = false;export const getConfigResponseRedisAuthDefault = "password";export const getConfigResponseRedisHostDefault = "localhost";export const getConfigResponseRedisPortDefault = 6379;export const getConfigResponseRedisImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseRedisImageTagDefault = "latest";export const getConfigResponseRedisPersistenceEnabledDefault = true;export const getConfigResponseRedisPersistenceSizeDefault = "10Gi";export const getConfigResponseRedisResourcesLimitsCpuDefault = "1000m";export const getConfigResponseRedisResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseRedisResourcesRequestsCpuDefault = "100m";export const getConfigResponseRedisResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseStorageEnabledDefault = false;export const getConfigResponseStorageManagedDefault = false;export const getConfigResponseStorageAccesskeyDefault = "minioadmin";export const getConfigResponseStorageBucketDefault = "archesai";export const getConfigResponseStorageEndpointDefault = "http://localhost:9000";export const getConfigResponseStorageSecretkeyDefault = "minioadmin";export const getConfigResponseStorageImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseStorageImageTagDefault = "latest";export const getConfigResponseStoragePersistenceEnabledDefault = true;export const getConfigResponseStoragePersistenceSizeDefault = "10Gi";export const getConfigResponseStorageResourcesLimitsCpuDefault = "1000m";export const getConfigResponseStorageResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseStorageResourcesRequestsCpuDefault = "100m";export const getConfigResponseStorageResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseKubernetesInfrastructureImagesImagePullSecretsDefault = [];export const getConfigResponseKubernetesInfrastructureImagesImageRegistryDefault = "";export const getConfigResponseKubernetesInfrastructureMigrationsEnabledDefault = false;export const getConfigResponseKubernetesInfrastructureNamespaceDefault = "arches-system";export const getConfigResponseKubernetesInfrastructureServiceAccountCreateDefault = true;export const getConfigResponseKubernetesInfrastructureServiceAccountNameDefault = "";export const getConfigResponseKubernetesIngressEnabledDefault = false;export const getConfigResponseKubernetesIngressDomainDefault = "archesai.dev";export const getConfigResponseKubernetesIngressTlsEnabledDefault = true;export const getConfigResponseKubernetesIngressTlsIssuerDefault = "letsencrypt-staging";export const getConfigResponseKubernetesIngressTlsSecretNameDefault = "archesai-tls";export const getConfigResponseKubernetesMonitoringGrafanaEnabledDefault = false;export const getConfigResponseKubernetesMonitoringGrafanaManagedDefault = false;export const getConfigResponseKubernetesMonitoringGrafanaImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseKubernetesMonitoringGrafanaImageTagDefault = "latest";export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsCpuDefault = "1000m";export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsCpuDefault = "100m";export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseKubernetesMonitoringLokiEnabledDefault = false;export const getConfigResponseKubernetesMonitoringLokiManagedDefault = false;export const getConfigResponseKubernetesMonitoringLokiHostDefault = "http://localhost:3100";export const getConfigResponseKubernetesMonitoringLokiImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseKubernetesMonitoringLokiImageTagDefault = "latest";export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsCpuDefault = "1000m";export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsCpuDefault = "100m";export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsMemoryDefault = "128Mi";
 
 export const getConfigResponse = zod.object({
   "api": zod.object({
-  "cors": zod.string().min(1).default(getConfigResponseApiCorsDefault).describe('A comma-separated list of allowed origins for CORS requests'),
-  "docs": zod.boolean().default(getConfigResponseApiDocsDefault).describe('Enable or disable API documentation'),
+  "cors": zod.string().min(1).describe('A comma-separated list of allowed origins for CORS requests'),
+  "docs": zod.boolean().describe('Enable or disable API documentation'),
   "email": zod.object({
   "enabled": zod.boolean().describe('Enable email functionality'),
   "service": zod.string().optional().describe('Email service provider (e.g., \"gmail\", \"sendgrid\", etc.)'),
   "user": zod.string().optional().describe('Username for the email service'),
   "password": zod.string().optional().describe('Password for the email service')
 }).optional().describe('Email configuration for sending emails'),
-  "environment": zod.enum(['development', 'staging', 'production']).default(getConfigResponseApiEnvironmentDefault).describe('Deployment environment (development, staging, production)'),
-  "host": zod.string().min(1).default(getConfigResponseApiHostDefault).describe('The host address on which the API server will listen'),
-  "port": zod.number().default(getConfigResponseApiPortDefault).describe('The port on which the API server will listen'),
-  "validate": zod.boolean().default(getConfigResponseApiValidateDefault).describe('Enable or disable request validation'),
+  "environment": zod.string().describe('Deployment environment (development, staging, production)'),
+  "host": zod.string().min(1).describe('The host address on which the API server will listen'),
+  "port": zod.number().describe('The port on which the API server will listen'),
+  "validate": zod.boolean().describe('Enable or disable request validation'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
   "repository": zod.string().min(1).optional().describe('Container image repository'),
@@ -2398,19 +2435,15 @@ export const getConfigResponse = zod.object({
 }).optional().describe('Billing configuration for Stripe'),
   "database": zod.object({
   "enabled": zod.boolean().describe('Enable database'),
-  "url": zod.string().min(1).default(getConfigResponseDatabaseUrlDefault).describe('Database connection url/string'),
-  "type": zod.enum(['postgresql', 'sqlite']).default(getConfigResponseDatabaseTypeDefault).describe('Database type (postgresql or sqlite)'),
-  "maxConns": zod.number().min(1).default(getConfigResponseDatabaseMaxConnsDefault).describe('Maximum number of connections in pool (PostgreSQL)'),
-  "minConns": zod.number().min(getConfigResponseDatabaseMinConnsMin).default(getConfigResponseDatabaseMinConnsDefault).describe('Minimum number of connections in pool (PostgreSQL)'),
+  "url": zod.string().min(1).describe('Database connection url/string'),
+  "type": zod.enum(['postgresql', 'sqlite']).describe('Database type (postgresql or sqlite)'),
+  "maxConns": zod.number().min(1).describe('Maximum number of connections in pool (PostgreSQL)'),
+  "minConns": zod.number().min(getConfigResponseDatabaseMinConnsMin).describe('Minimum number of connections in pool (PostgreSQL)'),
   "connMaxLifetime": zod.string().regex(getConfigResponseDatabaseConnMaxLifetimeRegExp).optional().describe('Maximum connection lifetime (e.g., \"30m\")'),
   "connMaxIdleTime": zod.string().regex(getConfigResponseDatabaseConnMaxIdleTimeRegExp).optional().describe('Maximum connection idle time (e.g., \"5m\")'),
   "healthCheckPeriod": zod.string().regex(getConfigResponseDatabaseHealthCheckPeriodRegExp).optional().describe('Health check period for connections (PostgreSQL)'),
-  "runMigrations": zod.boolean().optional().describe('Automatically run database migrations on startup'),
-  "managed": zod.boolean().optional().describe('Use managed database deployment'),
-  "auth": zod.object({
-  "database": zod.string().min(1).describe('Database name'),
-  "password": zod.string().min(1).describe('Database user password')
-}).optional().describe('Database authentication credentials'),
+  "runMigrations": zod.boolean().describe('Automatically run database migrations on startup'),
+  "managed": zod.boolean().describe('Use managed database deployment'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
   "repository": zod.string().min(1).optional().describe('Container image repository'),
@@ -2433,8 +2466,10 @@ export const getConfigResponse = zod.object({
 }).optional().describe('Database configuration for PostgreSQL'),
   "intelligence": zod.object({
   "embedding": zod.object({
-  "type": zod.enum(['openai', 'ollama']).describe('The embedding provider to use for vector embeddings')
-}).optional().describe('Configuration for text embedding generation'),
+  "type": zod.enum(['ollama', 'openai']).describe('LLM provider type'),
+  "endpoint": zod.string().min(1).optional().describe('LLM service endpoint URL'),
+  "token": zod.string().min(1).optional().describe('Authentication token for LLM service')
+}).optional().describe('Large Language Model configuration'),
   "llm": zod.object({
   "type": zod.enum(['ollama', 'openai']).describe('LLM provider type'),
   "endpoint": zod.string().min(1).optional().describe('LLM service endpoint URL'),

@@ -9,10 +9,25 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
+
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -24,13 +39,13 @@ type ServerInterface interface {
 	CreateOrganization(ctx echo.Context) error
 	// Delete an organization
 	// (DELETE /organizations/{id})
-	DeleteOrganization(ctx echo.Context, id UUID) error
+	DeleteOrganization(ctx echo.Context, id uuid.UUID) error
 	// Get an organization
 	// (GET /organizations/{id})
-	GetOrganization(ctx echo.Context, id UUID) error
+	GetOrganization(ctx echo.Context, id uuid.UUID) error
 	// Update an organization
 	// (PATCH /organizations/{id})
-	UpdateOrganization(ctx echo.Context, id UUID) error
+	UpdateOrganization(ctx echo.Context, id uuid.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -42,10 +57,9 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) ListOrganizations(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(BearerAuthScopes, []string{})
-
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListOrganizationsParams
+
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -67,6 +81,8 @@ func (w *ServerInterfaceWrapper) ListOrganizations(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
 	}
 
+	ctx.Set(BearerAuthScopes, []string{})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.ListOrganizations(ctx, params)
 	return err
@@ -87,7 +103,7 @@ func (w *ServerInterfaceWrapper) CreateOrganization(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteOrganization(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -105,7 +121,7 @@ func (w *ServerInterfaceWrapper) DeleteOrganization(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetOrganization(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -123,7 +139,7 @@ func (w *ServerInterfaceWrapper) GetOrganization(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateOrganization(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -164,7 +180,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
 	router.GET(baseURL+"/organizations", wrapper.ListOrganizations)
 	router.POST(baseURL+"/organizations", wrapper.CreateOrganization)
 	router.DELETE(baseURL+"/organizations/:id", wrapper.DeleteOrganization)
@@ -173,11 +188,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
 
-type NotFoundApplicationProblemPlusJSONResponse Problem
+type NotFoundResponse ProblemDetails
 
-type UnauthorizedApplicationProblemPlusJSONResponse Problem
+type UnauthorizedResponse ProblemDetails
 
 type ListOrganizationsRequestObject struct {
 	Params ListOrganizationsParams
@@ -190,8 +205,7 @@ type ListOrganizationsResponseObject interface {
 type ListOrganizations200JSONResponse struct {
 	Data []Organization `json:"data"`
 	Meta struct {
-		// Total Total number of items in the collection
-		Total float32 `json:"total"`
+		Total int64 `json:"total"`
 	} `json:"meta"`
 }
 
@@ -202,38 +216,42 @@ func (response ListOrganizations200JSONResponse) VisitListOrganizationsResponse(
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListOrganizations400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type ListOrganizations400Response = BadRequestResponse
 
-func (response ListOrganizations400ApplicationProblemPlusJSONResponse) VisitListOrganizationsResponse(w http.ResponseWriter) error {
+func (response ListOrganizations400Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListOrganizations401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type ListOrganizations401Response = UnauthorizedResponse
 
-func (response ListOrganizations401ApplicationProblemPlusJSONResponse) VisitListOrganizationsResponse(w http.ResponseWriter) error {
+func (response ListOrganizations401Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ListOrganizations404Response = NotFoundResponse
+
+func (response ListOrganizations404Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type CreateOrganizationRequestObject struct {
-	Body *CreateOrganizationJSONRequestBody
+	Body *CreateOrganizationRequestBody
 }
 
 type CreateOrganizationResponseObject interface {
 	VisitCreateOrganizationResponse(w http.ResponseWriter) error
 }
-
 type CreateOrganization201JSONResponse struct {
-	// Data Schema for Organization entity
+	// Data Schema for organizations entity
 	Data Organization `json:"data"`
 }
 
@@ -244,22 +262,18 @@ func (response CreateOrganization201JSONResponse) VisitCreateOrganizationRespons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateOrganization400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type CreateOrganization400Response = BadRequestResponse
 
-func (response CreateOrganization400ApplicationProblemPlusJSONResponse) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
+func (response CreateOrganization400Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateOrganization401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type CreateOrganization401Response = UnauthorizedResponse
 
-func (response CreateOrganization401ApplicationProblemPlusJSONResponse) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
+func (response CreateOrganization401Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -267,15 +281,14 @@ func (response CreateOrganization401ApplicationProblemPlusJSONResponse) VisitCre
 }
 
 type DeleteOrganizationRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type DeleteOrganizationResponseObject interface {
 	VisitDeleteOrganizationResponse(w http.ResponseWriter) error
 }
-
 type DeleteOrganization200JSONResponse struct {
-	// Data Schema for Organization entity
+	// Data Schema for organizations entity
 	Data Organization `json:"data"`
 }
 
@@ -286,11 +299,27 @@ func (response DeleteOrganization200JSONResponse) VisitDeleteOrganizationRespons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteOrganization404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type DeleteOrganization400Response = BadRequestResponse
+
+func (response DeleteOrganization400Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response DeleteOrganization404ApplicationProblemPlusJSONResponse) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+type DeleteOrganization401Response = UnauthorizedResponse
+
+func (response DeleteOrganization401Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteOrganization404Response = NotFoundResponse
+
+func (response DeleteOrganization404Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -298,7 +327,7 @@ func (response DeleteOrganization404ApplicationProblemPlusJSONResponse) VisitDel
 }
 
 type GetOrganizationRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type GetOrganizationResponseObject interface {
@@ -306,8 +335,10 @@ type GetOrganizationResponseObject interface {
 }
 
 type GetOrganization200JSONResponse struct {
-	// Data Schema for Organization entity
-	Data Organization `json:"data"`
+	Data []Organization `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
 }
 
 func (response GetOrganization200JSONResponse) VisitGetOrganizationResponse(w http.ResponseWriter) error {
@@ -317,11 +348,27 @@ func (response GetOrganization200JSONResponse) VisitGetOrganizationResponse(w ht
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOrganization404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type GetOrganization400Response = BadRequestResponse
+
+func (response GetOrganization400Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response GetOrganization404ApplicationProblemPlusJSONResponse) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+type GetOrganization401Response = UnauthorizedResponse
+
+func (response GetOrganization401Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetOrganization404Response = NotFoundResponse
+
+func (response GetOrganization404Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -329,16 +376,15 @@ func (response GetOrganization404ApplicationProblemPlusJSONResponse) VisitGetOrg
 }
 
 type UpdateOrganizationRequestObject struct {
-	ID   UUID `json:"id"`
-	Body *UpdateOrganizationJSONRequestBody
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateOrganizationRequestBody
 }
 
 type UpdateOrganizationResponseObject interface {
 	VisitUpdateOrganizationResponse(w http.ResponseWriter) error
 }
-
 type UpdateOrganization200JSONResponse struct {
-	// Data Schema for Organization entity
+	// Data Schema for organizations entity
 	Data Organization `json:"data"`
 }
 
@@ -349,11 +395,27 @@ func (response UpdateOrganization200JSONResponse) VisitUpdateOrganizationRespons
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateOrganization404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type UpdateOrganization400Response = BadRequestResponse
+
+func (response UpdateOrganization400Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response UpdateOrganization404ApplicationProblemPlusJSONResponse) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+type UpdateOrganization401Response = UnauthorizedResponse
+
+func (response UpdateOrganization401Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateOrganization404Response = NotFoundResponse
+
+func (response UpdateOrganization404Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -394,7 +456,6 @@ type strictHandler struct {
 // ListOrganizations operation middleware
 func (sh *strictHandler) ListOrganizations(ctx echo.Context, params ListOrganizationsParams) error {
 	var request ListOrganizationsRequestObject
-
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -419,8 +480,7 @@ func (sh *strictHandler) ListOrganizations(ctx echo.Context, params ListOrganiza
 // CreateOrganization operation middleware
 func (sh *strictHandler) CreateOrganization(ctx echo.Context) error {
 	var request CreateOrganizationRequestObject
-
-	var body CreateOrganizationJSONRequestBody
+	var body CreateOrganizationRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
@@ -446,9 +506,8 @@ func (sh *strictHandler) CreateOrganization(ctx echo.Context) error {
 }
 
 // DeleteOrganization operation middleware
-func (sh *strictHandler) DeleteOrganization(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) DeleteOrganization(ctx echo.Context, id uuid.UUID) error {
 	var request DeleteOrganizationRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -471,9 +530,8 @@ func (sh *strictHandler) DeleteOrganization(ctx echo.Context, id UUID) error {
 }
 
 // GetOrganization operation middleware
-func (sh *strictHandler) GetOrganization(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) GetOrganization(ctx echo.Context, id uuid.UUID) error {
 	var request GetOrganizationRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -496,12 +554,10 @@ func (sh *strictHandler) GetOrganization(ctx echo.Context, id UUID) error {
 }
 
 // UpdateOrganization operation middleware
-func (sh *strictHandler) UpdateOrganization(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) UpdateOrganization(ctx echo.Context, id uuid.UUID) error {
 	var request UpdateOrganizationRequestObject
-
 	request.ID = id
-
-	var body UpdateOrganizationJSONRequestBody
+	var body UpdateOrganizationRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}

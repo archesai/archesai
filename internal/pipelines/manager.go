@@ -137,24 +137,12 @@ func (pm *PipelineManager) GetExecutionPlan(
 	return dag.GetExecutionPlan()
 }
 
-// PipelineStepResponse represents the API response for a pipeline step.
-type PipelineStepResponse struct {
-	ID           uuid.UUID              `json:"id"`
-	PipelineID   uuid.UUID              `json:"pipelineID"`
-	ToolID       uuid.UUID              `json:"toolID"`
-	Name         string                 `json:"name"`
-	Description  string                 `json:"description"`
-	Config       map[string]interface{} `json:"config"`
-	Position     int                    `json:"position"`
-	Dependencies []uuid.UUID            `json:"dependencies"`
-}
-
 // ConvertStepToResponse converts a domain step to API response.
-func ConvertStepToResponse(step *PipelineStep, dependencies []uuid.UUID) PipelineStepResponse {
+func ConvertStepToResponse(step *PipelineStep, dependencies []uuid.UUID) PipelineStep {
 	deps := make([]uuid.UUID, len(dependencies))
 	copy(deps, dependencies)
 
-	return PipelineStepResponse{
+	return PipelineStep{
 		ID:           step.ID,
 		PipelineID:   step.PipelineID,
 		ToolID:       step.ToolID,

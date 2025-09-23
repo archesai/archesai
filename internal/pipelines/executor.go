@@ -129,7 +129,8 @@ func (we *WorkflowExecutor) ExecutePipeline(
 			return nil, fmt.Errorf("failed to marshal input: %w", err)
 		}
 		// Temporarily store in error field - this should be refactored
-		run.Error = string(inputJSON)
+		errorStr := string(inputJSON)
+		run.Error = &errorStr
 	}
 
 	// Save run to database
@@ -163,7 +164,8 @@ func (we *WorkflowExecutor) executeRun(ctx context.Context, runID uuid.UUID) {
 
 	// Update run status to processing
 	run.Status = runs.PROCESSING
-	run.StartedAt = time.Now()
+	startTime := time.Now()
+	run.StartedAt = &startTime
 	_, err = we.runRepo.Update(ctx, run.ID, run)
 	if err != nil {
 		we.logger.Error("Failed to update run status", "error", err, "runId", runID)
@@ -228,10 +230,12 @@ func (we *WorkflowExecutor) handleRunFailure(ctx context.Context, run *runs.Run,
 	we.logger.Error("Pipeline execution failed", "error", err, "runId", run.ID)
 
 	run.Status = runs.FAILED
-	run.CompletedAt = time.Now()
+	completedTime := time.Now()
+	run.CompletedAt = &completedTime
 
 	// Store error message
-	run.Error = err.Error()
+	errorStr := err.Error()
+	run.Error = &errorStr
 
 	_, updateErr := we.runRepo.Update(ctx, run.ID, run)
 	if updateErr != nil {
@@ -244,7 +248,8 @@ func (we *WorkflowExecutor) handleRunSuccess(ctx context.Context, run *runs.Run)
 	we.logger.Info("Pipeline execution completed", "runId", run.ID)
 
 	run.Status = runs.COMPLETED
-	run.CompletedAt = time.Now()
+	completedTime := time.Now()
+	run.CompletedAt = &completedTime
 	run.Progress = 100
 
 	_, err := we.runRepo.Update(ctx, run.ID, run)

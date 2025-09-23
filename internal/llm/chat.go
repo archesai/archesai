@@ -11,7 +11,7 @@ type ChatPersona struct {
 	Name         string
 	SystemPrompt string
 	Model        string
-	Temperature  float32
+	Temperature  float64
 }
 
 // ChatSession manages a conversation with an LLM.

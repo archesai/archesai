@@ -4,26 +4,21 @@ package organizations
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/oapi-codegen/runtime/types"
 )
 
 // PostgresRepository implements Repository using PostgreSQL.
 type PostgresRepository struct {
-	db      *pgxpool.Pool
 	queries *postgresql.Queries
 }
 
 // NewPostgresRepository creates a new PostgreSQL repository.
 func NewPostgresRepository(db *pgxpool.Pool) Repository {
 	return &PostgresRepository{
-		db:      db,
 		queries: postgresql.New(db),
 	}
 }
@@ -35,13 +30,13 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Organization) (
 	params := postgresql.CreateOrganizationParams{
 		ID: entity.ID,
 
+		BillingEmail:     entity.BillingEmail,
+		Credits:          entity.Credits,
+		Logo:             entity.Logo,
 		Name:             entity.Name,
-		Logo:             stringPtr(entity.Logo),
-		BillingEmail:     stringPtr(string(entity.BillingEmail)),
 		Plan:             string(entity.Plan),
-		Credits:          int32(entity.Credits),
-		Metadata:         marshalJSON(entity.Metadata),
-		StripeCustomerID: stringPtr(entity.StripeCustomerID),
+		Slug:             entity.Slug,
+		StripeCustomerID: entity.StripeCustomerID,
 	}
 
 	result, err := r.queries.CreateOrganization(ctx, params)
@@ -70,13 +65,13 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *O
 	params := postgresql.UpdateOrganizationParams{
 		ID: id,
 
-		Name:             stringPtr(entity.Name),
-		Logo:             stringPtr(entity.Logo),
-		BillingEmail:     stringPtr(string(entity.BillingEmail)),
-		Plan:             stringPtr(string(entity.Plan)),
-		Credits:          int32Ptr(int32(entity.Credits)),
-		Metadata:         marshalJSON(entity.Metadata),
-		StripeCustomerID: stringPtr(entity.StripeCustomerID),
+		BillingEmail:     entity.BillingEmail,
+		Credits:          &entity.Credits,
+		Logo:             entity.Logo,
+		Name:             &entity.Name,
+		Plan:             func() *string { s := string(entity.Plan); return &s }(),
+		Slug:             &entity.Slug,
+		StripeCustomerID: entity.StripeCustomerID,
 	}
 
 	result, err := r.queries.UpdateOrganization(ctx, params)
@@ -109,7 +104,7 @@ func (r *PostgresRepository) List(ctx context.Context, params ListOrganizationsP
 	limit := int32(10) // default
 
 	// Check if params has Page field with Number and Size
-	if params.Page.Number > 0 && params.Page.Size > 0 {
+	if params.Page != nil && params.Page.Number > 0 && params.Page.Size > 0 {
 		offset = int32((params.Page.Number - 1) * params.Page.Size)
 		limit = int32(params.Page.Size)
 	}
@@ -136,21 +131,21 @@ func (r *PostgresRepository) List(ctx context.Context, params ListOrganizationsP
 	return items, count, nil
 }
 
-// GetBySlug retrieves organization by slug
-func (r *PostgresRepository) GetBySlug(ctx context.Context, slug string) (*Organization, error) {
-	// TODO: Implement GetBySlug - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
+// Additional methods
 
-	return nil, fmt.Errorf("GetBySlug not implemented - add SQLC query")
+// GetBySlug retrieves a single organization by slug
+func (r *PostgresRepository) GetBySlug(ctx context.Context, slug string) (*Organization, error) {
+
+	// TODO: Implement GetBySlug - fetch single organization
+	return nil, fmt.Errorf("GetBySlug not yet implemented")
 
 }
 
-// GetByStripeCustomerID retrieves organization by stripeCustomerID
-func (r *PostgresRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*Organization, error) {
-	// TODO: Implement GetByStripeCustomerID - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
+// GetByStripeCustomerID retrieves a single organization by stripeCustomerID
+func (r *PostgresRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (*Organization, error) {
 
-	return nil, fmt.Errorf("GetByStripeCustomerID not implemented - add SQLC query")
+	// TODO: Implement GetByStripeCustomerID - fetch single organization
+	return nil, fmt.Errorf("GetByStripeCustomerID not yet implemented")
 
 }
 
@@ -166,95 +161,20 @@ func mapOrganizationFromDB(db *postgresql.Organization) *Organization {
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
 
+		BillingEmail: db.BillingEmail,
+
+		Credits: db.Credits,
+
+		Logo: db.Logo,
+
 		Name: db.Name,
-
-		Logo: stringFromPtr(db.Logo),
-
-		BillingEmail: types.Email(stringFromPtr(db.BillingEmail)),
 
 		Plan: OrganizationPlan(db.Plan),
 
-		Credits: float32(db.Credits),
+		Slug: db.Slug,
 
-		Metadata: unmarshalJSON(db.Metadata),
-
-		StripeCustomerID: stringFromPtr(db.StripeCustomerID),
+		StripeCustomerID: db.StripeCustomerID,
 	}
 
 	return result
-}
-
-// Helper functions for conversions
-func stringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func nilIfEmpty(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func stringFromPtr(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
-func boolPtr(b bool) *bool {
-	return &b
-}
-
-func int32Ptr(i int32) *int32 {
-	return &i
-}
-
-func float32Ptr(f float32) *float32 {
-	return &f
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
-}
-
-func marshalJSON(v interface{}) *string {
-	if v == nil {
-		return nil
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil
-	}
-	s := string(data)
-	return &s
-}
-
-func unmarshalJSON(s *string) map[string]interface{} {
-	if s == nil {
-		return nil
-	}
-	var result map[string]interface{}
-	if err := json.Unmarshal([]byte(*s), &result); err != nil {
-		return nil
-	}
-	return result
-}
-
-func uuidFromPtr(u *uuid.UUID) uuid.UUID {
-	if u == nil {
-		return uuid.Nil
-	}
-	return *u
-}
-
-func timeFromPtr(t *time.Time) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	return *t
 }

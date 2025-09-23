@@ -17,6 +17,8 @@ type Repository interface {
 	List(ctx context.Context, params ListArtifactsParams) ([]*Artifact, int64, error)
 
 	// Additional operations
+	// ListByOrganization retrieves multiple artifacts by organizationID
 	ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Artifact, error)
-	ListByProducer(ctx context.Context, producerID string) ([]*Artifact, error)
+	// ListByProducer retrieves multiple artifacts by producerID
+	ListByProducer(ctx context.Context, producerID *uuid.UUID) ([]*Artifact, error)
 }

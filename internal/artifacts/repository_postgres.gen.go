@@ -4,9 +4,7 @@ package artifacts
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/google/uuid"
@@ -15,14 +13,12 @@ import (
 
 // PostgresRepository implements Repository using PostgreSQL.
 type PostgresRepository struct {
-	db      *pgxpool.Pool
 	queries *postgresql.Queries
 }
 
 // NewPostgresRepository creates a new PostgreSQL repository.
 func NewPostgresRepository(db *pgxpool.Pool) Repository {
 	return &PostgresRepository{
-		db:      db,
 		queries: postgresql.New(db),
 	}
 }
@@ -34,14 +30,14 @@ func (r *PostgresRepository) Create(ctx context.Context, entity *Artifact) (*Art
 	params := postgresql.CreateArtifactParams{
 		ID: entity.ID,
 
-		Credits:        int32(entity.Credits),
-		Description:    stringPtr(entity.Description),
+		Credits:        entity.Credits,
+		Description:    entity.Description,
 		MimeType:       entity.MimeType,
-		Name:           stringPtr(entity.Name),
+		Name:           entity.Name,
 		OrganizationID: entity.OrganizationID,
-		PreviewImage:   stringPtr(entity.PreviewImage),
-		ProducerID:     &entity.ProducerID,
-		Text:           stringPtr(entity.Text),
+		PreviewImage:   entity.PreviewImage,
+		ProducerID:     entity.ProducerID,
+		Text:           entity.Text,
 	}
 
 	result, err := r.queries.CreateArtifact(ctx, params)
@@ -70,12 +66,13 @@ func (r *PostgresRepository) Update(ctx context.Context, id uuid.UUID, entity *A
 	params := postgresql.UpdateArtifactParams{
 		ID: id,
 
-		Credits:      int32Ptr(int32(entity.Credits)),
-		Description:  stringPtr(entity.Description),
-		MimeType:     stringPtr(entity.MimeType),
-		Name:         stringPtr(entity.Name),
-		PreviewImage: stringPtr(entity.PreviewImage),
-		Text:         stringPtr(entity.Text),
+		Credits:      &entity.Credits,
+		Description:  entity.Description,
+		MimeType:     &entity.MimeType,
+		Name:         entity.Name,
+		PreviewImage: entity.PreviewImage,
+		ProducerID:   entity.ProducerID,
+		Text:         entity.Text,
 	}
 
 	result, err := r.queries.UpdateArtifact(ctx, params)
@@ -108,7 +105,7 @@ func (r *PostgresRepository) List(ctx context.Context, params ListArtifactsParam
 	limit := int32(10) // default
 
 	// Check if params has Page field with Number and Size
-	if params.Page.Number > 0 && params.Page.Size > 0 {
+	if params.Page != nil && params.Page.Number > 0 && params.Page.Size > 0 {
 		offset = int32((params.Page.Number - 1) * params.Page.Size)
 		limit = int32(params.Page.Size)
 	}
@@ -135,21 +132,21 @@ func (r *PostgresRepository) List(ctx context.Context, params ListArtifactsParam
 	return items, count, nil
 }
 
+// Additional methods
+
 // ListByOrganization retrieves multiple artifacts by organizationID
 func (r *PostgresRepository) ListByOrganization(ctx context.Context, organizationID uuid.UUID) ([]*Artifact, error) {
-	// TODO: Implement ListByOrganization - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
 
-	return nil, fmt.Errorf("ListByOrganization not implemented - add SQLC query")
+	// TODO: Implement ListByOrganization - fetch multiple artifacts
+	return nil, fmt.Errorf("ListByOrganization not yet implemented")
 
 }
 
 // ListByProducer retrieves multiple artifacts by producerID
-func (r *PostgresRepository) ListByProducer(ctx context.Context, producerID string) ([]*Artifact, error) {
-	// TODO: Implement ListByProducer - this needs a custom SQLC query
-	// The implementation depends on the specific query available in SQLC
+func (r *PostgresRepository) ListByProducer(ctx context.Context, producerID *uuid.UUID) ([]*Artifact, error) {
 
-	return nil, fmt.Errorf("ListByProducer not implemented - add SQLC query")
+	// TODO: Implement ListByProducer - fetch multiple artifacts
+	return nil, fmt.Errorf("ListByProducer not yet implemented")
 
 }
 
@@ -165,97 +162,22 @@ func mapArtifactFromDB(db *postgresql.Artifact) *Artifact {
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
 
-		Credits: float32(db.Credits),
+		Credits: db.Credits,
 
-		Description: stringFromPtr(db.Description),
+		Description: db.Description,
 
 		MimeType: db.MimeType,
 
-		Name: stringFromPtr(db.Name),
+		Name: db.Name,
 
 		OrganizationID: db.OrganizationID,
 
-		PreviewImage: stringFromPtr(db.PreviewImage),
+		PreviewImage: db.PreviewImage,
 
-		ProducerID: uuidFromPtr(db.ProducerID),
+		ProducerID: db.ProducerID,
 
-		Text: stringFromPtr(db.Text),
+		Text: db.Text,
 	}
 
 	return result
-}
-
-// Helper functions for conversions
-func stringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func nilIfEmpty(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
-func stringFromPtr(s *string) string {
-	if s == nil {
-		return ""
-	}
-	return *s
-}
-
-func boolPtr(b bool) *bool {
-	return &b
-}
-
-func int32Ptr(i int32) *int32 {
-	return &i
-}
-
-func float32Ptr(f float32) *float32 {
-	return &f
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
-}
-
-func marshalJSON(v interface{}) *string {
-	if v == nil {
-		return nil
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		return nil
-	}
-	s := string(data)
-	return &s
-}
-
-func unmarshalJSON(s *string) map[string]interface{} {
-	if s == nil {
-		return nil
-	}
-	var result map[string]interface{}
-	if err := json.Unmarshal([]byte(*s), &result); err != nil {
-		return nil
-	}
-	return result
-}
-
-func uuidFromPtr(u *uuid.UUID) uuid.UUID {
-	if u == nil {
-		return uuid.Nil
-	}
-	return *u
-}
-
-func timeFromPtr(t *time.Time) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	return *t
 }

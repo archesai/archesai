@@ -47,12 +47,14 @@
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "environment": {
           "default": "development",
           "description": "Deployment environment (development, staging, production)",
-          "enum": ["development", "staging", "production"],
           "example": "development",
           "type": "string"
         },
@@ -61,6 +63,7 @@
           "description": "The host address on which the API server will listen",
           "example": "0.0.0.0",
           "minLength": 1,
+          "readOnly": true,
           "type": "string"
         },
         "image": {
@@ -89,7 +92,10 @@
             }
           },
           "required": ["pullPolicy", "tag"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "port": {
           "default": 3001,
@@ -147,7 +153,10 @@
             }
           },
           "required": ["limits", "requests"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "validate": {
           "default": true,
@@ -156,8 +165,11 @@
           "type": "boolean"
         }
       },
-      "required": [],
-      "type": "object"
+      "required": ["cors", "docs", "environment", "host", "port", "validate"],
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     },
     "auth": {
       "additionalProperties": false,
@@ -198,7 +210,10 @@
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "github": {
           "additionalProperties": false,
@@ -236,7 +251,10 @@
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "google": {
           "additionalProperties": false,
@@ -274,7 +292,10 @@
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "local": {
           "additionalProperties": false,
@@ -316,7 +337,10 @@
             "accessTokenTtl",
             "refreshTokenTtl"
           ],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "magicLink": {
           "additionalProperties": false,
@@ -429,7 +453,10 @@
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "microsoft": {
           "additionalProperties": false,
@@ -473,7 +500,10 @@
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "twitter": {
           "additionalProperties": false,
@@ -505,11 +535,17 @@
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         }
       },
       "required": ["enabled"],
-      "type": "object"
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     },
     "billing": {
       "additionalProperties": false,
@@ -539,38 +575,22 @@
             }
           },
           "required": ["token", "whsec"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         }
       },
       "required": ["enabled"],
-      "type": "object"
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     },
     "database": {
       "additionalProperties": false,
       "description": "Database configuration for PostgreSQL",
       "properties": {
-        "auth": {
-          "additionalProperties": false,
-          "description": "Database authentication credentials",
-          "properties": {
-            "database": {
-              "default": "archesai",
-              "description": "Database name",
-              "example": "archesai",
-              "minLength": 1,
-              "type": "string"
-            },
-            "password": {
-              "default": "password",
-              "description": "Database user password",
-              "example": "example-string",
-              "minLength": 1,
-              "type": "string"
-            }
-          },
-          "required": ["database", "password"],
-          "type": "object"
-        },
         "connMaxIdleTime": {
           "description": "Maximum connection idle time (e.g., \"5m\")",
           "example": "5m",
@@ -621,7 +641,10 @@
             }
           },
           "required": ["pullPolicy", "tag"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "managed": {
           "default": false,
@@ -633,6 +656,7 @@
           "default": 25,
           "description": "Maximum number of connections in pool (PostgreSQL)",
           "example": 25,
+          "format": "int32",
           "minimum": 1,
           "type": "integer"
         },
@@ -640,6 +664,7 @@
           "default": 5,
           "description": "Minimum number of connections in pool (PostgreSQL)",
           "example": 5,
+          "format": "int32",
           "minimum": 0,
           "type": "integer"
         },
@@ -662,7 +687,10 @@
             }
           },
           "required": ["enabled", "size"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "resources": {
           "additionalProperties": false,
@@ -714,7 +742,10 @@
             }
           },
           "required": ["limits", "requests"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "runMigrations": {
           "default": false,
@@ -737,8 +768,19 @@
           "type": "string"
         }
       },
-      "required": ["enabled"],
-      "type": "object"
+      "required": [
+        "enabled",
+        "url",
+        "type",
+        "maxConns",
+        "minConns",
+        "runMigrations",
+        "managed"
+      ],
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     },
     "intelligence": {
       "additionalProperties": false,
@@ -746,18 +788,33 @@
       "properties": {
         "embedding": {
           "additionalProperties": false,
-          "description": "Configuration for text embedding generation",
+          "description": "Large Language Model configuration",
           "properties": {
+            "endpoint": {
+              "description": "LLM service endpoint URL",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "token": {
+              "description": "Authentication token for LLM service",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
             "type": {
               "default": "ollama",
-              "description": "The embedding provider to use for vector embeddings",
-              "enum": ["openai", "ollama"],
-              "example": "openai",
+              "description": "LLM provider type",
+              "enum": ["ollama", "openai"],
+              "example": "ollama",
               "type": "string"
             }
           },
           "required": ["type"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "llm": {
           "additionalProperties": false,
@@ -784,7 +841,10 @@
             }
           },
           "required": ["type"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "runpod": {
           "additionalProperties": false,
@@ -804,7 +864,10 @@
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "scraper": {
           "additionalProperties": false,
@@ -848,7 +911,10 @@
                 }
               },
               "required": ["pullPolicy", "tag"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             },
             "managed": {
               "default": false,
@@ -906,11 +972,17 @@
                 }
               },
               "required": ["limits", "requests"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "speech": {
           "additionalProperties": false,
@@ -930,7 +1002,10 @@
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "unstructured": {
           "additionalProperties": false,
@@ -968,7 +1043,10 @@
                 }
               },
               "required": ["pullPolicy", "tag"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             },
             "managed": {
               "default": false,
@@ -1026,14 +1104,23 @@
                 }
               },
               "required": ["limits", "requests"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         }
       },
-      "type": "object"
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     },
     "kubernetes": {
       "additionalProperties": false,
@@ -1066,7 +1153,10 @@
                 }
               },
               "required": ["imagePullSecrets", "imageRegistry"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             },
             "migrations": {
               "additionalProperties": false,
@@ -1080,7 +1170,10 @@
                 }
               },
               "required": ["enabled"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             },
             "namespace": {
               "default": "arches-system",
@@ -1108,11 +1201,17 @@
                 }
               },
               "required": ["create", "name"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             }
           },
           "required": ["images", "migrations", "namespace", "serviceAccount"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "ingress": {
           "additionalProperties": false,
@@ -1157,11 +1256,17 @@
                 }
               },
               "required": ["enabled"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             }
           },
           "required": ["enabled"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "monitoring": {
           "additionalProperties": false,
@@ -1203,7 +1308,10 @@
                     }
                   },
                   "required": ["pullPolicy", "tag"],
-                  "type": "object"
+                  "type": "object",
+                  "x-codegen": {
+                    "domain": "config"
+                  }
                 },
                 "managed": {
                   "default": false,
@@ -1261,11 +1369,17 @@
                     }
                   },
                   "required": ["limits", "requests"],
-                  "type": "object"
+                  "type": "object",
+                  "x-codegen": {
+                    "domain": "config"
+                  }
                 }
               },
               "required": ["enabled"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             },
             "loki": {
               "additionalProperties": false,
@@ -1310,7 +1424,10 @@
                     }
                   },
                   "required": ["pullPolicy", "tag"],
-                  "type": "object"
+                  "type": "object",
+                  "x-codegen": {
+                    "domain": "config"
+                  }
                 },
                 "managed": {
                   "default": false,
@@ -1368,18 +1485,30 @@
                     }
                   },
                   "required": ["limits", "requests"],
-                  "type": "object"
+                  "type": "object",
+                  "x-codegen": {
+                    "domain": "config"
+                  }
                 }
               },
               "required": ["enabled"],
-              "type": "object"
+              "type": "object",
+              "x-codegen": {
+                "domain": "config"
+              }
             }
           },
           "required": ["grafana", "loki"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         }
       },
-      "type": "object"
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     },
     "logging": {
       "additionalProperties": false,
@@ -1408,7 +1537,10 @@
         }
       },
       "required": ["level", "pretty"],
-      "type": "object"
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     },
     "platform": {
       "additionalProperties": false,
@@ -1453,7 +1585,10 @@
             }
           },
           "required": ["pullPolicy", "tag"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "managed": {
           "default": false,
@@ -1511,11 +1646,17 @@
             }
           },
           "required": ["limits", "requests"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         }
       },
       "required": ["enabled"],
-      "type": "object"
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     },
     "redis": {
       "additionalProperties": false,
@@ -1573,7 +1714,10 @@
             }
           },
           "required": ["pullPolicy", "tag"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "managed": {
           "default": false,
@@ -1600,7 +1744,10 @@
             }
           },
           "required": ["enabled", "size"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "port": {
           "default": 6379,
@@ -1658,11 +1805,17 @@
             }
           },
           "required": ["limits", "requests"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         }
       },
       "required": ["enabled", "auth", "host", "port"],
-      "type": "object"
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     },
     "storage": {
       "additionalProperties": false,
@@ -1721,7 +1874,10 @@
             }
           },
           "required": ["pullPolicy", "tag"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "managed": {
           "default": false,
@@ -1748,7 +1904,10 @@
             }
           },
           "required": ["enabled", "size"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "resources": {
           "additionalProperties": false,
@@ -1800,7 +1959,10 @@
             }
           },
           "required": ["limits", "requests"],
-          "type": "object"
+          "type": "object",
+          "x-codegen": {
+            "domain": "config"
+          }
         },
         "secretkey": {
           "default": "minioadmin",
@@ -1811,9 +1973,15 @@
         }
       },
       "required": ["enabled", "accesskey", "bucket", "endpoint", "secretkey"],
-      "type": "object"
+      "type": "object",
+      "x-codegen": {
+        "domain": "config"
+      }
     }
   },
   "title": "Arches Helm Values Schema",
-  "type": "object"
+  "type": "object",
+  "x-codegen": {
+    "domain": "config"
+  }
 }

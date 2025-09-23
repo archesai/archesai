@@ -25,7 +25,7 @@ import type {
 
 import type {
   BadRequestResponse,
-  HealthResponse
+  Health
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -51,9 +51,9 @@ export const getGetHealthUrl = () => {
   return `/health`
 }
 
-export const getHealth = async ( options?: RequestInit): Promise<HealthResponse> => {
+export const getHealth = async ( options?: RequestInit): Promise<Health> => {
   
-  return customFetch<HealthResponse>(getGetHealthUrl(),
+  return customFetch<Health>(getGetHealthUrl(),
   {      
     ...options,
     method: 'GET'

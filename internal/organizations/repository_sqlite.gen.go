@@ -61,18 +61,18 @@ func (r *SQLiteRepository) List(ctx context.Context, params ListOrganizationsPar
 	return nil, 0, fmt.Errorf("ListOrganizations not yet implemented - requires custom mapping")
 }
 
-// GetBySlug retrieves organization by slug
+// GetBySlug retrieves a single organization by slug
 func (r *SQLiteRepository) GetBySlug(ctx context.Context, slug string) (*Organization, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement GetBySlug - fetch single record
 	return nil, fmt.Errorf("GetBySlug not yet implemented - requires custom mapping")
 
 }
 
-// GetByStripeCustomerID retrieves organization by stripeCustomerID
-func (r *SQLiteRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*Organization, error) {
+// GetByStripeCustomerID retrieves a single organization by stripeCustomerID
+func (r *SQLiteRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (*Organization, error) {
 
-	// For now, return a basic implementation
+	// TODO: Implement GetByStripeCustomerID - fetch single record
 	return nil, fmt.Errorf("GetByStripeCustomerID not yet implemented - requires custom mapping")
 
 }

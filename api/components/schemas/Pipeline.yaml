@@ -1,6 +1,7 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
 description: Schema for Pipeline entity
 x-codegen:
+  domain: pipelines
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID]
@@ -10,9 +11,14 @@ x-codegen:
         returns: multiple
 allOf:
   - $ref: ./Base.yaml
-  - $ref: ./OrganizationReference.yaml
   - type: object
     properties:
+      organizationID:
+        description: The organization identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
       name:
         description: The pipeline's display name
         type: string
@@ -25,5 +31,5 @@ allOf:
         maxLength: 1000
         example: 'Processes incoming data through validation, transformation, and storage steps'
     required:
-      - name
-    additionalProperties: false
+      - organizationID
+unevaluatedProperties: false

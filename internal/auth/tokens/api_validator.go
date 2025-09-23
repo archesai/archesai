@@ -13,23 +13,23 @@ import (
 
 // APIValidator handles API token validation with rate limiting and scope checking.
 type APIValidator struct {
-	store auth.APITokenStore
+	store auth.APIKeyStore
 }
 
 // NewAPIValidator creates a new API token validator.
-func NewAPIValidator(store auth.APITokenStore) *APIValidator {
+func NewAPIValidator(store auth.APIKeyStore) *APIValidator {
 	return &APIValidator{
 		store: store,
 	}
 }
 
-// NewAPITokenValidator creates a new API token validator without store (dummy implementation).
-func NewAPITokenValidator() auth.APITokenValidator {
-	return &APITokenValidatorImpl{}
+// NewAPIKeyValidator creates a new API token validator without store (dummy implementation).
+func NewAPIKeyValidator() auth.APIKeyValidator {
+	return &APIKeyValidatorImpl{}
 }
 
 // ValidateAPIKey validates an API key and returns the token data.
-func (v *APIValidator) ValidateAPIKey(ctx context.Context, key string) (*auth.APIToken, error) {
+func (v *APIValidator) ValidateAPIKey(ctx context.Context, key string) (*auth.APIKey, error) {
 	if key == "" {
 		return nil, auth.ErrInvalidAPIKey
 	}
@@ -48,7 +48,7 @@ func (v *APIValidator) ValidateAPIKeyWithScopes(
 	ctx context.Context,
 	key string,
 	requiredScopes []string,
-) (*auth.APIToken, error) {
+) (*auth.APIKey, error) {
 	token, err := v.ValidateAPIKey(ctx, key)
 	if err != nil {
 		return nil, err
@@ -67,14 +67,14 @@ func (v *APIValidator) ValidateAPIKeyForOrganization(
 	ctx context.Context,
 	key string,
 	organizationID uuid.UUID,
-) (*auth.APIToken, error) {
+) (*auth.APIKey, error) {
 	token, err := v.ValidateAPIKey(ctx, key)
 	if err != nil {
 		return nil, err
 	}
 
 	// Check organization access
-	if token.OrganizationID != organizationID {
+	if token.OrganizationID != &organizationID {
 		return nil, auth.ErrUnauthorizedOrganization
 	}
 
@@ -110,7 +110,7 @@ func (v *APIValidator) ExtractAPIKeyFromHeaders(headers map[string]string) strin
 // CheckRateLimit checks if the API key has exceeded its rate limit.
 func (v *APIValidator) CheckRateLimit(
 	_ context.Context,
-	token *auth.APIToken,
+	token *auth.APIKey,
 	window time.Duration,
 ) error {
 	// This is a simplified rate limit check
@@ -212,42 +212,42 @@ func (v *APIValidator) hasRequiredScopes(tokenScopes, requiredScopes []string) b
 	return true
 }
 
-// APITokenValidatorImpl is a simple implementation of APITokenValidator
-type APITokenValidatorImpl struct{}
+// APIKeyValidatorImpl is a simple implementation of APIKeyValidator
+type APIKeyValidatorImpl struct{}
 
 // ValidateAPIKey validates an API key
-func (v *APITokenValidatorImpl) ValidateAPIKey(
+func (v *APIKeyValidatorImpl) ValidateAPIKey(
 	_ context.Context,
 	_ string,
-) (*auth.APIToken, error) {
+) (*auth.APIKey, error) {
 	// Dummy implementation - would need actual store
 	return nil, auth.ErrInvalidAPIKey
 }
 
 // ValidateAPIKeyWithScopes validates an API key with required scopes
-func (v *APITokenValidatorImpl) ValidateAPIKeyWithScopes(
+func (v *APIKeyValidatorImpl) ValidateAPIKeyWithScopes(
 	_ context.Context,
 	_ string,
 	_ []string,
-) (*auth.APIToken, error) {
+) (*auth.APIKey, error) {
 	// Dummy implementation - would need actual store
 	return nil, auth.ErrInvalidAPIKey
 }
 
 // ValidateAPIKeyForOrganization validates an API key for an organization
-func (v *APITokenValidatorImpl) ValidateAPIKeyForOrganization(
+func (v *APIKeyValidatorImpl) ValidateAPIKeyForOrganization(
 	_ context.Context,
 	_ string,
 	_ uuid.UUID,
-) (*auth.APIToken, error) {
+) (*auth.APIKey, error) {
 	// Dummy implementation - would need actual store
 	return nil, auth.ErrInvalidAPIKey
 }
 
 // CheckRateLimit checks rate limit for a token
-func (v *APITokenValidatorImpl) CheckRateLimit(
+func (v *APIKeyValidatorImpl) CheckRateLimit(
 	_ context.Context,
-	_ *auth.APIToken,
+	_ *auth.APIKey,
 	_ time.Duration,
 ) error {
 	// Simple implementation - no rate limiting
@@ -255,7 +255,7 @@ func (v *APITokenValidatorImpl) CheckRateLimit(
 }
 
 // ValidateScopes checks if provided scopes contain all required scopes
-func (v *APITokenValidatorImpl) ValidateScopes(tokenScopes, requiredScopes []string) error {
+func (v *APIKeyValidatorImpl) ValidateScopes(tokenScopes, requiredScopes []string) error {
 	scopeMap := make(map[string]bool)
 	for _, s := range tokenScopes {
 		scopeMap[s] = true
@@ -270,7 +270,7 @@ func (v *APITokenValidatorImpl) ValidateScopes(tokenScopes, requiredScopes []str
 }
 
 // ExtractAPIKeyFromHeaders extracts API key from various header formats
-func (v *APITokenValidatorImpl) ExtractAPIKeyFromHeaders(headers map[string]string) string {
+func (v *APIKeyValidatorImpl) ExtractAPIKeyFromHeaders(headers map[string]string) string {
 	// Check Authorization header
 	if auth := headers["Authorization"]; auth != "" {
 		if strings.HasPrefix(strings.ToLower(auth), "bearer ") {

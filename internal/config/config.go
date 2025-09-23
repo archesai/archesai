@@ -25,3 +25,30 @@ var ConfigPaths = []string{
 	"/etc/archesai/",
 	"$HOME/.config/archesai",
 }
+
+// New returns the default configuration.
+func New() *Config {
+	host := "0.0.0.0"
+	port := float64(8080)
+	dbURL := "postgres://localhost/archesai"
+	redisHost := "localhost"
+	redisAuth := "password"
+	authEnabled := true
+
+	return &Config{
+		API: &ConfigAPI{
+			Host: host,
+			Port: port,
+		},
+		Database: &ConfigDatabase{
+			URL: dbURL,
+		},
+		Redis: &ConfigRedis{
+			Host: redisHost,
+			Auth: redisAuth,
+		},
+		Auth: &ConfigAuth{
+			Enabled: authEnabled,
+		},
+	}
+}

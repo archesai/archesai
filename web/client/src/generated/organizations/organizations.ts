@@ -38,8 +38,7 @@ import type {
   NotFoundResponse,
   UnauthorizedResponse,
   UpdateOrganization200,
-  UpdateOrganizationBody,
-  Uuid
+  UpdateOrganizationBody
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -292,7 +291,7 @@ export function useListOrganizationsSuspense<TData = Awaited<ReturnType<typeof l
  * Delete an organization
  * @summary Delete an organization
  */
-export const getDeleteOrganizationUrl = (id: Uuid | undefined | null,) => {
+export const getDeleteOrganizationUrl = (id: string | undefined | null,) => {
 
 
   
@@ -300,7 +299,7 @@ export const getDeleteOrganizationUrl = (id: Uuid | undefined | null,) => {
   return `/organizations/${id}`
 }
 
-export const deleteOrganization = async (id: Uuid | undefined | null, options?: RequestInit): Promise<DeleteOrganization200> => {
+export const deleteOrganization = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteOrganization200> => {
   
   return customFetch<DeleteOrganization200>(getDeleteOrganizationUrl(id),
   {      
@@ -315,8 +314,8 @@ export const deleteOrganization = async (id: Uuid | undefined | null, options?: 
 
 
 export const getDeleteOrganizationMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteOrganization>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteOrganization>>, TError,{id: Uuid | undefined | null}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteOrganization>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteOrganization>>, TError,{id: string | undefined | null}, TContext> => {
 
 const mutationKey = ['deleteOrganization'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -328,7 +327,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteOrganization>>, {id: Uuid | undefined | null}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteOrganization>>, {id: string | undefined | null}> = (props) => {
           const {id} = props ?? {};
 
           return  deleteOrganization(id,requestOptions)
@@ -347,11 +346,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Delete an organization
  */
 export const useDeleteOrganization = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteOrganization>>, TError,{id: Uuid | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteOrganization>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteOrganization>>,
         TError,
-        {id: Uuid | undefined | null},
+        {id: string | undefined | null},
         TContext
       > => {
 
@@ -363,7 +362,7 @@ export const useDeleteOrganization = <TError = NotFoundResponse,
  * Get an organization
  * @summary Get an organization
  */
-export const getGetOrganizationUrl = (id: Uuid | undefined | null,) => {
+export const getGetOrganizationUrl = (id: string | undefined | null,) => {
 
 
   
@@ -371,7 +370,7 @@ export const getGetOrganizationUrl = (id: Uuid | undefined | null,) => {
   return `/organizations/${id}`
 }
 
-export const getOrganization = async (id: Uuid | undefined | null, options?: RequestInit): Promise<GetOrganization200> => {
+export const getOrganization = async (id: string | undefined | null, options?: RequestInit): Promise<GetOrganization200> => {
   
   return customFetch<GetOrganization200>(getGetOrganizationUrl(id),
   {      
@@ -384,12 +383,12 @@ export const getOrganization = async (id: Uuid | undefined | null, options?: Req
 
 
 
-export const getGetOrganizationQueryKey = (id?: Uuid | undefined | null,) => {
+export const getGetOrganizationQueryKey = (id?: string | undefined | null,) => {
     return [`/organizations/${id}`] as const;
     }
 
     
-export const getGetOrganizationQueryOptions = <TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetOrganizationQueryOptions = <TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -412,7 +411,7 @@ export type GetOrganizationQueryError = NotFoundResponse
 
 
 export function useGetOrganization<TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>> & Pick<
+ id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getOrganization>>,
           TError,
@@ -422,7 +421,7 @@ export function useGetOrganization<TData = Awaited<ReturnType<typeof getOrganiza
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetOrganization<TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>> & Pick<
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getOrganization>>,
           TError,
@@ -432,7 +431,7 @@ export function useGetOrganization<TData = Awaited<ReturnType<typeof getOrganiza
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetOrganization<TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -440,7 +439,7 @@ export function useGetOrganization<TData = Awaited<ReturnType<typeof getOrganiza
  */
 
 export function useGetOrganization<TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -455,7 +454,7 @@ export function useGetOrganization<TData = Awaited<ReturnType<typeof getOrganiza
 
 
 
-export const getGetOrganizationSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetOrganizationSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -478,15 +477,15 @@ export type GetOrganizationSuspenseQueryError = NotFoundResponse
 
 
 export function useGetOrganizationSuspense<TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetOrganizationSuspense<TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetOrganizationSuspense<TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -494,7 +493,7 @@ export function useGetOrganizationSuspense<TData = Awaited<ReturnType<typeof get
  */
 
 export function useGetOrganizationSuspense<TData = Awaited<ReturnType<typeof getOrganization>>, TError = NotFoundResponse>(
- id: Uuid | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getOrganization>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -513,7 +512,7 @@ export function useGetOrganizationSuspense<TData = Awaited<ReturnType<typeof get
  * Update an organization
  * @summary Update an organization
  */
-export const getUpdateOrganizationUrl = (id: Uuid | undefined | null,) => {
+export const getUpdateOrganizationUrl = (id: string | undefined | null,) => {
 
 
   
@@ -521,7 +520,7 @@ export const getUpdateOrganizationUrl = (id: Uuid | undefined | null,) => {
   return `/organizations/${id}`
 }
 
-export const updateOrganization = async (id: Uuid | undefined | null,
+export const updateOrganization = async (id: string | undefined | null,
     updateOrganizationBody: UpdateOrganizationBody, options?: RequestInit): Promise<UpdateOrganization200> => {
   
   return customFetch<UpdateOrganization200>(getUpdateOrganizationUrl(id),
@@ -538,8 +537,8 @@ export const updateOrganization = async (id: Uuid | undefined | null,
 
 
 export const getUpdateOrganizationMutationOptions = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOrganization>>, TError,{id: Uuid | undefined | null;data: UpdateOrganizationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateOrganization>>, TError,{id: Uuid | undefined | null;data: UpdateOrganizationBody}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOrganization>>, TError,{id: string | undefined | null;data: UpdateOrganizationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateOrganization>>, TError,{id: string | undefined | null;data: UpdateOrganizationBody}, TContext> => {
 
 const mutationKey = ['updateOrganization'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -551,7 +550,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateOrganization>>, {id: Uuid | undefined | null;data: UpdateOrganizationBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateOrganization>>, {id: string | undefined | null;data: UpdateOrganizationBody}> = (props) => {
           const {id,data} = props ?? {};
 
           return  updateOrganization(id,data,requestOptions)
@@ -570,11 +569,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Update an organization
  */
 export const useUpdateOrganization = <TError = NotFoundResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOrganization>>, TError,{id: Uuid | undefined | null;data: UpdateOrganizationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOrganization>>, TError,{id: string | undefined | null;data: UpdateOrganizationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateOrganization>>,
         TError,
-        {id: Uuid | undefined | null;data: UpdateOrganizationBody},
+        {id: string | undefined | null;data: UpdateOrganizationBody},
         TContext
       > => {
 

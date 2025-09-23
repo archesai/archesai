@@ -252,7 +252,7 @@ func TestService_ListPipelines(t *testing.T) {
 		assert.NotNil(t, result)
 		if successResp, ok := result.(ListPipelines200JSONResponse); ok {
 			assert.Len(t, successResp.Data, 2)
-			assert.Equal(t, float32(2), successResp.Meta.Total)
+			assert.Equal(t, int64(2), successResp.Meta.Total)
 		} else {
 			t.Fatalf("expected ListPipelines200JSONResponse, got %T", result)
 		}

@@ -162,7 +162,7 @@ graph LR
 ### Embedding Generation
 
 ```go
-func GenerateEmbedding(content Content) ([]float32, error) {
+func GenerateEmbedding(content Content) ([]float64, error) {
     // Extract text from content
     text := ExtractText(content)
 

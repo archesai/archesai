@@ -9,10 +9,25 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
+
+const (
+	BearerAuthScopes    = "bearerAuth.Scopes"
+	SessionCookieScopes = "sessionCookie.Scopes"
+)
+
+// ProblemDetails represents an RFC 7807 problem details response.
+type ProblemDetails struct {
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance,omitempty"`
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -24,13 +39,13 @@ type ServerInterface interface {
 	CreateRun(ctx echo.Context) error
 	// Delete a run
 	// (DELETE /runs/{id})
-	DeleteRun(ctx echo.Context, id UUID) error
+	DeleteRun(ctx echo.Context, id uuid.UUID) error
 	// Find a run
 	// (GET /runs/{id})
-	GetRun(ctx echo.Context, id UUID) error
+	GetRun(ctx echo.Context, id uuid.UUID) error
 	// Update a run
 	// (PATCH /runs/{id})
-	UpdateRun(ctx echo.Context, id UUID) error
+	UpdateRun(ctx echo.Context, id uuid.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -42,10 +57,9 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) ListRuns(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(BearerAuthScopes, []string{})
-
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ListRunsParams
+
 	// ------------- Optional query parameter "filter" -------------
 
 	err = runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter)
@@ -67,6 +81,8 @@ func (w *ServerInterfaceWrapper) ListRuns(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
 	}
 
+	ctx.Set(BearerAuthScopes, []string{})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.ListRuns(ctx, params)
 	return err
@@ -87,7 +103,7 @@ func (w *ServerInterfaceWrapper) CreateRun(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) DeleteRun(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -105,7 +121,7 @@ func (w *ServerInterfaceWrapper) DeleteRun(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetRun(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -123,7 +139,7 @@ func (w *ServerInterfaceWrapper) GetRun(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) UpdateRun(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "id" -------------
-	var id UUID
+	var id uuid.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
@@ -164,7 +180,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
-
 	router.GET(baseURL+"/runs", wrapper.ListRuns)
 	router.POST(baseURL+"/runs", wrapper.CreateRun)
 	router.DELETE(baseURL+"/runs/:id", wrapper.DeleteRun)
@@ -173,11 +188,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse Problem
+type BadRequestResponse ProblemDetails
 
-type NotFoundApplicationProblemPlusJSONResponse Problem
+type NotFoundResponse ProblemDetails
 
-type UnauthorizedApplicationProblemPlusJSONResponse Problem
+type UnauthorizedResponse ProblemDetails
 
 type ListRunsRequestObject struct {
 	Params ListRunsParams
@@ -190,8 +205,7 @@ type ListRunsResponseObject interface {
 type ListRuns200JSONResponse struct {
 	Data []Run `json:"data"`
 	Meta struct {
-		// Total Total number of items in the collection
-		Total float32 `json:"total"`
+		Total int64 `json:"total"`
 	} `json:"meta"`
 }
 
@@ -202,38 +216,42 @@ func (response ListRuns200JSONResponse) VisitListRunsResponse(w http.ResponseWri
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListRuns400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type ListRuns400Response = BadRequestResponse
 
-func (response ListRuns400ApplicationProblemPlusJSONResponse) VisitListRunsResponse(w http.ResponseWriter) error {
+func (response ListRuns400Response) VisitListRunsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListRuns401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type ListRuns401Response = UnauthorizedResponse
 
-func (response ListRuns401ApplicationProblemPlusJSONResponse) VisitListRunsResponse(w http.ResponseWriter) error {
+func (response ListRuns401Response) VisitListRunsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ListRuns404Response = NotFoundResponse
+
+func (response ListRuns404Response) VisitListRunsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type CreateRunRequestObject struct {
-	Body *CreateRunJSONRequestBody
+	Body *CreateRunRequestBody
 }
 
 type CreateRunResponseObject interface {
 	VisitCreateRunResponse(w http.ResponseWriter) error
 }
-
 type CreateRun201JSONResponse struct {
-	// Data Schema for Run entity
+	// Data Schema for runs entity
 	Data Run `json:"data"`
 }
 
@@ -244,22 +262,18 @@ func (response CreateRun201JSONResponse) VisitCreateRunResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateRun400ApplicationProblemPlusJSONResponse struct {
-	BadRequestApplicationProblemPlusJSONResponse
-}
+type CreateRun400Response = BadRequestResponse
 
-func (response CreateRun400ApplicationProblemPlusJSONResponse) VisitCreateRunResponse(w http.ResponseWriter) error {
+func (response CreateRun400Response) VisitCreateRunResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type CreateRun401ApplicationProblemPlusJSONResponse struct {
-	UnauthorizedApplicationProblemPlusJSONResponse
-}
+type CreateRun401Response = UnauthorizedResponse
 
-func (response CreateRun401ApplicationProblemPlusJSONResponse) VisitCreateRunResponse(w http.ResponseWriter) error {
+func (response CreateRun401Response) VisitCreateRunResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(401)
 
@@ -267,15 +281,14 @@ func (response CreateRun401ApplicationProblemPlusJSONResponse) VisitCreateRunRes
 }
 
 type DeleteRunRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type DeleteRunResponseObject interface {
 	VisitDeleteRunResponse(w http.ResponseWriter) error
 }
-
 type DeleteRun200JSONResponse struct {
-	// Data Schema for Run entity
+	// Data Schema for runs entity
 	Data Run `json:"data"`
 }
 
@@ -286,11 +299,27 @@ func (response DeleteRun200JSONResponse) VisitDeleteRunResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response)
 }
 
-type DeleteRun404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type DeleteRun400Response = BadRequestResponse
+
+func (response DeleteRun400Response) VisitDeleteRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response DeleteRun404ApplicationProblemPlusJSONResponse) VisitDeleteRunResponse(w http.ResponseWriter) error {
+type DeleteRun401Response = UnauthorizedResponse
+
+func (response DeleteRun401Response) VisitDeleteRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteRun404Response = NotFoundResponse
+
+func (response DeleteRun404Response) VisitDeleteRunResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -298,7 +327,7 @@ func (response DeleteRun404ApplicationProblemPlusJSONResponse) VisitDeleteRunRes
 }
 
 type GetRunRequestObject struct {
-	ID UUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 type GetRunResponseObject interface {
@@ -306,8 +335,10 @@ type GetRunResponseObject interface {
 }
 
 type GetRun200JSONResponse struct {
-	// Data Schema for Run entity
-	Data Run `json:"data"`
+	Data []Run `json:"data"`
+	Meta struct {
+		Total int64 `json:"total"`
+	} `json:"meta"`
 }
 
 func (response GetRun200JSONResponse) VisitGetRunResponse(w http.ResponseWriter) error {
@@ -317,11 +348,27 @@ func (response GetRun200JSONResponse) VisitGetRunResponse(w http.ResponseWriter)
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetRun404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type GetRun400Response = BadRequestResponse
+
+func (response GetRun400Response) VisitGetRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response GetRun404ApplicationProblemPlusJSONResponse) VisitGetRunResponse(w http.ResponseWriter) error {
+type GetRun401Response = UnauthorizedResponse
+
+func (response GetRun401Response) VisitGetRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetRun404Response = NotFoundResponse
+
+func (response GetRun404Response) VisitGetRunResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -329,16 +376,15 @@ func (response GetRun404ApplicationProblemPlusJSONResponse) VisitGetRunResponse(
 }
 
 type UpdateRunRequestObject struct {
-	ID   UUID `json:"id"`
-	Body *UpdateRunJSONRequestBody
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateRunRequestBody
 }
 
 type UpdateRunResponseObject interface {
 	VisitUpdateRunResponse(w http.ResponseWriter) error
 }
-
 type UpdateRun200JSONResponse struct {
-	// Data Schema for Run entity
+	// Data Schema for runs entity
 	Data Run `json:"data"`
 }
 
@@ -349,11 +395,27 @@ func (response UpdateRun200JSONResponse) VisitUpdateRunResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateRun404ApplicationProblemPlusJSONResponse struct {
-	NotFoundApplicationProblemPlusJSONResponse
+type UpdateRun400Response = BadRequestResponse
+
+func (response UpdateRun400Response) VisitUpdateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response UpdateRun404ApplicationProblemPlusJSONResponse) VisitUpdateRunResponse(w http.ResponseWriter) error {
+type UpdateRun401Response = UnauthorizedResponse
+
+func (response UpdateRun401Response) VisitUpdateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateRun404Response = NotFoundResponse
+
+func (response UpdateRun404Response) VisitUpdateRunResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(404)
 
@@ -394,7 +456,6 @@ type strictHandler struct {
 // ListRuns operation middleware
 func (sh *strictHandler) ListRuns(ctx echo.Context, params ListRunsParams) error {
 	var request ListRunsRequestObject
-
 	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -419,8 +480,7 @@ func (sh *strictHandler) ListRuns(ctx echo.Context, params ListRunsParams) error
 // CreateRun operation middleware
 func (sh *strictHandler) CreateRun(ctx echo.Context) error {
 	var request CreateRunRequestObject
-
-	var body CreateRunJSONRequestBody
+	var body CreateRunRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}
@@ -446,9 +506,8 @@ func (sh *strictHandler) CreateRun(ctx echo.Context) error {
 }
 
 // DeleteRun operation middleware
-func (sh *strictHandler) DeleteRun(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) DeleteRun(ctx echo.Context, id uuid.UUID) error {
 	var request DeleteRunRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -471,9 +530,8 @@ func (sh *strictHandler) DeleteRun(ctx echo.Context, id UUID) error {
 }
 
 // GetRun operation middleware
-func (sh *strictHandler) GetRun(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) GetRun(ctx echo.Context, id uuid.UUID) error {
 	var request GetRunRequestObject
-
 	request.ID = id
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
@@ -496,12 +554,10 @@ func (sh *strictHandler) GetRun(ctx echo.Context, id UUID) error {
 }
 
 // UpdateRun operation middleware
-func (sh *strictHandler) UpdateRun(ctx echo.Context, id UUID) error {
+func (sh *strictHandler) UpdateRun(ctx echo.Context, id uuid.UUID) error {
 	var request UpdateRunRequestObject
-
 	request.ID = id
-
-	var body UpdateRunJSONRequestBody
+	var body UpdateRunRequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return err
 	}

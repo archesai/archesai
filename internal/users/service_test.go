@@ -332,7 +332,7 @@ func TestListUsers(t *testing.T) {
 				assert.NotNil(t, result)
 				if resp, ok := result.(ListUsers200JSONResponse); ok {
 					assert.Len(t, resp.Data, tt.wantCount)
-					assert.Equal(t, float32(tt.wantCount), resp.Meta.Total)
+					assert.Equal(t, int64(tt.wantCount), resp.Meta.Total)
 				} else {
 					t.Fatal("Expected ListUsers200JSONResponse")
 				}
