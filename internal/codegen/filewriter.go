@@ -1,0 +1,271 @@
+// Package codegen provides file writing utilities for code generation.
+package codegen
+
+import (
+	"bytes"
+	"fmt"
+	"go/format"
+	"os"
+	"path/filepath"
+	"strings"
+	"text/template"
+
+	"golang.org/x/tools/imports"
+)
+
+// FileWriter handles writing generated files with proper formatting and headers.
+type FileWriter struct {
+	header     string
+	overwrite  bool
+	formatCode bool
+}
+
+// NewFileWriter creates a new file writer with default settings.
+func NewFileWriter() *FileWriter {
+	return &FileWriter{
+		header:     DefaultHeader(),
+		overwrite:  true,
+		formatCode: true,
+	}
+}
+
+// WithHeader sets a custom header for generated files.
+func (fw *FileWriter) WithHeader(header string) *FileWriter {
+	fw.header = header
+	return fw
+}
+
+// WithOverwrite sets whether to overwrite existing files.
+func (fw *FileWriter) WithOverwrite(overwrite bool) *FileWriter {
+	fw.overwrite = overwrite
+	return fw
+}
+
+// WithFormatting sets whether to format Go code.
+func (fw *FileWriter) WithFormatting(format bool) *FileWriter {
+	fw.formatCode = format
+	return fw
+}
+
+// WriteFile writes content to a file with proper headers and formatting.
+func (fw *FileWriter) WriteFile(path string, content []byte) error {
+	// Check if file exists and overwrite is disabled
+	if !fw.overwrite {
+		if _, err := os.Stat(path); err == nil {
+			return fmt.Errorf("file already exists and overwrite is disabled: %s", path)
+		}
+	}
+
+	// Ensure the file has .gen.go suffix if it's a Go file
+	if strings.HasSuffix(path, ".go") && !strings.HasSuffix(path, ".gen.go") {
+		// Only enforce for generated files in internal/
+		if strings.Contains(path, "internal/") && !strings.Contains(path, "_manual.go") {
+			base := strings.TrimSuffix(path, ".go")
+			path = base + ".gen.go"
+		}
+	}
+
+	// Add header if it's a Go file
+	if strings.HasSuffix(path, ".go") && fw.header != "" {
+		content = fw.addHeader(content)
+	}
+
+	// Format Go code if enabled
+	if fw.formatCode && strings.HasSuffix(path, ".go") {
+		// First apply gofmt
+		formatted, err := format.Source(content)
+		if err != nil {
+			// If formatting fails, write unformatted with a warning comment
+			warning := []byte("// WARNING: This file could not be formatted automatically\n")
+			content = append(warning, content...)
+		} else {
+			// Then apply goimports to fix imports (add missing, remove unused)
+			imported, err := imports.Process(path, formatted, &imports.Options{
+				Fragment:  false,
+				AllErrors: false,
+				Comments:  true,
+				TabIndent: true,
+				TabWidth:  8,
+			})
+			if err != nil {
+				// If goimports fails, at least use gofmt result
+				content = formatted
+			} else {
+				content = imported
+			}
+		}
+	}
+
+	// Ensure directory exists
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("failed to create directory %s: %w", dir, err)
+	}
+
+	// Write the file
+	if err := os.WriteFile(path, content, 0644); err != nil {
+		return fmt.Errorf("failed to write file %s: %w", path, err)
+	}
+
+	return nil
+}
+
+// WriteTemplate executes a template and writes the result to a file.
+func (fw *FileWriter) WriteTemplate(path string, tmpl *template.Template, data interface{}) error {
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return fmt.Errorf("failed to execute template: %w", err)
+	}
+
+	return fw.WriteFile(path, buf.Bytes())
+}
+
+// WriteTemplateString parses a template string and writes the result to a file.
+func (fw *FileWriter) WriteTemplateString(path, tmplStr string, data interface{}) error {
+	tmpl, err := template.New(filepath.Base(path)).Parse(tmplStr)
+	if err != nil {
+		return fmt.Errorf("failed to parse template: %w", err)
+	}
+
+	return fw.WriteTemplate(path, tmpl, data)
+}
+
+// addHeader prepends the header to content.
+func (fw *FileWriter) addHeader(content []byte) []byte {
+	// Skip if content already has a header
+	contentStr := string(content)
+	if strings.HasPrefix(contentStr, "// Code generated") ||
+		strings.HasPrefix(contentStr, "// Package") {
+		// Check if it already has our header
+		if strings.Contains(contentStr, "DO NOT EDIT") {
+			return content
+		}
+	}
+
+	// Find the package declaration
+	lines := strings.Split(contentStr, "\n")
+	var headerLines []string
+	packageIndex := -1
+
+	for i, line := range lines {
+		if strings.HasPrefix(strings.TrimSpace(line), "package ") {
+			packageIndex = i
+			break
+		}
+	}
+
+	// Add header before package declaration
+	if packageIndex >= 0 {
+		headerLines = append(headerLines, fw.header)
+		if !strings.HasSuffix(fw.header, "\n") {
+			headerLines = append(headerLines, "")
+		}
+		headerLines = append(headerLines, lines[packageIndex:]...)
+		return []byte(strings.Join(headerLines, "\n"))
+	}
+
+	// No package declaration found, prepend header
+	return []byte(fw.header + "\n" + contentStr)
+}
+
+// DefaultHeader returns the default header for generated files.
+func DefaultHeader() string {
+	return `// Code generated by archesai-codegen. DO NOT EDIT.`
+}
+
+// HeaderWithSource returns a header that includes the source file.
+func HeaderWithSource(source string) string {
+	return fmt.Sprintf(`// Code generated by archesai-codegen. DO NOT EDIT.
+// Source: %s`, source)
+}
+
+// HeaderWithDetails returns a detailed header for generated files.
+func HeaderWithDetails(generator, source string) string {
+	return fmt.Sprintf(`// Code generated by archesai-codegen. DO NOT EDIT.
+// Generator: %s
+// Source: %s`, generator, source)
+}
+
+// EnsureGenSuffix ensures a file path has the .gen.go suffix.
+func EnsureGenSuffix(path string) string {
+	if !strings.HasSuffix(path, ".go") {
+		return path
+	}
+
+	if strings.HasSuffix(path, ".gen.go") {
+		return path
+	}
+
+	// Don't change manual files
+	if strings.Contains(path, "_manual") || strings.Contains(path, "manual_") {
+		return path
+	}
+
+	base := strings.TrimSuffix(path, ".go")
+	return base + ".gen.go"
+}
+
+// IsGeneratedFile checks if a file is a generated file.
+func IsGeneratedFile(path string) bool {
+	// Check by suffix
+	if strings.HasSuffix(path, ".gen.go") {
+		return true
+	}
+
+	// Check by reading the file header
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return false
+	}
+
+	contentStr := string(content)
+	return strings.Contains(contentStr, "Code generated") &&
+		strings.Contains(contentStr, "DO NOT EDIT")
+}
+
+// BackupFile creates a backup of an existing file before overwriting.
+func BackupFile(path string) error {
+	// Check if file exists
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil // No file to backup
+	}
+
+	// Create backup path
+	backupPath := path + ".backup"
+
+	// Read original file
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("failed to read original file: %w", err)
+	}
+
+	// Write backup
+	if err := os.WriteFile(backupPath, content, 0644); err != nil {
+		return fmt.Errorf("failed to write backup: %w", err)
+	}
+
+	return nil
+}
+
+// CleanGeneratedFiles removes all generated files in a directory.
+func CleanGeneratedFiles(dir string) error {
+	return filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Skip directories
+		if info.IsDir() {
+			return nil
+		}
+
+		// Remove generated files
+		if IsGeneratedFile(path) {
+			if err := os.Remove(path); err != nil {
+				return fmt.Errorf("failed to remove %s: %w", path, err)
+			}
+		}
+
+		return nil
+	})
+}

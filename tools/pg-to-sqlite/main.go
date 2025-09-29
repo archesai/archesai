@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/archesai/archesai/internal/logger"
+	"github.com/archesai/archesai/internal/shared/logger"
 )
 
 func main() {
@@ -16,8 +16,14 @@ func main() {
 		Pretty: true,
 	})
 
-	postgresDir := filepath.Join("internal", "migrations", "postgresql")
-	sqliteDir := filepath.Join("internal", "migrations", "sqlite")
+	postgresDir := filepath.Join(
+		"internal",
+		"infrastructure",
+		"persistence",
+		"postgres",
+		"migrations",
+	)
+	sqliteDir := filepath.Join("internal", "infrastructure", "persistence", "sqlite", "migrations")
 
 	// Ensure SQLite directory exists
 	if err := os.MkdirAll(sqliteDir, 0755); err != nil {

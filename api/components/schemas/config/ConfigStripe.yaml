@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Stripe payment configuration
+type: object
+title: StripeConfig
+properties:
+  token:
+    description: Stripe secret API key
+    type: string
+    minLength: 1
+    example: example-string
+  whsec:
+    description: Stripe webhook endpoint secret
+    type: string
+    minLength: 1
+    example: example-string
+required:
+  - token
+  - whsec
+additionalProperties: false
+x-codegen:
+  schemaType: valueobject

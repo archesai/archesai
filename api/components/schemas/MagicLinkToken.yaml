@@ -1,6 +1,7 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
+title: MagicLinkToken
 x-codegen:
-  domain: auth
+  schemaType: valueobject
 description: Schema for MagicLinkToken entity
 type: object
 properties:
@@ -16,6 +17,11 @@ properties:
     format: uuid
     example: 550e8400-e29b-41d4-a716-446655440000
     minLength: 36
+  token:
+    description: The raw magic link token
+    type: string
+    minLength: 32
+    example: 'abc123def456789ghi012jkl345mno678pqr901stu234'
   tokenHash:
     description: SHA256 hash of the magic link token
     type: string
@@ -51,9 +57,10 @@ properties:
     example: '2023-10-05T14:48:00Z'
   usedAt:
     description: When the token was used (null if unused)
-    type: string
-    format: date-time
-    nullable: true
+    oneOf:
+      - type: string
+        format: date-time
+      - type: 'null'
     example: '2023-10-05T14:48:00Z'
   ipAddress:
     description: IP address of the request

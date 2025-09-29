@@ -1,210 +1,230 @@
+// Package parsers provides OpenAPI and JSON Schema parsing functionality
 package parsers
 
 import (
+	"bytes"
+	"context"
 	"fmt"
+	"os"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/speakeasy-api/openapi/jsonschema/oas3"
-
-	"github.com/archesai/archesai/internal/templates"
+	"github.com/speakeasy-api/openapi/marshaller"
 )
 
-// JSONSchema handles JSON Schema operations and transformations.
-type JSONSchema struct {
-	*oas3.Schema
-	Name       string
-	Tags       []string
-	Extensions map[string]any // Generic extension storage
+const (
+	tagOmitempty = ",omitempty"
+)
+
+// ParseJSONSchema loads a schema from a YAML file
+func ParseJSONSchema(filePath string) (*oas3.Schema, *XCodegenExtension, error) {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to read schema file %s: %w", filePath, err)
+	}
+
+	ctx := context.Background()
+
+	// Unmarshal directly to a JSONSchema
+	var schema oas3.JSONSchema[oas3.Concrete]
+	validationErrs, err := marshaller.Unmarshal(ctx, bytes.NewReader(data), &schema)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to unmarshal schema: %w", err)
+	}
+
+	// Validate the schema
+	additionalErrs := schema.Validate(ctx)
+	validationErrs = append(validationErrs, additionalErrs...)
+
+	// Log validation errors if any
+	if len(validationErrs) > 0 {
+		for _, vErr := range validationErrs {
+			fmt.Printf("Schema validation warning: %s\n", vErr.Error())
+		}
+	}
+
+	// Get the concrete schema
+	var concreteSchema *oas3.Schema
+	if schema.IsLeft() {
+		concreteSchema = schema.GetLeft()
+	} else {
+		// It's a reference, we need to resolve it
+		return nil, nil, fmt.Errorf("schema is a reference, not a concrete schema")
+	}
+
+	// Parse x-codegen extension if present
+	var xcodegen *XCodegenExtension
+	parser := NewXCodegenParser()
+	if concreteSchema.Extensions != nil {
+		xcodegen = parser.Parse(*concreteSchema.Extensions)
+	}
+
+	return concreteSchema, xcodegen, nil
 }
 
-// NewJSONSchema creates a new JSONSchema instance.
-func NewJSONSchema(
+// ProcessSchema processes a single schema and extracts all relevant information
+func ProcessSchema(schema *oas3.Schema, name string) (*ProcessedSchema, error) {
+	if schema == nil {
+		return nil, fmt.Errorf("schema is nil")
+	}
+
+	result := &ProcessedSchema{
+		Name:   name,
+		Title:  extractTitle(schema, name),
+		Schema: schema,
+	}
+
+	// Extract description
+	if schema.Description != nil {
+		result.Description = *schema.Description
+	}
+
+	// Parse x-codegen extension
+	if schema.Extensions != nil {
+		xcodegenParser := NewXCodegenParser()
+		result.XCodegen = xcodegenParser.Parse(*schema.Extensions)
+		if result.XCodegen != nil {
+			// Set type flags based on x-codegen
+			switch result.XCodegen.SchemaType {
+			case "entity":
+				result.IsEntity = true
+				result.HasDomainEvents = true
+			case "aggregate":
+				result.IsAggregate = true
+				result.HasDomainEvents = true
+			case "valueobject":
+				result.IsValueObject = true
+			case "dto":
+				result.IsDTO = true
+			}
+		}
+	}
+
+	// Check if it's an enum
+	if len(schema.Enum) > 0 {
+		result.IsEnum = true
+		result.EnumValues = ExtractEnumValues(schema)
+		return result, nil
+	}
+
+	// Extract fields
+	result.Fields = ExtractFields(schema)
+
+	// Sort fields alphabetically for consistency
+	sort.Slice(result.Fields, func(i, j int) bool {
+		return result.Fields[i].Name < result.Fields[j].Name
+	})
+
+	// Separate required and optional fields
+	for _, field := range result.Fields {
+		if field.Required {
+			result.RequiredFields = append(result.RequiredFields, field)
+		} else {
+			result.OptionalFields = append(result.OptionalFields, field)
+		}
+	}
+
+	return result, nil
+}
+
+// ExtractFields extracts all fields from a schema including allOf compositions
+func ExtractFields(schema *oas3.Schema) []FieldDef {
+	if schema == nil {
+		return nil
+	}
+
+	fieldMap := make(map[string]FieldDef)
+	requiredFields := ExtractRequiredFields(schema)
+
+	// Process allOf references first
+	processAllOfFields(schema, fieldMap, requiredFields)
+
+	// Process direct properties (these override any from allOf)
+	processDirectProperties(schema, fieldMap, requiredFields)
+
+	// Convert map to slice
+	var fields []FieldDef
+	for _, field := range fieldMap {
+		field.Required = requiredFields[field.Name]
+
+		// Handle optional fields
+		if !field.Required {
+			if !strings.Contains(field.JSONTag, tagOmitempty) {
+				field.JSONTag += tagOmitempty
+			}
+			if field.YAMLTag != "" && !strings.Contains(field.YAMLTag, tagOmitempty) {
+				field.YAMLTag += tagOmitempty
+			}
+		}
+
+		// Apply type inference
+		field.GoType = InferGoType(field)
+
+		// Make optional fields pointers (after type inference)
+		if !field.Required && !strings.HasPrefix(field.GoType, "*") &&
+			!strings.HasPrefix(field.GoType, "[]") &&
+			!strings.HasPrefix(field.GoType, "map[") {
+			field.GoType = "*" + field.GoType
+		}
+
+		fields = append(fields, field)
+	}
+
+	return fields
+}
+
+// processAllOfFields processes fields from allOf compositions
+func processAllOfFields(
 	schema *oas3.Schema,
-) *JSONSchema {
-	return &JSONSchema{
-		Schema:     schema,
-		Extensions: make(map[string]any),
-	}
-}
-
-// GetExtension retrieves an extension by name.
-func (j *JSONSchema) GetExtension(name string) (any, bool) {
-	if j.Extensions == nil {
-		return nil, false
-	}
-	ext, ok := j.Extensions[name]
-	return ext, ok
-}
-
-// ExtractRequiredFields extracts all required fields from a schema including allOf.
-func (j *JSONSchema) ExtractRequiredFields() map[string]bool {
-	required := make(map[string]bool)
-
-	// Add required fields from main schema
-	for _, field := range j.Required {
-		required[field] = true
-	}
-
-	// Add required fields from resolved allOf schemas
-	for _, allOfItem := range j.AllOf {
+	fieldMap map[string]FieldDef,
+	requiredFields map[string]bool,
+) {
+	for _, allOfItem := range schema.AllOf {
 		resolvedObject := allOfItem.GetResolvedObject()
 		if resolvedObject != nil && resolvedObject.IsLeft() {
 			refSchema := resolvedObject.GetLeft()
 			if refSchema != nil {
-				for _, field := range refSchema.Required {
-					required[field] = true
+				// Recursively process allOf schemas
+				processAllOfFields(refSchema, fieldMap, requiredFields)
+
+				// Process direct properties
+				processSchemaProperties(refSchema, fieldMap)
+
+				// Add required fields
+				for _, req := range refSchema.Required {
+					fieldName := NormalizeFieldName(req)
+					requiredFields[fieldName] = true
 				}
 			}
 		}
 	}
-
-	return required
 }
 
-// ExtractProperties extracts all properties from a schema including allOf.
-func (j *JSONSchema) ExtractProperties() map[string]*oas3.Schema {
-	properties := make(map[string]*oas3.Schema)
+// processDirectProperties processes direct properties of a schema
+func processDirectProperties(
+	schema *oas3.Schema,
+	fieldMap map[string]FieldDef,
+	requiredFields map[string]bool,
+) {
+	processSchemaProperties(schema, fieldMap)
 
-	// First, add properties from resolved allOf schemas (base schemas)
-	for _, allOfItem := range j.AllOf {
-		resolvedObject := allOfItem.GetResolvedObject()
-		if resolvedObject != nil && resolvedObject.IsLeft() {
-			refSchema := resolvedObject.GetLeft()
-			if refSchema != nil && refSchema.Properties != nil {
-				for name := range refSchema.Properties.Keys() {
-					propRef := refSchema.Properties.GetOrZero(name)
-					if propRef != nil && propRef.IsLeft() {
-						properties[name] = propRef.GetLeft()
-					}
-				}
-			}
-		}
+	// Add required fields from this schema
+	for _, req := range schema.Required {
+		fieldName := NormalizeFieldName(req)
+		requiredFields[fieldName] = true
 	}
-
-	// Then, add/override with properties from main schema
-	if j.Properties != nil {
-		for name := range j.Properties.Keys() {
-			propRef := j.Properties.GetOrZero(name)
-			if propRef != nil && propRef.IsLeft() {
-				properties[name] = propRef.GetLeft()
-			}
-		}
-	}
-
-	return properties
 }
 
-// =============================================================================
-// Type Conversion Methods
-// =============================================================================
-
-// SchemaToGoType converts a JSON Schema to a Go type.
-func (j *JSONSchema) SchemaToGoType(schema *oas3.Schema) string {
-	if schema == nil {
-		return "interface{}"
+// generateInlineStructType generates an inline struct type definition for nested objects
+func generateInlineStructType(schema *oas3.Schema) string {
+	if schema == nil || schema.Properties == nil || schema.Properties.Len() == 0 {
+		return goTypeInterface
 	}
 
-	// Get the types array from the schema
-	types := schema.GetType()
-	if len(types) == 0 {
-		return "interface{}"
-	}
+	var structFields []string
 
-	// Use the first type (most schemas have only one type)
-	schemaType := string(types[0])
-
-	// Check for string types with format
-	if schemaType == "string" {
-		if schema.Format != nil {
-			switch *schema.Format {
-			case "date-time":
-				return "time.Time"
-			case "date":
-				return "time.Time"
-			case "uuid":
-				return "uuid.UUID"
-			case "email", "uri", "hostname":
-				return "string"
-			default:
-				return "string"
-			}
-		}
-		return "string"
-	}
-
-	// Check for numeric types
-	if schemaType == "integer" {
-		if schema.Format != nil {
-			switch *schema.Format {
-			case "int32":
-				return "int32"
-			case "int64":
-				return "int64"
-			default:
-				return "int"
-			}
-		}
-		return "int"
-	}
-
-	if schemaType == "number" {
-		if schema.Format != nil {
-			switch *schema.Format {
-			case "float":
-				return "float32"
-			case "double":
-				return "float64"
-			default:
-				return "float64"
-			}
-		}
-		return "float64"
-	}
-
-	// Check for boolean
-	if schemaType == "boolean" {
-		return "bool"
-	}
-
-	// Check for array
-	if schemaType == "array" {
-		if schema.Items != nil {
-			if schema.Items.IsLeft() {
-				itemType := j.SchemaToGoType(schema.Items.GetLeft())
-				return "[]" + itemType
-			}
-		}
-		return "[]interface{}"
-	}
-
-	// Check for object
-	if schemaType == "object" {
-		if schema.AdditionalProperties != nil {
-			if schema.AdditionalProperties.IsLeft() {
-				valueType := j.SchemaToGoType(schema.AdditionalProperties.GetLeft())
-				return "map[string]" + valueType
-			}
-		}
-		// If it has properties, generate an inline struct with fields
-		if schema.Properties != nil && schema.Properties.Len() > 0 {
-			return j.generateInlineStruct(schema)
-		}
-		return "map[string]interface{}"
-	}
-
-	// Default
-	return "interface{}"
-}
-
-// generateInlineStruct generates an inline struct definition with fields.
-func (j *JSONSchema) generateInlineStruct(schema *oas3.Schema) string {
-	if schema == nil || schema.Properties == nil {
-		return "struct{}"
-	}
-
-	var fields []string
+	// Process each property in the nested object
 	for propName := range schema.Properties.Keys() {
 		propRef := schema.Properties.GetOrZero(propName)
 		if propRef == nil || !propRef.IsLeft() {
@@ -216,160 +236,261 @@ func (j *JSONSchema) generateInlineStruct(schema *oas3.Schema) string {
 			continue
 		}
 
-		// Convert JSON field name to proper Go field name
-		fieldName := templates.PascalCase(propName)
-		// Apply initialism fixes
-		fieldName = templates.Title(fieldName)
-
-		// Get the Go type for this property
-		goType := j.SchemaToGoType(prop)
-
-		// Check if field is required
-		isRequired := false
-		if schema.Required != nil {
-			for _, req := range schema.Required {
-				if req == propName {
-					isRequired = true
-					break
-				}
-			}
+		fieldDef := generateStructField(schema, propName, prop)
+		if fieldDef != "" {
+			structFields = append(structFields, fieldDef)
 		}
-
-		// Make optional fields pointers (unless they're already pointers, slices, or maps)
-		if !isRequired && !strings.HasPrefix(goType, "*") &&
-			!strings.HasPrefix(goType, "[]") &&
-			!strings.HasPrefix(goType, "map[") {
-			goType = "*" + goType
-		}
-
-		// Build JSON and YAML tags
-		jsonTag := propName
-		yamlTag := propName
-		if !isRequired {
-			jsonTag += ",omitempty"
-			yamlTag += ",omitempty"
-		}
-
-		// Add description if available
-		description := ""
-		if prop.Description != nil {
-			description = " // " + *prop.Description
-		}
-
-		// Build the field definition
-		field := fmt.Sprintf("\t%s %s `json:\"%s\" yaml:\"%s\"`%s",
-			fieldName, goType, jsonTag, yamlTag, description)
-		fields = append(fields, field)
 	}
 
-	// Sort fields for consistent output
-	sort.Strings(fields)
-
-	if len(fields) == 0 {
-		return "struct{}"
+	if len(structFields) == 0 {
+		return goTypeInterface
 	}
 
-	// Return the inline struct definition
-	return "struct {\n" + strings.Join(fields, "\n") + "\n}"
+	// Sort fields for consistency
+	sort.Strings(structFields)
+
+	// Build the inline struct type
+	return "struct {\n\t\t" + strings.Join(structFields, "\n\t\t") + "\n\t}"
 }
 
-// SchemaToSQLType converts a JSON Schema to a SQL type.
-func (j *JSONSchema) SchemaToSQLType(schema *oas3.Schema, dialect string) string {
-	if schema == nil {
-		return "TEXT"
+// generateStructField generates a single struct field definition
+func generateStructField(
+	schema *oas3.Schema,
+	propName string,
+	prop *oas3.Schema,
+) string {
+	fieldName := NormalizeFieldName(propName)
+	goType := determineGoType(prop, fieldName)
+
+	if goType == "" {
+		goType = "interface{}"
 	}
 
-	// Get the types array from the schema
-	types := schema.GetType()
-	if len(types) == 0 {
-		return "TEXT"
+	isRequired := isFieldRequired(schema, propName)
+
+	// Make optional fields pointers
+	if !isRequired && !strings.HasPrefix(goType, fieldName+" struct") &&
+		!strings.HasPrefix(goType, "*") && !strings.HasPrefix(goType, "[]") &&
+		!strings.HasPrefix(goType, "map[") && !strings.HasPrefix(goType, "struct{") {
+		goType = "*" + goType
 	}
 
-	// Use the first type (most schemas have only one type)
-	schemaType := string(types[0])
+	jsonTag := propName
+	if !isRequired {
+		jsonTag += tagOmitempty
+	}
 
-	// Check for string types
-	if schemaType == "string" {
-		if schema.Format != nil {
-			switch *schema.Format {
-			case "date-time":
-				if dialect == "postgresql" {
-					return "TIMESTAMPTZ"
-				}
-				return "DATETIME"
-			case "date":
-				return "DATE"
-			case "uuid":
-				return "UUID"
-			case "email":
-				if schema.MaxLength != nil && *schema.MaxLength > 0 {
-					if strings.ToUpper(dialect) == "POSTGRESQL" {
-						return "VARCHAR(" + strconv.Itoa(int(*schema.MaxLength)) + ")"
+	// Format the field definition
+	if strings.HasPrefix(goType, fieldName+" ") {
+		// It's a named inline struct, format it specially
+		structDef := strings.TrimPrefix(goType, fieldName+" ")
+		return fmt.Sprintf("%s %s `json:\"%s\" yaml:\"%s\"`",
+			fieldName, structDef, jsonTag, propName)
+	}
+
+	return fmt.Sprintf("%s %s `json:\"%s\" yaml:\"%s\"`",
+		fieldName, goType, jsonTag, propName)
+}
+
+// determineGoType determines the Go type for a property
+func determineGoType(prop *oas3.Schema, fieldName string) string {
+	if prop == nil {
+		return ""
+	}
+
+	// Handle references
+	if prop.Ref != nil && prop.Ref.String() != "" {
+		return extractTypeFromRef(prop.Ref.String())
+	}
+
+	// Handle nested objects
+	types := prop.GetType()
+	if len(types) > 0 {
+		switch string(types[0]) {
+		case schemaTypeObject:
+			if prop.Properties != nil && prop.Properties.Len() > 0 {
+				// Recursively generate inline struct
+				return fieldName + " " + generateInlineStructType(prop)
+			}
+		case "array":
+			// Handle array of objects specially
+			if prop.Items != nil && prop.Items.IsLeft() {
+				itemSchema := prop.Items.GetLeft()
+				if itemSchema != nil {
+					itemTypes := itemSchema.GetType()
+					if len(itemTypes) > 0 && string(itemTypes[0]) == "object" &&
+						itemSchema.Properties != nil && itemSchema.Properties.Len() > 0 {
+						// Array of objects with properties
+						return "[]" + generateInlineStructType(itemSchema)
 					}
-					return "TEXT"
 				}
-				return "VARCHAR(255)"
-			default:
-				if schema.MaxLength != nil && *schema.MaxLength > 0 {
-					return "VARCHAR(" + strconv.Itoa(int(*schema.MaxLength)) + ")"
-				}
-				return "TEXT"
 			}
 		}
-		if schema.MaxLength != nil && *schema.MaxLength > 0 {
-			return "VARCHAR(" + strconv.Itoa(int(*schema.MaxLength)) + ")"
-		}
-		return "TEXT"
 	}
 
-	// Check for numeric types
-	if schemaType == "integer" {
-		if schema.Format != nil {
-			switch *schema.Format {
-			case "int32":
-				return "INTEGER"
-			case "int64":
-				return "BIGINT"
-			default:
-				return "INTEGER"
-			}
-		}
-		return "INTEGER"
-	}
-
-	if schemaType == "number" {
-		if schema.Format != nil {
-			switch *schema.Format {
-			case "float":
-				return "REAL"
-			case "double":
-				return "DOUBLE PRECISION"
-			default:
-				return "NUMERIC"
-			}
-		}
-		return "NUMERIC"
-	}
-
-	// Check for boolean
-	if schemaType == "boolean" {
-		return "BOOLEAN"
-	}
-
-	// Check for array or object
-	if schemaType == "array" || schemaType == "object" {
-		if dialect == "postgresql" {
-			return "JSONB"
-		}
-		return "TEXT" // SQLite stores JSON as TEXT
-	}
-
-	// Default
-	return "TEXT"
+	// Use the existing SchemaToGoType for everything else
+	return SchemaToGoType(prop)
 }
 
-// ExtractEnumValues extracts enum values from a schema.
-func (j *JSONSchema) ExtractEnumValues(schema *oas3.Schema) []string {
+// isFieldRequired checks if a field is required
+func isFieldRequired(schema *oas3.Schema, propName string) bool {
+	for _, req := range schema.Required {
+		if req == propName {
+			return true
+		}
+	}
+	return false
+}
+
+// processSchemaProperties extracts properties from a schema
+func processSchemaProperties(
+	schema *oas3.Schema,
+	fieldMap map[string]FieldDef,
+) {
+	if schema.Properties == nil {
+		return
+	}
+
+	for propName := range schema.Properties.Keys() {
+		propRef := schema.Properties.GetOrZero(propName)
+		if propRef == nil {
+			continue
+		}
+
+		// Convert JSON field name to proper Go field name
+		fieldName := NormalizeFieldName(propName)
+
+		var goType string
+		var prop *oas3.Schema
+
+		if propRef.IsLeft() {
+			prop = propRef.GetLeft()
+			if prop != nil {
+				// Check if it's a reference
+				if prop.Ref != nil && prop.Ref.String() != "" {
+					goType = extractTypeFromRef(prop.Ref.String())
+				} else {
+					// Handle nested objects and arrays as inline structs
+					types := prop.GetType()
+					if len(types) > 0 && string(types[0]) == schemaTypeObject && prop.Properties != nil && prop.Properties.Len() > 0 {
+						// Generate inline struct type recursively
+						goType = generateInlineStructType(prop)
+					} else if len(types) > 0 && string(types[0]) == "array" {
+						// Handle arrays specially
+						if prop.Items != nil && prop.Items.IsLeft() {
+							itemSchema := prop.Items.GetLeft()
+							if itemSchema != nil {
+								itemTypes := itemSchema.GetType()
+								if len(itemTypes) > 0 && string(itemTypes[0]) == "object" &&
+									itemSchema.Properties != nil && itemSchema.Properties.Len() > 0 {
+									// Array of objects with properties - generate inline struct
+									goType = "[]" + generateInlineStructType(itemSchema)
+								} else {
+									goType = SchemaToGoType(prop)
+								}
+							} else {
+								goType = SchemaToGoType(prop)
+							}
+						} else {
+							goType = SchemaToGoType(prop)
+						}
+					} else {
+						goType = SchemaToGoType(prop)
+					}
+				}
+			}
+		}
+
+		if goType == "" {
+			goType = "interface{}"
+		}
+
+		field := FieldDef{
+			Name:      fieldName,
+			FieldName: fieldName,
+			GoType:    goType,
+			JSONTag:   propName,
+			YAMLTag:   propName,
+		}
+
+		// Extract additional properties if we have a prop
+		if prop != nil {
+			extractFieldMetadata(prop, &field)
+		}
+
+		fieldMap[field.Name] = field
+	}
+}
+
+// extractFieldMetadata extracts metadata from a schema property
+func extractFieldMetadata(prop *oas3.Schema, field *FieldDef) {
+	// Extract format
+	if prop.Format != nil {
+		field.Format = *prop.Format
+	}
+
+	// Extract description
+	if prop.Description != nil {
+		field.Description = *prop.Description
+	}
+
+	// Extract enum values
+	if prop.Enum != nil {
+		for _, enumVal := range prop.Enum {
+			if enumVal != nil {
+				var val string
+				if err := enumVal.Decode(&val); err == nil {
+					field.Enum = append(field.Enum, val)
+				}
+			}
+		}
+		if len(field.Enum) > 0 {
+			field.IsEnumType = true
+		}
+	}
+
+	// Check nullable
+	if prop.Nullable != nil {
+		field.Nullable = *prop.Nullable
+	}
+
+	// Extract default value
+	if prop.Default != nil {
+		field.DefaultValue = ExtractDefaultValue(prop)
+	}
+}
+
+// ExtractRequiredFields extracts all required fields from a schema including allOf
+func ExtractRequiredFields(schema *oas3.Schema) map[string]bool {
+	required := make(map[string]bool)
+
+	if schema == nil {
+		return required
+	}
+
+	// Add required fields from main schema
+	for _, field := range schema.Required {
+		required[NormalizeFieldName(field)] = true
+	}
+
+	// Add required fields from resolved allOf schemas
+	for _, allOfItem := range schema.AllOf {
+		resolvedObject := allOfItem.GetResolvedObject()
+		if resolvedObject != nil && resolvedObject.IsLeft() {
+			refSchema := resolvedObject.GetLeft()
+			if refSchema != nil {
+				for _, field := range refSchema.Required {
+					required[NormalizeFieldName(field)] = true
+				}
+			}
+		}
+	}
+
+	return required
+}
+
+// ExtractEnumValues extracts enum values from a schema
+func ExtractEnumValues(schema *oas3.Schema) []string {
 	if schema == nil || len(schema.Enum) == 0 {
 		return nil
 	}
@@ -377,7 +498,6 @@ func (j *JSONSchema) ExtractEnumValues(schema *oas3.Schema) []string {
 	var values []string
 	for _, v := range schema.Enum {
 		if v != nil {
-			// Convert the value to string representation
 			var strVal string
 			if err := v.Decode(&strVal); err == nil {
 				values = append(values, strVal)
@@ -387,18 +507,8 @@ func (j *JSONSchema) ExtractEnumValues(schema *oas3.Schema) []string {
 	return values
 }
 
-// IsRequired checks if a field is required.
-func (j *JSONSchema) IsRequired(fieldName string, required []string) bool {
-	for _, r := range required {
-		if r == fieldName {
-			return true
-		}
-	}
-	return false
-}
-
-// ExtractDefaultValue extracts the default value from a schema.
-func (j *JSONSchema) ExtractDefaultValue(schema *oas3.Schema) string {
+// ExtractDefaultValue extracts the default value from a schema
+func ExtractDefaultValue(schema *oas3.Schema) string {
 	if schema == nil || schema.Default == nil {
 		return ""
 	}
@@ -422,7 +532,7 @@ func (j *JSONSchema) ExtractDefaultValue(schema *oas3.Schema) string {
 	switch schemaType {
 	case "string":
 		if str, ok := defaultVal.(string); ok {
-			return `"` + str + `"`
+			return str
 		}
 	case "boolean":
 		if b, ok := defaultVal.(bool); ok {
@@ -438,342 +548,58 @@ func (j *JSONSchema) ExtractDefaultValue(schema *oas3.Schema) string {
 	return ""
 }
 
-// InferGoType infers the Go type for a field based on its properties.
-func (j *JSONSchema) InferGoType(field templates.FieldData) string {
-	// Check format first
-	switch field.Format {
-	case "uuid":
-		return "uuid.UUID"
-	case "date-time":
-		return "time.Time"
-	case "email":
-		return "string" // Keep as string for now, not openapi_types.Email
-	case "int32":
-		return "int32"
-	case "int64":
-		return "int64"
-	case "float":
-		return "float32"
-	case "double":
-		return "float64"
-	}
+// ExtractProperties extracts all properties from a schema including allOf
+func ExtractProperties(schema *oas3.Schema) map[string]*oas3.Schema {
+	properties := make(map[string]*oas3.Schema)
 
-	// Check enum
-	if len(field.Enum) > 0 {
-		return "string" // Enums are typically strings
-	}
-
-	// Use the Type field
-	switch field.GoType {
-	case "string", "*string":
-		return "string"
-	case "integer", "*integer":
-		return "int"
-	case "number", "*number":
-		return "float64"
-	case "boolean", "*boolean":
-		return "bool"
-	case "array":
-		return "[]interface{}"
-	case "object":
-		return "map[string]interface{}"
-	default:
-		// If type starts with *, it's a pointer - extract the base type
-		if strings.HasPrefix(field.GoType, "*") {
-			return field.GoType[1:]
-		}
-		// If we have a type, use it
-		if field.GoType != "" && field.GoType != "interface{}" {
-			return field.GoType
-		}
-		return "interface{}"
-	}
-
-}
-
-// InferSQLCType infers the SQLC type for a field.
-func (j *JSONSchema) InferSQLCType(field templates.FieldData) string {
-	goType := field.GoType
-	if goType == "" {
-		goType = j.InferGoType(field)
-	}
-
-	// Map Go types to SQLC types
-	switch goType {
-	case "uuid.UUID":
-		return "uuid.UUID"
-	case "time.Time":
-		return "time.Time"
-	case "string":
-		return "string"
-	case "int", "int32":
-		return "int32"
-	case "int64":
-		return "int64"
-	case "float32", "float64":
-		return "float64"
-	case "bool":
-		return "bool"
-	case "[]byte":
-		return "[]byte"
-	case "json.RawMessage", "map[string]interface{}":
-		return "json.RawMessage"
-	default:
-		// For complex types, use json.RawMessage
-		if strings.HasPrefix(goType, "[]") || strings.HasPrefix(goType, "map[") {
-			return "json.RawMessage"
-		}
-		return goType
-	}
-}
-
-// IsPointerType checks if a type should be a pointer based on field properties.
-func (j *JSONSchema) IsPointerType(field templates.FieldData) bool {
-	// Required fields are not pointers (unless explicitly nullable)
-	if field.Required && !field.Nullable {
-		return false
-	}
-
-	// Optional fields are pointers
-	if !field.Required {
-		return true
-	}
-
-	// Explicitly nullable fields are pointers
-	return field.Nullable
-}
-
-// WrapPointer wraps a type in a pointer if needed.
-func (j *JSONSchema) WrapPointer(goType string, isPointer bool) string {
-	if !isPointer || goType == "interface{}" {
-		return goType
-	}
-
-	if !strings.HasPrefix(goType, "*") {
-		return "*" + goType
-	}
-
-	return goType
-}
-
-// =============================================================================
-// Entity Data Preparation Methods
-// =============================================================================
-
-// ExtractSchemaFields extracts fields from a schema with allOf support.
-func (j *JSONSchema) ExtractSchemaFields() []templates.FieldData {
-	if j.Schema == nil {
-		return nil
-	}
-
-	fieldMap := make(map[string]templates.FieldData)
-	requiredFields := make(map[string]bool)
-
-	// Process allOf references first
-	j.processAllOfFields(j.Schema, fieldMap, requiredFields)
-
-	// Process direct properties (these override any from allOf)
-	j.processDirectProperties(j.Schema, fieldMap, requiredFields)
-
-	// Convert map to slice and update required status
-	var fields []templates.FieldData
-	for _, field := range fieldMap {
-		field.Required = requiredFields[field.Name]
-
-		// Handle optional fields
-		if !field.Required {
-			if !strings.Contains(field.JSONTag, ",omitempty") {
-				field.JSONTag += ",omitempty"
-			}
-			// For YAML, only add omitempty if not already present
-			if field.YAMLTag != "" && !strings.Contains(field.YAMLTag, ",omitempty") {
-				field.YAMLTag += ",omitempty"
-			}
-		}
-
-		// Apply type inference
-		field.GoType = j.InferGoType(field)
-		field.SQLCType = j.InferSQLCType(field)
-
-		// Make optional fields pointers (after type inference)
-		if !field.Required && !strings.HasPrefix(field.GoType, "*") &&
-			!strings.HasPrefix(field.GoType, "[]") &&
-			!strings.HasPrefix(field.GoType, "map[") {
-			field.GoType = "*" + field.GoType
-		}
-
-		field.FieldName = field.Name     // Already processed above
-		field.SQLCFieldName = field.Name // SQLC uses same naming as Go
-
-		fields = append(fields, field)
-	}
-
-	// Sort fields for consistent output
-	sort.Slice(fields, func(i, j int) bool {
-		return fields[i].Name < fields[j].Name
-	})
-
-	return fields
-}
-
-// processAllOfFields processes allOf references in a schema.
-func (j *JSONSchema) processAllOfFields(
-	schema *oas3.Schema,
-	fieldMap map[string]templates.FieldData,
-	requiredFields map[string]bool,
-) {
-	if schema == nil {
-		return
-	}
-
-	// Resolve allOf references and extract fields from each
-	for _, allOfItem := range j.AllOf {
+	// First, add properties from resolved allOf schemas
+	for _, allOfItem := range schema.AllOf {
 		resolvedObject := allOfItem.GetResolvedObject()
 		if resolvedObject != nil && resolvedObject.IsLeft() {
 			refSchema := resolvedObject.GetLeft()
-			if refSchema != nil {
-				refJsonSchema := NewJSONSchema(refSchema)
-				refJsonSchema.extractFieldsFromSchema(fieldMap)
-
-				// Add required fields from this schema
-				if refSchema.Required != nil {
-					for _, req := range refSchema.Required {
-						fieldName := templates.Title(templates.CamelCase(req))
-						requiredFields[fieldName] = true
+			if refSchema != nil && refSchema.Properties != nil {
+				for name := range refSchema.Properties.Keys() {
+					propRef := refSchema.Properties.GetOrZero(name)
+					if propRef != nil && propRef.IsLeft() {
+						properties[name] = propRef.GetLeft()
 					}
 				}
 			}
 		}
 	}
+
+	// Then, add/override with properties from main schema
+	if schema.Properties != nil {
+		for name := range schema.Properties.Keys() {
+			propRef := schema.Properties.GetOrZero(name)
+			if propRef != nil && propRef.IsLeft() {
+				properties[name] = propRef.GetLeft()
+			}
+		}
+	}
+
+	return properties
 }
 
-// processDirectProperties processes direct schema properties.
-func (j *JSONSchema) processDirectProperties(
-	schema *oas3.Schema,
-	fieldMap map[string]templates.FieldData,
-	requiredFields map[string]bool,
-) {
-	if schema.Properties == nil {
-		return
+// extractTitle extracts the title from a schema or uses the default name
+func extractTitle(schema *oas3.Schema, defaultName string) string {
+	if schema != nil && schema.Title != nil && *schema.Title != "" {
+		return *schema.Title
 	}
-
-	j.extractFieldsFromSchema(fieldMap)
-
-	// Add required fields from this schema
-	if schema.Required != nil {
-		for _, req := range schema.Required {
-			fieldName := templates.Title(templates.CamelCase(req))
-			requiredFields[fieldName] = true
-		}
-	}
+	return defaultName
 }
 
-// extractFieldsFromSchema extracts fields from a schema into the field map.
-func (j *JSONSchema) extractFieldsFromSchema(
-	fieldMap map[string]templates.FieldData,
-) {
-	if j.Properties == nil {
-		return
+// extractTypeFromRef extracts type name from a reference string
+func extractTypeFromRef(ref string) string {
+	if strings.HasPrefix(ref, "#/") {
+		parts := strings.Split(ref, "/")
+		if len(parts) > 0 {
+			return parts[len(parts)-1]
+		}
+	} else if strings.HasPrefix(ref, "./") {
+		typeName := strings.TrimPrefix(ref, "./")
+		typeName = strings.TrimSuffix(typeName, ".yaml")
+		return typeName
 	}
-
-	for propName := range j.Properties.Keys() {
-		propRef := j.Properties.GetOrZero(propName)
-		if propRef == nil {
-			continue
-		}
-
-		// Convert JSON field name to proper Go field name
-		fieldName := templates.PascalCase(propName)
-		// Apply initialism fixes
-		fieldName = templates.Title(fieldName)
-
-		var goType string
-		var prop *oas3.Schema
-
-		// Properties are always schemas, but they might have a $ref
-		if propRef.IsLeft() {
-			prop = propRef.GetLeft()
-			if prop != nil {
-				// Check if this schema has a reference
-				if prop.Ref != nil && prop.Ref.String() != "" {
-					// It's a reference - extract the type name
-					refStr := prop.Ref.String()
-					// Handle both local refs (#/components/schemas/ConfigAPI)
-					// and file refs (./ConfigAPI.yaml)
-					if strings.HasPrefix(refStr, "#/") {
-						// Local reference
-						parts := strings.Split(refStr, "/")
-						if len(parts) > 0 {
-							goType = parts[len(parts)-1]
-						}
-					} else if strings.HasPrefix(refStr, "./") {
-						// File reference
-						typeName := strings.TrimPrefix(refStr, "./")
-						typeName = strings.TrimSuffix(typeName, ".yaml")
-						goType = typeName
-					} else {
-						// Just use the ref as-is
-						goType = refStr
-					}
-				} else {
-					// It's an inline schema
-					goType = j.SchemaToGoType(prop)
-				}
-			}
-		}
-
-		if goType == "" {
-			goType = "interface{}"
-		}
-
-		field := templates.FieldData{
-			Name:    fieldName,
-			GoType:  goType,
-			JSONTag: propName,
-			YAMLTag: propName,
-		}
-
-		// Only extract additional properties if we have a prop (inline schema)
-		if prop != nil {
-			// Extract format
-			if prop.Format != nil {
-				field.Format = *prop.Format
-			}
-
-			// Extract description
-			if prop.Description != nil {
-				field.Description = *prop.Description
-			}
-
-			// Extract enum values
-			if prop.Enum != nil {
-				for _, enumVal := range prop.Enum {
-					if enumVal != nil {
-						field.Enum = append(field.Enum, fmt.Sprintf("%v", enumVal.Value))
-					}
-				}
-				// Set IsEnumType flag when enum values exist
-				if len(field.Enum) > 0 {
-					// Generate enum type name (schema name + field name)
-					// This will be updated later if we have access to the schema name
-					field.IsEnumType = true
-				}
-			}
-
-			// Check nullable
-			if prop.Nullable != nil {
-				field.Nullable = *prop.Nullable
-			}
-
-			// Extract default value
-			if prop.Default != nil {
-				var defaultValue interface{}
-				if err := prop.Default.Decode(&defaultValue); err == nil {
-					field.DefaultValue = fmt.Sprint(defaultValue)
-				}
-			}
-		}
-
-		fieldMap[field.Name] = field
-	}
+	return ref
 }

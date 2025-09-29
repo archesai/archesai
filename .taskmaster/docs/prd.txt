@@ -1,438 +1,441 @@
 <context>
-# Overview  
-ArchesAI is an AI-native workflow automation platform that democratizes complex data processing and AI operations for non-technical users. Unlike traditional automation tools that bolt on AI features, ArchesAI is built from the ground up with AI at its core, enabling users to create, modify, and optimize workflows through natural language while maintaining the power and flexibility that enterprises demand.
+# Overview
+ArchesAI is an AI-powered code generation platform that transforms OpenAPI specifications into production-ready full-stack applications. Unlike traditional code generators that produce boilerplate templates, ArchesAI leverages containerized AI environments where Claude can develop, test, and refine code in real-time, creating sophisticated applications following hexagonal architecture patterns and modern best practices.
 
-The platform solves the critical gap between powerful AI capabilities and business users who lack engineering expertise. While tools like n8n require technical knowledge to configure integrations and write expressions, ArchesAI uses conversational AI to translate business requirements into executable workflows, making advanced automation accessible to product managers, analysts, and business operators.
+The platform solves the fundamental challenge of bridging the gap between API design and implementation. While developers can easily define what their application should do through OpenAPI specs, translating these specifications into well-architected, maintainable code requires significant expertise and time. ArchesAI automates this process while maintaining the flexibility for developers to interact with AI to customize and refine the generated code through natural language.
 
-# Core Features  
+# Core Features
 
-## 1. Conversational Workflow Builder
-- Natural language workflow creation: Users describe what they want in plain English
-- AI-powered workflow suggestions based on industry best practices
-- Automatic error handling and optimization recommendations
-- Real-time workflow explanation and documentation generation
+## 1. OpenAPI-Driven Code Generation
+- Automatic generation of backend code in Go with hexagonal architecture
+- SQLC generation for type-safe database operations
+- Frontend component generation with full TypeScript types
+- Automatic API client generation for multiple languages
+- Smart dependency injection and interface generation
+- Test suite generation with mocks and fixtures
 
-## 2. Universal AI Model Hub
-- Single interface for all major LLM providers (OpenAI, Claude, Gemini, Mistral, Ollama)
-- Hugging Face model integration for specialized tasks
-- Automatic model selection based on task requirements and cost optimization
-- Model performance comparison and A/B testing capabilities
-- Built-in prompt engineering assistant
+## 2. Containerized AI Development Environment
+- Isolated Docker containers where Claude can develop and execute code
+- Sandboxed environments for safe code execution and testing
+- Real-time file system access and modification capabilities
+- Integrated terminal access through the web UI
+- Resource monitoring and automatic cleanup
+- Multi-container orchestration for microservices
 
-## 3. Visual DAG Editor with AI Assistance
-- Drag-and-drop workflow designer with AI-powered node recommendations
-- Smart connectors that suggest optimal data flow paths
-- Real-time validation and error prevention
-- One-click conversion between visual and code representations
-- AI explains what each node does in business terms
+## 3. Live Preview and Visualization
+- Real-time component preview in isolated iframes
+- Hot-reload for instant feedback on code changes
+- Full application preview with backend and frontend running
+- Interactive component playground with prop editing
+- Responsive design testing across different viewports
+- Performance metrics and bundle size analysis
 
-## 4. Intelligent Content Processing
-- Automatic content classification and tagging using AI
-- Multi-modal processing (text, images, documents, structured data)
-- Smart data extraction and transformation
-- Version control with AI-powered diff explanations
-- Automated quality checks and data validation
+## 4. Intelligent Code Refinement
+- Natural language interaction to modify generated code
+- AI understands context from OpenAPI spec for accurate modifications
+- Automatic regeneration when OpenAPI spec changes
+- Code explanation and documentation generation
+- Refactoring suggestions based on best practices
+- Migration assistance when updating specifications
 
-## 5. Self-Learning Execution Engine
-- Learns from execution patterns to optimize performance
-- Predictive error detection and prevention
-- Automatic retry strategies with intelligent backoff
-- Cost optimization through smart resource allocation
-- Performance insights with actionable recommendations
+## 5. Theme and Component Library System
+- Customizable design system generation
+- Theme editor with live preview
+- Component library with searchable documentation
+- Export themes as design tokens (CSS variables, JS objects)
+- Automatic dark mode generation
+- Accessibility compliance checking
 
-## 6. Enterprise-Ready Multi-Tenancy
-- Organization-level isolation with shared workflow templates
-- Role-based access control with AI-suggested permissions
-- Audit logging with natural language search
-- Compliance automation for common standards
-- White-label capabilities for agencies and consultants
+## 6. Full-Stack Project Scaffolding
+- Complete project structure following best practices
+- Dockerfile and docker-compose generation
+- CI/CD pipeline configuration (GitHub Actions, GitLab CI)
+- Environment configuration management
+- Database migration systems
+- Deployment configurations for major cloud providers
 
-# User Experience  
+# User Experience
 
 ## User Personas
 
-### 1. Business Analyst Sarah
-- Needs to process customer data and generate insights
-- No coding experience but understands business logic
-- Wants to automate repetitive reporting tasks
+### 1. Startup Founder Alex
+- Needs to build an MVP quickly without a large team
+- Has a clear API design but limited coding expertise
+- Wants production-ready code that can scale
 
-### 2. Product Manager Mike
-- Manages multiple AI-powered features
-- Needs to prototype and test AI workflows quickly
-- Wants to control costs across different AI providers
+### 2. Senior Developer Maria
+- Architects systems but wants to accelerate implementation
+- Needs code that follows specific architectural patterns
+- Wants to maintain control over code quality and structure
 
-### 3. Operations Director Lisa
-- Oversees company-wide automation initiatives
-- Needs visibility into all workflows and their performance
-- Requires compliance and governance features
+### 3. Tech Lead David
+- Manages multiple projects and needs consistency
+- Requires standardized code generation across teams
+- Needs customizable templates for company standards
 
 ## Key User Flows
 
-### Workflow Creation Flow
-1. User describes their goal in natural language
-2. AI suggests a workflow template or builds from scratch
-3. User refines using visual editor with AI assistance
-4. Platform validates and suggests optimizations
-5. One-click deployment with monitoring setup
+### Application Generation Flow
+1. User uploads or creates OpenAPI specification
+2. Platform validates spec and suggests improvements
+3. User selects architecture preferences and tech stack
+4. AI generates initial codebase in containerized environment
+5. User previews running application and components
+6. User interacts with AI to refine specific features
+7. Final code is exported or deployed
 
-### AI Model Selection Flow
-1. User describes the task they want to accomplish
-2. Platform recommends optimal model based on task, cost, and speed
-3. User can override with preferences or constraints
-4. System provides cost estimates and performance predictions
-5. Automatic fallback configuration for reliability
+### AI Refinement Flow
+1. User selects generated code section
+2. User describes desired changes in natural language
+3. AI modifies code while maintaining consistency
+4. Changes are validated against OpenAPI spec
+5. Live preview updates automatically
+6. User approves or requests further refinement
 
-### Debugging and Optimization Flow
-1. Platform detects workflow issues or inefficiencies
-2. AI analyzes patterns and suggests root causes
-3. User receives plain-language explanation of issues
-4. One-click fixes for common problems
-5. Continuous learning from resolutions
+### Component Development Flow
+1. User defines component through OpenAPI schema
+2. AI generates component with props and types
+3. User sees live preview in component playground
+4. User adjusts theme and styling through UI
+5. Component documentation is auto-generated
+6. Component is added to shared library
 </context>
 <PRD>
-# Technical Architecture  
+# Technical Architecture
 
 ## System Components
 
 ### Core Services
-- **Workflow Engine**: DAG-based execution engine with parallel processing
-- **AI Gateway**: Unified interface for all AI/ML providers with automatic routing
-- **Content Pipeline**: Multi-modal content processing with streaming support
-- **Auth Service**: JWT-based authentication with OAuth2 integration
-- **Organization Service**: Multi-tenant management with resource isolation
+- **Code Generation Engine**: Template-based generation with AI enhancement
+- **Container Orchestration Service**: Docker container lifecycle management
+- **AI Integration Layer**: Claude API integration with context management
+- **Preview Server**: Live application hosting and hot-reload
+- **Specification Parser**: OpenAPI validation and schema extraction
 
 ### Infrastructure Layer
-- **PostgreSQL + pgvector**: Primary database with vector search for AI embeddings
-- **Redis**: Distributed caching and pub/sub for real-time updates
-- **S3-compatible Storage**: Artifact and content storage
-- **Kubernetes**: Container orchestration for scalable execution
-- **Temporal/Airflow**: Workflow orchestration backbone
+- **PostgreSQL**: Project metadata, user data, generation history
+- **Redis**: Session management, container state, real-time updates
+- **S3-compatible Storage**: Generated code archives, templates
+- **Docker Swarm/K8s**: Container orchestration for dev environments
+- **MinIO**: Local object storage for development
 
-### AI Integration Layer
-- **LLM Router**: Intelligent routing between providers based on cost/performance
-- **Prompt Template Engine**: Reusable, parameterized prompt management
-- **Model Registry**: Centralized model configuration and versioning
-- **Embedding Service**: Vector generation for semantic search and matching
-- **Fine-tuning Pipeline**: Custom model training infrastructure
+### Code Generation Layer
+- **Template Engine**: Go templates, Handlebars for different targets
+- **AST Manipulation**: Code modification without regeneration
+- **Schema Parsers**: OpenAPI, JSON Schema, GraphQL support
+- **Type Mappers**: Schema to language-specific type conversion
+- **Dependency Resolver**: Package management for generated code
 
 ### Frontend Architecture
-- **React SPA**: Primary user interface with real-time updates
-- **Visual Workflow Designer**: React Flow-based DAG editor
-- **AI Chat Interface**: Conversational UI for workflow creation
-- **Monitoring Dashboard**: Real-time metrics and logs visualization
-- **TypeScript SDK**: For custom integrations and extensions
+- **React SPA**: Main platform interface
+- **Monaco Editor**: Code editing with syntax highlighting
+- **WebSocket Layer**: Real-time container communication
+- **iframe Sandboxing**: Secure component preview
+- **Web Terminal**: xterm.js for container access
 
 ## Data Models
 
 ### Core Entities
-- **Organization**: Multi-tenant root entity with settings and limits
-- **User**: Authentication and profile management
-- **Workflow**: DAG definition with nodes, edges, and configuration
-- **Execution**: Runtime instance of a workflow with state tracking
-- **Tool**: Reusable workflow components and integrations
-- **Artifact**: Generated content and intermediate results
-- **Model Configuration**: AI model settings and credentials
+- **Project**: Root entity containing OpenAPI spec and settings
+- **Generation**: Instance of code generation with configuration
+- **Container**: Docker container instance with metadata
+- **Template**: Reusable code generation templates
+- **Theme**: Design system configuration
+- **Component**: Generated UI component with preview data
+- **Deployment**: Deployment configuration and status
 
 ### Event System
-- Workflow state changes
-- Execution progress updates
-- Error and alert notifications
-- Usage and billing events
-- Audit trail events
+- Code generation events
+- Container lifecycle events
+- Preview server updates
+- AI interaction logs
+- User modification tracking
 
 ## APIs and Integrations
 
 ### REST API
-- OpenAPI 3.1 specification
-- JWT authentication with refresh tokens
-- Rate limiting and quota management
-- Webhook support for external triggers
+- OpenAPI specification management
+- Code generation triggers
+- Container management
+- Template CRUD operations
 
 ### WebSocket API
-- Real-time execution monitoring
-- Live collaboration features
-- Push notifications
-- Streaming AI responses
+- Container terminal access
+- Live code updates
+- Preview hot-reload
+- AI conversation streaming
 
 ### Third-party Integrations
-- OAuth2 providers (Google, Microsoft, GitHub)
-- Cloud storage services (AWS S3, Google Cloud Storage, Azure Blob)
-- Communication platforms (Slack, Teams, Discord)
-- Data sources (databases, APIs, file systems)
-- Monitoring tools (Datadog, New Relic, Prometheus)
+- GitHub/GitLab for code repository management
+- Docker Hub for base images
+- NPM/Go modules for dependency management
+- Cloud providers for deployment (AWS, GCP, Azure)
+- Claude API for AI interactions
 
-# Development Roadmap  
+# Development Roadmap
 
 ## Phase 1: Foundation (MVP)
 ### Core Platform
-- Basic authentication and user management
-- Organization creation and management
-- Simple workflow engine with sequential execution
-- PostgreSQL and Redis setup
+- OpenAPI parser and validator
+- Basic Go code generation with hexagonal architecture
+- SQLC generation from OpenAPI schemas
+- Simple project management system
 
-### AI Integration
-- OpenAI and Anthropic Claude integration
-- Basic prompt templates
-- Simple model selection interface
-- Text-only processing
+### Code Generation
+- Template system for Go services
+- Repository pattern implementation
+- Basic CRUD operations
+- Database schema generation
 
 ### User Interface
-- React SPA scaffold with routing
-- Basic visual workflow editor (nodes and edges)
-- Simple execution monitoring
-- Manual workflow triggers
+- Web-based OpenAPI editor
+- Generated code viewer
+- Download generated code as ZIP
+- Basic project dashboard
 
-### Essential Workflows
-- Data transformation pipelines
-- Basic AI chat workflows
-- File processing workflows
-- API integration workflows
+### Essential Features
+- PostgreSQL database support
+- RESTful API generation
+- Basic error handling
+- Simple authentication patterns
 
-## Phase 2: Intelligence Layer
-### Advanced AI Features
-- Multi-model support (Gemini, Mistral, Ollama, Hugging Face)
-- Intelligent model routing and selection
-- Cost optimization algorithms
-- Prompt engineering assistant
-- AI-powered workflow generation from natural language
+## Phase 2: AI Integration & Containers
+### Container Infrastructure
+- Docker container provisioning per project
+- Container lifecycle management
+- Resource limits and monitoring
+- Automatic cleanup policies
 
-### Enhanced Workflow Engine
-- Parallel execution support
-- Conditional branching and loops
-- Error handling and retry strategies
-- Workflow versioning and rollback
-- Schedule and trigger management
+### AI Capabilities
+- Claude integration for code refinement
+- Natural language to code modifications
+- Context-aware suggestions
+- Code explanation generation
 
-### Collaboration Features
+### Enhanced Generation
+- Service layer generation
+- Validation and business logic
+- Unit test generation
+- API documentation
+
+### Developer Experience
+- Web-based terminal for containers
+- File explorer for generated code
+- Real-time code editing
+- Git integration
+
+## Phase 3: Frontend & Visualization
+### Frontend Generation
+- React component generation from schemas
+- TypeScript interfaces and types
+- API client generation
+- Form generation from schemas
+
+### Live Preview System
+- Component preview server
+- Hot-reload capabilities
+- Prop playground
+- Responsive testing tools
+
+### Theme System
+- Design token generation
+- Component styling options
+- Theme editor UI
+- Dark mode support
+
+### Enhanced AI Features
+- Multi-file modifications
+- Architectural suggestions
+- Performance optimization hints
+- Security vulnerability detection
+
+## Phase 4: Enterprise & Scale
+### Advanced Generation
+- Microservices orchestration
+- GraphQL support
+- Event-driven architectures
+- Message queue integration
+
+### Deployment Features
+- One-click deployment to cloud
+- CI/CD pipeline generation
+- Infrastructure as Code
+- Monitoring and logging setup
+
+### Collaboration
 - Team workspaces
-- Shared workflow templates
-- Comments and annotations
-- Change tracking and approval workflows
-- Role-based access control
+- Shared templates
+- Code review workflows
+- Version control integration
 
-### Content Processing
-- Multi-modal support (images, documents, audio)
-- Content extraction and transformation
-- Automatic tagging and classification
-- Content versioning and comparison
-- Quality validation rules
-
-## Phase 3: Enterprise Scale
-### Performance & Reliability
-- Distributed execution with Kubernetes
-- Auto-scaling based on load
-- Multi-region deployment
-- Disaster recovery and backup
-- SLA monitoring and guarantees
-
-### Advanced Intelligence
-- Custom model fine-tuning
-- Workflow learning and optimization
-- Predictive analytics and insights
-- Anomaly detection and alerting
-- Automated A/B testing
-
-### Enterprise Features
-- Single Sign-On (SSO) and SAML
-- Advanced audit logging and compliance
-- Custom branding and white-labeling
-- API rate limiting and quotas
-- Usage analytics and reporting
-
-### Marketplace & Ecosystem
-- Public workflow template library
-- Third-party tool marketplace
-- Developer SDK and CLI tools
-- Webhook and API extensions
-- Community contributions
-
-## Phase 4: Optimization & Expansion
-### AI Operations
-- Model performance monitoring
-- Automatic prompt optimization
-- Cost forecasting and budgeting
-- Multi-modal workflow designer
-- Federated learning capabilities
-
-### Platform Evolution
-- Mobile application
-- Edge deployment options
-- Offline execution support
-- Real-time collaboration
-- Advanced debugging tools
-
-### Business Intelligence
-- Workflow analytics dashboard
-- ROI calculation and reporting
-- Process mining and optimization
-- Predictive maintenance
-- Executive dashboards
+### Extensibility
+- Plugin system for custom generators
+- Template marketplace
+- Custom AI prompts
+- Webhook integrations
 
 # Logical Dependency Chain
 
 ## Foundation Dependencies (Must Build First)
-1. **Authentication System**: Required for all user operations
-2. **Database Schema**: Core data models must be established
-3. **Basic API Structure**: RESTful endpoints for CRUD operations
-4. **Organization Management**: Multi-tenancy foundation
+1. **OpenAPI Parser**: Required for all code generation
+2. **Template Engine**: Core generation mechanism
+3. **Project Management**: Store specifications and settings
+4. **Basic Code Generation**: Go + SQLC as proof of concept
 
-## Core Platform Dependencies
-1. **Workflow Engine**: Depends on auth and database
-2. **Execution Runtime**: Depends on workflow engine
-3. **Basic UI**: Depends on API structure
-4. **Tool Registry**: Depends on workflow engine
+## Container Platform Dependencies
+1. **Docker Integration**: Depends on project management
+2. **Container Orchestration**: Depends on Docker integration
+3. **WebSocket Server**: Depends on container orchestration
+4. **Web Terminal**: Depends on WebSocket server
 
 ## AI Integration Dependencies
-1. **AI Gateway**: Depends on configuration management
-2. **Model Management**: Depends on AI gateway
-3. **Prompt Templates**: Depends on model management
-4. **Content Processing**: Depends on AI gateway and storage
+1. **Claude API Client**: Depends on project context
+2. **Code Context Manager**: Depends on file system access
+3. **Modification Engine**: Depends on AST parsing
+4. **Conversation History**: Depends on project storage
 
-## User Experience Dependencies
-1. **Visual Editor**: Depends on workflow engine and UI framework
-2. **Execution Monitoring**: Depends on execution runtime and WebSocket
-3. **Natural Language Interface**: Depends on AI gateway and workflow engine
-4. **Template Library**: Depends on workflow engine and storage
+## Preview System Dependencies
+1. **Component Server**: Depends on frontend generation
+2. **Hot Reload**: Depends on file watching
+3. **iframe Sandbox**: Depends on security policies
+4. **Theme Engine**: Depends on component system
 
 ## Getting to Usable Frontend Quickly
-### Week 1-2: Minimal Viable Interface
-- Basic React setup with authentication
-- Simple workflow list and creation
-- Text-based workflow definition
-- Manual execution trigger
-- Basic execution logs
+### Week 1-2: Basic Generation
+- OpenAPI upload and validation
+- Simple Go code generation
+- Download generated code
+- Basic web interface
 
-### Week 3-4: Visual Enhancement
-- Drag-and-drop node editor
-- Real-time execution status
-- Basic AI chat interface
-- Simple template selection
-- Error display and debugging
+### Week 3-4: Container Integration
+- Provision Docker containers
+- Generate code in containers
+- Web terminal access
+- File explorer UI
 
-### Week 5-6: Intelligence Layer
-- Natural language workflow creation
-- AI-powered suggestions
-- Model selection interface
-- Cost estimation display
-- Performance metrics
+### Week 5-6: AI Enhancement
+- Claude integration
+- Natural language refinements
+- Code explanation
+- Interactive modifications
 
-# Risks and Mitigations  
+# Risks and Mitigations
 
 ## Technical Risks
 
-### 1. AI Provider Reliability
-- **Risk**: Dependence on external AI services
-- **Mitigation**: Multi-provider support with automatic fallback
-- **Mitigation**: Caching and retry strategies
-- **Mitigation**: Local model options with Ollama
+### 1. Container Security
+- **Risk**: Malicious code execution in containers
+- **Mitigation**: Strict container isolation and resource limits
+- **Mitigation**: Network segmentation for containers
+- **Mitigation**: Regular security audits and updates
 
-### 2. Workflow Complexity Management
-- **Risk**: Visual editor becomes unwieldy with complex workflows
-- **Mitigation**: Hierarchical workflow composition
-- **Mitigation**: Workflow templates and patterns
-- **Mitigation**: AI-assisted simplification
+### 2. AI Hallucinations
+- **Risk**: AI generates incorrect or insecure code
+- **Mitigation**: Validation against OpenAPI spec
+- **Mitigation**: Automated testing of generated code
+- **Mitigation**: Human review options for critical code
 
-### 3. Performance at Scale
-- **Risk**: System slowdown with many concurrent executions
-- **Mitigation**: Distributed execution architecture
-- **Mitigation**: Intelligent queue management
-- **Mitigation**: Resource pooling and optimization
+### 3. Scalability Challenges
+- **Risk**: Container orchestration at scale
+- **Mitigation**: Kubernetes for production deployments
+- **Mitigation**: Container pooling and reuse
+- **Mitigation**: Automatic resource scaling
 
 ## Business Risks
 
-### 1. User Adoption Challenges
-- **Risk**: Non-technical users find platform too complex
-- **Mitigation**: Progressive disclosure of features
-- **Mitigation**: Comprehensive onboarding workflows
-- **Mitigation**: AI assistant for guidance
+### 1. Market Competition
+- **Risk**: Existing tools add AI code generation
+- **Mitigation**: Superior AI integration and UX
+- **Mitigation**: Focus on full-stack generation
+- **Mitigation**: Open-source community building
 
-### 2. Cost Management
-- **Risk**: AI API costs spiral out of control
-- **Mitigation**: Built-in cost monitoring and alerts
-- **Mitigation**: Automatic model optimization
-- **Mitigation**: Usage quotas and limits
+### 2. AI API Costs
+- **Risk**: Claude API costs for heavy usage
+- **Mitigation**: Caching and deduplication
+- **Mitigation**: Tiered pricing with limits
+- **Mitigation**: Option for self-hosted models
 
-### 3. Competitive Pressure
-- **Risk**: Established players add similar features
-- **Mitigation**: Focus on AI-native experience
-- **Mitigation**: Rapid iteration and feature development
-- **Mitigation**: Strong community and ecosystem
+### 3. Adoption Barriers
+- **Risk**: Developers prefer manual coding
+- **Mitigation**: Incremental adoption path
+- **Mitigation**: High-quality code generation
+- **Mitigation**: Full control and customization
 
 ## MVP Scoping Risks
 
-### 1. Feature Creep
-- **Risk**: Trying to build too much in MVP
-- **Mitigation**: Strict focus on core workflow execution
-- **Mitigation**: Defer advanced features to Phase 2
-- **Mitigation**: Regular user feedback loops
+### 1. Over-Engineering
+- **Risk**: Building too complex initially
+- **Mitigation**: Focus on Go+SQLC only for MVP
+- **Mitigation**: Simple container implementation
+- **Mitigation**: Defer advanced AI features
 
-### 2. Technical Debt
-- **Risk**: Shortcuts in MVP hinder future development
-- **Mitigation**: Clean architecture from start
-- **Mitigation**: Comprehensive testing strategy
-- **Mitigation**: Regular refactoring sprints
+### 2. Security Vulnerabilities
+- **Risk**: Container escape or data leaks
+- **Mitigation**: Security-first architecture
+- **Mitigation**: Regular penetration testing
+- **Mitigation**: Compliance with security standards
 
-# Appendix  
+# Appendix
 
 ## Competitive Analysis
 
-### vs n8n
-- **ArchesAI Advantages**: AI-native design, natural language interface, intelligent optimization
-- **n8n Advantages**: Mature ecosystem, extensive integrations, self-hosted option
-- **Strategy**: Position as next-generation AI-first alternative
+### vs GitHub Copilot
+- **ArchesAI Advantages**: Full application generation, OpenAPI-driven, live preview
+- **Copilot Advantages**: IDE integration, broader language support, Microsoft backing
+- **Strategy**: Position as application-level generator vs line-by-line assistant
 
-### vs Zapier
-- **ArchesAI Advantages**: Visual workflow design, AI model integration, developer-friendly
-- **Zapier Advantages**: Massive integration library, brand recognition, simplicity
-- **Strategy**: Target power users who need AI capabilities
+### vs Swagger Codegen
+- **ArchesAI Advantages**: AI refinement, modern architecture, live development environment
+- **Swagger Advantages**: Mature, open-source, wide language support
+- **Strategy**: Next-generation intelligent generator vs template-based approach
 
-### vs Make (Integromat)
-- **ArchesAI Advantages**: AI assistance, code generation, enterprise features
-- **Make Advantages**: Visual simplicity, template library, pricing
-- **Strategy**: Focus on AI-powered automation use cases
+### vs Cursor/Windsurf
+- **ArchesAI Advantages**: OpenAPI-first, full-stack generation, containerized environments
+- **Cursor Advantages**: IDE experience, general-purpose coding, local development
+- **Strategy**: Specialized for API-driven full-stack vs general AI coding assistant
 
 ## Technical Specifications
 
 ### Performance Requirements
-- Workflow execution: < 100ms overhead
-- API response time: < 200ms p95
-- UI interaction: < 100ms feedback
-- AI response: < 5s for completions
-- Throughput: 10,000 executions/minute
+- Code generation: < 30s for full application
+- Container provisioning: < 10s
+- Live preview update: < 500ms
+- AI response time: < 5s
+- Concurrent containers: 1000+
 
 ### Scalability Targets
-- Users: 1M+ active users
-- Organizations: 100K+ organizations
-- Workflows: 10M+ stored workflows
-- Executions: 1B+ monthly executions
-- Storage: 1PB+ artifact storage
+- Projects: 100K+ active projects
+- Users: 10K+ concurrent users
+- Containers: 5K+ simultaneous containers
+- Storage: 10TB+ generated code
+- API calls: 1M+ daily generations
 
 ### Security Requirements
 - SOC 2 Type II compliance
-- GDPR compliance
-- End-to-end encryption for sensitive data
-- Row-level security in database
-- API rate limiting and DDoS protection
+- Container isolation with gVisor/Firecracker
+- Encrypted data at rest and in transit
+- Regular security audits
+- OWASP compliance for generated code
 
 ## Market Research
 
 ### Target Market Size
-- Workflow automation market: $25B by 2025
-- AI integration market: $15B by 2025
-- No-code/low-code market: $45B by 2025
-- Total addressable market: $85B+
+- API development tools: $5B by 2025
+- Low-code development: $45B by 2025
+- AI coding assistants: $2B by 2025
+- Total addressable market: $52B+
 
 ### User Research Insights
-- 73% of businesses struggle with AI integration
-- 65% of workflows could be automated but aren't
-- 89% of users want natural language interfaces
-- 78% cite cost as barrier to AI adoption
-- 92% need better workflow visibility
+- 82% of developers work with APIs regularly
+- 67% want faster API implementation
+- 71% struggle with maintaining consistency
+- 89% interested in AI-assisted development
+- 76% need better testing tools
 
 ### Pricing Research
-- Competitors range from $20-500/month
-- Enterprise deals: $10K-100K/year
-- Usage-based pricing preferred by 67%
-- Free tier essential for adoption
-- AI token costs must be passed through
+- Competitors: $20-200/month per developer
+- Enterprise: $50K-500K/year
+- Usage-based pricing for containers
+- Free tier with generation limits
+- Premium features for teams
 </PRD>

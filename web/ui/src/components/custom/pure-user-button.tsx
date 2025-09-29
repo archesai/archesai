@@ -27,8 +27,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "#components/shadcn/sidebar";
+import { useIsMobile } from "#hooks/use-mobile";
 
 export interface PureUserButtonProps {
   // User data
@@ -71,7 +71,7 @@ export function PureUserButton({
   onSwitchOrganization,
   size = "lg",
 }: PureUserButtonProps): JSX.Element {
-  const { isMobile } = useSidebar();
+  const isMobile = useIsMobile();
   const defaultOrgname = "Arches Platform";
 
   // If no user data is provided, render a placeholder

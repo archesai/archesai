@@ -32,33 +32,40 @@ export const useToggleView = ({
   toggleView: () => void;
   view: ViewType;
 } => {
-  // Initialize from cookie or use default
-  const getInitialView = (): ViewType => {
-    const savedView = getCookie("viewType") as null | ViewType;
-    return savedView ?? defaultView;
-  };
+  // Always start with default view to prevent SSR hydration mismatch
+  const [view, setView] = useState<ViewType>(defaultView);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const [view, setView] = useState<ViewType>(getInitialView);
+  // Initialize view from cookie after hydration
+  useEffect(() => {
+    if (!isInitialized) {
+      const savedView = getCookie("viewType") as null | ViewType;
+
+      // On mobile, always use grid view
+      if (window.innerWidth <= 768) {
+        setView("grid");
+        setCookie("viewType", "grid");
+      } else if (savedView) {
+        setView(savedView);
+      }
+
+      setIsInitialized(true);
+    }
+  }, [isInitialized]);
 
   // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => {
-      if (typeof window !== "undefined" && window.innerWidth <= 768) {
-        const newView = "grid";
-        setView(newView);
-        setCookie("viewType", newView);
+      if (window.innerWidth <= 768) {
+        setView("grid");
+        setCookie("viewType", "grid");
       }
     };
 
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", handleResize);
-      handleResize(); // Check on mount
-    }
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      if (typeof window !== "undefined") {
-        window.removeEventListener("resize", handleResize);
-      }
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 

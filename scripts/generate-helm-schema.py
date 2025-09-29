@@ -61,7 +61,7 @@ def resolve_refs(obj, schemas_dir, visited=None):
 
 def main():
     script_dir = Path(__file__).parent
-    schemas_dir = script_dir / "../api/components/schemas"
+    schemas_dir = script_dir / "../api/components/schemas/config"
     output_path = script_dir / "../deployments/helm-minimal/values.schema.json"
 
     # Resolve paths

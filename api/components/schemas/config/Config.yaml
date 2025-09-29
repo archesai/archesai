@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Arches AI configuration schema
+title: Config
+x-codegen:
+  schemaType: valueobject
+  queries:
+    operations:
+      - get
+  controller:
+    operations:
+      - read
+type: object
+properties:
+  api:
+    $ref: ./ConfigAPI.yaml
+  auth:
+    $ref: ./ConfigAuth.yaml
+  billing:
+    $ref: ./ConfigBilling.yaml
+  database:
+    $ref: ./ConfigDatabase.yaml
+  intelligence:
+    $ref: ./ConfigIntelligence.yaml
+  logging:
+    $ref: ./ConfigLogging.yaml
+  platform:
+    $ref: ./ConfigPlatform.yaml
+  redis:
+    $ref: ./ConfigRedis.yaml
+  storage:
+    $ref: ./ConfigStorage.yaml
+  kubernetes:
+    $ref: ./ConfigKubernetes.yaml
+additionalProperties: false

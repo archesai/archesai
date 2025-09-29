@@ -1,9 +1,9 @@
-# yaml-language-server: $schema=api/components/schemas/Config.yaml
+# yaml-language-server: $schema=api/components/schemas/config/Config.yaml
 api:
   cors: localhost
   docs: true
   environment: development
-  host: '0.0.0.0'
+  host: 'moose'
   port: 3001
   validate: true
 
@@ -15,9 +15,13 @@ auth:
   enabled: false
 
 database:
+  type: postgresql
   enabled: true
   url: postgresql://admin:password@localhost:5432/archesai
 # EACH SESSION IS BASICALLY A DEV SESSION
 # MCP HOOKED UP TO THE MAKEFILE
 # CAN GENERATE ENTIRE API WITH PERMISSION FROMS SCHEMA
 # CONTAINER CAN RESTART WITH ADDITIONAL CODE IT HAS GENERATED
+# WHEN YOU ADD HOOKS IN THE FREE VERSION, IT WILL CALL THE CODE FROM UR BROWSWER VIA WEBHOOKS
+# FOR CUSTOM ACTIONS ON THE ENTITY YOU CAN WRITE HOOKS, ADD EVENTS, ETC
+

@@ -1,0 +1,233 @@
+{{- /*
+Unified Schema Template
+Handles: Entities, Value Objects, DTOs, Enums, and Constants
+*/ -}}
+{{template "header.tmpl" .}}
+{{- /* Import block */ -}}
+{{- if or .Imports .IsEntity .IsAggregate .IsEnum .IsValueObject }}
+import (
+	"fmt"
+{{- if .IsValueObject }}
+	"strings"
+{{- end }}
+	"time"
+	"github.com/google/uuid"
+{{- if and (or .IsEntity .IsAggregate) (ne .Package "core") }}
+	"github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/events"
+{{- end }}
+{{- if and (or .IsEntity .IsAggregate) (ne .Package "valueobjects") }}
+	"github.com/archesai/archesai/internal/core/valueobjects"
+{{- end }}
+{{- range .Imports }}
+	"{{ . }}"
+{{- end }}
+)
+{{- end }}
+{{- /* Handle Enums */ -}}
+{{- if .IsEnum }}
+// {{ .Name }} represents the {{ .Description }} enumeration
+type {{ .Name }} string
+
+// {{ .Name }} values
+const (
+{{- range .Values }}
+	{{ .Name }}{{ .Value }} {{ $.Name }} = "{{ .RawValue }}"
+{{- end }}
+)
+
+// String returns the string representation of {{ .Name }}
+func (e {{ .Name }}) String() string {
+	return string(e)
+}
+
+// IsValid checks if the {{ .Name }} value is valid
+func (e {{ .Name }}) IsValid() bool {
+	switch e {
+{{- range .Values }}
+	case {{ .Name }}{{ .Value }}:
+{{- end }}
+		return true
+	default:
+		return false
+	}
+}
+
+// Parse{{ .Name }} parses a string into a {{ .Name }}
+func Parse{{ .Name }}(s string) ({{ .Name }}, error) {
+	v := {{ .Name }}(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid {{ .Name }}: %s", s)
+	}
+	return v, nil
+}
+
+{{- /* Handle Constants */ -}}
+{{- else if .IsConstant }}
+// {{ .Name }} constants
+const (
+{{- range .Constants }}
+	{{ .Name }} = {{ .Value }}{{ if .Comment }} // {{ .Comment }}{{ end }}
+{{- end }}
+)
+{{- /* Handle Structs (Entity, Aggregate, ValueObject, DTO) */ -}}
+{{- else }}
+{{- /* Handle multiple types if provided */ -}}
+{{- if .Types }}
+{{- range .Types }}
+// {{ .Name }} represents {{ if .Description }}{{ .Description }}{{ else }}a {{ .Name }}{{ end }}
+type {{ .Name }} struct {
+{{- range .Fields }}
+	{{ .FieldName }} {{ .GoType }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
+{{- end }}
+}
+
+{{- end }}
+{{- else }}
+// {{ .Name }} represents {{ if .Description }}{{ .Description }}{{ else }}a {{ .Name }}{{ end }}
+type {{ .Name }} struct {
+{{- range .Fields }}
+	{{ .FieldName }} {{ .GoType }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
+{{- end }}
+{{- if and .IsEntity .HasDomainEvents }}
+	events []events.DomainEvent `json:"-" yaml:"-"`
+{{- end }}
+}
+
+{{- /* Constructor for Entities */ -}}
+{{- if .IsEntity }}
+
+// New{{ .Name }} creates a new {{ .Name }} entity
+func New{{ .Name }}(
+{{- range .RequiredFields }}
+{{- if not (or (strContains .FieldName "CreatedAt") (strContains .FieldName "UpdatedAt") (eq .FieldName "ID")) }}
+	{{ camelCase .FieldName }} {{ .GoType }},
+{{- end }}
+{{- end }}
+) (*{{ .Name }}, error) {
+{{- /* Validation */ -}}
+{{- range .RequiredFields }}
+{{- if and (eq .GoType "string") (not (or (strContains .FieldName "CreatedAt") (strContains .FieldName "UpdatedAt"))) }}
+	if {{ camelCase .FieldName }} == "" {
+		return nil, fmt.Errorf("{{ .FieldName }} cannot be empty")
+	}
+{{- end }}
+{{- end }}
+
+	{{ .NameLower }} := &{{ .Name }}{
+{{- range .Fields }}
+{{- if eq .FieldName "ID" }}
+		{{ .FieldName }}:  uuid.New(),
+{{- else if strContains .FieldName "CreatedAt" }}
+		{{ .FieldName }}: time.Now().UTC(),
+{{- else if strContains .FieldName "UpdatedAt" }}
+		{{ .FieldName }}: time.Now().UTC(),
+{{- else if .Required }}
+		{{ .FieldName }}: {{ camelCase .FieldName }},
+{{- end }}
+{{- end }}
+{{- if .HasDomainEvents }}
+		events: []events.DomainEvent{},
+{{- end }}
+	}
+
+{{- if .HasDomainEvents }}
+	{{ .NameLower }}.addEvent(events.New{{ .Name }}CreatedEvent({{ .NameLower }}.ID))
+{{- end }}
+
+	return {{ .NameLower }}, nil
+}
+
+{{- /* Getters for Entities */ -}}
+{{- range .Fields }}
+
+// Get{{ .FieldName }} returns the {{ .FieldName }}
+func (e *{{ $.Name }}) Get{{ .FieldName }}() {{ .GoType }} {
+	return e.{{ .FieldName }}
+}
+{{- end }}
+
+{{- /* Domain Events methods */ -}}
+{{- if .HasDomainEvents }}
+
+// Events returns the domain events
+func (e *{{ .Name }}) Events() []events.DomainEvent {
+	return e.events
+}
+
+// ClearEvents clears the domain events
+func (e *{{ .Name }}) ClearEvents() {
+	e.events = []events.DomainEvent{}
+}
+
+// addEvent adds a domain event
+func (e *{{ .Name }}) addEvent(event events.DomainEvent) {
+	e.events = append(e.events, event)
+}
+{{- end }}
+
+// Reconstruct{{ .Name }} reconstructs a {{ .Name }} from persistence
+func Reconstruct{{ .Name }}(
+{{- range .Fields }}
+	{{ camelCase .FieldName }} {{ .GoType }},
+{{- end }}
+) *{{ .Name }} {
+	return &{{ .Name }}{
+{{- range .Fields }}
+		{{ .FieldName }}: {{ camelCase .FieldName }},
+{{- end }}
+{{- if .HasDomainEvents }}
+		events: []events.DomainEvent{},
+{{- end }}
+	}
+}
+
+{{- /* Constructor for Value Objects */ -}}
+{{- else if .IsValueObject }}
+
+// New{{ .Name }} creates a new {{ .Name }} value object
+func New{{ .Name }}({{ range $i, $f := .Fields }}{{ if $i }}, {{ end }}{{ camelCase .FieldName }} {{ .GoType }}{{ end }}) ({{ .Name }}, error) {
+{{- /* Simple validation */ -}}
+{{- range .Fields }}
+{{- if and .Required (eq .GoType "string") }}
+	if {{ camelCase .FieldName }} == "" {
+		return {{ $.Name }}{}, fmt.Errorf("{{ .FieldName }} cannot be empty")
+	}
+{{- end }}
+{{- end }}
+
+	return {{ .Name }}{
+{{- range .Fields }}
+		{{ .FieldName }}: {{ camelCase .FieldName }},
+{{- end }}
+	}, nil
+}
+
+{{- /* Getters for Value Objects */ -}}
+{{- range .Fields }}
+
+// Get{{ .FieldName }} returns the {{ .FieldName }}
+func (v {{ $.Name }}) Get{{ .FieldName }}() {{ .GoType }} {
+	return v.{{ .FieldName }}
+}
+{{- end }}
+
+// Equals checks if two {{ .Name }} value objects are equal
+// func (v {{ .Name }}) Equals(other {{ .Name }}) bool {
+//	return {{ range $i, $f := .Fields }}{{ if $i }} && {{ end }}v.{{ .FieldName }} == other.{{ .FieldName }}{{ end }}
+// }
+
+// String returns a string representation of {{ .Name }}
+func (v {{ .Name }}) String() string {
+	// Build string representation field by field to avoid recursion
+	var fields []string
+{{- range .Fields }}
+	fields = append(fields, fmt.Sprintf("{{ .FieldName }}: %v", v.{{ .FieldName }}))
+{{- end }}
+	return fmt.Sprintf("{{ .Name }}{%s}", strings.Join(fields, ", "))
+}
+
+{{- end }}
+{{- end }}
+{{- /* End of struct types */ -}}
+{{- end }}

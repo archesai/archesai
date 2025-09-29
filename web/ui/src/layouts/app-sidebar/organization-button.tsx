@@ -17,8 +17,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "#components/shadcn/sidebar";
+import { useIsMobile } from "#hooks/use-mobile";
 
 interface OrganizationButtonProps {
   memberships?: {
@@ -54,7 +54,7 @@ export function OrganizationButton({
   onUpdateSession,
   session,
 }: OrganizationButtonProps): JSX.Element {
-  const { isMobile } = useSidebar();
+  const isMobile = useIsMobile();
 
   return (
     <SidebarMenu>

@@ -32,11 +32,12 @@ export function AppSidebar({
   return (
     <Sidebar
       {...props}
+      className="top-(--header-height) h-[calc(100svh-56px)]"
       collapsible="icon"
-      variant="floating"
+      variant="sidebar"
     >
       <SidebarHeader>
-        {organizationSlot}
+        {/* {organizationSlot} */}
         {onSearch && <SearchForm onSubmit={onSearch} />}
       </SidebarHeader>
       <SidebarContent>

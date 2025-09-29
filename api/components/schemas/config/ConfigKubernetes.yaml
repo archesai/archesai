@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+type: object
+description: Kubernetes-specific deployment configuration
+properties:
+  infrastructure:
+    $ref: ./ConfigInfrastructure.yaml
+  ingress:
+    $ref: ./ConfigIngress.yaml
+  monitoring:
+    $ref: ./ConfigMonitoring.yaml
+additionalProperties: false
+x-codegen:
+  schemaType: valueobject

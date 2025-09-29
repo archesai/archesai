@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Loki log aggregation service configuration
+type: object
+properties:
+  enabled:
+    description: Enable Loki
+    type: boolean
+    default: false
+    example: true
+  managed:
+    description: Use managed Loki deployment
+    type: boolean
+    default: false
+    example: true
+  host:
+    description: Loki host URL
+    type: string
+    default: http://localhost:3100
+    minLength: 1
+    example: example-string
+  image:
+    $ref: ./ConfigImage.yaml
+  resources:
+    $ref: ./ConfigResource.yaml
+required:
+  - enabled
+additionalProperties: false
+x-codegen:
+  schemaType: valueobject

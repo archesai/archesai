@@ -10,19 +10,19 @@ Generated: 2025-09-17 03:24:39 UTC
 
 ## Coverage by Package
 
-| Package                  | Coverage | Status           |
-| ------------------------ | -------- | ---------------- |
-| `internal/accounts`      | 18.9%    | 🔴 Low           |
-| `internal/artifacts`     | 19.9%    | 🔴 Low           |
-| `internal/config`        | 33.0%    | 🔴 Low           |
-| `internal/health`        | 10.5%    | 🔴 Low           |
-| `internal/labels`        | 19.8%    | 🔴 Low           |
-| `internal/oauth`         | 7.3%     | 🔴 Low           |
-| `internal/organizations` | 4.5%     | 🔴 Low           |
-| `internal/pipelines`     | 17.8%    | 🔴 Low           |
-| `internal/sessions`      | 32.2%    | 🔴 Low           |
-| `internal/storage`       | -        | ⚫ No statements |
-| `internal/users`         | 18.5%    | 🔴 Low           |
+| Package                          | Coverage | Status           |
+| -------------------------------- | -------- | ---------------- |
+| `internal/accounts`              | 18.9%    | 🔴 Low           |
+| `internal/artifacts`             | 19.9%    | 🔴 Low           |
+| `internal/infrastructure/config` | 33.0%    | 🔴 Low           |
+| `internal/health`                | 10.5%    | 🔴 Low           |
+| `internal/labels`                | 19.8%    | 🔴 Low           |
+| `internal/oauth`                 | 7.3%     | 🔴 Low           |
+| `internal/organizations`         | 4.5%     | 🔴 Low           |
+| `internal/pipelines`             | 17.8%    | 🔴 Low           |
+| `internal/sessions`              | 32.2%    | 🔴 Low           |
+| `internal/storage`               | -        | ⚫ No statements |
+| `internal/users`                 | 18.5%    | 🔴 Low           |
 
 ## Coverage Trends
 

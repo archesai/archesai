@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Ingress configuration
+type: object
+properties:
+  enabled:
+    description: Enable ingress
+    type: boolean
+    default: false
+    example: true
+  domain:
+    description: Primary domain name for ingress routing
+    type: string
+    default: archesai.dev
+    minLength: 1
+    example: example-string
+  tls:
+    $ref: ./ConfigTLS.yaml
+required:
+  - enabled
+additionalProperties: false
+x-codegen:
+  schemaType: valueobject

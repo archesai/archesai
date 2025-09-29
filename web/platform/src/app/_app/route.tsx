@@ -21,14 +21,19 @@ export const Route = createFileRoute("/_app")({
 
 function AppLayout(): JSX.Element {
   return (
-    <SidebarProvider defaultOpen={false}>
-      <AppSidebarContainer siteRoutes={siteRoutes} />
-      <SidebarInset>
-        <PageHeaderContainer siteRoutes={siteRoutes} />
-        <main className="flex-1 p-4">
-          <Outlet />
-        </main>
-      </SidebarInset>
+    <SidebarProvider
+      className="flex flex-col"
+      defaultOpen={false}
+    >
+      <PageHeaderContainer siteRoutes={siteRoutes} />
+      <div className="flex flex-1">
+        <AppSidebarContainer siteRoutes={siteRoutes} />
+        <SidebarInset>
+          <main className="flex-1 p-4">
+            <Outlet />
+          </main>
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }

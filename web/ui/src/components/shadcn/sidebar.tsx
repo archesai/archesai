@@ -2,8 +2,7 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { Slot as SlotPrimitive } from "radix-ui";
 import * as React from "react";
-
-import { PanelLeftIcon } from "#components/custom/icons";
+import { ArchesLogo } from "#components/custom/arches-logo";
 import { Button } from "#components/shadcn/button";
 import { Input } from "#components/shadcn/input";
 import { Separator } from "#components/shadcn/separator";
@@ -263,7 +262,7 @@ function SidebarTrigger({
 
   return (
     <Button
-      className={cn("size-7", className)}
+      className={cn("size-8", className)}
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       onClick={(event) => {
@@ -274,7 +273,7 @@ function SidebarTrigger({
       variant="ghost"
       {...props}
     >
-      <PanelLeftIcon />
+      <ArchesLogo size="sm" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

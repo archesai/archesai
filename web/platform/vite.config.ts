@@ -10,6 +10,7 @@ import svgr from "vite-plugin-svgr";
 export default defineConfig(({ mode }) => {
   let envVars = {};
   let proxyConfig = {};
+  let allowedHosts = [] as string[];
 
   // Only read arches.yaml in development mode
   if (mode === "development") {
@@ -34,12 +35,7 @@ export default defineConfig(({ mode }) => {
 
     // Define environment variables from config
     envVars = {
-      "import.meta.env.VITE_API_HOST": JSON.stringify(apiHost),
-      "import.meta.env.VITE_API_PORT": JSON.stringify(String(apiPort)),
-      "import.meta.env.VITE_API_URL": JSON.stringify(apiUrl),
-      "import.meta.env.VITE_ENVIRONMENT": JSON.stringify(
-        config.api?.environment || "development",
-      ),
+      "import.meta.env.VITE_ARCHES_API_HOST": JSON.stringify(apiUrl),
     };
 
     // Set up proxy for API routes
@@ -50,18 +46,18 @@ export default defineConfig(({ mode }) => {
         target: apiUrl,
       },
     };
+
+    allowedHosts = [apiHost];
   }
 
   return {
     define: envVars,
     plugins: [
       tanstackStart({
-        customViteReactPlugin: true,
-        tsr: {
+        router: {
           // autoCodeSplitting: true,
           enableRouteTreeFormatting: true,
-          routesDirectory: "src/app",
-          target: "react",
+          routesDirectory: "app",
         },
       }),
       viteReact({
@@ -81,7 +77,7 @@ export default defineConfig(({ mode }) => {
     ],
     publicDir: resolve(import.meta.dirname, "../../assets"),
     server: {
-      allowedHosts: [],
+      allowedHosts: allowedHosts,
       host: "0.0.0.0",
       port: 3000,
       proxy: proxyConfig,

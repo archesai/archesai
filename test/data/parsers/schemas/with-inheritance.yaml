@@ -1,0 +1,33 @@
+# Schema with allOf inheritance
+allOf:
+  - type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+    required:
+      - id
+      - createdAt
+      - updatedAt
+  - type: object
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 255
+      email:
+        type: string
+        format: email
+      role:
+        type: string
+        enum: ['admin', 'user', 'guest']
+        default: 'user'
+    required:
+      - name
+      - email

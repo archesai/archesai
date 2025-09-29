@@ -2,14 +2,14 @@ import { getSession, isProblem } from "@archesai/client";
 import { createServerFn } from "@tanstack/react-start";
 import {
   getCookie,
-  getWebRequest,
+  getRequest,
   setResponseStatus,
 } from "@tanstack/react-start/server";
 
 const getSessionSSR = createServerFn({
   method: "GET",
 }).handler(async () => {
-  const { headers } = getWebRequest();
+  const { headers } = getRequest();
   try {
     const sessionId = getCookie("session_id");
 

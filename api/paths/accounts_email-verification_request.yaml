@@ -2,7 +2,7 @@ post:
   operationId: requestEmailVerification
   summary: Request e-mail verification
   tags:
-    - Auth
+    - Accounts
   description: This endpoint will send an e-mail verification link to you. ADMIN ONLY.
   security:
     - bearerAuth: []

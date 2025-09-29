@@ -1,7 +1,8 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 description: Schema for Pipeline entity
+title: Pipeline
 x-codegen:
-  domain: pipelines
+  schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID]
@@ -9,6 +10,12 @@ x-codegen:
       - name: ListByOrganization
         params: [organizationID]
         returns: multiple
+  commands:
+    operations: [create, update, delete]
+  queries:
+    operations: [get, list]
+  controller:
+    operations: [create, read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object
@@ -30,6 +37,11 @@ allOf:
         type: string
         maxLength: 1000
         example: 'Processes incoming data through validation, transformation, and storage steps'
+      isEnabled:
+        description: Whether the pipeline is enabled for execution
+        type: boolean
+        default: false
+        example: true
     required:
       - organizationID
 unevaluatedProperties: false

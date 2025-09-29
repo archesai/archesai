@@ -1,7 +1,8 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
+title: Organization
 description: Schema for Organization entity
 x-codegen:
-  domain: organizations
+  schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
     indices: [slug, stripeCustomerID]
@@ -12,13 +13,12 @@ x-codegen:
       - name: GetByStripeCustomerID
         params: [stripeCustomerID]
         returns: single
-  service:
-    generate: true
-    transaction_support: true
-    error_handling: error_return
-    logging:
-      level: info
-      structured: true
+  commands:
+    operations: [create, update, delete]
+  queries:
+    operations: [get, list]
+  controller:
+    operations: [create, read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object

@@ -21,6 +21,8 @@ security:
   - bearerAuth: []
   - sessionCookie: []
 tags:
+  - name: APIKeys
+    description: API key management
   - name: Accounts
     description: User account management
   - name: Artifacts
@@ -89,22 +91,22 @@ paths:
   /auth/magic-links/verify:
     $ref: paths/auth_magic-link.yaml#/~1auth~1magic-links~1verify
   # API Keys domain
-  /tokens:
-    $ref: paths/tokens.yaml
-  /tokens/{id}:
-    $ref: paths/tokens_{id}.yaml
+  /api-keys:
+    $ref: paths/api-keys.yaml
+  /api-keys/{id}:
+    $ref: paths/api-keys_{id}.yaml
   # Organizations domain
   /organizations:
     $ref: paths/organizations.yaml
   /organizations/{id}:
     $ref: paths/organizations_{id}.yaml
-  /organizations/{id}/members:
+  /organizations/{organizationID}/members:
     $ref: paths/members.yaml
-  /organizations/{id}/members/{memberID}:
+  /organizations/{organizationID}/members/{id}:
     $ref: paths/members_{id}.yaml
-  /organizations/{id}/invitations:
+  /organizations/{organizationID}/invitations:
     $ref: paths/invitations.yaml
-  /organizations/{id}/invitations/{invitationID}:
+  /organizations/{organizationID}/invitations/{id}:
     $ref: paths/invitations_{id}.yaml
   # Pipelines domain
   /pipelines:

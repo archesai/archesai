@@ -1,0 +1,64 @@
+# Complex schema with nested objects and arrays
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  profile:
+    type: object
+    properties:
+      firstName:
+        type: string
+        minLength: 1
+      lastName:
+        type: string
+        minLength: 1
+      avatar:
+        type: string
+        format: uri
+      preferences:
+        type: object
+        properties:
+          theme:
+            type: string
+            enum: ['light', 'dark', 'auto']
+          language:
+            type: string
+            pattern: '^[a-z]{2}-[A-Z]{2}$'
+        required:
+          - theme
+    required:
+      - firstName
+      - lastName
+  tags:
+    type: array
+    items:
+      type: string
+    minItems: 0
+    maxItems: 10
+  metadata:
+    type: object
+    additionalProperties:
+      type: string
+  addresses:
+    type: array
+    items:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+          minLength: 2
+          maxLength: 2
+        postalCode:
+          type: string
+      required:
+        - street
+        - city
+        - country
+required:
+  - id
+  - profile

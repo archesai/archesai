@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Kubernetes resource configuration
+type: object
+properties:
+  limits:
+    description: Resource limits
+    type: object
+    properties:
+      cpu:
+        description: Maximum CPU allocation
+        type: string
+        default: '1000m'
+        minLength: 1
+        example: '1000m'
+      memory:
+        description: Maximum memory allocation
+        type: string
+        default: '1Gi'
+        minLength: 1
+        example: '1Gi'
+    required:
+      - cpu
+      - memory
+    additionalProperties: false
+  requests:
+    description: Resource requests
+    type: object
+    properties:
+      cpu:
+        description: Requested CPU allocation
+        type: string
+        default: '100m'
+        minLength: 1
+        example: '100m'
+      memory:
+        description: Requested memory allocation
+        type: string
+        default: '128Mi'
+        minLength: 1
+        example: '128Mi'
+    required:
+      - cpu
+      - memory
+    additionalProperties: false
+required:
+  - limits
+  - requests
+additionalProperties: false
+x-codegen:
+  schemaType: valueobject

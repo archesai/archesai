@@ -1,7 +1,8 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 description: Schema for Artifact entity
+title: Artifact
 x-codegen:
-  domain: artifacts
+  schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID, producerID]
@@ -12,6 +13,12 @@ x-codegen:
       - name: ListByProducer
         params: [producerID]
         returns: multiple
+  commands:
+    operations: [create, update, delete]
+  queries:
+    operations: [get, list]
+  controller:
+    operations: [create, read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object

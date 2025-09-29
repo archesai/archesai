@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Object storage configuration for MinIO or S3-compatible services
+type: object
+properties:
+  enabled:
+    description: Enable object storage
+    type: boolean
+    default: false
+    example: true
+  managed:
+    description: Use managed storage deployment
+    type: boolean
+    default: false
+    example: true
+  accesskey:
+    description: MinIO/S3 access key ID
+    type: string
+    default: minioadmin
+    minLength: 1
+    example: example-string
+  bucket:
+    description: S3 bucket name
+    type: string
+    default: archesai
+    minLength: 1
+    example: example-string
+  endpoint:
+    description: MinIO server endpoint URL
+    type: string
+    default: http://localhost:9000
+    minLength: 1
+    example: example-string
+  secretkey:
+    description: MinIO/S3 secret access key
+    type: string
+    default: minioadmin
+    minLength: 1
+    example: example-string
+  image:
+    $ref: ./ConfigImage.yaml
+  persistence:
+    $ref: ./ConfigPersistence.yaml
+  resources:
+    $ref: ./ConfigResource.yaml
+required:
+  - enabled
+  - accesskey
+  - bucket
+  - endpoint
+  - secretkey
+additionalProperties: false
+x-codegen:
+  schemaType: valueobject
+title: StorageConfig

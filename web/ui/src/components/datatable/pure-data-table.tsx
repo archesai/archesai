@@ -178,7 +178,7 @@ export function PureDataTable<TEntity extends BaseEntity>({
               table.options.meta as {
                 entityKey: string;
               }
-            ).entityKey ?? "Entity"}
+            )?.entityKey ?? "Entity"}
           </DialogTitle>
         </VisuallyHidden.Root>
         <DialogContent

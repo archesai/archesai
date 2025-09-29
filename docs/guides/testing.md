@@ -65,7 +65,7 @@ Current coverage by package:
 
 - `internal/auth` - 20.2%
 - `internal/sessions` - 27.2%
-- `internal/config` - 47.2%
+- `internal/infrastructure/config` - 47.2%
 - `internal/artifacts` - 17.2%
 - `internal/labels` - 16.3%
 - `internal/pipelines` - 12.8%

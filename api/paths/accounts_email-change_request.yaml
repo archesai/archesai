@@ -2,7 +2,7 @@ post:
   operationId: requestEmailChange
   summary: Request e-mail change
   tags:
-    - Auth
+    - Accounts
   description: This endpoint will request your e-mail change with a token
   requestBody:
     content:

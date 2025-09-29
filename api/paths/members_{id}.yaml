@@ -12,7 +12,7 @@ delete:
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
       in: path
-      name: id
+      name: organizationID
       required: true
       description: The unique identifier of the organization.
     - schema:
@@ -22,7 +22,7 @@ delete:
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
       in: path
-      name: memberID
+      name: id
       required: true
       description: The unique identifier of the member.
   security:
@@ -56,7 +56,7 @@ get:
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
       in: path
-      name: id
+      name: organizationID
       required: true
       description: The unique identifier of the organization.
     - schema:
@@ -66,7 +66,7 @@ get:
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
       in: path
-      name: memberID
+      name: id
       required: true
       description: The unique identifier of the member.
   security:
@@ -114,7 +114,7 @@ patch:
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
       in: path
-      name: id
+      name: organizationID
       required: true
       description: The unique identifier of the organization.
     - schema:
@@ -124,7 +124,7 @@ patch:
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
       in: path
-      name: memberID
+      name: id
       required: true
       description: The unique identifier of the member.
   security:

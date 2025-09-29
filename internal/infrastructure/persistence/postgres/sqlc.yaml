@@ -1,0 +1,26 @@
+version: '2'
+sql:
+  - engine: 'postgresql'
+    queries: 'queries'
+    schema: './migrations'
+    gen:
+      go:
+        package: 'repositories'
+        emit_pointers_for_null_types: true
+        out: 'repositories'
+        sql_package: 'pgx/v5'
+        emit_interface: true
+        initialisms:
+          ['id', 'ip', 'url', 'uuid', 'api', 'http', 'json', 'oauth', 'jwt']
+        overrides:
+          - db_type: 'uuid'
+            go_type: 'github.com/google/uuid.UUID'
+          - db_type: 'uuid'
+            go_type: '*github.com/google/uuid.UUID'
+            nullable: true
+          - db_type: 'timestamptz'
+            go_type: 'time.Time'
+          - db_type: 'timestamptz'
+            nullable: true
+            go_type:
+              type: '*time.Time'

@@ -1,7 +1,8 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
+title: Invitation
 description: Schema for Invitation entity
 x-codegen:
-  domain: invitations
+  schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID, email, inviterID]
@@ -15,6 +16,12 @@ x-codegen:
       - name: ListByInviter
         params: [inviterID]
         returns: multiple
+  commands:
+    operations: [create, update, delete]
+  queries:
+    operations: [get, list]
+  controller:
+    operations: [create, read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object
@@ -48,7 +55,7 @@ allOf:
         enum:
           - admin
           - owner
-          - member
+          - basic
         example: admin
       status:
         description: The status of the invitation, e.g., pending, accepted, declined

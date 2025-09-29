@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Speech recognition and TTS services
+type: object
+properties:
+  enabled:
+    description: Enable speech services
+    type: boolean
+    default: false
+    example: true
+  token:
+    description: Speech-to-text service API token
+    type: string
+    minLength: 1
+    example: example-string
+required:
+  - enabled
+additionalProperties: false
+x-codegen:
+  schemaType: valueobject
+title: SpeechConfig

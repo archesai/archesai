@@ -2,7 +2,7 @@ delete:
   operationId: deleteSession
   summary: Delete session (Logout)
   tags:
-    - Auth
+    - Sessions
   description: Delete a specific session (logout from that session)
   parameters:
     - schema:
@@ -38,7 +38,7 @@ get:
   operationId: getSession
   summary: Find a session
   tags:
-    - Auth
+    - Sessions
   description: Find a session
   parameters:
     - schema:
@@ -72,7 +72,7 @@ patch:
   operationId: updateSession
   summary: Update Session
   tags:
-    - Auth
+    - Sessions
   description: This endpoint will update the active organization for the current session
   requestBody:
     content:
