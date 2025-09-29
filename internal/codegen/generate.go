@@ -155,7 +155,7 @@ func (g *Generator) GenerateSchema(specPath string, outputDir string) (string, e
 	var output bytes.Buffer
 
 	log.Info("Generating models (DTOs, entities, value objects)")
-	if err := g.generateModel(schema, schema.Title, xcodegen.SchemaType, &outputDir); err != nil {
+	if err := g.generateModel(schema, schema.Title, xcodegen.GetSchemaType(), &outputDir); err != nil {
 		return "", fmt.Errorf("failed to generate models: %w", err)
 	}
 

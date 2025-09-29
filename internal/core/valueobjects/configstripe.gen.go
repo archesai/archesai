@@ -13,8 +13,10 @@ type ConfigStripe struct {
 	Whsec string `json:"whsec" yaml:"whsec"` // Stripe webhook endpoint secret
 }
 
-// NewConfigStripe creates a new ConfigStripe value object
+// NewConfigStripe creates a new immutable ConfigStripe value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigStripe(token string, whsec string) (ConfigStripe, error) {
+	// Validate all fields
 	if token == "" {
 		return ConfigStripe{}, fmt.Errorf("Token cannot be empty")
 	}
@@ -28,24 +30,55 @@ func NewConfigStripe(token string, whsec string) (ConfigStripe, error) {
 	}, nil
 }
 
-// GetToken returns the Token
+// MustConfigStripe creates a new ConfigStripe value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigStripe(token string, whsec string) ConfigStripe {
+	v, err := NewConfigStripe(token, whsec)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigStripe: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigStripe returns the zero value for ConfigStripe.
+// This is useful for comparisons and as a default value.
+func ZeroConfigStripe() ConfigStripe {
+	return ConfigStripe{}
+}
+
+// GetToken returns the Token value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStripe) GetToken() string {
 	return v.Token
 }
 
-// GetWhsec returns the Whsec
+// GetWhsec returns the Whsec value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStripe) GetWhsec() string {
 	return v.Whsec
 }
 
-// Equals checks if two ConfigStripe value objects are equal
-// func (v ConfigStripe) Equals(other ConfigStripe) bool {
-//	return v.Token == other.Token && v.Whsec == other.Whsec
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigStripe) IsZero() bool {
+	zero := ZeroConfigStripe()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigStripe) Validate() error {
+	if v.Token == "" {
+		return fmt.Errorf("Token cannot be empty")
+	}
+	if v.Whsec == "" {
+		return fmt.Errorf("Whsec cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of ConfigStripe
 func (v ConfigStripe) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Token: %v", v.Token))
 	fields = append(fields, fmt.Sprintf("Whsec: %v", v.Whsec))

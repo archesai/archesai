@@ -15,8 +15,10 @@ type ConfigAuthLocal struct {
 	RefreshTokenTTL string `json:"refreshTokenTtl" yaml:"refreshTokenTtl"` // Refresh token time-to-live duration (e.g., "7d", "168h")
 }
 
-// NewConfigAuthLocal creates a new ConfigAuthLocal value object
+// NewConfigAuthLocal creates a new immutable ConfigAuthLocal value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigAuthLocal(accessTokenTtl string, enabled bool, jwtsecret string, refreshTokenTtl string) (ConfigAuthLocal, error) {
+	// Validate all fields
 	if accessTokenTtl == "" {
 		return ConfigAuthLocal{}, fmt.Errorf("AccessTokenTTL cannot be empty")
 	}
@@ -35,34 +37,70 @@ func NewConfigAuthLocal(accessTokenTtl string, enabled bool, jwtsecret string, r
 	}, nil
 }
 
-// GetAccessTokenTTL returns the AccessTokenTTL
+// MustConfigAuthLocal creates a new ConfigAuthLocal value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigAuthLocal(accessTokenTtl string, enabled bool, jwtsecret string, refreshTokenTtl string) ConfigAuthLocal {
+	v, err := NewConfigAuthLocal(accessTokenTtl, enabled, jwtsecret, refreshTokenTtl)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigAuthLocal: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigAuthLocal returns the zero value for ConfigAuthLocal.
+// This is useful for comparisons and as a default value.
+func ZeroConfigAuthLocal() ConfigAuthLocal {
+	return ConfigAuthLocal{}
+}
+
+// GetAccessTokenTTL returns the AccessTokenTTL value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthLocal) GetAccessTokenTTL() string {
 	return v.AccessTokenTTL
 }
 
-// GetEnabled returns the Enabled
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthLocal) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetJWTSecret returns the JWTSecret
+// GetJWTSecret returns the JWTSecret value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthLocal) GetJWTSecret() string {
 	return v.JWTSecret
 }
 
-// GetRefreshTokenTTL returns the RefreshTokenTTL
+// GetRefreshTokenTTL returns the RefreshTokenTTL value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthLocal) GetRefreshTokenTTL() string {
 	return v.RefreshTokenTTL
 }
 
-// Equals checks if two ConfigAuthLocal value objects are equal
-// func (v ConfigAuthLocal) Equals(other ConfigAuthLocal) bool {
-//	return v.AccessTokenTTL == other.AccessTokenTTL && v.Enabled == other.Enabled && v.JWTSecret == other.JWTSecret && v.RefreshTokenTTL == other.RefreshTokenTTL
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigAuthLocal) IsZero() bool {
+	zero := ZeroConfigAuthLocal()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigAuthLocal) Validate() error {
+	if v.AccessTokenTTL == "" {
+		return fmt.Errorf("AccessTokenTTL cannot be empty")
+	}
+	if v.JWTSecret == "" {
+		return fmt.Errorf("JWTSecret cannot be empty")
+	}
+	if v.RefreshTokenTTL == "" {
+		return fmt.Errorf("RefreshTokenTTL cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of ConfigAuthLocal
 func (v ConfigAuthLocal) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("AccessTokenTTL: %v", v.AccessTokenTTL))
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))

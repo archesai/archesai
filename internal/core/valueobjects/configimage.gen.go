@@ -7,55 +7,132 @@ import (
 	"strings"
 )
 
-// ConfigImage represents Container image configuration
-type ConfigImage struct {
-	PullPolicy string  `json:"pullPolicy" yaml:"pullPolicy"`                     // Kubernetes image pull policy
-	Repository *string `json:"repository,omitempty" yaml:"repository,omitempty"` // Container image repository
-	Tag        string  `json:"tag" yaml:"tag"`                                   // Container image tag
+// ConfigImagePullPolicy represents the enumeration of valid values for PullPolicy
+type ConfigImagePullPolicy string
+
+// Valid PullPolicy values
+const (
+	ConfigImagePullPolicyAlways       ConfigImagePullPolicy = "Always"
+	ConfigImagePullPolicyIfNotPresent ConfigImagePullPolicy = "IfNotPresent"
+	ConfigImagePullPolicyNever        ConfigImagePullPolicy = "Never"
+)
+
+// String returns the string representation
+func (e ConfigImagePullPolicy) String() string {
+	return string(e)
 }
 
-// NewConfigImage creates a new ConfigImage value object
+// IsValid checks if the value is valid
+func (e ConfigImagePullPolicy) IsValid() bool {
+	switch e {
+	case ConfigImagePullPolicyAlways:
+		return true
+	case ConfigImagePullPolicyIfNotPresent:
+		return true
+	case ConfigImagePullPolicyNever:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseConfigImagePullPolicy parses a string into the enum type
+func ParseConfigImagePullPolicy(s string) (ConfigImagePullPolicy, error) {
+	v := ConfigImagePullPolicy(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid PullPolicy: %s", s)
+	}
+	return v, nil
+}
+
+// ConfigImage represents Container image configuration
+type ConfigImage struct {
+	PullPolicy ConfigImagePullPolicy `json:"pullPolicy" yaml:"pullPolicy"`                     // Kubernetes image pull policy
+	Repository *string               `json:"repository,omitempty" yaml:"repository,omitempty"` // Container image repository
+	Tag        string                `json:"tag" yaml:"tag"`                                   // Container image tag
+}
+
+// NewConfigImage creates a new immutable ConfigImage value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigImage(pullPolicy string, repository *string, tag string) (ConfigImage, error) {
-	if pullPolicy == "" {
-		return ConfigImage{}, fmt.Errorf("PullPolicy cannot be empty")
+	// Validate all fields
+	pullPolicyEnum := ConfigImagePullPolicy(pullPolicy)
+	if !pullPolicyEnum.IsValid() {
+		return ConfigImage{}, fmt.Errorf("invalid PullPolicy: %s", pullPolicy)
 	}
 	if tag == "" {
 		return ConfigImage{}, fmt.Errorf("Tag cannot be empty")
 	}
 
 	return ConfigImage{
-		PullPolicy: pullPolicy,
+		PullPolicy: pullPolicyEnum,
 		Repository: repository,
 		Tag:        tag,
 	}, nil
 }
 
-// GetPullPolicy returns the PullPolicy
-func (v ConfigImage) GetPullPolicy() string {
-	return v.PullPolicy
+// MustConfigImage creates a new ConfigImage value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigImage(pullPolicy string, repository *string, tag string) ConfigImage {
+	v, err := NewConfigImage(pullPolicy, repository, tag)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigImage: %v", err))
+	}
+	return v
 }
 
-// GetRepository returns the Repository
+// ZeroConfigImage returns the zero value for ConfigImage.
+// This is useful for comparisons and as a default value.
+func ZeroConfigImage() ConfigImage {
+	return ConfigImage{}
+}
+
+// GetPullPolicy returns the PullPolicy value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v ConfigImage) GetPullPolicy() string {
+	return string(v.PullPolicy)
+}
+
+// GetRepository returns the Repository value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigImage) GetRepository() *string {
 	return v.Repository
 }
 
-// GetTag returns the Tag
+// GetTag returns the Tag value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigImage) GetTag() string {
 	return v.Tag
 }
 
-// Equals checks if two ConfigImage value objects are equal
-// func (v ConfigImage) Equals(other ConfigImage) bool {
-//	return v.PullPolicy == other.PullPolicy && v.Repository == other.Repository && v.Tag == other.Tag
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigImage) IsZero() bool {
+	zero := ZeroConfigImage()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigImage) Validate() error {
+	if v.PullPolicy == "" {
+		return fmt.Errorf("PullPolicy cannot be empty")
+	}
+	if v.Tag == "" {
+		return fmt.Errorf("Tag cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of ConfigImage
 func (v ConfigImage) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("PullPolicy: %v", v.PullPolicy))
-	fields = append(fields, fmt.Sprintf("Repository: %v", v.Repository))
+	if v.Repository != nil {
+		fields = append(fields, fmt.Sprintf("Repository: %v", *v.Repository))
+	} else {
+		fields = append(fields, "Repository: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Tag: %v", v.Tag))
 	return fmt.Sprintf("ConfigImage{%s}", strings.Join(fields, ", "))
 }

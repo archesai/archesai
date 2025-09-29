@@ -7,6 +7,41 @@ import (
 	"strings"
 )
 
+// ConfigDatabaseType represents the enumeration of valid values for Type
+type ConfigDatabaseType string
+
+// Valid Type values
+const (
+	ConfigDatabaseTypePostgresql ConfigDatabaseType = "postgresql"
+	ConfigDatabaseTypeSQLite     ConfigDatabaseType = "sqlite"
+)
+
+// String returns the string representation
+func (e ConfigDatabaseType) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e ConfigDatabaseType) IsValid() bool {
+	switch e {
+	case ConfigDatabaseTypePostgresql:
+		return true
+	case ConfigDatabaseTypeSQLite:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseConfigDatabaseType parses a string into the enum type
+func ParseConfigDatabaseType(s string) (ConfigDatabaseType, error) {
+	v := ConfigDatabaseType(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Type: %s", s)
+	}
+	return v, nil
+}
+
 // ConfigDatabase represents Database configuration for PostgreSQL
 type ConfigDatabase struct {
 	ConnMaxIdleTime   *string            `json:"connMaxIdleTime,omitempty" yaml:"connMaxIdleTime,omitempty"`     // Maximum connection idle time (e.g., "5m")
@@ -20,14 +55,17 @@ type ConfigDatabase struct {
 	Persistence       *ConfigPersistence `json:"persistence,omitempty" yaml:"persistence,omitempty"`
 	Resources         *ConfigResource    `json:"resources,omitempty" yaml:"resources,omitempty"`
 	RunMigrations     bool               `json:"runMigrations" yaml:"runMigrations"` // Automatically run database migrations on startup
-	Type              string             `json:"type" yaml:"type"`                   // Database type (postgresql or sqlite)
+	Type              ConfigDatabaseType `json:"type" yaml:"type"`                   // Database type (postgresql or sqlite)
 	URL               string             `json:"url" yaml:"url"`                     // Database connection url/string
 }
 
-// NewConfigDatabase creates a new ConfigDatabase value object
+// NewConfigDatabase creates a new immutable ConfigDatabase value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigDatabase(connMaxIdleTime *string, connMaxLifetime *string, enabled bool, healthCheckPeriod *string, image *ConfigImage, managed bool, maxConns int32, minConns int32, persistence *ConfigPersistence, resources *ConfigResource, runMigrations bool, type_ string, url string) (ConfigDatabase, error) {
-	if type_ == "" {
-		return ConfigDatabase{}, fmt.Errorf("Type cannot be empty")
+	// Validate all fields
+	type_Enum := ConfigDatabaseType(type_)
+	if !type_Enum.IsValid() {
+		return ConfigDatabase{}, fmt.Errorf("invalid Type: %s", type_)
 	}
 	if url == "" {
 		return ConfigDatabase{}, fmt.Errorf("URL cannot be empty")
@@ -45,95 +83,161 @@ func NewConfigDatabase(connMaxIdleTime *string, connMaxLifetime *string, enabled
 		Persistence:       persistence,
 		Resources:         resources,
 		RunMigrations:     runMigrations,
-		Type:              type_,
+		Type:              type_Enum,
 		URL:               url,
 	}, nil
 }
 
-// GetConnMaxIdleTime returns the ConnMaxIdleTime
+// MustConfigDatabase creates a new ConfigDatabase value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigDatabase(connMaxIdleTime *string, connMaxLifetime *string, enabled bool, healthCheckPeriod *string, image *ConfigImage, managed bool, maxConns int32, minConns int32, persistence *ConfigPersistence, resources *ConfigResource, runMigrations bool, type_ string, url string) ConfigDatabase {
+	v, err := NewConfigDatabase(connMaxIdleTime, connMaxLifetime, enabled, healthCheckPeriod, image, managed, maxConns, minConns, persistence, resources, runMigrations, type_, url)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigDatabase: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigDatabase returns the zero value for ConfigDatabase.
+// This is useful for comparisons and as a default value.
+func ZeroConfigDatabase() ConfigDatabase {
+	return ConfigDatabase{}
+}
+
+// GetConnMaxIdleTime returns the ConnMaxIdleTime value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetConnMaxIdleTime() *string {
 	return v.ConnMaxIdleTime
 }
 
-// GetConnMaxLifetime returns the ConnMaxLifetime
+// GetConnMaxLifetime returns the ConnMaxLifetime value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetConnMaxLifetime() *string {
 	return v.ConnMaxLifetime
 }
 
-// GetEnabled returns the Enabled
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetHealthCheckPeriod returns the HealthCheckPeriod
+// GetHealthCheckPeriod returns the HealthCheckPeriod value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetHealthCheckPeriod() *string {
 	return v.HealthCheckPeriod
 }
 
-// GetImage returns the Image
+// GetImage returns the Image value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetImage() *ConfigImage {
 	return v.Image
 }
 
-// GetManaged returns the Managed
+// GetManaged returns the Managed value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetManaged() bool {
 	return v.Managed
 }
 
-// GetMaxConns returns the MaxConns
+// GetMaxConns returns the MaxConns value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetMaxConns() int32 {
 	return v.MaxConns
 }
 
-// GetMinConns returns the MinConns
+// GetMinConns returns the MinConns value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetMinConns() int32 {
 	return v.MinConns
 }
 
-// GetPersistence returns the Persistence
+// GetPersistence returns the Persistence value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetPersistence() *ConfigPersistence {
 	return v.Persistence
 }
 
-// GetResources returns the Resources
+// GetResources returns the Resources value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetResources() *ConfigResource {
 	return v.Resources
 }
 
-// GetRunMigrations returns the RunMigrations
+// GetRunMigrations returns the RunMigrations value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetRunMigrations() bool {
 	return v.RunMigrations
 }
 
-// GetType returns the Type
+// GetType returns the Type value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetType() string {
-	return v.Type
+	return string(v.Type)
 }
 
-// GetURL returns the URL
+// GetURL returns the URL value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigDatabase) GetURL() string {
 	return v.URL
 }
 
-// Equals checks if two ConfigDatabase value objects are equal
-// func (v ConfigDatabase) Equals(other ConfigDatabase) bool {
-//	return v.ConnMaxIdleTime == other.ConnMaxIdleTime && v.ConnMaxLifetime == other.ConnMaxLifetime && v.Enabled == other.Enabled && v.HealthCheckPeriod == other.HealthCheckPeriod && v.Image == other.Image && v.Managed == other.Managed && v.MaxConns == other.MaxConns && v.MinConns == other.MinConns && v.Persistence == other.Persistence && v.Resources == other.Resources && v.RunMigrations == other.RunMigrations && v.Type == other.Type && v.URL == other.URL
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigDatabase) IsZero() bool {
+	zero := ZeroConfigDatabase()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigDatabase) Validate() error {
+	if v.Type == "" {
+		return fmt.Errorf("Type cannot be empty")
+	}
+	if v.URL == "" {
+		return fmt.Errorf("URL cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of ConfigDatabase
 func (v ConfigDatabase) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("ConnMaxIdleTime: %v", v.ConnMaxIdleTime))
-	fields = append(fields, fmt.Sprintf("ConnMaxLifetime: %v", v.ConnMaxLifetime))
+	if v.ConnMaxIdleTime != nil {
+		fields = append(fields, fmt.Sprintf("ConnMaxIdleTime: %v", *v.ConnMaxIdleTime))
+	} else {
+		fields = append(fields, "ConnMaxIdleTime: <nil>")
+	}
+	if v.ConnMaxLifetime != nil {
+		fields = append(fields, fmt.Sprintf("ConnMaxLifetime: %v", *v.ConnMaxLifetime))
+	} else {
+		fields = append(fields, "ConnMaxLifetime: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("HealthCheckPeriod: %v", v.HealthCheckPeriod))
-	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
+	if v.HealthCheckPeriod != nil {
+		fields = append(fields, fmt.Sprintf("HealthCheckPeriod: %v", *v.HealthCheckPeriod))
+	} else {
+		fields = append(fields, "HealthCheckPeriod: <nil>")
+	}
+	if v.Image != nil {
+		fields = append(fields, fmt.Sprintf("Image: %v", *v.Image))
+	} else {
+		fields = append(fields, "Image: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
 	fields = append(fields, fmt.Sprintf("MaxConns: %v", v.MaxConns))
 	fields = append(fields, fmt.Sprintf("MinConns: %v", v.MinConns))
-	fields = append(fields, fmt.Sprintf("Persistence: %v", v.Persistence))
-	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	if v.Persistence != nil {
+		fields = append(fields, fmt.Sprintf("Persistence: %v", *v.Persistence))
+	} else {
+		fields = append(fields, "Persistence: <nil>")
+	}
+	if v.Resources != nil {
+		fields = append(fields, fmt.Sprintf("Resources: %v", *v.Resources))
+	} else {
+		fields = append(fields, "Resources: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("RunMigrations: %v", v.RunMigrations))
 	fields = append(fields, fmt.Sprintf("Type: %v", v.Type))
 	fields = append(fields, fmt.Sprintf("URL: %v", v.URL))

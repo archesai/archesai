@@ -16,8 +16,10 @@ type ConfigPlatform struct {
 	Resources *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
-// NewConfigPlatform creates a new ConfigPlatform value object
+// NewConfigPlatform creates a new immutable ConfigPlatform value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigPlatform(enabled bool, host *string, image *ConfigImage, managed *bool, resources *ConfigResource) (ConfigPlatform, error) {
+	// Validate all fields
 
 	return ConfigPlatform{
 		Enabled:   enabled,
@@ -28,44 +30,88 @@ func NewConfigPlatform(enabled bool, host *string, image *ConfigImage, managed *
 	}, nil
 }
 
-// GetEnabled returns the Enabled
+// MustConfigPlatform creates a new ConfigPlatform value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigPlatform(enabled bool, host *string, image *ConfigImage, managed *bool, resources *ConfigResource) ConfigPlatform {
+	v, err := NewConfigPlatform(enabled, host, image, managed, resources)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigPlatform: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigPlatform returns the zero value for ConfigPlatform.
+// This is useful for comparisons and as a default value.
+func ZeroConfigPlatform() ConfigPlatform {
+	return ConfigPlatform{}
+}
+
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigPlatform) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetHost returns the Host
+// GetHost returns the Host value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigPlatform) GetHost() *string {
 	return v.Host
 }
 
-// GetImage returns the Image
+// GetImage returns the Image value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigPlatform) GetImage() *ConfigImage {
 	return v.Image
 }
 
-// GetManaged returns the Managed
+// GetManaged returns the Managed value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigPlatform) GetManaged() *bool {
 	return v.Managed
 }
 
-// GetResources returns the Resources
+// GetResources returns the Resources value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigPlatform) GetResources() *ConfigResource {
 	return v.Resources
 }
 
-// Equals checks if two ConfigPlatform value objects are equal
-// func (v ConfigPlatform) Equals(other ConfigPlatform) bool {
-//	return v.Enabled == other.Enabled && v.Host == other.Host && v.Image == other.Image && v.Managed == other.Managed && v.Resources == other.Resources
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigPlatform) IsZero() bool {
+	zero := ZeroConfigPlatform()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigPlatform) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigPlatform
 func (v ConfigPlatform) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("Host: %v", v.Host))
-	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
-	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
-	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	if v.Host != nil {
+		fields = append(fields, fmt.Sprintf("Host: %v", *v.Host))
+	} else {
+		fields = append(fields, "Host: <nil>")
+	}
+	if v.Image != nil {
+		fields = append(fields, fmt.Sprintf("Image: %v", *v.Image))
+	} else {
+		fields = append(fields, "Image: <nil>")
+	}
+	if v.Managed != nil {
+		fields = append(fields, fmt.Sprintf("Managed: %v", *v.Managed))
+	} else {
+		fields = append(fields, "Managed: <nil>")
+	}
+	if v.Resources != nil {
+		fields = append(fields, fmt.Sprintf("Resources: %v", *v.Resources))
+	} else {
+		fields = append(fields, "Resources: <nil>")
+	}
 	return fmt.Sprintf("ConfigPlatform{%s}", strings.Join(fields, ", "))
 }

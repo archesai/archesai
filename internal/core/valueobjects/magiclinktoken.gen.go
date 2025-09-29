@@ -10,24 +10,77 @@ import (
 	"github.com/google/uuid"
 )
 
-// MagicLinkToken represents Schema for MagicLinkToken entity
-type MagicLinkToken struct {
-	Code           *string      `json:"code,omitempty" yaml:"code,omitempty"`                     // Optional 6-digit OTP code
-	CreatedAt      time.Time    `json:"createdAt" yaml:"createdAt"`                               // When the token was created
-	DeliveryMethod *string      `json:"deliveryMethod,omitempty" yaml:"deliveryMethod,omitempty"` // How the magic link was delivered
-	ExpiresAt      time.Time    `json:"expiresAt" yaml:"expiresAt"`                               // When the token expires
-	ID             uuid.UUID    `json:"id" yaml:"id"`                                             // Unique identifier for the magic link token
-	Identifier     string       `json:"identifier" yaml:"identifier"`                             // Email or username for authentication
-	IpAddress      *string      `json:"ipAddress,omitempty" yaml:"ipAddress,omitempty"`           // IP address of the request
-	Token          *string      `json:"token,omitempty" yaml:"token,omitempty"`                   // The raw magic link token
-	TokenHash      string       `json:"tokenHash" yaml:"tokenHash"`                               // SHA256 hash of the magic link token
-	UsedAt         *interface{} `json:"usedAt,omitempty" yaml:"usedAt,omitempty"`                 // When the token was used (null if unused)
-	UserAgent      *string      `json:"userAgent,omitempty" yaml:"userAgent,omitempty"`           // User agent of the request
-	UserID         *uuid.UUID   `json:"userID,omitempty" yaml:"userID,omitempty"`                 // User ID if token is for existing user
+// MagicLinkTokenDeliveryMethod represents the enumeration of valid values for DeliveryMethod
+type MagicLinkTokenDeliveryMethod string
+
+// Valid DeliveryMethod values
+const (
+	MagicLinkTokenDeliveryMethodEmail   MagicLinkTokenDeliveryMethod = "email"
+	MagicLinkTokenDeliveryMethodConsole MagicLinkTokenDeliveryMethod = "console"
+	MagicLinkTokenDeliveryMethodWebhook MagicLinkTokenDeliveryMethod = "webhook"
+	MagicLinkTokenDeliveryMethodOtp     MagicLinkTokenDeliveryMethod = "otp"
+	MagicLinkTokenDeliveryMethodFile    MagicLinkTokenDeliveryMethod = "file"
+)
+
+// String returns the string representation
+func (e MagicLinkTokenDeliveryMethod) String() string {
+	return string(e)
 }
 
-// NewMagicLinkToken creates a new MagicLinkToken value object
-func NewMagicLinkToken(code *string, createdAt time.Time, deliveryMethod *string, expiresAt time.Time, id uuid.UUID, identifier string, ipAddress *string, token *string, tokenHash string, usedAt *interface{}, userAgent *string, userID *uuid.UUID) (MagicLinkToken, error) {
+// IsValid checks if the value is valid
+func (e MagicLinkTokenDeliveryMethod) IsValid() bool {
+	switch e {
+	case MagicLinkTokenDeliveryMethodEmail:
+		return true
+	case MagicLinkTokenDeliveryMethodConsole:
+		return true
+	case MagicLinkTokenDeliveryMethodWebhook:
+		return true
+	case MagicLinkTokenDeliveryMethodOtp:
+		return true
+	case MagicLinkTokenDeliveryMethodFile:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseMagicLinkTokenDeliveryMethod parses a string into the enum type
+func ParseMagicLinkTokenDeliveryMethod(s string) (MagicLinkTokenDeliveryMethod, error) {
+	v := MagicLinkTokenDeliveryMethod(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid DeliveryMethod: %s", s)
+	}
+	return v, nil
+}
+
+// MagicLinkToken represents Schema for MagicLinkToken entity
+type MagicLinkToken struct {
+	Code           *string                      `json:"code,omitempty" yaml:"code,omitempty"`                     // Optional 6-digit OTP code
+	CreatedAt      time.Time                    `json:"createdAt" yaml:"createdAt"`                               // When the token was created
+	DeliveryMethod MagicLinkTokenDeliveryMethod `json:"deliveryMethod,omitempty" yaml:"deliveryMethod,omitempty"` // How the magic link was delivered
+	ExpiresAt      time.Time                    `json:"expiresAt" yaml:"expiresAt"`                               // When the token expires
+	ID             uuid.UUID                    `json:"id" yaml:"id"`                                             // Unique identifier for the magic link token
+	Identifier     string                       `json:"identifier" yaml:"identifier"`                             // Email or username for authentication
+	IpAddress      *string                      `json:"ipAddress,omitempty" yaml:"ipAddress,omitempty"`           // IP address of the request
+	Token          *string                      `json:"token,omitempty" yaml:"token,omitempty"`                   // The raw magic link token
+	TokenHash      string                       `json:"tokenHash" yaml:"tokenHash"`                               // SHA256 hash of the magic link token
+	UsedAt         *interface{}                 `json:"usedAt,omitempty" yaml:"usedAt,omitempty"`                 // When the token was used (null if unused)
+	UserAgent      *string                      `json:"userAgent,omitempty" yaml:"userAgent,omitempty"`           // User agent of the request
+	UserID         *uuid.UUID                   `json:"userID,omitempty" yaml:"userID,omitempty"`                 // User ID if token is for existing user
+}
+
+// NewMagicLinkToken creates a new immutable MagicLinkToken value object.
+// Value objects are immutable and validated upon creation.
+func NewMagicLinkToken(code *string, createdAt time.Time, deliveryMethod string, expiresAt time.Time, id uuid.UUID, identifier string, ipAddress *string, token *string, tokenHash string, usedAt *interface{}, userAgent *string, userID *uuid.UUID) (MagicLinkToken, error) {
+	// Validate all fields
+	deliveryMethodEnum := MagicLinkTokenDeliveryMethod(deliveryMethod)
+	if !deliveryMethodEnum.IsValid() {
+		return MagicLinkToken{}, fmt.Errorf("invalid DeliveryMethod: %s", deliveryMethod)
+	}
+	if id == uuid.Nil {
+		return MagicLinkToken{}, fmt.Errorf("ID cannot be nil UUID")
+	}
 	if identifier == "" {
 		return MagicLinkToken{}, fmt.Errorf("Identifier cannot be empty")
 	}
@@ -38,7 +91,7 @@ func NewMagicLinkToken(code *string, createdAt time.Time, deliveryMethod *string
 	return MagicLinkToken{
 		Code:           code,
 		CreatedAt:      createdAt,
-		DeliveryMethod: deliveryMethod,
+		DeliveryMethod: deliveryMethodEnum,
 		ExpiresAt:      expiresAt,
 		ID:             id,
 		Identifier:     identifier,
@@ -51,86 +104,154 @@ func NewMagicLinkToken(code *string, createdAt time.Time, deliveryMethod *string
 	}, nil
 }
 
-// GetCode returns the Code
+// MustMagicLinkToken creates a new MagicLinkToken value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustMagicLinkToken(code *string, createdAt time.Time, deliveryMethod string, expiresAt time.Time, id uuid.UUID, identifier string, ipAddress *string, token *string, tokenHash string, usedAt *interface{}, userAgent *string, userID *uuid.UUID) MagicLinkToken {
+	v, err := NewMagicLinkToken(code, createdAt, deliveryMethod, expiresAt, id, identifier, ipAddress, token, tokenHash, usedAt, userAgent, userID)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create MagicLinkToken: %v", err))
+	}
+	return v
+}
+
+// ZeroMagicLinkToken returns the zero value for MagicLinkToken.
+// This is useful for comparisons and as a default value.
+func ZeroMagicLinkToken() MagicLinkToken {
+	return MagicLinkToken{}
+}
+
+// GetCode returns the Code value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetCode() *string {
 	return v.Code
 }
 
-// GetCreatedAt returns the CreatedAt
+// GetCreatedAt returns the CreatedAt value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetCreatedAt() time.Time {
 	return v.CreatedAt
 }
 
-// GetDeliveryMethod returns the DeliveryMethod
-func (v MagicLinkToken) GetDeliveryMethod() *string {
-	return v.DeliveryMethod
+// GetDeliveryMethod returns the DeliveryMethod value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v MagicLinkToken) GetDeliveryMethod() string {
+	return string(v.DeliveryMethod)
 }
 
-// GetExpiresAt returns the ExpiresAt
+// GetExpiresAt returns the ExpiresAt value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetExpiresAt() time.Time {
 	return v.ExpiresAt
 }
 
-// GetID returns the ID
+// GetID returns the ID value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetID() uuid.UUID {
 	return v.ID
 }
 
-// GetIdentifier returns the Identifier
+// GetIdentifier returns the Identifier value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetIdentifier() string {
 	return v.Identifier
 }
 
-// GetIpAddress returns the IpAddress
+// GetIpAddress returns the IpAddress value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetIpAddress() *string {
 	return v.IpAddress
 }
 
-// GetToken returns the Token
+// GetToken returns the Token value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetToken() *string {
 	return v.Token
 }
 
-// GetTokenHash returns the TokenHash
+// GetTokenHash returns the TokenHash value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetTokenHash() string {
 	return v.TokenHash
 }
 
-// GetUsedAt returns the UsedAt
+// GetUsedAt returns the UsedAt value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetUsedAt() *interface{} {
 	return v.UsedAt
 }
 
-// GetUserAgent returns the UserAgent
+// GetUserAgent returns the UserAgent value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetUserAgent() *string {
 	return v.UserAgent
 }
 
-// GetUserID returns the UserID
+// GetUserID returns the UserID value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetUserID() *uuid.UUID {
 	return v.UserID
 }
 
-// Equals checks if two MagicLinkToken value objects are equal
-// func (v MagicLinkToken) Equals(other MagicLinkToken) bool {
-//	return v.Code == other.Code && v.CreatedAt == other.CreatedAt && v.DeliveryMethod == other.DeliveryMethod && v.ExpiresAt == other.ExpiresAt && v.ID == other.ID && v.Identifier == other.Identifier && v.IpAddress == other.IpAddress && v.Token == other.Token && v.TokenHash == other.TokenHash && v.UsedAt == other.UsedAt && v.UserAgent == other.UserAgent && v.UserID == other.UserID
-// }
+// IsZero returns true if this is the zero value.
+func (v MagicLinkToken) IsZero() bool {
+	zero := ZeroMagicLinkToken()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v MagicLinkToken) Validate() error {
+	if v.ID == uuid.Nil {
+		return fmt.Errorf("ID cannot be nil UUID")
+	}
+	if v.Identifier == "" {
+		return fmt.Errorf("Identifier cannot be empty")
+	}
+	if v.TokenHash == "" {
+		return fmt.Errorf("TokenHash cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of MagicLinkToken
 func (v MagicLinkToken) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("Code: %v", v.Code))
+	if v.Code != nil {
+		fields = append(fields, fmt.Sprintf("Code: %v", *v.Code))
+	} else {
+		fields = append(fields, "Code: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("CreatedAt: %v", v.CreatedAt))
 	fields = append(fields, fmt.Sprintf("DeliveryMethod: %v", v.DeliveryMethod))
 	fields = append(fields, fmt.Sprintf("ExpiresAt: %v", v.ExpiresAt))
 	fields = append(fields, fmt.Sprintf("ID: %v", v.ID))
 	fields = append(fields, fmt.Sprintf("Identifier: %v", v.Identifier))
-	fields = append(fields, fmt.Sprintf("IpAddress: %v", v.IpAddress))
-	fields = append(fields, fmt.Sprintf("Token: %v", v.Token))
+	if v.IpAddress != nil {
+		fields = append(fields, fmt.Sprintf("IpAddress: %v", *v.IpAddress))
+	} else {
+		fields = append(fields, "IpAddress: <nil>")
+	}
+	if v.Token != nil {
+		fields = append(fields, fmt.Sprintf("Token: %v", *v.Token))
+	} else {
+		fields = append(fields, "Token: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("TokenHash: %v", v.TokenHash))
-	fields = append(fields, fmt.Sprintf("UsedAt: %v", v.UsedAt))
-	fields = append(fields, fmt.Sprintf("UserAgent: %v", v.UserAgent))
-	fields = append(fields, fmt.Sprintf("UserID: %v", v.UserID))
+	if v.UsedAt != nil {
+		fields = append(fields, fmt.Sprintf("UsedAt: %v", *v.UsedAt))
+	} else {
+		fields = append(fields, "UsedAt: <nil>")
+	}
+	if v.UserAgent != nil {
+		fields = append(fields, fmt.Sprintf("UserAgent: %v", *v.UserAgent))
+	} else {
+		fields = append(fields, "UserAgent: <nil>")
+	}
+	if v.UserID != nil {
+		fields = append(fields, fmt.Sprintf("UserID: %v", *v.UserID))
+	} else {
+		fields = append(fields, "UserID: <nil>")
+	}
 	return fmt.Sprintf("MagicLinkToken{%s}", strings.Join(fields, ", "))
 }

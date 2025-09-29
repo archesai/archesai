@@ -22,12 +22,14 @@ type User struct {
 	events        []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewUser creates a new User entity
+// NewUser creates a new User entity with validation.
+// All required fields must be provided and valid.
 func NewUser(
 	email string,
 	emailVerified bool,
 	name string,
 ) (*User, error) {
+	// Validate required fields
 	if email == "" {
 		return nil, fmt.Errorf("Email cannot be empty")
 	}
@@ -35,13 +37,14 @@ func NewUser(
 		return nil, fmt.Errorf("Name cannot be empty")
 	}
 
+	now := time.Now().UTC()
 	user := &User{
-		CreatedAt:     time.Now().UTC(),
+		CreatedAt:     now,
 		Email:         email,
 		EmailVerified: emailVerified,
 		ID:            uuid.New(),
 		Name:          name,
-		UpdatedAt:     time.Now().UTC(),
+		UpdatedAt:     now,
 		events:        []events.DomainEvent{},
 	}
 	user.addEvent(events.NewUserCreatedEvent(user.ID))

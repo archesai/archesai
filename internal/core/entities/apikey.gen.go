@@ -27,7 +27,8 @@ type APIKey struct {
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewAPIKey creates a new APIKey entity
+// NewAPIKey creates a new APIKey entity with validation.
+// All required fields must be provided and valid.
 func NewAPIKey(
 	expiresAt time.Time,
 	name string,
@@ -35,22 +36,27 @@ func NewAPIKey(
 	rateLimit int,
 	scopes []string,
 ) (*APIKey, error) {
+	// Validate required fields
 	if name == "" {
 		return nil, fmt.Errorf("Name cannot be empty")
 	}
 	if prefix == "" {
 		return nil, fmt.Errorf("Prefix cannot be empty")
 	}
+	if rateLimit < 0 {
+		return nil, fmt.Errorf("RateLimit cannot be negative")
+	}
 
+	now := time.Now().UTC()
 	apikey := &APIKey{
-		CreatedAt: time.Now().UTC(),
+		CreatedAt: now,
 		ExpiresAt: expiresAt,
 		ID:        uuid.New(),
 		Name:      name,
 		Prefix:    prefix,
 		RateLimit: rateLimit,
 		Scopes:    scopes,
-		UpdatedAt: time.Now().UTC(),
+		UpdatedAt: now,
 		events:    []events.DomainEvent{},
 	}
 	apikey.addEvent(events.NewAPIKeyCreatedEvent(apikey.ID))

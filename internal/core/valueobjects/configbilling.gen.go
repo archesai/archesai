@@ -13,8 +13,10 @@ type ConfigBilling struct {
 	Stripe  *ConfigStripe `json:"stripe,omitempty" yaml:"stripe,omitempty"`
 }
 
-// NewConfigBilling creates a new ConfigBilling value object
+// NewConfigBilling creates a new immutable ConfigBilling value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigBilling(enabled bool, stripe *ConfigStripe) (ConfigBilling, error) {
+	// Validate all fields
 
 	return ConfigBilling{
 		Enabled: enabled,
@@ -22,26 +24,55 @@ func NewConfigBilling(enabled bool, stripe *ConfigStripe) (ConfigBilling, error)
 	}, nil
 }
 
-// GetEnabled returns the Enabled
+// MustConfigBilling creates a new ConfigBilling value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigBilling(enabled bool, stripe *ConfigStripe) ConfigBilling {
+	v, err := NewConfigBilling(enabled, stripe)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigBilling: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigBilling returns the zero value for ConfigBilling.
+// This is useful for comparisons and as a default value.
+func ZeroConfigBilling() ConfigBilling {
+	return ConfigBilling{}
+}
+
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigBilling) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetStripe returns the Stripe
+// GetStripe returns the Stripe value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigBilling) GetStripe() *ConfigStripe {
 	return v.Stripe
 }
 
-// Equals checks if two ConfigBilling value objects are equal
-// func (v ConfigBilling) Equals(other ConfigBilling) bool {
-//	return v.Enabled == other.Enabled && v.Stripe == other.Stripe
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigBilling) IsZero() bool {
+	zero := ZeroConfigBilling()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigBilling) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigBilling
 func (v ConfigBilling) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("Stripe: %v", v.Stripe))
+	if v.Stripe != nil {
+		fields = append(fields, fmt.Sprintf("Stripe: %v", *v.Stripe))
+	} else {
+		fields = append(fields, "Stripe: <nil>")
+	}
 	return fmt.Sprintf("ConfigBilling{%s}", strings.Join(fields, ", "))
 }

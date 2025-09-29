@@ -10,6 +10,50 @@ import (
 	"github.com/google/uuid"
 )
 
+// AccountProviderID represents the enumeration of valid values for ProviderID
+type AccountProviderID string
+
+// Valid ProviderID values
+const (
+	AccountProviderIDLocal     AccountProviderID = "local"
+	AccountProviderIDGoogle    AccountProviderID = "google"
+	AccountProviderIDGithub    AccountProviderID = "github"
+	AccountProviderIDMicrosoft AccountProviderID = "microsoft"
+	AccountProviderIDApple     AccountProviderID = "apple"
+)
+
+// String returns the string representation
+func (e AccountProviderID) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e AccountProviderID) IsValid() bool {
+	switch e {
+	case AccountProviderIDLocal:
+		return true
+	case AccountProviderIDGoogle:
+		return true
+	case AccountProviderIDGithub:
+		return true
+	case AccountProviderIDMicrosoft:
+		return true
+	case AccountProviderIDApple:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseAccountProviderID parses a string into the enum type
+func ParseAccountProviderID(s string) (AccountProviderID, error) {
+	v := AccountProviderID(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid ProviderID: %s", s)
+	}
+	return v, nil
+}
+
 // Account represents Schema for Account entity (authentication provider account)
 type Account struct {
 	AccessToken           *string              `json:"accessToken,omitempty" yaml:"accessToken,omitempty"`                     // The OAuth access token
@@ -18,7 +62,7 @@ type Account struct {
 	CreatedAt             time.Time            `json:"createdAt" yaml:"createdAt"`                                             // The date and time when the resource was created
 	ID                    uuid.UUID            `json:"id" yaml:"id"`                                                           // Unique identifier for the resource
 	IdToken               *string              `json:"idToken,omitempty" yaml:"idToken,omitempty"`                             // The OpenID Connect ID token
-	ProviderID            string               `json:"providerID" yaml:"providerID"`                                           // The authentication provider identifier
+	ProviderID            AccountProviderID    `json:"providerID" yaml:"providerID"`                                           // The authentication provider identifier
 	RefreshToken          *string              `json:"refreshToken,omitempty" yaml:"refreshToken,omitempty"`                   // The OAuth refresh token
 	RefreshTokenExpiresAt *time.Time           `json:"refreshTokenExpiresAt,omitempty" yaml:"refreshTokenExpiresAt,omitempty"` // The refresh token expiration timestamp
 	Scope                 *string              `json:"scope,omitempty" yaml:"scope,omitempty"`                                 // The OAuth scope granted
@@ -27,25 +71,28 @@ type Account struct {
 	events                []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewAccount creates a new Account entity
+// NewAccount creates a new Account entity with validation.
+// All required fields must be provided and valid.
 func NewAccount(
 	accountID string,
-	providerID string,
+	providerID AccountProviderID,
 	userID uuid.UUID,
 ) (*Account, error) {
+	// Validate required fields
 	if accountID == "" {
 		return nil, fmt.Errorf("AccountID cannot be empty")
 	}
-	if providerID == "" {
-		return nil, fmt.Errorf("ProviderID cannot be empty")
+	if !providerID.IsValid() {
+		return nil, fmt.Errorf("invalid ProviderID: %s", providerID)
 	}
 
+	now := time.Now().UTC()
 	account := &Account{
 		AccountID:  accountID,
-		CreatedAt:  time.Now().UTC(),
+		CreatedAt:  now,
 		ID:         uuid.New(),
 		ProviderID: providerID,
-		UpdatedAt:  time.Now().UTC(),
+		UpdatedAt:  now,
 		UserID:     userID,
 		events:     []events.DomainEvent{},
 	}
@@ -86,7 +133,7 @@ func (e *Account) GetIdToken() *string {
 
 // GetProviderID returns the ProviderID
 func (e *Account) GetProviderID() string {
-	return e.ProviderID
+	return string(e.ProviderID)
 }
 
 // GetRefreshToken returns the RefreshToken
@@ -151,7 +198,7 @@ func ReconstructAccount(
 		CreatedAt:             createdAt,
 		ID:                    id,
 		IdToken:               idToken,
-		ProviderID:            providerID,
+		ProviderID:            AccountProviderID(providerID),
 		RefreshToken:          refreshToken,
 		RefreshTokenExpiresAt: refreshTokenExpiresAt,
 		Scope:                 scope,

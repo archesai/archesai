@@ -7,6 +7,41 @@ import (
 	"strings"
 )
 
+// XCodegenExtensionSchemaType represents the enumeration of valid values for SchemaType
+type XCodegenExtensionSchemaType string
+
+// Valid SchemaType values
+const (
+	XCodegenExtensionSchemaTypeEntity      XCodegenExtensionSchemaType = "entity"
+	XCodegenExtensionSchemaTypeValueobject XCodegenExtensionSchemaType = "valueobject"
+)
+
+// String returns the string representation
+func (e XCodegenExtensionSchemaType) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e XCodegenExtensionSchemaType) IsValid() bool {
+	switch e {
+	case XCodegenExtensionSchemaTypeEntity:
+		return true
+	case XCodegenExtensionSchemaTypeValueobject:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseXCodegenExtensionSchemaType parses a string into the enum type
+func ParseXCodegenExtensionSchemaType(s string) (XCodegenExtensionSchemaType, error) {
+	v := XCodegenExtensionSchemaType(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid SchemaType: %s", s)
+	}
+	return v, nil
+}
+
 // XCodegenExtension represents Configuration for code generation from OpenAPI schemas
 type XCodegenExtension struct {
 	Commands *struct {
@@ -37,10 +72,11 @@ type XCodegenExtension struct {
 		Operations []string `json:"operations,omitempty" yaml:"operations"`
 		TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
 	} `json:"repository,omitempty" yaml:"repository,omitempty"` // Repository generation configuration
-	SchemaType string `json:"schemaType" yaml:"schemaType"` // Type of domain object (entity, valueobject)
+	SchemaType XCodegenExtensionSchemaType `json:"schemaType" yaml:"schemaType"` // Type of domain object (entity, valueobject)
 }
 
-// NewXCodegenExtension creates a new XCodegenExtension value object
+// NewXCodegenExtension creates a new immutable XCodegenExtension value object.
+// Value objects are immutable and validated upon creation.
 func NewXCodegenExtension(commands *struct {
 	AdditionalMethods []struct {
 		Handler     *string `json:"handler,omitempty" yaml:"handler"`
@@ -66,8 +102,10 @@ func NewXCodegenExtension(commands *struct {
 	Operations []string `json:"operations,omitempty" yaml:"operations"`
 	TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
 }, schemaType string) (XCodegenExtension, error) {
-	if schemaType == "" {
-		return XCodegenExtension{}, fmt.Errorf("SchemaType cannot be empty")
+	// Validate all fields
+	schemaTypeEnum := XCodegenExtensionSchemaType(schemaType)
+	if !schemaTypeEnum.IsValid() {
+		return XCodegenExtension{}, fmt.Errorf("invalid SchemaType: %s", schemaType)
 	}
 
 	return XCodegenExtension{
@@ -75,11 +113,52 @@ func NewXCodegenExtension(commands *struct {
 		Controller: controller,
 		Queries:    queries,
 		Repository: repository,
-		SchemaType: schemaType,
+		SchemaType: schemaTypeEnum,
 	}, nil
 }
 
-// GetCommands returns the Commands
+// MustXCodegenExtension creates a new XCodegenExtension value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustXCodegenExtension(commands *struct {
+	AdditionalMethods []struct {
+		Handler     *string `json:"handler,omitempty" yaml:"handler"`
+		OperationId string  `json:"operationId" yaml:"operationId"`
+	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
+	Operations []string `json:"operations,omitempty" yaml:"operations"`
+}, controller *struct {
+	Middleware []string `json:"middleware,omitempty" yaml:"middleware"`
+	Operations []string `json:"operations,omitempty" yaml:"operations"`
+}, queries *struct {
+	AdditionalMethods []struct {
+		Handler     *string `json:"handler,omitempty" yaml:"handler"`
+		OperationId string  `json:"operationId" yaml:"operationId"`
+	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
+	Operations []string `json:"operations,omitempty" yaml:"operations"`
+}, repository *struct {
+	AdditionalMethods []struct {
+		Name    string   `json:"name" yaml:"name"`
+		Params  []string `json:"params,omitempty" yaml:"params"`
+		Returns string   `json:"returns" yaml:"returns"`
+	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
+	Indices    []string `json:"indices,omitempty" yaml:"indices"`
+	Operations []string `json:"operations,omitempty" yaml:"operations"`
+	TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
+}, schemaType string) XCodegenExtension {
+	v, err := NewXCodegenExtension(commands, controller, queries, repository, schemaType)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create XCodegenExtension: %v", err))
+	}
+	return v
+}
+
+// ZeroXCodegenExtension returns the zero value for XCodegenExtension.
+// This is useful for comparisons and as a default value.
+func ZeroXCodegenExtension() XCodegenExtension {
+	return XCodegenExtension{}
+}
+
+// GetCommands returns the Commands value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v XCodegenExtension) GetCommands() *struct {
 	AdditionalMethods []struct {
 		Handler     *string `json:"handler,omitempty" yaml:"handler"`
@@ -90,7 +169,8 @@ func (v XCodegenExtension) GetCommands() *struct {
 	return v.Commands
 }
 
-// GetController returns the Controller
+// GetController returns the Controller value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v XCodegenExtension) GetController() *struct {
 	Middleware []string `json:"middleware,omitempty" yaml:"middleware"`
 	Operations []string `json:"operations,omitempty" yaml:"operations"`
@@ -98,7 +178,8 @@ func (v XCodegenExtension) GetController() *struct {
 	return v.Controller
 }
 
-// GetQueries returns the Queries
+// GetQueries returns the Queries value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v XCodegenExtension) GetQueries() *struct {
 	AdditionalMethods []struct {
 		Handler     *string `json:"handler,omitempty" yaml:"handler"`
@@ -109,7 +190,8 @@ func (v XCodegenExtension) GetQueries() *struct {
 	return v.Queries
 }
 
-// GetRepository returns the Repository
+// GetRepository returns the Repository value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v XCodegenExtension) GetRepository() *struct {
 	AdditionalMethods []struct {
 		Name    string   `json:"name" yaml:"name"`
@@ -123,24 +205,51 @@ func (v XCodegenExtension) GetRepository() *struct {
 	return v.Repository
 }
 
-// GetSchemaType returns the SchemaType
+// GetSchemaType returns the SchemaType value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v XCodegenExtension) GetSchemaType() string {
-	return v.SchemaType
+	return string(v.SchemaType)
 }
 
-// Equals checks if two XCodegenExtension value objects are equal
-// func (v XCodegenExtension) Equals(other XCodegenExtension) bool {
-//	return v.Commands == other.Commands && v.Controller == other.Controller && v.Queries == other.Queries && v.Repository == other.Repository && v.SchemaType == other.SchemaType
-// }
+// IsZero returns true if this is the zero value.
+func (v XCodegenExtension) IsZero() bool {
+	zero := ZeroXCodegenExtension()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v XCodegenExtension) Validate() error {
+	if v.SchemaType == "" {
+		return fmt.Errorf("SchemaType cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of XCodegenExtension
 func (v XCodegenExtension) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("Commands: %v", v.Commands))
-	fields = append(fields, fmt.Sprintf("Controller: %v", v.Controller))
-	fields = append(fields, fmt.Sprintf("Queries: %v", v.Queries))
-	fields = append(fields, fmt.Sprintf("Repository: %v", v.Repository))
+	if v.Commands != nil {
+		fields = append(fields, fmt.Sprintf("Commands: %v", *v.Commands))
+	} else {
+		fields = append(fields, "Commands: <nil>")
+	}
+	if v.Controller != nil {
+		fields = append(fields, fmt.Sprintf("Controller: %v", *v.Controller))
+	} else {
+		fields = append(fields, "Controller: <nil>")
+	}
+	if v.Queries != nil {
+		fields = append(fields, fmt.Sprintf("Queries: %v", *v.Queries))
+	} else {
+		fields = append(fields, "Queries: <nil>")
+	}
+	if v.Repository != nil {
+		fields = append(fields, fmt.Sprintf("Repository: %v", *v.Repository))
+	} else {
+		fields = append(fields, "Repository: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("SchemaType: %v", v.SchemaType))
 	return fmt.Sprintf("XCodegenExtension{%s}", strings.Join(fields, ", "))
 }

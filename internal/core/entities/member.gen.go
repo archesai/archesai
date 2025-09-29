@@ -10,33 +10,74 @@ import (
 	"github.com/google/uuid"
 )
 
+// MemberRole represents the enumeration of valid values for Role
+type MemberRole string
+
+// Valid Role values
+const (
+	MemberRoleAdmin MemberRole = "admin"
+	MemberRoleOwner MemberRole = "owner"
+	MemberRoleBasic MemberRole = "basic"
+)
+
+// String returns the string representation
+func (e MemberRole) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e MemberRole) IsValid() bool {
+	switch e {
+	case MemberRoleAdmin:
+		return true
+	case MemberRoleOwner:
+		return true
+	case MemberRoleBasic:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseMemberRole parses a string into the enum type
+func ParseMemberRole(s string) (MemberRole, error) {
+	v := MemberRole(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Role: %s", s)
+	}
+	return v, nil
+}
+
 // Member represents Schema for Member entity
 type Member struct {
 	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`           // The date and time when the resource was created
 	ID             uuid.UUID            `json:"id" yaml:"id"`                         // Unique identifier for the resource
 	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"` // The organization this member belongs to
-	Role           string               `json:"role" yaml:"role"`                     // The role of the member
+	Role           MemberRole           `json:"role" yaml:"role"`                     // The role of the member
 	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`           // The date and time when the resource was last updated
 	UserID         uuid.UUID            `json:"userID" yaml:"userID"`                 // The user who is a member of the organization
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewMember creates a new Member entity
+// NewMember creates a new Member entity with validation.
+// All required fields must be provided and valid.
 func NewMember(
 	organizationID uuid.UUID,
-	role string,
+	role MemberRole,
 	userID uuid.UUID,
 ) (*Member, error) {
-	if role == "" {
-		return nil, fmt.Errorf("Role cannot be empty")
+	// Validate required fields
+	if !role.IsValid() {
+		return nil, fmt.Errorf("invalid Role: %s", role)
 	}
 
+	now := time.Now().UTC()
 	member := &Member{
-		CreatedAt:      time.Now().UTC(),
+		CreatedAt:      now,
 		ID:             uuid.New(),
 		OrganizationID: organizationID,
 		Role:           role,
-		UpdatedAt:      time.Now().UTC(),
+		UpdatedAt:      now,
 		UserID:         userID,
 		events:         []events.DomainEvent{},
 	}
@@ -62,7 +103,7 @@ func (e *Member) GetOrganizationID() uuid.UUID {
 
 // GetRole returns the Role
 func (e *Member) GetRole() string {
-	return e.Role
+	return string(e.Role)
 }
 
 // GetUpdatedAt returns the UpdatedAt
@@ -103,7 +144,7 @@ func ReconstructMember(
 		CreatedAt:      createdAt,
 		ID:             id,
 		OrganizationID: organizationID,
-		Role:           role,
+		Role:           MemberRole(role),
 		UpdatedAt:      updatedAt,
 		UserID:         userID,
 		events:         []events.DomainEvent{},

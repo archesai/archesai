@@ -23,7 +23,8 @@ type Tool struct {
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewTool creates a new Tool entity
+// NewTool creates a new Tool entity with validation.
+// All required fields must be provided and valid.
 func NewTool(
 	description string,
 	inputMimeType string,
@@ -31,6 +32,7 @@ func NewTool(
 	organizationID uuid.UUID,
 	outputMimeType string,
 ) (*Tool, error) {
+	// Validate required fields
 	if description == "" {
 		return nil, fmt.Errorf("Description cannot be empty")
 	}
@@ -44,15 +46,16 @@ func NewTool(
 		return nil, fmt.Errorf("OutputMimeType cannot be empty")
 	}
 
+	now := time.Now().UTC()
 	tool := &Tool{
-		CreatedAt:      time.Now().UTC(),
+		CreatedAt:      now,
 		Description:    description,
 		ID:             uuid.New(),
 		InputMimeType:  inputMimeType,
 		Name:           name,
 		OrganizationID: organizationID,
 		OutputMimeType: outputMimeType,
-		UpdatedAt:      time.Now().UTC(),
+		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	tool.addEvent(events.NewToolCreatedEvent(tool.ID))

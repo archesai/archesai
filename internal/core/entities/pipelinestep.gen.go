@@ -10,6 +10,53 @@ import (
 	"github.com/google/uuid"
 )
 
+// PipelineStepStatus represents the enumeration of valid values for Status
+type PipelineStepStatus string
+
+// Valid Status values
+const (
+	PipelineStepStatusPending   PipelineStepStatus = "pending"
+	PipelineStepStatusReady     PipelineStepStatus = "ready"
+	PipelineStepStatusRunning   PipelineStepStatus = "running"
+	PipelineStepStatusCompleted PipelineStepStatus = "completed"
+	PipelineStepStatusFailed    PipelineStepStatus = "failed"
+	PipelineStepStatusSkipped   PipelineStepStatus = "skipped"
+)
+
+// String returns the string representation
+func (e PipelineStepStatus) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e PipelineStepStatus) IsValid() bool {
+	switch e {
+	case PipelineStepStatusPending:
+		return true
+	case PipelineStepStatusReady:
+		return true
+	case PipelineStepStatusRunning:
+		return true
+	case PipelineStepStatusCompleted:
+		return true
+	case PipelineStepStatusFailed:
+		return true
+	case PipelineStepStatusSkipped:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParsePipelineStepStatus parses a string into the enum type
+func ParsePipelineStepStatus(s string) (PipelineStepStatus, error) {
+	v := PipelineStepStatus(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Status: %s", s)
+	}
+	return v, nil
+}
+
 // PipelineStep represents Schema for PipelineStep entity
 type PipelineStep struct {
 	Config       map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`             // Configuration parameters for the tool
@@ -21,30 +68,33 @@ type PipelineStep struct {
 	PipelineID   uuid.UUID              `json:"pipelineID" yaml:"pipelineID"`                         // The pipeline this step belongs to
 	Position     *int                   `json:"position,omitempty" yaml:"position,omitempty"`         // Position in the pipeline for ordering
 	Retries      *int                   `json:"retries,omitempty" yaml:"retries,omitempty"`           // Number of retries on failure
-	Status       *string                `json:"status,omitempty" yaml:"status,omitempty"`             // Current status of the step
+	Status       PipelineStepStatus     `json:"status,omitempty" yaml:"status,omitempty"`             // Current status of the step
 	Timeout      *int                   `json:"timeout,omitempty" yaml:"timeout,omitempty"`           // Timeout in seconds
 	ToolID       uuid.UUID              `json:"toolID" yaml:"toolID"`                                 // The tool used in this step
 	UpdatedAt    time.Time              `json:"updatedAt" yaml:"updatedAt"`                           // The date and time when the resource was last updated
 	events       []events.DomainEvent   `json:"-" yaml:"-"`
 }
 
-// NewPipelineStep creates a new PipelineStep entity
+// NewPipelineStep creates a new PipelineStep entity with validation.
+// All required fields must be provided and valid.
 func NewPipelineStep(
 	name string,
 	pipelineID uuid.UUID,
 	toolID uuid.UUID,
 ) (*PipelineStep, error) {
+	// Validate required fields
 	if name == "" {
 		return nil, fmt.Errorf("Name cannot be empty")
 	}
 
+	now := time.Now().UTC()
 	pipelinestep := &PipelineStep{
-		CreatedAt:  time.Now().UTC(),
+		CreatedAt:  now,
 		ID:         uuid.New(),
 		Name:       name,
 		PipelineID: pipelineID,
 		ToolID:     toolID,
-		UpdatedAt:  time.Now().UTC(),
+		UpdatedAt:  now,
 		events:     []events.DomainEvent{},
 	}
 	pipelinestep.addEvent(events.NewPipelineStepCreatedEvent(pipelinestep.ID))
@@ -98,8 +148,8 @@ func (e *PipelineStep) GetRetries() *int {
 }
 
 // GetStatus returns the Status
-func (e *PipelineStep) GetStatus() *string {
-	return e.Status
+func (e *PipelineStep) GetStatus() string {
+	return string(e.Status)
 }
 
 // GetTimeout returns the Timeout
@@ -143,7 +193,7 @@ func ReconstructPipelineStep(
 	pipelineID uuid.UUID,
 	position *int,
 	retries *int,
-	status *string,
+	status string,
 	timeout *int,
 	toolID uuid.UUID,
 	updatedAt time.Time,
@@ -158,7 +208,7 @@ func ReconstructPipelineStep(
 		PipelineID:   pipelineID,
 		Position:     position,
 		Retries:      retries,
-		Status:       status,
+		Status:       PipelineStepStatus(status),
 		Timeout:      timeout,
 		ToolID:       toolID,
 		UpdatedAt:    updatedAt,

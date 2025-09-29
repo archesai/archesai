@@ -20,21 +20,24 @@ type Label struct {
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewLabel creates a new Label entity
+// NewLabel creates a new Label entity with validation.
+// All required fields must be provided and valid.
 func NewLabel(
 	name string,
 	organizationID uuid.UUID,
 ) (*Label, error) {
+	// Validate required fields
 	if name == "" {
 		return nil, fmt.Errorf("Name cannot be empty")
 	}
 
+	now := time.Now().UTC()
 	label := &Label{
-		CreatedAt:      time.Now().UTC(),
+		CreatedAt:      now,
 		ID:             uuid.New(),
 		Name:           name,
 		OrganizationID: organizationID,
-		UpdatedAt:      time.Now().UTC(),
+		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	label.addEvent(events.NewLabelCreatedEvent(label.ID))

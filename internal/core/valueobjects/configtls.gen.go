@@ -14,8 +14,10 @@ type ConfigTLS struct {
 	SecretName *string `json:"secretName,omitempty" yaml:"secretName,omitempty"` // Kubernetes secret name for TLS certificates
 }
 
-// NewConfigTLS creates a new ConfigTLS value object
+// NewConfigTLS creates a new immutable ConfigTLS value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigTLS(enabled bool, issuer *string, secretName *string) (ConfigTLS, error) {
+	// Validate all fields
 
 	return ConfigTLS{
 		Enabled:    enabled,
@@ -24,32 +26,66 @@ func NewConfigTLS(enabled bool, issuer *string, secretName *string) (ConfigTLS, 
 	}, nil
 }
 
-// GetEnabled returns the Enabled
+// MustConfigTLS creates a new ConfigTLS value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigTLS(enabled bool, issuer *string, secretName *string) ConfigTLS {
+	v, err := NewConfigTLS(enabled, issuer, secretName)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigTLS: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigTLS returns the zero value for ConfigTLS.
+// This is useful for comparisons and as a default value.
+func ZeroConfigTLS() ConfigTLS {
+	return ConfigTLS{}
+}
+
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigTLS) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetIssuer returns the Issuer
+// GetIssuer returns the Issuer value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigTLS) GetIssuer() *string {
 	return v.Issuer
 }
 
-// GetSecretName returns the SecretName
+// GetSecretName returns the SecretName value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigTLS) GetSecretName() *string {
 	return v.SecretName
 }
 
-// Equals checks if two ConfigTLS value objects are equal
-// func (v ConfigTLS) Equals(other ConfigTLS) bool {
-//	return v.Enabled == other.Enabled && v.Issuer == other.Issuer && v.SecretName == other.SecretName
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigTLS) IsZero() bool {
+	zero := ZeroConfigTLS()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigTLS) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigTLS
 func (v ConfigTLS) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("Issuer: %v", v.Issuer))
-	fields = append(fields, fmt.Sprintf("SecretName: %v", v.SecretName))
+	if v.Issuer != nil {
+		fields = append(fields, fmt.Sprintf("Issuer: %v", *v.Issuer))
+	} else {
+		fields = append(fields, "Issuer: <nil>")
+	}
+	if v.SecretName != nil {
+		fields = append(fields, fmt.Sprintf("SecretName: %v", *v.SecretName))
+	} else {
+		fields = append(fields, "SecretName: <nil>")
+	}
 	return fmt.Sprintf("ConfigTLS{%s}", strings.Join(fields, ", "))
 }

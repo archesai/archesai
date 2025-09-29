@@ -13,8 +13,10 @@ type ConfigPersistence struct {
 	Size    string `json:"size" yaml:"size"`       // Size of persistent volume
 }
 
-// NewConfigPersistence creates a new ConfigPersistence value object
+// NewConfigPersistence creates a new immutable ConfigPersistence value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigPersistence(enabled bool, size string) (ConfigPersistence, error) {
+	// Validate all fields
 	if size == "" {
 		return ConfigPersistence{}, fmt.Errorf("Size cannot be empty")
 	}
@@ -25,24 +27,52 @@ func NewConfigPersistence(enabled bool, size string) (ConfigPersistence, error) 
 	}, nil
 }
 
-// GetEnabled returns the Enabled
+// MustConfigPersistence creates a new ConfigPersistence value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigPersistence(enabled bool, size string) ConfigPersistence {
+	v, err := NewConfigPersistence(enabled, size)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigPersistence: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigPersistence returns the zero value for ConfigPersistence.
+// This is useful for comparisons and as a default value.
+func ZeroConfigPersistence() ConfigPersistence {
+	return ConfigPersistence{}
+}
+
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigPersistence) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetSize returns the Size
+// GetSize returns the Size value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigPersistence) GetSize() string {
 	return v.Size
 }
 
-// Equals checks if two ConfigPersistence value objects are equal
-// func (v ConfigPersistence) Equals(other ConfigPersistence) bool {
-//	return v.Enabled == other.Enabled && v.Size == other.Size
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigPersistence) IsZero() bool {
+	zero := ZeroConfigPersistence()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigPersistence) Validate() error {
+	if v.Size == "" {
+		return fmt.Errorf("Size cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of ConfigPersistence
 func (v ConfigPersistence) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
 	fields = append(fields, fmt.Sprintf("Size: %v", v.Size))

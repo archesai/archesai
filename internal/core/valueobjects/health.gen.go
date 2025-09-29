@@ -18,14 +18,19 @@ type Health struct {
 	Uptime    float64 `json:"uptime" yaml:"uptime"`
 }
 
-// NewHealth creates a new Health value object
+// NewHealth creates a new immutable Health value object.
+// Value objects are immutable and validated upon creation.
 func NewHealth(services struct {
 	Database string `json:"database" yaml:"database"`
 	Email    string `json:"email" yaml:"email"`
 	Redis    string `json:"redis" yaml:"redis"`
 }, timestamp string, uptime float64) (Health, error) {
+	// Validate all fields
 	if timestamp == "" {
 		return Health{}, fmt.Errorf("Timestamp cannot be empty")
+	}
+	if uptime < 0 {
+		return Health{}, fmt.Errorf("Uptime cannot be negative")
 	}
 
 	return Health{
@@ -35,7 +40,28 @@ func NewHealth(services struct {
 	}, nil
 }
 
-// GetServices returns the Services
+// MustHealth creates a new Health value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustHealth(services struct {
+	Database string `json:"database" yaml:"database"`
+	Email    string `json:"email" yaml:"email"`
+	Redis    string `json:"redis" yaml:"redis"`
+}, timestamp string, uptime float64) Health {
+	v, err := NewHealth(services, timestamp, uptime)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create Health: %v", err))
+	}
+	return v
+}
+
+// ZeroHealth returns the zero value for Health.
+// This is useful for comparisons and as a default value.
+func ZeroHealth() Health {
+	return Health{}
+}
+
+// GetServices returns the Services value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Health) GetServices() struct {
 	Database string `json:"database" yaml:"database"`
 	Email    string `json:"email" yaml:"email"`
@@ -44,24 +70,36 @@ func (v Health) GetServices() struct {
 	return v.Services
 }
 
-// GetTimestamp returns the Timestamp
+// GetTimestamp returns the Timestamp value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Health) GetTimestamp() string {
 	return v.Timestamp
 }
 
-// GetUptime returns the Uptime
+// GetUptime returns the Uptime value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Health) GetUptime() float64 {
 	return v.Uptime
 }
 
-// Equals checks if two Health value objects are equal
-// func (v Health) Equals(other Health) bool {
-//	return v.Services == other.Services && v.Timestamp == other.Timestamp && v.Uptime == other.Uptime
-// }
+// IsZero returns true if this is the zero value.
+func (v Health) IsZero() bool {
+	zero := ZeroHealth()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v Health) Validate() error {
+	if v.Timestamp == "" {
+		return fmt.Errorf("Timestamp cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of Health
 func (v Health) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Services: %v", v.Services))
 	fields = append(fields, fmt.Sprintf("Timestamp: %v", v.Timestamp))

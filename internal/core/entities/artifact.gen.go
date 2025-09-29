@@ -26,23 +26,26 @@ type Artifact struct {
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewArtifact creates a new Artifact entity
+// NewArtifact creates a new Artifact entity with validation.
+// All required fields must be provided and valid.
 func NewArtifact(
 	credits int32,
 	mimeType string,
 	organizationID uuid.UUID,
 ) (*Artifact, error) {
+	// Validate required fields
 	if mimeType == "" {
 		return nil, fmt.Errorf("MimeType cannot be empty")
 	}
 
+	now := time.Now().UTC()
 	artifact := &Artifact{
-		CreatedAt:      time.Now().UTC(),
+		CreatedAt:      now,
 		Credits:        credits,
 		ID:             uuid.New(),
 		MimeType:       mimeType,
 		OrganizationID: organizationID,
-		UpdatedAt:      time.Now().UTC(),
+		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	artifact.addEvent(events.NewArtifactCreatedEvent(artifact.ID))

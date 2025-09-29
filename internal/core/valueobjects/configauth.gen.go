@@ -19,8 +19,10 @@ type ConfigAuth struct {
 	Twitter   *ConfigAuthTwitter   `json:"twitter,omitempty" yaml:"twitter,omitempty"`
 }
 
-// NewConfigAuth creates a new ConfigAuth value object
+// NewConfigAuth creates a new immutable ConfigAuth value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigAuth(enabled bool, firebase *ConfigAuthFirebase, github *ConfigAuthGithub, google *ConfigAuthGoogle, local *ConfigAuthLocal, magicLink *ConfigAuthMagicLink, microsoft *ConfigAuthMicrosoft, twitter *ConfigAuthTwitter) (ConfigAuth, error) {
+	// Validate all fields
 
 	return ConfigAuth{
 		Enabled:   enabled,
@@ -34,62 +36,121 @@ func NewConfigAuth(enabled bool, firebase *ConfigAuthFirebase, github *ConfigAut
 	}, nil
 }
 
-// GetEnabled returns the Enabled
+// MustConfigAuth creates a new ConfigAuth value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigAuth(enabled bool, firebase *ConfigAuthFirebase, github *ConfigAuthGithub, google *ConfigAuthGoogle, local *ConfigAuthLocal, magicLink *ConfigAuthMagicLink, microsoft *ConfigAuthMicrosoft, twitter *ConfigAuthTwitter) ConfigAuth {
+	v, err := NewConfigAuth(enabled, firebase, github, google, local, magicLink, microsoft, twitter)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigAuth: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigAuth returns the zero value for ConfigAuth.
+// This is useful for comparisons and as a default value.
+func ZeroConfigAuth() ConfigAuth {
+	return ConfigAuth{}
+}
+
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuth) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetFirebase returns the Firebase
+// GetFirebase returns the Firebase value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuth) GetFirebase() *ConfigAuthFirebase {
 	return v.Firebase
 }
 
-// GetGithub returns the Github
+// GetGithub returns the Github value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuth) GetGithub() *ConfigAuthGithub {
 	return v.Github
 }
 
-// GetGoogle returns the Google
+// GetGoogle returns the Google value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuth) GetGoogle() *ConfigAuthGoogle {
 	return v.Google
 }
 
-// GetLocal returns the Local
+// GetLocal returns the Local value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuth) GetLocal() *ConfigAuthLocal {
 	return v.Local
 }
 
-// GetMagicLink returns the MagicLink
+// GetMagicLink returns the MagicLink value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuth) GetMagicLink() *ConfigAuthMagicLink {
 	return v.MagicLink
 }
 
-// GetMicrosoft returns the Microsoft
+// GetMicrosoft returns the Microsoft value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuth) GetMicrosoft() *ConfigAuthMicrosoft {
 	return v.Microsoft
 }
 
-// GetTwitter returns the Twitter
+// GetTwitter returns the Twitter value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuth) GetTwitter() *ConfigAuthTwitter {
 	return v.Twitter
 }
 
-// Equals checks if two ConfigAuth value objects are equal
-// func (v ConfigAuth) Equals(other ConfigAuth) bool {
-//	return v.Enabled == other.Enabled && v.Firebase == other.Firebase && v.Github == other.Github && v.Google == other.Google && v.Local == other.Local && v.MagicLink == other.MagicLink && v.Microsoft == other.Microsoft && v.Twitter == other.Twitter
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigAuth) IsZero() bool {
+	zero := ZeroConfigAuth()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigAuth) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigAuth
 func (v ConfigAuth) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("Firebase: %v", v.Firebase))
-	fields = append(fields, fmt.Sprintf("Github: %v", v.Github))
-	fields = append(fields, fmt.Sprintf("Google: %v", v.Google))
-	fields = append(fields, fmt.Sprintf("Local: %v", v.Local))
-	fields = append(fields, fmt.Sprintf("MagicLink: %v", v.MagicLink))
-	fields = append(fields, fmt.Sprintf("Microsoft: %v", v.Microsoft))
-	fields = append(fields, fmt.Sprintf("Twitter: %v", v.Twitter))
+	if v.Firebase != nil {
+		fields = append(fields, fmt.Sprintf("Firebase: %v", *v.Firebase))
+	} else {
+		fields = append(fields, "Firebase: <nil>")
+	}
+	if v.Github != nil {
+		fields = append(fields, fmt.Sprintf("Github: %v", *v.Github))
+	} else {
+		fields = append(fields, "Github: <nil>")
+	}
+	if v.Google != nil {
+		fields = append(fields, fmt.Sprintf("Google: %v", *v.Google))
+	} else {
+		fields = append(fields, "Google: <nil>")
+	}
+	if v.Local != nil {
+		fields = append(fields, fmt.Sprintf("Local: %v", *v.Local))
+	} else {
+		fields = append(fields, "Local: <nil>")
+	}
+	if v.MagicLink != nil {
+		fields = append(fields, fmt.Sprintf("MagicLink: %v", *v.MagicLink))
+	} else {
+		fields = append(fields, "MagicLink: <nil>")
+	}
+	if v.Microsoft != nil {
+		fields = append(fields, fmt.Sprintf("Microsoft: %v", *v.Microsoft))
+	} else {
+		fields = append(fields, "Microsoft: <nil>")
+	}
+	if v.Twitter != nil {
+		fields = append(fields, fmt.Sprintf("Twitter: %v", *v.Twitter))
+	} else {
+		fields = append(fields, "Twitter: <nil>")
+	}
 	return fmt.Sprintf("ConfigAuth{%s}", strings.Join(fields, ", "))
 }

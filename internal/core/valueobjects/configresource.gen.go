@@ -19,7 +19,8 @@ type ConfigResource struct {
 	} `json:"requests" yaml:"requests"` // Resource requests
 }
 
-// NewConfigResource creates a new ConfigResource value object
+// NewConfigResource creates a new immutable ConfigResource value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigResource(limits struct {
 	Cpu    string `json:"cpu" yaml:"cpu"`
 	Memory string `json:"memory" yaml:"memory"`
@@ -27,6 +28,7 @@ func NewConfigResource(limits struct {
 	Cpu    string `json:"cpu" yaml:"cpu"`
 	Memory string `json:"memory" yaml:"memory"`
 }) (ConfigResource, error) {
+	// Validate all fields
 
 	return ConfigResource{
 		Limits:   limits,
@@ -34,7 +36,30 @@ func NewConfigResource(limits struct {
 	}, nil
 }
 
-// GetLimits returns the Limits
+// MustConfigResource creates a new ConfigResource value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigResource(limits struct {
+	Cpu    string `json:"cpu" yaml:"cpu"`
+	Memory string `json:"memory" yaml:"memory"`
+}, requests struct {
+	Cpu    string `json:"cpu" yaml:"cpu"`
+	Memory string `json:"memory" yaml:"memory"`
+}) ConfigResource {
+	v, err := NewConfigResource(limits, requests)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigResource: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigResource returns the zero value for ConfigResource.
+// This is useful for comparisons and as a default value.
+func ZeroConfigResource() ConfigResource {
+	return ConfigResource{}
+}
+
+// GetLimits returns the Limits value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigResource) GetLimits() struct {
 	Cpu    string `json:"cpu" yaml:"cpu"`
 	Memory string `json:"memory" yaml:"memory"`
@@ -42,7 +67,8 @@ func (v ConfigResource) GetLimits() struct {
 	return v.Limits
 }
 
-// GetRequests returns the Requests
+// GetRequests returns the Requests value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigResource) GetRequests() struct {
 	Cpu    string `json:"cpu" yaml:"cpu"`
 	Memory string `json:"memory" yaml:"memory"`
@@ -50,14 +76,21 @@ func (v ConfigResource) GetRequests() struct {
 	return v.Requests
 }
 
-// Equals checks if two ConfigResource value objects are equal
-// func (v ConfigResource) Equals(other ConfigResource) bool {
-//	return v.Limits == other.Limits && v.Requests == other.Requests
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigResource) IsZero() bool {
+	zero := ZeroConfigResource()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigResource) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigResource
 func (v ConfigResource) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Limits: %v", v.Limits))
 	fields = append(fields, fmt.Sprintf("Requests: %v", v.Requests))

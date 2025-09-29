@@ -26,7 +26,8 @@ type Session struct {
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewSession creates a new Session entity
+// NewSession creates a new Session entity with validation.
+// All required fields must be provided and valid.
 func NewSession(
 	expiresAt time.Time,
 	ipAddress string,
@@ -34,6 +35,7 @@ func NewSession(
 	userAgent string,
 	userID uuid.UUID,
 ) (*Session, error) {
+	// Validate required fields
 	if ipAddress == "" {
 		return nil, fmt.Errorf("IpAddress cannot be empty")
 	}
@@ -44,13 +46,14 @@ func NewSession(
 		return nil, fmt.Errorf("UserAgent cannot be empty")
 	}
 
+	now := time.Now().UTC()
 	session := &Session{
-		CreatedAt: time.Now().UTC(),
+		CreatedAt: now,
 		ExpiresAt: expiresAt,
 		ID:        uuid.New(),
 		IpAddress: ipAddress,
 		Token:     token,
-		UpdatedAt: time.Now().UTC(),
+		UpdatedAt: now,
 		UserAgent: userAgent,
 		UserID:    userID,
 		events:    []events.DomainEvent{},

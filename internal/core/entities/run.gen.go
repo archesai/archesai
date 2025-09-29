@@ -10,6 +10,47 @@ import (
 	"github.com/google/uuid"
 )
 
+// RunStatus represents the enumeration of valid values for Status
+type RunStatus string
+
+// Valid Status values
+const (
+	RunStatusCOMPLETED  RunStatus = "COMPLETED"
+	RunStatusFAILED     RunStatus = "FAILED"
+	RunStatusPROCESSING RunStatus = "PROCESSING"
+	RunStatusQUEUED     RunStatus = "QUEUED"
+)
+
+// String returns the string representation
+func (e RunStatus) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e RunStatus) IsValid() bool {
+	switch e {
+	case RunStatusCOMPLETED:
+		return true
+	case RunStatusFAILED:
+		return true
+	case RunStatusPROCESSING:
+		return true
+	case RunStatusQUEUED:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseRunStatus parses a string into the enum type
+func ParseRunStatus(s string) (RunStatus, error) {
+	v := RunStatus(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Status: %s", s)
+	}
+	return v, nil
+}
+
 // Run represents Schema for Run entity
 type Run struct {
 	CompletedAt    *time.Time           `json:"completedAt,omitempty" yaml:"completedAt,omitempty"` // The timestamp when the run completed
@@ -20,33 +61,39 @@ type Run struct {
 	PipelineID     uuid.UUID            `json:"pipelineID" yaml:"pipelineID"`                       // The pipeline this run is executing
 	Progress       float64              `json:"progress" yaml:"progress"`                           // The percent progress of the run
 	StartedAt      *time.Time           `json:"startedAt,omitempty" yaml:"startedAt,omitempty"`     // The timestamp when the run started
-	Status         string               `json:"status" yaml:"status"`
+	Status         RunStatus            `json:"status" yaml:"status"`
 	ToolID         uuid.UUID            `json:"toolID" yaml:"toolID"`       // The tool being used in this run
 	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"` // The date and time when the resource was last updated
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewRun creates a new Run entity
+// NewRun creates a new Run entity with validation.
+// All required fields must be provided and valid.
 func NewRun(
 	organizationID uuid.UUID,
 	pipelineID uuid.UUID,
 	progress float64,
-	status string,
+	status RunStatus,
 	toolID uuid.UUID,
 ) (*Run, error) {
-	if status == "" {
-		return nil, fmt.Errorf("Status cannot be empty")
+	// Validate required fields
+	if progress < 0 {
+		return nil, fmt.Errorf("Progress cannot be negative")
+	}
+	if !status.IsValid() {
+		return nil, fmt.Errorf("invalid Status: %s", status)
 	}
 
+	now := time.Now().UTC()
 	run := &Run{
-		CreatedAt:      time.Now().UTC(),
+		CreatedAt:      now,
 		ID:             uuid.New(),
 		OrganizationID: organizationID,
 		PipelineID:     pipelineID,
 		Progress:       progress,
 		Status:         status,
 		ToolID:         toolID,
-		UpdatedAt:      time.Now().UTC(),
+		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	run.addEvent(events.NewRunCreatedEvent(run.ID))
@@ -96,7 +143,7 @@ func (e *Run) GetStartedAt() *time.Time {
 
 // GetStatus returns the Status
 func (e *Run) GetStatus() string {
-	return e.Status
+	return string(e.Status)
 }
 
 // GetToolID returns the ToolID
@@ -147,7 +194,7 @@ func ReconstructRun(
 		PipelineID:     pipelineID,
 		Progress:       progress,
 		StartedAt:      startedAt,
-		Status:         status,
+		Status:         RunStatus(status),
 		ToolID:         toolID,
 		UpdatedAt:      updatedAt,
 		events:         []events.DomainEvent{},

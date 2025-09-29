@@ -10,6 +10,50 @@ import (
 	"github.com/google/uuid"
 )
 
+// OrganizationPlan represents the enumeration of valid values for Plan
+type OrganizationPlan string
+
+// Valid Plan values
+const (
+	OrganizationPlanFREE      OrganizationPlan = "FREE"
+	OrganizationPlanBASIC     OrganizationPlan = "BASIC"
+	OrganizationPlanSTANDARD  OrganizationPlan = "STANDARD"
+	OrganizationPlanPREMIUM   OrganizationPlan = "PREMIUM"
+	OrganizationPlanUNLIMITED OrganizationPlan = "UNLIMITED"
+)
+
+// String returns the string representation
+func (e OrganizationPlan) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e OrganizationPlan) IsValid() bool {
+	switch e {
+	case OrganizationPlanFREE:
+		return true
+	case OrganizationPlanBASIC:
+		return true
+	case OrganizationPlanSTANDARD:
+		return true
+	case OrganizationPlanPREMIUM:
+		return true
+	case OrganizationPlanUNLIMITED:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseOrganizationPlan parses a string into the enum type
+func ParseOrganizationPlan(s string) (OrganizationPlan, error) {
+	v := OrganizationPlan(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Plan: %s", s)
+	}
+	return v, nil
+}
+
 // Organization represents Schema for Organization entity
 type Organization struct {
 	BillingEmail     *string              `json:"billingEmail,omitempty" yaml:"billingEmail,omitempty"`         // Email address for billing communications
@@ -18,38 +62,41 @@ type Organization struct {
 	ID               uuid.UUID            `json:"id" yaml:"id"`                                                 // Unique identifier for the resource
 	Logo             *string              `json:"logo,omitempty" yaml:"logo,omitempty"`                         // The organization's logo URL
 	Name             string               `json:"name" yaml:"name"`                                             // The organization's display name
-	Plan             string               `json:"plan" yaml:"plan"`                                             // The current subscription plan
+	Plan             OrganizationPlan     `json:"plan" yaml:"plan"`                                             // The current subscription plan
 	Slug             string               `json:"slug" yaml:"slug"`                                             // URL-friendly unique identifier for the organization
 	StripeCustomerID *string              `json:"stripeCustomerID,omitempty" yaml:"stripeCustomerID,omitempty"` // Stripe customer identifier
 	UpdatedAt        time.Time            `json:"updatedAt" yaml:"updatedAt"`                                   // The date and time when the resource was last updated
 	events           []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewOrganization creates a new Organization entity
+// NewOrganization creates a new Organization entity with validation.
+// All required fields must be provided and valid.
 func NewOrganization(
 	credits int32,
 	name string,
-	plan string,
+	plan OrganizationPlan,
 	slug string,
 ) (*Organization, error) {
+	// Validate required fields
 	if name == "" {
 		return nil, fmt.Errorf("Name cannot be empty")
 	}
-	if plan == "" {
-		return nil, fmt.Errorf("Plan cannot be empty")
+	if !plan.IsValid() {
+		return nil, fmt.Errorf("invalid Plan: %s", plan)
 	}
 	if slug == "" {
 		return nil, fmt.Errorf("Slug cannot be empty")
 	}
 
+	now := time.Now().UTC()
 	organization := &Organization{
-		CreatedAt: time.Now().UTC(),
+		CreatedAt: now,
 		Credits:   credits,
 		ID:        uuid.New(),
 		Name:      name,
 		Plan:      plan,
 		Slug:      slug,
-		UpdatedAt: time.Now().UTC(),
+		UpdatedAt: now,
 		events:    []events.DomainEvent{},
 	}
 	organization.addEvent(events.NewOrganizationCreatedEvent(organization.ID))
@@ -89,7 +136,7 @@ func (e *Organization) GetName() string {
 
 // GetPlan returns the Plan
 func (e *Organization) GetPlan() string {
-	return e.Plan
+	return string(e.Plan)
 }
 
 // GetSlug returns the Slug
@@ -142,7 +189,7 @@ func ReconstructOrganization(
 		ID:               id,
 		Logo:             logo,
 		Name:             name,
-		Plan:             plan,
+		Plan:             OrganizationPlan(plan),
 		Slug:             slug,
 		StripeCustomerID: stripeCustomerID,
 		UpdatedAt:        updatedAt,

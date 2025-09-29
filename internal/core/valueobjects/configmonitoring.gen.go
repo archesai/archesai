@@ -13,8 +13,10 @@ type ConfigMonitoring struct {
 	Loki    ConfigLoki    `json:"loki" yaml:"loki"`
 }
 
-// NewConfigMonitoring creates a new ConfigMonitoring value object
+// NewConfigMonitoring creates a new immutable ConfigMonitoring value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigMonitoring(grafana ConfigGrafana, loki ConfigLoki) (ConfigMonitoring, error) {
+	// Validate all fields
 
 	return ConfigMonitoring{
 		Grafana: grafana,
@@ -22,24 +24,49 @@ func NewConfigMonitoring(grafana ConfigGrafana, loki ConfigLoki) (ConfigMonitori
 	}, nil
 }
 
-// GetGrafana returns the Grafana
+// MustConfigMonitoring creates a new ConfigMonitoring value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigMonitoring(grafana ConfigGrafana, loki ConfigLoki) ConfigMonitoring {
+	v, err := NewConfigMonitoring(grafana, loki)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigMonitoring: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigMonitoring returns the zero value for ConfigMonitoring.
+// This is useful for comparisons and as a default value.
+func ZeroConfigMonitoring() ConfigMonitoring {
+	return ConfigMonitoring{}
+}
+
+// GetGrafana returns the Grafana value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigMonitoring) GetGrafana() ConfigGrafana {
 	return v.Grafana
 }
 
-// GetLoki returns the Loki
+// GetLoki returns the Loki value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigMonitoring) GetLoki() ConfigLoki {
 	return v.Loki
 }
 
-// Equals checks if two ConfigMonitoring value objects are equal
-// func (v ConfigMonitoring) Equals(other ConfigMonitoring) bool {
-//	return v.Grafana == other.Grafana && v.Loki == other.Loki
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigMonitoring) IsZero() bool {
+	zero := ZeroConfigMonitoring()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigMonitoring) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigMonitoring
 func (v ConfigMonitoring) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Grafana: %v", v.Grafana))
 	fields = append(fields, fmt.Sprintf("Loki: %v", v.Loki))

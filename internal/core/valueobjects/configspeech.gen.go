@@ -13,8 +13,10 @@ type ConfigSpeech struct {
 	Token   *string `json:"token,omitempty" yaml:"token,omitempty"` // Speech-to-text service API token
 }
 
-// NewConfigSpeech creates a new ConfigSpeech value object
+// NewConfigSpeech creates a new immutable ConfigSpeech value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigSpeech(enabled bool, token *string) (ConfigSpeech, error) {
+	// Validate all fields
 
 	return ConfigSpeech{
 		Enabled: enabled,
@@ -22,26 +24,55 @@ func NewConfigSpeech(enabled bool, token *string) (ConfigSpeech, error) {
 	}, nil
 }
 
-// GetEnabled returns the Enabled
+// MustConfigSpeech creates a new ConfigSpeech value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigSpeech(enabled bool, token *string) ConfigSpeech {
+	v, err := NewConfigSpeech(enabled, token)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigSpeech: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigSpeech returns the zero value for ConfigSpeech.
+// This is useful for comparisons and as a default value.
+func ZeroConfigSpeech() ConfigSpeech {
+	return ConfigSpeech{}
+}
+
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigSpeech) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetToken returns the Token
+// GetToken returns the Token value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigSpeech) GetToken() *string {
 	return v.Token
 }
 
-// Equals checks if two ConfigSpeech value objects are equal
-// func (v ConfigSpeech) Equals(other ConfigSpeech) bool {
-//	return v.Enabled == other.Enabled && v.Token == other.Token
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigSpeech) IsZero() bool {
+	zero := ZeroConfigSpeech()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigSpeech) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigSpeech
 func (v ConfigSpeech) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("Token: %v", v.Token))
+	if v.Token != nil {
+		fields = append(fields, fmt.Sprintf("Token: %v", *v.Token))
+	} else {
+		fields = append(fields, "Token: <nil>")
+	}
 	return fmt.Sprintf("ConfigSpeech{%s}", strings.Join(fields, ", "))
 }

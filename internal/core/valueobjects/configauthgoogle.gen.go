@@ -16,8 +16,10 @@ type ConfigAuthGoogle struct {
 	Scopes       []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
 }
 
-// NewConfigAuthGoogle creates a new ConfigAuthGoogle value object
+// NewConfigAuthGoogle creates a new immutable ConfigAuthGoogle value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigAuthGoogle(clientID *string, clientSecret *string, enabled bool, redirectURL *string, scopes []string) (ConfigAuthGoogle, error) {
+	// Validate all fields
 
 	return ConfigAuthGoogle{
 		ClientId:     clientID,
@@ -28,44 +30,87 @@ func NewConfigAuthGoogle(clientID *string, clientSecret *string, enabled bool, r
 	}, nil
 }
 
-// GetClientId returns the ClientId
+// MustConfigAuthGoogle creates a new ConfigAuthGoogle value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigAuthGoogle(clientID *string, clientSecret *string, enabled bool, redirectURL *string, scopes []string) ConfigAuthGoogle {
+	v, err := NewConfigAuthGoogle(clientID, clientSecret, enabled, redirectURL, scopes)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigAuthGoogle: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigAuthGoogle returns the zero value for ConfigAuthGoogle.
+// This is useful for comparisons and as a default value.
+func ZeroConfigAuthGoogle() ConfigAuthGoogle {
+	return ConfigAuthGoogle{}
+}
+
+// GetClientId returns the ClientId value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGoogle) GetClientId() *string {
 	return v.ClientId
 }
 
-// GetClientSecret returns the ClientSecret
+// GetClientSecret returns the ClientSecret value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGoogle) GetClientSecret() *string {
 	return v.ClientSecret
 }
 
-// GetEnabled returns the Enabled
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGoogle) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetRedirectUrl returns the RedirectUrl
+// GetRedirectUrl returns the RedirectUrl value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGoogle) GetRedirectUrl() *string {
 	return v.RedirectUrl
 }
 
-// GetScopes returns the Scopes
+// GetScopes returns the Scopes value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGoogle) GetScopes() []string {
-	return v.Scopes
+	// Return a copy for slices and maps to maintain immutability
+	result := make([]string, len(v.Scopes))
+	copy(result, v.Scopes)
+	return result
 }
 
-// Equals checks if two ConfigAuthGoogle value objects are equal
-// func (v ConfigAuthGoogle) Equals(other ConfigAuthGoogle) bool {
-//	return v.ClientId == other.ClientId && v.ClientSecret == other.ClientSecret && v.Enabled == other.Enabled && v.RedirectUrl == other.RedirectUrl && v.Scopes == other.Scopes
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigAuthGoogle) IsZero() bool {
+	zero := ZeroConfigAuthGoogle()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigAuthGoogle) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigAuthGoogle
 func (v ConfigAuthGoogle) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("ClientId: %v", v.ClientId))
-	fields = append(fields, fmt.Sprintf("ClientSecret: %v", v.ClientSecret))
+	if v.ClientId != nil {
+		fields = append(fields, fmt.Sprintf("ClientId: %v", *v.ClientId))
+	} else {
+		fields = append(fields, "ClientId: <nil>")
+	}
+	if v.ClientSecret != nil {
+		fields = append(fields, fmt.Sprintf("ClientSecret: %v", *v.ClientSecret))
+	} else {
+		fields = append(fields, "ClientSecret: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("RedirectUrl: %v", v.RedirectUrl))
+	if v.RedirectUrl != nil {
+		fields = append(fields, fmt.Sprintf("RedirectUrl: %v", *v.RedirectUrl))
+	} else {
+		fields = append(fields, "RedirectUrl: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Scopes: %v", v.Scopes))
 	return fmt.Sprintf("ConfigAuthGoogle{%s}", strings.Join(fields, ", "))
 }

@@ -15,8 +15,10 @@ type ConfigAuthFirebase struct {
 	ProjectID   *string `json:"projectID,omitempty" yaml:"projectID,omitempty"`     // Firebase project ID for authentication
 }
 
-// NewConfigAuthFirebase creates a new ConfigAuthFirebase value object
+// NewConfigAuthFirebase creates a new immutable ConfigAuthFirebase value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigAuthFirebase(clientEmail *string, enabled bool, privateKey *string, projectID *string) (ConfigAuthFirebase, error) {
+	// Validate all fields
 
 	return ConfigAuthFirebase{
 		ClientEmail: clientEmail,
@@ -26,38 +28,77 @@ func NewConfigAuthFirebase(clientEmail *string, enabled bool, privateKey *string
 	}, nil
 }
 
-// GetClientEmail returns the ClientEmail
+// MustConfigAuthFirebase creates a new ConfigAuthFirebase value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigAuthFirebase(clientEmail *string, enabled bool, privateKey *string, projectID *string) ConfigAuthFirebase {
+	v, err := NewConfigAuthFirebase(clientEmail, enabled, privateKey, projectID)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigAuthFirebase: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigAuthFirebase returns the zero value for ConfigAuthFirebase.
+// This is useful for comparisons and as a default value.
+func ZeroConfigAuthFirebase() ConfigAuthFirebase {
+	return ConfigAuthFirebase{}
+}
+
+// GetClientEmail returns the ClientEmail value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthFirebase) GetClientEmail() *string {
 	return v.ClientEmail
 }
 
-// GetEnabled returns the Enabled
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthFirebase) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetPrivateKey returns the PrivateKey
+// GetPrivateKey returns the PrivateKey value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthFirebase) GetPrivateKey() *string {
 	return v.PrivateKey
 }
 
-// GetProjectID returns the ProjectID
+// GetProjectID returns the ProjectID value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthFirebase) GetProjectID() *string {
 	return v.ProjectID
 }
 
-// Equals checks if two ConfigAuthFirebase value objects are equal
-// func (v ConfigAuthFirebase) Equals(other ConfigAuthFirebase) bool {
-//	return v.ClientEmail == other.ClientEmail && v.Enabled == other.Enabled && v.PrivateKey == other.PrivateKey && v.ProjectID == other.ProjectID
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigAuthFirebase) IsZero() bool {
+	zero := ZeroConfigAuthFirebase()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigAuthFirebase) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigAuthFirebase
 func (v ConfigAuthFirebase) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("ClientEmail: %v", v.ClientEmail))
+	if v.ClientEmail != nil {
+		fields = append(fields, fmt.Sprintf("ClientEmail: %v", *v.ClientEmail))
+	} else {
+		fields = append(fields, "ClientEmail: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("PrivateKey: %v", v.PrivateKey))
-	fields = append(fields, fmt.Sprintf("ProjectID: %v", v.ProjectID))
+	if v.PrivateKey != nil {
+		fields = append(fields, fmt.Sprintf("PrivateKey: %v", *v.PrivateKey))
+	} else {
+		fields = append(fields, "PrivateKey: <nil>")
+	}
+	if v.ProjectID != nil {
+		fields = append(fields, fmt.Sprintf("ProjectID: %v", *v.ProjectID))
+	} else {
+		fields = append(fields, "ProjectID: <nil>")
+	}
 	return fmt.Sprintf("ConfigAuthFirebase{%s}", strings.Join(fields, ", "))
 }

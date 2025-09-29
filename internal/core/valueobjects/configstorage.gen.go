@@ -20,8 +20,10 @@ type ConfigStorage struct {
 	Secretkey   string             `json:"secretkey" yaml:"secretkey"` // MinIO/S3 secret access key
 }
 
-// NewConfigStorage creates a new ConfigStorage value object
+// NewConfigStorage creates a new immutable ConfigStorage value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigStorage(accesskey string, bucket string, enabled bool, endpoint string, image *ConfigImage, managed *bool, persistence *ConfigPersistence, resources *ConfigResource, secretkey string) (ConfigStorage, error) {
+	// Validate all fields
 	if accesskey == "" {
 		return ConfigStorage{}, fmt.Errorf("Accesskey cannot be empty")
 	}
@@ -48,68 +50,128 @@ func NewConfigStorage(accesskey string, bucket string, enabled bool, endpoint st
 	}, nil
 }
 
-// GetAccesskey returns the Accesskey
+// MustConfigStorage creates a new ConfigStorage value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigStorage(accesskey string, bucket string, enabled bool, endpoint string, image *ConfigImage, managed *bool, persistence *ConfigPersistence, resources *ConfigResource, secretkey string) ConfigStorage {
+	v, err := NewConfigStorage(accesskey, bucket, enabled, endpoint, image, managed, persistence, resources, secretkey)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigStorage: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigStorage returns the zero value for ConfigStorage.
+// This is useful for comparisons and as a default value.
+func ZeroConfigStorage() ConfigStorage {
+	return ConfigStorage{}
+}
+
+// GetAccesskey returns the Accesskey value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStorage) GetAccesskey() string {
 	return v.Accesskey
 }
 
-// GetBucket returns the Bucket
+// GetBucket returns the Bucket value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStorage) GetBucket() string {
 	return v.Bucket
 }
 
-// GetEnabled returns the Enabled
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStorage) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetEndpoint returns the Endpoint
+// GetEndpoint returns the Endpoint value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStorage) GetEndpoint() string {
 	return v.Endpoint
 }
 
-// GetImage returns the Image
+// GetImage returns the Image value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStorage) GetImage() *ConfigImage {
 	return v.Image
 }
 
-// GetManaged returns the Managed
+// GetManaged returns the Managed value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStorage) GetManaged() *bool {
 	return v.Managed
 }
 
-// GetPersistence returns the Persistence
+// GetPersistence returns the Persistence value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStorage) GetPersistence() *ConfigPersistence {
 	return v.Persistence
 }
 
-// GetResources returns the Resources
+// GetResources returns the Resources value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStorage) GetResources() *ConfigResource {
 	return v.Resources
 }
 
-// GetSecretkey returns the Secretkey
+// GetSecretkey returns the Secretkey value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigStorage) GetSecretkey() string {
 	return v.Secretkey
 }
 
-// Equals checks if two ConfigStorage value objects are equal
-// func (v ConfigStorage) Equals(other ConfigStorage) bool {
-//	return v.Accesskey == other.Accesskey && v.Bucket == other.Bucket && v.Enabled == other.Enabled && v.Endpoint == other.Endpoint && v.Image == other.Image && v.Managed == other.Managed && v.Persistence == other.Persistence && v.Resources == other.Resources && v.Secretkey == other.Secretkey
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigStorage) IsZero() bool {
+	zero := ZeroConfigStorage()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigStorage) Validate() error {
+	if v.Accesskey == "" {
+		return fmt.Errorf("Accesskey cannot be empty")
+	}
+	if v.Bucket == "" {
+		return fmt.Errorf("Bucket cannot be empty")
+	}
+	if v.Endpoint == "" {
+		return fmt.Errorf("Endpoint cannot be empty")
+	}
+	if v.Secretkey == "" {
+		return fmt.Errorf("Secretkey cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of ConfigStorage
 func (v ConfigStorage) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Accesskey: %v", v.Accesskey))
 	fields = append(fields, fmt.Sprintf("Bucket: %v", v.Bucket))
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
 	fields = append(fields, fmt.Sprintf("Endpoint: %v", v.Endpoint))
-	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
-	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
-	fields = append(fields, fmt.Sprintf("Persistence: %v", v.Persistence))
-	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	if v.Image != nil {
+		fields = append(fields, fmt.Sprintf("Image: %v", *v.Image))
+	} else {
+		fields = append(fields, "Image: <nil>")
+	}
+	if v.Managed != nil {
+		fields = append(fields, fmt.Sprintf("Managed: %v", *v.Managed))
+	} else {
+		fields = append(fields, "Managed: <nil>")
+	}
+	if v.Persistence != nil {
+		fields = append(fields, fmt.Sprintf("Persistence: %v", *v.Persistence))
+	} else {
+		fields = append(fields, "Persistence: <nil>")
+	}
+	if v.Resources != nil {
+		fields = append(fields, fmt.Sprintf("Resources: %v", *v.Resources))
+	} else {
+		fields = append(fields, "Resources: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Secretkey: %v", v.Secretkey))
 	return fmt.Sprintf("ConfigStorage{%s}", strings.Join(fields, ", "))
 }

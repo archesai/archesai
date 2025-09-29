@@ -34,7 +34,8 @@ type ConfigAuthMagicLink struct {
 	TokenExpiry *int `json:"tokenExpiry,omitempty" yaml:"tokenExpiry,omitempty"` // Token expiry duration in minutes
 }
 
-// NewConfigAuthMagicLink creates a new ConfigAuthMagicLink value object
+// NewConfigAuthMagicLink creates a new immutable ConfigAuthMagicLink value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigAuthMagicLink(deliveryMethods *struct {
 	Console struct {
 		Enabled *bool `json:"enabled,omitempty" yaml:"enabled"`
@@ -54,6 +55,7 @@ func NewConfigAuthMagicLink(deliveryMethods *struct {
 	MaxAttempts   *int `json:"maxAttempts,omitempty" yaml:"maxAttempts"`
 	WindowMinutes *int `json:"windowMinutes,omitempty" yaml:"windowMinutes"`
 }, tokenExpiry *int) (ConfigAuthMagicLink, error) {
+	// Validate all fields
 
 	return ConfigAuthMagicLink{
 		DeliveryMethods: deliveryMethods,
@@ -64,7 +66,42 @@ func NewConfigAuthMagicLink(deliveryMethods *struct {
 	}, nil
 }
 
-// GetDeliveryMethods returns the DeliveryMethods
+// MustConfigAuthMagicLink creates a new ConfigAuthMagicLink value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigAuthMagicLink(deliveryMethods *struct {
+	Console struct {
+		Enabled *bool `json:"enabled,omitempty" yaml:"enabled"`
+	} `json:"console,omitempty" yaml:"console"`
+	Email struct {
+		Enabled *bool   `json:"enabled,omitempty" yaml:"enabled"`
+		From    *string `json:"from,omitempty" yaml:"from"`
+	} `json:"email,omitempty" yaml:"email"`
+	Otp struct {
+		Enabled *bool `json:"enabled,omitempty" yaml:"enabled"`
+	} `json:"otp,omitempty" yaml:"otp"`
+	Webhook struct {
+		Enabled *bool   `json:"enabled,omitempty" yaml:"enabled"`
+		URL     *string `json:"url,omitempty" yaml:"url"`
+	} `json:"webhook,omitempty" yaml:"webhook"`
+}, enabled bool, otpLength *int, rateLimit *struct {
+	MaxAttempts   *int `json:"maxAttempts,omitempty" yaml:"maxAttempts"`
+	WindowMinutes *int `json:"windowMinutes,omitempty" yaml:"windowMinutes"`
+}, tokenExpiry *int) ConfigAuthMagicLink {
+	v, err := NewConfigAuthMagicLink(deliveryMethods, enabled, otpLength, rateLimit, tokenExpiry)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigAuthMagicLink: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigAuthMagicLink returns the zero value for ConfigAuthMagicLink.
+// This is useful for comparisons and as a default value.
+func ZeroConfigAuthMagicLink() ConfigAuthMagicLink {
+	return ConfigAuthMagicLink{}
+}
+
+// GetDeliveryMethods returns the DeliveryMethods value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthMagicLink) GetDeliveryMethods() *struct {
 	Console struct {
 		Enabled *bool `json:"enabled,omitempty" yaml:"enabled"`
@@ -84,17 +121,20 @@ func (v ConfigAuthMagicLink) GetDeliveryMethods() *struct {
 	return v.DeliveryMethods
 }
 
-// GetEnabled returns the Enabled
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthMagicLink) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetOtpLength returns the OtpLength
+// GetOtpLength returns the OtpLength value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthMagicLink) GetOtpLength() *int {
 	return v.OtpLength
 }
 
-// GetRateLimit returns the RateLimit
+// GetRateLimit returns the RateLimit value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthMagicLink) GetRateLimit() *struct {
 	MaxAttempts   *int `json:"maxAttempts,omitempty" yaml:"maxAttempts"`
 	WindowMinutes *int `json:"windowMinutes,omitempty" yaml:"windowMinutes"`
@@ -102,24 +142,48 @@ func (v ConfigAuthMagicLink) GetRateLimit() *struct {
 	return v.RateLimit
 }
 
-// GetTokenExpiry returns the TokenExpiry
+// GetTokenExpiry returns the TokenExpiry value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthMagicLink) GetTokenExpiry() *int {
 	return v.TokenExpiry
 }
 
-// Equals checks if two ConfigAuthMagicLink value objects are equal
-// func (v ConfigAuthMagicLink) Equals(other ConfigAuthMagicLink) bool {
-//	return v.DeliveryMethods == other.DeliveryMethods && v.Enabled == other.Enabled && v.OtpLength == other.OtpLength && v.RateLimit == other.RateLimit && v.TokenExpiry == other.TokenExpiry
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigAuthMagicLink) IsZero() bool {
+	zero := ZeroConfigAuthMagicLink()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigAuthMagicLink) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigAuthMagicLink
 func (v ConfigAuthMagicLink) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("DeliveryMethods: %v", v.DeliveryMethods))
+	if v.DeliveryMethods != nil {
+		fields = append(fields, fmt.Sprintf("DeliveryMethods: %v", *v.DeliveryMethods))
+	} else {
+		fields = append(fields, "DeliveryMethods: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("OtpLength: %v", v.OtpLength))
-	fields = append(fields, fmt.Sprintf("RateLimit: %v", v.RateLimit))
-	fields = append(fields, fmt.Sprintf("TokenExpiry: %v", v.TokenExpiry))
+	if v.OtpLength != nil {
+		fields = append(fields, fmt.Sprintf("OtpLength: %v", *v.OtpLength))
+	} else {
+		fields = append(fields, "OtpLength: <nil>")
+	}
+	if v.RateLimit != nil {
+		fields = append(fields, fmt.Sprintf("RateLimit: %v", *v.RateLimit))
+	} else {
+		fields = append(fields, "RateLimit: <nil>")
+	}
+	if v.TokenExpiry != nil {
+		fields = append(fields, fmt.Sprintf("TokenExpiry: %v", *v.TokenExpiry))
+	} else {
+		fields = append(fields, "TokenExpiry: <nil>")
+	}
 	return fmt.Sprintf("ConfigAuthMagicLink{%s}", strings.Join(fields, ", "))
 }

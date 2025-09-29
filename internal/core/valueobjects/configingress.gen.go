@@ -14,8 +14,10 @@ type ConfigIngress struct {
 	Tls     *ConfigTLS `json:"tls,omitempty" yaml:"tls,omitempty"`
 }
 
-// NewConfigIngress creates a new ConfigIngress value object
+// NewConfigIngress creates a new immutable ConfigIngress value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigIngress(domain *string, enabled bool, tls *ConfigTLS) (ConfigIngress, error) {
+	// Validate all fields
 
 	return ConfigIngress{
 		Domain:  domain,
@@ -24,32 +26,66 @@ func NewConfigIngress(domain *string, enabled bool, tls *ConfigTLS) (ConfigIngre
 	}, nil
 }
 
-// GetDomain returns the Domain
+// MustConfigIngress creates a new ConfigIngress value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigIngress(domain *string, enabled bool, tls *ConfigTLS) ConfigIngress {
+	v, err := NewConfigIngress(domain, enabled, tls)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigIngress: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigIngress returns the zero value for ConfigIngress.
+// This is useful for comparisons and as a default value.
+func ZeroConfigIngress() ConfigIngress {
+	return ConfigIngress{}
+}
+
+// GetDomain returns the Domain value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigIngress) GetDomain() *string {
 	return v.Domain
 }
 
-// GetEnabled returns the Enabled
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigIngress) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetTls returns the Tls
+// GetTls returns the Tls value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigIngress) GetTls() *ConfigTLS {
 	return v.Tls
 }
 
-// Equals checks if two ConfigIngress value objects are equal
-// func (v ConfigIngress) Equals(other ConfigIngress) bool {
-//	return v.Domain == other.Domain && v.Enabled == other.Enabled && v.Tls == other.Tls
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigIngress) IsZero() bool {
+	zero := ZeroConfigIngress()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigIngress) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigIngress
 func (v ConfigIngress) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("Domain: %v", v.Domain))
+	if v.Domain != nil {
+		fields = append(fields, fmt.Sprintf("Domain: %v", *v.Domain))
+	} else {
+		fields = append(fields, "Domain: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("Tls: %v", v.Tls))
+	if v.Tls != nil {
+		fields = append(fields, fmt.Sprintf("Tls: %v", *v.Tls))
+	} else {
+		fields = append(fields, "Tls: <nil>")
+	}
 	return fmt.Sprintf("ConfigIngress{%s}", strings.Join(fields, ", "))
 }

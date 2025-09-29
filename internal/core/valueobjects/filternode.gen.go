@@ -7,60 +7,166 @@ import (
 	"strings"
 )
 
-// FilterNode represents A recursive filter node that can be a condition or group
-type FilterNode struct {
-	Children []interface{} `json:"children,omitempty" yaml:"children,omitempty"` // Child filter nodes (for logical operators)
-	Field    *string       `json:"field,omitempty" yaml:"field,omitempty"`       // The field to filter on (for leaf conditions)
-	Type     string        `json:"type" yaml:"type"`                             // The type of filter operation
-	Value    *interface{}  `json:"value,omitempty" yaml:"value,omitempty"`       // The value to compare against (for leaf conditions)
+// FilterNodeType represents the enumeration of valid values for Type
+type FilterNodeType string
+
+// Valid Type values
+const (
+	FilterNodeTypeAnd         FilterNodeType = "and"
+	FilterNodeTypeOr          FilterNodeType = "or"
+	FilterNodeTypeEq          FilterNodeType = "eq"
+	FilterNodeTypeNe          FilterNodeType = "ne"
+	FilterNodeTypeGt          FilterNodeType = "gt"
+	FilterNodeTypeGte         FilterNodeType = "gte"
+	FilterNodeTypeLt          FilterNodeType = "lt"
+	FilterNodeTypeLte         FilterNodeType = "lte"
+	FilterNodeTypeContains    FilterNodeType = "contains"
+	FilterNodeTypeStarts_with FilterNodeType = "starts_with"
+	FilterNodeTypeEnds_with   FilterNodeType = "ends_with"
+)
+
+// String returns the string representation
+func (e FilterNodeType) String() string {
+	return string(e)
 }
 
-// NewFilterNode creates a new FilterNode value object
+// IsValid checks if the value is valid
+func (e FilterNodeType) IsValid() bool {
+	switch e {
+	case FilterNodeTypeAnd:
+		return true
+	case FilterNodeTypeOr:
+		return true
+	case FilterNodeTypeEq:
+		return true
+	case FilterNodeTypeNe:
+		return true
+	case FilterNodeTypeGt:
+		return true
+	case FilterNodeTypeGte:
+		return true
+	case FilterNodeTypeLt:
+		return true
+	case FilterNodeTypeLte:
+		return true
+	case FilterNodeTypeContains:
+		return true
+	case FilterNodeTypeStarts_with:
+		return true
+	case FilterNodeTypeEnds_with:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseFilterNodeType parses a string into the enum type
+func ParseFilterNodeType(s string) (FilterNodeType, error) {
+	v := FilterNodeType(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Type: %s", s)
+	}
+	return v, nil
+}
+
+// FilterNode represents A recursive filter node that can be a condition or group
+type FilterNode struct {
+	Children []interface{}  `json:"children,omitempty" yaml:"children,omitempty"` // Child filter nodes (for logical operators)
+	Field    *string        `json:"field,omitempty" yaml:"field,omitempty"`       // The field to filter on (for leaf conditions)
+	Type     FilterNodeType `json:"type" yaml:"type"`                             // The type of filter operation
+	Value    *interface{}   `json:"value,omitempty" yaml:"value,omitempty"`       // The value to compare against (for leaf conditions)
+}
+
+// NewFilterNode creates a new immutable FilterNode value object.
+// Value objects are immutable and validated upon creation.
 func NewFilterNode(children []interface{}, field *string, type_ string, value *interface{}) (FilterNode, error) {
-	if type_ == "" {
-		return FilterNode{}, fmt.Errorf("Type cannot be empty")
+	// Validate all fields
+	type_Enum := FilterNodeType(type_)
+	if !type_Enum.IsValid() {
+		return FilterNode{}, fmt.Errorf("invalid Type: %s", type_)
 	}
 
 	return FilterNode{
 		Children: children,
 		Field:    field,
-		Type:     type_,
+		Type:     type_Enum,
 		Value:    value,
 	}, nil
 }
 
-// GetChildren returns the Children
-func (v FilterNode) GetChildren() []interface{} {
-	return v.Children
+// MustFilterNode creates a new FilterNode value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustFilterNode(children []interface{}, field *string, type_ string, value *interface{}) FilterNode {
+	v, err := NewFilterNode(children, field, type_, value)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create FilterNode: %v", err))
+	}
+	return v
 }
 
-// GetField returns the Field
+// ZeroFilterNode returns the zero value for FilterNode.
+// This is useful for comparisons and as a default value.
+func ZeroFilterNode() FilterNode {
+	return FilterNode{}
+}
+
+// GetChildren returns the Children value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v FilterNode) GetChildren() []interface{} {
+	// Return a copy for slices and maps to maintain immutability
+	result := make([]interface{}, len(v.Children))
+	copy(result, v.Children)
+	return result
+}
+
+// GetField returns the Field value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v FilterNode) GetField() *string {
 	return v.Field
 }
 
-// GetType returns the Type
+// GetType returns the Type value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v FilterNode) GetType() string {
-	return v.Type
+	return string(v.Type)
 }
 
-// GetValue returns the Value
+// GetValue returns the Value value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v FilterNode) GetValue() *interface{} {
 	return v.Value
 }
 
-// Equals checks if two FilterNode value objects are equal
-// func (v FilterNode) Equals(other FilterNode) bool {
-//	return v.Children == other.Children && v.Field == other.Field && v.Type == other.Type && v.Value == other.Value
-// }
+// IsZero returns true if this is the zero value.
+func (v FilterNode) IsZero() bool {
+	zero := ZeroFilterNode()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v FilterNode) Validate() error {
+	if v.Type == "" {
+		return fmt.Errorf("Type cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of FilterNode
 func (v FilterNode) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Children: %v", v.Children))
-	fields = append(fields, fmt.Sprintf("Field: %v", v.Field))
+	if v.Field != nil {
+		fields = append(fields, fmt.Sprintf("Field: %v", *v.Field))
+	} else {
+		fields = append(fields, "Field: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Type: %v", v.Type))
-	fields = append(fields, fmt.Sprintf("Value: %v", v.Value))
+	if v.Value != nil {
+		fields = append(fields, fmt.Sprintf("Value: %v", *v.Value))
+	} else {
+		fields = append(fields, "Value: <nil>")
+	}
 	return fmt.Sprintf("FilterNode{%s}", strings.Join(fields, ", "))
 }

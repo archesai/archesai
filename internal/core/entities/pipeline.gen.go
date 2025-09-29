@@ -21,16 +21,19 @@ type Pipeline struct {
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewPipeline creates a new Pipeline entity
+// NewPipeline creates a new Pipeline entity with validation.
+// All required fields must be provided and valid.
 func NewPipeline(
 	organizationID uuid.UUID,
 ) (*Pipeline, error) {
+	// Validate required fields
 
+	now := time.Now().UTC()
 	pipeline := &Pipeline{
-		CreatedAt:      time.Now().UTC(),
+		CreatedAt:      now,
 		ID:             uuid.New(),
 		OrganizationID: organizationID,
-		UpdatedAt:      time.Now().UTC(),
+		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	pipeline.addEvent(events.NewPipelineCreatedEvent(pipeline.ID))

@@ -16,8 +16,10 @@ type ConfigAuthGithub struct {
 	Scopes       []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
 }
 
-// NewConfigAuthGithub creates a new ConfigAuthGithub value object
+// NewConfigAuthGithub creates a new immutable ConfigAuthGithub value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigAuthGithub(clientID *string, clientSecret *string, enabled bool, redirectURL *string, scopes []string) (ConfigAuthGithub, error) {
+	// Validate all fields
 
 	return ConfigAuthGithub{
 		ClientId:     clientID,
@@ -28,44 +30,87 @@ func NewConfigAuthGithub(clientID *string, clientSecret *string, enabled bool, r
 	}, nil
 }
 
-// GetClientId returns the ClientId
+// MustConfigAuthGithub creates a new ConfigAuthGithub value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigAuthGithub(clientID *string, clientSecret *string, enabled bool, redirectURL *string, scopes []string) ConfigAuthGithub {
+	v, err := NewConfigAuthGithub(clientID, clientSecret, enabled, redirectURL, scopes)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigAuthGithub: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigAuthGithub returns the zero value for ConfigAuthGithub.
+// This is useful for comparisons and as a default value.
+func ZeroConfigAuthGithub() ConfigAuthGithub {
+	return ConfigAuthGithub{}
+}
+
+// GetClientId returns the ClientId value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGithub) GetClientId() *string {
 	return v.ClientId
 }
 
-// GetClientSecret returns the ClientSecret
+// GetClientSecret returns the ClientSecret value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGithub) GetClientSecret() *string {
 	return v.ClientSecret
 }
 
-// GetEnabled returns the Enabled
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGithub) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetRedirectUrl returns the RedirectUrl
+// GetRedirectUrl returns the RedirectUrl value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGithub) GetRedirectUrl() *string {
 	return v.RedirectUrl
 }
 
-// GetScopes returns the Scopes
+// GetScopes returns the Scopes value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAuthGithub) GetScopes() []string {
-	return v.Scopes
+	// Return a copy for slices and maps to maintain immutability
+	result := make([]string, len(v.Scopes))
+	copy(result, v.Scopes)
+	return result
 }
 
-// Equals checks if two ConfigAuthGithub value objects are equal
-// func (v ConfigAuthGithub) Equals(other ConfigAuthGithub) bool {
-//	return v.ClientId == other.ClientId && v.ClientSecret == other.ClientSecret && v.Enabled == other.Enabled && v.RedirectUrl == other.RedirectUrl && v.Scopes == other.Scopes
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigAuthGithub) IsZero() bool {
+	zero := ZeroConfigAuthGithub()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigAuthGithub) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigAuthGithub
 func (v ConfigAuthGithub) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("ClientId: %v", v.ClientId))
-	fields = append(fields, fmt.Sprintf("ClientSecret: %v", v.ClientSecret))
+	if v.ClientId != nil {
+		fields = append(fields, fmt.Sprintf("ClientId: %v", *v.ClientId))
+	} else {
+		fields = append(fields, "ClientId: <nil>")
+	}
+	if v.ClientSecret != nil {
+		fields = append(fields, fmt.Sprintf("ClientSecret: %v", *v.ClientSecret))
+	} else {
+		fields = append(fields, "ClientSecret: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("RedirectUrl: %v", v.RedirectUrl))
+	if v.RedirectUrl != nil {
+		fields = append(fields, fmt.Sprintf("RedirectUrl: %v", *v.RedirectUrl))
+	} else {
+		fields = append(fields, "RedirectUrl: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Scopes: %v", v.Scopes))
 	return fmt.Sprintf("ConfigAuthGithub{%s}", strings.Join(fields, ", "))
 }

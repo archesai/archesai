@@ -21,8 +21,10 @@ type Config struct {
 	Storage      *ConfigStorage      `json:"storage,omitempty" yaml:"storage,omitempty"`
 }
 
-// NewConfig creates a new Config value object
+// NewConfig creates a new immutable Config value object.
+// Value objects are immutable and validated upon creation.
 func NewConfig(api *ConfigAPI, auth *ConfigAuth, billing *ConfigBilling, database *ConfigDatabase, intelligence *ConfigIntelligence, kubernetes *ConfigKubernetes, logging *ConfigLogging, platform *ConfigPlatform, redis *ConfigRedis, storage *ConfigStorage) (Config, error) {
+	// Validate all fields
 
 	return Config{
 		API:          api,
@@ -38,74 +40,147 @@ func NewConfig(api *ConfigAPI, auth *ConfigAuth, billing *ConfigBilling, databas
 	}, nil
 }
 
-// GetAPI returns the API
+// MustConfig creates a new Config value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfig(api *ConfigAPI, auth *ConfigAuth, billing *ConfigBilling, database *ConfigDatabase, intelligence *ConfigIntelligence, kubernetes *ConfigKubernetes, logging *ConfigLogging, platform *ConfigPlatform, redis *ConfigRedis, storage *ConfigStorage) Config {
+	v, err := NewConfig(api, auth, billing, database, intelligence, kubernetes, logging, platform, redis, storage)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create Config: %v", err))
+	}
+	return v
+}
+
+// ZeroConfig returns the zero value for Config.
+// This is useful for comparisons and as a default value.
+func ZeroConfig() Config {
+	return Config{}
+}
+
+// GetAPI returns the API value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetAPI() *ConfigAPI {
 	return v.API
 }
 
-// GetAuth returns the Auth
+// GetAuth returns the Auth value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetAuth() *ConfigAuth {
 	return v.Auth
 }
 
-// GetBilling returns the Billing
+// GetBilling returns the Billing value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetBilling() *ConfigBilling {
 	return v.Billing
 }
 
-// GetDatabase returns the Database
+// GetDatabase returns the Database value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetDatabase() *ConfigDatabase {
 	return v.Database
 }
 
-// GetIntelligence returns the Intelligence
+// GetIntelligence returns the Intelligence value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetIntelligence() *ConfigIntelligence {
 	return v.Intelligence
 }
 
-// GetKubernetes returns the Kubernetes
+// GetKubernetes returns the Kubernetes value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetKubernetes() *ConfigKubernetes {
 	return v.Kubernetes
 }
 
-// GetLogging returns the Logging
+// GetLogging returns the Logging value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetLogging() *ConfigLogging {
 	return v.Logging
 }
 
-// GetPlatform returns the Platform
+// GetPlatform returns the Platform value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetPlatform() *ConfigPlatform {
 	return v.Platform
 }
 
-// GetRedis returns the Redis
+// GetRedis returns the Redis value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetRedis() *ConfigRedis {
 	return v.Redis
 }
 
-// GetStorage returns the Storage
+// GetStorage returns the Storage value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v Config) GetStorage() *ConfigStorage {
 	return v.Storage
 }
 
-// Equals checks if two Config value objects are equal
-// func (v Config) Equals(other Config) bool {
-//	return v.API == other.API && v.Auth == other.Auth && v.Billing == other.Billing && v.Database == other.Database && v.Intelligence == other.Intelligence && v.Kubernetes == other.Kubernetes && v.Logging == other.Logging && v.Platform == other.Platform && v.Redis == other.Redis && v.Storage == other.Storage
-// }
+// IsZero returns true if this is the zero value.
+func (v Config) IsZero() bool {
+	zero := ZeroConfig()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v Config) Validate() error {
+	return nil
+}
 
 // String returns a string representation of Config
 func (v Config) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("API: %v", v.API))
-	fields = append(fields, fmt.Sprintf("Auth: %v", v.Auth))
-	fields = append(fields, fmt.Sprintf("Billing: %v", v.Billing))
-	fields = append(fields, fmt.Sprintf("Database: %v", v.Database))
-	fields = append(fields, fmt.Sprintf("Intelligence: %v", v.Intelligence))
-	fields = append(fields, fmt.Sprintf("Kubernetes: %v", v.Kubernetes))
-	fields = append(fields, fmt.Sprintf("Logging: %v", v.Logging))
-	fields = append(fields, fmt.Sprintf("Platform: %v", v.Platform))
-	fields = append(fields, fmt.Sprintf("Redis: %v", v.Redis))
-	fields = append(fields, fmt.Sprintf("Storage: %v", v.Storage))
+	if v.API != nil {
+		fields = append(fields, fmt.Sprintf("API: %v", *v.API))
+	} else {
+		fields = append(fields, "API: <nil>")
+	}
+	if v.Auth != nil {
+		fields = append(fields, fmt.Sprintf("Auth: %v", *v.Auth))
+	} else {
+		fields = append(fields, "Auth: <nil>")
+	}
+	if v.Billing != nil {
+		fields = append(fields, fmt.Sprintf("Billing: %v", *v.Billing))
+	} else {
+		fields = append(fields, "Billing: <nil>")
+	}
+	if v.Database != nil {
+		fields = append(fields, fmt.Sprintf("Database: %v", *v.Database))
+	} else {
+		fields = append(fields, "Database: <nil>")
+	}
+	if v.Intelligence != nil {
+		fields = append(fields, fmt.Sprintf("Intelligence: %v", *v.Intelligence))
+	} else {
+		fields = append(fields, "Intelligence: <nil>")
+	}
+	if v.Kubernetes != nil {
+		fields = append(fields, fmt.Sprintf("Kubernetes: %v", *v.Kubernetes))
+	} else {
+		fields = append(fields, "Kubernetes: <nil>")
+	}
+	if v.Logging != nil {
+		fields = append(fields, fmt.Sprintf("Logging: %v", *v.Logging))
+	} else {
+		fields = append(fields, "Logging: <nil>")
+	}
+	if v.Platform != nil {
+		fields = append(fields, fmt.Sprintf("Platform: %v", *v.Platform))
+	} else {
+		fields = append(fields, "Platform: <nil>")
+	}
+	if v.Redis != nil {
+		fields = append(fields, fmt.Sprintf("Redis: %v", *v.Redis))
+	} else {
+		fields = append(fields, "Redis: <nil>")
+	}
+	if v.Storage != nil {
+		fields = append(fields, fmt.Sprintf("Storage: %v", *v.Storage))
+	} else {
+		fields = append(fields, "Storage: <nil>")
+	}
 	return fmt.Sprintf("Config{%s}", strings.Join(fields, ", "))
 }

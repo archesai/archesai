@@ -18,10 +18,10 @@ func (g *Generator) GenerateModels(schemas map[string]*parsers.ProcessedSchema) 
 			continue
 		}
 
-		if err := g.generateModel(processed, name, processed.XCodegen.SchemaType, nil); err != nil {
+		if err := g.generateModel(processed, name, processed.XCodegen.GetSchemaType(), nil); err != nil {
 			return fmt.Errorf(
 				"failed to generate %s %s: %w",
-				processed.XCodegen.SchemaType,
+				processed.XCodegen.GetSchemaType(),
 				name,
 				err,
 			)

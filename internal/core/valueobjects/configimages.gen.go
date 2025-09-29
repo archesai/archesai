@@ -13,8 +13,10 @@ type ConfigImages struct {
 	ImageRegistry    string   `json:"imageRegistry" yaml:"imageRegistry"`       // Custom container registry URL (leave empty for Docker Hub)
 }
 
-// NewConfigImages creates a new ConfigImages value object
+// NewConfigImages creates a new immutable ConfigImages value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigImages(imagePullSecrets []string, imageRegistry string) (ConfigImages, error) {
+	// Validate all fields
 	if imageRegistry == "" {
 		return ConfigImages{}, fmt.Errorf("ImageRegistry cannot be empty")
 	}
@@ -25,24 +27,55 @@ func NewConfigImages(imagePullSecrets []string, imageRegistry string) (ConfigIma
 	}, nil
 }
 
-// GetImagePullSecrets returns the ImagePullSecrets
-func (v ConfigImages) GetImagePullSecrets() []string {
-	return v.ImagePullSecrets
+// MustConfigImages creates a new ConfigImages value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigImages(imagePullSecrets []string, imageRegistry string) ConfigImages {
+	v, err := NewConfigImages(imagePullSecrets, imageRegistry)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigImages: %v", err))
+	}
+	return v
 }
 
-// GetImageRegistry returns the ImageRegistry
+// ZeroConfigImages returns the zero value for ConfigImages.
+// This is useful for comparisons and as a default value.
+func ZeroConfigImages() ConfigImages {
+	return ConfigImages{}
+}
+
+// GetImagePullSecrets returns the ImagePullSecrets value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v ConfigImages) GetImagePullSecrets() []string {
+	// Return a copy for slices and maps to maintain immutability
+	result := make([]string, len(v.ImagePullSecrets))
+	copy(result, v.ImagePullSecrets)
+	return result
+}
+
+// GetImageRegistry returns the ImageRegistry value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigImages) GetImageRegistry() string {
 	return v.ImageRegistry
 }
 
-// Equals checks if two ConfigImages value objects are equal
-// func (v ConfigImages) Equals(other ConfigImages) bool {
-//	return v.ImagePullSecrets == other.ImagePullSecrets && v.ImageRegistry == other.ImageRegistry
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigImages) IsZero() bool {
+	zero := ZeroConfigImages()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigImages) Validate() error {
+	if v.ImageRegistry == "" {
+		return fmt.Errorf("ImageRegistry cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of ConfigImages
 func (v ConfigImages) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("ImagePullSecrets: %v", v.ImagePullSecrets))
 	fields = append(fields, fmt.Sprintf("ImageRegistry: %v", v.ImageRegistry))

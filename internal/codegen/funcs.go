@@ -8,6 +8,13 @@ import (
 	"unicode"
 )
 
+// Constants for commonly used type strings
+const (
+	typeString = "string"
+	typeUUID   = "uuid.UUID"
+	typeNil    = "nil"
+)
+
 // TemplateFuncs returns common template functions used across all generators.
 func TemplateFuncs() template.FuncMap {
 	return template.FuncMap{
@@ -39,12 +46,24 @@ func TemplateFuncs() template.FuncMap {
 		// Template utilities
 		"dict": Dict,
 
+		// Type checking and validation
+		"isPointer":       IsPointer,
+		"isSlice":         IsSlice,
+		"isMap":           IsMap,
+		"isStruct":        IsStruct,
+		"isPrimitive":     IsPrimitive,
+		"isOptional":      IsOptional,
+		"needsValidation": NeedsValidation,
+		"defaultValue":    DefaultValueForType,
+
 		// Template-specific functions
-		"paramType":        ParamType,
-		"isUUIDParam":      IsUUIDParam,
-		"isUpdateExcluded": IsUpdateExcluded,
-		"default":          DefaultValue,
-		"echoPath":         EchoPath,
+		"paramType":         ParamType,
+		"isUUIDParam":       IsUUIDParam,
+		"isUpdateExcluded":  IsUpdateExcluded,
+		"default":           DefaultValue,
+		"echoPath":          EchoPath,
+		"fieldName":         FieldName,
+		"exportedFieldName": ExportedFieldName,
 	}
 }
 
@@ -468,9 +487,9 @@ func isVowel(b byte) bool {
 func ParamType(paramName string) string {
 	// UUID types
 	if strings.HasSuffix(paramName, "ID") || paramName == "id" {
-		return "uuid.UUID"
+		return typeUUID
 	}
-	return "string"
+	return typeString
 }
 
 // IsUUIDParam checks if a parameter should be treated as a UUID type.
@@ -518,4 +537,129 @@ func Dict(values ...interface{}) map[string]interface{} {
 		}
 	}
 	return dict
+}
+
+// IsPointer checks if a Go type string represents a pointer type
+func IsPointer(goType string) bool {
+	return strings.HasPrefix(goType, "*")
+}
+
+// IsSlice checks if a Go type string represents a slice type
+func IsSlice(goType string) bool {
+	return strings.HasPrefix(goType, "[]")
+}
+
+// IsMap checks if a Go type string represents a map type
+func IsMap(goType string) bool {
+	return strings.HasPrefix(goType, "map[")
+}
+
+// IsStruct checks if a Go type string represents a struct type
+func IsStruct(goType string) bool {
+	// Check if it's not a primitive type and not a pointer/slice/map
+	if IsPointer(goType) || IsSlice(goType) || IsMap(goType) {
+		return false
+	}
+	return !IsPrimitive(goType)
+}
+
+// IsPrimitive checks if a Go type string represents a primitive type
+func IsPrimitive(goType string) bool {
+	primitives := map[string]bool{
+		"bool":       true,
+		"string":     true,
+		"int":        true,
+		"int8":       true,
+		"int16":      true,
+		"int32":      true,
+		"int64":      true,
+		"uint":       true,
+		"uint8":      true,
+		"uint16":     true,
+		"uint32":     true,
+		"uint64":     true,
+		"float32":    true,
+		"float64":    true,
+		"complex64":  true,
+		"complex128": true,
+		"byte":       true,
+		"rune":       true,
+		"time.Time":  true,
+		"uuid.UUID":  true,
+	}
+
+	// Remove pointer prefix if present
+	cleanType := strings.TrimPrefix(goType, "*")
+	return primitives[cleanType]
+}
+
+// IsOptional checks if a field is optional (pointer type)
+func IsOptional(goType string) bool {
+	return IsPointer(goType)
+}
+
+// NeedsValidation checks if a type needs validation
+func NeedsValidation(goType string, required bool) bool {
+	// Required strings always need validation
+	if required && goType == typeString {
+		return true
+	}
+	// UUIDs need validation
+	if goType == typeUUID {
+		return true
+	}
+	// Email fields need validation
+	if strings.Contains(strings.ToLower(goType), "email") {
+		return true
+	}
+	// URL fields need validation
+	if strings.Contains(strings.ToLower(goType), "url") {
+		return true
+	}
+	return false
+}
+
+// DefaultValueForType returns the appropriate default value for a Go type
+func DefaultValueForType(goType string) string {
+	switch {
+	case IsPointer(goType):
+		return typeNil
+	case goType == typeString:
+		return `""`
+	case goType == "bool":
+		return "false"
+	case strings.HasPrefix(goType, "int") || strings.HasPrefix(goType, "uint"):
+		return "0"
+	case strings.HasPrefix(goType, "float"):
+		return "0.0"
+	case IsSlice(goType):
+		return typeNil
+	case IsMap(goType):
+		return typeNil
+	case goType == "time.Time":
+		return "time.Time{}"
+	case goType == typeUUID:
+		return "uuid.Nil"
+	default:
+		return goType + "{}"
+	}
+}
+
+// FieldName returns the appropriate field name based on context
+func FieldName(name string, unexported bool) string {
+	if unexported {
+		return CamelCase(name)
+	}
+	return name
+}
+
+// ExportedFieldName always returns an exported field name
+func ExportedFieldName(name string) string {
+	if name == "" {
+		return name
+	}
+	// Ensure first letter is uppercase
+	r := []rune(name)
+	r[0] = unicode.ToUpper(r[0])
+	return string(r)
 }

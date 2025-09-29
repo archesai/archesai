@@ -13,8 +13,10 @@ type ConfigRunPod struct {
 	Token   *string `json:"token,omitempty" yaml:"token,omitempty"` // RunPod API token
 }
 
-// NewConfigRunPod creates a new ConfigRunPod value object
+// NewConfigRunPod creates a new immutable ConfigRunPod value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigRunPod(enabled bool, token *string) (ConfigRunPod, error) {
+	// Validate all fields
 
 	return ConfigRunPod{
 		Enabled: enabled,
@@ -22,26 +24,55 @@ func NewConfigRunPod(enabled bool, token *string) (ConfigRunPod, error) {
 	}, nil
 }
 
-// GetEnabled returns the Enabled
+// MustConfigRunPod creates a new ConfigRunPod value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigRunPod(enabled bool, token *string) ConfigRunPod {
+	v, err := NewConfigRunPod(enabled, token)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigRunPod: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigRunPod returns the zero value for ConfigRunPod.
+// This is useful for comparisons and as a default value.
+func ZeroConfigRunPod() ConfigRunPod {
+	return ConfigRunPod{}
+}
+
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigRunPod) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetToken returns the Token
+// GetToken returns the Token value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigRunPod) GetToken() *string {
 	return v.Token
 }
 
-// Equals checks if two ConfigRunPod value objects are equal
-// func (v ConfigRunPod) Equals(other ConfigRunPod) bool {
-//	return v.Enabled == other.Enabled && v.Token == other.Token
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigRunPod) IsZero() bool {
+	zero := ZeroConfigRunPod()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigRunPod) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigRunPod
 func (v ConfigRunPod) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("Token: %v", v.Token))
+	if v.Token != nil {
+		fields = append(fields, fmt.Sprintf("Token: %v", *v.Token))
+	} else {
+		fields = append(fields, "Token: <nil>")
+	}
 	return fmt.Sprintf("ConfigRunPod{%s}", strings.Join(fields, ", "))
 }

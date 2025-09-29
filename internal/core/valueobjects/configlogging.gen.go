@@ -7,42 +7,123 @@ import (
 	"strings"
 )
 
-// ConfigLogging represents Logging configuration
-type ConfigLogging struct {
-	Level  string `json:"level" yaml:"level"`   // Minimum log level to output
-	Pretty bool   `json:"pretty" yaml:"pretty"` // Enable pretty-printed logs for development
+// ConfigLoggingLevel represents the enumeration of valid values for Level
+type ConfigLoggingLevel string
+
+// Valid Level values
+const (
+	ConfigLoggingLevelFatal  ConfigLoggingLevel = "fatal"
+	ConfigLoggingLevelError  ConfigLoggingLevel = "error"
+	ConfigLoggingLevelWarn   ConfigLoggingLevel = "warn"
+	ConfigLoggingLevelInfo   ConfigLoggingLevel = "info"
+	ConfigLoggingLevelDebug  ConfigLoggingLevel = "debug"
+	ConfigLoggingLevelTrace  ConfigLoggingLevel = "trace"
+	ConfigLoggingLevelSilent ConfigLoggingLevel = "silent"
+)
+
+// String returns the string representation
+func (e ConfigLoggingLevel) String() string {
+	return string(e)
 }
 
-// NewConfigLogging creates a new ConfigLogging value object
+// IsValid checks if the value is valid
+func (e ConfigLoggingLevel) IsValid() bool {
+	switch e {
+	case ConfigLoggingLevelFatal:
+		return true
+	case ConfigLoggingLevelError:
+		return true
+	case ConfigLoggingLevelWarn:
+		return true
+	case ConfigLoggingLevelInfo:
+		return true
+	case ConfigLoggingLevelDebug:
+		return true
+	case ConfigLoggingLevelTrace:
+		return true
+	case ConfigLoggingLevelSilent:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseConfigLoggingLevel parses a string into the enum type
+func ParseConfigLoggingLevel(s string) (ConfigLoggingLevel, error) {
+	v := ConfigLoggingLevel(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Level: %s", s)
+	}
+	return v, nil
+}
+
+// ConfigLogging represents Logging configuration
+type ConfigLogging struct {
+	Level  ConfigLoggingLevel `json:"level" yaml:"level"`   // Minimum log level to output
+	Pretty bool               `json:"pretty" yaml:"pretty"` // Enable pretty-printed logs for development
+}
+
+// NewConfigLogging creates a new immutable ConfigLogging value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigLogging(level string, pretty bool) (ConfigLogging, error) {
-	if level == "" {
-		return ConfigLogging{}, fmt.Errorf("Level cannot be empty")
+	// Validate all fields
+	levelEnum := ConfigLoggingLevel(level)
+	if !levelEnum.IsValid() {
+		return ConfigLogging{}, fmt.Errorf("invalid Level: %s", level)
 	}
 
 	return ConfigLogging{
-		Level:  level,
+		Level:  levelEnum,
 		Pretty: pretty,
 	}, nil
 }
 
-// GetLevel returns the Level
-func (v ConfigLogging) GetLevel() string {
-	return v.Level
+// MustConfigLogging creates a new ConfigLogging value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigLogging(level string, pretty bool) ConfigLogging {
+	v, err := NewConfigLogging(level, pretty)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigLogging: %v", err))
+	}
+	return v
 }
 
-// GetPretty returns the Pretty
+// ZeroConfigLogging returns the zero value for ConfigLogging.
+// This is useful for comparisons and as a default value.
+func ZeroConfigLogging() ConfigLogging {
+	return ConfigLogging{}
+}
+
+// GetLevel returns the Level value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v ConfigLogging) GetLevel() string {
+	return string(v.Level)
+}
+
+// GetPretty returns the Pretty value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigLogging) GetPretty() bool {
 	return v.Pretty
 }
 
-// Equals checks if two ConfigLogging value objects are equal
-// func (v ConfigLogging) Equals(other ConfigLogging) bool {
-//	return v.Level == other.Level && v.Pretty == other.Pretty
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigLogging) IsZero() bool {
+	zero := ZeroConfigLogging()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigLogging) Validate() error {
+	if v.Level == "" {
+		return fmt.Errorf("Level cannot be empty")
+	}
+	return nil
+}
 
 // String returns a string representation of ConfigLogging
 func (v ConfigLogging) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Level: %v", v.Level))
 	fields = append(fields, fmt.Sprintf("Pretty: %v", v.Pretty))

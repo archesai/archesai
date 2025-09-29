@@ -10,6 +10,44 @@ import (
 	"github.com/google/uuid"
 )
 
+// InvitationRole represents the enumeration of valid values for Role
+type InvitationRole string
+
+// Valid Role values
+const (
+	InvitationRoleAdmin InvitationRole = "admin"
+	InvitationRoleOwner InvitationRole = "owner"
+	InvitationRoleBasic InvitationRole = "basic"
+)
+
+// String returns the string representation
+func (e InvitationRole) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e InvitationRole) IsValid() bool {
+	switch e {
+	case InvitationRoleAdmin:
+		return true
+	case InvitationRoleOwner:
+		return true
+	case InvitationRoleBasic:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseInvitationRole parses a string into the enum type
+func ParseInvitationRole(s string) (InvitationRole, error) {
+	v := InvitationRole(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Role: %s", s)
+	}
+	return v, nil
+}
+
 // Invitation represents Schema for Invitation entity
 type Invitation struct {
 	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`           // The date and time when the resource was created
@@ -18,33 +56,36 @@ type Invitation struct {
 	ID             uuid.UUID            `json:"id" yaml:"id"`                         // Unique identifier for the resource
 	InviterID      uuid.UUID            `json:"inviterID" yaml:"inviterID"`           // The ID of the user who sent this invitation
 	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"` // The organization the user is being invited to join
-	Role           string               `json:"role" yaml:"role"`                     // The role of the invitation
+	Role           InvitationRole       `json:"role" yaml:"role"`                     // The role of the invitation
 	Status         string               `json:"status" yaml:"status"`                 // The status of the invitation, e.g., pending, accepted, declined
 	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`           // The date and time when the resource was last updated
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
-// NewInvitation creates a new Invitation entity
+// NewInvitation creates a new Invitation entity with validation.
+// All required fields must be provided and valid.
 func NewInvitation(
 	email string,
 	expiresAt time.Time,
 	inviterID uuid.UUID,
 	organizationID uuid.UUID,
-	role string,
+	role InvitationRole,
 	status string,
 ) (*Invitation, error) {
+	// Validate required fields
 	if email == "" {
 		return nil, fmt.Errorf("Email cannot be empty")
 	}
-	if role == "" {
-		return nil, fmt.Errorf("Role cannot be empty")
+	if !role.IsValid() {
+		return nil, fmt.Errorf("invalid Role: %s", role)
 	}
 	if status == "" {
 		return nil, fmt.Errorf("Status cannot be empty")
 	}
 
+	now := time.Now().UTC()
 	invitation := &Invitation{
-		CreatedAt:      time.Now().UTC(),
+		CreatedAt:      now,
 		Email:          email,
 		ExpiresAt:      expiresAt,
 		ID:             uuid.New(),
@@ -52,7 +93,7 @@ func NewInvitation(
 		OrganizationID: organizationID,
 		Role:           role,
 		Status:         status,
-		UpdatedAt:      time.Now().UTC(),
+		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	invitation.addEvent(events.NewInvitationCreatedEvent(invitation.ID))
@@ -92,7 +133,7 @@ func (e *Invitation) GetOrganizationID() uuid.UUID {
 
 // GetRole returns the Role
 func (e *Invitation) GetRole() string {
-	return e.Role
+	return string(e.Role)
 }
 
 // GetStatus returns the Status
@@ -139,7 +180,7 @@ func ReconstructInvitation(
 		ID:             id,
 		InviterID:      inviterID,
 		OrganizationID: organizationID,
-		Role:           role,
+		Role:           InvitationRole(role),
 		Status:         status,
 		UpdatedAt:      updatedAt,
 		events:         []events.DomainEvent{},

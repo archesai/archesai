@@ -7,9 +7,7 @@ Handles: Entities, Value Objects, DTOs, Enums, and Constants
 {{- if or .Imports .IsEntity .IsAggregate .IsEnum .IsValueObject }}
 import (
 	"fmt"
-{{- if .IsValueObject }}
 	"strings"
-{{- end }}
 	"time"
 	"github.com/google/uuid"
 {{- if and (or .IsEntity .IsAggregate) (ne .Package "core") }}
@@ -76,18 +74,76 @@ const (
 {{- if .Types }}
 {{- range .Types }}
 // {{ .Name }} represents {{ if .Description }}{{ .Description }}{{ else }}a {{ .Name }}{{ end }}
+{{- if $.MakeUnexported }}
+// The struct is unexported to enforce creation through constructor functions.
+type {{ lower .Name }} struct {
+{{- else }}
 type {{ .Name }} struct {
+{{- end }}
 {{- range .Fields }}
-	{{ .FieldName }} {{ .GoType }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
+	{{ camelCase .FieldName }} {{ .GoType }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
 {{- end }}
 }
 
 {{- end }}
 {{- else }}
-// {{ .Name }} represents {{ if .Description }}{{ .Description }}{{ else }}a {{ .Name }}{{ end }}
-type {{ .Name }} struct {
+{{- /* Generate enum types for fields with enum values */ -}}
 {{- range .Fields }}
-	{{ .FieldName }} {{ .GoType }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
+{{- if .Enum }}
+{{- $fieldName := .FieldName }}
+{{- $fieldType := print $.Name .FieldName }}
+
+// {{ $fieldType }} represents the enumeration of valid values for {{ .FieldName }}
+type {{ $fieldType }} string
+
+// Valid {{ .FieldName }} values
+const (
+{{- range .Enum }}
+	{{ $.Name }}{{ $fieldName }}{{ . | ToConstantCase }} {{ $fieldType }} = "{{ . }}"
+{{- end }}
+)
+
+// String returns the string representation
+func (e {{ $fieldType }}) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e {{ $fieldType }}) IsValid() bool {
+	switch e {
+{{- range .Enum }}
+	case {{ $.Name }}{{ $fieldName }}{{ . | ToConstantCase }}:
+		return true
+{{- end }}
+	default:
+		return false
+	}
+}
+
+// Parse{{ $.Name }}{{ $fieldName }} parses a string into the enum type
+func Parse{{ $.Name }}{{ $fieldName }}(s string) ({{ $fieldType }}, error) {
+	v := {{ $fieldType }}(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid {{ $fieldName }}: %s", s)
+	}
+	return v, nil
+}
+{{- end }}
+{{- end }}
+
+// {{ .Name }} represents {{ if .Description }}{{ .Description }}{{ else }}a {{ .Name }}{{ end }}
+{{- if and .IsEntity .MakeUnexported }}
+// The struct is unexported to enforce creation through constructor functions.
+type {{ lower .Name }} struct {
+{{- else }}
+type {{ .Name }} struct {
+{{- end }}
+{{- range .Fields }}
+{{- if and $.IsEntity $.MakeUnexported }}
+	{{ camelCase .FieldName }} {{ if .Enum }}{{ $.Name }}{{ .FieldName }}{{ else }}{{ .GoType }}{{ end }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
+{{- else }}
+	{{ .FieldName }} {{ if .Enum }}{{ $.Name }}{{ .FieldName }}{{ else }}{{ .GoType }}{{ end }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
+{{- end }}
 {{- end }}
 {{- if and .IsEntity .HasDomainEvents }}
 	events []events.DomainEvent `json:"-" yaml:"-"`
@@ -97,33 +153,47 @@ type {{ .Name }} struct {
 {{- /* Constructor for Entities */ -}}
 {{- if .IsEntity }}
 
-// New{{ .Name }} creates a new {{ .Name }} entity
+// New{{ .Name }} creates a new {{ .Name }} entity with validation.
+// All required fields must be provided and valid.
 func New{{ .Name }}(
 {{- range .RequiredFields }}
 {{- if not (or (strContains .FieldName "CreatedAt") (strContains .FieldName "UpdatedAt") (eq .FieldName "ID")) }}
-	{{ camelCase .FieldName }} {{ .GoType }},
+	{{ camelCase .FieldName }} {{ if .Enum }}{{ $.Name }}{{ .FieldName }}{{ else }}{{ .GoType }}{{ end }},
 {{- end }}
 {{- end }}
 ) (*{{ .Name }}, error) {
-{{- /* Validation */ -}}
+	// Validate required fields
 {{- range .RequiredFields }}
-{{- if and (eq .GoType "string") (not (or (strContains .FieldName "CreatedAt") (strContains .FieldName "UpdatedAt"))) }}
+{{- if .Enum }}
+	if !{{ camelCase .FieldName }}.IsValid() {
+		return nil, fmt.Errorf("invalid {{ .FieldName }}: %s", {{ camelCase .FieldName }})
+	}
+{{- else if and (eq .GoType "string") (not (or (strContains .FieldName "CreatedAt") (strContains .FieldName "UpdatedAt") (eq .FieldName "ID"))) }}
 	if {{ camelCase .FieldName }} == "" {
 		return nil, fmt.Errorf("{{ .FieldName }} cannot be empty")
+	}
+{{- else if eq .GoType "int" }}
+	if {{ camelCase .FieldName }} < 0 {
+		return nil, fmt.Errorf("{{ .FieldName }} cannot be negative")
+	}
+{{- else if eq .GoType "float64" }}
+	if {{ camelCase .FieldName }} < 0 {
+		return nil, fmt.Errorf("{{ .FieldName }} cannot be negative")
 	}
 {{- end }}
 {{- end }}
 
+	now := time.Now().UTC()
 	{{ .NameLower }} := &{{ .Name }}{
 {{- range .Fields }}
 {{- if eq .FieldName "ID" }}
-		{{ .FieldName }}:  uuid.New(),
+		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: uuid.New(),
 {{- else if strContains .FieldName "CreatedAt" }}
-		{{ .FieldName }}: time.Now().UTC(),
+		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: now,
 {{- else if strContains .FieldName "UpdatedAt" }}
-		{{ .FieldName }}: time.Now().UTC(),
+		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: now,
 {{- else if .Required }}
-		{{ .FieldName }}: {{ camelCase .FieldName }},
+		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: {{ camelCase .FieldName }},
 {{- end }}
 {{- end }}
 {{- if .HasDomainEvents }}
@@ -132,7 +202,7 @@ func New{{ .Name }}(
 	}
 
 {{- if .HasDomainEvents }}
-	{{ .NameLower }}.addEvent(events.New{{ .Name }}CreatedEvent({{ .NameLower }}.ID))
+	{{ .NameLower }}.addEvent(events.New{{ .Name }}CreatedEvent({{ .NameLower }}.{{ if $.MakeUnexported }}id{{ else }}ID{{ end }}))
 {{- end }}
 
 	return {{ .NameLower }}, nil
@@ -142,8 +212,12 @@ func New{{ .Name }}(
 {{- range .Fields }}
 
 // Get{{ .FieldName }} returns the {{ .FieldName }}
-func (e *{{ $.Name }}) Get{{ .FieldName }}() {{ .GoType }} {
+func (e *{{ $.Name }}) Get{{ .FieldName }}() {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }} {
+{{- if .Enum }}
+	return string(e.{{ .FieldName }})
+{{- else }}
 	return e.{{ .FieldName }}
+{{- end }}
 }
 {{- end }}
 
@@ -169,12 +243,16 @@ func (e *{{ .Name }}) addEvent(event events.DomainEvent) {
 // Reconstruct{{ .Name }} reconstructs a {{ .Name }} from persistence
 func Reconstruct{{ .Name }}(
 {{- range .Fields }}
-	{{ camelCase .FieldName }} {{ .GoType }},
+	{{ camelCase .FieldName }} {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }},
 {{- end }}
 ) *{{ .Name }} {
 	return &{{ .Name }}{
 {{- range .Fields }}
-		{{ .FieldName }}: {{ camelCase .FieldName }},
+{{- if .Enum }}
+		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: {{ $.Name }}{{ .FieldName }}({{ camelCase .FieldName }}),
+{{- else }}
+		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: {{ camelCase .FieldName }},
+{{- end }}
 {{- end }}
 {{- if .HasDomainEvents }}
 		events: []events.DomainEvent{},
@@ -185,44 +263,136 @@ func Reconstruct{{ .Name }}(
 {{- /* Constructor for Value Objects */ -}}
 {{- else if .IsValueObject }}
 
-// New{{ .Name }} creates a new {{ .Name }} value object
-func New{{ .Name }}({{ range $i, $f := .Fields }}{{ if $i }}, {{ end }}{{ camelCase .FieldName }} {{ .GoType }}{{ end }}) ({{ .Name }}, error) {
-{{- /* Simple validation */ -}}
+// New{{ .Name }} creates a new immutable {{ .Name }} value object.
+// Value objects are immutable and validated upon creation.
+func New{{ .Name }}({{ range $i, $f := .Fields }}{{ if $i }}, {{ end }}{{ camelCase .FieldName }} {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }}{{ end }}) ({{ .Name }}, error) {
+	// Validate all fields
 {{- range .Fields }}
-{{- if and .Required (eq .GoType "string") }}
+{{- if .Enum }}
+	{{ camelCase .FieldName }}Enum := {{ $.Name }}{{ .FieldName }}({{ camelCase .FieldName }})
+	if !{{ camelCase .FieldName }}Enum.IsValid() {
+		return {{ $.Name }}{}, fmt.Errorf("invalid {{ .FieldName }}: %s", {{ camelCase .FieldName }})
+	}
+{{- else if and .Required (eq .GoType "string") }}
 	if {{ camelCase .FieldName }} == "" {
 		return {{ $.Name }}{}, fmt.Errorf("{{ .FieldName }} cannot be empty")
+	}
+{{- else if and .Required (eq .GoType "int") }}
+	if {{ camelCase .FieldName }} < 0 {
+		return {{ $.Name }}{}, fmt.Errorf("{{ .FieldName }} cannot be negative")
+	}
+{{- else if and .Required (eq .GoType "float64") }}
+	if {{ camelCase .FieldName }} < 0 {
+		return {{ $.Name }}{}, fmt.Errorf("{{ .FieldName }} cannot be negative")
+	}
+{{- else if eq .GoType "uuid.UUID" }}
+	if {{ camelCase .FieldName }} == uuid.Nil {
+		return {{ $.Name }}{}, fmt.Errorf("{{ .FieldName }} cannot be nil UUID")
 	}
 {{- end }}
 {{- end }}
 
 	return {{ .Name }}{
 {{- range .Fields }}
+{{- if .Enum }}
+		{{ .FieldName }}: {{ camelCase .FieldName }}Enum,
+{{- else }}
 		{{ .FieldName }}: {{ camelCase .FieldName }},
+{{- end }}
 {{- end }}
 	}, nil
 }
 
-{{- /* Getters for Value Objects */ -}}
+// Must{{ .Name }} creates a new {{ .Name }} value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func Must{{ .Name }}({{ range $i, $f := .Fields }}{{ if $i }}, {{ end }}{{ camelCase .FieldName }} {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }}{{ end }}) {{ .Name }} {
+	v, err := New{{ .Name }}({{ range $i, $f := .Fields }}{{ if $i }}, {{ end }}{{ camelCase .FieldName }}{{ end }})
+	if err != nil {
+		panic(fmt.Sprintf("failed to create {{ .Name }}: %v", err))
+	}
+	return v
+}
+
+// Zero{{ .Name }} returns the zero value for {{ .Name }}.
+// This is useful for comparisons and as a default value.
+func Zero{{ .Name }}() {{ .Name }} {
+	return {{ .Name }}{}
+}
+
+{{- /* Getters for Value Objects - return by value for immutability */ -}}
 {{- range .Fields }}
 
-// Get{{ .FieldName }} returns the {{ .FieldName }}
-func (v {{ $.Name }}) Get{{ .FieldName }}() {{ .GoType }} {
+// Get{{ .FieldName }} returns the {{ .FieldName }} value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v {{ $.Name }}) Get{{ .FieldName }}() {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }} {
+{{- if .Enum }}
+	return string(v.{{ .FieldName }})
+{{- else if or (hasPrefix .GoType "[]") (hasPrefix .GoType "map") }}
+	// Return a copy for slices and maps to maintain immutability
+	{{- if hasPrefix .GoType "[]" }}
+	result := make({{ .GoType }}, len(v.{{ .FieldName }}))
+	copy(result, v.{{ .FieldName }})
+	return result
+	{{- else }}
+	result := make({{ .GoType }})
+	for k, val := range v.{{ .FieldName }} {
+		result[k] = val
+	}
+	return result
+	{{- end }}
+{{- else }}
 	return v.{{ .FieldName }}
+{{- end }}
 }
 {{- end }}
 
-// Equals checks if two {{ .Name }} value objects are equal
-// func (v {{ .Name }}) Equals(other {{ .Name }}) bool {
-//	return {{ range $i, $f := .Fields }}{{ if $i }} && {{ end }}v.{{ .FieldName }} == other.{{ .FieldName }}{{ end }}
-// }
+// IsZero returns true if this is the zero value.
+func (v {{ .Name }}) IsZero() bool {
+	zero := Zero{{ .Name }}()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+{{- /* Skip Validate method if there's a field named Validate */ -}}
+{{- $hasValidateField := false }}
+{{- range .Fields }}
+{{- if eq .FieldName "Validate" }}
+{{- $hasValidateField = true }}
+{{- end }}
+{{- end }}
+
+{{- if not $hasValidateField }}
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v {{ .Name }}) Validate() error {
+{{- range .Fields }}
+{{- if and .Required (eq .GoType "string") }}
+	if v.{{ .FieldName }} == "" {
+		return fmt.Errorf("{{ .FieldName }} cannot be empty")
+	}
+{{- else if eq .GoType "uuid.UUID" }}
+	if v.{{ .FieldName }} == uuid.Nil {
+		return fmt.Errorf("{{ .FieldName }} cannot be nil UUID")
+	}
+{{- end }}
+{{- end }}
+	return nil
+}
+{{- end }}
 
 // String returns a string representation of {{ .Name }}
 func (v {{ .Name }}) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 {{- range .Fields }}
+{{- if and (not .Enum) (isPointer .GoType) }}
+	if v.{{ .FieldName }} != nil {
+		fields = append(fields, fmt.Sprintf("{{ .FieldName }}: %v", *v.{{ .FieldName }}))
+	} else {
+		fields = append(fields, "{{ .FieldName }}: <nil>")
+	}
+{{- else }}
 	fields = append(fields, fmt.Sprintf("{{ .FieldName }}: %v", v.{{ .FieldName }}))
+{{- end }}
 {{- end }}
 	return fmt.Sprintf("{{ .Name }}{%s}", strings.Join(fields, ", "))
 }

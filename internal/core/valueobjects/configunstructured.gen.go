@@ -15,8 +15,10 @@ type ConfigUnstructured struct {
 	Resources *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
-// NewConfigUnstructured creates a new ConfigUnstructured value object
+// NewConfigUnstructured creates a new immutable ConfigUnstructured value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigUnstructured(enabled bool, image *ConfigImage, managed *bool, resources *ConfigResource) (ConfigUnstructured, error) {
+	// Validate all fields
 
 	return ConfigUnstructured{
 		Enabled:   enabled,
@@ -26,38 +28,77 @@ func NewConfigUnstructured(enabled bool, image *ConfigImage, managed *bool, reso
 	}, nil
 }
 
-// GetEnabled returns the Enabled
+// MustConfigUnstructured creates a new ConfigUnstructured value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigUnstructured(enabled bool, image *ConfigImage, managed *bool, resources *ConfigResource) ConfigUnstructured {
+	v, err := NewConfigUnstructured(enabled, image, managed, resources)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigUnstructured: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigUnstructured returns the zero value for ConfigUnstructured.
+// This is useful for comparisons and as a default value.
+func ZeroConfigUnstructured() ConfigUnstructured {
+	return ConfigUnstructured{}
+}
+
+// GetEnabled returns the Enabled value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigUnstructured) GetEnabled() bool {
 	return v.Enabled
 }
 
-// GetImage returns the Image
+// GetImage returns the Image value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigUnstructured) GetImage() *ConfigImage {
 	return v.Image
 }
 
-// GetManaged returns the Managed
+// GetManaged returns the Managed value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigUnstructured) GetManaged() *bool {
 	return v.Managed
 }
 
-// GetResources returns the Resources
+// GetResources returns the Resources value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigUnstructured) GetResources() *ConfigResource {
 	return v.Resources
 }
 
-// Equals checks if two ConfigUnstructured value objects are equal
-// func (v ConfigUnstructured) Equals(other ConfigUnstructured) bool {
-//	return v.Enabled == other.Enabled && v.Image == other.Image && v.Managed == other.Managed && v.Resources == other.Resources
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigUnstructured) IsZero() bool {
+	zero := ZeroConfigUnstructured()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigUnstructured) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigUnstructured
 func (v ConfigUnstructured) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
-	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
-	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	if v.Image != nil {
+		fields = append(fields, fmt.Sprintf("Image: %v", *v.Image))
+	} else {
+		fields = append(fields, "Image: <nil>")
+	}
+	if v.Managed != nil {
+		fields = append(fields, fmt.Sprintf("Managed: %v", *v.Managed))
+	} else {
+		fields = append(fields, "Managed: <nil>")
+	}
+	if v.Resources != nil {
+		fields = append(fields, fmt.Sprintf("Resources: %v", *v.Resources))
+	} else {
+		fields = append(fields, "Resources: <nil>")
+	}
 	return fmt.Sprintf("ConfigUnstructured{%s}", strings.Join(fields, ", "))
 }

@@ -17,8 +17,10 @@ type ConfigIntelligence struct {
 	Unstructured *ConfigUnstructured `json:"unstructured,omitempty" yaml:"unstructured,omitempty"`
 }
 
-// NewConfigIntelligence creates a new ConfigIntelligence value object
+// NewConfigIntelligence creates a new immutable ConfigIntelligence value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigIntelligence(embedding *ConfigLLM, llm *ConfigLLM, runpod *ConfigRunPod, scraper *ConfigScraper, speech *ConfigSpeech, unstructured *ConfigUnstructured) (ConfigIntelligence, error) {
+	// Validate all fields
 
 	return ConfigIntelligence{
 		Embedding:    embedding,
@@ -30,50 +32,103 @@ func NewConfigIntelligence(embedding *ConfigLLM, llm *ConfigLLM, runpod *ConfigR
 	}, nil
 }
 
-// GetEmbedding returns the Embedding
+// MustConfigIntelligence creates a new ConfigIntelligence value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigIntelligence(embedding *ConfigLLM, llm *ConfigLLM, runpod *ConfigRunPod, scraper *ConfigScraper, speech *ConfigSpeech, unstructured *ConfigUnstructured) ConfigIntelligence {
+	v, err := NewConfigIntelligence(embedding, llm, runpod, scraper, speech, unstructured)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigIntelligence: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigIntelligence returns the zero value for ConfigIntelligence.
+// This is useful for comparisons and as a default value.
+func ZeroConfigIntelligence() ConfigIntelligence {
+	return ConfigIntelligence{}
+}
+
+// GetEmbedding returns the Embedding value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigIntelligence) GetEmbedding() *ConfigLLM {
 	return v.Embedding
 }
 
-// GetLlm returns the Llm
+// GetLlm returns the Llm value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigIntelligence) GetLlm() *ConfigLLM {
 	return v.Llm
 }
 
-// GetRunpod returns the Runpod
+// GetRunpod returns the Runpod value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigIntelligence) GetRunpod() *ConfigRunPod {
 	return v.Runpod
 }
 
-// GetScraper returns the Scraper
+// GetScraper returns the Scraper value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigIntelligence) GetScraper() *ConfigScraper {
 	return v.Scraper
 }
 
-// GetSpeech returns the Speech
+// GetSpeech returns the Speech value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigIntelligence) GetSpeech() *ConfigSpeech {
 	return v.Speech
 }
 
-// GetUnstructured returns the Unstructured
+// GetUnstructured returns the Unstructured value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigIntelligence) GetUnstructured() *ConfigUnstructured {
 	return v.Unstructured
 }
 
-// Equals checks if two ConfigIntelligence value objects are equal
-// func (v ConfigIntelligence) Equals(other ConfigIntelligence) bool {
-//	return v.Embedding == other.Embedding && v.Llm == other.Llm && v.Runpod == other.Runpod && v.Scraper == other.Scraper && v.Speech == other.Speech && v.Unstructured == other.Unstructured
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigIntelligence) IsZero() bool {
+	zero := ZeroConfigIntelligence()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
+
+// Validate checks if the value object is valid.
+// This is automatically called during construction but can be used for explicit validation.
+func (v ConfigIntelligence) Validate() error {
+	return nil
+}
 
 // String returns a string representation of ConfigIntelligence
 func (v ConfigIntelligence) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
-	fields = append(fields, fmt.Sprintf("Embedding: %v", v.Embedding))
-	fields = append(fields, fmt.Sprintf("Llm: %v", v.Llm))
-	fields = append(fields, fmt.Sprintf("Runpod: %v", v.Runpod))
-	fields = append(fields, fmt.Sprintf("Scraper: %v", v.Scraper))
-	fields = append(fields, fmt.Sprintf("Speech: %v", v.Speech))
-	fields = append(fields, fmt.Sprintf("Unstructured: %v", v.Unstructured))
+	if v.Embedding != nil {
+		fields = append(fields, fmt.Sprintf("Embedding: %v", *v.Embedding))
+	} else {
+		fields = append(fields, "Embedding: <nil>")
+	}
+	if v.Llm != nil {
+		fields = append(fields, fmt.Sprintf("Llm: %v", *v.Llm))
+	} else {
+		fields = append(fields, "Llm: <nil>")
+	}
+	if v.Runpod != nil {
+		fields = append(fields, fmt.Sprintf("Runpod: %v", *v.Runpod))
+	} else {
+		fields = append(fields, "Runpod: <nil>")
+	}
+	if v.Scraper != nil {
+		fields = append(fields, fmt.Sprintf("Scraper: %v", *v.Scraper))
+	} else {
+		fields = append(fields, "Scraper: <nil>")
+	}
+	if v.Speech != nil {
+		fields = append(fields, fmt.Sprintf("Speech: %v", *v.Speech))
+	} else {
+		fields = append(fields, "Speech: <nil>")
+	}
+	if v.Unstructured != nil {
+		fields = append(fields, fmt.Sprintf("Unstructured: %v", *v.Unstructured))
+	} else {
+		fields = append(fields, "Unstructured: <nil>")
+	}
 	return fmt.Sprintf("ConfigIntelligence{%s}", strings.Join(fields, ", "))
 }

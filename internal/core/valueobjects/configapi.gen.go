@@ -20,8 +20,10 @@ type ConfigAPI struct {
 	Validate    bool            `json:"validate" yaml:"validate"` // Enable or disable request validation
 }
 
-// NewConfigAPI creates a new ConfigAPI value object
+// NewConfigAPI creates a new immutable ConfigAPI value object.
+// Value objects are immutable and validated upon creation.
 func NewConfigAPI(cors string, docs bool, email *ConfigEmail, environment string, host string, image *ConfigImage, port float64, resources *ConfigResource, validate bool) (ConfigAPI, error) {
+	// Validate all fields
 	if cors == "" {
 		return ConfigAPI{}, fmt.Errorf("Cors cannot be empty")
 	}
@@ -30,6 +32,9 @@ func NewConfigAPI(cors string, docs bool, email *ConfigEmail, environment string
 	}
 	if host == "" {
 		return ConfigAPI{}, fmt.Errorf("Host cannot be empty")
+	}
+	if port < 0 {
+		return ConfigAPI{}, fmt.Errorf("Port cannot be negative")
 	}
 
 	return ConfigAPI{
@@ -45,68 +50,106 @@ func NewConfigAPI(cors string, docs bool, email *ConfigEmail, environment string
 	}, nil
 }
 
-// GetCors returns the Cors
+// MustConfigAPI creates a new ConfigAPI value object and panics on validation error.
+// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
+func MustConfigAPI(cors string, docs bool, email *ConfigEmail, environment string, host string, image *ConfigImage, port float64, resources *ConfigResource, validate bool) ConfigAPI {
+	v, err := NewConfigAPI(cors, docs, email, environment, host, image, port, resources, validate)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create ConfigAPI: %v", err))
+	}
+	return v
+}
+
+// ZeroConfigAPI returns the zero value for ConfigAPI.
+// This is useful for comparisons and as a default value.
+func ZeroConfigAPI() ConfigAPI {
+	return ConfigAPI{}
+}
+
+// GetCors returns the Cors value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetCors() string {
 	return v.Cors
 }
 
-// GetDocs returns the Docs
+// GetDocs returns the Docs value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetDocs() bool {
 	return v.Docs
 }
 
-// GetEmail returns the Email
+// GetEmail returns the Email value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetEmail() *ConfigEmail {
 	return v.Email
 }
 
-// GetEnvironment returns the Environment
+// GetEnvironment returns the Environment value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetEnvironment() string {
 	return v.Environment
 }
 
-// GetHost returns the Host
+// GetHost returns the Host value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetHost() string {
 	return v.Host
 }
 
-// GetImage returns the Image
+// GetImage returns the Image value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetImage() *ConfigImage {
 	return v.Image
 }
 
-// GetPort returns the Port
+// GetPort returns the Port value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetPort() float64 {
 	return v.Port
 }
 
-// GetResources returns the Resources
+// GetResources returns the Resources value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetResources() *ConfigResource {
 	return v.Resources
 }
 
-// GetValidate returns the Validate
+// GetValidate returns the Validate value.
+// Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetValidate() bool {
 	return v.Validate
 }
 
-// Equals checks if two ConfigAPI value objects are equal
-// func (v ConfigAPI) Equals(other ConfigAPI) bool {
-//	return v.Cors == other.Cors && v.Docs == other.Docs && v.Email == other.Email && v.Environment == other.Environment && v.Host == other.Host && v.Image == other.Image && v.Port == other.Port && v.Resources == other.Resources && v.Validate == other.Validate
-// }
+// IsZero returns true if this is the zero value.
+func (v ConfigAPI) IsZero() bool {
+	zero := ZeroConfigAPI()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
+}
 
 // String returns a string representation of ConfigAPI
 func (v ConfigAPI) String() string {
-	// Build string representation field by field to avoid recursion
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Cors: %v", v.Cors))
 	fields = append(fields, fmt.Sprintf("Docs: %v", v.Docs))
-	fields = append(fields, fmt.Sprintf("Email: %v", v.Email))
+	if v.Email != nil {
+		fields = append(fields, fmt.Sprintf("Email: %v", *v.Email))
+	} else {
+		fields = append(fields, "Email: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Environment: %v", v.Environment))
 	fields = append(fields, fmt.Sprintf("Host: %v", v.Host))
-	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
+	if v.Image != nil {
+		fields = append(fields, fmt.Sprintf("Image: %v", *v.Image))
+	} else {
+		fields = append(fields, "Image: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Port: %v", v.Port))
-	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	if v.Resources != nil {
+		fields = append(fields, fmt.Sprintf("Resources: %v", *v.Resources))
+	} else {
+		fields = append(fields, "Resources: <nil>")
+	}
 	fields = append(fields, fmt.Sprintf("Validate: %v", v.Validate))
 	return fmt.Sprintf("ConfigAPI{%s}", strings.Join(fields, ", "))
 }
