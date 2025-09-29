@@ -6,8 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +25,21 @@ func NewSQLiteToolRepository(db *sql.DB) *SQLiteToolRepository {
 // Tool operations
 
 // Create creates a new tool
-func (r *SQLiteToolRepository) Create(ctx context.Context, entity *aggregates.Tool) (*aggregates.Tool, error) {
+func (r *SQLiteToolRepository) Create(ctx context.Context, entity *entities.Tool) (*entities.Tool, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateTool not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a tool by ID
-func (r *SQLiteToolRepository) Get(ctx context.Context, id uuid.UUID) (*aggregates.Tool, error) {
+func (r *SQLiteToolRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Tool, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetTool not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing tool
-func (r *SQLiteToolRepository) Update(ctx context.Context, id uuid.UUID, entity *aggregates.Tool) (*aggregates.Tool, error) {
+func (r *SQLiteToolRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Tool) (*entities.Tool, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateTool not yet implemented - requires custom mapping")
@@ -54,7 +53,7 @@ func (r *SQLiteToolRepository) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 // List returns a paginated list of tools
-func (r *SQLiteToolRepository) List(ctx context.Context, params dto.ListToolsParams) ([]*aggregates.Tool, int64, error) {
+func (r *SQLiteToolRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Tool, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListTools not yet implemented - requires custom mapping")
@@ -63,7 +62,7 @@ func (r *SQLiteToolRepository) List(ctx context.Context, params dto.ListToolsPar
 // Additional methods
 
 // ListByOrganization retrieves multiple tools by organizationID
-func (r *SQLiteToolRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*aggregates.Tool, error) {
+func (r *SQLiteToolRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Tool, error) {
 
 	// TODO: Implement ListByOrganization - fetch multiple records
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")

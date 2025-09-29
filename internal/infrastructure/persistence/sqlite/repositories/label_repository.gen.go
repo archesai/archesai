@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
@@ -54,7 +53,7 @@ func (r *SQLiteLabelRepository) Delete(ctx context.Context, id uuid.UUID) error 
 }
 
 // List returns a paginated list of labels
-func (r *SQLiteLabelRepository) List(ctx context.Context, params dto.ListLabelsParams) ([]*entities.Label, int64, error) {
+func (r *SQLiteLabelRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Label, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListLabels not yet implemented - requires custom mapping")

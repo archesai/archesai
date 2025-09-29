@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/runs"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/runs"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // RunsController handles HTTP requests for runs endpoints.
@@ -81,7 +79,7 @@ func (response CreateRun201JSONResponse) VisitCreateRunResponse(w http.ResponseW
 }
 
 type CreateRun400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreateRun400Response) VisitCreateRunResponse(w http.ResponseWriter) error {
@@ -92,7 +90,7 @@ func (response CreateRun400Response) VisitCreateRunResponse(w http.ResponseWrite
 }
 
 type CreateRun401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response CreateRun401Response) VisitCreateRunResponse(w http.ResponseWriter) error {
@@ -151,7 +149,7 @@ func (response ListRuns200JSONResponse) VisitListRunsResponse(w http.ResponseWri
 }
 
 type ListRuns400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListRuns400Response) VisitListRunsResponse(w http.ResponseWriter) error {
@@ -162,7 +160,7 @@ func (response ListRuns400Response) VisitListRunsResponse(w http.ResponseWriter)
 }
 
 type ListRuns401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListRuns401Response) VisitListRunsResponse(w http.ResponseWriter) error {
@@ -239,7 +237,7 @@ func (response DeleteRun200JSONResponse) VisitDeleteRunResponse(w http.ResponseW
 }
 
 type DeleteRun404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeleteRun404Response) VisitDeleteRunResponse(w http.ResponseWriter) error {
@@ -265,7 +263,7 @@ func (c *RunsController) DeleteRun(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeleteRunCommand(
-		valueobjects.RunID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -303,7 +301,7 @@ func (response GetRun200JSONResponse) VisitGetRunResponse(w http.ResponseWriter)
 }
 
 type GetRun404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetRun404Response) VisitGetRunResponse(w http.ResponseWriter) error {
@@ -329,7 +327,7 @@ func (c *RunsController) GetRun(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetRunQuery(
-		valueobjects.RunID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -369,7 +367,7 @@ func (response UpdateRun200JSONResponse) VisitUpdateRunResponse(w http.ResponseW
 }
 
 type UpdateRun404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdateRun404Response) VisitUpdateRunResponse(w http.ResponseWriter) error {

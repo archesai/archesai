@@ -2,6 +2,8 @@
 
 package valueobjects
 
+import "fmt"
+
 // Config represents Arches AI configuration schema
 type Config struct {
 	API          *ConfigAPI          `json:"api,omitempty" yaml:"api,omitempty"`
@@ -16,300 +18,79 @@ type Config struct {
 	Storage      *ConfigStorage      `json:"storage,omitempty" yaml:"storage,omitempty"`
 }
 
-// ConfigAPI represents Configuration schema for the API server
-type ConfigAPI struct {
-	Cors        string          `json:"cors" yaml:"cors"` // A comma-separated list of allowed origins for CORS requests
-	Docs        bool            `json:"docs" yaml:"docs"` // Enable or disable API documentation
-	Email       *ConfigEmail    `json:"email,omitempty" yaml:"email,omitempty"`
-	Environment string          `json:"environment" yaml:"environment"` // Deployment environment (development, staging, production)
-	Host        string          `json:"host" yaml:"host"`               // The host address on which the API server will listen
-	Image       *ConfigImage    `json:"image,omitempty" yaml:"image,omitempty"`
-	Port        float64         `json:"port" yaml:"port"` // The port on which the API server will listen
-	Resources   *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
-	Validate    bool            `json:"validate" yaml:"validate"` // Enable or disable request validation
+// NewConfig creates a new Config value object
+func NewConfig(api *ConfigAPI, auth *ConfigAuth, billing *ConfigBilling, database *ConfigDatabase, intelligence *ConfigIntelligence, kubernetes *ConfigKubernetes, logging *ConfigLogging, platform *ConfigPlatform, redis *ConfigRedis, storage *ConfigStorage) (Config, error) {
+
+	return Config{
+		API:          api,
+		Auth:         auth,
+		Billing:      billing,
+		Database:     database,
+		Intelligence: intelligence,
+		Kubernetes:   kubernetes,
+		Logging:      logging,
+		Platform:     platform,
+		Redis:        redis,
+		Storage:      storage,
+	}, nil
 }
 
-// ConfigEmail represents Email configuration for sending emails
-type ConfigEmail struct {
-	Enabled  bool    `json:"enabled" yaml:"enabled"`                       // Enable email functionality
-	Password *string `json:"password,omitempty" yaml:"password,omitempty"` // Password for the email service
-	Service  *string `json:"service,omitempty" yaml:"service,omitempty"`   // Email service provider (e.g., "gmail", "sendgrid", etc.)
-	User     *string `json:"user,omitempty" yaml:"user,omitempty"`         // Username for the email service
+// GetAPI returns the API
+func (v Config) GetAPI() *ConfigAPI {
+	return v.API
 }
 
-// ConfigImage represents Container image configuration
-type ConfigImage struct {
-	PullPolicy string  `json:"pullPolicy" yaml:"pullPolicy"`                     // Kubernetes image pull policy
-	Repository *string `json:"repository,omitempty" yaml:"repository,omitempty"` // Container image repository
-	Tag        string  `json:"tag" yaml:"tag"`                                   // Container image tag
+// GetAuth returns the Auth
+func (v Config) GetAuth() *ConfigAuth {
+	return v.Auth
 }
 
-// ConfigResource represents Kubernetes resource configuration
-type ConfigResource struct {
-	Limits   interface{} `json:"limits" yaml:"limits"`     // Resource limits
-	Requests interface{} `json:"requests" yaml:"requests"` // Resource requests
+// GetBilling returns the Billing
+func (v Config) GetBilling() *ConfigBilling {
+	return v.Billing
 }
 
-// ConfigAuth represents Authentication configuration for the API server
-type ConfigAuth struct {
-	Enabled   bool                 `json:"enabled" yaml:"enabled"` // Enable authentication
-	Firebase  *ConfigAuthFirebase  `json:"firebase,omitempty" yaml:"firebase,omitempty"`
-	Github    *ConfigAuthGithub    `json:"github,omitempty" yaml:"github,omitempty"`
-	Google    *ConfigAuthGoogle    `json:"google,omitempty" yaml:"google,omitempty"`
-	Local     *ConfigAuthLocal     `json:"local,omitempty" yaml:"local,omitempty"`
-	MagicLink *ConfigAuthMagicLink `json:"magicLink,omitempty" yaml:"magicLink,omitempty"`
-	Microsoft *ConfigAuthMicrosoft `json:"microsoft,omitempty" yaml:"microsoft,omitempty"`
-	Twitter   *ConfigAuthTwitter   `json:"twitter,omitempty" yaml:"twitter,omitempty"`
+// GetDatabase returns the Database
+func (v Config) GetDatabase() *ConfigDatabase {
+	return v.Database
 }
 
-// ConfigAuthFirebase represents Firebase authentication configuration
-type ConfigAuthFirebase struct {
-	ClientEmail *string `json:"clientEmail,omitempty" yaml:"clientEmail,omitempty"` // Firebase service account client email address
-	Enabled     bool    `json:"enabled" yaml:"enabled"`                             // Enable Firebase authentication
-	PrivateKey  *string `json:"privateKey,omitempty" yaml:"privateKey,omitempty"`   // Firebase service account private key (PEM format)
-	ProjectID   *string `json:"projectID,omitempty" yaml:"projectID,omitempty"`     // Firebase project ID for authentication
+// GetIntelligence returns the Intelligence
+func (v Config) GetIntelligence() *ConfigIntelligence {
+	return v.Intelligence
 }
 
-// ConfigAuthLocal represents Local username/password authentication
-type ConfigAuthLocal struct {
-	AccessTokenTTL  string `json:"accessTokenTtl" yaml:"accessTokenTtl"`   // Access token time-to-live duration (e.g., "15m", "1h")
-	Enabled         bool   `json:"enabled" yaml:"enabled"`                 // Enable local authentication
-	JWTSecret       string `json:"jwtSecret" yaml:"jwtSecret"`             // Secret key for JWT token signing
-	RefreshTokenTTL string `json:"refreshTokenTtl" yaml:"refreshTokenTtl"` // Refresh token time-to-live duration (e.g., "7d", "168h")
+// GetKubernetes returns the Kubernetes
+func (v Config) GetKubernetes() *ConfigKubernetes {
+	return v.Kubernetes
 }
 
-// ConfigAuthMagicLink represents Magic link authentication configuration
-type ConfigAuthMagicLink struct {
-	DeliveryMethods *interface{} `json:"deliveryMethods,omitempty" yaml:"deliveryMethods,omitempty"` // Available delivery methods
-	Enabled         bool         `json:"enabled" yaml:"enabled"`                                     // Enable magic link authentication
-	OtpLength       *int         `json:"otpLength,omitempty" yaml:"otpLength,omitempty"`             // Length of OTP code
-	RateLimit       *interface{} `json:"rateLimit,omitempty" yaml:"rateLimit,omitempty"`             // Rate limiting configuration
-	TokenExpiry     *int         `json:"tokenExpiry,omitempty" yaml:"tokenExpiry,omitempty"`         // Token expiry duration in minutes
+// GetLogging returns the Logging
+func (v Config) GetLogging() *ConfigLogging {
+	return v.Logging
 }
 
-// ConfigAuthTwitter represents Twitter OAuth configuration
-type ConfigAuthTwitter struct {
-	CallbackURL    *string `json:"callbackURL,omitempty" yaml:"callbackURL,omitempty"`       // OAuth callback URL
-	ConsumerKey    *string `json:"consumerKey,omitempty" yaml:"consumerKey,omitempty"`       // Twitter API consumer key
-	ConsumerSecret *string `json:"consumerSecret,omitempty" yaml:"consumerSecret,omitempty"` // Twitter API consumer secret
-	Enabled        bool    `json:"enabled" yaml:"enabled"`                                   // Enable Twitter OAuth
+// GetPlatform returns the Platform
+func (v Config) GetPlatform() *ConfigPlatform {
+	return v.Platform
 }
 
-// ConfigAuthGoogle represents Google OAuth configuration
-type ConfigAuthGoogle struct {
-	ClientId     *string  `json:"clientId,omitempty" yaml:"clientId,omitempty"`         // Google OAuth client ID
-	ClientSecret *string  `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"` // Google OAuth client secret
-	Enabled      bool     `json:"enabled" yaml:"enabled"`                               // Enable Google OAuth
-	RedirectUrl  *string  `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`   // OAuth callback URL
-	Scopes       []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
+// GetRedis returns the Redis
+func (v Config) GetRedis() *ConfigRedis {
+	return v.Redis
 }
 
-// ConfigAuthGithub represents GitHub OAuth configuration
-type ConfigAuthGithub struct {
-	ClientId     *string  `json:"clientId,omitempty" yaml:"clientId,omitempty"`         // GitHub OAuth App client ID
-	ClientSecret *string  `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"` // GitHub OAuth App client secret
-	Enabled      bool     `json:"enabled" yaml:"enabled"`                               // Enable GitHub OAuth
-	RedirectUrl  *string  `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`   // OAuth callback URL
-	Scopes       []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
+// GetStorage returns the Storage
+func (v Config) GetStorage() *ConfigStorage {
+	return v.Storage
 }
 
-// ConfigAuthMicrosoft represents Microsoft/Azure AD OAuth configuration
-type ConfigAuthMicrosoft struct {
-	ClientId     *string  `json:"clientId,omitempty" yaml:"clientId,omitempty"`         // Azure AD Application (client) ID
-	ClientSecret *string  `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"` // Azure AD client secret
-	Enabled      bool     `json:"enabled" yaml:"enabled"`                               // Enable Microsoft OAuth
-	RedirectUrl  *string  `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`   // OAuth callback URL
-	Scopes       []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
-	Tenant       *string  `json:"tenant,omitempty" yaml:"tenant,omitempty"`             // Azure AD tenant ID (use 'common' for multi-tenant)
-}
+// Equals checks if two Config value objects are equal
+// func (v Config) Equals(other Config) bool {
+//	return v.API == other.API && v.Auth == other.Auth && v.Billing == other.Billing && v.Database == other.Database && v.Intelligence == other.Intelligence && v.Kubernetes == other.Kubernetes && v.Logging == other.Logging && v.Platform == other.Platform && v.Redis == other.Redis && v.Storage == other.Storage
+// }
 
-// ConfigBilling represents Billing configuration for Stripe
-type ConfigBilling struct {
-	Enabled bool          `json:"enabled" yaml:"enabled"` // Enable billing functionality
-	Stripe  *ConfigStripe `json:"stripe,omitempty" yaml:"stripe,omitempty"`
-}
-
-// ConfigStripe represents Stripe payment configuration
-type ConfigStripe struct {
-	Token string `json:"token" yaml:"token"` // Stripe secret API key
-	Whsec string `json:"whsec" yaml:"whsec"` // Stripe webhook endpoint secret
-}
-
-// ConfigDatabase represents Database configuration for PostgreSQL
-type ConfigDatabase struct {
-	ConnMaxIdleTime   *string            `json:"connMaxIdleTime,omitempty" yaml:"connMaxIdleTime,omitempty"`     // Maximum connection idle time (e.g., "5m")
-	ConnMaxLifetime   *string            `json:"connMaxLifetime,omitempty" yaml:"connMaxLifetime,omitempty"`     // Maximum connection lifetime (e.g., "30m")
-	Enabled           bool               `json:"enabled" yaml:"enabled"`                                         // Enable database
-	HealthCheckPeriod *string            `json:"healthCheckPeriod,omitempty" yaml:"healthCheckPeriod,omitempty"` // Health check period for connections (PostgreSQL)
-	Image             *ConfigImage       `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed           bool               `json:"managed" yaml:"managed"`   // Use managed database deployment
-	MaxConns          int32              `json:"maxConns" yaml:"maxConns"` // Maximum number of connections in pool (PostgreSQL)
-	MinConns          int32              `json:"minConns" yaml:"minConns"` // Minimum number of connections in pool (PostgreSQL)
-	Persistence       *ConfigPersistence `json:"persistence,omitempty" yaml:"persistence,omitempty"`
-	Resources         *ConfigResource    `json:"resources,omitempty" yaml:"resources,omitempty"`
-	RunMigrations     bool               `json:"runMigrations" yaml:"runMigrations"` // Automatically run database migrations on startup
-	Type              string             `json:"type" yaml:"type"`                   // Database type (postgresql or sqlite)
-	URL               string             `json:"url" yaml:"url"`                     // Database connection url/string
-}
-
-// ConfigPersistence represents Persistent storage configuration
-type ConfigPersistence struct {
-	Enabled bool   `json:"enabled" yaml:"enabled"` // Enable persistent storage
-	Size    string `json:"size" yaml:"size"`       // Size of persistent volume
-}
-
-// ConfigIntelligence represents Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
-type ConfigIntelligence struct {
-	Embedding    *ConfigLLM          `json:"embedding,omitempty" yaml:"embedding,omitempty"`
-	Llm          *ConfigLLM          `json:"llm,omitempty" yaml:"llm,omitempty"`
-	Runpod       *ConfigRunPod       `json:"runpod,omitempty" yaml:"runpod,omitempty"`
-	Scraper      *ConfigScraper      `json:"scraper,omitempty" yaml:"scraper,omitempty"`
-	Speech       *ConfigSpeech       `json:"speech,omitempty" yaml:"speech,omitempty"`
-	Unstructured *ConfigUnstructured `json:"unstructured,omitempty" yaml:"unstructured,omitempty"`
-}
-
-// ConfigLLM represents Large Language Model configuration
-type ConfigLLM struct {
-	Endpoint *string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"` // LLM service endpoint URL
-	Token    *string `json:"token,omitempty" yaml:"token,omitempty"`       // Authentication token for LLM service
-	Type     string  `json:"type" yaml:"type"`                             // LLM provider type
-}
-
-// ConfigRunPod represents RunPod serverless GPU configuration
-type ConfigRunPod struct {
-	Enabled bool    `json:"enabled" yaml:"enabled"`                 // Enable RunPod integration
-	Token   *string `json:"token,omitempty" yaml:"token,omitempty"` // RunPod API token
-}
-
-// ConfigScraper represents Web scraping service configuration
-type ConfigScraper struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"`                       // Enable scraper service
-	Endpoint  *string         `json:"endpoint,omitempty" yaml:"endpoint,omitempty"` // Web scraper service endpoint URL
-	Image     *ConfigImage    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed scraper deployment
-	Resources *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
-}
-
-// ConfigSpeech represents Speech recognition and TTS services
-type ConfigSpeech struct {
-	Enabled bool    `json:"enabled" yaml:"enabled"`                 // Enable speech services
-	Token   *string `json:"token,omitempty" yaml:"token,omitempty"` // Speech-to-text service API token
-}
-
-// ConfigUnstructured represents Unstructured.io service for document parsing
-type ConfigUnstructured struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"` // Enable unstructured document parsing
-	Image     *ConfigImage    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed unstructured deployment
-	Resources *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
-}
-
-// ConfigLogging represents Logging configuration
-type ConfigLogging struct {
-	Level  string `json:"level" yaml:"level"`   // Minimum log level to output
-	Pretty bool   `json:"pretty" yaml:"pretty"` // Enable pretty-printed logs for development
-}
-
-// ConfigPlatform represents Platform configuration (host, image, resources)
-type ConfigPlatform struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"`               // Enable platform service
-	Host      *string         `json:"host,omitempty" yaml:"host,omitempty"` // Host address where the platform service will be accessible
-	Image     *ConfigImage    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed platform deployment
-	Resources *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
-}
-
-// ConfigRedis represents Redis configuration
-type ConfigRedis struct {
-	Auth        string             `json:"auth" yaml:"auth"`                 // Redis authentication password
-	Ca          *string            `json:"ca,omitempty" yaml:"ca,omitempty"` // Certificate Authority for TLS (optional)
-	Enabled     bool               `json:"enabled" yaml:"enabled"`           // Enable Redis
-	Host        string             `json:"host" yaml:"host"`                 // Redis hostname or IP
-	Image       *ConfigImage       `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed     *bool              `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed Redis deployment
-	Persistence *ConfigPersistence `json:"persistence,omitempty" yaml:"persistence,omitempty"`
-	Port        float64            `json:"port" yaml:"port"` // Redis port number
-	Resources   *ConfigResource    `json:"resources,omitempty" yaml:"resources,omitempty"`
-}
-
-// ConfigStorage represents Object storage configuration for MinIO or S3-compatible services
-type ConfigStorage struct {
-	Accesskey   string             `json:"accesskey" yaml:"accesskey"` // MinIO/S3 access key ID
-	Bucket      string             `json:"bucket" yaml:"bucket"`       // S3 bucket name
-	Enabled     bool               `json:"enabled" yaml:"enabled"`     // Enable object storage
-	Endpoint    string             `json:"endpoint" yaml:"endpoint"`   // MinIO server endpoint URL
-	Image       *ConfigImage       `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed     *bool              `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed storage deployment
-	Persistence *ConfigPersistence `json:"persistence,omitempty" yaml:"persistence,omitempty"`
-	Resources   *ConfigResource    `json:"resources,omitempty" yaml:"resources,omitempty"`
-	Secretkey   string             `json:"secretkey" yaml:"secretkey"` // MinIO/S3 secret access key
-}
-
-// ConfigKubernetes represents Kubernetes-specific deployment configuration
-type ConfigKubernetes struct {
-	Infrastructure *ConfigInfrastructure `json:"infrastructure,omitempty" yaml:"infrastructure,omitempty"`
-	Ingress        *ConfigIngress        `json:"ingress,omitempty" yaml:"ingress,omitempty"`
-	Monitoring     *ConfigMonitoring     `json:"monitoring,omitempty" yaml:"monitoring,omitempty"`
-}
-
-// ConfigInfrastructure represents Infrastructure configuration for Kubernetes deployments
-type ConfigInfrastructure struct {
-	Images         ConfigImages         `json:"images" yaml:"images"`
-	Migrations     ConfigMigrations     `json:"migrations" yaml:"migrations"`
-	Namespace      string               `json:"namespace" yaml:"namespace"` // Kubernetes namespace where all resources will be deployed
-	ServiceAccount ConfigServiceAccount `json:"serviceAccount" yaml:"serviceAccount"`
-}
-
-// ConfigImages represents Container image configuration
-type ConfigImages struct {
-	ImagePullSecrets []string `json:"imagePullSecrets" yaml:"imagePullSecrets"` // List of Kubernetes secrets for pulling private images
-	ImageRegistry    string   `json:"imageRegistry" yaml:"imageRegistry"`       // Custom container registry URL (leave empty for Docker Hub)
-}
-
-// ConfigMigrations represents Database migration configuration
-type ConfigMigrations struct {
-	Enabled bool `json:"enabled" yaml:"enabled"` // Enable automatic DB migrations
-}
-
-// ConfigServiceAccount represents Kubernetes service account configuration
-type ConfigServiceAccount struct {
-	Create bool   `json:"create" yaml:"create"` // Create dedicated service account
-	Name   string `json:"name" yaml:"name"`     // Custom service account name
-}
-
-// ConfigIngress represents Ingress configuration
-type ConfigIngress struct {
-	Domain  *string    `json:"domain,omitempty" yaml:"domain,omitempty"` // Primary domain name for ingress routing
-	Enabled bool       `json:"enabled" yaml:"enabled"`                   // Enable ingress
-	Tls     *ConfigTLS `json:"tls,omitempty" yaml:"tls,omitempty"`
-}
-
-// ConfigTLS represents TLS configuration
-type ConfigTLS struct {
-	Enabled    bool    `json:"enabled" yaml:"enabled"`                           // Enable TLS/SSL
-	Issuer     *string `json:"issuer,omitempty" yaml:"issuer,omitempty"`         // Cert-manager ClusterIssuer
-	SecretName *string `json:"secretName,omitempty" yaml:"secretName,omitempty"` // Kubernetes secret name for TLS certificates
-}
-
-// ConfigMonitoring represents Monitoring configuration for Grafana and Loki
-type ConfigMonitoring struct {
-	Grafana ConfigGrafana `json:"grafana" yaml:"grafana"`
-	Loki    ConfigLoki    `json:"loki" yaml:"loki"`
-}
-
-// ConfigGrafana represents Grafana monitoring dashboard configuration
-type ConfigGrafana struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"` // Enable Grafana
-	Image     *ConfigImage    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed Grafana deployment
-	Resources *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
-}
-
-// ConfigLoki represents Loki log aggregation service configuration
-type ConfigLoki struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"`               // Enable Loki
-	Host      *string         `json:"host,omitempty" yaml:"host,omitempty"` // Loki host URL
-	Image     *ConfigImage    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed Loki deployment
-	Resources *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
+// String returns a string representation of Config
+func (v Config) String() string {
+	return fmt.Sprintf("%+v", v)
 }

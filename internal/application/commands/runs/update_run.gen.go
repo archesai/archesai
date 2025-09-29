@@ -4,19 +4,19 @@ package runs
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // UpdateRunCommand represents the command to update a run.
 type UpdateRunCommand struct {
-	ID          valueobjects.RunID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -24,30 +24,7 @@ type UpdateRunCommand struct {
 
 // NewUpdateRunCommand creates a new update run command.
 func NewUpdateRunCommand(
-	id valueobjects.RunID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateRunCommand {
-	return &UpdateRunCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateRunCommand represents a command to update an run.
-type UpdateRunCommand struct {
-	ID          valueobjects.RunID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateRunCommand creates a new update run command.
-func NewUpdateRunCommand(
-	id valueobjects.RunID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -82,7 +59,7 @@ func (h *UpdateRunCommandHandler) Handle(ctx context.Context, cmd *UpdateRunComm
 	// Fetch existing run
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get run")
+		return nil, fmt.Errorf("failed to get run: %w", err)
 	}
 
 	// Update fields
@@ -92,14 +69,11 @@ func (h *UpdateRunCommandHandler) Handle(ctx context.Context, cmd *UpdateRunComm
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update run")
+		return nil, fmt.Errorf("failed to update run: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewRunUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewRunUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

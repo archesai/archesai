@@ -4,19 +4,19 @@ package artifacts
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // CreateArtifactCommand represents the command to create a artifact.
 type CreateArtifactCommand struct {
-	OrganizationID valueobjects.OrganizationID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
@@ -24,7 +24,7 @@ type CreateArtifactCommand struct {
 
 // NewCreateArtifactCommand creates a new create artifact command.
 func NewCreateArtifactCommand(
-	organizationID valueobjects.OrganizationID,
+	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
@@ -58,7 +58,7 @@ func NewCreateArtifactCommandHandler(
 func (h *CreateArtifactCommandHandler) Handle(ctx context.Context, cmd *CreateArtifactCommand) (*entities.Artifact, error) {
 	// Create the artifact entity
 	entity := &entities.Artifact{
-		ID:        valueobjects.NewArtifactID(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		// TODO: Map command fields to entity
@@ -67,14 +67,11 @@ func (h *CreateArtifactCommandHandler) Handle(ctx context.Context, cmd *CreateAr
 	// Save to repository
 	created, err := h.repo.Create(ctx, entity)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create artifact")
+		return nil, fmt.Errorf("failed to create artifact: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewArtifactCreatedEvent(
-		created.ID,
-		created.CreatedAt,
-	)
+	event := events.NewArtifactCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

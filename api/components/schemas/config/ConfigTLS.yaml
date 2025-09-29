@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: TLS configuration
 type: object
+title: TLSConfig
 properties:
   enabled:
     description: Enable TLS/SSL
@@ -22,3 +23,5 @@ properties:
 required:
   - enabled
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

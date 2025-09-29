@@ -6,20 +6,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
-{{- range .Entities }}
-{{- if eq .EntityPackage "aggregates" }}
-	"github.com/archesai/archesai/internal/core/aggregates"
-{{- else if eq .EntityPackage "valueobjects" }}
-	"github.com/archesai/archesai/internal/core/valueobjects"
-{{- else }}
 	"github.com/archesai/archesai/internal/core/entities"
-{{- end }}
-{{- end }}
 	"github.com/google/uuid"
 )
 
-{{range .Entities}}{{$entity := .}}{{$pkg := .EntityPackage}}
+{{range .Entities}}{{$entity := .}}
 // SQLite{{.Name}}Repository implements {{.Name}}Repository using SQLite.
 type SQLite{{.Name}}Repository struct {
 	queries *Queries
@@ -35,21 +26,21 @@ func NewSQLite{{.Name}}Repository(db *sql.DB) *SQLite{{.Name}}Repository {
 // {{.Name}} operations
 
 // Create creates a new {{lower .Name}}
-func (r *SQLite{{.Name}}Repository) Create(ctx context.Context, entity *{{$pkg}}.{{.Type}}) (*{{$pkg}}.{{.Type}}, error) {
+func (r *SQLite{{.Name}}Repository) Create(ctx context.Context, entity *entities.{{.Type}}) (*entities.{{.Type}}, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("Create{{.Name}} not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a {{lower .Name}} by ID
-func (r *SQLite{{.Name}}Repository) Get(ctx context.Context, id uuid.UUID) (*{{$pkg}}.{{.Type}}, error) {
+func (r *SQLite{{.Name}}Repository) Get(ctx context.Context, id uuid.UUID) (*entities.{{.Type}}, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("Get{{.Name}} not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing {{lower .Name}}
-func (r *SQLite{{.Name}}Repository) Update(ctx context.Context, id uuid.UUID, entity *{{$pkg}}.{{.Type}}) (*{{$pkg}}.{{.Type}}, error) {
+func (r *SQLite{{.Name}}Repository) Update(ctx context.Context, id uuid.UUID, entity *entities.{{.Type}}) (*entities.{{.Type}}, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("Update{{.Name}} not yet implemented - requires custom mapping")
@@ -63,7 +54,7 @@ func (r *SQLite{{.Name}}Repository) Delete(ctx context.Context, id uuid.UUID) er
 }
 
 // List returns a paginated list of {{lower .Name}}s
-func (r *SQLite{{.Name}}Repository) List(ctx context.Context, params dto.List{{.Name}}sParams) ([]*{{$pkg}}.{{.Type}}, int64, error) {
+func (r *SQLite{{.Name}}Repository) List(ctx context.Context, limit, offset int32) ([]*entities.{{.Type}}, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("List{{.Name}}s not yet implemented - requires custom mapping")
@@ -73,7 +64,7 @@ func (r *SQLite{{.Name}}Repository) List(ctx context.Context, params dto.List{{.
 // Additional methods
 {{range .AdditionalMethods}}
 // {{.Name}} retrieves {{if hasPrefix .Name "List"}}multiple {{$entity.Type | singularize | lower}}s{{else}}a single {{$entity.Type | singularize | lower}}{{end}}{{if .Parameters}} by {{range $i, $p := .Parameters}}{{if $i}} and {{end}}{{$p.Name}}{{end}}{{end}}
-func (r *SQLite{{$entity.Name}}Repository) {{.Name}}(ctx context.Context{{range $i, $param := .Parameters}}, {{$param.Name}} {{$param.Type}}{{end}}) ({{range $i, $ret := .Returns}}{{if $i}}, {{end}}{{if eq $ret (print "*" $entity.Type)}}*{{$pkg}}.{{$entity.Type}}{{else if eq $ret (print "[]*" $entity.Type)}}[]*{{$pkg}}.{{$entity.Type}}{{else}}{{$ret}}{{end}}{{end}}) {
+func (r *SQLite{{$entity.Name}}Repository) {{.Name}}(ctx context.Context{{range $i, $param := .Parameters}}, {{$param.Name}} {{$param.Type}}{{end}}) ({{range $i, $ret := .Returns}}{{if $i}}, {{end}}{{if eq $ret (print "*" $entity.Type)}}*entities.{{$entity.Type}}{{else if eq $ret (print "[]*" $entity.Type)}}[]*entities.{{$entity.Type}}{{else}}{{$ret}}{{end}}{{end}}) {
 	{{if eq (len .Returns) 2}}
 	{{if hasPrefix .Name "List"}}
 	// TODO: Implement {{.Name}} - fetch multiple records

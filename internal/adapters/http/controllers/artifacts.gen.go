@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/artifacts"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/artifacts"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // ArtifactsController handles HTTP requests for artifacts endpoints.
@@ -81,7 +79,7 @@ func (response CreateArtifact201JSONResponse) VisitCreateArtifactResponse(w http
 }
 
 type CreateArtifact400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreateArtifact400Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
@@ -92,7 +90,7 @@ func (response CreateArtifact400Response) VisitCreateArtifactResponse(w http.Res
 }
 
 type CreateArtifact401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response CreateArtifact401Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
@@ -151,7 +149,7 @@ func (response ListArtifacts200JSONResponse) VisitListArtifactsResponse(w http.R
 }
 
 type ListArtifacts400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListArtifacts400Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
@@ -162,7 +160,7 @@ func (response ListArtifacts400Response) VisitListArtifactsResponse(w http.Respo
 }
 
 type ListArtifacts401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListArtifacts401Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
@@ -239,7 +237,7 @@ func (response DeleteArtifact200JSONResponse) VisitDeleteArtifactResponse(w http
 }
 
 type DeleteArtifact404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeleteArtifact404Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
@@ -265,7 +263,7 @@ func (c *ArtifactsController) DeleteArtifact(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeleteArtifactCommand(
-		valueobjects.ArtifactID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -303,7 +301,7 @@ func (response GetArtifact200JSONResponse) VisitGetArtifactResponse(w http.Respo
 }
 
 type GetArtifact404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetArtifact404Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
@@ -329,7 +327,7 @@ func (c *ArtifactsController) GetArtifact(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetArtifactQuery(
-		valueobjects.ArtifactID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -369,7 +367,7 @@ func (response UpdateArtifact200JSONResponse) VisitUpdateArtifactResponse(w http
 }
 
 type UpdateArtifact404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdateArtifact404Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {

@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
@@ -54,7 +53,7 @@ func (r *SQLiteArtifactRepository) Delete(ctx context.Context, id uuid.UUID) err
 }
 
 // List returns a paginated list of artifacts
-func (r *SQLiteArtifactRepository) List(ctx context.Context, params dto.ListArtifactsParams) ([]*entities.Artifact, int64, error) {
+func (r *SQLiteArtifactRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Artifact, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListArtifacts not yet implemented - requires custom mapping")

@@ -6,8 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -28,7 +27,7 @@ func NewPostgresToolRepository(db *pgxpool.Pool) *PostgresToolRepository {
 // Tool operations
 
 // Create creates a new tool
-func (r *PostgresToolRepository) Create(ctx context.Context, entity *aggregates.Tool) (*aggregates.Tool, error) {
+func (r *PostgresToolRepository) Create(ctx context.Context, entity *entities.Tool) (*entities.Tool, error) {
 	params := CreateToolParams{
 		ID: entity.ID,
 	}
@@ -42,7 +41,7 @@ func (r *PostgresToolRepository) Create(ctx context.Context, entity *aggregates.
 }
 
 // Get retrieves a tool by ID
-func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*aggregates.Tool, error) {
+func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Tool, error) {
 	result, err := r.queries.GetTool(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -55,7 +54,7 @@ func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*aggreg
 }
 
 // Update updates an existing tool
-func (r *PostgresToolRepository) Update(ctx context.Context, id uuid.UUID, entity *aggregates.Tool) (*aggregates.Tool, error) {
+func (r *PostgresToolRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Tool) (*entities.Tool, error) {
 	params := UpdateToolParams{
 		ID: id,
 	}
@@ -84,21 +83,7 @@ func (r *PostgresToolRepository) Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // List returns a paginated list of tools
-func (r *PostgresToolRepository) List(ctx context.Context, params dto.ListToolsParams) ([]*aggregates.Tool, int64, error) {
-	// Calculate offset from page
-	offset := int32(0)
-	limit := int32(10) // default
-
-	// Check if params has Page field with Limit and Offset
-	if params.Page != nil {
-		if params.Page.Offset != nil && *params.Page.Offset >= 0 {
-			offset = int32(*params.Page.Offset)
-		}
-		if params.Page.Limit != nil && *params.Page.Limit > 0 {
-			limit = int32(*params.Page.Limit)
-		}
-	}
-
+func (r *PostgresToolRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Tool, int64, error) {
 	listParams := ListToolsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -109,7 +94,7 @@ func (r *PostgresToolRepository) List(ctx context.Context, params dto.ListToolsP
 		return nil, 0, fmt.Errorf("failed to list tools: %w", err)
 	}
 
-	items := make([]*aggregates.Tool, len(results))
+	items := make([]*entities.Tool, len(results))
 	for i, result := range results {
 		items[i] = mapToolFromDB(&result)
 	}
@@ -124,19 +109,19 @@ func (r *PostgresToolRepository) List(ctx context.Context, params dto.ListToolsP
 // Additional methods
 
 // ListByOrganization retrieves multiple tools by organizationID
-func (r *PostgresToolRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*aggregates.Tool, error) {
+func (r *PostgresToolRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Tool, error) {
 
 	// TODO: Implement ListByOrganization - fetch multiple tools
 	return nil, fmt.Errorf("ListByOrganization not yet implemented")
 
 }
 
-func mapToolFromDB(db *Tool) *aggregates.Tool {
+func mapToolFromDB(db *Tool) *entities.Tool {
 	if db == nil {
 		return nil
 	}
 
-	result := &aggregates.Tool{
+	result := &entities.Tool{
 		ID:        db.ID,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,

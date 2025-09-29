@@ -10,9 +10,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 
-	"github.com/archesai/archesai/internal/core/aggregates"
-	ports "github.com/archesai/archesai/internal/core/ports/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/entities"
+	ports "github.com/archesai/archesai/internal/core/repositories"
 	"github.com/archesai/archesai/internal/infrastructure/cache"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 	"github.com/archesai/archesai/internal/infrastructure/events"
@@ -28,8 +27,8 @@ type Infrastructure struct {
 	Logger         *slog.Logger
 	Database       *database.Database // Database wrapper for both PostgreSQL and SQLite
 	EventPublisher events.Publisher
-	AuthCache      cache.Cache[valueobjects.Session]
-	UsersCache     cache.Cache[aggregates.User]
+	AuthCache      cache.Cache[entities.Session]
+	UsersCache     cache.Cache[entities.User]
 	// Single Redis client shared across components
 	redisClient *redis.Client
 }
@@ -135,20 +134,20 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 		if err != nil {
 			log.Warn("failed to connect to Redis, using in-memory alternatives", "error", err)
 			infra.EventPublisher = events.NewNoOpPublisher()
-			infra.AuthCache = cache.NewMemoryCache[valueobjects.Session]()
-			infra.UsersCache = cache.NewMemoryCache[aggregates.User]()
+			infra.AuthCache = cache.NewMemoryCache[entities.Session]()
+			infra.UsersCache = cache.NewMemoryCache[entities.User]()
 		} else {
 			log.Info("connected to redis", "host", cfg.Redis.Host, "port", cfg.Redis.Port)
 			infra.redisClient = redisClient
 			infra.EventPublisher = events.NewRedisPublisher(redisClient.GetRedisClient())
-			infra.AuthCache = cache.NewRedisCache[valueobjects.Session](redisClient.GetRedisClient(), "auth:session")
-			infra.UsersCache = cache.NewRedisCache[aggregates.User](redisClient.GetRedisClient(), "users")
+			infra.AuthCache = cache.NewRedisCache[entities.Session](redisClient.GetRedisClient(), "auth:session")
+			infra.UsersCache = cache.NewRedisCache[entities.User](redisClient.GetRedisClient(), "users")
 		}
 	} else {
 		// Use in-memory alternatives when Redis is disabled
 		infra.EventPublisher = events.NewNoOpPublisher()
-		infra.AuthCache = cache.NewMemoryCache[valueobjects.Session]()
-		infra.UsersCache = cache.NewMemoryCache[aggregates.User]()
+		infra.AuthCache = cache.NewMemoryCache[entities.Session]()
+		infra.UsersCache = cache.NewMemoryCache[entities.User]()
 	}
 
 	return infra, nil

@@ -28,15 +28,13 @@ func NewLabel(
 	if name == "" {
 		return nil, fmt.Errorf("Name cannot be empty")
 	}
-	id := uuid.New()
-	now := time.Now().UTC()
 
 	label := &Label{
-		CreatedAt:      now,
-		ID:             id,
+		CreatedAt:      time.Now().UTC(),
+		ID:             uuid.New(),
 		Name:           name,
 		OrganizationID: organizationID,
-		UpdatedAt:      now,
+		UpdatedAt:      time.Now().UTC(),
 		events:         []events.DomainEvent{},
 	}
 	label.addEvent(events.NewLabelCreatedEvent(label.ID))

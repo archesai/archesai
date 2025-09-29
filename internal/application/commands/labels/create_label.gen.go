@@ -4,19 +4,19 @@ package labels
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // CreateLabelCommand represents the command to create a label.
 type CreateLabelCommand struct {
-	OrganizationID valueobjects.OrganizationID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
@@ -24,7 +24,7 @@ type CreateLabelCommand struct {
 
 // NewCreateLabelCommand creates a new create label command.
 func NewCreateLabelCommand(
-	organizationID valueobjects.OrganizationID,
+	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
@@ -58,7 +58,7 @@ func NewCreateLabelCommandHandler(
 func (h *CreateLabelCommandHandler) Handle(ctx context.Context, cmd *CreateLabelCommand) (*entities.Label, error) {
 	// Create the label entity
 	entity := &entities.Label{
-		ID:        valueobjects.NewLabelID(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		// TODO: Map command fields to entity
@@ -67,14 +67,11 @@ func (h *CreateLabelCommandHandler) Handle(ctx context.Context, cmd *CreateLabel
 	// Save to repository
 	created, err := h.repo.Create(ctx, entity)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create label")
+		return nil, fmt.Errorf("failed to create label: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewLabelCreatedEvent(
-		created.ID,
-		created.CreatedAt,
-	)
+	event := events.NewLabelCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

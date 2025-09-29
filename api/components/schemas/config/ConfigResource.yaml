@@ -46,3 +46,5 @@ required:
   - limits
   - requests
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

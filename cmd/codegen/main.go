@@ -46,7 +46,12 @@ If no path is provided, defaults to api/openapi.bundled.yaml`,
 			os.Setenv("ARCHESAI_LOGGING_LEVEL", "error")
 		}
 
-		if err := codegen.Run(path); err != nil {
+		generator := codegen.NewGenerator()
+		if err := generator.Initialize(); err != nil {
+			return fmt.Errorf("failed to initialize code generator: %w", err)
+		}
+
+		if _, err := generator.GenerateAPI(path); err != nil {
 			return fmt.Errorf("code generation failed: %w", err)
 		}
 
@@ -62,8 +67,8 @@ var jsonschemaCmd = &cobra.Command{
 	Long: `Generate a single Go struct file from a JSON Schema.
 
 The path argument is the JSON Schema file to process.
-Requires --output flag for the output file path.
-The package name is automatically inferred from the output path.`,
+Requires --output flag for the output directory.
+The package name is automatically inferred from the output directory.`,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		schemaPath := args[0]
@@ -78,7 +83,12 @@ The package name is automatically inferred from the output path.`,
 			os.Setenv("ARCHESAI_LOGGING_LEVEL", "error")
 		}
 
-		if err := codegen.RunFromJSONSchema(schemaPath, outputPath); err != nil {
+		generator := codegen.NewGenerator()
+		if err := generator.Initialize(); err != nil {
+			return fmt.Errorf("failed to initialize code generator: %w", err)
+		}
+
+		if _, err := generator.GenerateSchema(schemaPath, outputPath); err != nil {
 			return fmt.Errorf("code generation failed: %w", err)
 		}
 

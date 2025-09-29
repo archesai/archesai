@@ -2,7 +2,7 @@
 title: Organization
 description: Schema for Organization entity
 x-codegen:
-  schemaType: aggregate
+  schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
     indices: [slug, stripeCustomerID]

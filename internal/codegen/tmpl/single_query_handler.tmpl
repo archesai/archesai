@@ -14,21 +14,22 @@ package {{ .Package }}
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 {{- if eq .QueryType "Get" }}
 // Get{{ .EntityName }}Query represents a query to get a {{ .EntityNameLower }}.
 type Get{{ .EntityName }}Query struct {
-	ID valueobjects.{{ .EntityName }}ID
+	ID uuid.UUID
 }
 
 // NewGet{{ .EntityName }}Query creates a new get {{ .EntityNameLower }} query.
-func NewGet{{ .EntityName }}Query(id valueobjects.{{ .EntityName }}ID) *Get{{ .EntityName }}Query {
+func NewGet{{ .EntityName }}Query(id uuid.UUID) *Get{{ .EntityName }}Query {
 	return &Get{{ .EntityName }}Query{
 		ID: id,
 	}
@@ -50,7 +51,7 @@ func New{{ .QueryType }}{{ .EntityName }}QueryHandler(repo repositories.{{ .Enti
 func (h *{{ .QueryType }}{{ .EntityName }}QueryHandler) Handle(ctx context.Context, query *{{ .QueryType }}{{ .EntityName }}Query) (*entities.{{ .EntityName }}, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get {{ .EntityNameLower }}")
+		return nil, fmt.Errorf("failed to get {{ .EntityNameLower }}: %w", err)
 	}
 	return result, nil
 }
@@ -85,25 +86,14 @@ func New{{ .QueryType }}{{ .EntityNamePlural }}QueryHandler(repo repositories.{{
 
 // Handle executes the list {{ .EntityNameLower }}s query.
 func (h *{{ .QueryType }}{{ .EntityNamePlural }}QueryHandler) Handle(ctx context.Context, query *{{ .QueryType }}{{ .EntityNamePlural }}Query) ([]*entities.{{ .EntityName }}, int64, error) {
-	// Apply filters
-	filters := make(map[string]interface{})
-	if query.OrganizationID != "" {
-		filters["organization_id"] = query.OrganizationID
-	}
-	if query.Filter != nil {
-		// TODO: Apply advanced filters
-	}
+	// Convert to int32 for repository
+	limit := int32(query.Limit)
+	offset := int32(query.Offset)
 
 	// Execute query with pagination
-	results, err := h.repo.List(ctx, filters, query.Limit, query.Offset)
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
-		return nil, 0, errors.Wrap(err, "failed to list {{ .EntityNameLower }}s")
-	}
-
-	// Get total count
-	total, err := h.repo.Count(ctx, filters)
-	if err != nil {
-		return nil, 0, errors.Wrap(err, "failed to count {{ .EntityNameLower }}s")
+		return nil, 0, fmt.Errorf("failed to list {{ .EntityNameLower }}s: %w", err)
 	}
 
 	return results, total, nil
@@ -125,7 +115,7 @@ func New{{ .QueryType }}{{ .EntityNamePlural }}QueryHandler(repo repositories.{{
 func (h *{{ .QueryType }}{{ .EntityNamePlural }}QueryHandler) Handle(ctx context.Context, query *{{ .QueryType }}{{ .EntityNamePlural }}Query) ([]*entities.{{ .EntityName }}, error) {
 	results, err := h.repo.Search(ctx, query.SearchTerm, query.Limit)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to search {{ .EntityNameLower }}s")
+		return nil, fmt.Errorf("failed to search {{ .EntityNameLower }}s: %w", err)
 	}
 	return results, nil
 }

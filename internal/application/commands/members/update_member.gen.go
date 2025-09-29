@@ -4,19 +4,19 @@ package members
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // UpdateMemberCommand represents the command to update a member.
 type UpdateMemberCommand struct {
-	ID          valueobjects.MemberID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -24,30 +24,7 @@ type UpdateMemberCommand struct {
 
 // NewUpdateMemberCommand creates a new update member command.
 func NewUpdateMemberCommand(
-	id valueobjects.MemberID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateMemberCommand {
-	return &UpdateMemberCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateMemberCommand represents a command to update an member.
-type UpdateMemberCommand struct {
-	ID          valueobjects.MemberID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateMemberCommand creates a new update member command.
-func NewUpdateMemberCommand(
-	id valueobjects.MemberID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -82,7 +59,7 @@ func (h *UpdateMemberCommandHandler) Handle(ctx context.Context, cmd *UpdateMemb
 	// Fetch existing member
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get member")
+		return nil, fmt.Errorf("failed to get member: %w", err)
 	}
 
 	// Update fields
@@ -92,14 +69,11 @@ func (h *UpdateMemberCommandHandler) Handle(ctx context.Context, cmd *UpdateMemb
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update member")
+		return nil, fmt.Errorf("failed to update member: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewMemberUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewMemberUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

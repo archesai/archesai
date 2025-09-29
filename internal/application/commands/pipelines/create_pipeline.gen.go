@@ -4,19 +4,19 @@ package pipelines
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // CreatePipelineCommand represents the command to create a pipeline.
 type CreatePipelineCommand struct {
-	OrganizationID valueobjects.OrganizationID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
@@ -24,7 +24,7 @@ type CreatePipelineCommand struct {
 
 // NewCreatePipelineCommand creates a new create pipeline command.
 func NewCreatePipelineCommand(
-	organizationID valueobjects.OrganizationID,
+	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
@@ -58,7 +58,7 @@ func NewCreatePipelineCommandHandler(
 func (h *CreatePipelineCommandHandler) Handle(ctx context.Context, cmd *CreatePipelineCommand) (*entities.Pipeline, error) {
 	// Create the pipeline entity
 	entity := &entities.Pipeline{
-		ID:        valueobjects.NewPipelineID(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		// TODO: Map command fields to entity
@@ -67,14 +67,11 @@ func (h *CreatePipelineCommandHandler) Handle(ctx context.Context, cmd *CreatePi
 	// Save to repository
 	created, err := h.repo.Create(ctx, entity)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create pipeline")
+		return nil, fmt.Errorf("failed to create pipeline: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewPipelineCreatedEvent(
-		created.ID,
-		created.CreatedAt,
-	)
+	event := events.NewPipelineCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

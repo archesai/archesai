@@ -4,20 +4,21 @@ package labels
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetLabelQuery represents a query to get a label.
 type GetLabelQuery struct {
-	ID valueobjects.LabelID
+	ID uuid.UUID
 }
 
 // NewGetLabelQuery creates a new get label query.
-func NewGetLabelQuery(id valueobjects.LabelID) *GetLabelQuery {
+func NewGetLabelQuery(id uuid.UUID) *GetLabelQuery {
 	return &GetLabelQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetLabelQueryHandler(repo repositories.LabelRepository) *GetLabelQueryHa
 func (h *GetLabelQueryHandler) Handle(ctx context.Context, query *GetLabelQuery) (*entities.Label, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get label")
+		return nil, fmt.Errorf("failed to get label: %w", err)
 	}
 	return result, nil
 }

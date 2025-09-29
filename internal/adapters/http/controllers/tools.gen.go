@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/tools"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/tools"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // ToolsController handles HTTP requests for tools endpoints.
@@ -81,7 +79,7 @@ func (response CreateTool201JSONResponse) VisitCreateToolResponse(w http.Respons
 }
 
 type CreateTool400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreateTool400Response) VisitCreateToolResponse(w http.ResponseWriter) error {
@@ -92,7 +90,7 @@ func (response CreateTool400Response) VisitCreateToolResponse(w http.ResponseWri
 }
 
 type CreateTool401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response CreateTool401Response) VisitCreateToolResponse(w http.ResponseWriter) error {
@@ -151,7 +149,7 @@ func (response ListTools200JSONResponse) VisitListToolsResponse(w http.ResponseW
 }
 
 type ListTools400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListTools400Response) VisitListToolsResponse(w http.ResponseWriter) error {
@@ -162,7 +160,7 @@ func (response ListTools400Response) VisitListToolsResponse(w http.ResponseWrite
 }
 
 type ListTools401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListTools401Response) VisitListToolsResponse(w http.ResponseWriter) error {
@@ -239,7 +237,7 @@ func (response DeleteTool200JSONResponse) VisitDeleteToolResponse(w http.Respons
 }
 
 type DeleteTool404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeleteTool404Response) VisitDeleteToolResponse(w http.ResponseWriter) error {
@@ -265,7 +263,7 @@ func (c *ToolsController) DeleteTool(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeleteToolCommand(
-		valueobjects.ToolID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -303,7 +301,7 @@ func (response GetTool200JSONResponse) VisitGetToolResponse(w http.ResponseWrite
 }
 
 type GetTool404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetTool404Response) VisitGetToolResponse(w http.ResponseWriter) error {
@@ -329,7 +327,7 @@ func (c *ToolsController) GetTool(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetToolQuery(
-		valueobjects.ToolID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -369,7 +367,7 @@ func (response UpdateTool200JSONResponse) VisitUpdateToolResponse(w http.Respons
 }
 
 type UpdateTool404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdateTool404Response) VisitUpdateToolResponse(w http.ResponseWriter) error {

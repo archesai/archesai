@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/accounts"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/accounts"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // AccountsController handles HTTP requests for accounts endpoints.
@@ -82,7 +80,7 @@ func (response ListAccounts200JSONResponse) VisitListAccountsResponse(w http.Res
 }
 
 type ListAccounts400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListAccounts400Response) VisitListAccountsResponse(w http.ResponseWriter) error {
@@ -93,7 +91,7 @@ func (response ListAccounts400Response) VisitListAccountsResponse(w http.Respons
 }
 
 type ListAccounts401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListAccounts401Response) VisitListAccountsResponse(w http.ResponseWriter) error {
@@ -169,7 +167,7 @@ func (response CreateAccount201JSONResponse) VisitCreateAccountResponse(w http.R
 }
 
 type CreateAccount400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreateAccount400Response) VisitCreateAccountResponse(w http.ResponseWriter) error {
@@ -180,7 +178,7 @@ func (response CreateAccount400Response) VisitCreateAccountResponse(w http.Respo
 }
 
 type CreateAccount409Response struct {
-	dto.ConflictResponse
+	server.ConflictResponse
 }
 
 func (response CreateAccount409Response) VisitCreateAccountResponse(w http.ResponseWriter) error {
@@ -239,7 +237,7 @@ func (response GetAccount200JSONResponse) VisitGetAccountResponse(w http.Respons
 }
 
 type GetAccount404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetAccount404Response) VisitGetAccountResponse(w http.ResponseWriter) error {
@@ -265,7 +263,7 @@ func (c *AccountsController) GetAccount(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetAccountQuery(
-		valueobjects.AccountID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -305,7 +303,7 @@ func (response UpdateAccount200JSONResponse) VisitUpdateAccountResponse(w http.R
 }
 
 type UpdateAccount404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdateAccount404Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
@@ -371,7 +369,7 @@ func (response DeleteAccount200JSONResponse) VisitDeleteAccountResponse(w http.R
 }
 
 type DeleteAccount404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeleteAccount404Response) VisitDeleteAccountResponse(w http.ResponseWriter) error {
@@ -397,7 +395,7 @@ func (c *AccountsController) DeleteAccount(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeleteAccountCommand(
-		valueobjects.AccountID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)

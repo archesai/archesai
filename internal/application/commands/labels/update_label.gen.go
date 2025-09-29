@@ -4,19 +4,19 @@ package labels
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // UpdateLabelCommand represents the command to update a label.
 type UpdateLabelCommand struct {
-	ID          valueobjects.LabelID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -24,30 +24,7 @@ type UpdateLabelCommand struct {
 
 // NewUpdateLabelCommand creates a new update label command.
 func NewUpdateLabelCommand(
-	id valueobjects.LabelID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateLabelCommand {
-	return &UpdateLabelCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateLabelCommand represents a command to update an label.
-type UpdateLabelCommand struct {
-	ID          valueobjects.LabelID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateLabelCommand creates a new update label command.
-func NewUpdateLabelCommand(
-	id valueobjects.LabelID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -82,7 +59,7 @@ func (h *UpdateLabelCommandHandler) Handle(ctx context.Context, cmd *UpdateLabel
 	// Fetch existing label
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get label")
+		return nil, fmt.Errorf("failed to get label: %w", err)
 	}
 
 	// Update fields
@@ -92,14 +69,11 @@ func (h *UpdateLabelCommandHandler) Handle(ctx context.Context, cmd *UpdateLabel
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update label")
+		return nil, fmt.Errorf("failed to update label: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewLabelUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewLabelUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

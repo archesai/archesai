@@ -35,16 +35,14 @@ func NewArtifact(
 	if mimeType == "" {
 		return nil, fmt.Errorf("MimeType cannot be empty")
 	}
-	id := uuid.New()
-	now := time.Now().UTC()
 
 	artifact := &Artifact{
-		CreatedAt:      now,
+		CreatedAt:      time.Now().UTC(),
 		Credits:        credits,
-		ID:             id,
+		ID:             uuid.New(),
 		MimeType:       mimeType,
 		OrganizationID: organizationID,
-		UpdatedAt:      now,
+		UpdatedAt:      time.Now().UTC(),
 		events:         []events.DomainEvent{},
 	}
 	artifact.addEvent(events.NewArtifactCreatedEvent(artifact.ID))

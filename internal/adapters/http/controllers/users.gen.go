@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/users"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/users"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // UsersController handles HTTP requests for users endpoints.
@@ -81,7 +79,7 @@ func (response ListUsers200JSONResponse) VisitListUsersResponse(w http.ResponseW
 }
 
 type ListUsers400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListUsers400Response) VisitListUsersResponse(w http.ResponseWriter) error {
@@ -92,7 +90,7 @@ func (response ListUsers400Response) VisitListUsersResponse(w http.ResponseWrite
 }
 
 type ListUsers401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListUsers401Response) VisitListUsersResponse(w http.ResponseWriter) error {
@@ -169,7 +167,7 @@ func (response DeleteUser200JSONResponse) VisitDeleteUserResponse(w http.Respons
 }
 
 type DeleteUser404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeleteUser404Response) VisitDeleteUserResponse(w http.ResponseWriter) error {
@@ -195,7 +193,7 @@ func (c *UsersController) DeleteUser(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeleteUserCommand(
-		valueobjects.UserID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -233,7 +231,7 @@ func (response GetUser200JSONResponse) VisitGetUserResponse(w http.ResponseWrite
 }
 
 type GetUser404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetUser404Response) VisitGetUserResponse(w http.ResponseWriter) error {
@@ -259,7 +257,7 @@ func (c *UsersController) GetUser(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetUserQuery(
-		valueobjects.UserID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -299,7 +297,7 @@ func (response UpdateUser200JSONResponse) VisitUpdateUserResponse(w http.Respons
 }
 
 type UpdateUser404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdateUser404Response) VisitUpdateUserResponse(w http.ResponseWriter) error {

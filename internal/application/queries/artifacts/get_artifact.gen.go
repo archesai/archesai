@@ -4,20 +4,21 @@ package artifacts
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetArtifactQuery represents a query to get a artifact.
 type GetArtifactQuery struct {
-	ID valueobjects.ArtifactID
+	ID uuid.UUID
 }
 
 // NewGetArtifactQuery creates a new get artifact query.
-func NewGetArtifactQuery(id valueobjects.ArtifactID) *GetArtifactQuery {
+func NewGetArtifactQuery(id uuid.UUID) *GetArtifactQuery {
 	return &GetArtifactQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetArtifactQueryHandler(repo repositories.ArtifactRepository) *GetArtifa
 func (h *GetArtifactQueryHandler) Handle(ctx context.Context, query *GetArtifactQuery) (*entities.Artifact, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get artifact")
+		return nil, fmt.Errorf("failed to get artifact: %w", err)
 	}
 	return result, nil
 }

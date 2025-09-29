@@ -5,8 +5,8 @@ import (
 	"context"
 )
 
-// EventPublisher defines the interface for publishing domain events.
-type EventPublisher interface {
+// Publisher defines the interface for publishing domain events.
+type Publisher interface {
 	// Publish publishes a single domain event.
 	Publish(ctx context.Context, event DomainEvent) error
 
@@ -14,8 +14,8 @@ type EventPublisher interface {
 	PublishMultiple(ctx context.Context, events []DomainEvent) error
 }
 
-// EventSubscriber defines the interface for subscribing to domain events.
-type EventSubscriber interface {
+// Subscriber defines the interface for subscribing to domain events.
+type Subscriber interface {
 	// Subscribe subscribes to events of a specific aggregate type.
 	Subscribe(ctx context.Context, aggregateType string, handler EventHandler) error
 
@@ -58,6 +58,6 @@ type EventStore interface {
 
 // EventBus combines publishing and subscribing capabilities.
 type EventBus interface {
-	EventPublisher
-	EventSubscriber
+	Publisher
+	Subscriber
 }

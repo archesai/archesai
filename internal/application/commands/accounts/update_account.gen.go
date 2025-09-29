@@ -4,19 +4,19 @@ package accounts
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // UpdateAccountCommand represents the command to update a account.
 type UpdateAccountCommand struct {
-	ID          valueobjects.AccountID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -24,30 +24,7 @@ type UpdateAccountCommand struct {
 
 // NewUpdateAccountCommand creates a new update account command.
 func NewUpdateAccountCommand(
-	id valueobjects.AccountID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateAccountCommand {
-	return &UpdateAccountCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateAccountCommand represents a command to update an account.
-type UpdateAccountCommand struct {
-	ID          valueobjects.AccountID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateAccountCommand creates a new update account command.
-func NewUpdateAccountCommand(
-	id valueobjects.AccountID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -82,7 +59,7 @@ func (h *UpdateAccountCommandHandler) Handle(ctx context.Context, cmd *UpdateAcc
 	// Fetch existing account
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get account")
+		return nil, fmt.Errorf("failed to get account: %w", err)
 	}
 
 	// Update fields
@@ -92,14 +69,11 @@ func (h *UpdateAccountCommandHandler) Handle(ctx context.Context, cmd *UpdateAcc
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update account")
+		return nil, fmt.Errorf("failed to update account: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewAccountUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewAccountUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

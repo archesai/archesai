@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
@@ -84,21 +83,7 @@ func (r *PostgresPipelineRepository) Delete(ctx context.Context, id uuid.UUID) e
 }
 
 // List returns a paginated list of pipelines
-func (r *PostgresPipelineRepository) List(ctx context.Context, params dto.ListPipelinesParams) ([]*entities.Pipeline, int64, error) {
-	// Calculate offset from page
-	offset := int32(0)
-	limit := int32(10) // default
-
-	// Check if params has Page field with Limit and Offset
-	if params.Page != nil {
-		if params.Page.Offset != nil && *params.Page.Offset >= 0 {
-			offset = int32(*params.Page.Offset)
-		}
-		if params.Page.Limit != nil && *params.Page.Limit > 0 {
-			limit = int32(*params.Page.Limit)
-		}
-	}
-
+func (r *PostgresPipelineRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Pipeline, int64, error) {
 	listParams := ListPipelinesParams{
 		Limit:  limit,
 		Offset: offset,

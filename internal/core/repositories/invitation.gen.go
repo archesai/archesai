@@ -4,7 +4,6 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/application/dto"
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
@@ -16,7 +15,7 @@ type InvitationRepository interface {
 	Get(ctx context.Context, id uuid.UUID) (*entities.Invitation, error)
 	Update(ctx context.Context, id uuid.UUID, entity *entities.Invitation) (*entities.Invitation, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, params dto.ListInvitationsParams) ([]*entities.Invitation, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*entities.Invitation, int64, error)
 
 	// Additional operations
 	// ListByOrganization retrieves multiple invitations by organizationID

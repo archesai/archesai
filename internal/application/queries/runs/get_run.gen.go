@@ -4,20 +4,21 @@ package runs
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetRunQuery represents a query to get a run.
 type GetRunQuery struct {
-	ID valueobjects.RunID
+	ID uuid.UUID
 }
 
 // NewGetRunQuery creates a new get run query.
-func NewGetRunQuery(id valueobjects.RunID) *GetRunQuery {
+func NewGetRunQuery(id uuid.UUID) *GetRunQuery {
 	return &GetRunQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetRunQueryHandler(repo repositories.RunRepository) *GetRunQueryHandler 
 func (h *GetRunQueryHandler) Handle(ctx context.Context, query *GetRunQuery) (*entities.Run, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get run")
+		return nil, fmt.Errorf("failed to get run: %w", err)
 	}
 	return result, nil
 }

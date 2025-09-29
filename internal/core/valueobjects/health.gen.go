@@ -4,15 +4,23 @@ package valueobjects
 
 import "fmt"
 
-// Health represents a Health
+// Health represents Health check response
 type Health struct {
-	Services  interface{} `json:"services" yaml:"services"`
-	Timestamp string      `json:"timestamp" yaml:"timestamp"`
-	Uptime    float64     `json:"uptime" yaml:"uptime"`
+	Services struct {
+		Database string `json:"database" yaml:"database"`
+		Email    string `json:"email" yaml:"email"`
+		Redis    string `json:"redis" yaml:"redis"`
+	} `json:"services" yaml:"services"`
+	Timestamp string  `json:"timestamp" yaml:"timestamp"`
+	Uptime    float64 `json:"uptime" yaml:"uptime"`
 }
 
 // NewHealth creates a new Health value object
-func NewHealth(services interface{}, timestamp string, uptime float64) (Health, error) {
+func NewHealth(services struct {
+	Database string `json:"database" yaml:"database"`
+	Email    string `json:"email" yaml:"email"`
+	Redis    string `json:"redis" yaml:"redis"`
+}, timestamp string, uptime float64) (Health, error) {
 	if timestamp == "" {
 		return Health{}, fmt.Errorf("Timestamp cannot be empty")
 	}
@@ -25,7 +33,11 @@ func NewHealth(services interface{}, timestamp string, uptime float64) (Health, 
 }
 
 // GetServices returns the Services
-func (v Health) GetServices() interface{} {
+func (v Health) GetServices() struct {
+	Database string `json:"database" yaml:"database"`
+	Email    string `json:"email" yaml:"email"`
+	Redis    string `json:"redis" yaml:"redis"`
+} {
 	return v.Services
 }
 
@@ -40,9 +52,9 @@ func (v Health) GetUptime() float64 {
 }
 
 // Equals checks if two Health value objects are equal
-func (v Health) Equals(other Health) bool {
-	return v.Services == other.Services && v.Timestamp == other.Timestamp && v.Uptime == other.Uptime
-}
+// func (v Health) Equals(other Health) bool {
+//	return v.Services == other.Services && v.Timestamp == other.Timestamp && v.Uptime == other.Uptime
+// }
 
 // String returns a string representation of Health
 func (v Health) String() string {

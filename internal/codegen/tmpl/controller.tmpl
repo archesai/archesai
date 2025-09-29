@@ -41,7 +41,6 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/{{ .DomainLower }}"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/{{ .DomainLower }}"
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/valueobjects"
@@ -247,7 +246,7 @@ func (response {{ .GoName }}200JSONResponse) Visit{{ .GoName }}Response(w http.R
 {{- end }}
 
 type {{ $opName }}{{ .StatusCode }}Response struct {
-	dto.{{ $responseType }}
+	server.{{ $responseType }}
 }
 
 func (response {{ $opName }}{{ .StatusCode }}Response) Visit{{ $opName }}Response(w http.ResponseWriter) error {
@@ -347,7 +346,7 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	{{- else if hasPrefix .GoName "Delete" }}
 	// Create delete command from request
 	cmd := commands.NewDelete{{ $.DomainSingular }}Command(
-		valueobjects.{{ $.DomainSingular }}ID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -375,7 +374,7 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	{{- else if hasPrefix .GoName "Get" }}
 	// Create get query from request
 	query := queries.NewGet{{ $.DomainSingular }}Query(
-		valueobjects.{{ $.DomainSingular }}ID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)

@@ -1,20 +1,14 @@
 {{- /*
 Unified Schema Template
-Handles: Entities, Aggregates, Value Objects, DTOs, Enums, and Constants
+Handles: Entities, Value Objects, DTOs, Enums, and Constants
 */ -}}
 {{template "header.tmpl" .}}
 {{- /* Import block */ -}}
-{{- if or .Imports .HasTimeFields .HasUUIDFields .IsEntity .IsAggregate .IsEnum }}
+{{- if or .Imports .IsEntity .IsAggregate .IsEnum }}
 import (
-{{- if or .IsEnum .IsValueObject }}
 	"fmt"
-{{- end }}
-{{- if or .HasTimeFields (and (or .IsEntity .IsAggregate) .RequiredFields) }}
 	"time"
-{{- end }}
-{{- if .HasUUIDFields }}
 	"github.com/google/uuid"
-{{- end }}
 {{- if and (or .IsEntity .IsAggregate) (ne .Package "core") }}
 	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
@@ -92,15 +86,15 @@ type {{ .Name }} struct {
 {{- range .Fields }}
 	{{ .FieldName }} {{ .GoType }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
 {{- end }}
-{{- if and (or .IsEntity .IsAggregate) .HasDomainEvents }}
+{{- if and .IsEntity .HasDomainEvents }}
 	events []events.DomainEvent `json:"-" yaml:"-"`
 {{- end }}
 }
 
-{{- /* Constructor for Entities and Aggregates */ -}}
-{{- if or .IsEntity .IsAggregate }}
+{{- /* Constructor for Entities */ -}}
+{{- if .IsEntity }}
 
-// New{{ .Name }} creates a new {{ .Name }}{{ if .IsAggregate }} aggregate{{ else if .IsEntity }} entity{{ end }}
+// New{{ .Name }} creates a new {{ .Name }} entity
 func New{{ .Name }}(
 {{- range .RequiredFields }}
 {{- if not (or (strContains .FieldName "CreatedAt") (strContains .FieldName "UpdatedAt") (eq .FieldName "ID")) }}
@@ -117,23 +111,14 @@ func New{{ .Name }}(
 {{- end }}
 {{- end }}
 
-{{- if or .HasUUIDFields .HasTimeFields }}
-{{- if .HasUUIDFields }}
-	id := uuid.New()
-{{- end }}
-{{- if .HasTimeFields }}
-	now := time.Now().UTC()
-{{- end }}
-{{- end }}
-
 	{{ .NameLower }} := &{{ .Name }}{
 {{- range .Fields }}
 {{- if eq .FieldName "ID" }}
-		{{ .FieldName }}: id,
+		{{ .FieldName }}:  uuid.New(),
 {{- else if strContains .FieldName "CreatedAt" }}
-		{{ .FieldName }}: now,
+		{{ .FieldName }}: time.Now().UTC(),
 {{- else if strContains .FieldName "UpdatedAt" }}
-		{{ .FieldName }}: now,
+		{{ .FieldName }}: time.Now().UTC(),
 {{- else if .Required }}
 		{{ .FieldName }}: {{ camelCase .FieldName }},
 {{- end }}
@@ -150,7 +135,7 @@ func New{{ .Name }}(
 	return {{ .NameLower }}, nil
 }
 
-{{- /* Getters for Entities/Aggregates */ -}}
+{{- /* Getters for Entities */ -}}
 {{- range .Fields }}
 
 // Get{{ .FieldName }} returns the {{ .FieldName }}
@@ -225,9 +210,9 @@ func (v {{ $.Name }}) Get{{ .FieldName }}() {{ .GoType }} {
 {{- end }}
 
 // Equals checks if two {{ .Name }} value objects are equal
-func (v {{ .Name }}) Equals(other {{ .Name }}) bool {
-	return {{ range $i, $f := .Fields }}{{ if $i }} && {{ end }}v.{{ .FieldName }} == other.{{ .FieldName }}{{ end }}
-}
+// func (v {{ .Name }}) Equals(other {{ .Name }}) bool {
+//	return {{ range $i, $f := .Fields }}{{ if $i }} && {{ end }}v.{{ .FieldName }} == other.{{ .FieldName }}{{ end }}
+// }
 
 // String returns a string representation of {{ .Name }}
 func (v {{ .Name }}) String() string {

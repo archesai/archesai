@@ -4,7 +4,6 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/application/dto"
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
@@ -16,7 +15,7 @@ type AccountRepository interface {
 	Get(ctx context.Context, id uuid.UUID) (*entities.Account, error)
 	Update(ctx context.Context, id uuid.UUID, entity *entities.Account) (*entities.Account, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, params dto.ListAccountsParams) ([]*entities.Account, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*entities.Account, int64, error)
 
 	// Additional operations
 	// GetByProviderID retrieves a single account by provider and providerAccountID

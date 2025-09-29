@@ -4,19 +4,19 @@ package users
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // UpdateUserCommand represents the command to update a user.
 type UpdateUserCommand struct {
-	ID          valueobjects.UserID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -24,30 +24,7 @@ type UpdateUserCommand struct {
 
 // NewUpdateUserCommand creates a new update user command.
 func NewUpdateUserCommand(
-	id valueobjects.UserID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateUserCommand {
-	return &UpdateUserCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateUserCommand represents a command to update an user.
-type UpdateUserCommand struct {
-	ID          valueobjects.UserID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateUserCommand creates a new update user command.
-func NewUpdateUserCommand(
-	id valueobjects.UserID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -82,7 +59,7 @@ func (h *UpdateUserCommandHandler) Handle(ctx context.Context, cmd *UpdateUserCo
 	// Fetch existing user
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get user")
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
 	// Update fields
@@ -92,14 +69,11 @@ func (h *UpdateUserCommandHandler) Handle(ctx context.Context, cmd *UpdateUserCo
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update user")
+		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewUserUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewUserUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

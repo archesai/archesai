@@ -4,20 +4,21 @@ package invitations
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetInvitationQuery represents a query to get a invitation.
 type GetInvitationQuery struct {
-	ID valueobjects.InvitationID
+	ID uuid.UUID
 }
 
 // NewGetInvitationQuery creates a new get invitation query.
-func NewGetInvitationQuery(id valueobjects.InvitationID) *GetInvitationQuery {
+func NewGetInvitationQuery(id uuid.UUID) *GetInvitationQuery {
 	return &GetInvitationQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetInvitationQueryHandler(repo repositories.InvitationRepository) *GetIn
 func (h *GetInvitationQueryHandler) Handle(ctx context.Context, query *GetInvitationQuery) (*entities.Invitation, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get invitation")
+		return nil, fmt.Errorf("failed to get invitation: %w", err)
 	}
 	return result, nil
 }

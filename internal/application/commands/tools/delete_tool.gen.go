@@ -4,36 +4,23 @@ package tools
 
 import (
 	"context"
-	"time"
+	"fmt"
 
-	"github.com/archesai/archesai/internal/core/errors"
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // DeleteToolCommand represents the command to delete a tool.
 type DeleteToolCommand struct {
-	ID valueobjects.ToolID
+	ID uuid.UUID
 }
 
 // NewDeleteToolCommand creates a new delete tool command.
 func NewDeleteToolCommand(
-	id valueobjects.ToolID,
+	id uuid.UUID,
 ) *DeleteToolCommand {
-	return &DeleteToolCommand{
-		ID: id,
-	}
-}
-
-// DeleteToolCommand represents a command to delete an tool.
-type DeleteToolCommand struct {
-	ID valueobjects.ToolID
-}
-
-// NewDeleteToolCommand creates a new delete tool command.
-func NewDeleteToolCommand(id valueobjects.ToolID) *DeleteToolCommand {
 	return &DeleteToolCommand{
 		ID: id,
 	}
@@ -60,14 +47,11 @@ func NewDeleteToolCommandHandler(
 func (h *DeleteToolCommandHandler) Handle(ctx context.Context, cmd *DeleteToolCommand) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, cmd.ID); err != nil {
-		return errors.Wrap(err, "failed to delete tool")
+		return fmt.Errorf("failed to delete tool: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewToolDeletedEvent(
-		cmd.ID,
-		time.Now().UTC(),
-	)
+	event := events.NewToolDeletedEvent(cmd.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

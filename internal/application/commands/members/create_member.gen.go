@@ -4,19 +4,19 @@ package members
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // CreateMemberCommand represents the command to create a member.
 type CreateMemberCommand struct {
-	OrganizationID valueobjects.OrganizationID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
@@ -24,7 +24,7 @@ type CreateMemberCommand struct {
 
 // NewCreateMemberCommand creates a new create member command.
 func NewCreateMemberCommand(
-	organizationID valueobjects.OrganizationID,
+	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
@@ -58,7 +58,7 @@ func NewCreateMemberCommandHandler(
 func (h *CreateMemberCommandHandler) Handle(ctx context.Context, cmd *CreateMemberCommand) (*entities.Member, error) {
 	// Create the member entity
 	entity := &entities.Member{
-		ID:        valueobjects.NewMemberID(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		// TODO: Map command fields to entity
@@ -67,14 +67,11 @@ func (h *CreateMemberCommandHandler) Handle(ctx context.Context, cmd *CreateMemb
 	// Save to repository
 	created, err := h.repo.Create(ctx, entity)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create member")
+		return nil, fmt.Errorf("failed to create member: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewMemberCreatedEvent(
-		created.ID,
-		created.CreatedAt,
-	)
+	event := events.NewMemberCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

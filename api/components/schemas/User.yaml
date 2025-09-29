@@ -2,7 +2,7 @@
 description: Schema for User entity
 title: User
 x-codegen:
-  schemaType: aggregate
+  schemaType: entity
   repository:
     operations: [read, update, delete, list] # No create endpoint in API
     indices: [email]

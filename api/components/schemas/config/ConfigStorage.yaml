@@ -49,3 +49,6 @@ required:
   - endpoint
   - secretkey
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject
+title: StorageConfig

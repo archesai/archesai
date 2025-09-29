@@ -4,20 +4,21 @@ package config
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetConfigQuery represents a query to get a config.
 type GetConfigQuery struct {
-	ID valueobjects.ConfigID
+	ID uuid.UUID
 }
 
 // NewGetConfigQuery creates a new get config query.
-func NewGetConfigQuery(id valueobjects.ConfigID) *GetConfigQuery {
+func NewGetConfigQuery(id uuid.UUID) *GetConfigQuery {
 	return &GetConfigQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetConfigQueryHandler(repo repositories.ConfigRepository) *GetConfigQuer
 func (h *GetConfigQueryHandler) Handle(ctx context.Context, query *GetConfigQuery) (*entities.Config, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get config")
+		return nil, fmt.Errorf("failed to get config: %w", err)
 	}
 	return result, nil
 }

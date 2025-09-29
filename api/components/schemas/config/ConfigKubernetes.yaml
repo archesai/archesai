@@ -9,3 +9,5 @@ properties:
   monitoring:
     $ref: ./ConfigMonitoring.yaml
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

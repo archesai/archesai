@@ -4,23 +4,22 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
 
 // OrganizationRepository handles organization persistence
 type OrganizationRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *aggregates.Organization) (*aggregates.Organization, error)
-	Get(ctx context.Context, id uuid.UUID) (*aggregates.Organization, error)
-	Update(ctx context.Context, id uuid.UUID, entity *aggregates.Organization) (*aggregates.Organization, error)
+	Create(ctx context.Context, entity *entities.Organization) (*entities.Organization, error)
+	Get(ctx context.Context, id uuid.UUID) (*entities.Organization, error)
+	Update(ctx context.Context, id uuid.UUID, entity *entities.Organization) (*entities.Organization, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, params dto.ListOrganizationsParams) ([]*aggregates.Organization, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*entities.Organization, int64, error)
 
 	// Additional operations
 	// GetBySlug retrieves a single organization by slug
-	GetBySlug(ctx context.Context, slug string) (*aggregates.Organization, error)
+	GetBySlug(ctx context.Context, slug string) (*entities.Organization, error)
 	// GetByStripeCustomerID retrieves a single organization by stripeCustomerID
-	GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*aggregates.Organization, error)
+	GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*entities.Organization, error)
 }

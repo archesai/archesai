@@ -6,8 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -28,7 +27,7 @@ func NewPostgresOrganizationRepository(db *pgxpool.Pool) *PostgresOrganizationRe
 // Organization operations
 
 // Create creates a new organization
-func (r *PostgresOrganizationRepository) Create(ctx context.Context, entity *aggregates.Organization) (*aggregates.Organization, error) {
+func (r *PostgresOrganizationRepository) Create(ctx context.Context, entity *entities.Organization) (*entities.Organization, error) {
 	params := CreateOrganizationParams{
 		ID: entity.ID,
 	}
@@ -42,7 +41,7 @@ func (r *PostgresOrganizationRepository) Create(ctx context.Context, entity *agg
 }
 
 // Get retrieves a organization by ID
-func (r *PostgresOrganizationRepository) Get(ctx context.Context, id uuid.UUID) (*aggregates.Organization, error) {
+func (r *PostgresOrganizationRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Organization, error) {
 	result, err := r.queries.GetOrganization(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -55,7 +54,7 @@ func (r *PostgresOrganizationRepository) Get(ctx context.Context, id uuid.UUID) 
 }
 
 // Update updates an existing organization
-func (r *PostgresOrganizationRepository) Update(ctx context.Context, id uuid.UUID, entity *aggregates.Organization) (*aggregates.Organization, error) {
+func (r *PostgresOrganizationRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Organization) (*entities.Organization, error) {
 	params := UpdateOrganizationParams{
 		ID: id,
 	}
@@ -84,21 +83,7 @@ func (r *PostgresOrganizationRepository) Delete(ctx context.Context, id uuid.UUI
 }
 
 // List returns a paginated list of organizations
-func (r *PostgresOrganizationRepository) List(ctx context.Context, params dto.ListOrganizationsParams) ([]*aggregates.Organization, int64, error) {
-	// Calculate offset from page
-	offset := int32(0)
-	limit := int32(10) // default
-
-	// Check if params has Page field with Limit and Offset
-	if params.Page != nil {
-		if params.Page.Offset != nil && *params.Page.Offset >= 0 {
-			offset = int32(*params.Page.Offset)
-		}
-		if params.Page.Limit != nil && *params.Page.Limit > 0 {
-			limit = int32(*params.Page.Limit)
-		}
-	}
-
+func (r *PostgresOrganizationRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Organization, int64, error) {
 	listParams := ListOrganizationsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -109,7 +94,7 @@ func (r *PostgresOrganizationRepository) List(ctx context.Context, params dto.Li
 		return nil, 0, fmt.Errorf("failed to list organizations: %w", err)
 	}
 
-	items := make([]*aggregates.Organization, len(results))
+	items := make([]*entities.Organization, len(results))
 	for i, result := range results {
 		items[i] = mapOrganizationFromDB(&result)
 	}
@@ -124,7 +109,7 @@ func (r *PostgresOrganizationRepository) List(ctx context.Context, params dto.Li
 // Additional methods
 
 // GetBySlug retrieves a single organization by slug
-func (r *PostgresOrganizationRepository) GetBySlug(ctx context.Context, slug string) (*aggregates.Organization, error) {
+func (r *PostgresOrganizationRepository) GetBySlug(ctx context.Context, slug string) (*entities.Organization, error) {
 
 	// TODO: Implement GetBySlug - fetch single organization
 	return nil, fmt.Errorf("GetBySlug not yet implemented")
@@ -132,19 +117,19 @@ func (r *PostgresOrganizationRepository) GetBySlug(ctx context.Context, slug str
 }
 
 // GetByStripeCustomerID retrieves a single organization by stripeCustomerID
-func (r *PostgresOrganizationRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*aggregates.Organization, error) {
+func (r *PostgresOrganizationRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*entities.Organization, error) {
 
 	// TODO: Implement GetByStripeCustomerID - fetch single organization
 	return nil, fmt.Errorf("GetByStripeCustomerID not yet implemented")
 
 }
 
-func mapOrganizationFromDB(db *Organization) *aggregates.Organization {
+func mapOrganizationFromDB(db *Organization) *entities.Organization {
 	if db == nil {
 		return nil
 	}
 
-	result := &aggregates.Organization{
+	result := &entities.Organization{
 		ID:        db.ID,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,

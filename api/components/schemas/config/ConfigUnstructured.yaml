@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Unstructured.io service for document parsing
 type: object
+title: UnstructuredConfig
 properties:
   enabled:
     description: Enable unstructured document parsing
@@ -19,3 +20,5 @@ properties:
 required:
   - enabled
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/members"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/members"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // MembersController handles HTTP requests for members endpoints.
@@ -82,7 +80,7 @@ func (response CreateMember201JSONResponse) VisitCreateMemberResponse(w http.Res
 }
 
 type CreateMember400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreateMember400Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
@@ -93,7 +91,7 @@ func (response CreateMember400Response) VisitCreateMemberResponse(w http.Respons
 }
 
 type CreateMember401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response CreateMember401Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
@@ -160,7 +158,7 @@ func (response ListMembers200JSONResponse) VisitListMembersResponse(w http.Respo
 }
 
 type ListMembers400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListMembers400Response) VisitListMembersResponse(w http.ResponseWriter) error {
@@ -171,7 +169,7 @@ func (response ListMembers400Response) VisitListMembersResponse(w http.ResponseW
 }
 
 type ListMembers401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListMembers401Response) VisitListMembersResponse(w http.ResponseWriter) error {
@@ -256,7 +254,7 @@ func (response DeleteMember200JSONResponse) VisitDeleteMemberResponse(w http.Res
 }
 
 type DeleteMember404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeleteMember404Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
@@ -289,7 +287,7 @@ func (c *MembersController) DeleteMember(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeleteMemberCommand(
-		valueobjects.MemberID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -328,7 +326,7 @@ func (response GetMember200JSONResponse) VisitGetMemberResponse(w http.ResponseW
 }
 
 type GetMember404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetMember404Response) VisitGetMemberResponse(w http.ResponseWriter) error {
@@ -361,7 +359,7 @@ func (c *MembersController) GetMember(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetMemberQuery(
-		valueobjects.MemberID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -402,7 +400,7 @@ func (response UpdateMember200JSONResponse) VisitUpdateMemberResponse(w http.Res
 }
 
 type UpdateMember404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdateMember404Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {

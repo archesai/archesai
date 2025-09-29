@@ -23,3 +23,5 @@ properties:
 required:
   - type
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

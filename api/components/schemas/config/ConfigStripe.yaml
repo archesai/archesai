@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Stripe payment configuration
 type: object
+title: StripeConfig
 properties:
   token:
     description: Stripe secret API key
@@ -16,3 +17,5 @@ required:
   - token
   - whsec
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

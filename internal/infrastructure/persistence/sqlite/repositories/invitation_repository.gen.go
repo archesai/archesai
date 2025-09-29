@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
@@ -54,7 +53,7 @@ func (r *SQLiteInvitationRepository) Delete(ctx context.Context, id uuid.UUID) e
 }
 
 // List returns a paginated list of invitations
-func (r *SQLiteInvitationRepository) List(ctx context.Context, params dto.ListInvitationsParams) ([]*entities.Invitation, int64, error) {
+func (r *SQLiteInvitationRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Invitation, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListInvitations not yet implemented - requires custom mapping")

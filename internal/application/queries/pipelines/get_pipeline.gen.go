@@ -4,20 +4,21 @@ package pipelines
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetPipelineQuery represents a query to get a pipeline.
 type GetPipelineQuery struct {
-	ID valueobjects.PipelineID
+	ID uuid.UUID
 }
 
 // NewGetPipelineQuery creates a new get pipeline query.
-func NewGetPipelineQuery(id valueobjects.PipelineID) *GetPipelineQuery {
+func NewGetPipelineQuery(id uuid.UUID) *GetPipelineQuery {
 	return &GetPipelineQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetPipelineQueryHandler(repo repositories.PipelineRepository) *GetPipeli
 func (h *GetPipelineQueryHandler) Handle(ctx context.Context, query *GetPipelineQuery) (*entities.Pipeline, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get pipeline")
+		return nil, fmt.Errorf("failed to get pipeline: %w", err)
 	}
 	return result, nil
 }

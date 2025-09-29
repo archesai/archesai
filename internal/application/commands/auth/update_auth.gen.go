@@ -4,18 +4,19 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
+	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // UpdateAuthCommand represents the command to update a auth.
 type UpdateAuthCommand struct {
-	ID          valueobjects.AuthID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -23,30 +24,7 @@ type UpdateAuthCommand struct {
 
 // NewUpdateAuthCommand creates a new update auth command.
 func NewUpdateAuthCommand(
-	id valueobjects.AuthID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateAuthCommand {
-	return &UpdateAuthCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateAuthCommand represents a command to update an auth.
-type UpdateAuthCommand struct {
-	ID          valueobjects.AuthID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateAuthCommand creates a new update auth command.
-func NewUpdateAuthCommand(
-	id valueobjects.AuthID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -81,7 +59,7 @@ func (h *UpdateAuthCommandHandler) Handle(ctx context.Context, cmd *UpdateAuthCo
 	// Fetch existing auth
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get auth")
+		return nil, fmt.Errorf("failed to get auth: %w", err)
 	}
 
 	// Update fields
@@ -91,14 +69,11 @@ func (h *UpdateAuthCommandHandler) Handle(ctx context.Context, cmd *UpdateAuthCo
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update auth")
+		return nil, fmt.Errorf("failed to update auth: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewAuthUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewAuthUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

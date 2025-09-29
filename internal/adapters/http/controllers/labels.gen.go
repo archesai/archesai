@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/labels"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/labels"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // LabelsController handles HTTP requests for labels endpoints.
@@ -81,7 +79,7 @@ func (response CreateLabel201JSONResponse) VisitCreateLabelResponse(w http.Respo
 }
 
 type CreateLabel400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreateLabel400Response) VisitCreateLabelResponse(w http.ResponseWriter) error {
@@ -92,7 +90,7 @@ func (response CreateLabel400Response) VisitCreateLabelResponse(w http.ResponseW
 }
 
 type CreateLabel401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response CreateLabel401Response) VisitCreateLabelResponse(w http.ResponseWriter) error {
@@ -151,7 +149,7 @@ func (response ListLabels200JSONResponse) VisitListLabelsResponse(w http.Respons
 }
 
 type ListLabels400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListLabels400Response) VisitListLabelsResponse(w http.ResponseWriter) error {
@@ -162,7 +160,7 @@ func (response ListLabels400Response) VisitListLabelsResponse(w http.ResponseWri
 }
 
 type ListLabels401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListLabels401Response) VisitListLabelsResponse(w http.ResponseWriter) error {
@@ -239,7 +237,7 @@ func (response DeleteLabel200JSONResponse) VisitDeleteLabelResponse(w http.Respo
 }
 
 type DeleteLabel404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeleteLabel404Response) VisitDeleteLabelResponse(w http.ResponseWriter) error {
@@ -265,7 +263,7 @@ func (c *LabelsController) DeleteLabel(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeleteLabelCommand(
-		valueobjects.LabelID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -303,7 +301,7 @@ func (response GetLabel200JSONResponse) VisitGetLabelResponse(w http.ResponseWri
 }
 
 type GetLabel404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetLabel404Response) VisitGetLabelResponse(w http.ResponseWriter) error {
@@ -329,7 +327,7 @@ func (c *LabelsController) GetLabel(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetLabelQuery(
-		valueobjects.LabelID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -369,7 +367,7 @@ func (response UpdateLabel200JSONResponse) VisitUpdateLabelResponse(w http.Respo
 }
 
 type UpdateLabel404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdateLabel404Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {

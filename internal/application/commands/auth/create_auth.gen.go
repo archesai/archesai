@@ -4,18 +4,19 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
+	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // CreateAuthCommand represents the command to create a auth.
 type CreateAuthCommand struct {
-	OrganizationID valueobjects.OrganizationID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
@@ -23,7 +24,7 @@ type CreateAuthCommand struct {
 
 // NewCreateAuthCommand creates a new create auth command.
 func NewCreateAuthCommand(
-	organizationID valueobjects.OrganizationID,
+	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
@@ -57,7 +58,7 @@ func NewCreateAuthCommandHandler(
 func (h *CreateAuthCommandHandler) Handle(ctx context.Context, cmd *CreateAuthCommand) (*entities.Auth, error) {
 	// Create the auth entity
 	entity := &entities.Auth{
-		ID:        valueobjects.NewAuthID(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		// TODO: Map command fields to entity
@@ -66,14 +67,11 @@ func (h *CreateAuthCommandHandler) Handle(ctx context.Context, cmd *CreateAuthCo
 	// Save to repository
 	created, err := h.repo.Create(ctx, entity)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create auth")
+		return nil, fmt.Errorf("failed to create auth: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewAuthCreatedEvent(
-		created.ID,
-		created.CreatedAt,
-	)
+	event := events.NewAuthCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

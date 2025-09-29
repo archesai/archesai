@@ -4,20 +4,21 @@ package organizations
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetOrganizationQuery represents a query to get a organization.
 type GetOrganizationQuery struct {
-	ID valueobjects.OrganizationID
+	ID uuid.UUID
 }
 
 // NewGetOrganizationQuery creates a new get organization query.
-func NewGetOrganizationQuery(id valueobjects.OrganizationID) *GetOrganizationQuery {
+func NewGetOrganizationQuery(id uuid.UUID) *GetOrganizationQuery {
 	return &GetOrganizationQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetOrganizationQueryHandler(repo repositories.OrganizationRepository) *G
 func (h *GetOrganizationQueryHandler) Handle(ctx context.Context, query *GetOrganizationQuery) (*entities.Organization, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get organization")
+		return nil, fmt.Errorf("failed to get organization: %w", err)
 	}
 	return result, nil
 }

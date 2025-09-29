@@ -25,14 +25,12 @@ type Pipeline struct {
 func NewPipeline(
 	organizationID uuid.UUID,
 ) (*Pipeline, error) {
-	id := uuid.New()
-	now := time.Now().UTC()
 
 	pipeline := &Pipeline{
-		CreatedAt:      now,
-		ID:             id,
+		CreatedAt:      time.Now().UTC(),
+		ID:             uuid.New(),
 		OrganizationID: organizationID,
-		UpdatedAt:      now,
+		UpdatedAt:      time.Now().UTC(),
 		events:         []events.DomainEvent{},
 	}
 	pipeline.addEvent(events.NewPipelineCreatedEvent(pipeline.ID))

@@ -4,20 +4,21 @@ package members
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetMemberQuery represents a query to get a member.
 type GetMemberQuery struct {
-	ID valueobjects.MemberID
+	ID uuid.UUID
 }
 
 // NewGetMemberQuery creates a new get member query.
-func NewGetMemberQuery(id valueobjects.MemberID) *GetMemberQuery {
+func NewGetMemberQuery(id uuid.UUID) *GetMemberQuery {
 	return &GetMemberQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetMemberQueryHandler(repo repositories.MemberRepository) *GetMemberQuer
 func (h *GetMemberQueryHandler) Handle(ctx context.Context, query *GetMemberQuery) (*entities.Member, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get member")
+		return nil, fmt.Errorf("failed to get member: %w", err)
 	}
 	return result, nil
 }

@@ -4,19 +4,19 @@ package invitations
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // CreateInvitationCommand represents the command to create a invitation.
 type CreateInvitationCommand struct {
-	OrganizationID valueobjects.OrganizationID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
@@ -24,7 +24,7 @@ type CreateInvitationCommand struct {
 
 // NewCreateInvitationCommand creates a new create invitation command.
 func NewCreateInvitationCommand(
-	organizationID valueobjects.OrganizationID,
+	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
@@ -58,7 +58,7 @@ func NewCreateInvitationCommandHandler(
 func (h *CreateInvitationCommandHandler) Handle(ctx context.Context, cmd *CreateInvitationCommand) (*entities.Invitation, error) {
 	// Create the invitation entity
 	entity := &entities.Invitation{
-		ID:        valueobjects.NewInvitationID(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		// TODO: Map command fields to entity
@@ -67,14 +67,11 @@ func (h *CreateInvitationCommandHandler) Handle(ctx context.Context, cmd *Create
 	// Save to repository
 	created, err := h.repo.Create(ctx, entity)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create invitation")
+		return nil, fmt.Errorf("failed to create invitation: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewInvitationCreatedEvent(
-		created.ID,
-		created.CreatedAt,
-	)
+	event := events.NewInvitationCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

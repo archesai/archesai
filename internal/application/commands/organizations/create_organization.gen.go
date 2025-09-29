@@ -4,19 +4,19 @@ package organizations
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // CreateOrganizationCommand represents the command to create a organization.
 type CreateOrganizationCommand struct {
-	OrganizationID valueobjects.OrganizationID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
@@ -24,7 +24,7 @@ type CreateOrganizationCommand struct {
 
 // NewCreateOrganizationCommand creates a new create organization command.
 func NewCreateOrganizationCommand(
-	organizationID valueobjects.OrganizationID,
+	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
@@ -58,7 +58,7 @@ func NewCreateOrganizationCommandHandler(
 func (h *CreateOrganizationCommandHandler) Handle(ctx context.Context, cmd *CreateOrganizationCommand) (*entities.Organization, error) {
 	// Create the organization entity
 	entity := &entities.Organization{
-		ID:        valueobjects.NewOrganizationID(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		// TODO: Map command fields to entity
@@ -67,14 +67,11 @@ func (h *CreateOrganizationCommandHandler) Handle(ctx context.Context, cmd *Crea
 	// Save to repository
 	created, err := h.repo.Create(ctx, entity)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create organization")
+		return nil, fmt.Errorf("failed to create organization: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewOrganizationCreatedEvent(
-		created.ID,
-		created.CreatedAt,
-	)
+	event := events.NewOrganizationCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

@@ -4,36 +4,23 @@ package organizations
 
 import (
 	"context"
-	"time"
+	"fmt"
 
-	"github.com/archesai/archesai/internal/core/errors"
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // DeleteOrganizationCommand represents the command to delete a organization.
 type DeleteOrganizationCommand struct {
-	ID valueobjects.OrganizationID
+	ID uuid.UUID
 }
 
 // NewDeleteOrganizationCommand creates a new delete organization command.
 func NewDeleteOrganizationCommand(
-	id valueobjects.OrganizationID,
+	id uuid.UUID,
 ) *DeleteOrganizationCommand {
-	return &DeleteOrganizationCommand{
-		ID: id,
-	}
-}
-
-// DeleteOrganizationCommand represents a command to delete an organization.
-type DeleteOrganizationCommand struct {
-	ID valueobjects.OrganizationID
-}
-
-// NewDeleteOrganizationCommand creates a new delete organization command.
-func NewDeleteOrganizationCommand(id valueobjects.OrganizationID) *DeleteOrganizationCommand {
 	return &DeleteOrganizationCommand{
 		ID: id,
 	}
@@ -60,14 +47,11 @@ func NewDeleteOrganizationCommandHandler(
 func (h *DeleteOrganizationCommandHandler) Handle(ctx context.Context, cmd *DeleteOrganizationCommand) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, cmd.ID); err != nil {
-		return errors.Wrap(err, "failed to delete organization")
+		return fmt.Errorf("failed to delete organization: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewOrganizationDeletedEvent(
-		cmd.ID,
-		time.Now().UTC(),
-	)
+	event := events.NewOrganizationDeletedEvent(cmd.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

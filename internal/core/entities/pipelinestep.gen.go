@@ -37,16 +37,14 @@ func NewPipelineStep(
 	if name == "" {
 		return nil, fmt.Errorf("Name cannot be empty")
 	}
-	id := uuid.New()
-	now := time.Now().UTC()
 
 	pipelinestep := &PipelineStep{
-		CreatedAt:  now,
-		ID:         id,
+		CreatedAt:  time.Now().UTC(),
+		ID:         uuid.New(),
 		Name:       name,
 		PipelineID: pipelineID,
 		ToolID:     toolID,
-		UpdatedAt:  now,
+		UpdatedAt:  time.Now().UTC(),
 		events:     []events.DomainEvent{},
 	}
 	pipelinestep.addEvent(events.NewPipelineStepCreatedEvent(pipelinestep.ID))

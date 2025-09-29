@@ -4,20 +4,21 @@ package users
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetUserQuery represents a query to get a user.
 type GetUserQuery struct {
-	ID valueobjects.UserID
+	ID uuid.UUID
 }
 
 // NewGetUserQuery creates a new get user query.
-func NewGetUserQuery(id valueobjects.UserID) *GetUserQuery {
+func NewGetUserQuery(id uuid.UUID) *GetUserQuery {
 	return &GetUserQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetUserQueryHandler(repo repositories.UserRepository) *GetUserQueryHandl
 func (h *GetUserQueryHandler) Handle(ctx context.Context, query *GetUserQuery) (*entities.User, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get user")
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 	return result, nil
 }

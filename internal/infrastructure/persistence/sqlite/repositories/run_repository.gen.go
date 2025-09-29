@@ -6,8 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +25,21 @@ func NewSQLiteRunRepository(db *sql.DB) *SQLiteRunRepository {
 // Run operations
 
 // Create creates a new run
-func (r *SQLiteRunRepository) Create(ctx context.Context, entity *aggregates.Run) (*aggregates.Run, error) {
+func (r *SQLiteRunRepository) Create(ctx context.Context, entity *entities.Run) (*entities.Run, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateRun not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a run by ID
-func (r *SQLiteRunRepository) Get(ctx context.Context, id uuid.UUID) (*aggregates.Run, error) {
+func (r *SQLiteRunRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Run, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetRun not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing run
-func (r *SQLiteRunRepository) Update(ctx context.Context, id uuid.UUID, entity *aggregates.Run) (*aggregates.Run, error) {
+func (r *SQLiteRunRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Run) (*entities.Run, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateRun not yet implemented - requires custom mapping")
@@ -54,7 +53,7 @@ func (r *SQLiteRunRepository) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 // List returns a paginated list of runs
-func (r *SQLiteRunRepository) List(ctx context.Context, params dto.ListRunsParams) ([]*aggregates.Run, int64, error) {
+func (r *SQLiteRunRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Run, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListRuns not yet implemented - requires custom mapping")
@@ -63,7 +62,7 @@ func (r *SQLiteRunRepository) List(ctx context.Context, params dto.ListRunsParam
 // Additional methods
 
 // ListByPipeline retrieves multiple runs by pipelineID
-func (r *SQLiteRunRepository) ListByPipeline(ctx context.Context, pipelineID string) ([]*aggregates.Run, error) {
+func (r *SQLiteRunRepository) ListByPipeline(ctx context.Context, pipelineID string) ([]*entities.Run, error) {
 
 	// TODO: Implement ListByPipeline - fetch multiple records
 	return nil, fmt.Errorf("ListByPipeline not yet implemented - requires custom mapping")
@@ -71,7 +70,7 @@ func (r *SQLiteRunRepository) ListByPipeline(ctx context.Context, pipelineID str
 }
 
 // ListByOrganization retrieves multiple runs by organizationID
-func (r *SQLiteRunRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*aggregates.Run, error) {
+func (r *SQLiteRunRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Run, error) {
 
 	// TODO: Implement ListByOrganization - fetch multiple records
 	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
@@ -79,7 +78,7 @@ func (r *SQLiteRunRepository) ListByOrganization(ctx context.Context, organizati
 }
 
 // ListByTool retrieves multiple runs by toolID
-func (r *SQLiteRunRepository) ListByTool(ctx context.Context, toolID string) ([]*aggregates.Run, error) {
+func (r *SQLiteRunRepository) ListByTool(ctx context.Context, toolID string) ([]*entities.Run, error) {
 
 	// TODO: Implement ListByTool - fetch multiple records
 	return nil, fmt.Errorf("ListByTool not yet implemented - requires custom mapping")

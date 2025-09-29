@@ -6,9 +6,9 @@ type: object
 required: [schemaType]
 properties:
   schemaType:
-    description: Type of domain object (entity, aggregate, valueobject)
+    description: Type of domain object (entity, valueobject)
     type: string
-    enum: [entity, aggregate, valueobject]
+    enum: [entity, valueobject]
 
   repository:
     description: Repository generation configuration
@@ -49,95 +49,28 @@ properties:
               enum: [single, multiple]
           required: [name, returns]
           additionalProperties: false
-      soft_delete:
-        description: Enable soft delete functionality
-        type: boolean
-        default: false
-      timestamps:
-        description: Automatically manage created_at and updated_at
-        type: boolean
-        default: true
       table_name:
         description: Override default table name
         type: string
     additionalProperties: false
 
-  service:
-    description: Service layer generation configuration
+  controller:
+    description: HTTP controller generation configuration
     type: object
     properties:
-      generate:
-        description: Generate service layer
-        type: boolean
-        default: true
-      transaction_support:
-        description: Enable transaction support
-        type: boolean
-        default: false
-      error_handling:
-        description: Error handling strategy
+      name:
+        description: Override default repository name
         type: string
-        enum: [error_return, panic, custom]
-        default: error_return
-      logging:
-        description: Logging configuration
-        type: object
-        properties:
-          level:
-            type: string
-            enum: [debug, info, warn, error]
-            default: info
-          structured:
-            type: boolean
-            default: true
-        additionalProperties: false
-      custom_operations:
-        description: Custom operations beyond standard CRUD
+      operations:
+        description: CRUD operations to generate
         type: array
         items:
-          type: object
-          properties:
-            name:
-              description: Operation name
-              type: string
-            operation_id:
-              description: OpenAPI operation ID
-              type: string
-            method:
-              description: HTTP method
-              type: string
-              enum: [GET, POST, PUT, PATCH, DELETE]
-          required: [name, operation_id, method]
-          additionalProperties: false
-    additionalProperties: false
-
-  handler:
-    description: HTTP handler generation configuration
-    type: object
-    properties:
-      generate:
-        description: Whether to generate handler
-        type: boolean
-        default: true
-      path_prefix:
-        description: URL path prefix
-        type: string
-        pattern: '^/[a-z][a-z0-9-/]*$'
-      pagination:
-        description: Pagination configuration for list endpoints
-        type: object
-        properties:
-          default_limit:
-            type: integer
-            minimum: 1
-            maximum: 1000
-            default: 20
-          max_limit:
-            type: integer
-            minimum: 1
-            maximum: 1000
-            default: 100
+          type: string
+          enum: [create, read, update, delete, list]
+        default: [create, read, update, delete, list]
         additionalProperties: false
     additionalProperties: false
 # This schema defines the x-codegen extension structure
 # It should NOT have its own x-codegen extension
+x-codegen:
+  schemaType: valueobject

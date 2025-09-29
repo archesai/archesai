@@ -6,8 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -28,7 +27,7 @@ func NewPostgresUserRepository(db *pgxpool.Pool) *PostgresUserRepository {
 // User operations
 
 // Create creates a new user
-func (r *PostgresUserRepository) Create(ctx context.Context, entity *aggregates.User) (*aggregates.User, error) {
+func (r *PostgresUserRepository) Create(ctx context.Context, entity *entities.User) (*entities.User, error) {
 	params := CreateUserParams{
 		ID: entity.ID,
 	}
@@ -42,7 +41,7 @@ func (r *PostgresUserRepository) Create(ctx context.Context, entity *aggregates.
 }
 
 // Get retrieves a user by ID
-func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*aggregates.User, error) {
+func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*entities.User, error) {
 	result, err := r.queries.GetUser(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -55,7 +54,7 @@ func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*aggreg
 }
 
 // Update updates an existing user
-func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entity *aggregates.User) (*aggregates.User, error) {
+func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.User) (*entities.User, error) {
 	params := UpdateUserParams{
 		ID: id,
 	}
@@ -84,21 +83,7 @@ func (r *PostgresUserRepository) Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // List returns a paginated list of users
-func (r *PostgresUserRepository) List(ctx context.Context, params dto.ListUsersParams) ([]*aggregates.User, int64, error) {
-	// Calculate offset from page
-	offset := int32(0)
-	limit := int32(10) // default
-
-	// Check if params has Page field with Limit and Offset
-	if params.Page != nil {
-		if params.Page.Offset != nil && *params.Page.Offset >= 0 {
-			offset = int32(*params.Page.Offset)
-		}
-		if params.Page.Limit != nil && *params.Page.Limit > 0 {
-			limit = int32(*params.Page.Limit)
-		}
-	}
-
+func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) ([]*entities.User, int64, error) {
 	listParams := ListUsersParams{
 		Limit:  limit,
 		Offset: offset,
@@ -109,7 +94,7 @@ func (r *PostgresUserRepository) List(ctx context.Context, params dto.ListUsersP
 		return nil, 0, fmt.Errorf("failed to list users: %w", err)
 	}
 
-	items := make([]*aggregates.User, len(results))
+	items := make([]*entities.User, len(results))
 	for i, result := range results {
 		items[i] = mapUserFromDB(&result)
 	}
@@ -124,19 +109,19 @@ func (r *PostgresUserRepository) List(ctx context.Context, params dto.ListUsersP
 // Additional methods
 
 // GetByEmail retrieves a single user by email
-func (r *PostgresUserRepository) GetByEmail(ctx context.Context, email string) (*aggregates.User, error) {
+func (r *PostgresUserRepository) GetByEmail(ctx context.Context, email string) (*entities.User, error) {
 
 	// TODO: Implement GetByEmail - fetch single user
 	return nil, fmt.Errorf("GetByEmail not yet implemented")
 
 }
 
-func mapUserFromDB(db *User) *aggregates.User {
+func mapUserFromDB(db *User) *entities.User {
 	if db == nil {
 		return nil
 	}
 
-	result := &aggregates.User{
+	result := &entities.User{
 		ID:        db.ID,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,

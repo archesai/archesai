@@ -184,9 +184,8 @@ generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 .PHONY: generate-codegen-types
 generate-codegen-types: ## Generate types for codegen configuration
 	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
-	@go run cmd/codegen/main.go jsonschema api/components/schemas/xcodegen/CodegenExtension.yaml --output internal/codegen/xcodegen_types.gen.go
+	@go run cmd/codegen/main.go jsonschema api/components/schemas/xcodegen/CodegenExtension.yaml --output internal/parsers --verbose
 	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
-
 
 .PHONY: generate-codegen
 generate-codegen: generate-codegen-types bundle-openapi ## Generate codegen
@@ -195,7 +194,7 @@ generate-codegen: generate-codegen-types bundle-openapi ## Generate codegen
 	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
 
 .PHONY: generate-mocks
-generate-mocks: generate-codegen ## Generate test mocks using mockery
+generate-mocks: ## Generate test mocks using mockery
 	@echo -e "$(YELLOW)▶ Generating test mocks...$(NC)"
 	@go tool mockery
 	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"

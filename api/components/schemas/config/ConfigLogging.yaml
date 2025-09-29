@@ -24,3 +24,5 @@ required:
   - level
   - pretty
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

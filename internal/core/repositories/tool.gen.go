@@ -4,21 +4,20 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
 
 // ToolRepository handles tool persistence
 type ToolRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *aggregates.Tool) (*aggregates.Tool, error)
-	Get(ctx context.Context, id uuid.UUID) (*aggregates.Tool, error)
-	Update(ctx context.Context, id uuid.UUID, entity *aggregates.Tool) (*aggregates.Tool, error)
+	Create(ctx context.Context, entity *entities.Tool) (*entities.Tool, error)
+	Get(ctx context.Context, id uuid.UUID) (*entities.Tool, error)
+	Update(ctx context.Context, id uuid.UUID, entity *entities.Tool) (*entities.Tool, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, params dto.ListToolsParams) ([]*aggregates.Tool, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*entities.Tool, int64, error)
 
 	// Additional operations
 	// ListByOrganization retrieves multiple tools by organizationID
-	ListByOrganization(ctx context.Context, organizationID string) ([]*aggregates.Tool, error)
+	ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Tool, error)
 }

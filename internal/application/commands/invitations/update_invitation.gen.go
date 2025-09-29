@@ -4,19 +4,19 @@ package invitations
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // UpdateInvitationCommand represents the command to update a invitation.
 type UpdateInvitationCommand struct {
-	ID          valueobjects.InvitationID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -24,30 +24,7 @@ type UpdateInvitationCommand struct {
 
 // NewUpdateInvitationCommand creates a new update invitation command.
 func NewUpdateInvitationCommand(
-	id valueobjects.InvitationID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateInvitationCommand {
-	return &UpdateInvitationCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateInvitationCommand represents a command to update an invitation.
-type UpdateInvitationCommand struct {
-	ID          valueobjects.InvitationID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateInvitationCommand creates a new update invitation command.
-func NewUpdateInvitationCommand(
-	id valueobjects.InvitationID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -82,7 +59,7 @@ func (h *UpdateInvitationCommandHandler) Handle(ctx context.Context, cmd *Update
 	// Fetch existing invitation
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get invitation")
+		return nil, fmt.Errorf("failed to get invitation: %w", err)
 	}
 
 	// Update fields
@@ -92,14 +69,11 @@ func (h *UpdateInvitationCommandHandler) Handle(ctx context.Context, cmd *Update
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update invitation")
+		return nil, fmt.Errorf("failed to update invitation: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewInvitationUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewInvitationUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

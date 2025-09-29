@@ -10,3 +10,5 @@ properties:
 required:
   - enabled
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

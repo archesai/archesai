@@ -4,25 +4,24 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
 
 // RunRepository handles run persistence
 type RunRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *aggregates.Run) (*aggregates.Run, error)
-	Get(ctx context.Context, id uuid.UUID) (*aggregates.Run, error)
-	Update(ctx context.Context, id uuid.UUID, entity *aggregates.Run) (*aggregates.Run, error)
+	Create(ctx context.Context, entity *entities.Run) (*entities.Run, error)
+	Get(ctx context.Context, id uuid.UUID) (*entities.Run, error)
+	Update(ctx context.Context, id uuid.UUID, entity *entities.Run) (*entities.Run, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, params dto.ListRunsParams) ([]*aggregates.Run, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*entities.Run, int64, error)
 
 	// Additional operations
 	// ListByPipeline retrieves multiple runs by pipelineID
-	ListByPipeline(ctx context.Context, pipelineID string) ([]*aggregates.Run, error)
+	ListByPipeline(ctx context.Context, pipelineID string) ([]*entities.Run, error)
 	// ListByOrganization retrieves multiple runs by organizationID
-	ListByOrganization(ctx context.Context, organizationID string) ([]*aggregates.Run, error)
+	ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Run, error)
 	// ListByTool retrieves multiple runs by toolID
-	ListByTool(ctx context.Context, toolID string) ([]*aggregates.Run, error)
+	ListByTool(ctx context.Context, toolID string) ([]*entities.Run, error)
 }

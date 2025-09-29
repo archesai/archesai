@@ -4,7 +4,6 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/application/dto"
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
@@ -16,7 +15,7 @@ type MemberRepository interface {
 	Get(ctx context.Context, id uuid.UUID) (*entities.Member, error)
 	Update(ctx context.Context, id uuid.UUID, entity *entities.Member) (*entities.Member, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, params dto.ListMembersParams) ([]*entities.Member, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*entities.Member, int64, error)
 
 	// Additional operations
 	// ListByOrganization retrieves multiple members by organizationID

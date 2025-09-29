@@ -4,19 +4,19 @@ package accounts
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // CreateAccountCommand represents the command to create a account.
 type CreateAccountCommand struct {
-	OrganizationID valueobjects.OrganizationID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
@@ -24,7 +24,7 @@ type CreateAccountCommand struct {
 
 // NewCreateAccountCommand creates a new create account command.
 func NewCreateAccountCommand(
-	organizationID valueobjects.OrganizationID,
+	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
@@ -58,7 +58,7 @@ func NewCreateAccountCommandHandler(
 func (h *CreateAccountCommandHandler) Handle(ctx context.Context, cmd *CreateAccountCommand) (*entities.Account, error) {
 	// Create the account entity
 	entity := &entities.Account{
-		ID:        valueobjects.NewAccountID(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		// TODO: Map command fields to entity
@@ -67,14 +67,11 @@ func (h *CreateAccountCommandHandler) Handle(ctx context.Context, cmd *CreateAcc
 	// Save to repository
 	created, err := h.repo.Create(ctx, entity)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create account")
+		return nil, fmt.Errorf("failed to create account: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewAccountCreatedEvent(
-		created.ID,
-		created.CreatedAt,
-	)
+	event := events.NewAccountCreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

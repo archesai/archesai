@@ -4,35 +4,23 @@ package auth
 
 import (
 	"context"
-	"time"
+	"fmt"
 
-	"github.com/archesai/archesai/internal/core/errors"
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/events"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
+	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // DeleteAuthCommand represents the command to delete a auth.
 type DeleteAuthCommand struct {
-	ID valueobjects.AuthID
+	ID uuid.UUID
 }
 
 // NewDeleteAuthCommand creates a new delete auth command.
 func NewDeleteAuthCommand(
-	id valueobjects.AuthID,
+	id uuid.UUID,
 ) *DeleteAuthCommand {
-	return &DeleteAuthCommand{
-		ID: id,
-	}
-}
-
-// DeleteAuthCommand represents a command to delete an auth.
-type DeleteAuthCommand struct {
-	ID valueobjects.AuthID
-}
-
-// NewDeleteAuthCommand creates a new delete auth command.
-func NewDeleteAuthCommand(id valueobjects.AuthID) *DeleteAuthCommand {
 	return &DeleteAuthCommand{
 		ID: id,
 	}
@@ -59,14 +47,11 @@ func NewDeleteAuthCommandHandler(
 func (h *DeleteAuthCommandHandler) Handle(ctx context.Context, cmd *DeleteAuthCommand) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, cmd.ID); err != nil {
-		return errors.Wrap(err, "failed to delete auth")
+		return fmt.Errorf("failed to delete auth: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewAuthDeletedEvent(
-		cmd.ID,
-		time.Now().UTC(),
-	)
+	event := events.NewAuthDeletedEvent(cmd.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

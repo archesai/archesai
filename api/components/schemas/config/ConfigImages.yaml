@@ -20,3 +20,5 @@ required:
   - imagePullSecrets
   - imageRegistry
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

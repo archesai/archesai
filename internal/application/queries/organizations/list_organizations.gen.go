@@ -4,9 +4,9 @@ package organizations
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -40,25 +40,14 @@ func NewListOrganizationsQueryHandler(repo repositories.OrganizationRepository) 
 
 // Handle executes the list organizations query.
 func (h *ListOrganizationsQueryHandler) Handle(ctx context.Context, query *ListOrganizationsQuery) ([]*entities.Organization, int64, error) {
-	// Apply filters
-	filters := make(map[string]interface{})
-	if query.OrganizationID != "" {
-		filters["organization_id"] = query.OrganizationID
-	}
-	if query.Filter != nil {
-		// TODO: Apply advanced filters
-	}
+	// Convert to int32 for repository
+	limit := int32(query.Limit)
+	offset := int32(query.Offset)
 
 	// Execute query with pagination
-	results, err := h.repo.List(ctx, filters, query.Limit, query.Offset)
+	results, total, err := h.repo.List(ctx, limit, offset)
 	if err != nil {
-		return nil, 0, errors.Wrap(err, "failed to list organizations")
-	}
-
-	// Get total count
-	total, err := h.repo.Count(ctx, filters)
-	if err != nil {
-		return nil, 0, errors.Wrap(err, "failed to count organizations")
+		return nil, 0, fmt.Errorf("failed to list organizations: %w", err)
 	}
 
 	return results, total, nil

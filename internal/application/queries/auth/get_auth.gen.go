@@ -4,20 +4,21 @@ package auth
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetAuthQuery represents a query to get a auth.
 type GetAuthQuery struct {
-	ID valueobjects.AuthID
+	ID uuid.UUID
 }
 
 // NewGetAuthQuery creates a new get auth query.
-func NewGetAuthQuery(id valueobjects.AuthID) *GetAuthQuery {
+func NewGetAuthQuery(id uuid.UUID) *GetAuthQuery {
 	return &GetAuthQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetAuthQueryHandler(repo repositories.AuthRepository) *GetAuthQueryHandl
 func (h *GetAuthQueryHandler) Handle(ctx context.Context, query *GetAuthQuery) (*entities.Auth, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get auth")
+		return nil, fmt.Errorf("failed to get auth: %w", err)
 	}
 	return result, nil
 }

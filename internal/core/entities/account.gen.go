@@ -39,15 +39,13 @@ func NewAccount(
 	if providerID == "" {
 		return nil, fmt.Errorf("ProviderID cannot be empty")
 	}
-	id := uuid.New()
-	now := time.Now().UTC()
 
 	account := &Account{
 		AccountID:  accountID,
-		CreatedAt:  now,
-		ID:         id,
+		CreatedAt:  time.Now().UTC(),
+		ID:         uuid.New(),
 		ProviderID: providerID,
-		UpdatedAt:  now,
+		UpdatedAt:  time.Now().UTC(),
 		UserID:     userID,
 		events:     []events.DomainEvent{},
 	}

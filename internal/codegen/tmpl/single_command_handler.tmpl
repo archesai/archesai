@@ -13,26 +13,27 @@ package {{ .Package }}
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
+	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // {{ .CommandType }}{{ .EntityName }}Command represents the command to {{ lower .CommandType }} a {{ .EntityNameLower }}.
 type {{ .CommandType }}{{ .EntityName }}Command struct {
 {{- if eq .CommandType "Delete" }}
-	ID valueobjects.{{ .EntityName }}ID
+	ID uuid.UUID
 {{- else if eq .CommandType "Update" }}
-	ID          valueobjects.{{ .EntityName }}ID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
 {{- else if eq .CommandType "Create" }}
-	OrganizationID valueobjects.OrganizationID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
@@ -42,14 +43,14 @@ type {{ .CommandType }}{{ .EntityName }}Command struct {
 // New{{ .CommandType }}{{ .EntityName }}Command creates a new {{ lower .CommandType }} {{ .EntityNameLower }} command.
 func New{{ .CommandType }}{{ .EntityName }}Command(
 {{- if eq .CommandType "Delete" }}
-	id valueobjects.{{ .EntityName }}ID,
+	id uuid.UUID,
 {{- else if eq .CommandType "Update" }}
-	id valueobjects.{{ .EntityName }}ID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
 {{- else if eq .CommandType "Create" }}
-	organizationID valueobjects.OrganizationID,
+	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
@@ -95,7 +96,7 @@ func New{{ .CommandType }}{{ .EntityName }}CommandHandler(
 func (h *{{ .CommandType }}{{ .EntityName }}CommandHandler) Handle(ctx context.Context, cmd *{{ .CommandType }}{{ .EntityName }}Command) (*entities.{{ .EntityName }}, error) {
 	// Create the {{ .EntityNameLower }} entity
 	entity := &entities.{{ .EntityName }}{
-		ID:        valueobjects.New{{ .EntityName }}ID(),
+		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		// TODO: Map command fields to entity
@@ -104,14 +105,11 @@ func (h *{{ .CommandType }}{{ .EntityName }}CommandHandler) Handle(ctx context.C
 	// Save to repository
 	created, err := h.repo.Create(ctx, entity)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create {{ .EntityNameLower }}")
+		return nil, fmt.Errorf("failed to create {{ .EntityNameLower }}: %w", err)
 	}
 
 	// Publish domain event
-	event := events.New{{ .EntityName }}CreatedEvent(
-		created.ID,
-		created.CreatedAt,
-	)
+	event := events.New{{ .EntityName }}CreatedEvent(created.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}
@@ -119,28 +117,6 @@ func (h *{{ .CommandType }}{{ .EntityName }}CommandHandler) Handle(ctx context.C
 	return created, nil
 }
 {{- else if eq .CommandType "Update" }}
-// Update{{ .EntityName }}Command represents a command to update an {{ .EntityNameLower }}.
-type Update{{ .EntityName }}Command struct {
-	ID          valueobjects.{{ .EntityName }}ID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdate{{ .EntityName }}Command creates a new update {{ .EntityNameLower }} command.
-func NewUpdate{{ .EntityName }}Command(
-	id valueobjects.{{ .EntityName }}ID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *Update{{ .EntityName }}Command {
-	return &Update{{ .EntityName }}Command{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
 
 // {{ .CommandType }}{{ .EntityName }}CommandHandler handles the update {{ .EntityNameLower }} command.
 type {{ .CommandType }}{{ .EntityName }}CommandHandler struct {
@@ -164,7 +140,7 @@ func (h *{{ .CommandType }}{{ .EntityName }}CommandHandler) Handle(ctx context.C
 	// Fetch existing {{ .EntityNameLower }}
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get {{ .EntityNameLower }}")
+		return nil, fmt.Errorf("failed to get {{ .EntityNameLower }}: %w", err)
 	}
 
 	// Update fields
@@ -174,14 +150,11 @@ func (h *{{ .CommandType }}{{ .EntityName }}CommandHandler) Handle(ctx context.C
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update {{ .EntityNameLower }}")
+		return nil, fmt.Errorf("failed to update {{ .EntityNameLower }}: %w", err)
 	}
 
 	// Publish domain event
-	event := events.New{{ .EntityName }}UpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.New{{ .EntityName }}UpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}
@@ -189,17 +162,6 @@ func (h *{{ .CommandType }}{{ .EntityName }}CommandHandler) Handle(ctx context.C
 	return updated, nil
 }
 {{- else if eq .CommandType "Delete" }}
-// Delete{{ .EntityName }}Command represents a command to delete an {{ .EntityNameLower }}.
-type Delete{{ .EntityName }}Command struct {
-	ID valueobjects.{{ .EntityName }}ID
-}
-
-// NewDelete{{ .EntityName }}Command creates a new delete {{ .EntityNameLower }} command.
-func NewDelete{{ .EntityName }}Command(id valueobjects.{{ .EntityName }}ID) *Delete{{ .EntityName }}Command {
-	return &Delete{{ .EntityName }}Command{
-		ID: id,
-	}
-}
 
 // {{ .CommandType }}{{ .EntityName }}CommandHandler handles the delete {{ .EntityNameLower }} command.
 type {{ .CommandType }}{{ .EntityName }}CommandHandler struct {
@@ -222,14 +184,11 @@ func New{{ .CommandType }}{{ .EntityName }}CommandHandler(
 func (h *{{ .CommandType }}{{ .EntityName }}CommandHandler) Handle(ctx context.Context, cmd *{{ .CommandType }}{{ .EntityName }}Command) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, cmd.ID); err != nil {
-		return errors.Wrap(err, "failed to delete {{ .EntityNameLower }}")
+		return fmt.Errorf("failed to delete {{ .EntityNameLower }}: %w", err)
 	}
 
 	// Publish domain event
-	event := events.New{{ .EntityName }}DeletedEvent(
-		cmd.ID,
-		time.Now().UTC(),
-	)
+	event := events.New{{ .EntityName }}DeletedEvent(cmd.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

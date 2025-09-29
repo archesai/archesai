@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/organizations"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/organizations"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // OrganizationsController handles HTTP requests for organizations endpoints.
@@ -81,7 +79,7 @@ func (response CreateOrganization201JSONResponse) VisitCreateOrganizationRespons
 }
 
 type CreateOrganization400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreateOrganization400Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
@@ -92,7 +90,7 @@ func (response CreateOrganization400Response) VisitCreateOrganizationResponse(w 
 }
 
 type CreateOrganization401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response CreateOrganization401Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
@@ -151,7 +149,7 @@ func (response ListOrganizations200JSONResponse) VisitListOrganizationsResponse(
 }
 
 type ListOrganizations400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListOrganizations400Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
@@ -162,7 +160,7 @@ func (response ListOrganizations400Response) VisitListOrganizationsResponse(w ht
 }
 
 type ListOrganizations401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListOrganizations401Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
@@ -239,7 +237,7 @@ func (response DeleteOrganization200JSONResponse) VisitDeleteOrganizationRespons
 }
 
 type DeleteOrganization404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeleteOrganization404Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
@@ -265,7 +263,7 @@ func (c *OrganizationsController) DeleteOrganization(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeleteOrganizationCommand(
-		valueobjects.OrganizationID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -303,7 +301,7 @@ func (response GetOrganization200JSONResponse) VisitGetOrganizationResponse(w ht
 }
 
 type GetOrganization404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetOrganization404Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
@@ -329,7 +327,7 @@ func (c *OrganizationsController) GetOrganization(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetOrganizationQuery(
-		valueobjects.OrganizationID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -369,7 +367,7 @@ func (response UpdateOrganization200JSONResponse) VisitUpdateOrganizationRespons
 }
 
 type UpdateOrganization404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdateOrganization404Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {

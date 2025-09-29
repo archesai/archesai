@@ -4,36 +4,23 @@ package invitations
 
 import (
 	"context"
-	"time"
+	"fmt"
 
-	"github.com/archesai/archesai/internal/core/errors"
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // DeleteInvitationCommand represents the command to delete a invitation.
 type DeleteInvitationCommand struct {
-	ID valueobjects.InvitationID
+	ID uuid.UUID
 }
 
 // NewDeleteInvitationCommand creates a new delete invitation command.
 func NewDeleteInvitationCommand(
-	id valueobjects.InvitationID,
+	id uuid.UUID,
 ) *DeleteInvitationCommand {
-	return &DeleteInvitationCommand{
-		ID: id,
-	}
-}
-
-// DeleteInvitationCommand represents a command to delete an invitation.
-type DeleteInvitationCommand struct {
-	ID valueobjects.InvitationID
-}
-
-// NewDeleteInvitationCommand creates a new delete invitation command.
-func NewDeleteInvitationCommand(id valueobjects.InvitationID) *DeleteInvitationCommand {
 	return &DeleteInvitationCommand{
 		ID: id,
 	}
@@ -60,14 +47,11 @@ func NewDeleteInvitationCommandHandler(
 func (h *DeleteInvitationCommandHandler) Handle(ctx context.Context, cmd *DeleteInvitationCommand) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, cmd.ID); err != nil {
-		return errors.Wrap(err, "failed to delete invitation")
+		return fmt.Errorf("failed to delete invitation: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewInvitationDeletedEvent(
-		cmd.ID,
-		time.Now().UTC(),
-	)
+	event := events.NewInvitationDeletedEvent(cmd.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

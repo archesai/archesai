@@ -47,11 +47,9 @@ func (v FilterNode) GetValue() *interface{} {
 }
 
 // Equals checks if two FilterNode value objects are equal
-func (v FilterNode) Equals(other FilterNode) bool {
-	// Can't directly compare slices, so skip Children comparison for now
-	// A proper implementation would need to recursively compare children
-	return v.Field == other.Field && v.Type == other.Type && len(v.Children) == len(other.Children)
-}
+// func (v FilterNode) Equals(other FilterNode) bool {
+//	return v.Children == other.Children && v.Field == other.Field && v.Type == other.Type && v.Value == other.Value
+// }
 
 // String returns a string representation of FilterNode
 func (v FilterNode) String() string {

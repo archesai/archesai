@@ -30,15 +30,13 @@ func NewMember(
 	if role == "" {
 		return nil, fmt.Errorf("Role cannot be empty")
 	}
-	id := uuid.New()
-	now := time.Now().UTC()
 
 	member := &Member{
-		CreatedAt:      now,
-		ID:             id,
+		CreatedAt:      time.Now().UTC(),
+		ID:             uuid.New(),
 		OrganizationID: organizationID,
 		Role:           role,
-		UpdatedAt:      now,
+		UpdatedAt:      time.Now().UTC(),
 		UserID:         userID,
 		events:         []events.DomainEvent{},
 	}

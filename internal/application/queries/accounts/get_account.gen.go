@@ -4,20 +4,21 @@ package accounts
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetAccountQuery represents a query to get a account.
 type GetAccountQuery struct {
-	ID valueobjects.AccountID
+	ID uuid.UUID
 }
 
 // NewGetAccountQuery creates a new get account query.
-func NewGetAccountQuery(id valueobjects.AccountID) *GetAccountQuery {
+func NewGetAccountQuery(id uuid.UUID) *GetAccountQuery {
 	return &GetAccountQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetAccountQueryHandler(repo repositories.AccountRepository) *GetAccountQ
 func (h *GetAccountQueryHandler) Handle(ctx context.Context, query *GetAccountQuery) (*entities.Account, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get account")
+		return nil, fmt.Errorf("failed to get account: %w", err)
 	}
 	return result, nil
 }

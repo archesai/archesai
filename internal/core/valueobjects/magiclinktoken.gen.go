@@ -111,9 +111,9 @@ func (v MagicLinkToken) GetUserID() *uuid.UUID {
 }
 
 // Equals checks if two MagicLinkToken value objects are equal
-func (v MagicLinkToken) Equals(other MagicLinkToken) bool {
-	return v.Code == other.Code && v.CreatedAt == other.CreatedAt && v.DeliveryMethod == other.DeliveryMethod && v.ExpiresAt == other.ExpiresAt && v.ID == other.ID && v.Identifier == other.Identifier && v.IpAddress == other.IpAddress && v.Token == other.Token && v.TokenHash == other.TokenHash && v.UsedAt == other.UsedAt && v.UserAgent == other.UserAgent && v.UserID == other.UserID
-}
+// func (v MagicLinkToken) Equals(other MagicLinkToken) bool {
+//	return v.Code == other.Code && v.CreatedAt == other.CreatedAt && v.DeliveryMethod == other.DeliveryMethod && v.ExpiresAt == other.ExpiresAt && v.ID == other.ID && v.Identifier == other.Identifier && v.IpAddress == other.IpAddress && v.Token == other.Token && v.TokenHash == other.TokenHash && v.UsedAt == other.UsedAt && v.UserAgent == other.UserAgent && v.UserID == other.UserID
+// }
 
 // String returns a string representation of MagicLinkToken
 func (v MagicLinkToken) String() string {

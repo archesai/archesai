@@ -26,3 +26,5 @@ required:
   - pullPolicy
   - tag
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

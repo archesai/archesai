@@ -4,36 +4,23 @@ package users
 
 import (
 	"context"
-	"time"
+	"fmt"
 
-	"github.com/archesai/archesai/internal/core/errors"
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // DeleteUserCommand represents the command to delete a user.
 type DeleteUserCommand struct {
-	ID valueobjects.UserID
+	ID uuid.UUID
 }
 
 // NewDeleteUserCommand creates a new delete user command.
 func NewDeleteUserCommand(
-	id valueobjects.UserID,
+	id uuid.UUID,
 ) *DeleteUserCommand {
-	return &DeleteUserCommand{
-		ID: id,
-	}
-}
-
-// DeleteUserCommand represents a command to delete an user.
-type DeleteUserCommand struct {
-	ID valueobjects.UserID
-}
-
-// NewDeleteUserCommand creates a new delete user command.
-func NewDeleteUserCommand(id valueobjects.UserID) *DeleteUserCommand {
 	return &DeleteUserCommand{
 		ID: id,
 	}
@@ -60,14 +47,11 @@ func NewDeleteUserCommandHandler(
 func (h *DeleteUserCommandHandler) Handle(ctx context.Context, cmd *DeleteUserCommand) error {
 	// Delete from repository
 	if err := h.repo.Delete(ctx, cmd.ID); err != nil {
-		return errors.Wrap(err, "failed to delete user")
+		return fmt.Errorf("failed to delete user: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewUserDeletedEvent(
-		cmd.ID,
-		time.Now().UTC(),
-	)
+	event := events.NewUserDeletedEvent(cmd.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

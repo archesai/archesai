@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/pipelines"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/pipelines"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // PipelinesController handles HTTP requests for pipelines endpoints.
@@ -85,7 +83,7 @@ func (response CreatePipeline201JSONResponse) VisitCreatePipelineResponse(w http
 }
 
 type CreatePipeline400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreatePipeline400Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
@@ -96,7 +94,7 @@ func (response CreatePipeline400Response) VisitCreatePipelineResponse(w http.Res
 }
 
 type CreatePipeline401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response CreatePipeline401Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
@@ -155,7 +153,7 @@ func (response ListPipelines200JSONResponse) VisitListPipelinesResponse(w http.R
 }
 
 type ListPipelines400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListPipelines400Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
@@ -166,7 +164,7 @@ func (response ListPipelines400Response) VisitListPipelinesResponse(w http.Respo
 }
 
 type ListPipelines401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListPipelines401Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
@@ -243,7 +241,7 @@ func (response DeletePipeline200JSONResponse) VisitDeletePipelineResponse(w http
 }
 
 type DeletePipeline404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeletePipeline404Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
@@ -269,7 +267,7 @@ func (c *PipelinesController) DeletePipeline(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeletePipelineCommand(
-		valueobjects.PipelineID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -307,7 +305,7 @@ func (response GetPipeline200JSONResponse) VisitGetPipelineResponse(w http.Respo
 }
 
 type GetPipeline404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetPipeline404Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
@@ -333,7 +331,7 @@ func (c *PipelinesController) GetPipeline(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetPipelineQuery(
-		valueobjects.PipelineID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -373,7 +371,7 @@ func (response UpdatePipeline200JSONResponse) VisitUpdatePipelineResponse(w http
 }
 
 type UpdatePipeline404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdatePipeline404Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
@@ -439,7 +437,7 @@ func (response GetPipelineSteps200JSONResponse) VisitGetPipelineStepsResponse(w 
 }
 
 type GetPipelineSteps401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response GetPipelineSteps401Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
@@ -450,7 +448,7 @@ func (response GetPipelineSteps401Response) VisitGetPipelineStepsResponse(w http
 }
 
 type GetPipelineSteps404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetPipelineSteps404Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
@@ -476,7 +474,7 @@ func (c *PipelinesController) GetPipelineSteps(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetPipelineQuery(
-		valueobjects.PipelineID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -516,7 +514,7 @@ func (response CreatePipelineStep201JSONResponse) VisitCreatePipelineStepRespons
 }
 
 type CreatePipelineStep400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreatePipelineStep400Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
@@ -527,7 +525,7 @@ func (response CreatePipelineStep400Response) VisitCreatePipelineStepResponse(w 
 }
 
 type CreatePipelineStep401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response CreatePipelineStep401Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
@@ -538,7 +536,7 @@ func (response CreatePipelineStep401Response) VisitCreatePipelineStepResponse(w 
 }
 
 type CreatePipelineStep404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response CreatePipelineStep404Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
@@ -604,7 +602,7 @@ func (response GetPipelineExecutionPlan200JSONResponse) VisitGetPipelineExecutio
 }
 
 type GetPipelineExecutionPlan400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response GetPipelineExecutionPlan400Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
@@ -615,7 +613,7 @@ func (response GetPipelineExecutionPlan400Response) VisitGetPipelineExecutionPla
 }
 
 type GetPipelineExecutionPlan401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response GetPipelineExecutionPlan401Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
@@ -626,7 +624,7 @@ func (response GetPipelineExecutionPlan401Response) VisitGetPipelineExecutionPla
 }
 
 type GetPipelineExecutionPlan404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetPipelineExecutionPlan404Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
@@ -652,7 +650,7 @@ func (c *PipelinesController) GetPipelineExecutionPlan(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetPipelineQuery(
-		valueobjects.PipelineID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -692,7 +690,7 @@ func (response ValidatePipelineExecutionPlan201JSONResponse) VisitValidatePipeli
 }
 
 type ValidatePipelineExecutionPlan400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ValidatePipelineExecutionPlan400Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
@@ -703,7 +701,7 @@ func (response ValidatePipelineExecutionPlan400Response) VisitValidatePipelineEx
 }
 
 type ValidatePipelineExecutionPlan401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ValidatePipelineExecutionPlan401Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
@@ -714,7 +712,7 @@ func (response ValidatePipelineExecutionPlan401Response) VisitValidatePipelineEx
 }
 
 type ValidatePipelineExecutionPlan404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response ValidatePipelineExecutionPlan404Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {

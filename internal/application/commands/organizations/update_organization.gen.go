@@ -4,19 +4,19 @@ package organizations
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // UpdateOrganizationCommand represents the command to update a organization.
 type UpdateOrganizationCommand struct {
-	ID          valueobjects.OrganizationID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -24,30 +24,7 @@ type UpdateOrganizationCommand struct {
 
 // NewUpdateOrganizationCommand creates a new update organization command.
 func NewUpdateOrganizationCommand(
-	id valueobjects.OrganizationID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateOrganizationCommand {
-	return &UpdateOrganizationCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateOrganizationCommand represents a command to update an organization.
-type UpdateOrganizationCommand struct {
-	ID          valueobjects.OrganizationID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateOrganizationCommand creates a new update organization command.
-func NewUpdateOrganizationCommand(
-	id valueobjects.OrganizationID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -82,7 +59,7 @@ func (h *UpdateOrganizationCommandHandler) Handle(ctx context.Context, cmd *Upda
 	// Fetch existing organization
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get organization")
+		return nil, fmt.Errorf("failed to get organization: %w", err)
 	}
 
 	// Update fields
@@ -92,14 +69,11 @@ func (h *UpdateOrganizationCommandHandler) Handle(ctx context.Context, cmd *Upda
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update organization")
+		return nil, fmt.Errorf("failed to update organization: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewOrganizationUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewOrganizationUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

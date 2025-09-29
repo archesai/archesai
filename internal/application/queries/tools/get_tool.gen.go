@@ -4,20 +4,21 @@ package tools
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetToolQuery represents a query to get a tool.
 type GetToolQuery struct {
-	ID valueobjects.ToolID
+	ID uuid.UUID
 }
 
 // NewGetToolQuery creates a new get tool query.
-func NewGetToolQuery(id valueobjects.ToolID) *GetToolQuery {
+func NewGetToolQuery(id uuid.UUID) *GetToolQuery {
 	return &GetToolQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetToolQueryHandler(repo repositories.ToolRepository) *GetToolQueryHandl
 func (h *GetToolQueryHandler) Handle(ctx context.Context, query *GetToolQuery) (*entities.Tool, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get tool")
+		return nil, fmt.Errorf("failed to get tool: %w", err)
 	}
 	return result, nil
 }

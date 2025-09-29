@@ -4,19 +4,19 @@ package tools
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // UpdateToolCommand represents the command to update a tool.
 type UpdateToolCommand struct {
-	ID          valueobjects.ToolID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -24,30 +24,7 @@ type UpdateToolCommand struct {
 
 // NewUpdateToolCommand creates a new update tool command.
 func NewUpdateToolCommand(
-	id valueobjects.ToolID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateToolCommand {
-	return &UpdateToolCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateToolCommand represents a command to update an tool.
-type UpdateToolCommand struct {
-	ID          valueobjects.ToolID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateToolCommand creates a new update tool command.
-func NewUpdateToolCommand(
-	id valueobjects.ToolID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -82,7 +59,7 @@ func (h *UpdateToolCommandHandler) Handle(ctx context.Context, cmd *UpdateToolCo
 	// Fetch existing tool
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get tool")
+		return nil, fmt.Errorf("failed to get tool: %w", err)
 	}
 
 	// Update fields
@@ -92,14 +69,11 @@ func (h *UpdateToolCommandHandler) Handle(ctx context.Context, cmd *UpdateToolCo
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update tool")
+		return nil, fmt.Errorf("failed to update tool: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewToolUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewToolUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

@@ -41,18 +41,16 @@ func NewAPIKey(
 	if prefix == "" {
 		return nil, fmt.Errorf("Prefix cannot be empty")
 	}
-	id := uuid.New()
-	now := time.Now().UTC()
 
 	apikey := &APIKey{
-		CreatedAt: now,
+		CreatedAt: time.Now().UTC(),
 		ExpiresAt: expiresAt,
-		ID:        id,
+		ID:        uuid.New(),
 		Name:      name,
 		Prefix:    prefix,
 		RateLimit: rateLimit,
 		Scopes:    scopes,
-		UpdatedAt: now,
+		UpdatedAt: time.Now().UTC(),
 		events:    []events.DomainEvent{},
 	}
 	apikey.addEvent(events.NewAPIKeyCreatedEvent(apikey.ID))

@@ -6,22 +6,13 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
-{{- range .Entities }}
-{{- if eq .EntityPackage "aggregates" }}
-	"github.com/archesai/archesai/internal/core/aggregates"
-{{- else if eq .EntityPackage "valueobjects" }}
-	"github.com/archesai/archesai/internal/core/valueobjects"
-{{- else }}
 	"github.com/archesai/archesai/internal/core/entities"
-{{- end }}
-{{- end }}
 	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-{{range .Entities}}{{$entity := .}}{{$pkg := .EntityPackage}}
+{{range .Entities}}{{$entity := .}}
 // Postgres{{.Name}}Repository implements {{.Name}}Repository using PostgreSQL.
 type Postgres{{.Name}}Repository struct {
 	queries *Queries
@@ -37,7 +28,7 @@ func NewPostgres{{.Name}}Repository(db *pgxpool.Pool) *Postgres{{.Name}}Reposito
 // {{.Name}} operations
 
 // Create creates a new {{lower .Name}}
-func (r *Postgres{{.Name}}Repository) Create(ctx context.Context, entity *{{$pkg}}.{{.Type}}) (*{{$pkg}}.{{.Type}}, error) {
+func (r *Postgres{{.Name}}Repository) Create(ctx context.Context, entity *entities.{{.Type}}) (*entities.{{.Type}}, error) {
 	params := Create{{.Name}}Params{
 		ID: entity.ID,
 		{{range .Fields}}{{if ne .Name "ID"}}{{if ne .Name "CreatedAt"}}{{if ne .Name "UpdatedAt"}}{{if ne .Name "CompletedAt"}}{{if ne .Name "StartedAt"}}{{if ne .Name "Error"}}{{if .SQLCType}}
@@ -53,7 +44,7 @@ func (r *Postgres{{.Name}}Repository) Create(ctx context.Context, entity *{{$pkg
 }
 
 // Get retrieves a {{lower .Name}} by ID
-func (r *Postgres{{.Name}}Repository) Get(ctx context.Context, id uuid.UUID) (*{{$pkg}}.{{.Type}}, error) {
+func (r *Postgres{{.Name}}Repository) Get(ctx context.Context, id uuid.UUID) (*entities.{{.Type}}, error) {
 	result, err := r.queries.Get{{.Name}}(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -66,7 +57,7 @@ func (r *Postgres{{.Name}}Repository) Get(ctx context.Context, id uuid.UUID) (*{
 }
 
 // Update updates an existing {{lower .Name}}
-func (r *Postgres{{.Name}}Repository) Update(ctx context.Context, id uuid.UUID, entity *{{$pkg}}.{{.Type}}) (*{{$pkg}}.{{.Type}}, error) {
+func (r *Postgres{{.Name}}Repository) Update(ctx context.Context, id uuid.UUID, entity *entities.{{.Type}}) (*entities.{{.Type}}, error) {
 	params := Update{{.Name}}Params{
 		ID: id,
 		{{range .Fields}}{{if not (isUpdateExcluded .Name $entity.UpdateExclude)}}{{if ne .Name "ID"}}{{if ne .Name "CreatedAt"}}{{if ne .Name "UpdatedAt"}}{{if ne .Name "OrganizationID"}}{{if ne .Name "UserID"}}{{if ne .Name "AccountID"}}{{if ne .Name "ProviderID"}}{{if ne .Name "PipelineID"}}{{if ne .Name "ToolID"}}{{if ne .Name "InviterID"}}{{if .SQLCType}}
@@ -97,21 +88,7 @@ func (r *Postgres{{.Name}}Repository) Delete(ctx context.Context, id uuid.UUID) 
 }
 
 // List returns a paginated list of {{lower .Name}}s
-func (r *Postgres{{.Name}}Repository) List(ctx context.Context, params dto.List{{.Name}}sParams) ([]*{{$pkg}}.{{.Type}}, int64, error) {
-	// Calculate offset from page
-	offset := int32(0)
-	limit := int32(10) // default
-
-	// Check if params has Page field with Limit and Offset
-	if params.Page != nil {
-		if params.Page.Offset != nil && *params.Page.Offset >= 0 {
-			offset = int32(*params.Page.Offset)
-		}
-		if params.Page.Limit != nil && *params.Page.Limit > 0 {
-			limit = int32(*params.Page.Limit)
-		}
-	}
-
+func (r *Postgres{{.Name}}Repository) List(ctx context.Context, limit, offset int32) ([]*entities.{{.Type}}, int64, error) {
 	listParams := List{{.Name}}sParams{
 		Limit:  limit,
 		Offset: offset,
@@ -122,7 +99,7 @@ func (r *Postgres{{.Name}}Repository) List(ctx context.Context, params dto.List{
 		return nil, 0, fmt.Errorf("failed to list {{lower .Name}}s: %w", err)
 	}
 
-	items := make([]*{{$pkg}}.{{.Type}}, len(results))
+	items := make([]*entities.{{.Type}}, len(results))
 	for i, result := range results {
 		items[i] = map{{.Name}}FromDB(&result)
 	}
@@ -138,7 +115,7 @@ func (r *Postgres{{.Name}}Repository) List(ctx context.Context, params dto.List{
 // Additional methods
 {{range .AdditionalMethods}}
 // {{.Name}} retrieves {{if hasPrefix .Name "List"}}multiple {{$entity.Type | singularize | lower}}s{{else}}a single {{$entity.Type | singularize | lower}}{{end}}{{if .Parameters}} by {{range $i, $p := .Parameters}}{{if $i}} and {{end}}{{$p.Name}}{{end}}{{end}}
-func (r *Postgres{{$entity.Name}}Repository) {{.Name}}(ctx context.Context{{range .Parameters}}, {{.Name}} {{.Type}}{{end}}) ({{range $i, $ret := .Returns}}{{if $i}}, {{end}}{{if eq $ret (print "*" $entity.Type)}}*{{$pkg}}.{{$entity.Type}}{{else if eq $ret (print "[]*" $entity.Type)}}[]*{{$pkg}}.{{$entity.Type}}{{else}}{{$ret}}{{end}}{{end}}) {
+func (r *Postgres{{$entity.Name}}Repository) {{.Name}}(ctx context.Context{{range .Parameters}}, {{.Name}} {{.Type}}{{end}}) ({{range $i, $ret := .Returns}}{{if $i}}, {{end}}{{if eq $ret (print "*" $entity.Type)}}*entities.{{$entity.Type}}{{else if eq $ret (print "[]*" $entity.Type)}}[]*entities.{{$entity.Type}}{{else}}{{$ret}}{{end}}{{end}}) {
 	{{if eq (len .Returns) 2}}
 	{{if hasPrefix .Name "List"}}
 	// TODO: Implement {{.Name}} - fetch multiple {{$entity.Type | singularize | lower}}s
@@ -157,12 +134,12 @@ func (r *Postgres{{$entity.Name}}Repository) {{.Name}}(ctx context.Context{{rang
 }
 {{end}}{{end}}
 
-func map{{.Name}}FromDB(db *{{.Name}}) *{{$pkg}}.{{.Type}} {
+func map{{.Name}}FromDB(db *{{.Name}}) *entities.{{.Type}} {
 	if db == nil {
 		return nil
 	}
 
-	result := &{{$pkg}}.{{.Type}}{
+	result := &entities.{{.Type}}{
 		ID:        db.ID,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,

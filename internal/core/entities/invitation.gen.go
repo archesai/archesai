@@ -42,19 +42,17 @@ func NewInvitation(
 	if status == "" {
 		return nil, fmt.Errorf("Status cannot be empty")
 	}
-	id := uuid.New()
-	now := time.Now().UTC()
 
 	invitation := &Invitation{
-		CreatedAt:      now,
+		CreatedAt:      time.Now().UTC(),
 		Email:          email,
 		ExpiresAt:      expiresAt,
-		ID:             id,
+		ID:             uuid.New(),
 		InviterID:      inviterID,
 		OrganizationID: organizationID,
 		Role:           role,
 		Status:         status,
-		UpdatedAt:      now,
+		UpdatedAt:      time.Now().UTC(),
 		events:         []events.DomainEvent{},
 	}
 	invitation.addEvent(events.NewInvitationCreatedEvent(invitation.ID))

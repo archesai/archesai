@@ -6,8 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +25,21 @@ func NewSQLiteUserRepository(db *sql.DB) *SQLiteUserRepository {
 // User operations
 
 // Create creates a new user
-func (r *SQLiteUserRepository) Create(ctx context.Context, entity *aggregates.User) (*aggregates.User, error) {
+func (r *SQLiteUserRepository) Create(ctx context.Context, entity *entities.User) (*entities.User, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("CreateUser not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a user by ID
-func (r *SQLiteUserRepository) Get(ctx context.Context, id uuid.UUID) (*aggregates.User, error) {
+func (r *SQLiteUserRepository) Get(ctx context.Context, id uuid.UUID) (*entities.User, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("GetUser not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing user
-func (r *SQLiteUserRepository) Update(ctx context.Context, id uuid.UUID, entity *aggregates.User) (*aggregates.User, error) {
+func (r *SQLiteUserRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.User) (*entities.User, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, fmt.Errorf("UpdateUser not yet implemented - requires custom mapping")
@@ -54,7 +53,7 @@ func (r *SQLiteUserRepository) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 // List returns a paginated list of users
-func (r *SQLiteUserRepository) List(ctx context.Context, params dto.ListUsersParams) ([]*aggregates.User, int64, error) {
+func (r *SQLiteUserRepository) List(ctx context.Context, limit, offset int32) ([]*entities.User, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per entity
 	return nil, 0, fmt.Errorf("ListUsers not yet implemented - requires custom mapping")
@@ -63,7 +62,7 @@ func (r *SQLiteUserRepository) List(ctx context.Context, params dto.ListUsersPar
 // Additional methods
 
 // GetByEmail retrieves a single user by email
-func (r *SQLiteUserRepository) GetByEmail(ctx context.Context, email string) (*aggregates.User, error) {
+func (r *SQLiteUserRepository) GetByEmail(ctx context.Context, email string) (*entities.User, error) {
 
 	// TODO: Implement GetByEmail - fetch single record
 	return nil, fmt.Errorf("GetByEmail not yet implemented - requires custom mapping")

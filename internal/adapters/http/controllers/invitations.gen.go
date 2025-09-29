@@ -12,9 +12,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/invitations"
-	"github.com/archesai/archesai/internal/application/dto"
 	queries "github.com/archesai/archesai/internal/application/queries/invitations"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // InvitationsController handles HTTP requests for invitations endpoints.
@@ -82,7 +80,7 @@ func (response CreateInvitation201JSONResponse) VisitCreateInvitationResponse(w 
 }
 
 type CreateInvitation400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response CreateInvitation400Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
@@ -93,7 +91,7 @@ func (response CreateInvitation400Response) VisitCreateInvitationResponse(w http
 }
 
 type CreateInvitation401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response CreateInvitation401Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
@@ -160,7 +158,7 @@ func (response ListInvitations200JSONResponse) VisitListInvitationsResponse(w ht
 }
 
 type ListInvitations400Response struct {
-	dto.BadRequestResponse
+	server.BadRequestResponse
 }
 
 func (response ListInvitations400Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
@@ -171,7 +169,7 @@ func (response ListInvitations400Response) VisitListInvitationsResponse(w http.R
 }
 
 type ListInvitations401Response struct {
-	dto.UnauthorizedResponse
+	server.UnauthorizedResponse
 }
 
 func (response ListInvitations401Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
@@ -256,7 +254,7 @@ func (response DeleteInvitation200JSONResponse) VisitDeleteInvitationResponse(w 
 }
 
 type DeleteInvitation404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response DeleteInvitation404Response) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
@@ -289,7 +287,7 @@ func (c *InvitationsController) DeleteInvitation(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create delete command from request
 	cmd := commands.NewDeleteInvitationCommand(
-		valueobjects.InvitationID(request.ID),
+		request.ID,
 	)
 
 	err := c.deleteHandler.Handle(reqCtx, cmd)
@@ -328,7 +326,7 @@ func (response GetInvitation200JSONResponse) VisitGetInvitationResponse(w http.R
 }
 
 type GetInvitation404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response GetInvitation404Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
@@ -361,7 +359,7 @@ func (c *InvitationsController) GetInvitation(ctx echo.Context) error {
 	// Determine which handler to call based on operation
 	// Create get query from request
 	query := queries.NewGetInvitationQuery(
-		valueobjects.InvitationID(request.ID),
+		request.ID,
 	)
 
 	result, err := c.getHandler.Handle(reqCtx, query)
@@ -402,7 +400,7 @@ func (response UpdateInvitation200JSONResponse) VisitUpdateInvitationResponse(w 
 }
 
 type UpdateInvitation404Response struct {
-	dto.NotFoundResponse
+	server.NotFoundResponse
 }
 
 func (response UpdateInvitation404Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {

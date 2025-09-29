@@ -1,6 +1,9 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Configuration schema for the API server
 type: object
+title: ConfigAPI
+x-codegen:
+  schemaType: valueobject
 properties:
   cors:
     description: A comma-separated list of allowed origins for CORS requests

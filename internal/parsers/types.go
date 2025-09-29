@@ -160,8 +160,6 @@ type ProcessedSchema struct {
 	IsValueObject   bool
 	IsDTO           bool
 	IsEnum          bool
-	HasTimeFields   bool
-	HasUUIDFields   bool
 	HasDomainEvents bool
 
 	// X-codegen extension

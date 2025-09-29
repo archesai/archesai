@@ -4,7 +4,6 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/application/dto"
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/google/uuid"
 )
@@ -16,7 +15,7 @@ type PipelineRepository interface {
 	Get(ctx context.Context, id uuid.UUID) (*entities.Pipeline, error)
 	Update(ctx context.Context, id uuid.UUID, entity *entities.Pipeline) (*entities.Pipeline, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, params dto.ListPipelinesParams) ([]*entities.Pipeline, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*entities.Pipeline, int64, error)
 
 	// Additional operations
 	// ListByOrganization retrieves multiple pipelines by organizationID

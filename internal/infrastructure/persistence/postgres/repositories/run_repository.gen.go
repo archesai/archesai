@@ -6,8 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/application/dto"
-	"github.com/archesai/archesai/internal/core/aggregates"
+	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -28,7 +27,7 @@ func NewPostgresRunRepository(db *pgxpool.Pool) *PostgresRunRepository {
 // Run operations
 
 // Create creates a new run
-func (r *PostgresRunRepository) Create(ctx context.Context, entity *aggregates.Run) (*aggregates.Run, error) {
+func (r *PostgresRunRepository) Create(ctx context.Context, entity *entities.Run) (*entities.Run, error) {
 	params := CreateRunParams{
 		ID: entity.ID,
 	}
@@ -42,7 +41,7 @@ func (r *PostgresRunRepository) Create(ctx context.Context, entity *aggregates.R
 }
 
 // Get retrieves a run by ID
-func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*aggregates.Run, error) {
+func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Run, error) {
 	result, err := r.queries.GetRun(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -55,7 +54,7 @@ func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*aggrega
 }
 
 // Update updates an existing run
-func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity *aggregates.Run) (*aggregates.Run, error) {
+func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Run) (*entities.Run, error) {
 	params := UpdateRunParams{
 		ID: id,
 	}
@@ -84,21 +83,7 @@ func (r *PostgresRunRepository) Delete(ctx context.Context, id uuid.UUID) error 
 }
 
 // List returns a paginated list of runs
-func (r *PostgresRunRepository) List(ctx context.Context, params dto.ListRunsParams) ([]*aggregates.Run, int64, error) {
-	// Calculate offset from page
-	offset := int32(0)
-	limit := int32(10) // default
-
-	// Check if params has Page field with Limit and Offset
-	if params.Page != nil {
-		if params.Page.Offset != nil && *params.Page.Offset >= 0 {
-			offset = int32(*params.Page.Offset)
-		}
-		if params.Page.Limit != nil && *params.Page.Limit > 0 {
-			limit = int32(*params.Page.Limit)
-		}
-	}
-
+func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Run, int64, error) {
 	listParams := ListRunsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -109,7 +94,7 @@ func (r *PostgresRunRepository) List(ctx context.Context, params dto.ListRunsPar
 		return nil, 0, fmt.Errorf("failed to list runs: %w", err)
 	}
 
-	items := make([]*aggregates.Run, len(results))
+	items := make([]*entities.Run, len(results))
 	for i, result := range results {
 		items[i] = mapRunFromDB(&result)
 	}
@@ -124,7 +109,7 @@ func (r *PostgresRunRepository) List(ctx context.Context, params dto.ListRunsPar
 // Additional methods
 
 // ListByPipeline retrieves multiple runs by pipelineID
-func (r *PostgresRunRepository) ListByPipeline(ctx context.Context, pipelineID string) ([]*aggregates.Run, error) {
+func (r *PostgresRunRepository) ListByPipeline(ctx context.Context, pipelineID string) ([]*entities.Run, error) {
 
 	// TODO: Implement ListByPipeline - fetch multiple runs
 	return nil, fmt.Errorf("ListByPipeline not yet implemented")
@@ -132,7 +117,7 @@ func (r *PostgresRunRepository) ListByPipeline(ctx context.Context, pipelineID s
 }
 
 // ListByOrganization retrieves multiple runs by organizationID
-func (r *PostgresRunRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*aggregates.Run, error) {
+func (r *PostgresRunRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Run, error) {
 
 	// TODO: Implement ListByOrganization - fetch multiple runs
 	return nil, fmt.Errorf("ListByOrganization not yet implemented")
@@ -140,19 +125,19 @@ func (r *PostgresRunRepository) ListByOrganization(ctx context.Context, organiza
 }
 
 // ListByTool retrieves multiple runs by toolID
-func (r *PostgresRunRepository) ListByTool(ctx context.Context, toolID string) ([]*aggregates.Run, error) {
+func (r *PostgresRunRepository) ListByTool(ctx context.Context, toolID string) ([]*entities.Run, error) {
 
 	// TODO: Implement ListByTool - fetch multiple runs
 	return nil, fmt.Errorf("ListByTool not yet implemented")
 
 }
 
-func mapRunFromDB(db *Run) *aggregates.Run {
+func mapRunFromDB(db *Run) *entities.Run {
 	if db == nil {
 		return nil
 	}
 
-	result := &aggregates.Run{
+	result := &entities.Run{
 		ID:        db.ID,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,

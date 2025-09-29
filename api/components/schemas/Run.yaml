@@ -2,7 +2,7 @@
 description: Schema for Run entity
 title: Run
 x-codegen:
-  schemaType: aggregate
+  schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
     indices: [pipelineID, organizationID, toolID]

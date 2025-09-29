@@ -13,22 +13,22 @@ import (
 	infraevents "github.com/archesai/archesai/internal/infrastructure/events"
 )
 
-// EventPublisher implements the EventPublisher interface using Redis.
-type EventPublisher struct {
+// Publisher implements the Publisher interface using Redis.
+type Publisher struct {
 	client    *redis.Client
 	publisher infraevents.Publisher
 }
 
-// NewEventPublisher creates a new Redis-based event publisher.
-func NewEventPublisher(client *redis.Client) events.EventPublisher {
-	return &EventPublisher{
+// NewPublisher creates a new Redis-based event publisher.
+func NewPublisher(client *redis.Client) events.Publisher {
+	return &Publisher{
 		client:    client,
 		publisher: infraevents.NewRedisPublisher(client),
 	}
 }
 
 // Publish publishes a single domain event.
-func (p *EventPublisher) Publish(ctx context.Context, event coreevents.DomainEvent) error {
+func (p *Publisher) Publish(ctx context.Context, event coreevents.DomainEvent) error {
 	// Convert domain event to infrastructure event
 	infraEvent := infraevents.Event{
 		ID:        uuid.New().String(),
@@ -42,7 +42,7 @@ func (p *EventPublisher) Publish(ctx context.Context, event coreevents.DomainEve
 }
 
 // PublishMultiple publishes multiple domain events in order.
-func (p *EventPublisher) PublishMultiple(
+func (p *Publisher) PublishMultiple(
 	ctx context.Context,
 	events []coreevents.DomainEvent,
 ) error {
@@ -54,27 +54,27 @@ func (p *EventPublisher) PublishMultiple(
 	return nil
 }
 
-// EventSubscriber implements the EventSubscriber interface using Redis.
-type EventSubscriber struct {
+// Subscriber implements the Subscriber interface using Redis.
+type Subscriber struct {
 	client     *redis.Client
 	subscriber infraevents.Subscriber
 }
 
-// NewEventSubscriber creates a new Redis-based event subscriber.
-func NewEventSubscriber(client *redis.Client) events.EventSubscriber {
+// NewSubscriber creates a new Redis-based event subscriber.
+func NewSubscriber(client *redis.Client) events.Subscriber {
 	redisPublisher := infraevents.NewRedisPublisher(client)
 	subscriber, ok := redisPublisher.(infraevents.Subscriber)
 	if !ok {
 		panic("redis publisher does not implement subscriber interface")
 	}
-	return &EventSubscriber{
+	return &Subscriber{
 		client:     client,
 		subscriber: subscriber,
 	}
 }
 
 // Subscribe subscribes to events of a specific aggregate type.
-func (s *EventSubscriber) Subscribe(
+func (s *Subscriber) Subscribe(
 	ctx context.Context,
 	aggregateType string,
 	handler events.EventHandler,
@@ -87,7 +87,7 @@ func (s *EventSubscriber) Subscribe(
 }
 
 // SubscribeToEventType subscribes to a specific event type.
-func (s *EventSubscriber) SubscribeToEventType(
+func (s *Subscriber) SubscribeToEventType(
 	ctx context.Context,
 	eventType string,
 	handler events.EventHandler,
@@ -107,14 +107,14 @@ func (s *EventSubscriber) SubscribeToEventType(
 }
 
 // Unsubscribe removes a subscription.
-func (s *EventSubscriber) Unsubscribe(ctx context.Context, subscriptionID string) error {
+func (s *Subscriber) Unsubscribe(ctx context.Context, subscriptionID string) error {
 	// Redis pub/sub doesn't support explicit unsubscribe by ID
 	// This would need to be implemented with a subscription manager
 	return nil
 }
 
 // toDomainEvent converts an infrastructure event to a domain event.
-func (s *EventSubscriber) toDomainEvent(event infraevents.Event) coreevents.DomainEvent {
+func (s *Subscriber) toDomainEvent(event infraevents.Event) coreevents.DomainEvent {
 	aggregateID := ""
 	aggregateType := ""
 
@@ -133,7 +133,7 @@ func (s *EventSubscriber) toDomainEvent(event infraevents.Event) coreevents.Doma
 }
 
 // extractDomain extracts the domain from an event type.
-func (s *EventSubscriber) extractDomain(eventType string) string {
+func (s *Subscriber) extractDomain(eventType string) string {
 	// Map event types to domains
 	// This is a simple implementation - could be enhanced
 	switch {
@@ -158,14 +158,14 @@ func contains(s, substr string) bool {
 
 // EventBus combines publisher and subscriber for Redis.
 type EventBus struct {
-	events.EventPublisher
-	events.EventSubscriber
+	events.Publisher
+	events.Subscriber
 }
 
 // NewEventBus creates a new Redis-based event bus.
 func NewEventBus(client *redis.Client) events.EventBus {
 	return &EventBus{
-		EventPublisher:  NewEventPublisher(client),
-		EventSubscriber: NewEventSubscriber(client),
+		Publisher:  NewPublisher(client),
+		Subscriber: NewSubscriber(client),
 	}
 }

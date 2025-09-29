@@ -4,20 +4,21 @@ package health
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // GetHealthQuery represents a query to get a health.
 type GetHealthQuery struct {
-	ID valueobjects.HealthID
+	ID uuid.UUID
 }
 
 // NewGetHealthQuery creates a new get health query.
-func NewGetHealthQuery(id valueobjects.HealthID) *GetHealthQuery {
+func NewGetHealthQuery(id uuid.UUID) *GetHealthQuery {
 	return &GetHealthQuery{
 		ID: id,
 	}
@@ -39,7 +40,7 @@ func NewGetHealthQueryHandler(repo repositories.HealthRepository) *GetHealthQuer
 func (h *GetHealthQueryHandler) Handle(ctx context.Context, query *GetHealthQuery) (*entities.Health, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get health")
+		return nil, fmt.Errorf("failed to get health: %w", err)
 	}
 	return result, nil
 }

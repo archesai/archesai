@@ -2,7 +2,7 @@
 description: Schema for Tool entity
 title: Tool
 x-codegen:
-  schemaType: aggregate
+  schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID]

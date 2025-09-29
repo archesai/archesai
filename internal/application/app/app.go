@@ -14,7 +14,6 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/controllers"
 	"github.com/archesai/archesai/internal/adapters/http/server"
-	"github.com/archesai/archesai/internal/application/services"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 	database "github.com/archesai/archesai/internal/infrastructure/persistence"
@@ -32,21 +31,6 @@ type App struct {
 
 	// Middleware
 	// AuthMiddleware *middleware.AuthMiddleware  // TODO: Fix middleware type issue
-
-	// Domain services (public for handler access)
-	AccountsService      *services.AccountService
-	OrganizationsService *services.OrganizationService
-	// TODO: Generate these services with CQRS pattern
-	// UsersService         *services.UserService
-	// InvitationsService   *services.InvitationService
-	// ArtifactsService     *services.ArtifactService
-	// LabelsService        *services.LabelService
-	// MembersService       *services.MembersService
-	// PipelinesService     *services.PipelineApplicationService
-	// RunsService          *services.RunApplicationService
-	// ToolsService         *services.ToolApplicationService
-	// HealthService        *services.HealthApplicationService
-	// AuthService          *services.AuthenticationService
 
 	// HTTP handlers
 	AccountsHandler      controllers.AccountsController
@@ -79,7 +63,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 		log.Info("running database migrations")
 		if err := database.RunMigrations(infra.Database.SQLDB(), infra.Database.TypeString(), log); err != nil {
 			log.Error("failed to run migrations", "error", err)
-			isProduction := cfg.Api.Environment == "production"
+			isProduction := cfg.API.Environment == "production"
 			if isProduction {
 				return nil, fmt.Errorf("failed to run migrations: %w", err)
 			}
@@ -95,7 +79,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 
 	// Initialize authentication middleware
-	authMiddleware := middleware.NewAuthMiddleware(cfg.Auth.Local.JwtSecret, cfg, log)
+	authMiddleware := middleware.NewAuthMiddleware(cfg.Auth.Local.JWTSecret, cfg, log)
 
 	// Create app instance to populate
 	app := &App{
@@ -115,8 +99,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize accounts domain
 	g.Go(func() error {
 		log.Info("initializing accounts domain")
-		app.AccountsService = services.NewAccountService(repos.Accounts, log)
-		app.AccountsHandler = handlers.AccountsEchoHandler(app.AccountsService)
+		app.AccountsHandler = controllers.AccountsController(app.AccountsService)
 		log.Info("accounts domain ready")
 		return nil
 	})
@@ -124,8 +107,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize users domain
 	g.Go(func() error {
 		log.Info("initializing users domain")
-		app.UsersService = services.NewUserService(repos.Users, log)
-		app.UsersHandler = handlers.UsersEchoHandler(app.UsersService)
+		app.UsersHandler = controllers.UsersController(app.UsersService)
 		log.Info("users domain ready")
 		return nil
 	})
@@ -133,8 +115,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize organizations domain
 	g.Go(func() error {
 		log.Info("initializing organizations domain")
-		app.OrganizationsService = services.NewOrganizationService(repos.Organizations, log)
-		app.OrganizationsHandler = handlers.OrganizationsEchoHandler(
+		app.OrganizationsHandler = controllers.OrganizationsController(
 			app.OrganizationsService,
 		)
 		log.Info("organizations domain ready")
@@ -144,8 +125,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize pipelines domain
 	g.Go(func() error {
 		log.Info("initializing pipelines domain")
-		app.PipelinesService = services.NewPipelineService(repos.Pipelines, log)
-		app.PipelinesHandler = handlers.PipelinesEchoHandler(app.PipelinesService)
+		app.PipelinesHandler = *controllers.NewPipelinesController(app.PipelinesService)
 		log.Info("pipelines domain ready")
 		return nil
 	})
@@ -153,8 +133,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize runs domain
 	g.Go(func() error {
 		log.Info("initializing runs domain")
-		app.RunsService = services.NewRunService(repos.Runs, log)
-		app.RunsHandler = handlers.RunsEchoHandler(app.RunsService)
+		app.RunsHandler = controllers.RunsController(app.RunsService)
 		log.Info("runs domain ready")
 		return nil
 	})
@@ -162,8 +141,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize tools domain
 	g.Go(func() error {
 		log.Info("initializing tools domain")
-		app.ToolsService = services.NewToolService(repos.Tools, log)
-		app.ToolsHandler = handlers.ToolsEchoHandler(app.ToolsService)
+		app.ToolsHandler = controllers.ToolsController(app.ToolsService)
 		log.Info("tools domain ready")
 		return nil
 	})
@@ -171,8 +149,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize artifacts domain
 	g.Go(func() error {
 		log.Info("initializing artifacts domain")
-		app.ArtifactsService = services.NewArtifactService(repos.Artifacts, log)
-		app.ArtifactsHandler = handlers.ArtifactsEchoHandler(app.ArtifactsService)
+		app.ArtifactsHandler = controllers.ArtifactsController(app.ArtifactsService)
 		log.Info("artifacts domain ready")
 		return nil
 	})
@@ -180,8 +157,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize labels domain
 	g.Go(func() error {
 		log.Info("initializing labels domain")
-		app.LabelsService = services.NewLabelService(repos.Labels, log)
-		app.LabelsHandler = handlers.LabelsEchoHandler(app.LabelsService)
+		app.LabelsHandler = controllers.LabelsController(app.LabelsService)
 		log.Info("labels domain ready")
 		return nil
 	})
@@ -189,8 +165,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize members domain
 	g.Go(func() error {
 		log.Info("initializing members domain")
-		app.MembersService = services.NewMemberService(repos.Members, log)
-		app.MembersHandler = handlers.MembersEchoHandler(app.MembersService)
+		app.MembersHandler = controllers.MembersController(app.MembersService)
 		log.Info("members domain ready")
 		return nil
 	})
@@ -198,8 +173,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize invitations domain
 	g.Go(func() error {
 		log.Info("initializing invitations domain")
-		app.InvitationsService = services.NewInvitationService(repos.Invitations, log)
-		app.InvitationsHandler = handlers.InvitationsEchoHandler(app.InvitationsService)
+		app.InvitationsHandler = controllers.InvitationsController(app.InvitationsService)
 		log.Info("invitations domain ready")
 		return nil
 	})
@@ -207,8 +181,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize health domain
 	g.Go(func() error {
 		log.Info("initializing health domain")
-		app.HealthService = services.NewHealthService(repos.Health, log)
-		app.HealthHandler = handlers.HealthEchoHandler(app.HealthService)
+		app.HealthHandler = controllers.HealthController(app.HealthService)
 		log.Info("health domain ready")
 		return nil
 	})
@@ -254,19 +227,6 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 	apiKeyValidator := tokens.NewAPIKeyValidator()
 
-	// Create unified auth service
-	app.AuthService = services.AuthenticationService(
-		cfg,
-		log,
-		app.UsersService,
-		repos.Accounts,
-		sessionStore,
-		tokenManager,
-		magicLinkStore,
-		apiKeyStore,
-		apiKeyValidator,
-	)
-
 	// Register OAuth providers
 	if cfg.Auth.Google.Enabled {
 		app.AuthService.RegisterProvider(dto.ProviderGoogle,
@@ -305,7 +265,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 		deliverers.NewOTPDeliverer(log))
 
 	// Create unified auth handler
-	app.AuthHandler = handlers.AuthEchoHandler(app.AuthService)
+	app.AuthHandler = controllers.AuthController(app.AuthService)
 	log.Info("unified auth handler ready")
 
 	// Connect auth service to middleware
@@ -314,7 +274,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 
 	// Initialize config handler
 	log.Info("initializing config handler")
-	configHandler := handlers.ConfigEchoHandler(cfg)
+	configHandler := controllers.ConfigController(cfg)
 	app.ConfigHandler = configHandler
 	log.Info("config handler ready")
 

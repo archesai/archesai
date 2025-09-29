@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 x-codegen:
-  schemaType: valueobject
+  schemaType: entity
   repository:
     name: SessionRepository
     operations: [create, read, update, delete, list]

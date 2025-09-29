@@ -4,19 +4,19 @@ package artifacts
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/core/valueobjects"
-	"github.com/archesai/archesai/internal/infrastructure/events"
 )
 
 // UpdateArtifactCommand represents the command to update a artifact.
 type UpdateArtifactCommand struct {
-	ID          valueobjects.ArtifactID
+	ID          uuid.UUID
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
@@ -24,30 +24,7 @@ type UpdateArtifactCommand struct {
 
 // NewUpdateArtifactCommand creates a new update artifact command.
 func NewUpdateArtifactCommand(
-	id valueobjects.ArtifactID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-) *UpdateArtifactCommand {
-	return &UpdateArtifactCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-	}
-}
-
-// UpdateArtifactCommand represents a command to update an artifact.
-type UpdateArtifactCommand struct {
-	ID          valueobjects.ArtifactID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-}
-
-// NewUpdateArtifactCommand creates a new update artifact command.
-func NewUpdateArtifactCommand(
-	id valueobjects.ArtifactID,
+	id uuid.UUID,
 	name *string,
 	description *string,
 	metadata map[string]interface{},
@@ -82,7 +59,7 @@ func (h *UpdateArtifactCommandHandler) Handle(ctx context.Context, cmd *UpdateAr
 	// Fetch existing artifact
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get artifact")
+		return nil, fmt.Errorf("failed to get artifact: %w", err)
 	}
 
 	// Update fields
@@ -92,14 +69,11 @@ func (h *UpdateArtifactCommandHandler) Handle(ctx context.Context, cmd *UpdateAr
 	// Save to repository
 	updated, err := h.repo.Update(ctx, cmd.ID, existing)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to update artifact")
+		return nil, fmt.Errorf("failed to update artifact: %w", err)
 	}
 
 	// Publish domain event
-	event := events.NewArtifactUpdatedEvent(
-		updated.ID,
-		updated.UpdatedAt,
-	)
+	event := events.NewArtifactUpdatedEvent(updated.ID)
 	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
 	}

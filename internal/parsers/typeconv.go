@@ -79,8 +79,19 @@ func SchemaToGoType(schema *oas3.Schema) string {
 	if schemaType == "array" {
 		if schema.Items != nil {
 			if schema.Items.IsLeft() {
-				itemType := SchemaToGoType(schema.Items.GetLeft())
-				return "[]" + itemType
+				itemSchema := schema.Items.GetLeft()
+				if itemSchema != nil {
+					itemTypes := itemSchema.GetType()
+					// Check if the array item is an object with properties
+					if len(itemTypes) > 0 && string(itemTypes[0]) == "object" &&
+						itemSchema.Properties != nil && itemSchema.Properties.Len() > 0 {
+						// For arrays of objects with properties, we'll need special handling
+						// This will be handled by the caller (processSchemaProperties)
+						return "[]map[string]interface{}"
+					}
+					itemType := SchemaToGoType(itemSchema)
+					return "[]" + itemType
+				}
 			}
 		}
 		return "[]interface{}"
