@@ -102,8 +102,8 @@ run-tui: ## Launch the TUI interface
 	@echo -e "$(YELLOW)▶ Launching TUI...$(NC)"
 	@go run cmd/archesai/main.go tui
 
-.PHONY: run-config
-run-config-show:  ## Launch the configuration wizard
+.PHONY: run-config-show
+run-config-show: ## Launch the configuration wizard
 	@echo -e "$(YELLOW)▶ Launching configuration wizard...$(NC)"
 	@go run cmd/archesai/main.go config show
 
@@ -166,14 +166,13 @@ generate: ## Generate all code
 	echo -e "$(CYAN)[3/5] Mock Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-mocks && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mock generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
 	echo -e "$(CYAN)[4/5] Client Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-js-client && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Client generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
 	echo -e "$(CYAN)[5/5] Helm Schema Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-helm-schema && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Helm schema generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	START=$$(date +%s%3N) && $(MAKE) add-mapstructure-tags && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mapstructure tags added $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
 	END_TOTAL=$$(date +%s%3N); \
 	echo -e "$(GREEN)✓ All code generation complete in $$((END_TOTAL-START_TOTAL))ms!$(NC)"
 
 .PHONY: generate-sqlc
 generate-sqlc: generate-schema-sqlite ## Generate database code with sqlc
 	@echo -e "$(YELLOW)▶ Generating sqlc code...$(NC)"
-	@cd internal/database && go generate
+	@cd internal/infrastructure/persistence && go generate
 	@echo -e "$(GREEN)✓ sqlc generation complete!$(NC)"
 
 .PHONY: generate-schema-sqlite
@@ -185,21 +184,15 @@ generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 .PHONY: generate-codegen-types
 generate-codegen-types: ## Generate types for codegen configuration
 	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
-	@go run ./tools/codegen/main.go -openapi ./internal/codegen/xcodegen.yaml -config ./internal/codegen/codegen.yaml -output ./internal
-	@echo -e "$(YELLOW)WARN Codegen types not implemented!$(NC)"
+	@go run cmd/codegen/main.go jsonschema api/components/schemas/xcodegen/CodegenExtension.yaml --output internal/codegen/xcodegen_types.gen.go
+	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
 
 
 .PHONY: generate-codegen
 generate-codegen: generate-codegen-types bundle-openapi ## Generate codegen
 	@echo -e "$(YELLOW)▶ Generating code from OpenAPI schemas...$(NC)"
-	@go run tools/codegen/main.go
+	@go run cmd/codegen/main.go openapi ./api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
-
-.PHONY: add-mapstructure-tags
-add-mapstructure-tags: ## Add mapstructure tags to config types for Viper compatibility
-	@echo -e "$(YELLOW)▶ Adding mapstructure tags for Viper compatibility...$(NC)"
-	@./scripts/add-mapstructure-tags.sh
-	@echo -e "$(GREEN)✓ Mapstructure tags added!$(NC)"
 
 .PHONY: generate-mocks
 generate-mocks: generate-codegen ## Generate test mocks using mockery
@@ -360,7 +353,7 @@ format: format-go format-ts format-prettier ## Format all code
 .PHONY: format-go
 format-go: ## Format Go code
 	@echo -e "$(YELLOW)▶ Formatting Go code...$(NC)"
-	@golangci-lint fmt
+	@golangci-lint run --fix
 	@echo -e "$(GREEN)✓ Go code formatted!$(NC)"
 
 .PHONY: format-prettier
@@ -380,7 +373,7 @@ format-ts: ## Format Node.js/TypeScript code
 # ------------------------------------------
 
 .PHONY: clean
-clean: clean-ts clean-go clean-generated clean-test ## Clean build artifacts
+clean: clean-ts clean-go clean-generated clean-test ## Clean all build artifacts
 	@echo -e "$(GREEN)✓ Clean complete!$(NC)"
 
 .PHONY: clean-ts
@@ -392,13 +385,13 @@ clean-ts: ## Clean distribution builds
 .PHONY: clean-go
 clean-go: ## Clean Go build artifacts
 	@echo -e "$(YELLOW)▶ Cleaning Go build artifacts...$(NC)"
-	@rm -rf ./bin
+	@rm -rf ./bin $(BINARY_PATH)
 	@echo -e "$(GREEN)✓ Go build artifacts cleaned!$(NC)"
 
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
 	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
-	@find . -type f -name "*.gen.go" -exec rm -f {} +
+	@find . -type f -name "*.gen.go" ! -name "*.keep.gen.go" -exec rm -f {} +
 	@find . -type f -name "mocks_test.go" -exec rm -f {} +
 	@rm -rf ./web/client/src/generated
 	@rm -f ./api/openapi.bundled.yaml
@@ -440,7 +433,7 @@ prepare-docs: bundle-openapi ## Copy markdown docs to web/docs/docs
 # Database Commands
 # ------------------------------------------
 
-MIGRATION_PATH := internal/migrations/postgresql
+MIGRATION_PATH := internal/infrastructure/persistence/postgres/migrations
 
 .PHONY: db-migrate
 db-migrate: db-migrate-up ## Alias for db-migrate-up

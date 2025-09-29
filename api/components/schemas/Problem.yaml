@@ -1,4 +1,5 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
+title: Problem
 description: RFC 7807 (Problem Details) compliant error response
 type: object
 additionalProperties: false

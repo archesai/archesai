@@ -1,3 +1,28 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
+title: FilterNode
 description: A recursive filter node that can be a condition or group
+x-codegen:
+  schemaType: valueobject
 type: object
+properties:
+  type:
+    type: string
+    enum: [and, or, eq, ne, gt, gte, lt, lte, contains, starts_with, ends_with]
+    description: The type of filter operation
+    example: eq
+    minLength: 1
+  field:
+    type: string
+    description: The field to filter on (for leaf conditions)
+    example: name
+    minLength: 1
+  value:
+    description: The value to compare against (for leaf conditions)
+    example: example-value
+  children:
+    type: array
+    items:
+      $ref: '#'
+    description: Child filter nodes (for logical operators)
+required:
+  - type

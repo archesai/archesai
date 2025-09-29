@@ -24,7 +24,7 @@
     },
     "main": {
       "maxTokens": 64000,
-      "modelId": "sonnet",
+      "modelId": "opus",
       "provider": "claude-code",
       "temperature": 0.2
     },

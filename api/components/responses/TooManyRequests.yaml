@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=../schemas/xcodegen/JSONSchemaDraft7Extended.yaml
 description: Too many requests - rate limit exceeded
 content:
   application/problem+json:

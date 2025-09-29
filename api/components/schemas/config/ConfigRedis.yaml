@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Redis configuration
+type: object
+properties:
+  enabled:
+    description: Enable Redis
+    type: boolean
+    default: false
+    example: true
+  managed:
+    description: Use managed Redis deployment
+    type: boolean
+    default: false
+    example: true
+  auth:
+    description: Redis authentication password
+    type: string
+    default: password
+    minLength: 1
+    example: example-string
+  ca:
+    description: Certificate Authority for TLS (optional)
+    type: string
+    minLength: 1
+    example: example-string
+  host:
+    description: Redis hostname or IP
+    type: string
+    default: localhost
+    minLength: 1
+    example: example-string
+  port:
+    description: Redis port number
+    type: number
+    default: 6379
+    example: 42
+  image:
+    $ref: ./ConfigImage.yaml
+  persistence:
+    $ref: ./ConfigPersistence.yaml
+  resources:
+    $ref: ./ConfigResource.yaml
+required:
+  - enabled
+  - auth
+  - host
+  - port
+additionalProperties: false

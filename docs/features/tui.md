@@ -101,7 +101,7 @@ import (
     "log"
     "os"
 
-    "github.com/archesai/archesai/internal/llm"
+    "github.com/archesai/archesai/internal/adapters/llm"
     "github.com/archesai/archesai/internal/tui"
     tea "github.com/charmbracelet/bubbletea"
 )
@@ -222,13 +222,13 @@ To modify the TUI:
 1. Edit `internal/tui/config_tui.go` for config viewer
 2. Edit `internal/tui/tui.go` for chat interface
 3. Edit `internal/cli/tui.go` for CLI integration
-4. Edit `internal/llm/chat.go` for chat client functionality
+4. Edit `internal/adapters/llm/chat.go` for chat client functionality
 
 Run tests:
 
 ```bash
 go test ./internal/tui/...
-go test ./internal/llm/...
+go test ./internal/adapters/llm/...
 ```
 
 ## Future Enhancements

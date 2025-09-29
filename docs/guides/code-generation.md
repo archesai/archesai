@@ -194,7 +194,7 @@ generators:
     redis: events_redis.gen.go
     nats: events_nats.gen.go
 
-  defaults: internal/config/defaults.gen.go
+  defaults: internal/infrastructure/config/defaults.gen.go
 
 # Domain configurations (optional)
 domains:

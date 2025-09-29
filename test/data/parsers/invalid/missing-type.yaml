@@ -1,0 +1,8 @@
+# Invalid schema - missing type field
+properties:
+  id:
+    type: string
+  name:
+    # Missing type here
+    minLength: 1
+    maxLength: 100

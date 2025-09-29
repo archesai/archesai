@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Billing configuration for Stripe
+type: object
+properties:
+  enabled:
+    description: Enable billing functionality
+    type: boolean
+    default: false
+    example: true
+  stripe:
+    $ref: ./ConfigStripe.yaml
+required:
+  - enabled
+additionalProperties: false

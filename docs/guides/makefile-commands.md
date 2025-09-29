@@ -8,7 +8,6 @@ Run `make help` to see all available commands.
 Usage: make [target]
 
 Available targets:
-  add-mapstructure-tags      Add mapstructure tags to config types for Viper compatibility
   all                        Default: generate, lint, and format code
   build                      Build all binaries
   build-api                  Build archesai server binary
@@ -16,7 +15,7 @@ Available targets:
   build-platform             Build platform assets
   bundle-openapi             Bundle OpenAPI into single file
   check-deps                 Check for required dependencies
-  clean                      Clean build artifacts
+  clean                      Clean all build artifacts
   clean-deps                 Clean all dependencies
   clean-generated            Clean all generated code
   clean-go                   Clean Go build artifacts

@@ -1,10 +1,11 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 x-codegen:
-  domain: auth
+  schemaType: valueobject
   repository:
     name: SessionRepository
     operations: [create, read, update, delete, list]
 description: Schema for Session entity
+title: Session
 allOf:
   - $ref: ./Base.yaml
   - type: object

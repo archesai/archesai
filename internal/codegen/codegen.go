@@ -2,156 +2,181 @@
 package codegen
 
 import (
+	"bytes"
 	"fmt"
 	"log/slog"
-	"os"
+	"path/filepath"
+	"sort"
+	"strings"
 
-	"github.com/archesai/archesai/internal/logger"
+	"github.com/charmbracelet/log"
+	"github.com/speakeasy-api/openapi/jsonschema/oas3"
+
 	"github.com/archesai/archesai/internal/parsers"
-	"github.com/archesai/archesai/internal/templates"
 )
 
-// stringPtr returns a pointer to the given string.
-func stringPtr(s string) *string {
-	return &s
+// Run executes the code generator with the given OpenAPI path (simplified entry point)
+func Run(openapiPath string) error {
+	_, err := Generate(openapiPath, Configuration{
+		SpecPath: openapiPath,
+	})
+	return err
 }
 
-// GetDefaultConfig returns a new Config with default values.
-func GetDefaultConfig() *CodegenConfig {
-	output := "internal"
-	return &CodegenConfig{
-		Generators: &struct {
-			Cache *struct {
-				Interface *string "json:\"interface,omitempty\" yaml:\"interface,omitempty\""
-				Memory    *string "json:\"memory,omitempty\" yaml:\"memory,omitempty\""
-				Redis     *string "json:\"redis,omitempty\" yaml:\"redis,omitempty\""
-			} "json:\"cache,omitempty\" yaml:\"cache,omitempty\""
-			EchoServer *string "json:\"echo_server,omitempty\" yaml:\"echo_server,omitempty\""
-			Events     *struct {
-				Interface *string "json:\"interface,omitempty\" yaml:\"interface,omitempty\""
-				Nats      *string "json:\"nats,omitempty\" yaml:\"nats,omitempty\""
-				Redis     *string "json:\"redis,omitempty\" yaml:\"redis,omitempty\""
-			} "json:\"events,omitempty\" yaml:\"events,omitempty\""
-			Repository *struct {
-				Interface *string "json:\"interface,omitempty\" yaml:\"interface,omitempty\""
-				Postgres  *string "json:\"postgres,omitempty\" yaml:\"postgres,omitempty\""
-				Sqlite    *string "json:\"sqlite,omitempty\" yaml:\"sqlite,omitempty\""
-			} "json:\"repository,omitempty\" yaml:\"repository,omitempty\""
-			SQL *struct {
-				Dialect   *string "json:\"dialect,omitempty\" yaml:\"dialect,omitempty\""
-				QueryDir  *string "json:\"query_dir,omitempty\" yaml:\"query_dir,omitempty\""
-				SchemaDir *string "json:\"schema_dir,omitempty\" yaml:\"schema_dir,omitempty\""
-			} "json:\"sql,omitempty\" yaml:\"sql,omitempty\""
-			Service *string "json:\"service,omitempty\" yaml:\"service,omitempty\""
-			Types   *string "json:\"types,omitempty\" yaml:\"types,omitempty\""
-		}{
-			Repository: &struct {
-				Interface *string "json:\"interface,omitempty\" yaml:\"interface,omitempty\""
-				Postgres  *string "json:\"postgres,omitempty\" yaml:\"postgres,omitempty\""
-				Sqlite    *string "json:\"sqlite,omitempty\" yaml:\"sqlite,omitempty\""
-			}{
-				Interface: stringPtr("repository.gen.go"),
-				Postgres:  stringPtr("repository_postgres.gen.go"),
-				Sqlite:    stringPtr("repository_sqlite.gen.go"),
-			},
-			EchoServer: stringPtr("handler.gen.go"),
-			Service:    stringPtr("service.gen.go"),
-			Types:      stringPtr("types.gen.go"),
-		},
-		Output:  &output,
-		Openapi: "api/openapi.yaml",
+// RunFromJSONSchema generates a Go struct from a standalone JSON Schema file
+func RunFromJSONSchema(schemaPath, outputPath string) error {
+	// Extract struct name from schema filename
+	structName := strings.TrimSuffix(filepath.Base(schemaPath), filepath.Ext(schemaPath))
+
+	// Extract package name from output path
+	packageName := filepath.Base(filepath.Dir(outputPath))
+	if packageName == "." || packageName == "" {
+		return fmt.Errorf("cannot infer package name from output path %s", outputPath)
 	}
 
-}
-
-// Run executes the unified code generator with the given configuration.
-func Run(config *CodegenConfig) error {
-	// Create logger with error level by default (only show errors)
-	// Set ARCHESAI_LOG_LEVEL=debug to see debug logs
-	logLevel := os.Getenv("ARCHESAI_LOG_LEVEL")
-	if logLevel == "" {
-		logLevel = "error"
-	}
-	log := logger.New(logger.Config{Level: logLevel, Pretty: true})
-
-	// Create parser and file writer
-	parser := parsers.NewParser()
-	fileWriter := templates.NewFileWriter()
-
-	// Parse the OpenAPI specification
-	openAPISchema, warnings, err := parser.Parse(config.Openapi)
-	if err != nil {
-		return fmt.Errorf("failed to parse OpenAPI spec: %w", err)
-	}
-	parser.OpenAPI = openAPISchema
-
-	// Configure file writer
-	fileWriter.WithOverwrite(true) // Always overwrite generated files
-	fileWriter.WithHeader(templates.DefaultHeader())
-
-	// Load templates from templates package
-	templateMap, err := templates.LoadTemplates()
+	// Load templates
+	loadedTemplates, err := LoadTemplates()
 	if err != nil {
 		return fmt.Errorf("failed to load templates: %w", err)
 	}
 
-	// Extract schemas from OpenAPI
-	schemas := parser.OpenAPI.ExtractSchemas()
+	// Load schema directly
+	schema, xcodegen, err := parsers.ParseJSONSchema(schemaPath)
+	if err != nil {
+		return fmt.Errorf("failed to load schema: %w", err)
+	}
 
-	// Add parsing warnings to parser
-	if len(warnings) > 0 {
-		for _, w := range warnings {
-			log.Warn("OpenAPI parsing warning", "message", w)
+	// Set the title if not present (use structName)
+	if schema.GetTitle() == "" {
+		title := structName
+		schema.Title = &title
+	}
+
+	// Create a minimal global state for the generation
+	state := NewGlobalState()
+	state.Templates = loadedTemplates
+	state.FileWriter = NewFileWriter().WithOverwrite(true).WithHeader(DefaultHeader())
+
+	// Create a processed schema entry
+	processed := &parsers.ProcessedSchema{
+		Schema:   schema,
+		Fields:   parsers.ExtractFields(schema),
+		XCodegen: xcodegen,
+	}
+	state.ProcessedSchemas = map[string]*parsers.ProcessedSchema{
+		structName: processed,
+	}
+
+	// Find all referenced schemas recursively (same as generateBatchedValueObjects)
+	referenced := findReferencedSchemas(state, schema)
+
+	// Add referenced schemas to the state
+	for _, refSchema := range referenced {
+		refName := refSchema.GetTitle()
+		if refName != "" && state.ProcessedSchemas[refName] == nil {
+			state.ProcessedSchemas[refName] = &parsers.ProcessedSchema{
+				Schema: refSchema,
+				Fields: parsers.ExtractFields(refSchema),
+			}
 		}
 	}
 
-	// Common context for all generators
-	ctx := &GeneratorContext{
-		Config:     config,
-		Parser:     parser,
-		Schemas:    schemas,
-		Templates:  templateMap,
-		FileWriter: fileWriter,
-	}
+	// Collect all schemas to generate
+	var schemasToGenerate []*oas3.Schema
+	schemasToGenerate = append(schemasToGenerate, referenced...)
+	schemasToGenerate = append(schemasToGenerate, schema)
 
-	// Create all generators using the new unified system
-	allGenerators := CreateGenerators(parser, log)
+	// Extract fields for all schemas
+	allTypes := []map[string]interface{}{}
+	hasTimeFields := false
+	hasUUIDFields := false
 
-	// Define generator execution order
-	// Types must be generated first as other generators may depend on them
-	generatorOrder := []string{
-		"types",
-		"sql",
-		"repository",
-		"cache",
-		"events",
-		"service",
-		"echo_server",
-	}
-
-	// Run each generator in order
-	for _, name := range generatorOrder {
-		gen, exists := allGenerators[name]
-		if !exists {
-			log.Debug("Generator not found", slog.String("name", name))
+	for _, s := range schemasToGenerate {
+		fields := parsers.ExtractFields(s)
+		if len(fields) == 0 {
 			continue
 		}
 
-		log.Debug("Running generator", slog.String("name", name))
-		// Each generator checks if it's enabled internally
-		if err := gen.Generate(ctx); err != nil {
-			return fmt.Errorf("%s generation failed: %w", name, err)
+		// Sort fields alphabetically
+		sort.Slice(fields, func(i, j int) bool {
+			return fields[i].Name < fields[j].Name
+		})
+
+		// Check for time and UUID fields
+		for _, field := range fields {
+			if strings.Contains(field.GoType, "time.Time") {
+				hasTimeFields = true
+			}
+			if strings.Contains(field.GoType, "uuid.UUID") {
+				hasUUIDFields = true
+			}
 		}
+
+		// Convert fields to template format
+		var templateFields []map[string]interface{}
+		for _, field := range fields {
+			jsonName := field.JSONTag
+			if jsonName == "" {
+				jsonName = field.Name
+			}
+			// Remove ,omitempty if present as template will add it
+			if strings.Contains(jsonName, ",omitempty") {
+				jsonName = strings.Split(jsonName, ",")[0]
+			}
+
+			templateFields = append(templateFields, map[string]interface{}{
+				"FieldName":    field.FieldName,
+				"GoType":       field.GoType,
+				"JSONName":     jsonName,
+				"YAMLName":     field.YAMLTag,
+				"Required":     field.Required,
+				"Description":  field.Description,
+				"DefaultValue": field.DefaultValue,
+			})
+		}
+
+		// Get the schema title, ensuring it's set
+		title := s.GetTitle()
+		if title == "" && s == schema {
+			title = structName
+		}
+
+		allTypes = append(allTypes, map[string]interface{}{
+			"Name":        title,
+			"Fields":      templateFields,
+			"Description": s.GetDescription(),
+		})
 	}
 
-	// Report warnings
-	if warnings := parser.GetWarnings(); len(warnings) > 0 {
-		log.Warn("Parsing warnings found")
-		for _, w := range warnings {
-			log.Debug("Warning", slog.String("message", w))
-		}
+	// Get the schema template
+	tmpl, ok := loadedTemplates["schema.tmpl"]
+	if !ok {
+		return fmt.Errorf("schema template not found")
 	}
 
-	log.Debug("Code generation completed successfully")
+	// Create template data
+	data := map[string]interface{}{
+		"Package":       packageName,
+		"Types":         allTypes,
+		"HasTimeFields": hasTimeFields,
+		"HasUUIDFields": hasUUIDFields,
+		"IsValueObject": true, // Treat standalone schemas as value objects
+	}
+
+	// Generate content
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return fmt.Errorf("failed to execute template: %w", err)
+	}
+
+	if err := state.FileWriter.WriteFile(outputPath, buf.Bytes()); err != nil {
+		return fmt.Errorf("failed to write file: %w", err)
+	}
+
+	log.Info("Generated struct from JSON Schema",
+		slog.String("schema", schemaPath),
+		slog.String("struct", structName),
+		slog.String("output", outputPath))
+
 	return nil
 }

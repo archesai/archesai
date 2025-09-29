@@ -1,7 +1,8 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 description: Schema for Run entity
+title: Run
 x-codegen:
-  domain: runs
+  schemaType: aggregate
   repository:
     operations: [create, read, update, delete, list]
     indices: [pipelineID, organizationID, toolID]

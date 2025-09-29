@@ -6,24 +6,63 @@
  * OpenAPI spec version: v0.0.0
  */
 /**
- * A recursive filter node that can be a condition or group
+ * The type of filter operation
+ * @minLength 1
  */
-export interface FilterNode { [key: string]: unknown }
+export type FilterNodeType = typeof FilterNodeType[keyof typeof FilterNodeType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FilterNodeType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
 
 /**
- * Pagination (page number & size)
+ * A recursive filter node that can be a condition or group
+ */
+export interface FilterNode {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: FilterNodeType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+}
+
+/**
+ * Pagination parameters (limit & offset)
  */
 export interface Page {
   /**
-   * @minimum 1
-   * @maximum 9007199254740991
-   */
-  number?: number;
-  /**
+   * Maximum number of items to return
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
+  limit?: number;
+  /**
+   * Number of items to skip before starting to collect the result set
+   * @minimum 0
+   * @maximum 9007199254740991
+   */
+  offset?: number;
 }
 
 export interface Base {
@@ -190,6 +229,77 @@ export type UserAllOf = {
  */
 export type User = Base & UserAllOf;
 
+/**
+ * How the magic link was delivered
+ */
+export type MagicLinkTokenDeliveryMethod = typeof MagicLinkTokenDeliveryMethod[keyof typeof MagicLinkTokenDeliveryMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MagicLinkTokenDeliveryMethod = {
+  email: 'email',
+  console: 'console',
+  webhook: 'webhook',
+  otp: 'otp',
+  file: 'file',
+} as const;
+
+/**
+ * When the token was used (null if unused)
+ */
+export type MagicLinkTokenUsedAt = string | null;
+
+/**
+ * Schema for MagicLinkToken entity
+ */
+export interface MagicLinkToken {
+  /**
+   * Unique identifier for the magic link token
+   * @minLength 36
+   */
+  id: string;
+  /**
+   * User ID if token is for existing user
+   * @minLength 36
+   */
+  userID?: string;
+  /**
+   * The raw magic link token
+   * @minLength 32
+   */
+  token?: string;
+  /**
+   * SHA256 hash of the magic link token
+   * @minLength 64
+   * @maxLength 64
+   */
+  tokenHash: string;
+  /**
+   * Optional 6-digit OTP code
+   * @minLength 6
+   * @maxLength 6
+   * @pattern ^[0-9]{6}$
+   */
+  code?: string;
+  /**
+   * Email or username for authentication
+   * @minLength 1
+   */
+  identifier: string;
+  /** How the magic link was delivered */
+  deliveryMethod?: MagicLinkTokenDeliveryMethod;
+  /** When the token expires */
+  expiresAt: string;
+  /** When the token was used (null if unused) */
+  usedAt?: MagicLinkTokenUsedAt;
+  /** IP address of the request */
+  ipAddress?: string;
+  /** User agent of the request */
+  userAgent?: string;
+  /** When the token was created */
+  createdAt: string;
+}
+
 export type APIKeyAllOf = {
   /**
    * The user who owns this API key
@@ -289,7 +399,7 @@ export type MemberAllOfRole = typeof MemberAllOfRole[keyof typeof MemberAllOfRol
 export const MemberAllOfRole = {
   admin: 'admin',
   owner: 'owner',
-  user: 'user',
+  basic: 'basic',
 } as const;
 
 export type MemberAllOf = {
@@ -322,7 +432,7 @@ export type InvitationAllOfRole = typeof InvitationAllOfRole[keyof typeof Invita
 export const InvitationAllOfRole = {
   admin: 'admin',
   owner: 'owner',
-  member: 'member',
+  basic: 'basic',
 } as const;
 
 export type InvitationAllOf = {
@@ -377,6 +487,8 @@ export type PipelineAllOf = {
    * @maxLength 1000
    */
   description?: string;
+  /** Whether the pipeline is enabled for execution */
+  isEnabled?: boolean;
 };
 
 /**
@@ -1411,24 +1523,63 @@ export type TooManyRequestsResponse = Problem;
 export type InternalServerErrorResponse = Problem;
 
 /**
- * A recursive filter node that can be a condition or group
+ * The type of filter operation
+ * @minLength 1
  */
-export type AccountsFilterParameter = { [key: string]: unknown };
+export type AccountsFilterParameterType = typeof AccountsFilterParameterType[keyof typeof AccountsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AccountsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
 
 /**
- * Pagination (page number & size)
+ * A recursive filter node that can be a condition or group
+ */
+export type AccountsFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: AccountsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
+
+/**
+ * Pagination parameters (limit & offset)
  */
 export type PageQueryParameter = {
   /**
-   * @minimum 1
-   * @maximum 9007199254740991
-   */
-  number?: number;
-  /**
+   * Maximum number of items to return
    * @minimum 1
    * @maximum 100
    */
-  size?: number;
+  limit?: number;
+  /**
+   * Number of items to skip before starting to collect the result set
+   * @minimum 0
+   * @maximum 9007199254740991
+   */
+  offset?: number;
 };
 
 export type AccountsSortParameterItemField = typeof AccountsSortParameterItemField[keyof typeof AccountsSortParameterItemField];
@@ -1470,9 +1621,46 @@ export type AccountsSortParameterItem = {
 export type AccountsSortParameter = AccountsSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type SessionsFilterParameterType = typeof SessionsFilterParameterType[keyof typeof SessionsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type SessionsFilterParameter = { [key: string]: unknown };
+export type SessionsFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: SessionsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type SessionsSortParameterItemField = typeof SessionsSortParameterItemField[keyof typeof SessionsSortParameterItemField];
 
@@ -1510,9 +1698,46 @@ export type SessionsSortParameterItem = {
 export type SessionsSortParameter = SessionsSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type UsersFilterParameterType = typeof UsersFilterParameterType[keyof typeof UsersFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type UsersFilterParameter = { [key: string]: unknown };
+export type UsersFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: UsersFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type UsersSortParameterItemField = typeof UsersSortParameterItemField[keyof typeof UsersSortParameterItemField];
 
@@ -1548,9 +1773,46 @@ export type UsersSortParameterItem = {
 export type UsersSortParameter = UsersSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type APIKeysFilterParameterType = typeof APIKeysFilterParameterType[keyof typeof APIKeysFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const APIKeysFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type APIKeysFilterParameter = { [key: string]: unknown };
+export type APIKeysFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: APIKeysFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type APIKeysSortParameterItemField = typeof APIKeysSortParameterItemField[keyof typeof APIKeysSortParameterItemField];
 
@@ -1590,9 +1852,46 @@ export type APIKeysSortParameterItem = {
 export type APIKeysSortParameter = APIKeysSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type OrganizationsFilterParameterType = typeof OrganizationsFilterParameterType[keyof typeof OrganizationsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type OrganizationsFilterParameter = { [key: string]: unknown };
+export type OrganizationsFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: OrganizationsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type OrganizationsSortParameterItemField = typeof OrganizationsSortParameterItemField[keyof typeof OrganizationsSortParameterItemField];
 
@@ -1632,9 +1931,46 @@ export type OrganizationsSortParameterItem = {
 export type OrganizationsSortParameter = OrganizationsSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type MembersFilterParameterType = typeof MembersFilterParameterType[keyof typeof MembersFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type MembersFilterParameter = { [key: string]: unknown };
+export type MembersFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: MembersFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type MembersSortParameterItemField = typeof MembersSortParameterItemField[keyof typeof MembersSortParameterItemField];
 
@@ -1669,9 +2005,46 @@ export type MembersSortParameterItem = {
 export type MembersSortParameter = MembersSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type InvitationsFilterParameterType = typeof InvitationsFilterParameterType[keyof typeof InvitationsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type InvitationsFilterParameter = { [key: string]: unknown };
+export type InvitationsFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: InvitationsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type InvitationsSortParameterItemField = typeof InvitationsSortParameterItemField[keyof typeof InvitationsSortParameterItemField];
 
@@ -1709,9 +2082,46 @@ export type InvitationsSortParameterItem = {
 export type InvitationsSortParameter = InvitationsSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type PipelinesFilterParameterType = typeof PipelinesFilterParameterType[keyof typeof PipelinesFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type PipelinesFilterParameter = { [key: string]: unknown };
+export type PipelinesFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: PipelinesFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type PipelinesSortParameterItemField = typeof PipelinesSortParameterItemField[keyof typeof PipelinesSortParameterItemField];
 
@@ -1746,9 +2156,46 @@ export type PipelinesSortParameterItem = {
 export type PipelinesSortParameter = PipelinesSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type RunsFilterParameterType = typeof RunsFilterParameterType[keyof typeof RunsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type RunsFilterParameter = { [key: string]: unknown };
+export type RunsFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: RunsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type RunsSortParameterItemField = typeof RunsSortParameterItemField[keyof typeof RunsSortParameterItemField];
 
@@ -1788,9 +2235,46 @@ export type RunsSortParameterItem = {
 export type RunsSortParameter = RunsSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type ToolsFilterParameterType = typeof ToolsFilterParameterType[keyof typeof ToolsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type ToolsFilterParameter = { [key: string]: unknown };
+export type ToolsFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: ToolsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type ToolsSortParameterItemField = typeof ToolsSortParameterItemField[keyof typeof ToolsSortParameterItemField];
 
@@ -1827,9 +2311,46 @@ export type ToolsSortParameterItem = {
 export type ToolsSortParameter = ToolsSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type ArtifactsFilterParameterType = typeof ArtifactsFilterParameterType[keyof typeof ArtifactsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type ArtifactsFilterParameter = { [key: string]: unknown };
+export type ArtifactsFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: ArtifactsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type ArtifactsSortParameterItemField = typeof ArtifactsSortParameterItemField[keyof typeof ArtifactsSortParameterItemField];
 
@@ -1870,9 +2391,46 @@ export type ArtifactsSortParameterItem = {
 export type ArtifactsSortParameter = ArtifactsSortParameterItem[];
 
 /**
+ * The type of filter operation
+ * @minLength 1
+ */
+export type LabelsFilterParameterType = typeof LabelsFilterParameterType[keyof typeof LabelsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
  * A recursive filter node that can be a condition or group
  */
-export type LabelsFilterParameter = { [key: string]: unknown };
+export type LabelsFilterParameter = {
+  /**
+   * The type of filter operation
+   * @minLength 1
+   */
+  type: LabelsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+};
 
 export type LabelsSortParameterItemField = typeof LabelsSortParameterItemField[keyof typeof LabelsSortParameterItemField];
 
@@ -1911,7 +2469,7 @@ export type ListAccountsParams = {
  */
 filter?: AccountsFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2042,7 +2600,7 @@ export type ListSessionsParams = {
  */
 filter?: SessionsFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2103,7 +2661,7 @@ export type ListUsersParams = {
  */
 filter?: UsersFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2222,6 +2780,8 @@ export type RequestMagicLink200 = {
   otpCode?: string;
   /** Token expiry in seconds */
   expiresIn?: number;
+  /** Magic link token details (for internal use) */
+  token?: MagicLinkToken;
 };
 
 export type VerifyMagicLinkBody = {
@@ -2247,7 +2807,7 @@ export type ListAPIKeysParams = {
  */
 filter?: APIKeysFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2323,7 +2883,7 @@ export type ListOrganizationsParams = {
  */
 filter?: OrganizationsFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2392,7 +2952,7 @@ export type ListMembersParams = {
  */
 filter?: MembersFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2474,7 +3034,7 @@ export type ListInvitationsParams = {
  */
 filter?: InvitationsFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2548,7 +3108,7 @@ export type ListPipelinesParams = {
  */
 filter?: PipelinesFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2680,7 +3240,7 @@ export type ListRunsParams = {
  */
 filter?: RunsFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2742,7 +3302,7 @@ export type ListToolsParams = {
  */
 filter?: ToolsFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2809,7 +3369,7 @@ export type ListArtifactsParams = {
  */
 filter?: ArtifactsFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**
@@ -2870,7 +3430,7 @@ export type ListLabelsParams = {
  */
 filter?: LabelsFilterParameter;
 /**
- * Pagination (page number & size)
+ * Pagination parameters (limit & offset)
  */
 page?: PageQueryParameter;
 /**

@@ -1,0 +1,164 @@
+package valueobjects
+
+import (
+	"time"
+)
+
+// ComponentName represents the name of a system component
+type ComponentName string
+
+const (
+	// ComponentNameDatabase represents the database component
+	ComponentNameDatabase ComponentName = "database"
+	// ComponentNameRedis represents the Redis component
+	ComponentNameRedis ComponentName = "redis"
+	// ComponentNameEmail represents the email service component
+	ComponentNameEmail ComponentName = "email"
+	// ComponentNameStorage represents the storage component
+	ComponentNameStorage ComponentName = "storage"
+)
+
+// String returns the string representation of ComponentName
+func (c ComponentName) String() string {
+	return string(c)
+}
+
+// IsValid checks if the ComponentName is valid
+func (c ComponentName) IsValid() bool {
+	switch c {
+	case ComponentNameDatabase, ComponentNameRedis, ComponentNameEmail, ComponentNameStorage:
+		return true
+	default:
+		return false
+	}
+}
+
+// HealthStatus represents the health status of a component
+type HealthStatus string
+
+const (
+	// HealthStatusHealthy indicates the component is functioning normally
+	HealthStatusHealthy HealthStatus = "healthy"
+	// HealthStatusUnhealthy indicates the component has critical issues
+	HealthStatusUnhealthy HealthStatus = "unhealthy"
+	// HealthStatusDegraded indicates the component is operational but with issues
+	HealthStatusDegraded HealthStatus = "degraded"
+)
+
+// String returns the string representation of HealthStatus
+func (h HealthStatus) String() string {
+	return string(h)
+}
+
+// HealthCheckResult represents the result of a health check for a single component
+type HealthCheckResult struct {
+	Component ComponentName `json:"component"`
+	Status    HealthStatus  `json:"status"`
+	Message   string        `json:"message,omitempty"`
+	Error     string        `json:"error,omitempty"`
+	Latency   time.Duration `json:"latency"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// NewHealthCheckResult creates a new health check result
+func NewHealthCheckResult(component ComponentName, status HealthStatus) *HealthCheckResult {
+	return &HealthCheckResult{
+		Component: component,
+		Status:    status,
+		Timestamp: time.Now().UTC(),
+	}
+}
+
+// NewHealthCheckResultWithError creates a health check result from an error
+func NewHealthCheckResultWithError(component ComponentName, err error, latency time.Duration) *HealthCheckResult {
+	result := &HealthCheckResult{
+		Component: component,
+		Latency:   latency,
+		Timestamp: time.Now().UTC(),
+	}
+
+	if err != nil {
+		result.Status = HealthStatusUnhealthy
+		result.Error = err.Error()
+		result.Message = "Component check failed"
+	} else {
+		result.Status = HealthStatusHealthy
+		result.Message = "Component is healthy"
+	}
+
+	return result
+}
+
+// IsHealthy returns true if the component is healthy
+func (h *HealthCheckResult) IsHealthy() bool {
+	return h.Status == HealthStatusHealthy
+}
+
+// IsOperational returns true if the component is operational (healthy or degraded)
+func (h *HealthCheckResult) IsOperational() bool {
+	return h.Status == HealthStatusHealthy || h.Status == HealthStatusDegraded
+}
+
+// AggregatedHealthCheckResult represents the aggregated health status of all components
+type AggregatedHealthCheckResult struct {
+	Status    HealthStatus         `json:"status"`
+	Uptime    time.Duration        `json:"uptime"`
+	Results   []*HealthCheckResult `json:"results"`
+	Services  map[string]string    `json:"services"`
+	Timestamp time.Time            `json:"timestamp"`
+}
+
+// NewAggregatedHealthCheckResult creates a new aggregated health check result
+func NewAggregatedHealthCheckResult(results []*HealthCheckResult, uptime time.Duration) *AggregatedHealthCheckResult {
+	aggregated := &AggregatedHealthCheckResult{
+		Results:   results,
+		Uptime:    uptime,
+		Services:  make(map[string]string),
+		Timestamp: time.Now().UTC(),
+	}
+
+	// Determine overall status and build services map
+	allHealthy := true
+	anyOperational := false
+
+	for _, result := range results {
+		aggregated.Services[result.Component.String()] = result.Status.String()
+
+		if !result.IsHealthy() {
+			allHealthy = false
+		}
+		if result.IsOperational() {
+			anyOperational = true
+		}
+	}
+
+	if allHealthy {
+		aggregated.Status = HealthStatusHealthy
+	} else if anyOperational {
+		aggregated.Status = HealthStatusDegraded
+	} else {
+		aggregated.Status = HealthStatusUnhealthy
+	}
+
+	return aggregated
+}
+
+// IsHealthy returns true if all components are healthy
+func (a *AggregatedHealthCheckResult) IsHealthy() bool {
+	return a.Status == HealthStatusHealthy
+}
+
+// IsOperational returns true if the system is operational (healthy or degraded)
+func (a *AggregatedHealthCheckResult) IsOperational() bool {
+	return a.Status == HealthStatusHealthy || a.Status == HealthStatusDegraded
+}
+
+// GetComponentResult returns the health check result for a specific component
+func (a *AggregatedHealthCheckResult) GetComponentResult(component ComponentName) *HealthCheckResult {
+	for _, result := range a.Results {
+		if result.Component == component {
+			return result
+		}
+	}
+	return nil
+}

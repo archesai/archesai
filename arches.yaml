@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=api/components/schemas/Config.yaml
+# yaml-language-server: $schema=api/components/schemas/config/Config.yaml
 api:
   cors: localhost
   docs: true
@@ -15,9 +15,332 @@ auth:
   enabled: false
 
 database:
+  type: postgresql
   enabled: true
   url: postgresql://admin:password@localhost:5432/archesai
 # EACH SESSION IS BASICALLY A DEV SESSION
 # MCP HOOKED UP TO THE MAKEFILE
 # CAN GENERATE ENTIRE API WITH PERMISSION FROMS SCHEMA
 # CONTAINER CAN RESTART WITH ADDITIONAL CODE IT HAS GENERATED
+# WHEN YOU ADD HOOKS IN THE FREE VERSION, IT WILL CALL THE CODE FROM UR BROWSWER VIA WEBHOOKS
+# FOR CUSTOM ACTIONS ON THE ENTITY YOU CAN WRITE HOOKS, ADD EVENTS, ETC
+
+# package entities
+
+# import (
+# 	"fmt"
+# 	"time"
+
+# 	"github.com/archesai/archesai/internal/core/events"
+# 	"github.com/archesai/archesai/internal/core/valueobjects"
+# )
+
+# // PipelineStep represents a single step in a pipeline.
+# type PipelineStep struct {
+# 	id           valueobjects.PipelineStepID
+# 	pipelineID   valueobjects.PipelineID
+# 	toolID       valueobjects.ToolID
+# 	name         string
+# 	description  string
+# 	order        int
+# 	dependencies []valueobjects.PipelineStepID
+# 	config       map[string]interface{}
+# 	timeout      time.Duration
+# 	retryPolicy  RetryPolicy
+# 	status       valueobjects.PipelineStepStatus
+# 	runID        *valueobjects.RunID
+# 	startedAt    *time.Time
+# 	completedAt  *time.Time
+# 	error        string
+# 	createdAt    time.Time
+# 	updatedAt    time.Time
+# 	events       []events.DomainEvent
+# }
+
+# // RetryPolicy defines retry behavior for a step.
+# type RetryPolicy struct {
+# 	MaxAttempts int
+# 	BackoffType string // "exponential", "linear", "constant"
+# 	Delay       time.Duration
+# 	MaxDelay    time.Duration
+# }
+
+# // NewPipelineStep creates a new pipeline step.
+# func NewPipelineStep(
+# 	pipelineID valueobjects.PipelineID,
+# 	toolID valueobjects.ToolID,
+# 	name string,
+# 	order int,
+# ) (*PipelineStep, error) {
+# 	if pipelineID.IsZero() {
+# 		return nil, fmt.Errorf("pipeline ID is required")
+# 	}
+
+# 	if toolID.IsZero() {
+# 		return nil, fmt.Errorf("tool ID is required")
+# 	}
+
+# 	if name == "" {
+# 		return nil, fmt.Errorf("step name is required")
+# 	}
+
+# 	if order < 0 {
+# 		return nil, fmt.Errorf("step order must be non-negative")
+# 	}
+
+# 	now := time.Now().UTC()
+
+# 	step := &PipelineStep{
+# 		id:           valueobjects.NewPipelineStepID(),
+# 		pipelineID:   pipelineID,
+# 		toolID:       toolID,
+# 		name:         name,
+# 		order:        order,
+# 		dependencies: []valueobjects.PipelineStepID{},
+# 		config:       make(map[string]interface{}),
+# 		timeout:      5 * time.Minute, // Default timeout
+# 		retryPolicy: RetryPolicy{
+# 			MaxAttempts: 3,
+# 			BackoffType: "exponential",
+# 			Delay:       time.Second,
+# 			MaxDelay:    30 * time.Second,
+# 		},
+# 		status:    valueobjects.PipelineStepStatusPending,
+# 		createdAt: now,
+# 		updatedAt: now,
+# 		events:    []events.DomainEvent{},
+# 	}
+
+# 	return step, nil
+# }
+
+# // AddDependency adds a dependency to this step.
+# func (ps *PipelineStep) AddDependency(stepID valueobjects.PipelineStepID) error {
+# 	if stepID.IsZero() {
+# 		return fmt.Errorf("dependency step ID cannot be zero")
+# 	}
+
+# 	// Check for circular dependency (simplified check)
+# 	if stepID.Equals(ps.id) {
+# 		return fmt.Errorf("step cannot depend on itself")
+# 	}
+
+# 	// Check if dependency already exists
+# 	for _, dep := range ps.dependencies {
+# 		if dep.Equals(stepID) {
+# 			return nil // Already exists
+# 		}
+# 	}
+
+# 	ps.dependencies = append(ps.dependencies, stepID)
+# 	ps.updatedAt = time.Now().UTC()
+
+# 	return nil
+# }
+
+# // RemoveDependency removes a dependency from this step.
+# func (ps *PipelineStep) RemoveDependency(stepID valueobjects.PipelineStepID) {
+# 	newDeps := []valueobjects.PipelineStepID{}
+# 	for _, dep := range ps.dependencies {
+# 		if !dep.Equals(stepID) {
+# 			newDeps = append(newDeps, dep)
+# 		}
+# 	}
+# 	ps.dependencies = newDeps
+# 	ps.updatedAt = time.Now().UTC()
+# }
+
+# // SetConfiguration sets the configuration for this step.
+# func (ps *PipelineStep) SetConfiguration(config map[string]interface{}) {
+# 	ps.config = config
+# 	ps.updatedAt = time.Now().UTC()
+# }
+
+# // SetTimeout sets the timeout for this step.
+# func (ps *PipelineStep) SetTimeout(timeout time.Duration) error {
+# 	if timeout <= 0 {
+# 		return fmt.Errorf("timeout must be positive")
+# 	}
+# 	ps.timeout = timeout
+# 	ps.updatedAt = time.Now().UTC()
+# 	return nil
+# }
+
+# // SetRetryPolicy sets the retry policy for this step.
+# func (ps *PipelineStep) SetRetryPolicy(policy RetryPolicy) error {
+# 	if policy.MaxAttempts < 1 {
+# 		return fmt.Errorf("max attempts must be at least 1")
+# 	}
+# 	if policy.Delay <= 0 {
+# 		return fmt.Errorf("delay must be positive")
+# 	}
+# 	ps.retryPolicy = policy
+# 	ps.updatedAt = time.Now().UTC()
+# 	return nil
+# }
+
+# // AssignRun assigns a run to this step.
+# func (ps *PipelineStep) AssignRun(runID valueobjects.RunID) error {
+# 	if ps.runID != nil {
+# 		return fmt.Errorf("step already has an assigned run")
+# 	}
+# 	ps.runID = &runID
+# 	ps.status = valueobjects.PipelineStepStatusRunning
+# 	now := time.Now().UTC()
+# 	ps.startedAt = &now
+# 	ps.updatedAt = now
+# 	return nil
+# }
+
+# // MarkCompleted marks the step as completed.
+# func (ps *PipelineStep) MarkCompleted() error {
+# 	if !ps.status.CanTransitionTo(valueobjects.PipelineStepStatusCompleted) {
+# 		return fmt.Errorf("cannot mark step as completed from status %s", ps.status)
+# 	}
+# 	ps.status = valueobjects.PipelineStepStatusCompleted
+# 	now := time.Now().UTC()
+# 	ps.completedAt = &now
+# 	ps.updatedAt = now
+# 	return nil
+# }
+
+# // MarkFailed marks the step as failed.
+# func (ps *PipelineStep) MarkFailed() error {
+# 	if !ps.status.CanTransitionTo(valueobjects.PipelineStepStatusFailed) {
+# 		return fmt.Errorf("cannot mark step as failed from status %s", ps.status)
+# 	}
+# 	ps.status = valueobjects.PipelineStepStatusFailed
+# 	now := time.Now().UTC()
+# 	ps.completedAt = &now
+# 	ps.updatedAt = now
+# 	return nil
+# }
+
+# // Skip marks the step as skipped.
+# func (ps *PipelineStep) Skip() error {
+# 	if !ps.status.CanTransitionTo(valueobjects.PipelineStepStatusSkipped) {
+# 		return fmt.Errorf("cannot skip step from status %s", ps.status)
+# 	}
+# 	ps.status = valueobjects.PipelineStepStatusSkipped
+# 	now := time.Now().UTC()
+# 	ps.completedAt = &now
+# 	ps.updatedAt = now
+# 	return nil
+# }
+
+# // IsReady checks if all dependencies are met and the step is ready to run.
+# func (ps *PipelineStep) IsReady(completedSteps map[valueobjects.PipelineStepID]bool) bool {
+# 	if ps.status != valueobjects.PipelineStepStatusPending {
+# 		return false
+# 	}
+
+# 	for _, dep := range ps.dependencies {
+# 		if !completedSteps[dep] {
+# 			return false
+# 		}
+# 	}
+
+# 	return true
+# }
+
+# // IsCompleted returns true if the step is completed successfully.
+# func (ps *PipelineStep) IsCompleted() bool {
+# 	return ps.status == valueobjects.PipelineStepStatusCompleted
+# }
+
+# // IsTerminal returns true if the step is in a terminal state.
+# func (ps *PipelineStep) IsTerminal() bool {
+# 	return ps.status.IsTerminal()
+# }
+
+# // GetDependencyIDs returns the IDs of dependencies as strings.
+# func (ps *PipelineStep) GetDependencyIDs() []string {
+# 	ids := make([]string, len(ps.dependencies))
+# 	for i, dep := range ps.dependencies {
+# 		ids[i] = dep.String()
+# 	}
+# 	return ids
+# }
+
+# // Duration returns the duration of the step execution.
+# func (ps *PipelineStep) Duration() *time.Duration {
+# 	if ps.startedAt == nil {
+# 		return nil
+# 	}
+
+# 	endTime := ps.completedAt
+# 	if endTime == nil {
+# 		now := time.Now().UTC()
+# 		endTime = &now
+# 	}
+
+# 	duration := endTime.Sub(*ps.startedAt)
+# 	return &duration
+# }
+
+# // Getters
+
+# // ID returns the step's unique identifier.
+# func (ps *PipelineStep) ID() valueobjects.PipelineStepID {
+# 	return ps.id
+# }
+
+# // PipelineID returns the pipeline this step belongs to.
+# func (ps *PipelineStep) PipelineID() valueobjects.PipelineID {
+# 	return ps.pipelineID
+# }
+
+# // ToolID returns the tool used in this step.
+# func (ps *PipelineStep) ToolID() valueobjects.ToolID {
+# 	return ps.toolID
+# }
+
+# // Name returns the step's name.
+# func (ps *PipelineStep) Name() string {
+# 	return ps.name
+# }
+
+# // Description returns the step's description.
+# func (ps *PipelineStep) Description() string {
+# 	return ps.description
+# }
+
+# // Order returns the step's order in the pipeline.
+# func (ps *PipelineStep) Order() int {
+# 	return ps.order
+# }
+
+# // Status returns the current status of the step.
+# func (ps *PipelineStep) Status() valueobjects.PipelineStepStatus {
+# 	return ps.status
+# }
+
+# // RunID returns the assigned run ID.
+# func (ps *PipelineStep) RunID() *valueobjects.RunID {
+# 	return ps.runID
+# }
+
+# // Error returns the error message if the step failed.
+# func (ps *PipelineStep) Error() string {
+# 	return ps.error
+# }
+
+# // CreatedAt returns when the step was created.
+# func (ps *PipelineStep) CreatedAt() time.Time {
+# 	return ps.createdAt
+# }
+
+# // UpdatedAt returns when the step was last updated.
+# func (ps *PipelineStep) UpdatedAt() time.Time {
+# 	return ps.updatedAt
+# }
+
+# // Events returns the domain events.
+# func (ps *PipelineStep) Events() []events.DomainEvent {
+# 	return ps.events
+# }
+
+# // ClearEvents clears the domain events.
+# func (ps *PipelineStep) ClearEvents() {
+# 	ps.events = []events.DomainEvent{}
+# }

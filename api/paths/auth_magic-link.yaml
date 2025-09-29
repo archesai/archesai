@@ -55,6 +55,9 @@
                   description: Token expiry in seconds
                   type: integer
                   example: 900
+                token:
+                  description: Magic link token details (for internal use)
+                  $ref: '../components/schemas/MagicLinkToken.yaml'
       '400':
         $ref: '../components/responses/BadRequest.yaml'
       '429':

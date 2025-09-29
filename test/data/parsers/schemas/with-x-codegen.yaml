@@ -1,0 +1,60 @@
+# Schema with x-codegen extension
+x-codegen:
+  type: entity
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [email, username]
+    additional_methods:
+      - name: GetByEmail
+        params: [email]
+        returns: single
+      - name: GetByUsername
+        params: [username]
+        returns: single
+      - name: ListActive
+        params: []
+        returns: multiple
+    soft_delete: true
+    timestamps: true
+    table_name: users
+  service:
+    generate: true
+    transaction_support: true
+    error_handling: error_return
+    logging:
+      level: info
+      structured: true
+    custom_operations:
+      - name: ActivateUser
+        operation_id: activateUser
+        method: POST
+  handler:
+    generate: true
+    path_prefix: /api/v1
+    pagination:
+      default_limit: 20
+      max_limit: 100
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  username:
+    type: string
+    minLength: 3
+    maxLength: 50
+    pattern: '^[a-zA-Z0-9_]+$'
+  email:
+    type: string
+    format: email
+  isActive:
+    type: boolean
+    default: false
+  role:
+    type: string
+    enum: [admin, moderator, user]
+    default: user
+required:
+  - id
+  - username
+  - email

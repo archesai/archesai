@@ -1,7 +1,8 @@
-# yaml-language-server: $schema=https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 description: Schema for Tool entity
+title: Tool
 x-codegen:
-  domain: tools
+  schemaType: aggregate
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID]

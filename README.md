@@ -91,7 +91,7 @@ For detailed installation and setup instructions, see
 
 #### AI & Chat
 
-- [LLM Package](internal/llm/) - Multi-provider LLM interface with chat clients
+- [LLM Package](internal/adapters/llm/) - Multi-provider LLM interface with chat clients
 
 #### Core Domains
 
@@ -103,7 +103,7 @@ For detailed installation and setup instructions, see
 #### Infrastructure
 
 - [Database](internal/database/) - Database layer
-- [Config](internal/config/) - Configuration management
+- [Config](internal/infrastructure/config/) - Configuration management
 - [CLI](internal/cli/) - Command-line interface
 - [TUI](internal/tui/) - Terminal user interface
 

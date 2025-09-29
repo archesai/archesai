@@ -13,19 +13,29 @@ import {
  * List accounts
  * @summary List accounts
  */
-export const listAccountsQueryPageNumberDefault = 1;
-export const listAccountsQueryPageNumberMax = 9007199254740991;
-export const listAccountsQueryPageSizeDefault = 10;
-export const listAccountsQueryPageSizeMax = 100;
+export const listAccountsQueryPageLimitDefault = 10;
+export const listAccountsQueryPageLimitMax = 100;
+export const listAccountsQueryPageOffsetDefault = 0;
+export const listAccountsQueryPageOffsetMin = 0;
+
+export const listAccountsQueryPageOffsetMax = 9007199254740991;
 
 
 export const listAccountsQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter accounts by field values. Supported fields:\n- createdAt, id, updatedAt, accessToken, accessTokenExpiresAt\n- accountID, idToken, password, providerID, refreshToken\n- refreshTokenExpiresAt, scope, userID\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listAccountsQueryPageNumberMax).default(listAccountsQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listAccountsQueryPageSizeMax).default(listAccountsQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listAccountsQueryPageLimitMax).default(listAccountsQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listAccountsQueryPageOffsetMin).max(listAccountsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'accessToken', 'accessTokenExpiresAt', 'accountID', 'idToken', 'providerID', 'refreshToken', 'refreshTokenExpiresAt', 'scope', 'userID']),
@@ -283,19 +293,29 @@ export const confirmEmailChangeBody = zod.object({
  * List user sessions
  * @summary List sessions
  */
-export const listSessionsQueryPageNumberDefault = 1;
-export const listSessionsQueryPageNumberMax = 9007199254740991;
-export const listSessionsQueryPageSizeDefault = 10;
-export const listSessionsQueryPageSizeMax = 100;
+export const listSessionsQueryPageLimitDefault = 10;
+export const listSessionsQueryPageLimitMax = 100;
+export const listSessionsQueryPageOffsetDefault = 0;
+export const listSessionsQueryPageOffsetMin = 0;
+
+export const listSessionsQueryPageOffsetMax = 9007199254740991;
 
 
 export const listSessionsQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter sessions by field values. Supported fields:\n- createdAt, id, updatedAt, organizationID, expiresAt\n- ipAddress, token, userAgent, userID\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listSessionsQueryPageNumberMax).default(listSessionsQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listSessionsQueryPageSizeMax).default(listSessionsQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listSessionsQueryPageLimitMax).default(listSessionsQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listSessionsQueryPageOffsetMin).max(listSessionsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'organizationID', 'expiresAt', 'ipAddress', 'token', 'userAgent', 'userID']),
@@ -456,19 +476,29 @@ export const updateSessionResponse = zod.object({
  * List users
  * @summary List users
  */
-export const listUsersQueryPageNumberDefault = 1;
-export const listUsersQueryPageNumberMax = 9007199254740991;
-export const listUsersQueryPageSizeDefault = 10;
-export const listUsersQueryPageSizeMax = 100;
+export const listUsersQueryPageLimitDefault = 10;
+export const listUsersQueryPageLimitMax = 100;
+export const listUsersQueryPageOffsetDefault = 0;
+export const listUsersQueryPageOffsetMin = 0;
+
+export const listUsersQueryPageOffsetMax = 9007199254740991;
 
 
 export const listUsersQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter users by field values. Supported fields:\n- createdAt, id, updatedAt, email, emailVerified, image, name\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listUsersQueryPageNumberMax).default(listUsersQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listUsersQueryPageSizeMax).default(listUsersQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listUsersQueryPageLimitMax).default(listUsersQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listUsersQueryPageOffsetMin).max(listUsersQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'email', 'emailVerified', 'image', 'name']),
@@ -683,12 +713,37 @@ export const requestMagicLinkBody = zod.object({
 export const requestMagicLinkResponseOtpCodeMin = 6;
 
 export const requestMagicLinkResponseOtpCodeMax = 6;
+export const requestMagicLinkResponseTokenIdMin = 36;
+export const requestMagicLinkResponseTokenUserIDMin = 36;
+export const requestMagicLinkResponseTokenTokenMin = 32;
+export const requestMagicLinkResponseTokenTokenHashMin = 64;
+
+export const requestMagicLinkResponseTokenTokenHashMax = 64;
+export const requestMagicLinkResponseTokenCodeMin = 6;
+
+export const requestMagicLinkResponseTokenCodeMax = 6;
+
+export const requestMagicLinkResponseTokenCodeRegExp = new RegExp('^[0-9]{6}$');
 
 
 export const requestMagicLinkResponse = zod.object({
   "message": zod.string().optional(),
   "otpCode": zod.string().min(requestMagicLinkResponseOtpCodeMin).max(requestMagicLinkResponseOtpCodeMax).optional().describe('OTP code (only returned if deliveryMethod is \'otp\')'),
-  "expiresIn": zod.number().optional().describe('Token expiry in seconds')
+  "expiresIn": zod.number().optional().describe('Token expiry in seconds'),
+  "token": zod.object({
+  "id": zod.uuid().min(requestMagicLinkResponseTokenIdMin).describe('Unique identifier for the magic link token'),
+  "userID": zod.uuid().min(requestMagicLinkResponseTokenUserIDMin).optional().describe('User ID if token is for existing user'),
+  "token": zod.string().min(requestMagicLinkResponseTokenTokenMin).optional().describe('The raw magic link token'),
+  "tokenHash": zod.string().min(requestMagicLinkResponseTokenTokenHashMin).max(requestMagicLinkResponseTokenTokenHashMax).describe('SHA256 hash of the magic link token'),
+  "code": zod.string().min(requestMagicLinkResponseTokenCodeMin).max(requestMagicLinkResponseTokenCodeMax).regex(requestMagicLinkResponseTokenCodeRegExp).optional().describe('Optional 6-digit OTP code'),
+  "identifier": zod.string().min(1).describe('Email or username for authentication'),
+  "deliveryMethod": zod.enum(['email', 'console', 'webhook', 'otp', 'file']).optional().describe('How the magic link was delivered'),
+  "expiresAt": zod.iso.datetime({}).describe('When the token expires'),
+  "usedAt": zod.union([zod.iso.datetime({}),zod.null()]).optional().describe('When the token was used (null if unused)'),
+  "ipAddress": zod.string().optional().describe('IP address of the request'),
+  "userAgent": zod.string().optional().describe('User agent of the request'),
+  "createdAt": zod.iso.datetime({}).describe('When the token was created')
+}).optional().describe('Schema for MagicLinkToken entity')
 })
 
 
@@ -715,19 +770,29 @@ export const verifyMagicLinkBody = zod.object({
  * List user's tokens (without showing the actual key values)
  * @summary List tokens
  */
-export const listAPIKeysQueryPageNumberDefault = 1;
-export const listAPIKeysQueryPageNumberMax = 9007199254740991;
-export const listAPIKeysQueryPageSizeDefault = 10;
-export const listAPIKeysQueryPageSizeMax = 100;
+export const listAPIKeysQueryPageLimitDefault = 10;
+export const listAPIKeysQueryPageLimitMax = 100;
+export const listAPIKeysQueryPageOffsetDefault = 0;
+export const listAPIKeysQueryPageOffsetMin = 0;
+
+export const listAPIKeysQueryPageOffsetMax = 9007199254740991;
 
 
 export const listAPIKeysQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter API keys by field values. Supported fields:\n- createdAt, id, updatedAt, userID, organizationID\n- keyHash, name, prefix, rateLimit, lastUsedAt, expiresAt\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listAPIKeysQueryPageNumberMax).default(listAPIKeysQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listAPIKeysQueryPageSizeMax).default(listAPIKeysQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listAPIKeysQueryPageLimitMax).default(listAPIKeysQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listAPIKeysQueryPageOffsetMin).max(listAPIKeysQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'userID', 'organizationID', 'keyHash', 'name', 'prefix', 'rateLimit', 'lastUsedAt', 'expiresAt']),
@@ -883,19 +948,29 @@ export const createOrganizationBody = zod.object({
  * List organizations
  * @summary List organizations
  */
-export const listOrganizationsQueryPageNumberDefault = 1;
-export const listOrganizationsQueryPageNumberMax = 9007199254740991;
-export const listOrganizationsQueryPageSizeDefault = 10;
-export const listOrganizationsQueryPageSizeMax = 100;
+export const listOrganizationsQueryPageLimitDefault = 10;
+export const listOrganizationsQueryPageLimitMax = 100;
+export const listOrganizationsQueryPageOffsetDefault = 0;
+export const listOrganizationsQueryPageOffsetMin = 0;
+
+export const listOrganizationsQueryPageOffsetMax = 9007199254740991;
 
 
 export const listOrganizationsQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter organizations by field values. Supported fields:\n- createdAt, id, updatedAt, billingEmail, credits, logo\n- metadata, name, plan, slug, stripeCustomerID\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listOrganizationsQueryPageNumberMax).default(listOrganizationsQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listOrganizationsQueryPageSizeMax).default(listOrganizationsQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listOrganizationsQueryPageLimitMax).default(listOrganizationsQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listOrganizationsQueryPageOffsetMin).max(listOrganizationsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'billingEmail', 'credits', 'logo', 'metadata', 'name', 'plan', 'slug', 'stripeCustomerID']),
@@ -1080,19 +1155,29 @@ export const listMembersParams = zod.object({
   "id": zod.string().describe('Organization ID')
 })
 
-export const listMembersQueryPageNumberDefault = 1;
-export const listMembersQueryPageNumberMax = 9007199254740991;
-export const listMembersQueryPageSizeDefault = 10;
-export const listMembersQueryPageSizeMax = 100;
+export const listMembersQueryPageLimitDefault = 10;
+export const listMembersQueryPageLimitMax = 100;
+export const listMembersQueryPageOffsetDefault = 0;
+export const listMembersQueryPageOffsetMin = 0;
+
+export const listMembersQueryPageOffsetMax = 9007199254740991;
 
 
 export const listMembersQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter members by field values. Supported fields:\n- createdAt, id, updatedAt, organizationID, role, userID\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listMembersQueryPageNumberMax).default(listMembersQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listMembersQueryPageSizeMax).default(listMembersQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listMembersQueryPageLimitMax).default(listMembersQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listMembersQueryPageOffsetMin).max(listMembersQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'organizationID', 'role', 'userID']),
@@ -1112,7 +1197,7 @@ export const listMembersResponse = zod.object({
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "organizationID": zod.uuid().min(listMembersResponseDataItemOrganizationIDMin).describe('The organization this member belongs to'),
-  "role": zod.enum(['admin', 'owner', 'user']).describe('The role of the member'),
+  "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the member'),
   "userID": zod.uuid().min(listMembersResponseDataItemUserIDMin).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')),
   "meta": zod.object({
@@ -1146,7 +1231,7 @@ export const deleteMemberResponse = zod.object({
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "organizationID": zod.uuid().min(deleteMemberResponseDataOrganizationIDMin).describe('The organization this member belongs to'),
-  "role": zod.enum(['admin', 'owner', 'user']).describe('The role of the member'),
+  "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the member'),
   "userID": zod.uuid().min(deleteMemberResponseDataUserIDMin).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')
 })
@@ -1177,7 +1262,7 @@ export const getMemberResponse = zod.object({
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "organizationID": zod.uuid().min(getMemberResponseDataOrganizationIDMin).describe('The organization this member belongs to'),
-  "role": zod.enum(['admin', 'owner', 'user']).describe('The role of the member'),
+  "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the member'),
   "userID": zod.uuid().min(getMemberResponseDataUserIDMin).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')
 })
@@ -1212,7 +1297,7 @@ export const updateMemberResponse = zod.object({
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).and(zod.object({
   "organizationID": zod.uuid().min(updateMemberResponseDataOrganizationIDMin).describe('The organization this member belongs to'),
-  "role": zod.enum(['admin', 'owner', 'user']).describe('The role of the member'),
+  "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the member'),
   "userID": zod.uuid().min(updateMemberResponseDataUserIDMin).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')
 })
@@ -1246,19 +1331,29 @@ export const listInvitationsParams = zod.object({
   "id": zod.uuid().min(listInvitationsPathIdMin).describe('The unique identifier of the organization.')
 })
 
-export const listInvitationsQueryPageNumberDefault = 1;
-export const listInvitationsQueryPageNumberMax = 9007199254740991;
-export const listInvitationsQueryPageSizeDefault = 10;
-export const listInvitationsQueryPageSizeMax = 100;
+export const listInvitationsQueryPageLimitDefault = 10;
+export const listInvitationsQueryPageLimitMax = 100;
+export const listInvitationsQueryPageOffsetDefault = 0;
+export const listInvitationsQueryPageOffsetMin = 0;
+
+export const listInvitationsQueryPageOffsetMax = 9007199254740991;
 
 
 export const listInvitationsQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter invitations by field values. Supported fields:\n- createdAt, id, updatedAt, email, expiresAt\n- inviterID, organizationID, role, status\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listInvitationsQueryPageNumberMax).default(listInvitationsQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listInvitationsQueryPageSizeMax).default(listInvitationsQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listInvitationsQueryPageLimitMax).default(listInvitationsQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listInvitationsQueryPageOffsetMin).max(listInvitationsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'email', 'expiresAt', 'inviterID', 'organizationID', 'role', 'status']),
@@ -1281,7 +1376,7 @@ export const listInvitationsResponse = zod.object({
   "expiresAt": zod.iso.datetime({}).min(1).describe('The date and time when the invitation expires'),
   "inviterID": zod.uuid().min(listInvitationsResponseDataItemInviterIDMin).describe('The ID of the user who sent this invitation'),
   "organizationID": zod.uuid().min(listInvitationsResponseDataItemOrganizationIDMin).describe('The organization the user is being invited to join'),
-  "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the invitation'),
+  "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the invitation'),
   "status": zod.string().min(1).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')),
   "meta": zod.object({
@@ -1318,7 +1413,7 @@ export const deleteInvitationResponse = zod.object({
   "expiresAt": zod.iso.datetime({}).min(1).describe('The date and time when the invitation expires'),
   "inviterID": zod.uuid().min(deleteInvitationResponseDataInviterIDMin).describe('The ID of the user who sent this invitation'),
   "organizationID": zod.uuid().min(deleteInvitationResponseDataOrganizationIDMin).describe('The organization the user is being invited to join'),
-  "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the invitation'),
+  "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the invitation'),
   "status": zod.string().min(1).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')
 })
@@ -1352,7 +1447,7 @@ export const getInvitationResponse = zod.object({
   "expiresAt": zod.iso.datetime({}).min(1).describe('The date and time when the invitation expires'),
   "inviterID": zod.uuid().min(getInvitationResponseDataInviterIDMin).describe('The ID of the user who sent this invitation'),
   "organizationID": zod.uuid().min(getInvitationResponseDataOrganizationIDMin).describe('The organization the user is being invited to join'),
-  "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the invitation'),
+  "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the invitation'),
   "status": zod.string().min(1).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')
 })
@@ -1391,7 +1486,7 @@ export const updateInvitationResponse = zod.object({
   "expiresAt": zod.iso.datetime({}).min(1).describe('The date and time when the invitation expires'),
   "inviterID": zod.uuid().min(updateInvitationResponseDataInviterIDMin).describe('The ID of the user who sent this invitation'),
   "organizationID": zod.uuid().min(updateInvitationResponseDataOrganizationIDMin).describe('The organization the user is being invited to join'),
-  "role": zod.enum(['admin', 'owner', 'member']).describe('The role of the invitation'),
+  "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the invitation'),
   "status": zod.string().min(1).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')
 })
@@ -1411,19 +1506,29 @@ export const createPipelineBody = zod.object({
  * List pipelines
  * @summary List pipelines
  */
-export const listPipelinesQueryPageNumberDefault = 1;
-export const listPipelinesQueryPageNumberMax = 9007199254740991;
-export const listPipelinesQueryPageSizeDefault = 10;
-export const listPipelinesQueryPageSizeMax = 100;
+export const listPipelinesQueryPageLimitDefault = 10;
+export const listPipelinesQueryPageLimitMax = 100;
+export const listPipelinesQueryPageOffsetDefault = 0;
+export const listPipelinesQueryPageOffsetMin = 0;
+
+export const listPipelinesQueryPageOffsetMax = 9007199254740991;
 
 
 export const listPipelinesQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter pipelines by field values. Supported fields:\n- createdAt, id, updatedAt, description, name, organizationID\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listPipelinesQueryPageNumberMax).default(listPipelinesQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listPipelinesQueryPageSizeMax).default(listPipelinesQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listPipelinesQueryPageLimitMax).default(listPipelinesQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listPipelinesQueryPageOffsetMin).max(listPipelinesQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'description', 'name', 'organizationID']),
@@ -1435,7 +1540,7 @@ export const listPipelinesResponseDataItemIdMin = 36;
 export const listPipelinesResponseDataItemOrganizationIDMin = 36;
 export const listPipelinesResponseDataItemNameMax = 255;
 export const listPipelinesResponseDataItemDescriptionMax = 1000;
-
+export const listPipelinesResponseDataItemIsEnabledDefault = false;
 
 export const listPipelinesResponse = zod.object({
   "data": zod.array(zod.object({
@@ -1445,7 +1550,8 @@ export const listPipelinesResponse = zod.object({
 }).and(zod.object({
   "organizationID": zod.uuid().min(listPipelinesResponseDataItemOrganizationIDMin).describe('The organization identifier'),
   "name": zod.string().min(1).max(listPipelinesResponseDataItemNameMax).optional().describe('The pipeline\'s display name'),
-  "description": zod.string().max(listPipelinesResponseDataItemDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
+  "description": zod.string().max(listPipelinesResponseDataItemDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose'),
+  "isEnabled": zod.boolean().optional().describe('Whether the pipeline is enabled for execution')
 })).describe('Schema for Pipeline entity')),
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
@@ -1468,7 +1574,7 @@ export const deletePipelineResponseDataIdMin = 36;
 export const deletePipelineResponseDataOrganizationIDMin = 36;
 export const deletePipelineResponseDataNameMax = 255;
 export const deletePipelineResponseDataDescriptionMax = 1000;
-
+export const deletePipelineResponseDataIsEnabledDefault = false;
 
 export const deletePipelineResponse = zod.object({
   "data": zod.object({
@@ -1478,7 +1584,8 @@ export const deletePipelineResponse = zod.object({
 }).and(zod.object({
   "organizationID": zod.uuid().min(deletePipelineResponseDataOrganizationIDMin).describe('The organization identifier'),
   "name": zod.string().min(1).max(deletePipelineResponseDataNameMax).optional().describe('The pipeline\'s display name'),
-  "description": zod.string().max(deletePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
+  "description": zod.string().max(deletePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose'),
+  "isEnabled": zod.boolean().optional().describe('Whether the pipeline is enabled for execution')
 })).describe('Schema for Pipeline entity')
 })
 
@@ -1498,7 +1605,7 @@ export const getPipelineResponseDataIdMin = 36;
 export const getPipelineResponseDataOrganizationIDMin = 36;
 export const getPipelineResponseDataNameMax = 255;
 export const getPipelineResponseDataDescriptionMax = 1000;
-
+export const getPipelineResponseDataIsEnabledDefault = false;
 
 export const getPipelineResponse = zod.object({
   "data": zod.object({
@@ -1508,7 +1615,8 @@ export const getPipelineResponse = zod.object({
 }).and(zod.object({
   "organizationID": zod.uuid().min(getPipelineResponseDataOrganizationIDMin).describe('The organization identifier'),
   "name": zod.string().min(1).max(getPipelineResponseDataNameMax).optional().describe('The pipeline\'s display name'),
-  "description": zod.string().max(getPipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
+  "description": zod.string().max(getPipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose'),
+  "isEnabled": zod.boolean().optional().describe('Whether the pipeline is enabled for execution')
 })).describe('Schema for Pipeline entity')
 })
 
@@ -1533,7 +1641,7 @@ export const updatePipelineResponseDataIdMin = 36;
 export const updatePipelineResponseDataOrganizationIDMin = 36;
 export const updatePipelineResponseDataNameMax = 255;
 export const updatePipelineResponseDataDescriptionMax = 1000;
-
+export const updatePipelineResponseDataIsEnabledDefault = false;
 
 export const updatePipelineResponse = zod.object({
   "data": zod.object({
@@ -1543,7 +1651,8 @@ export const updatePipelineResponse = zod.object({
 }).and(zod.object({
   "organizationID": zod.uuid().min(updatePipelineResponseDataOrganizationIDMin).describe('The organization identifier'),
   "name": zod.string().min(1).max(updatePipelineResponseDataNameMax).optional().describe('The pipeline\'s display name'),
-  "description": zod.string().max(updatePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
+  "description": zod.string().max(updatePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose'),
+  "isEnabled": zod.boolean().optional().describe('Whether the pipeline is enabled for execution')
 })).describe('Schema for Pipeline entity')
 })
 
@@ -1686,19 +1795,29 @@ export const createRunBody = zod.object({
  * List runs
  * @summary List runs
  */
-export const listRunsQueryPageNumberDefault = 1;
-export const listRunsQueryPageNumberMax = 9007199254740991;
-export const listRunsQueryPageSizeDefault = 10;
-export const listRunsQueryPageSizeMax = 100;
+export const listRunsQueryPageLimitDefault = 10;
+export const listRunsQueryPageLimitMax = 100;
+export const listRunsQueryPageOffsetDefault = 0;
+export const listRunsQueryPageOffsetMin = 0;
+
+export const listRunsQueryPageOffsetMax = 9007199254740991;
 
 
 export const listRunsQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter runs by field values. Supported fields:\n- createdAt, id, updatedAt, completedAt, error, organizationID\n- pipelineID, progress, startedAt, status, toolID\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listRunsQueryPageNumberMax).default(listRunsQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listRunsQueryPageSizeMax).default(listRunsQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listRunsQueryPageLimitMax).default(listRunsQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listRunsQueryPageOffsetMin).max(listRunsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'completedAt', 'error', 'organizationID', 'pipelineID', 'progress', 'startedAt', 'status', 'toolID']),
@@ -1859,19 +1978,29 @@ export const createToolBody = zod.object({
  * List tools
  * @summary List tools
  */
-export const listToolsQueryPageNumberDefault = 1;
-export const listToolsQueryPageNumberMax = 9007199254740991;
-export const listToolsQueryPageSizeDefault = 10;
-export const listToolsQueryPageSizeMax = 100;
+export const listToolsQueryPageLimitDefault = 10;
+export const listToolsQueryPageLimitMax = 100;
+export const listToolsQueryPageOffsetDefault = 0;
+export const listToolsQueryPageOffsetMin = 0;
+
+export const listToolsQueryPageOffsetMax = 9007199254740991;
 
 
 export const listToolsQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter tools by field values. Supported fields:\n- createdAt, id, updatedAt, description, inputMimeType\n- name, organizationID, outputMimeType\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listToolsQueryPageNumberMax).default(listToolsQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listToolsQueryPageSizeMax).default(listToolsQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listToolsQueryPageLimitMax).default(listToolsQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listToolsQueryPageOffsetMin).max(listToolsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'description', 'inputMimeType', 'name', 'organizationID', 'outputMimeType']),
@@ -2010,19 +2139,29 @@ export const createArtifactBody = zod.object({
  * List artifacts
  * @summary List artifacts
  */
-export const listArtifactsQueryPageNumberDefault = 1;
-export const listArtifactsQueryPageNumberMax = 9007199254740991;
-export const listArtifactsQueryPageSizeDefault = 10;
-export const listArtifactsQueryPageSizeMax = 100;
+export const listArtifactsQueryPageLimitDefault = 10;
+export const listArtifactsQueryPageLimitMax = 100;
+export const listArtifactsQueryPageOffsetDefault = 0;
+export const listArtifactsQueryPageOffsetMin = 0;
+
+export const listArtifactsQueryPageOffsetMax = 9007199254740991;
 
 
 export const listArtifactsQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter artifacts by field values. Supported fields:\n- createdAt, id, updatedAt, credits, description, mimeType\n- name, organizationID, previewImage, producerID, text, url\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listArtifactsQueryPageNumberMax).default(listArtifactsQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listArtifactsQueryPageSizeMax).default(listArtifactsQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listArtifactsQueryPageLimitMax).default(listArtifactsQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listArtifactsQueryPageOffsetMin).max(listArtifactsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'credits', 'description', 'mimeType', 'name', 'organizationID', 'previewImage', 'producerID', 'text', 'url']),
@@ -2177,19 +2316,29 @@ export const createLabelBody = zod.object({
  * List labels
  * @summary List labels
  */
-export const listLabelsQueryPageNumberDefault = 1;
-export const listLabelsQueryPageNumberMax = 9007199254740991;
-export const listLabelsQueryPageSizeDefault = 10;
-export const listLabelsQueryPageSizeMax = 100;
+export const listLabelsQueryPageLimitDefault = 10;
+export const listLabelsQueryPageLimitMax = 100;
+export const listLabelsQueryPageOffsetDefault = 0;
+export const listLabelsQueryPageOffsetMin = 0;
+
+export const listLabelsQueryPageOffsetMax = 9007199254740991;
 
 
 export const listLabelsQueryParams = zod.object({
   "filter": zod.object({
-
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.object({
+  "type": zod.min(1).enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
+  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
+  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
+}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
 }).optional().describe('Filter labels by field values. Supported fields:\n- createdAt, id, updatedAt, name, organizationID\n'),
   "page": zod.object({
-  "number": zod.number().min(1).max(listLabelsQueryPageNumberMax).default(listLabelsQueryPageNumberDefault),
-  "size": zod.number().min(1).max(listLabelsQueryPageSizeMax).default(listLabelsQueryPageSizeDefault)
+  "limit": zod.number().min(1).max(listLabelsQueryPageLimitMax).default(listLabelsQueryPageLimitDefault).describe('Maximum number of items to return'),
+  "offset": zod.number().min(listLabelsQueryPageOffsetMin).max(listLabelsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
   "field": zod.enum(['createdAt', 'id', 'updatedAt', 'name', 'organizationID']),

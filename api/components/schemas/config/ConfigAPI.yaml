@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Configuration schema for the API server
+type: object
+properties:
+  cors:
+    description: A comma-separated list of allowed origins for CORS requests
+    type: string
+    default: 'localhost'
+    minLength: 1
+    example: 'localhost,https://platform.archesai.com'
+  docs:
+    description: Enable or disable API documentation
+    type: boolean
+    default: true
+    example: true
+  email:
+    $ref: ./ConfigEmail.yaml
+  environment:
+    description: Deployment environment (development, staging, production)
+    type: string
+    default: development
+    example: development
+  host:
+    description: The host address on which the API server will listen
+    type: string
+    default: 0.0.0.0
+    minLength: 1
+    example: 0.0.0.0
+    readOnly: true
+  port:
+    description: The port on which the API server will listen
+    type: number
+    default: 3001
+    example: 3001
+  validate:
+    description: Enable or disable request validation
+    type: boolean
+    default: true
+    example: true
+  image:
+    $ref: ./ConfigImage.yaml
+  resources:
+    $ref: ./ConfigResource.yaml
+required:
+  - cors
+  - docs
+  - environment
+  - host
+  - port
+  - validate
+additionalProperties: false

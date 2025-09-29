@@ -1,0 +1,33 @@
+# Simple schema for testing basic field extraction
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: Unique identifier
+  name:
+    type: string
+    minLength: 1
+    maxLength: 100
+    description: Name of the item
+  age:
+    type: integer
+    minimum: 0
+    maximum: 150
+    description: Age in years
+  email:
+    type: string
+    format: email
+    description: Email address
+  isActive:
+    type: boolean
+    default: true
+    description: Whether the item is active
+  createdAt:
+    type: string
+    format: date-time
+    description: Creation timestamp
+required:
+  - id
+  - name
+  - email

@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
+description: Container image configuration
+type: object
+properties:
+  pullPolicy:
+    description: Kubernetes image pull policy
+    type: string
+    enum:
+      - Always
+      - IfNotPresent
+      - Never
+    default: IfNotPresent
+    example: Always
+  repository:
+    description: Container image repository
+    type: string
+    minLength: 1
+    example: example-string
+  tag:
+    description: Container image tag
+    type: string
+    default: latest
+    minLength: 1
+    example: example-string
+required:
+  - pullPolicy
+  - tag
+additionalProperties: false
