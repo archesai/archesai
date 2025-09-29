@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigAuthMagicLink represents Magic link authentication configuration
 type ConfigAuthMagicLink struct {
@@ -111,5 +114,12 @@ func (v ConfigAuthMagicLink) GetTokenExpiry() *int {
 
 // String returns a string representation of ConfigAuthMagicLink
 func (v ConfigAuthMagicLink) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("DeliveryMethods: %v", v.DeliveryMethods))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("OtpLength: %v", v.OtpLength))
+	fields = append(fields, fmt.Sprintf("RateLimit: %v", v.RateLimit))
+	fields = append(fields, fmt.Sprintf("TokenExpiry: %v", v.TokenExpiry))
+	return fmt.Sprintf("ConfigAuthMagicLink{%s}", strings.Join(fields, ", "))
 }

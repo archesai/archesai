@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // Health represents Health check response
 type Health struct {
@@ -58,5 +61,10 @@ func (v Health) GetUptime() float64 {
 
 // String returns a string representation of Health
 func (v Health) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Services: %v", v.Services))
+	fields = append(fields, fmt.Sprintf("Timestamp: %v", v.Timestamp))
+	fields = append(fields, fmt.Sprintf("Uptime: %v", v.Uptime))
+	return fmt.Sprintf("Health{%s}", strings.Join(fields, ", "))
 }

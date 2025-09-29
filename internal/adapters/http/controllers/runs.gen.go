@@ -21,7 +21,6 @@ type RunsController struct {
 	createHandler *commands.CreateRunCommandHandler
 	updateHandler *commands.UpdateRunCommandHandler
 	deleteHandler *commands.DeleteRunCommandHandler
-
 	// Query handlers
 	getHandler  *queries.GetRunQueryHandler
 	listHandler *queries.ListRunsQueryHandler
@@ -58,8 +57,13 @@ func RegisterRunsRoutes(router server.EchoRouter, controller *RunsController) {
 // ============================================================================
 
 // Request types
+// CreateRunRequestBody defines the request body for CreateRun
+type CreateRunRequestBody struct {
+	PipelineID uuid.UUID `json:"pipelineID"`
+}
 
 type CreateRunRequest struct {
+	Body *CreateRunRequestBody
 }
 
 // Response types
@@ -105,11 +109,28 @@ func (response CreateRun401Response) VisitCreateRunResponse(w http.ResponseWrite
 // CreateRun handles the POST /runs endpoint.
 func (c *RunsController) CreateRun(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := CreateRunRequest{}
+
+	// Request body
+	var body CreateRunRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
 
 	// Determine which handler to call based on operation
-	// Create command from request
+	// Create handler
+	// Available request body fields: PipelineID
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreateRunCommand(
-	// TODO: Map request fields to command
+		orgID,
+		"",  // TODO: Map appropriate field from request.Body
+		"",  // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -127,9 +148,15 @@ func (c *RunsController) CreateRun(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// ListRunsParams defines parameters for ListRuns
+type ListRunsParams struct {
+	Filter *map[string]interface{}   `json:"filter,omitempty"`
+	Page   *map[string]interface{}   `json:"page,omitempty"`
+	Sort   *[]map[string]interface{} `json:"sort,omitempty"`
+}
 
 type ListRunsRequest struct {
-	Params dto.ListRunsParams
+	Params ListRunsParams
 }
 
 // Response types
@@ -175,9 +202,10 @@ func (response ListRuns401Response) VisitListRunsResponse(w http.ResponseWriter)
 // ListRuns handles the GET /runs endpoint.
 func (c *RunsController) ListRuns(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ListRunsRequest{}
 
 	// Query parameters
-	var params dto.ListRunsParams
+	var params ListRunsParams
 	// Optional query parameter "filter"
 	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
@@ -252,6 +280,7 @@ func (response DeleteRun404Response) VisitDeleteRunResponse(w http.ResponseWrite
 // DeleteRun handles the DELETE /runs/{id} endpoint.
 func (c *RunsController) DeleteRun(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := DeleteRunRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -316,6 +345,7 @@ func (response GetRun404Response) VisitGetRunResponse(w http.ResponseWriter) err
 // GetRun handles the GET /runs/{id} endpoint.
 func (c *RunsController) GetRun(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetRunRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -345,9 +375,14 @@ func (c *RunsController) GetRun(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// UpdateRunRequestBody defines the request body for UpdateRun
+type UpdateRunRequestBody struct {
+	PipelineID *uuid.UUID `json:"pipelineID,omitempty"`
+}
 
 type UpdateRunRequest struct {
-	ID uuid.UUID `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateRunRequestBody
 }
 
 // Response types
@@ -382,6 +417,7 @@ func (response UpdateRun404Response) VisitUpdateRunResponse(w http.ResponseWrite
 // UpdateRun handles the PATCH /runs/{id} endpoint.
 func (c *RunsController) UpdateRun(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := UpdateRunRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -390,10 +426,23 @@ func (c *RunsController) UpdateRun(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body UpdateRunRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create update command from request
+	// Update handler
+	// Available request body fields: PipelineID
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdateRunCommand(
-	// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

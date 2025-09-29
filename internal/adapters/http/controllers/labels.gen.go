@@ -21,7 +21,6 @@ type LabelsController struct {
 	createHandler *commands.CreateLabelCommandHandler
 	updateHandler *commands.UpdateLabelCommandHandler
 	deleteHandler *commands.DeleteLabelCommandHandler
-
 	// Query handlers
 	getHandler  *queries.GetLabelQueryHandler
 	listHandler *queries.ListLabelsQueryHandler
@@ -58,8 +57,13 @@ func RegisterLabelsRoutes(router server.EchoRouter, controller *LabelsController
 // ============================================================================
 
 // Request types
+// CreateLabelRequestBody defines the request body for CreateLabel
+type CreateLabelRequestBody struct {
+	Name string `json:"name"`
+}
 
 type CreateLabelRequest struct {
+	Body *CreateLabelRequestBody
 }
 
 // Response types
@@ -105,11 +109,28 @@ func (response CreateLabel401Response) VisitCreateLabelResponse(w http.ResponseW
 // CreateLabel handles the POST /labels endpoint.
 func (c *LabelsController) CreateLabel(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := CreateLabelRequest{}
+
+	// Request body
+	var body CreateLabelRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
 
 	// Determine which handler to call based on operation
-	// Create command from request
+	// Create handler
+	// Available request body fields: Name
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreateLabelCommand(
-	// TODO: Map request fields to command
+		orgID,
+		"",  // TODO: Map appropriate field from request.Body
+		"",  // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -127,9 +148,15 @@ func (c *LabelsController) CreateLabel(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// ListLabelsParams defines parameters for ListLabels
+type ListLabelsParams struct {
+	Filter *map[string]interface{}   `json:"filter,omitempty"`
+	Page   *map[string]interface{}   `json:"page,omitempty"`
+	Sort   *[]map[string]interface{} `json:"sort,omitempty"`
+}
 
 type ListLabelsRequest struct {
-	Params dto.ListLabelsParams
+	Params ListLabelsParams
 }
 
 // Response types
@@ -175,9 +202,10 @@ func (response ListLabels401Response) VisitListLabelsResponse(w http.ResponseWri
 // ListLabels handles the GET /labels endpoint.
 func (c *LabelsController) ListLabels(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ListLabelsRequest{}
 
 	// Query parameters
-	var params dto.ListLabelsParams
+	var params ListLabelsParams
 	// Optional query parameter "filter"
 	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
@@ -252,6 +280,7 @@ func (response DeleteLabel404Response) VisitDeleteLabelResponse(w http.ResponseW
 // DeleteLabel handles the DELETE /labels/{id} endpoint.
 func (c *LabelsController) DeleteLabel(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := DeleteLabelRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -316,6 +345,7 @@ func (response GetLabel404Response) VisitGetLabelResponse(w http.ResponseWriter)
 // GetLabel handles the GET /labels/{id} endpoint.
 func (c *LabelsController) GetLabel(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetLabelRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -345,9 +375,14 @@ func (c *LabelsController) GetLabel(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// UpdateLabelRequestBody defines the request body for UpdateLabel
+type UpdateLabelRequestBody struct {
+	Name *string `json:"name,omitempty"`
+}
 
 type UpdateLabelRequest struct {
-	ID uuid.UUID `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateLabelRequestBody
 }
 
 // Response types
@@ -382,6 +417,7 @@ func (response UpdateLabel404Response) VisitUpdateLabelResponse(w http.ResponseW
 // UpdateLabel handles the PATCH /labels/{id} endpoint.
 func (c *LabelsController) UpdateLabel(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := UpdateLabelRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -390,10 +426,23 @@ func (c *LabelsController) UpdateLabel(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body UpdateLabelRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create update command from request
+	// Update handler
+	// Available request body fields: Name
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdateLabelCommand(
-	// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

@@ -172,7 +172,7 @@ generate: ## Generate all code
 .PHONY: generate-sqlc
 generate-sqlc: generate-schema-sqlite ## Generate database code with sqlc
 	@echo -e "$(YELLOW)▶ Generating sqlc code...$(NC)"
-	@cd internal/infrastructure/persistence && go generate
+	@cd internal/infrastructure/persistence/postgres && go tool sqlc generate
 	@echo -e "$(GREEN)✓ sqlc generation complete!$(NC)"
 
 .PHONY: generate-schema-sqlite

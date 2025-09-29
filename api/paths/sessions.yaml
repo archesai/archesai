@@ -2,7 +2,7 @@ get:
   operationId: listSessions
   summary: List sessions
   tags:
-    - Auth
+    - Sessions
   description: List user sessions
   parameters:
     - $ref: ../components/parameters/SessionsFilter.yaml
@@ -45,7 +45,7 @@ post:
   operationId: createSession
   summary: Create session (Login)
   tags:
-    - Auth
+    - Sessions
   description: Authenticate user and Create a session
   requestBody:
     content:

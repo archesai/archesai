@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigStorage represents Object storage configuration for MinIO or S3-compatible services
 type ConfigStorage struct {
@@ -97,5 +100,16 @@ func (v ConfigStorage) GetSecretkey() string {
 
 // String returns a string representation of ConfigStorage
 func (v ConfigStorage) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Accesskey: %v", v.Accesskey))
+	fields = append(fields, fmt.Sprintf("Bucket: %v", v.Bucket))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Endpoint: %v", v.Endpoint))
+	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
+	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
+	fields = append(fields, fmt.Sprintf("Persistence: %v", v.Persistence))
+	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	fields = append(fields, fmt.Sprintf("Secretkey: %v", v.Secretkey))
+	return fmt.Sprintf("ConfigStorage{%s}", strings.Join(fields, ", "))
 }

@@ -88,14 +88,49 @@ func ExtractOperations(doc *openapi.OpenAPI) []OperationDef {
 					RequestBodyRequired: hasRequiredRequestBody(op),
 				}
 
-				// Extract parameters
+				// Extract parameters and split by type
 				operationDef.Parameters = extractParameters(op)
+				for _, param := range operationDef.Parameters {
+					switch param.In {
+					case "path":
+						operationDef.PathParams = append(operationDef.PathParams, param)
+					case "query":
+						operationDef.QueryParams = append(operationDef.QueryParams, param)
+					case "header":
+						operationDef.HeaderParams = append(operationDef.HeaderParams, param)
+					}
+				}
+
+				// Extract and process request body schema
+				if required, schema := ExtractRequestBody(op); schema != nil {
+					operationDef.RequestBodyRequired = required
+					// Process the schema to get field definitions
+					processed, err := ProcessSchema(schema, "RequestBody")
+					if err == nil {
+						operationDef.RequestBodySchema = processed
+					}
+				}
 
 				// Extract security requirements
 				operationDef.Security = extractSecurityRequirements(op, doc)
 
 				// Extract responses
 				operationDef.Responses = extractResponses(op)
+
+				// Extract and process response schemas
+				responseSchemas := ExtractResponseSchemas(op)
+				if len(responseSchemas) > 0 {
+					operationDef.ResponseSchemas = make(map[string]*ProcessedSchema)
+					for statusCode, schema := range responseSchemas {
+						processed, err := ProcessSchema(
+							schema,
+							fmt.Sprintf("Response%s", statusCode),
+						)
+						if err == nil {
+							operationDef.ResponseSchemas[statusCode] = processed
+						}
+					}
+				}
 
 				operations = append(operations, operationDef)
 
@@ -105,92 +140,6 @@ func ExtractOperations(doc *openapi.OpenAPI) []OperationDef {
 	}
 
 	return operations
-}
-
-// WalkOperations walks through all operations in the OpenAPI document
-func WalkOperations(doc *openapi.OpenAPI, callback func(*ProcessOperationContext) error) error {
-	ctx := context.Background()
-
-	for item := range openapi.Walk(ctx, doc) {
-		err := item.Match(openapi.Matcher{
-			Operation: func(op *openapi.Operation) error {
-				if op == nil {
-					return nil
-				}
-
-				method, path := openapi.ExtractMethodAndPath(item.Location)
-				opCtx := ProcessOperation(op, method, path, doc)
-
-				return callback(opCtx)
-			},
-		})
-
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// ProcessOperation processes a single operation and extracts all information
-func ProcessOperation(
-	op *openapi.Operation,
-	method, path string,
-	doc *openapi.OpenAPI,
-) *ProcessOperationContext {
-	// Capitalize first letter of operation ID for GoName
-	opID := op.GetOperationID()
-	goName := opID
-	if len(opID) > 0 {
-		goName = strings.ToUpper(opID[:1]) + opID[1:]
-	}
-
-	ctx := &ProcessOperationContext{
-		Method:      strings.ToUpper(method),
-		Path:        path,
-		OperationID: opID,
-		Name:        opID,
-		GoName:      goName,
-		Description: op.GetSummary(),
-		Tags:        op.Tags,
-	}
-
-	// Extract parameters
-	ctx.Parameters = extractParameters(op)
-
-	// Separate parameters by type
-	for _, param := range ctx.Parameters {
-		switch param.In {
-		case "path":
-			ctx.PathParams = append(ctx.PathParams, param)
-		case "query":
-			ctx.QueryParams = append(ctx.QueryParams, param)
-		case "header":
-			ctx.HeaderParams = append(ctx.HeaderParams, param)
-		}
-	}
-
-	// Extract request body
-	ctx.RequestBodyRequired, ctx.RequestBodySchema = ExtractRequestBody(op)
-
-	// Extract response schemas
-	ctx.ResponseSchemas = ExtractResponseSchemas(op)
-
-	// Build response definitions
-	for statusCode := range ctx.ResponseSchemas {
-		code, _ := strconv.Atoi(statusCode)
-		isSuccess := code >= 200 && code < 300
-		ctx.Responses = append(ctx.Responses, ResponseDef{
-			StatusCode: statusCode,
-			IsSuccess:  isSuccess,
-		})
-	}
-
-	// Extract security
-	ctx.Security = extractSecurityRequirements(op, doc)
-
-	return ctx
 }
 
 // extractParameters extracts all parameters from an operation

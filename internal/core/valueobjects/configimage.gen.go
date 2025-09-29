@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigImage represents Container image configuration
 type ConfigImage struct {
@@ -49,5 +52,10 @@ func (v ConfigImage) GetTag() string {
 
 // String returns a string representation of ConfigImage
 func (v ConfigImage) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("PullPolicy: %v", v.PullPolicy))
+	fields = append(fields, fmt.Sprintf("Repository: %v", v.Repository))
+	fields = append(fields, fmt.Sprintf("Tag: %v", v.Tag))
+	return fmt.Sprintf("ConfigImage{%s}", strings.Join(fields, ", "))
 }

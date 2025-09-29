@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigMigrations represents Database migration configuration
 type ConfigMigrations struct {
@@ -29,5 +32,8 @@ func (v ConfigMigrations) GetEnabled() bool {
 
 // String returns a string representation of ConfigMigrations
 func (v ConfigMigrations) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	return fmt.Sprintf("ConfigMigrations{%s}", strings.Join(fields, ", "))
 }

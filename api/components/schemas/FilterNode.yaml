@@ -10,7 +10,6 @@ properties:
     enum: [and, or, eq, ne, gt, gte, lt, lte, contains, starts_with, ends_with]
     description: The type of filter operation
     example: eq
-    minLength: 1
   field:
     type: string
     description: The field to filter on (for leaf conditions)

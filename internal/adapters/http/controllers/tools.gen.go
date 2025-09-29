@@ -21,7 +21,6 @@ type ToolsController struct {
 	createHandler *commands.CreateToolCommandHandler
 	updateHandler *commands.UpdateToolCommandHandler
 	deleteHandler *commands.DeleteToolCommandHandler
-
 	// Query handlers
 	getHandler  *queries.GetToolQueryHandler
 	listHandler *queries.ListToolsQueryHandler
@@ -58,8 +57,14 @@ func RegisterToolsRoutes(router server.EchoRouter, controller *ToolsController) 
 // ============================================================================
 
 // Request types
+// CreateToolRequestBody defines the request body for CreateTool
+type CreateToolRequestBody struct {
+	Description string `json:"description"`
+	Name        string `json:"name"`
+}
 
 type CreateToolRequest struct {
+	Body *CreateToolRequestBody
 }
 
 // Response types
@@ -105,11 +110,28 @@ func (response CreateTool401Response) VisitCreateToolResponse(w http.ResponseWri
 // CreateTool handles the POST /tools endpoint.
 func (c *ToolsController) CreateTool(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := CreateToolRequest{}
+
+	// Request body
+	var body CreateToolRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
 
 	// Determine which handler to call based on operation
-	// Create command from request
+	// Create handler
+	// Available request body fields: Description, Name
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreateToolCommand(
-	// TODO: Map request fields to command
+		orgID,
+		"",  // TODO: Map appropriate field from request.Body
+		"",  // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -127,9 +149,15 @@ func (c *ToolsController) CreateTool(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// ListToolsParams defines parameters for ListTools
+type ListToolsParams struct {
+	Filter *map[string]interface{}   `json:"filter,omitempty"`
+	Page   *map[string]interface{}   `json:"page,omitempty"`
+	Sort   *[]map[string]interface{} `json:"sort,omitempty"`
+}
 
 type ListToolsRequest struct {
-	Params dto.ListToolsParams
+	Params ListToolsParams
 }
 
 // Response types
@@ -175,9 +203,10 @@ func (response ListTools401Response) VisitListToolsResponse(w http.ResponseWrite
 // ListTools handles the GET /tools endpoint.
 func (c *ToolsController) ListTools(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ListToolsRequest{}
 
 	// Query parameters
-	var params dto.ListToolsParams
+	var params ListToolsParams
 	// Optional query parameter "filter"
 	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
@@ -252,6 +281,7 @@ func (response DeleteTool404Response) VisitDeleteToolResponse(w http.ResponseWri
 // DeleteTool handles the DELETE /tools/{id} endpoint.
 func (c *ToolsController) DeleteTool(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := DeleteToolRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -316,6 +346,7 @@ func (response GetTool404Response) VisitGetToolResponse(w http.ResponseWriter) e
 // GetTool handles the GET /tools/{id} endpoint.
 func (c *ToolsController) GetTool(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetToolRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -345,9 +376,15 @@ func (c *ToolsController) GetTool(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// UpdateToolRequestBody defines the request body for UpdateTool
+type UpdateToolRequestBody struct {
+	Description *string `json:"description,omitempty"`
+	Name        *string `json:"name,omitempty"`
+}
 
 type UpdateToolRequest struct {
-	ID uuid.UUID `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateToolRequestBody
 }
 
 // Response types
@@ -382,6 +419,7 @@ func (response UpdateTool404Response) VisitUpdateToolResponse(w http.ResponseWri
 // UpdateTool handles the PATCH /tools/{id} endpoint.
 func (c *ToolsController) UpdateTool(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := UpdateToolRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -390,10 +428,23 @@ func (c *ToolsController) UpdateTool(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body UpdateToolRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create update command from request
+	// Update handler
+	// Available request body fields: Description, Name
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdateToolCommand(
-	// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

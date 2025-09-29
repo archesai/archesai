@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigAuthLocal represents Local username/password authentication
 type ConfigAuthLocal struct {
@@ -59,5 +62,11 @@ func (v ConfigAuthLocal) GetRefreshTokenTTL() string {
 
 // String returns a string representation of ConfigAuthLocal
 func (v ConfigAuthLocal) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("AccessTokenTTL: %v", v.AccessTokenTTL))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("JWTSecret: %v", v.JWTSecret))
+	fields = append(fields, fmt.Sprintf("RefreshTokenTTL: %v", v.RefreshTokenTTL))
+	return fmt.Sprintf("ConfigAuthLocal{%s}", strings.Join(fields, ", "))
 }

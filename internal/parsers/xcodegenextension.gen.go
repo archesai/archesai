@@ -2,14 +2,31 @@
 
 package parsers
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // XCodegenExtension represents Configuration for code generation from OpenAPI schemas
 type XCodegenExtension struct {
+	Commands *struct {
+		AdditionalMethods []struct {
+			Handler     *string `json:"handler,omitempty" yaml:"handler"`
+			OperationId string  `json:"operationId" yaml:"operationId"`
+		} `json:"additional_methods,omitempty" yaml:"additional_methods"`
+		Operations []string `json:"operations,omitempty" yaml:"operations"`
+	} `json:"commands,omitempty" yaml:"commands,omitempty"` // Command handler generation configuration
 	Controller *struct {
-		Name       *string  `json:"name,omitempty" yaml:"name"`
+		Middleware []string `json:"middleware,omitempty" yaml:"middleware"`
 		Operations []string `json:"operations,omitempty" yaml:"operations"`
 	} `json:"controller,omitempty" yaml:"controller,omitempty"` // HTTP controller generation configuration
+	Queries *struct {
+		AdditionalMethods []struct {
+			Handler     *string `json:"handler,omitempty" yaml:"handler"`
+			OperationId string  `json:"operationId" yaml:"operationId"`
+		} `json:"additional_methods,omitempty" yaml:"additional_methods"`
+		Operations []string `json:"operations,omitempty" yaml:"operations"`
+	} `json:"queries,omitempty" yaml:"queries,omitempty"` // Query handler generation configuration
 	Repository *struct {
 		AdditionalMethods []struct {
 			Name    string   `json:"name" yaml:"name"`
@@ -17,7 +34,6 @@ type XCodegenExtension struct {
 			Returns string   `json:"returns" yaml:"returns"`
 		} `json:"additional_methods,omitempty" yaml:"additional_methods"`
 		Indices    []string `json:"indices,omitempty" yaml:"indices"`
-		Name       *string  `json:"name,omitempty" yaml:"name"`
 		Operations []string `json:"operations,omitempty" yaml:"operations"`
 		TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
 	} `json:"repository,omitempty" yaml:"repository,omitempty"` // Repository generation configuration
@@ -25,8 +41,20 @@ type XCodegenExtension struct {
 }
 
 // NewXCodegenExtension creates a new XCodegenExtension value object
-func NewXCodegenExtension(controller *struct {
-	Name       *string  `json:"name,omitempty" yaml:"name"`
+func NewXCodegenExtension(commands *struct {
+	AdditionalMethods []struct {
+		Handler     *string `json:"handler,omitempty" yaml:"handler"`
+		OperationId string  `json:"operationId" yaml:"operationId"`
+	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
+	Operations []string `json:"operations,omitempty" yaml:"operations"`
+}, controller *struct {
+	Middleware []string `json:"middleware,omitempty" yaml:"middleware"`
+	Operations []string `json:"operations,omitempty" yaml:"operations"`
+}, queries *struct {
+	AdditionalMethods []struct {
+		Handler     *string `json:"handler,omitempty" yaml:"handler"`
+		OperationId string  `json:"operationId" yaml:"operationId"`
+	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
 	Operations []string `json:"operations,omitempty" yaml:"operations"`
 }, repository *struct {
 	AdditionalMethods []struct {
@@ -35,7 +63,6 @@ func NewXCodegenExtension(controller *struct {
 		Returns string   `json:"returns" yaml:"returns"`
 	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
 	Indices    []string `json:"indices,omitempty" yaml:"indices"`
-	Name       *string  `json:"name,omitempty" yaml:"name"`
 	Operations []string `json:"operations,omitempty" yaml:"operations"`
 	TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
 }, schemaType string) (XCodegenExtension, error) {
@@ -44,18 +71,42 @@ func NewXCodegenExtension(controller *struct {
 	}
 
 	return XCodegenExtension{
+		Commands:   commands,
 		Controller: controller,
+		Queries:    queries,
 		Repository: repository,
 		SchemaType: schemaType,
 	}, nil
 }
 
+// GetCommands returns the Commands
+func (v XCodegenExtension) GetCommands() *struct {
+	AdditionalMethods []struct {
+		Handler     *string `json:"handler,omitempty" yaml:"handler"`
+		OperationId string  `json:"operationId" yaml:"operationId"`
+	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
+	Operations []string `json:"operations,omitempty" yaml:"operations"`
+} {
+	return v.Commands
+}
+
 // GetController returns the Controller
 func (v XCodegenExtension) GetController() *struct {
-	Name       *string  `json:"name,omitempty" yaml:"name"`
+	Middleware []string `json:"middleware,omitempty" yaml:"middleware"`
 	Operations []string `json:"operations,omitempty" yaml:"operations"`
 } {
 	return v.Controller
+}
+
+// GetQueries returns the Queries
+func (v XCodegenExtension) GetQueries() *struct {
+	AdditionalMethods []struct {
+		Handler     *string `json:"handler,omitempty" yaml:"handler"`
+		OperationId string  `json:"operationId" yaml:"operationId"`
+	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
+	Operations []string `json:"operations,omitempty" yaml:"operations"`
+} {
+	return v.Queries
 }
 
 // GetRepository returns the Repository
@@ -66,7 +117,6 @@ func (v XCodegenExtension) GetRepository() *struct {
 		Returns string   `json:"returns" yaml:"returns"`
 	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
 	Indices    []string `json:"indices,omitempty" yaml:"indices"`
-	Name       *string  `json:"name,omitempty" yaml:"name"`
 	Operations []string `json:"operations,omitempty" yaml:"operations"`
 	TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
 } {
@@ -80,10 +130,17 @@ func (v XCodegenExtension) GetSchemaType() string {
 
 // Equals checks if two XCodegenExtension value objects are equal
 // func (v XCodegenExtension) Equals(other XCodegenExtension) bool {
-//	return v.Controller == other.Controller && v.Repository == other.Repository && v.SchemaType == other.SchemaType
+//	return v.Commands == other.Commands && v.Controller == other.Controller && v.Queries == other.Queries && v.Repository == other.Repository && v.SchemaType == other.SchemaType
 // }
 
 // String returns a string representation of XCodegenExtension
 func (v XCodegenExtension) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Commands: %v", v.Commands))
+	fields = append(fields, fmt.Sprintf("Controller: %v", v.Controller))
+	fields = append(fields, fmt.Sprintf("Queries: %v", v.Queries))
+	fields = append(fields, fmt.Sprintf("Repository: %v", v.Repository))
+	fields = append(fields, fmt.Sprintf("SchemaType: %v", v.SchemaType))
+	return fmt.Sprintf("XCodegenExtension{%s}", strings.Join(fields, ", "))
 }

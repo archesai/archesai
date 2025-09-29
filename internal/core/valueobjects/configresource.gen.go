@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigResource represents Kubernetes resource configuration
 type ConfigResource struct {
@@ -54,5 +57,9 @@ func (v ConfigResource) GetRequests() struct {
 
 // String returns a string representation of ConfigResource
 func (v ConfigResource) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Limits: %v", v.Limits))
+	fields = append(fields, fmt.Sprintf("Requests: %v", v.Requests))
+	return fmt.Sprintf("ConfigResource{%s}", strings.Join(fields, ", "))
 }

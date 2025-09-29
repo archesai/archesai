@@ -32,7 +32,10 @@ func LoadTemplates() (map[string]*template.Template, error) {
 		"repository_sqlite.tmpl",
 		"repository.tmpl",
 		"single_command_handler.tmpl",
-		"single_query_handler.tmpl"}
+		"single_query_handler.tmpl",
+		"app.tmpl",
+		"infrastructure.tmpl",
+	}
 
 	// Load header template first as it's used by other templates
 	headerContent, err := GetTemplate("header.tmpl")

@@ -14,11 +14,8 @@ properties:
     description: Repository generation configuration
     type: object
     properties:
-      name:
-        description: Override default repository name
-        type: string
       operations:
-        description: CRUD operations to generate
+        description: Standard CRUD operations to generate
         type: array
         items:
           type: string
@@ -54,21 +51,74 @@ properties:
         type: string
     additionalProperties: false
 
+  commands:
+    description: Command handler generation configuration
+    type: object
+    properties:
+      operations:
+        description: Standard command operations to generate
+        type: array
+        items:
+          type: string
+          enum: [create, update, delete]
+      additional_methods:
+        description: Additional command handlers to generate
+        type: array
+        items:
+          type: object
+          properties:
+            operationId:
+              description: OpenAPI operation ID to map to this command
+              type: string
+            handler:
+              description: Optional custom handler name
+              type: string
+          required: [operationId]
+          additionalProperties: false
+    additionalProperties: false
+
+  queries:
+    description: Query handler generation configuration
+    type: object
+    properties:
+      operations:
+        description: Standard query operations to generate
+        type: array
+        items:
+          type: string
+          enum: [get, list]
+      additional_methods:
+        description: Additional query handlers to generate
+        type: array
+        items:
+          type: object
+          properties:
+            operationId:
+              description: OpenAPI operation ID to map to this query
+              type: string
+            handler:
+              description: Optional custom handler name
+              type: string
+          required: [operationId]
+          additionalProperties: false
+    additionalProperties: false
+
   controller:
     description: HTTP controller generation configuration
     type: object
     properties:
-      name:
-        description: Override default repository name
-        type: string
       operations:
-        description: CRUD operations to generate
+        description: Standard CRUD operations to include in controller
         type: array
         items:
           type: string
           enum: [create, read, update, delete, list]
         default: [create, read, update, delete, list]
-        additionalProperties: false
+      middleware:
+        description: Middleware to apply to this controller
+        type: array
+        items:
+          type: string
     additionalProperties: false
 # This schema defines the x-codegen extension structure
 # It should NOT have its own x-codegen extension

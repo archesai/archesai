@@ -89,7 +89,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	}
 
 	log.Info("Generating command and query handlers")
-	if err := g.GenerateCommandQueryHandlers(operations); err != nil {
+	if err := g.GenerateCommandQueryHandlers(operations, schemas); err != nil {
 		return "", fmt.Errorf("failed to generate handlers: %w", err)
 	}
 
@@ -100,6 +100,11 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	log.Info("Generating events")
 	if err := g.GenerateEvents(schemas); err != nil {
 		return "", fmt.Errorf("failed to generate events: %w", err)
+	}
+
+	log.Info("Generating app wiring")
+	if err := g.GenerateAppWiring(schemas); err != nil {
+		return "", fmt.Errorf("failed to generate app wiring: %w", err)
 	}
 
 	// 10. Format output if needed

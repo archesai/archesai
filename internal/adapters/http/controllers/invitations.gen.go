@@ -21,7 +21,6 @@ type InvitationsController struct {
 	createHandler *commands.CreateInvitationCommandHandler
 	updateHandler *commands.UpdateInvitationCommandHandler
 	deleteHandler *commands.DeleteInvitationCommandHandler
-
 	// Query handlers
 	getHandler  *queries.GetInvitationQueryHandler
 	listHandler *queries.ListInvitationsQueryHandler
@@ -58,9 +57,15 @@ func RegisterInvitationsRoutes(router server.EchoRouter, controller *Invitations
 // ============================================================================
 
 // Request types
+// CreateInvitationRequestBody defines the request body for CreateInvitation
+type CreateInvitationRequestBody struct {
+	Email string `json:"email"`
+	Role  string `json:"role"`
+}
 
 type CreateInvitationRequest struct {
-	ID uuid.UUID `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body *CreateInvitationRequestBody
 }
 
 // Response types
@@ -106,6 +111,7 @@ func (response CreateInvitation401Response) VisitCreateInvitationResponse(w http
 // CreateInvitation handles the POST /organizations/{id}/invitations endpoint.
 func (c *InvitationsController) CreateInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := CreateInvitationRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -114,10 +120,26 @@ func (c *InvitationsController) CreateInvitation(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body CreateInvitationRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create command from request
+	// Create handler
+	// Available request body fields: Email, Role
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreateInvitationCommand(
-	// TODO: Map request fields to command
+		orgID,
+		"",  // TODO: Map appropriate field from request.Body
+		"",  // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -135,10 +157,16 @@ func (c *InvitationsController) CreateInvitation(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// ListInvitationsParams defines parameters for ListInvitations
+type ListInvitationsParams struct {
+	Filter *map[string]interface{}   `json:"filter,omitempty"`
+	Page   *map[string]interface{}   `json:"page,omitempty"`
+	Sort   *[]map[string]interface{} `json:"sort,omitempty"`
+}
 
 type ListInvitationsRequest struct {
 	ID     uuid.UUID `json:"id"`
-	Params dto.ListInvitationsParams
+	Params ListInvitationsParams
 }
 
 // Response types
@@ -184,6 +212,7 @@ func (response ListInvitations401Response) VisitListInvitationsResponse(w http.R
 // ListInvitations handles the GET /organizations/{id}/invitations endpoint.
 func (c *InvitationsController) ListInvitations(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ListInvitationsRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -193,7 +222,7 @@ func (c *InvitationsController) ListInvitations(ctx echo.Context) error {
 	request.ID = id
 
 	// Query parameters
-	var params dto.ListInvitationsParams
+	var params ListInvitationsParams
 	// Optional query parameter "filter"
 	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
@@ -269,6 +298,7 @@ func (response DeleteInvitation404Response) VisitDeleteInvitationResponse(w http
 // DeleteInvitation handles the DELETE /organizations/{id}/invitations/{invitationID} endpoint.
 func (c *InvitationsController) DeleteInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := DeleteInvitationRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -341,6 +371,7 @@ func (response GetInvitation404Response) VisitGetInvitationResponse(w http.Respo
 // GetInvitation handles the GET /organizations/{id}/invitations/{invitationID} endpoint.
 func (c *InvitationsController) GetInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetInvitationRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -377,10 +408,16 @@ func (c *InvitationsController) GetInvitation(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// UpdateInvitationRequestBody defines the request body for UpdateInvitation
+type UpdateInvitationRequestBody struct {
+	Email *string `json:"email,omitempty"`
+	Role  *string `json:"role,omitempty"`
+}
 
 type UpdateInvitationRequest struct {
 	ID           uuid.UUID `json:"id"`
 	InvitationID uuid.UUID `json:"invitationID"`
+	Body         *UpdateInvitationRequestBody
 }
 
 // Response types
@@ -415,6 +452,7 @@ func (response UpdateInvitation404Response) VisitUpdateInvitationResponse(w http
 // UpdateInvitation handles the PATCH /organizations/{id}/invitations/{invitationID} endpoint.
 func (c *InvitationsController) UpdateInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := UpdateInvitationRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -430,10 +468,23 @@ func (c *InvitationsController) UpdateInvitation(ctx echo.Context) error {
 	}
 	request.InvitationID = invitationID
 
+	// Request body
+	var body UpdateInvitationRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create update command from request
+	// Update handler
+	// Available request body fields: Email, Role
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdateInvitationCommand(
-	// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

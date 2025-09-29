@@ -48,30 +48,59 @@ import (
 
 // {{ .Domain }}Controller handles HTTP requests for {{ .Domain | lower }} endpoints.
 type {{ .Domain }}Controller struct {
+{{- if .HasCreate }}
 	// Command handlers
 	createHandler *commands.Create{{ .DomainSingular }}CommandHandler
+{{- end }}
+{{- if .HasUpdate }}
 	updateHandler *commands.Update{{ .DomainSingular }}CommandHandler
+{{- end }}
+{{- if .HasDelete }}
 	deleteHandler *commands.Delete{{ .DomainSingular }}CommandHandler
-
+{{- end }}
+{{- if .HasGet }}
 	// Query handlers
 	getHandler    *queries.Get{{ .DomainSingular }}QueryHandler
+{{- end }}
+{{- if .HasList }}
 	listHandler   *queries.List{{ .Domain }}QueryHandler
+{{- end }}
 }
 
 // New{{ .Domain }}Controller creates a new {{ .Domain | lower }} controller with injected handlers.
 func New{{ .Domain }}Controller(
+{{- if .HasCreate }}
 	createHandler *commands.Create{{ .DomainSingular }}CommandHandler,
+{{- end }}
+{{- if .HasUpdate }}
 	updateHandler *commands.Update{{ .DomainSingular }}CommandHandler,
+{{- end }}
+{{- if .HasDelete }}
 	deleteHandler *commands.Delete{{ .DomainSingular }}CommandHandler,
+{{- end }}
+{{- if .HasGet }}
 	getHandler *queries.Get{{ .DomainSingular }}QueryHandler,
+{{- end }}
+{{- if .HasList }}
 	listHandler *queries.List{{ .Domain }}QueryHandler,
+{{- end }}
 ) *{{ .Domain }}Controller {
 	return &{{ .Domain }}Controller{
+{{- if .HasCreate }}
 		createHandler: createHandler,
+{{- end }}
+{{- if .HasUpdate }}
 		updateHandler: updateHandler,
+{{- end }}
+{{- if .HasDelete }}
 		deleteHandler: deleteHandler,
+{{- end }}
+{{- if .HasGet }}
 		getHandler:    getHandler,
+{{- end }}
+{{- if .HasList }}
 		listHandler:   listHandler,
+{{- end }}
 	}
 }
 
@@ -91,6 +120,26 @@ func Register{{ .Domain }}Routes(router server.EchoRouter, controller *{{ .Domai
 
 // Request types
 
+{{- if .QueryParams }}
+// {{ .OperationID | title }}Params defines parameters for {{ .GoName }}
+type {{ .OperationID | title }}Params struct {
+{{- range .QueryParams }}
+	{{ .Name | title }} {{ if not .Required }}*{{ end }}{{ .Type }} `json:"{{ .Name }},omitempty"`
+{{- end }}
+}
+{{- end }}
+
+{{- if .HasRequestBody }}
+{{- if .RequestBodySchema }}
+// {{ .GoName }}RequestBody defines the request body for {{ .GoName }}
+type {{ .GoName }}RequestBody struct {
+{{- range .RequestBodySchema.Fields }}
+	{{ .FieldName }} {{ .GoType }} `json:"{{ .JSONTag }}"`
+{{- end }}
+}
+{{- end }}
+{{- end }}
+
 type {{ .GoName }}Request struct {
 	{{- if .PathParams }}
 	{{- range .PathParams }}
@@ -98,11 +147,11 @@ type {{ .GoName }}Request struct {
 	{{- end }}
 	{{- end }}
 	{{- if .QueryParams }}
-	Params dto.{{ .OperationID | title }}Params
+	Params {{ .OperationID | title }}Params
 	{{- end }}
 	{{- if .HasRequestBody }}
 	{{- if .RequestBodySchema }}
-	Body *{{ if .RequestBodyPackage }}{{ .RequestBodyPackage }}{{ else }}dto{{ end }}.{{ .RequestBodySchema }}
+	Body *{{ .GoName }}RequestBody
 	{{- end }}
 	{{- end }}
 }
@@ -126,10 +175,10 @@ type {{ .GoName }}200JSONResponse struct {
 		Total int64 `json:"total"`
 	} `json:"meta"`
 	{{- else }}
-	Data dto.{{ .SuccessResponse.Schema }} `json:"data"`
+	Data {{ .SuccessResponse.Schema }} `json:"data"`
 	{{- end }}
 	{{- else if .ResponseType }}
-	Data dto.{{ .ResponseType }} `json:"data"`
+	Data {{ .ResponseType }} `json:"data"`
 	{{- else }}
 	Data []entities.{{ $.Domain | title | singularize }} `json:"data"`
 	Meta struct {
@@ -148,9 +197,9 @@ func (response {{ .GoName }}200JSONResponse) Visit{{ .GoName }}Response(w http.R
 
 type {{ .GoName }}201JSONResponse struct {
 	{{- if .SuccessResponse.Schema }}
-	Data dto.{{ .SuccessResponse.Schema }} `json:"data"`
+	Data {{ .SuccessResponse.Schema }} `json:"data"`
 	{{- else if .ResponseType }}
-	Data dto.{{ .ResponseType }} `json:"data"`
+	Data {{ .ResponseType }} `json:"data"`
 	{{- else }}
 	Data entities.{{ $.Domain | title | singularize }} `json:"data"`
 	{{- end }}
@@ -180,7 +229,7 @@ type {{ .GoName }}200JSONResponse struct {
 	{{- if .ResponsePackage }}
 	Data {{ .ResponsePackage }}.{{ .ResponseType }} `json:"data"`
 	{{- else }}
-	Data dto.{{ .ResponseType }} `json:"data"`
+	Data {{ .ResponseType }} `json:"data"`
 	{{- end }}
 	{{- end }}
 }
@@ -198,7 +247,7 @@ type {{ .GoName }}201JSONResponse struct {
 	{{- if .ResponsePackage }}
 	Data {{ .ResponsePackage }}.{{ .ResponseType }} `json:"data"`
 	{{- else }}
-	Data dto.{{ .ResponseType }} `json:"data"`
+	Data {{ .ResponseType }} `json:"data"`
 	{{- end }}
 	{{- end }}
 }
@@ -216,7 +265,7 @@ type {{ .GoName }}200JSONResponse struct {
 	{{- if .ResponsePackage }}
 	Data {{ .ResponsePackage }}.{{ .ResponseType }} `json:"data"`
 	{{- else }}
-	Data dto.{{ .ResponseType }} `json:"data"`
+	Data {{ .ResponseType }} `json:"data"`
 	{{- end }}
 	{{- end }}
 }
@@ -263,6 +312,9 @@ func (response {{ $opName }}{{ .StatusCode }}Response) Visit{{ $opName }}Respons
 // {{ .GoName }} handles the {{ .Method }} {{ .Path }} endpoint.
 func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	{{- if or .PathParams .QueryParams .HasRequestBody }}
+	request := {{ .GoName }}Request{}
+	{{- end }}
 
 	{{- if .PathParams }}
 	{{- range .PathParams }}
@@ -279,7 +331,7 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	{{- if .QueryParams }}
 
 	// Query parameters
-	var params dto.{{ .OperationID | title }}Params
+	var params {{ .OperationID | title }}Params
 	{{- range .QueryParams }}
 	// {{ if .Required }}Required{{ else }}Optional{{ end }} query parameter "{{ .Name }}"
 	{{- if eq .Name "filter" }}
@@ -298,7 +350,7 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	{{- if .HasRequestBody }}
 
 	// Request body
-	var body dto.{{ .RequestBodySchema }}
+	var body {{ .GoName }}RequestBody
 	if err := ctx.Bind(&body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -316,9 +368,22 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	{{- if hasPrefix .GoName "Create" }}
-	// Create command from request
+	// Create handler
+	{{- if .HasRequestBody }}
+	{{- if .RequestBodySchema }}
+	// Available request body fields: {{ range $i, $field := .RequestBodySchema.Fields }}{{ if $i }}, {{ end }}{{ $field.Name }}{{ end }}
+	{{- end }}
+	{{- end }}
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreate{{ $.DomainSingular }}Command(
-		// TODO: Map request fields to command
+		orgID,
+		"", // TODO: Map appropriate field from request.Body
+		"", // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -330,9 +395,19 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 		"data": result,
 	})
 	{{- else if hasPrefix .GoName "Update" }}
-	// Create update command from request
+	// Update handler
+	{{- if .HasRequestBody }}
+	{{- if .RequestBodySchema }}
+	// Available request body fields: {{ range $i, $field := .RequestBodySchema.Fields }}{{ if $i }}, {{ end }}{{ $field.Name }}{{ end }}
+	{{- end }}
+	{{- end }}
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdate{{ $.DomainSingular }}Command(
-		// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil, // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)
@@ -373,9 +448,13 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	})
 	{{- else if hasPrefix .GoName "Get" }}
 	// Create get query from request
+	{{- if .PathParams }}
 	query := queries.NewGet{{ $.DomainSingular }}Query(
 		request.ID,
 	)
+	{{- else }}
+	query := queries.NewGet{{ $.DomainSingular }}Query()
+	{{- end }}
 
 	result, err := c.getHandler.Handle(reqCtx, query)
 	if err != nil {
@@ -387,6 +466,7 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	})
 	{{- else }}
 	// TODO: Handle custom operation {{ .GoName }}
+	_ = reqCtx // Custom operation not yet implemented
 	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
 	{{- end }}
 }

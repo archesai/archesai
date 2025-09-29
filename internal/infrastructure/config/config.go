@@ -41,6 +41,13 @@ var ConfigPaths = []string{
 	"$HOME/.config/archesai",
 }
 
+// ConfigFileNames defines the configuration file names to search for (in order of priority).
+var ConfigFileNames = []string{
+	"arches",    // arches.yaml
+	"config",    // config.yaml
+	".archesai", // .archesai.yaml
+}
+
 // New returns the default configuration.
 func New() *Config {
 	return &Config{

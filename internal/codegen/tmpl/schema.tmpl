@@ -4,9 +4,12 @@ Handles: Entities, Value Objects, DTOs, Enums, and Constants
 */ -}}
 {{template "header.tmpl" .}}
 {{- /* Import block */ -}}
-{{- if or .Imports .IsEntity .IsAggregate .IsEnum }}
+{{- if or .Imports .IsEntity .IsAggregate .IsEnum .IsValueObject }}
 import (
 	"fmt"
+{{- if .IsValueObject }}
+	"strings"
+{{- end }}
 	"time"
 	"github.com/google/uuid"
 {{- if and (or .IsEntity .IsAggregate) (ne .Package "core") }}
@@ -216,7 +219,12 @@ func (v {{ $.Name }}) Get{{ .FieldName }}() {{ .GoType }} {
 
 // String returns a string representation of {{ .Name }}
 func (v {{ .Name }}) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+{{- range .Fields }}
+	fields = append(fields, fmt.Sprintf("{{ .FieldName }}: %v", v.{{ .FieldName }}))
+{{- end }}
+	return fmt.Sprintf("{{ .Name }}{%s}", strings.Join(fields, ", "))
 }
 
 {{- end }}

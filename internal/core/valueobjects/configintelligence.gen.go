@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigIntelligence represents Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
 type ConfigIntelligence struct {
@@ -64,5 +67,13 @@ func (v ConfigIntelligence) GetUnstructured() *ConfigUnstructured {
 
 // String returns a string representation of ConfigIntelligence
 func (v ConfigIntelligence) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Embedding: %v", v.Embedding))
+	fields = append(fields, fmt.Sprintf("Llm: %v", v.Llm))
+	fields = append(fields, fmt.Sprintf("Runpod: %v", v.Runpod))
+	fields = append(fields, fmt.Sprintf("Scraper: %v", v.Scraper))
+	fields = append(fields, fmt.Sprintf("Speech: %v", v.Speech))
+	fields = append(fields, fmt.Sprintf("Unstructured: %v", v.Unstructured))
+	return fmt.Sprintf("ConfigIntelligence{%s}", strings.Join(fields, ", "))
 }

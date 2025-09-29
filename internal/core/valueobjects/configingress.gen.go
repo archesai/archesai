@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigIngress represents Ingress configuration
 type ConfigIngress struct {
@@ -43,5 +46,10 @@ func (v ConfigIngress) GetTls() *ConfigTLS {
 
 // String returns a string representation of ConfigIngress
 func (v ConfigIngress) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Domain: %v", v.Domain))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Tls: %v", v.Tls))
+	return fmt.Sprintf("ConfigIngress{%s}", strings.Join(fields, ", "))
 }

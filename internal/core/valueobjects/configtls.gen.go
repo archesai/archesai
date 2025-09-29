@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigTLS represents TLS configuration
 type ConfigTLS struct {
@@ -43,5 +46,10 @@ func (v ConfigTLS) GetSecretName() *string {
 
 // String returns a string representation of ConfigTLS
 func (v ConfigTLS) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Issuer: %v", v.Issuer))
+	fields = append(fields, fmt.Sprintf("SecretName: %v", v.SecretName))
+	return fmt.Sprintf("ConfigTLS{%s}", strings.Join(fields, ", "))
 }

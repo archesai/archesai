@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigServiceAccount represents Kubernetes service account configuration
 type ConfigServiceAccount struct {
@@ -39,5 +42,9 @@ func (v ConfigServiceAccount) GetName() string {
 
 // String returns a string representation of ConfigServiceAccount
 func (v ConfigServiceAccount) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Create: %v", v.Create))
+	fields = append(fields, fmt.Sprintf("Name: %v", v.Name))
+	return fmt.Sprintf("ConfigServiceAccount{%s}", strings.Join(fields, ", "))
 }

@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigAuthGoogle represents Google OAuth configuration
 type ConfigAuthGoogle struct {
@@ -57,5 +60,12 @@ func (v ConfigAuthGoogle) GetScopes() []string {
 
 // String returns a string representation of ConfigAuthGoogle
 func (v ConfigAuthGoogle) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("ClientId: %v", v.ClientId))
+	fields = append(fields, fmt.Sprintf("ClientSecret: %v", v.ClientSecret))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("RedirectUrl: %v", v.RedirectUrl))
+	fields = append(fields, fmt.Sprintf("Scopes: %v", v.Scopes))
+	return fmt.Sprintf("ConfigAuthGoogle{%s}", strings.Join(fields, ", "))
 }

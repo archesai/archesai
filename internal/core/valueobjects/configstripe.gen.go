@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigStripe represents Stripe payment configuration
 type ConfigStripe struct {
@@ -42,5 +45,9 @@ func (v ConfigStripe) GetWhsec() string {
 
 // String returns a string representation of ConfigStripe
 func (v ConfigStripe) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Token: %v", v.Token))
+	fields = append(fields, fmt.Sprintf("Whsec: %v", v.Whsec))
+	return fmt.Sprintf("ConfigStripe{%s}", strings.Join(fields, ", "))
 }

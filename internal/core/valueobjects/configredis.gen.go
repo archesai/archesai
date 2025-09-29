@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigRedis represents Redis configuration
 type ConfigRedis struct {
@@ -91,5 +94,16 @@ func (v ConfigRedis) GetResources() *ConfigResource {
 
 // String returns a string representation of ConfigRedis
 func (v ConfigRedis) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Auth: %v", v.Auth))
+	fields = append(fields, fmt.Sprintf("Ca: %v", v.Ca))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Host: %v", v.Host))
+	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
+	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
+	fields = append(fields, fmt.Sprintf("Persistence: %v", v.Persistence))
+	fields = append(fields, fmt.Sprintf("Port: %v", v.Port))
+	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	return fmt.Sprintf("ConfigRedis{%s}", strings.Join(fields, ", "))
 }

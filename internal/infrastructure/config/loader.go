@@ -20,12 +20,21 @@ func Load() (*Configuration, error) {
 	v := viper.New()
 	setupViper(v)
 
-	// Read config file if exists
-	if err := v.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return nil, fmt.Errorf("failed to read config: %w", err)
+	// Try to read config file with multiple possible names
+	var configFound bool
+	for _, name := range ConfigFileNames {
+		v.SetConfigName(name)
+		if err := v.ReadInConfig(); err == nil {
+			configFound = true
+			break
+		} else if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			// If it's not a "file not found" error, it's a real error
+			return nil, fmt.Errorf("failed to read config file %s: %w", name, err)
 		}
 	}
+
+	// It's OK if no config file is found, we'll use defaults and env vars
+	_ = configFound
 
 	// Start with default config
 	config := New()
@@ -43,11 +52,14 @@ func Load() (*Configuration, error) {
 
 // setupViper configures viper for reading config.
 func setupViper(v *viper.Viper) {
-	v.SetConfigName(DefaultConfigName)
+	// Try multiple config file names in order of priority
 	v.SetConfigType(DefaultConfigType)
 	for _, path := range ConfigPaths {
 		v.AddConfigPath(path)
 	}
+
+	// Set the first config name, we'll try others if this fails
+	v.SetConfigName(ConfigFileNames[0])
 
 	v.SetEnvPrefix(EnvPrefix)
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))

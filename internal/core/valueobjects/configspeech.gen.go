@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigSpeech represents Speech recognition and TTS services
 type ConfigSpeech struct {
@@ -36,5 +39,9 @@ func (v ConfigSpeech) GetToken() *string {
 
 // String returns a string representation of ConfigSpeech
 func (v ConfigSpeech) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Token: %v", v.Token))
+	return fmt.Sprintf("ConfigSpeech{%s}", strings.Join(fields, ", "))
 }

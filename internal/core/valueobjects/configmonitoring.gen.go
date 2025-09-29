@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigMonitoring represents Monitoring configuration for Grafana and Loki
 type ConfigMonitoring struct {
@@ -36,5 +39,9 @@ func (v ConfigMonitoring) GetLoki() ConfigLoki {
 
 // String returns a string representation of ConfigMonitoring
 func (v ConfigMonitoring) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Grafana: %v", v.Grafana))
+	fields = append(fields, fmt.Sprintf("Loki: %v", v.Loki))
+	return fmt.Sprintf("ConfigMonitoring{%s}", strings.Join(fields, ", "))
 }

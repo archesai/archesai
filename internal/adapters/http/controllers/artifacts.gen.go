@@ -21,7 +21,6 @@ type ArtifactsController struct {
 	createHandler *commands.CreateArtifactCommandHandler
 	updateHandler *commands.UpdateArtifactCommandHandler
 	deleteHandler *commands.DeleteArtifactCommandHandler
-
 	// Query handlers
 	getHandler  *queries.GetArtifactQueryHandler
 	listHandler *queries.ListArtifactsQueryHandler
@@ -58,8 +57,14 @@ func RegisterArtifactsRoutes(router server.EchoRouter, controller *ArtifactsCont
 // ============================================================================
 
 // Request types
+// CreateArtifactRequestBody defines the request body for CreateArtifact
+type CreateArtifactRequestBody struct {
+	Name *string `json:"name,omitempty"`
+	Text string  `json:"text"`
+}
 
 type CreateArtifactRequest struct {
+	Body *CreateArtifactRequestBody
 }
 
 // Response types
@@ -105,11 +110,28 @@ func (response CreateArtifact401Response) VisitCreateArtifactResponse(w http.Res
 // CreateArtifact handles the POST /artifacts endpoint.
 func (c *ArtifactsController) CreateArtifact(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := CreateArtifactRequest{}
+
+	// Request body
+	var body CreateArtifactRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
 
 	// Determine which handler to call based on operation
-	// Create command from request
+	// Create handler
+	// Available request body fields: Name, Text
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreateArtifactCommand(
-	// TODO: Map request fields to command
+		orgID,
+		"",  // TODO: Map appropriate field from request.Body
+		"",  // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -127,9 +149,15 @@ func (c *ArtifactsController) CreateArtifact(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// ListArtifactsParams defines parameters for ListArtifacts
+type ListArtifactsParams struct {
+	Filter *map[string]interface{}   `json:"filter,omitempty"`
+	Page   *map[string]interface{}   `json:"page,omitempty"`
+	Sort   *[]map[string]interface{} `json:"sort,omitempty"`
+}
 
 type ListArtifactsRequest struct {
-	Params dto.ListArtifactsParams
+	Params ListArtifactsParams
 }
 
 // Response types
@@ -175,9 +203,10 @@ func (response ListArtifacts401Response) VisitListArtifactsResponse(w http.Respo
 // ListArtifacts handles the GET /artifacts endpoint.
 func (c *ArtifactsController) ListArtifacts(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ListArtifactsRequest{}
 
 	// Query parameters
-	var params dto.ListArtifactsParams
+	var params ListArtifactsParams
 	// Optional query parameter "filter"
 	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
@@ -252,6 +281,7 @@ func (response DeleteArtifact404Response) VisitDeleteArtifactResponse(w http.Res
 // DeleteArtifact handles the DELETE /artifacts/{id} endpoint.
 func (c *ArtifactsController) DeleteArtifact(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := DeleteArtifactRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -316,6 +346,7 @@ func (response GetArtifact404Response) VisitGetArtifactResponse(w http.ResponseW
 // GetArtifact handles the GET /artifacts/{id} endpoint.
 func (c *ArtifactsController) GetArtifact(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetArtifactRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -345,9 +376,16 @@ func (c *ArtifactsController) GetArtifact(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// UpdateArtifactRequestBody defines the request body for UpdateArtifact
+type UpdateArtifactRequestBody struct {
+	Name *string `json:"name,omitempty"`
+	Text *string `json:"text,omitempty"`
+	URL  *string `json:"url,omitempty"`
+}
 
 type UpdateArtifactRequest struct {
-	ID uuid.UUID `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateArtifactRequestBody
 }
 
 // Response types
@@ -382,6 +420,7 @@ func (response UpdateArtifact404Response) VisitUpdateArtifactResponse(w http.Res
 // UpdateArtifact handles the PATCH /artifacts/{id} endpoint.
 func (c *ArtifactsController) UpdateArtifact(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := UpdateArtifactRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -390,10 +429,23 @@ func (c *ArtifactsController) UpdateArtifact(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body UpdateArtifactRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create update command from request
+	// Update handler
+	// Available request body fields: Name, Text, URL
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdateArtifactCommand(
-	// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

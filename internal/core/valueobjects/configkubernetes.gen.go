@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigKubernetes represents Kubernetes-specific deployment configuration
 type ConfigKubernetes struct {
@@ -43,5 +46,10 @@ func (v ConfigKubernetes) GetMonitoring() *ConfigMonitoring {
 
 // String returns a string representation of ConfigKubernetes
 func (v ConfigKubernetes) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Infrastructure: %v", v.Infrastructure))
+	fields = append(fields, fmt.Sprintf("Ingress: %v", v.Ingress))
+	fields = append(fields, fmt.Sprintf("Monitoring: %v", v.Monitoring))
+	return fmt.Sprintf("ConfigKubernetes{%s}", strings.Join(fields, ", "))
 }

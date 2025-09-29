@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigEmail represents Email configuration for sending emails
 type ConfigEmail struct {
@@ -50,5 +53,11 @@ func (v ConfigEmail) GetUser() *string {
 
 // String returns a string representation of ConfigEmail
 func (v ConfigEmail) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Password: %v", v.Password))
+	fields = append(fields, fmt.Sprintf("Service: %v", v.Service))
+	fields = append(fields, fmt.Sprintf("User: %v", v.User))
+	return fmt.Sprintf("ConfigEmail{%s}", strings.Join(fields, ", "))
 }

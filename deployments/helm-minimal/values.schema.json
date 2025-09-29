@@ -1,0 +1,1999 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Arches AI configuration schema",
+  "properties": {
+    "api": {
+      "additionalProperties": false,
+      "description": "Configuration schema for the API server",
+      "properties": {
+        "cors": {
+          "default": "localhost",
+          "description": "A comma-separated list of allowed origins for CORS requests",
+          "example": "localhost,https://platform.archesai.com",
+          "minLength": 1,
+          "type": "string"
+        },
+        "docs": {
+          "default": true,
+          "description": "Enable or disable API documentation",
+          "example": true,
+          "type": "boolean"
+        },
+        "email": {
+          "additionalProperties": false,
+          "description": "Email configuration for sending emails",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable email functionality",
+              "example": true,
+              "type": "boolean"
+            },
+            "password": {
+              "description": "Password for the email service",
+              "example": "example-string",
+              "type": "string"
+            },
+            "service": {
+              "description": "Email service provider (e.g., \"gmail\", \"sendgrid\", etc.)",
+              "example": "example-string",
+              "type": "string"
+            },
+            "user": {
+              "description": "Username for the email service",
+              "example": "example-string",
+              "type": "string"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "environment": {
+          "default": "development",
+          "description": "Deployment environment (development, staging, production)",
+          "example": "development",
+          "type": "string"
+        },
+        "host": {
+          "default": "0.0.0.0",
+          "description": "The host address on which the API server will listen",
+          "example": "0.0.0.0",
+          "minLength": 1,
+          "readOnly": true,
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": false,
+          "description": "Container image configuration",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Kubernetes image pull policy",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "example": "Always",
+              "type": "string"
+            },
+            "repository": {
+              "description": "Container image repository",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "tag": {
+              "default": "latest",
+              "description": "Container image tag",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["pullPolicy", "tag"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "port": {
+          "default": 3001,
+          "description": "The port on which the API server will listen",
+          "example": 3001,
+          "type": "number"
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "Kubernetes resource configuration",
+          "properties": {
+            "limits": {
+              "additionalProperties": false,
+              "description": "Resource limits",
+              "properties": {
+                "cpu": {
+                  "default": "1000m",
+                  "description": "Maximum CPU allocation",
+                  "example": "1000m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "description": "Maximum memory allocation",
+                  "example": "1Gi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": false,
+              "description": "Resource requests",
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "description": "Requested CPU allocation",
+                  "example": "100m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "description": "Requested memory allocation",
+                  "example": "128Mi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            }
+          },
+          "required": ["limits", "requests"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "validate": {
+          "default": true,
+          "description": "Enable or disable request validation",
+          "example": true,
+          "type": "boolean"
+        }
+      },
+      "required": ["cors", "docs", "environment", "host", "port", "validate"],
+      "title": "ConfigAPI",
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    },
+    "auth": {
+      "additionalProperties": false,
+      "description": "Authentication configuration for the API server",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "description": "Enable authentication",
+          "example": true,
+          "type": "boolean"
+        },
+        "firebase": {
+          "additionalProperties": false,
+          "description": "Firebase authentication configuration",
+          "properties": {
+            "clientEmail": {
+              "description": "Firebase service account client email address",
+              "example": "example-string",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable Firebase authentication",
+              "example": true,
+              "type": "boolean"
+            },
+            "privateKey": {
+              "description": "Firebase service account private key (PEM format)",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "projectID": {
+              "description": "Firebase project ID for authentication",
+              "example": "example-id-123",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "github": {
+          "additionalProperties": false,
+          "description": "GitHub OAuth configuration",
+          "properties": {
+            "clientId": {
+              "description": "GitHub OAuth App client ID",
+              "example": "Iv1.abc123def456ghi7",
+              "type": "string"
+            },
+            "clientSecret": {
+              "description": "GitHub OAuth App client secret",
+              "example": "abc123def456ghi789jkl012mno345pqr678stu901",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable GitHub OAuth",
+              "example": false,
+              "type": "boolean"
+            },
+            "redirectUrl": {
+              "description": "OAuth callback URL",
+              "example": "http://localhost:8080/auth/oauth/github/callback",
+              "type": "string"
+            },
+            "scopes": {
+              "default": ["user:email"],
+              "description": "OAuth scopes to request",
+              "example": ["user:email", "read:user"],
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "google": {
+          "additionalProperties": false,
+          "description": "Google OAuth configuration",
+          "properties": {
+            "clientId": {
+              "description": "Google OAuth client ID",
+              "example": "123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
+              "type": "string"
+            },
+            "clientSecret": {
+              "description": "Google OAuth client secret",
+              "example": "GOCSPX-abc123def456ghi789jkl012",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable Google OAuth",
+              "example": false,
+              "type": "boolean"
+            },
+            "redirectUrl": {
+              "description": "OAuth callback URL",
+              "example": "http://localhost:8080/auth/oauth/google/callback",
+              "type": "string"
+            },
+            "scopes": {
+              "default": ["openid", "profile", "email"],
+              "description": "OAuth scopes to request",
+              "example": ["openid", "profile", "email"],
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "local": {
+          "additionalProperties": false,
+          "description": "Local username/password authentication",
+          "properties": {
+            "accessTokenTtl": {
+              "default": "15m",
+              "description": "Access token time-to-live duration (e.g., \"15m\", \"1h\")",
+              "example": "15m",
+              "minLength": 2,
+              "pattern": "^(\\d+[smhd])+$",
+              "type": "string"
+            },
+            "enabled": {
+              "default": true,
+              "description": "Enable local authentication",
+              "example": true,
+              "type": "boolean"
+            },
+            "jwtSecret": {
+              "default": "change-me-in-production",
+              "description": "Secret key for JWT token signing",
+              "example": "your-256-bit-secret-key-here-change-in-production",
+              "minLength": 32,
+              "type": "string"
+            },
+            "refreshTokenTtl": {
+              "default": "168h",
+              "description": "Refresh token time-to-live duration (e.g., \"7d\", \"168h\")",
+              "example": "168h",
+              "minLength": 2,
+              "pattern": "^(\\d+[smhd])+$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "enabled",
+            "jwtSecret",
+            "accessTokenTtl",
+            "refreshTokenTtl"
+          ],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "magicLink": {
+          "additionalProperties": false,
+          "description": "Magic link authentication configuration",
+          "properties": {
+            "deliveryMethods": {
+              "additionalProperties": false,
+              "description": "Available delivery methods",
+              "properties": {
+                "console": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": false,
+                      "description": "Enable console output (development only)",
+                      "example": false,
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "email": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "example": true,
+                      "type": "boolean"
+                    },
+                    "from": {
+                      "example": "noreply@archesai.com",
+                      "format": "email",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "otp": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "example": true,
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
+                "webhook": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": false,
+                      "example": false,
+                      "type": "boolean"
+                    },
+                    "url": {
+                      "example": "https://hooks.example.com/magic-link",
+                      "format": "uri",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable magic link authentication",
+              "example": true,
+              "type": "boolean"
+            },
+            "otpLength": {
+              "default": 6,
+              "description": "Length of OTP code",
+              "example": 6,
+              "maximum": 8,
+              "minimum": 4,
+              "type": "integer"
+            },
+            "rateLimit": {
+              "additionalProperties": false,
+              "description": "Rate limiting configuration",
+              "properties": {
+                "maxAttempts": {
+                  "default": 5,
+                  "description": "Maximum number of attempts within window",
+                  "example": 5,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "windowMinutes": {
+                  "default": 15,
+                  "description": "Time window in minutes",
+                  "example": 15,
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "tokenExpiry": {
+              "default": 15,
+              "description": "Token expiry duration in minutes",
+              "example": 15,
+              "maximum": 60,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "microsoft": {
+          "additionalProperties": false,
+          "description": "Microsoft/Azure AD OAuth configuration",
+          "properties": {
+            "clientId": {
+              "description": "Azure AD Application (client) ID",
+              "example": "12345678-1234-1234-1234-123456789012",
+              "type": "string"
+            },
+            "clientSecret": {
+              "description": "Azure AD client secret",
+              "example": "abc~def123GHI456jkl789MNO012pqr345",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable Microsoft OAuth",
+              "example": false,
+              "type": "boolean"
+            },
+            "redirectUrl": {
+              "description": "OAuth callback URL",
+              "example": "http://localhost:8080/auth/oauth/microsoft/callback",
+              "type": "string"
+            },
+            "scopes": {
+              "default": ["openid", "profile", "email", "User.Read"],
+              "description": "OAuth scopes to request",
+              "example": ["openid", "profile", "email", "User.Read"],
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "tenant": {
+              "default": "common",
+              "description": "Azure AD tenant ID (use 'common' for multi-tenant)",
+              "example": "common",
+              "type": "string"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "twitter": {
+          "additionalProperties": false,
+          "description": "Twitter OAuth configuration",
+          "properties": {
+            "callbackURL": {
+              "description": "OAuth callback URL",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "consumerKey": {
+              "description": "Twitter API consumer key",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "consumerSecret": {
+              "description": "Twitter API consumer secret",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable Twitter OAuth",
+              "example": true,
+              "type": "boolean"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        }
+      },
+      "required": ["enabled"],
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    },
+    "billing": {
+      "additionalProperties": false,
+      "description": "Billing configuration for Stripe",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "Enable billing functionality",
+          "example": true,
+          "type": "boolean"
+        },
+        "stripe": {
+          "additionalProperties": false,
+          "description": "Stripe payment configuration",
+          "properties": {
+            "token": {
+              "description": "Stripe secret API key",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "whsec": {
+              "description": "Stripe webhook endpoint secret",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["token", "whsec"],
+          "title": "StripeConfig",
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        }
+      },
+      "required": ["enabled"],
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    },
+    "database": {
+      "additionalProperties": false,
+      "description": "Database configuration for PostgreSQL",
+      "properties": {
+        "connMaxIdleTime": {
+          "description": "Maximum connection idle time (e.g., \"5m\")",
+          "example": "5m",
+          "pattern": "^(\\d+[smh])+$",
+          "type": "string"
+        },
+        "connMaxLifetime": {
+          "description": "Maximum connection lifetime (e.g., \"30m\")",
+          "example": "30m",
+          "pattern": "^(\\d+[smh])+$",
+          "type": "string"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Enable database",
+          "example": true,
+          "type": "boolean"
+        },
+        "healthCheckPeriod": {
+          "description": "Health check period for connections (PostgreSQL)",
+          "example": "30s",
+          "pattern": "^(\\d+[smh])+$",
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": false,
+          "description": "Container image configuration",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Kubernetes image pull policy",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "example": "Always",
+              "type": "string"
+            },
+            "repository": {
+              "description": "Container image repository",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "tag": {
+              "default": "latest",
+              "description": "Container image tag",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["pullPolicy", "tag"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "managed": {
+          "default": false,
+          "description": "Use managed database deployment",
+          "example": true,
+          "type": "boolean"
+        },
+        "maxConns": {
+          "default": 25,
+          "description": "Maximum number of connections in pool (PostgreSQL)",
+          "example": 25,
+          "format": "int32",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "minConns": {
+          "default": 5,
+          "description": "Minimum number of connections in pool (PostgreSQL)",
+          "example": 5,
+          "format": "int32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "persistence": {
+          "additionalProperties": false,
+          "description": "Persistent storage configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable persistent storage",
+              "example": true,
+              "type": "boolean"
+            },
+            "size": {
+              "default": "10Gi",
+              "description": "Size of persistent volume",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["enabled", "size"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "Kubernetes resource configuration",
+          "properties": {
+            "limits": {
+              "additionalProperties": false,
+              "description": "Resource limits",
+              "properties": {
+                "cpu": {
+                  "default": "1000m",
+                  "description": "Maximum CPU allocation",
+                  "example": "1000m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "description": "Maximum memory allocation",
+                  "example": "1Gi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": false,
+              "description": "Resource requests",
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "description": "Requested CPU allocation",
+                  "example": "100m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "description": "Requested memory allocation",
+                  "example": "128Mi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            }
+          },
+          "required": ["limits", "requests"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "runMigrations": {
+          "default": false,
+          "description": "Automatically run database migrations on startup",
+          "example": true,
+          "type": "boolean"
+        },
+        "type": {
+          "default": "postgresql",
+          "description": "Database type (postgresql or sqlite)",
+          "enum": ["postgresql", "sqlite"],
+          "example": "postgresql",
+          "type": "string"
+        },
+        "url": {
+          "default": "postgresql://admin:password@127.0.0.1:5432/archesai",
+          "description": "Database connection url/string",
+          "example": "example-string",
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "url",
+        "type",
+        "maxConns",
+        "minConns",
+        "runMigrations",
+        "managed"
+      ],
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    },
+    "intelligence": {
+      "additionalProperties": false,
+      "description": "Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)",
+      "properties": {
+        "embedding": {
+          "additionalProperties": false,
+          "description": "Large Language Model configuration",
+          "properties": {
+            "endpoint": {
+              "description": "LLM service endpoint URL",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "token": {
+              "description": "Authentication token for LLM service",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "default": "ollama",
+              "description": "LLM provider type",
+              "enum": ["ollama", "openai"],
+              "example": "ollama",
+              "type": "string"
+            }
+          },
+          "required": ["type"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "llm": {
+          "additionalProperties": false,
+          "description": "Large Language Model configuration",
+          "properties": {
+            "endpoint": {
+              "description": "LLM service endpoint URL",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "token": {
+              "description": "Authentication token for LLM service",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": {
+              "default": "ollama",
+              "description": "LLM provider type",
+              "enum": ["ollama", "openai"],
+              "example": "ollama",
+              "type": "string"
+            }
+          },
+          "required": ["type"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "runpod": {
+          "additionalProperties": false,
+          "description": "RunPod serverless GPU configuration",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable RunPod integration",
+              "example": true,
+              "type": "boolean"
+            },
+            "token": {
+              "description": "RunPod API token",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "scraper": {
+          "additionalProperties": false,
+          "description": "Web scraping service configuration",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable scraper service",
+              "example": true,
+              "type": "boolean"
+            },
+            "endpoint": {
+              "description": "Web scraper service endpoint URL",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "image": {
+              "additionalProperties": false,
+              "description": "Container image configuration",
+              "properties": {
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "description": "Kubernetes image pull policy",
+                  "enum": ["Always", "IfNotPresent", "Never"],
+                  "example": "Always",
+                  "type": "string"
+                },
+                "repository": {
+                  "description": "Container image repository",
+                  "example": "example-string",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "latest",
+                  "description": "Container image tag",
+                  "example": "example-string",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["pullPolicy", "tag"],
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            },
+            "managed": {
+              "default": false,
+              "description": "Use managed scraper deployment",
+              "example": true,
+              "type": "boolean"
+            },
+            "resources": {
+              "additionalProperties": false,
+              "description": "Kubernetes resource configuration",
+              "properties": {
+                "limits": {
+                  "additionalProperties": false,
+                  "description": "Resource limits",
+                  "properties": {
+                    "cpu": {
+                      "default": "1000m",
+                      "description": "Maximum CPU allocation",
+                      "example": "1000m",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "1Gi",
+                      "description": "Maximum memory allocation",
+                      "example": "1Gi",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": ["cpu", "memory"],
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": false,
+                  "description": "Resource requests",
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "description": "Requested CPU allocation",
+                      "example": "100m",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "128Mi",
+                      "description": "Requested memory allocation",
+                      "example": "128Mi",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": ["cpu", "memory"],
+                  "type": "object"
+                }
+              },
+              "required": ["limits", "requests"],
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "speech": {
+          "additionalProperties": false,
+          "description": "Speech recognition and TTS services",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable speech services",
+              "example": true,
+              "type": "boolean"
+            },
+            "token": {
+              "description": "Speech-to-text service API token",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["enabled"],
+          "title": "SpeechConfig",
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "unstructured": {
+          "additionalProperties": false,
+          "description": "Unstructured.io service for document parsing",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable unstructured document parsing",
+              "example": true,
+              "type": "boolean"
+            },
+            "image": {
+              "additionalProperties": false,
+              "description": "Container image configuration",
+              "properties": {
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "description": "Kubernetes image pull policy",
+                  "enum": ["Always", "IfNotPresent", "Never"],
+                  "example": "Always",
+                  "type": "string"
+                },
+                "repository": {
+                  "description": "Container image repository",
+                  "example": "example-string",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "latest",
+                  "description": "Container image tag",
+                  "example": "example-string",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["pullPolicy", "tag"],
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            },
+            "managed": {
+              "default": false,
+              "description": "Use managed unstructured deployment",
+              "example": true,
+              "type": "boolean"
+            },
+            "resources": {
+              "additionalProperties": false,
+              "description": "Kubernetes resource configuration",
+              "properties": {
+                "limits": {
+                  "additionalProperties": false,
+                  "description": "Resource limits",
+                  "properties": {
+                    "cpu": {
+                      "default": "1000m",
+                      "description": "Maximum CPU allocation",
+                      "example": "1000m",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "1Gi",
+                      "description": "Maximum memory allocation",
+                      "example": "1Gi",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": ["cpu", "memory"],
+                  "type": "object"
+                },
+                "requests": {
+                  "additionalProperties": false,
+                  "description": "Resource requests",
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "description": "Requested CPU allocation",
+                      "example": "100m",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "128Mi",
+                      "description": "Requested memory allocation",
+                      "example": "128Mi",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": ["cpu", "memory"],
+                  "type": "object"
+                }
+              },
+              "required": ["limits", "requests"],
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            }
+          },
+          "required": ["enabled"],
+          "title": "UnstructuredConfig",
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        }
+      },
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    },
+    "kubernetes": {
+      "additionalProperties": false,
+      "description": "Kubernetes-specific deployment configuration",
+      "properties": {
+        "infrastructure": {
+          "additionalProperties": false,
+          "description": "Infrastructure configuration for Kubernetes deployments",
+          "properties": {
+            "images": {
+              "additionalProperties": false,
+              "description": "Container image configuration",
+              "properties": {
+                "imagePullSecrets": {
+                  "default": [],
+                  "description": "List of Kubernetes secrets for pulling private images",
+                  "items": {
+                    "example": "example-string",
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "imageRegistry": {
+                  "default": "",
+                  "description": "Custom container registry URL (leave empty for Docker Hub)",
+                  "example": "example-string",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["imagePullSecrets", "imageRegistry"],
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            },
+            "migrations": {
+              "additionalProperties": false,
+              "description": "Database migration configuration",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Enable automatic DB migrations",
+                  "example": true,
+                  "type": "boolean"
+                }
+              },
+              "required": ["enabled"],
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            },
+            "namespace": {
+              "default": "arches-system",
+              "description": "Kubernetes namespace where all resources will be deployed",
+              "example": "Example Name",
+              "minLength": 1,
+              "type": "string"
+            },
+            "serviceAccount": {
+              "additionalProperties": false,
+              "description": "Kubernetes service account configuration",
+              "properties": {
+                "create": {
+                  "default": true,
+                  "description": "Create dedicated service account",
+                  "example": true,
+                  "type": "boolean"
+                },
+                "name": {
+                  "default": "",
+                  "description": "Custom service account name",
+                  "example": "Example Name",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["create", "name"],
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            }
+          },
+          "required": ["images", "migrations", "namespace", "serviceAccount"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "ingress": {
+          "additionalProperties": false,
+          "description": "Ingress configuration",
+          "properties": {
+            "domain": {
+              "default": "archesai.dev",
+              "description": "Primary domain name for ingress routing",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable ingress",
+              "example": true,
+              "type": "boolean"
+            },
+            "tls": {
+              "additionalProperties": false,
+              "description": "TLS configuration",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "description": "Enable TLS/SSL",
+                  "example": true,
+                  "type": "boolean"
+                },
+                "issuer": {
+                  "default": "letsencrypt-staging",
+                  "description": "Cert-manager ClusterIssuer",
+                  "example": "example-string",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "secretName": {
+                  "default": "archesai-tls",
+                  "description": "Kubernetes secret name for TLS certificates",
+                  "example": "Example Name",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["enabled"],
+              "title": "TLSConfig",
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            }
+          },
+          "required": ["enabled"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "monitoring": {
+          "additionalProperties": false,
+          "description": "Monitoring configuration for Grafana and Loki",
+          "properties": {
+            "grafana": {
+              "additionalProperties": false,
+              "description": "Grafana monitoring dashboard configuration",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Enable Grafana",
+                  "example": true,
+                  "type": "boolean"
+                },
+                "image": {
+                  "additionalProperties": false,
+                  "description": "Container image configuration",
+                  "properties": {
+                    "pullPolicy": {
+                      "default": "IfNotPresent",
+                      "description": "Kubernetes image pull policy",
+                      "enum": ["Always", "IfNotPresent", "Never"],
+                      "example": "Always",
+                      "type": "string"
+                    },
+                    "repository": {
+                      "description": "Container image repository",
+                      "example": "example-string",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "tag": {
+                      "default": "latest",
+                      "description": "Container image tag",
+                      "example": "example-string",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": ["pullPolicy", "tag"],
+                  "type": "object",
+                  "x-codegen": {
+                    "schemaType": "valueobject"
+                  }
+                },
+                "managed": {
+                  "default": false,
+                  "description": "Use managed Grafana deployment",
+                  "example": true,
+                  "type": "boolean"
+                },
+                "resources": {
+                  "additionalProperties": false,
+                  "description": "Kubernetes resource configuration",
+                  "properties": {
+                    "limits": {
+                      "additionalProperties": false,
+                      "description": "Resource limits",
+                      "properties": {
+                        "cpu": {
+                          "default": "1000m",
+                          "description": "Maximum CPU allocation",
+                          "example": "1000m",
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "1Gi",
+                          "description": "Maximum memory allocation",
+                          "example": "1Gi",
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": ["cpu", "memory"],
+                      "type": "object"
+                    },
+                    "requests": {
+                      "additionalProperties": false,
+                      "description": "Resource requests",
+                      "properties": {
+                        "cpu": {
+                          "default": "100m",
+                          "description": "Requested CPU allocation",
+                          "example": "100m",
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "128Mi",
+                          "description": "Requested memory allocation",
+                          "example": "128Mi",
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": ["cpu", "memory"],
+                      "type": "object"
+                    }
+                  },
+                  "required": ["limits", "requests"],
+                  "type": "object",
+                  "x-codegen": {
+                    "schemaType": "valueobject"
+                  }
+                }
+              },
+              "required": ["enabled"],
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            },
+            "loki": {
+              "additionalProperties": false,
+              "description": "Loki log aggregation service configuration",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Enable Loki",
+                  "example": true,
+                  "type": "boolean"
+                },
+                "host": {
+                  "default": "http://localhost:3100",
+                  "description": "Loki host URL",
+                  "example": "example-string",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "image": {
+                  "additionalProperties": false,
+                  "description": "Container image configuration",
+                  "properties": {
+                    "pullPolicy": {
+                      "default": "IfNotPresent",
+                      "description": "Kubernetes image pull policy",
+                      "enum": ["Always", "IfNotPresent", "Never"],
+                      "example": "Always",
+                      "type": "string"
+                    },
+                    "repository": {
+                      "description": "Container image repository",
+                      "example": "example-string",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "tag": {
+                      "default": "latest",
+                      "description": "Container image tag",
+                      "example": "example-string",
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": ["pullPolicy", "tag"],
+                  "type": "object",
+                  "x-codegen": {
+                    "schemaType": "valueobject"
+                  }
+                },
+                "managed": {
+                  "default": false,
+                  "description": "Use managed Loki deployment",
+                  "example": true,
+                  "type": "boolean"
+                },
+                "resources": {
+                  "additionalProperties": false,
+                  "description": "Kubernetes resource configuration",
+                  "properties": {
+                    "limits": {
+                      "additionalProperties": false,
+                      "description": "Resource limits",
+                      "properties": {
+                        "cpu": {
+                          "default": "1000m",
+                          "description": "Maximum CPU allocation",
+                          "example": "1000m",
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "1Gi",
+                          "description": "Maximum memory allocation",
+                          "example": "1Gi",
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": ["cpu", "memory"],
+                      "type": "object"
+                    },
+                    "requests": {
+                      "additionalProperties": false,
+                      "description": "Resource requests",
+                      "properties": {
+                        "cpu": {
+                          "default": "100m",
+                          "description": "Requested CPU allocation",
+                          "example": "100m",
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "128Mi",
+                          "description": "Requested memory allocation",
+                          "example": "128Mi",
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": ["cpu", "memory"],
+                      "type": "object"
+                    }
+                  },
+                  "required": ["limits", "requests"],
+                  "type": "object",
+                  "x-codegen": {
+                    "schemaType": "valueobject"
+                  }
+                }
+              },
+              "required": ["enabled"],
+              "type": "object",
+              "x-codegen": {
+                "schemaType": "valueobject"
+              }
+            }
+          },
+          "required": ["grafana", "loki"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        }
+      },
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    },
+    "logging": {
+      "additionalProperties": false,
+      "description": "Logging configuration",
+      "properties": {
+        "level": {
+          "default": "info",
+          "description": "Minimum log level to output",
+          "enum": [
+            "fatal",
+            "error",
+            "warn",
+            "info",
+            "debug",
+            "trace",
+            "silent"
+          ],
+          "example": "fatal",
+          "type": "string"
+        },
+        "pretty": {
+          "default": false,
+          "description": "Enable pretty-printed logs for development",
+          "example": true,
+          "type": "boolean"
+        }
+      },
+      "required": ["level", "pretty"],
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    },
+    "platform": {
+      "additionalProperties": false,
+      "description": "Platform configuration (host, image, resources)",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "Enable platform service",
+          "example": true,
+          "type": "boolean"
+        },
+        "host": {
+          "default": "localhost",
+          "description": "Host address where the platform service will be accessible",
+          "example": "example-string",
+          "minLength": 1,
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": false,
+          "description": "Container image configuration",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Kubernetes image pull policy",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "example": "Always",
+              "type": "string"
+            },
+            "repository": {
+              "description": "Container image repository",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "tag": {
+              "default": "latest",
+              "description": "Container image tag",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["pullPolicy", "tag"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "managed": {
+          "default": false,
+          "description": "Use managed platform deployment",
+          "example": true,
+          "type": "boolean"
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "Kubernetes resource configuration",
+          "properties": {
+            "limits": {
+              "additionalProperties": false,
+              "description": "Resource limits",
+              "properties": {
+                "cpu": {
+                  "default": "1000m",
+                  "description": "Maximum CPU allocation",
+                  "example": "1000m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "description": "Maximum memory allocation",
+                  "example": "1Gi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": false,
+              "description": "Resource requests",
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "description": "Requested CPU allocation",
+                  "example": "100m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "description": "Requested memory allocation",
+                  "example": "128Mi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            }
+          },
+          "required": ["limits", "requests"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        }
+      },
+      "required": ["enabled"],
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    },
+    "redis": {
+      "additionalProperties": false,
+      "description": "Redis configuration",
+      "properties": {
+        "auth": {
+          "default": "password",
+          "description": "Redis authentication password",
+          "example": "example-string",
+          "minLength": 1,
+          "type": "string"
+        },
+        "ca": {
+          "description": "Certificate Authority for TLS (optional)",
+          "example": "example-string",
+          "minLength": 1,
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable Redis",
+          "example": true,
+          "type": "boolean"
+        },
+        "host": {
+          "default": "localhost",
+          "description": "Redis hostname or IP",
+          "example": "example-string",
+          "minLength": 1,
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": false,
+          "description": "Container image configuration",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Kubernetes image pull policy",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "example": "Always",
+              "type": "string"
+            },
+            "repository": {
+              "description": "Container image repository",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "tag": {
+              "default": "latest",
+              "description": "Container image tag",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["pullPolicy", "tag"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "managed": {
+          "default": false,
+          "description": "Use managed Redis deployment",
+          "example": true,
+          "type": "boolean"
+        },
+        "persistence": {
+          "additionalProperties": false,
+          "description": "Persistent storage configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable persistent storage",
+              "example": true,
+              "type": "boolean"
+            },
+            "size": {
+              "default": "10Gi",
+              "description": "Size of persistent volume",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["enabled", "size"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "port": {
+          "default": 6379,
+          "description": "Redis port number",
+          "example": 42,
+          "type": "number"
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "Kubernetes resource configuration",
+          "properties": {
+            "limits": {
+              "additionalProperties": false,
+              "description": "Resource limits",
+              "properties": {
+                "cpu": {
+                  "default": "1000m",
+                  "description": "Maximum CPU allocation",
+                  "example": "1000m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "description": "Maximum memory allocation",
+                  "example": "1Gi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": false,
+              "description": "Resource requests",
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "description": "Requested CPU allocation",
+                  "example": "100m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "description": "Requested memory allocation",
+                  "example": "128Mi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            }
+          },
+          "required": ["limits", "requests"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        }
+      },
+      "required": ["enabled", "auth", "host", "port"],
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    },
+    "storage": {
+      "additionalProperties": false,
+      "description": "Object storage configuration for MinIO or S3-compatible services",
+      "properties": {
+        "accesskey": {
+          "default": "minioadmin",
+          "description": "MinIO/S3 access key ID",
+          "example": "example-string",
+          "minLength": 1,
+          "type": "string"
+        },
+        "bucket": {
+          "default": "archesai",
+          "description": "S3 bucket name",
+          "example": "example-string",
+          "minLength": 1,
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable object storage",
+          "example": true,
+          "type": "boolean"
+        },
+        "endpoint": {
+          "default": "http://localhost:9000",
+          "description": "MinIO server endpoint URL",
+          "example": "example-string",
+          "minLength": 1,
+          "type": "string"
+        },
+        "image": {
+          "additionalProperties": false,
+          "description": "Container image configuration",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "description": "Kubernetes image pull policy",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "example": "Always",
+              "type": "string"
+            },
+            "repository": {
+              "description": "Container image repository",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            },
+            "tag": {
+              "default": "latest",
+              "description": "Container image tag",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["pullPolicy", "tag"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "managed": {
+          "default": false,
+          "description": "Use managed storage deployment",
+          "example": true,
+          "type": "boolean"
+        },
+        "persistence": {
+          "additionalProperties": false,
+          "description": "Persistent storage configuration",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable persistent storage",
+              "example": true,
+              "type": "boolean"
+            },
+            "size": {
+              "default": "10Gi",
+              "description": "Size of persistent volume",
+              "example": "example-string",
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["enabled", "size"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "resources": {
+          "additionalProperties": false,
+          "description": "Kubernetes resource configuration",
+          "properties": {
+            "limits": {
+              "additionalProperties": false,
+              "description": "Resource limits",
+              "properties": {
+                "cpu": {
+                  "default": "1000m",
+                  "description": "Maximum CPU allocation",
+                  "example": "1000m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "description": "Maximum memory allocation",
+                  "example": "1Gi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": false,
+              "description": "Resource requests",
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "description": "Requested CPU allocation",
+                  "example": "100m",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "128Mi",
+                  "description": "Requested memory allocation",
+                  "example": "128Mi",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["cpu", "memory"],
+              "type": "object"
+            }
+          },
+          "required": ["limits", "requests"],
+          "type": "object",
+          "x-codegen": {
+            "schemaType": "valueobject"
+          }
+        },
+        "secretkey": {
+          "default": "minioadmin",
+          "description": "MinIO/S3 secret access key",
+          "example": "example-string",
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": ["enabled", "accesskey", "bucket", "endpoint", "secretkey"],
+      "title": "StorageConfig",
+      "type": "object",
+      "x-codegen": {
+        "schemaType": "valueobject"
+      }
+    }
+  },
+  "title": "Config",
+  "type": "object",
+  "x-codegen": {
+    "controller": {
+      "operations": ["read"]
+    },
+    "queries": {
+      "operations": ["get"]
+    },
+    "schemaType": "valueobject"
+  }
+}

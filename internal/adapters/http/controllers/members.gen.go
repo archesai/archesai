@@ -21,7 +21,6 @@ type MembersController struct {
 	createHandler *commands.CreateMemberCommandHandler
 	updateHandler *commands.UpdateMemberCommandHandler
 	deleteHandler *commands.DeleteMemberCommandHandler
-
 	// Query handlers
 	getHandler  *queries.GetMemberQueryHandler
 	listHandler *queries.ListMembersQueryHandler
@@ -58,9 +57,14 @@ func RegisterMembersRoutes(router server.EchoRouter, controller *MembersControll
 // ============================================================================
 
 // Request types
+// CreateMemberRequestBody defines the request body for CreateMember
+type CreateMemberRequestBody struct {
+	Role string `json:"role"`
+}
 
 type CreateMemberRequest struct {
-	ID string `json:"id"`
+	ID   string `json:"id"`
+	Body *CreateMemberRequestBody
 }
 
 // Response types
@@ -106,6 +110,7 @@ func (response CreateMember401Response) VisitCreateMemberResponse(w http.Respons
 // CreateMember handles the POST /organizations/{id}/members endpoint.
 func (c *MembersController) CreateMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := CreateMemberRequest{}
 
 	// Path parameter "id"
 	var id string
@@ -114,10 +119,26 @@ func (c *MembersController) CreateMember(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body CreateMemberRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create command from request
+	// Create handler
+	// Available request body fields: Role
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreateMemberCommand(
-	// TODO: Map request fields to command
+		orgID,
+		"",  // TODO: Map appropriate field from request.Body
+		"",  // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -135,10 +156,16 @@ func (c *MembersController) CreateMember(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// ListMembersParams defines parameters for ListMembers
+type ListMembersParams struct {
+	Filter *map[string]interface{}   `json:"filter,omitempty"`
+	Page   *map[string]interface{}   `json:"page,omitempty"`
+	Sort   *[]map[string]interface{} `json:"sort,omitempty"`
+}
 
 type ListMembersRequest struct {
 	ID     string `json:"id"`
-	Params dto.ListMembersParams
+	Params ListMembersParams
 }
 
 // Response types
@@ -184,6 +211,7 @@ func (response ListMembers401Response) VisitListMembersResponse(w http.ResponseW
 // ListMembers handles the GET /organizations/{id}/members endpoint.
 func (c *MembersController) ListMembers(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ListMembersRequest{}
 
 	// Path parameter "id"
 	var id string
@@ -193,7 +221,7 @@ func (c *MembersController) ListMembers(ctx echo.Context) error {
 	request.ID = id
 
 	// Query parameters
-	var params dto.ListMembersParams
+	var params ListMembersParams
 	// Optional query parameter "filter"
 	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
@@ -269,6 +297,7 @@ func (response DeleteMember404Response) VisitDeleteMemberResponse(w http.Respons
 // DeleteMember handles the DELETE /organizations/{id}/members/{memberID} endpoint.
 func (c *MembersController) DeleteMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := DeleteMemberRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -341,6 +370,7 @@ func (response GetMember404Response) VisitGetMemberResponse(w http.ResponseWrite
 // GetMember handles the GET /organizations/{id}/members/{memberID} endpoint.
 func (c *MembersController) GetMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetMemberRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -377,10 +407,15 @@ func (c *MembersController) GetMember(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// UpdateMemberRequestBody defines the request body for UpdateMember
+type UpdateMemberRequestBody struct {
+	Role *string `json:"role,omitempty"`
+}
 
 type UpdateMemberRequest struct {
 	ID       uuid.UUID `json:"id"`
 	MemberID uuid.UUID `json:"memberID"`
+	Body     *UpdateMemberRequestBody
 }
 
 // Response types
@@ -415,6 +450,7 @@ func (response UpdateMember404Response) VisitUpdateMemberResponse(w http.Respons
 // UpdateMember handles the PATCH /organizations/{id}/members/{memberID} endpoint.
 func (c *MembersController) UpdateMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := UpdateMemberRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -430,10 +466,23 @@ func (c *MembersController) UpdateMember(ctx echo.Context) error {
 	}
 	request.MemberID = memberID
 
+	// Request body
+	var body UpdateMemberRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create update command from request
+	// Update handler
+	// Available request body fields: Role
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdateMemberCommand(
-	// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

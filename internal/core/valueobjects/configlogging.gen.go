@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigLogging represents Logging configuration
 type ConfigLogging struct {
@@ -39,5 +42,9 @@ func (v ConfigLogging) GetPretty() bool {
 
 // String returns a string representation of ConfigLogging
 func (v ConfigLogging) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Level: %v", v.Level))
+	fields = append(fields, fmt.Sprintf("Pretty: %v", v.Pretty))
+	return fmt.Sprintf("ConfigLogging{%s}", strings.Join(fields, ", "))
 }

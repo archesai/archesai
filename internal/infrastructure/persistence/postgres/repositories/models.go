@@ -12,7 +12,7 @@ import (
 	"github.com/pgvector/pgvector-go"
 )
 
-type APIToken struct {
+type APIKey struct {
 	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time

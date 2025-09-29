@@ -21,7 +21,6 @@ type PipelinesController struct {
 	createHandler *commands.CreatePipelineCommandHandler
 	updateHandler *commands.UpdatePipelineCommandHandler
 	deleteHandler *commands.DeletePipelineCommandHandler
-
 	// Query handlers
 	getHandler  *queries.GetPipelineQueryHandler
 	listHandler *queries.ListPipelinesQueryHandler
@@ -62,8 +61,14 @@ func RegisterPipelinesRoutes(router server.EchoRouter, controller *PipelinesCont
 // ============================================================================
 
 // Request types
+// CreatePipelineRequestBody defines the request body for CreatePipeline
+type CreatePipelineRequestBody struct {
+	Description *string `json:"description,omitempty"`
+	Name        *string `json:"name,omitempty"`
+}
 
 type CreatePipelineRequest struct {
+	Body *CreatePipelineRequestBody
 }
 
 // Response types
@@ -109,11 +114,28 @@ func (response CreatePipeline401Response) VisitCreatePipelineResponse(w http.Res
 // CreatePipeline handles the POST /pipelines endpoint.
 func (c *PipelinesController) CreatePipeline(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := CreatePipelineRequest{}
+
+	// Request body
+	var body CreatePipelineRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
 
 	// Determine which handler to call based on operation
-	// Create command from request
+	// Create handler
+	// Available request body fields: Description, Name
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreatePipelineCommand(
-	// TODO: Map request fields to command
+		orgID,
+		"",  // TODO: Map appropriate field from request.Body
+		"",  // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -131,9 +153,15 @@ func (c *PipelinesController) CreatePipeline(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// ListPipelinesParams defines parameters for ListPipelines
+type ListPipelinesParams struct {
+	Filter *map[string]interface{}   `json:"filter,omitempty"`
+	Page   *map[string]interface{}   `json:"page,omitempty"`
+	Sort   *[]map[string]interface{} `json:"sort,omitempty"`
+}
 
 type ListPipelinesRequest struct {
-	Params dto.ListPipelinesParams
+	Params ListPipelinesParams
 }
 
 // Response types
@@ -179,9 +207,10 @@ func (response ListPipelines401Response) VisitListPipelinesResponse(w http.Respo
 // ListPipelines handles the GET /pipelines endpoint.
 func (c *PipelinesController) ListPipelines(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ListPipelinesRequest{}
 
 	// Query parameters
-	var params dto.ListPipelinesParams
+	var params ListPipelinesParams
 	// Optional query parameter "filter"
 	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
@@ -256,6 +285,7 @@ func (response DeletePipeline404Response) VisitDeletePipelineResponse(w http.Res
 // DeletePipeline handles the DELETE /pipelines/{id} endpoint.
 func (c *PipelinesController) DeletePipeline(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := DeletePipelineRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -320,6 +350,7 @@ func (response GetPipeline404Response) VisitGetPipelineResponse(w http.ResponseW
 // GetPipeline handles the GET /pipelines/{id} endpoint.
 func (c *PipelinesController) GetPipeline(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetPipelineRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -349,9 +380,15 @@ func (c *PipelinesController) GetPipeline(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// UpdatePipelineRequestBody defines the request body for UpdatePipeline
+type UpdatePipelineRequestBody struct {
+	Description *string `json:"description,omitempty"`
+	Name        *string `json:"name,omitempty"`
+}
 
 type UpdatePipelineRequest struct {
-	ID uuid.UUID `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body *UpdatePipelineRequestBody
 }
 
 // Response types
@@ -386,6 +423,7 @@ func (response UpdatePipeline404Response) VisitUpdatePipelineResponse(w http.Res
 // UpdatePipeline handles the PATCH /pipelines/{id} endpoint.
 func (c *PipelinesController) UpdatePipeline(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := UpdatePipelineRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -394,10 +432,23 @@ func (c *PipelinesController) UpdatePipeline(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body UpdatePipelineRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create update command from request
+	// Update handler
+	// Available request body fields: Description, Name
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdatePipelineCommand(
-	// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)
@@ -463,6 +514,7 @@ func (response GetPipelineSteps404Response) VisitGetPipelineStepsResponse(w http
 // GetPipelineSteps handles the GET /pipelines/{id}/steps endpoint.
 func (c *PipelinesController) GetPipelineSteps(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetPipelineStepsRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -492,9 +544,19 @@ func (c *PipelinesController) GetPipelineSteps(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// CreatePipelineStepRequestBody defines the request body for CreatePipelineStep
+type CreatePipelineStepRequestBody struct {
+	Config       map[string]interface{} `json:"config,omitempty"`
+	Dependencies []uuid.UUID            `json:"dependencies,omitempty"`
+	Description  *string                `json:"description,omitempty"`
+	Name         string                 `json:"name"`
+	Position     *int                   `json:"position,omitempty"`
+	ToolID       uuid.UUID              `json:"toolID"`
+}
 
 type CreatePipelineStepRequest struct {
-	ID uuid.UUID `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body *CreatePipelineStepRequestBody
 }
 
 // Response types
@@ -551,6 +613,7 @@ func (response CreatePipelineStep404Response) VisitCreatePipelineStepResponse(w 
 // CreatePipelineStep handles the POST /pipelines/{id}/steps endpoint.
 func (c *PipelinesController) CreatePipelineStep(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := CreatePipelineStepRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -559,10 +622,26 @@ func (c *PipelinesController) CreatePipelineStep(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body CreatePipelineStepRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create command from request
+	// Create handler
+	// Available request body fields: Config, Dependencies, Description, Name, Position, ToolID
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreatePipelineCommand(
-	// TODO: Map request fields to command
+		orgID,
+		"",  // TODO: Map appropriate field from request.Body
+		"",  // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -639,6 +718,7 @@ func (response GetPipelineExecutionPlan404Response) VisitGetPipelineExecutionPla
 // GetPipelineExecutionPlan handles the GET /pipelines/{id}/execution-plans endpoint.
 func (c *PipelinesController) GetPipelineExecutionPlan(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetPipelineExecutionPlanRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -727,6 +807,7 @@ func (response ValidatePipelineExecutionPlan404Response) VisitValidatePipelineEx
 // ValidatePipelineExecutionPlan handles the POST /pipelines/{id}/execution-plans endpoint.
 func (c *PipelinesController) ValidatePipelineExecutionPlan(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ValidatePipelineExecutionPlanRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -737,5 +818,6 @@ func (c *PipelinesController) ValidatePipelineExecutionPlan(ctx echo.Context) er
 
 	// Determine which handler to call based on operation
 	// TODO: Handle custom operation ValidatePipelineExecutionPlan
+	_ = reqCtx // Custom operation not yet implemented
 	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
 }

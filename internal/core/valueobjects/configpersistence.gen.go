@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigPersistence represents Persistent storage configuration
 type ConfigPersistence struct {
@@ -39,5 +42,9 @@ func (v ConfigPersistence) GetSize() string {
 
 // String returns a string representation of ConfigPersistence
 func (v ConfigPersistence) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Size: %v", v.Size))
+	return fmt.Sprintf("ConfigPersistence{%s}", strings.Join(fields, ", "))
 }

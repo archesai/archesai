@@ -17,11 +17,8 @@ import (
 
 // UsersController handles HTTP requests for users endpoints.
 type UsersController struct {
-	// Command handlers
-	createHandler *commands.CreateUserCommandHandler
 	updateHandler *commands.UpdateUserCommandHandler
 	deleteHandler *commands.DeleteUserCommandHandler
-
 	// Query handlers
 	getHandler  *queries.GetUserQueryHandler
 	listHandler *queries.ListUsersQueryHandler
@@ -29,14 +26,12 @@ type UsersController struct {
 
 // NewUsersController creates a new users controller with injected handlers.
 func NewUsersController(
-	createHandler *commands.CreateUserCommandHandler,
 	updateHandler *commands.UpdateUserCommandHandler,
 	deleteHandler *commands.DeleteUserCommandHandler,
 	getHandler *queries.GetUserQueryHandler,
 	listHandler *queries.ListUsersQueryHandler,
 ) *UsersController {
 	return &UsersController{
-		createHandler: createHandler,
 		updateHandler: updateHandler,
 		deleteHandler: deleteHandler,
 		getHandler:    getHandler,
@@ -57,9 +52,15 @@ func RegisterUsersRoutes(router server.EchoRouter, controller *UsersController) 
 // ============================================================================
 
 // Request types
+// ListUsersParams defines parameters for ListUsers
+type ListUsersParams struct {
+	Filter *map[string]interface{}   `json:"filter,omitempty"`
+	Page   *map[string]interface{}   `json:"page,omitempty"`
+	Sort   *[]map[string]interface{} `json:"sort,omitempty"`
+}
 
 type ListUsersRequest struct {
-	Params dto.ListUsersParams
+	Params ListUsersParams
 }
 
 // Response types
@@ -105,9 +106,10 @@ func (response ListUsers401Response) VisitListUsersResponse(w http.ResponseWrite
 // ListUsers handles the GET /users endpoint.
 func (c *UsersController) ListUsers(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ListUsersRequest{}
 
 	// Query parameters
-	var params dto.ListUsersParams
+	var params ListUsersParams
 	// Optional query parameter "filter"
 	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
@@ -182,6 +184,7 @@ func (response DeleteUser404Response) VisitDeleteUserResponse(w http.ResponseWri
 // DeleteUser handles the DELETE /users/{id} endpoint.
 func (c *UsersController) DeleteUser(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := DeleteUserRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -246,6 +249,7 @@ func (response GetUser404Response) VisitGetUserResponse(w http.ResponseWriter) e
 // GetUser handles the GET /users/{id} endpoint.
 func (c *UsersController) GetUser(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetUserRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -275,9 +279,15 @@ func (c *UsersController) GetUser(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// UpdateUserRequestBody defines the request body for UpdateUser
+type UpdateUserRequestBody struct {
+	Email *string `json:"email,omitempty"`
+	Image *string `json:"image,omitempty"`
+}
 
 type UpdateUserRequest struct {
-	ID uuid.UUID `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateUserRequestBody
 }
 
 // Response types
@@ -312,6 +322,7 @@ func (response UpdateUser404Response) VisitUpdateUserResponse(w http.ResponseWri
 // UpdateUser handles the PATCH /users/{id} endpoint.
 func (c *UsersController) UpdateUser(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := UpdateUserRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -320,10 +331,23 @@ func (c *UsersController) UpdateUser(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body UpdateUserRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create update command from request
+	// Update handler
+	// Available request body fields: Email, Image
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdateUserCommand(
-	// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

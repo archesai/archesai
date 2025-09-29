@@ -2,41 +2,27 @@ package events
 
 import (
 	"context"
+
+	coreEvents "github.com/archesai/archesai/internal/core/events"
 )
 
 // NoOpPublisher is a no-op event publisher implementation for testing.
 type NoOpPublisher struct{}
 
 // NewNoOpPublisher creates a new no-op event publisher.
-func NewNoOpPublisher() PublisherSubscriber {
+func NewNoOpPublisher() coreEvents.Publisher {
 	return &NoOpPublisher{}
 }
 
 // Publish does nothing in no-op implementation.
-func (p *NoOpPublisher) Publish(_ context.Context, _ Event) error {
+func (p *NoOpPublisher) Publish(_ context.Context, _ coreEvents.DomainEvent) error {
 	return nil
 }
 
-// PublishRaw does nothing in no-op implementation.
-func (p *NoOpPublisher) PublishRaw(_ context.Context, _ string, _ string, _ interface{}) error {
+// PublishMultiple does nothing in no-op implementation.
+func (p *NoOpPublisher) PublishMultiple(_ context.Context, _ []coreEvents.DomainEvent) error {
 	return nil
 }
 
-// Subscribe does nothing in no-op implementation.
-func (p *NoOpPublisher) Subscribe(_ context.Context, _ string, _ func(event Event) error) error {
-	return nil
-}
-
-// SubscribeToType does nothing in no-op implementation.
-func (p *NoOpPublisher) SubscribeToType(
-	_ context.Context,
-	_ string,
-	_ string,
-	_ func(event Event) error,
-) error {
-	return nil
-}
-
-// Ensure NoOpPublisher implements the interfaces.
-var _ Publisher = (*NoOpPublisher)(nil)
-var _ PublisherSubscriber = (*NoOpPublisher)(nil)
+// Ensure NoOpPublisher implements the interface.
+var _ coreEvents.Publisher = (*NoOpPublisher)(nil)

@@ -2,7 +2,7 @@ post:
   operationId: confirmEmailVerification
   summary: Confirm e-mail verification
   tags:
-    - Auth
+    - Accounts
   description: This endpoint will confirm your e-mail with a token
   requestBody:
     content:

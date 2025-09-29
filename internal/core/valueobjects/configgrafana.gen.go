@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigGrafana represents Grafana monitoring dashboard configuration
 type ConfigGrafana struct {
@@ -50,5 +53,11 @@ func (v ConfigGrafana) GetResources() *ConfigResource {
 
 // String returns a string representation of ConfigGrafana
 func (v ConfigGrafana) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
+	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
+	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	return fmt.Sprintf("ConfigGrafana{%s}", strings.Join(fields, ", "))
 }

@@ -10,6 +10,12 @@ x-codegen:
       - name: GetByEmail
         params: [email]
         returns: single
+  commands:
+    operations: [update, delete] # No create command
+  queries:
+    operations: [get, list]
+  controller:
+    operations: [read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object

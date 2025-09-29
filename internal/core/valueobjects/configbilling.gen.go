@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigBilling represents Billing configuration for Stripe
 type ConfigBilling struct {
@@ -36,5 +39,9 @@ func (v ConfigBilling) GetStripe() *ConfigStripe {
 
 // String returns a string representation of ConfigBilling
 func (v ConfigBilling) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Stripe: %v", v.Stripe))
+	return fmt.Sprintf("ConfigBilling{%s}", strings.Join(fields, ", "))
 }

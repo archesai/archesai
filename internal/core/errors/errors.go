@@ -202,4 +202,8 @@ var (
 	// Session errors
 	ErrSessionNotFound = errors.New("session not found")
 	ErrSessionExists   = errors.New("session already exists")
+
+	// APIKey errors
+	ErrAPIKeyNotFound = errors.New("api key not found")
+	ErrAPIKeyExists   = errors.New("api key already exists")
 )

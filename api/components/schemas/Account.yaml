@@ -3,12 +3,6 @@ description: Schema for Account entity (authentication provider account)
 title: Account
 x-codegen:
   schemaType: entity
-  service:
-    generate: true
-    transaction_support: false
-    error_handling: error_return
-  handler:
-    generate: true
   repository:
     operations: [create, read, update, delete, list]
     indices: [userID, accountID]
@@ -19,6 +13,12 @@ x-codegen:
       - name: ListByUserID
         params: [userID]
         returns: multiple
+  commands:
+    operations: [create, update, delete]
+  queries:
+    operations: [get, list]
+  controller:
+    operations: [create, read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object

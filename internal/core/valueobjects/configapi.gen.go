@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigAPI represents Configuration schema for the API server
 type ConfigAPI struct {
@@ -94,5 +97,16 @@ func (v ConfigAPI) GetValidate() bool {
 
 // String returns a string representation of ConfigAPI
 func (v ConfigAPI) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Cors: %v", v.Cors))
+	fields = append(fields, fmt.Sprintf("Docs: %v", v.Docs))
+	fields = append(fields, fmt.Sprintf("Email: %v", v.Email))
+	fields = append(fields, fmt.Sprintf("Environment: %v", v.Environment))
+	fields = append(fields, fmt.Sprintf("Host: %v", v.Host))
+	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
+	fields = append(fields, fmt.Sprintf("Port: %v", v.Port))
+	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	fields = append(fields, fmt.Sprintf("Validate: %v", v.Validate))
+	return fmt.Sprintf("ConfigAPI{%s}", strings.Join(fields, ", "))
 }

@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigScraper represents Web scraping service configuration
 type ConfigScraper struct {
@@ -57,5 +60,12 @@ func (v ConfigScraper) GetResources() *ConfigResource {
 
 // String returns a string representation of ConfigScraper
 func (v ConfigScraper) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Endpoint: %v", v.Endpoint))
+	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
+	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
+	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	return fmt.Sprintf("ConfigScraper{%s}", strings.Join(fields, ", "))
 }

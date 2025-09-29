@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigRunPod represents RunPod serverless GPU configuration
 type ConfigRunPod struct {
@@ -36,5 +39,9 @@ func (v ConfigRunPod) GetToken() *string {
 
 // String returns a string representation of ConfigRunPod
 func (v ConfigRunPod) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Token: %v", v.Token))
+	return fmt.Sprintf("ConfigRunPod{%s}", strings.Join(fields, ", "))
 }

@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigLLM represents Large Language Model configuration
 type ConfigLLM struct {
@@ -46,5 +49,10 @@ func (v ConfigLLM) GetType() string {
 
 // String returns a string representation of ConfigLLM
 func (v ConfigLLM) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Endpoint: %v", v.Endpoint))
+	fields = append(fields, fmt.Sprintf("Token: %v", v.Token))
+	fields = append(fields, fmt.Sprintf("Type: %v", v.Type))
+	return fmt.Sprintf("ConfigLLM{%s}", strings.Join(fields, ", "))
 }

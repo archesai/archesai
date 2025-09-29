@@ -278,6 +278,10 @@ func Pluralize(word string) string {
 		"goose":  "geese",
 		"man":    "men",
 		"woman":  "women",
+		"health": "health", // Health is uncountable, stays the same
+		"config": "config", // Config is uncountable, stays the same
+		"apikey": "APIKeys",
+		"APIKey": "APIKeys",
 	}
 
 	lower := strings.ToLower(word)
@@ -333,6 +337,9 @@ func Singularize(word string) string {
 		"geese":    "goose",
 		"men":      "man",
 		"women":    "woman",
+		"apikeys":  "APIKey",
+		"Apikeys":  "APIKey",
+		"APIKeys":  "APIKey",
 	}
 
 	lower := strings.ToLower(word)

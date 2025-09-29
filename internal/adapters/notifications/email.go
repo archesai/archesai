@@ -34,7 +34,7 @@ func (d *EmailDeliverer) Deliver(
 	token *valueobjects.MagicLinkToken,
 	baseURL string,
 ) error {
-	magicLink := fmt.Sprintf("%s/auth/magic-link/verify?token=%s", baseURL, token.Token)
+	magicLink := fmt.Sprintf("%s/auth/magic-link/verify?token=%s", baseURL, *token.Token)
 
 	subject := "Sign in to Arches"
 	body := fmt.Sprintf(`

@@ -70,7 +70,11 @@ func NewHealthCheckResult(component ComponentName, status HealthStatus) *HealthC
 }
 
 // NewHealthCheckResultWithError creates a health check result from an error
-func NewHealthCheckResultWithError(component ComponentName, err error, latency time.Duration) *HealthCheckResult {
+func NewHealthCheckResultWithError(
+	component ComponentName,
+	err error,
+	latency time.Duration,
+) *HealthCheckResult {
 	result := &HealthCheckResult{
 		Component: component,
 		Latency:   latency,
@@ -109,7 +113,10 @@ type AggregatedHealthCheckResult struct {
 }
 
 // NewAggregatedHealthCheckResult creates a new aggregated health check result
-func NewAggregatedHealthCheckResult(results []*HealthCheckResult, uptime time.Duration) *AggregatedHealthCheckResult {
+func NewAggregatedHealthCheckResult(
+	results []*HealthCheckResult,
+	uptime time.Duration,
+) *AggregatedHealthCheckResult {
 	aggregated := &AggregatedHealthCheckResult{
 		Results:   results,
 		Uptime:    uptime,
@@ -154,7 +161,9 @@ func (a *AggregatedHealthCheckResult) IsOperational() bool {
 }
 
 // GetComponentResult returns the health check result for a specific component
-func (a *AggregatedHealthCheckResult) GetComponentResult(component ComponentName) *HealthCheckResult {
+func (a *AggregatedHealthCheckResult) GetComponentResult(
+	component ComponentName,
+) *HealthCheckResult {
 	for _, result := range a.Results {
 		if result.Component == component {
 			return result

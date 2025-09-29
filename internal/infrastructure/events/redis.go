@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
+
+	coreEvents "github.com/archesai/archesai/internal/core/events"
 )
 
 // RedisPublisher implements PublisherSubscriber using Redis pub/sub.
@@ -17,24 +17,35 @@ type RedisPublisher struct {
 }
 
 // NewRedisPublisher creates a new Redis event publisher with default channel.
-func NewRedisPublisher(client *redis.Client) PublisherSubscriber {
+func NewRedisPublisher(client *redis.Client) coreEvents.Publisher {
 	return &RedisPublisher{
 		client:  client,
 		channel: "events", // Global channel for all events
 	}
 }
 
-// Publish sends an event to Redis.
-func (p *RedisPublisher) Publish(ctx context.Context, event Event) error {
-	if event.ID == "" {
-		event.ID = uuid.New().String()
+// Publish sends a domain event to Redis.
+func (p *RedisPublisher) Publish(ctx context.Context, event coreEvents.DomainEvent) error {
+	if event == nil {
+		return fmt.Errorf("event cannot be nil")
 	}
-	if event.Timestamp.IsZero() {
-		event.Timestamp = time.Now().UTC()
+
+	// Convert domain event to infrastructure event
+	infraEvent := Event{
+		ID:        event.EventID(),
+		Type:      event.EventType(),
+		Domain:    event.AggregateType(),
+		Timestamp: event.OccurredAt(),
+		Source:    event.AggregateType(),
+		Data: map[string]interface{}{
+			"aggregate_id":   event.AggregateID(),
+			"aggregate_type": event.AggregateType(),
+			"event":          event,
+		},
 	}
 
 	// Marshal event to JSON
-	data, err := json.Marshal(event)
+	data, err := json.Marshal(infraEvent)
 	if err != nil {
 		return fmt.Errorf("failed to marshal event: %w", err)
 	}
@@ -45,14 +56,14 @@ func (p *RedisPublisher) Publish(ctx context.Context, event Event) error {
 	}
 
 	// Also publish to domain-specific channel for selective subscription
-	domainChannel := fmt.Sprintf("%s:%s", p.channel, event.Domain)
+	domainChannel := fmt.Sprintf("%s:%s", p.channel, infraEvent.Domain)
 	if err := p.client.Publish(ctx, domainChannel, data).Err(); err != nil {
 		// Log error but don't fail - domain-specific channel is optional
 		_ = err
 	}
 
 	// Also publish to type-specific channel
-	typeChannel := fmt.Sprintf("%s:%s:%s", p.channel, event.Domain, event.Type)
+	typeChannel := fmt.Sprintf("%s:%s:%s", p.channel, infraEvent.Domain, infraEvent.Type)
 	if err := p.client.Publish(ctx, typeChannel, data).Err(); err != nil {
 		// Log error but don't fail - type-specific channel is optional
 		_ = err
@@ -61,135 +72,18 @@ func (p *RedisPublisher) Publish(ctx context.Context, event Event) error {
 	return nil
 }
 
-// PublishRaw publishes an event with domain context.
-func (p *RedisPublisher) PublishRaw(
+// PublishMultiple publishes multiple domain events in order.
+func (p *RedisPublisher) PublishMultiple(
 	ctx context.Context,
-	domain string,
-	eventType string,
-	data interface{},
+	events []coreEvents.DomainEvent,
 ) error {
-	event := Event{
-		ID:        uuid.New().String(),
-		Type:      eventType,
-		Domain:    domain,
-		Timestamp: time.Now().UTC(),
-		Source:    domain,
-		Data:      data,
-	}
-
-	// If data is already an event-like structure with ID, preserve it
-	if dataMap, ok := data.(map[string]interface{}); ok {
-		if id, exists := dataMap["id"]; exists {
-			if idStr, ok := id.(string); ok {
-				event.Metadata = map[string]string{
-					"entity_id": idStr,
-				}
-			}
+	for _, event := range events {
+		if err := p.Publish(ctx, event); err != nil {
+			return fmt.Errorf("failed to publish event %s: %w", event.EventID(), err)
 		}
 	}
-
-	return p.Publish(ctx, event)
+	return nil
 }
 
-// Subscribe subscribes to all events from a specific domain.
-func (p *RedisPublisher) Subscribe(
-	ctx context.Context,
-	domain string,
-	handler func(event Event) error,
-) error {
-	// Subscribe to domain-specific channel
-	domainChannel := fmt.Sprintf("%s:%s", p.channel, domain)
-
-	pubsub := p.client.Subscribe(ctx, domainChannel)
-	defer func() {
-		_ = pubsub.Close()
-	}()
-
-	// Wait for subscription confirmation
-	_, err := pubsub.Receive(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to subscribe to domain channel: %w", err)
-	}
-
-	// Get channel for messages
-	ch := pubsub.Channel()
-
-	// Process messages
-	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case msg := <-ch:
-			if msg == nil {
-				continue
-			}
-
-			// Unmarshal event
-			var event Event
-			if err := json.Unmarshal([]byte(msg.Payload), &event); err != nil {
-				// Log error but continue processing
-				continue
-			}
-
-			// Handle event
-			if err := handler(event); err != nil {
-				// Log error but continue processing
-				continue
-			}
-		}
-	}
-}
-
-// SubscribeToType subscribes to specific event types.
-func (p *RedisPublisher) SubscribeToType(
-	ctx context.Context,
-	domain string,
-	eventType string,
-	handler func(event Event) error,
-) error {
-	// Subscribe to type-specific channel
-	typeChannel := fmt.Sprintf("%s:%s:%s", p.channel, domain, eventType)
-
-	pubsub := p.client.Subscribe(ctx, typeChannel)
-	defer func() {
-		_ = pubsub.Close()
-	}()
-
-	// Wait for subscription confirmation
-	_, err := pubsub.Receive(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to subscribe to type channel: %w", err)
-	}
-
-	// Get channel for messages
-	ch := pubsub.Channel()
-
-	// Process messages
-	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case msg := <-ch:
-			if msg == nil {
-				continue
-			}
-
-			// Unmarshal event
-			var event Event
-			if err := json.Unmarshal([]byte(msg.Payload), &event); err != nil {
-				// Log error but continue processing
-				continue
-			}
-
-			// Handle event
-			if err := handler(event); err != nil {
-				// Log error but continue processing
-				continue
-			}
-		}
-	}
-}
-
-// Ensure RedisPublisher implements the interfaces.
-var _ Publisher = (*RedisPublisher)(nil)
-var _ PublisherSubscriber = (*RedisPublisher)(nil)
+// Ensure RedisPublisher implements the core Publisher interface.
+var _ coreEvents.Publisher = (*RedisPublisher)(nil)

@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigInfrastructure represents Infrastructure configuration for Kubernetes deployments
 type ConfigInfrastructure struct {
@@ -53,5 +56,11 @@ func (v ConfigInfrastructure) GetServiceAccount() ConfigServiceAccount {
 
 // String returns a string representation of ConfigInfrastructure
 func (v ConfigInfrastructure) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Images: %v", v.Images))
+	fields = append(fields, fmt.Sprintf("Migrations: %v", v.Migrations))
+	fields = append(fields, fmt.Sprintf("Namespace: %v", v.Namespace))
+	fields = append(fields, fmt.Sprintf("ServiceAccount: %v", v.ServiceAccount))
+	return fmt.Sprintf("ConfigInfrastructure{%s}", strings.Join(fields, ", "))
 }

@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigAuthFirebase represents Firebase authentication configuration
 type ConfigAuthFirebase struct {
@@ -50,5 +53,11 @@ func (v ConfigAuthFirebase) GetProjectID() *string {
 
 // String returns a string representation of ConfigAuthFirebase
 func (v ConfigAuthFirebase) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("ClientEmail: %v", v.ClientEmail))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("PrivateKey: %v", v.PrivateKey))
+	fields = append(fields, fmt.Sprintf("ProjectID: %v", v.ProjectID))
+	return fmt.Sprintf("ConfigAuthFirebase{%s}", strings.Join(fields, ", "))
 }

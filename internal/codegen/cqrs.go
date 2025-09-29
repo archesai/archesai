@@ -11,14 +11,17 @@ import (
 // COMMANDS AND QUERIES
 
 // GenerateCommandQueryHandlers generates command and query handlers
-func (g *Generator) GenerateCommandQueryHandlers(operations []parsers.OperationDef) error {
+func (g *Generator) GenerateCommandQueryHandlers(
+	operations []parsers.OperationDef,
+	schemas map[string]*parsers.ProcessedSchema,
+) error {
 	// Generate command handlers (includes types)
-	if err := g.generateCommandHandlers(operations); err != nil {
+	if err := g.generateCommandHandlers(operations, schemas); err != nil {
 		return fmt.Errorf("failed to generate command handlers: %w", err)
 	}
 
 	// Generate query handlers (includes types)
-	if err := g.generateQueryHandlers(operations); err != nil {
+	if err := g.generateQueryHandlers(operations, schemas); err != nil {
 		return fmt.Errorf("failed to generate query handlers: %w", err)
 	}
 
@@ -26,11 +29,24 @@ func (g *Generator) GenerateCommandQueryHandlers(operations []parsers.OperationD
 }
 
 // generateCommandHandlers generates individual command handler files for each operation
-func (g *Generator) generateCommandHandlers(operations []parsers.OperationDef) error {
+func (g *Generator) generateCommandHandlers(
+	operations []parsers.OperationDef,
+	schemas map[string]*parsers.ProcessedSchema,
+) error {
 	tmpl, ok := g.templates["single_command_handler.tmpl"]
 	if !ok {
 		// Template doesn't exist yet, skip
 		return nil
+	}
+
+	// Build a map of domains that have commands configuration
+	domainsWithCommands := make(map[string]bool)
+	for name, processed := range schemas {
+		if processed.XCodegen != nil && processed.XCodegen.Commands != nil {
+			// Mark this domain as having commands
+			// Use the plural form of the name as the domain (e.g., "Tool" -> "tools")
+			domainsWithCommands[strings.ToLower(name+"s")] = true
+		}
 	}
 
 	// Group operations by their domain/tag
@@ -44,6 +60,10 @@ func (g *Generator) generateCommandHandlers(operations []parsers.OperationDef) e
 
 	// For each domain, generate command handlers for write operations
 	for domain, operations := range operationsByDomain {
+		// Only generate commands for domains that have x-codegen configuration
+		if !domainsWithCommands[domain] {
+			continue
+		}
 		for _, op := range operations {
 			// Only generate command handlers for write operations
 			if op.Method == "POST" || op.Method == "PUT" || op.Method == "PATCH" ||
@@ -97,11 +117,24 @@ func (g *Generator) generateCommandHandlers(operations []parsers.OperationDef) e
 }
 
 // generateQueryHandlers generates individual query handler files for each operation
-func (g *Generator) generateQueryHandlers(operations []parsers.OperationDef) error {
+func (g *Generator) generateQueryHandlers(
+	operations []parsers.OperationDef,
+	schemas map[string]*parsers.ProcessedSchema,
+) error {
 	tmpl, ok := g.templates["single_query_handler.tmpl"]
 	if !ok {
 		// Template doesn't exist yet, skip
 		return nil
+	}
+
+	// Build a map of domains that have queries configuration
+	domainsWithQueries := make(map[string]bool)
+	for name, processed := range schemas {
+		if processed.XCodegen != nil && processed.XCodegen.Queries != nil {
+			// Mark this domain as having queries
+			// Use the plural form of the name as the domain (e.g., "Tool" -> "tools")
+			domainsWithQueries[strings.ToLower(name+"s")] = true
+		}
 	}
 
 	// Group operations by their domain/tag
@@ -115,6 +148,10 @@ func (g *Generator) generateQueryHandlers(operations []parsers.OperationDef) err
 
 	// For each domain, generate query handlers for read operations
 	for domain, operations := range operationsByDomain {
+		// Only generate queries for domains that have x-codegen configuration
+		if !domainsWithQueries[domain] {
+			continue
+		}
 		for _, op := range operations {
 			// Only generate query handlers for read operations
 			if op.Method == "GET" {
@@ -138,7 +175,7 @@ func (g *Generator) generateQueryHandlers(operations []parsers.OperationDef) err
 				// Get the entity name from the schema if available
 				entityName := Singularize(strings.Title(domain))
 				entityNameLower := strings.ToLower(entityName)
-				entityNamePlural := strings.Title(domain)
+				entityNamePlural := Pluralize(entityName)
 
 				// Create template data
 				data := map[string]interface{}{

@@ -4,6 +4,7 @@ package valueobjects
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -117,5 +118,19 @@ func (v MagicLinkToken) GetUserID() *uuid.UUID {
 
 // String returns a string representation of MagicLinkToken
 func (v MagicLinkToken) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Code: %v", v.Code))
+	fields = append(fields, fmt.Sprintf("CreatedAt: %v", v.CreatedAt))
+	fields = append(fields, fmt.Sprintf("DeliveryMethod: %v", v.DeliveryMethod))
+	fields = append(fields, fmt.Sprintf("ExpiresAt: %v", v.ExpiresAt))
+	fields = append(fields, fmt.Sprintf("ID: %v", v.ID))
+	fields = append(fields, fmt.Sprintf("Identifier: %v", v.Identifier))
+	fields = append(fields, fmt.Sprintf("IpAddress: %v", v.IpAddress))
+	fields = append(fields, fmt.Sprintf("Token: %v", v.Token))
+	fields = append(fields, fmt.Sprintf("TokenHash: %v", v.TokenHash))
+	fields = append(fields, fmt.Sprintf("UsedAt: %v", v.UsedAt))
+	fields = append(fields, fmt.Sprintf("UserAgent: %v", v.UserAgent))
+	fields = append(fields, fmt.Sprintf("UserID: %v", v.UserID))
+	return fmt.Sprintf("MagicLinkToken{%s}", strings.Join(fields, ", "))
 }

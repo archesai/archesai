@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // Config represents Arches AI configuration schema
 type Config struct {
@@ -92,5 +95,17 @@ func (v Config) GetStorage() *ConfigStorage {
 
 // String returns a string representation of Config
 func (v Config) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("API: %v", v.API))
+	fields = append(fields, fmt.Sprintf("Auth: %v", v.Auth))
+	fields = append(fields, fmt.Sprintf("Billing: %v", v.Billing))
+	fields = append(fields, fmt.Sprintf("Database: %v", v.Database))
+	fields = append(fields, fmt.Sprintf("Intelligence: %v", v.Intelligence))
+	fields = append(fields, fmt.Sprintf("Kubernetes: %v", v.Kubernetes))
+	fields = append(fields, fmt.Sprintf("Logging: %v", v.Logging))
+	fields = append(fields, fmt.Sprintf("Platform: %v", v.Platform))
+	fields = append(fields, fmt.Sprintf("Redis: %v", v.Redis))
+	fields = append(fields, fmt.Sprintf("Storage: %v", v.Storage))
+	return fmt.Sprintf("Config{%s}", strings.Join(fields, ", "))
 }

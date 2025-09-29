@@ -42,19 +42,12 @@ func (g *Generator) GenerateControllers(
 		}
 	}
 
-	// List of domains that have command/query handlers
-	cqrsDomains := map[string]bool{
-		"accounts":      true,
-		"apikeys":       true,
-		"artifacts":     true,
-		"invitations":   true,
-		"labels":        true,
-		"members":       true,
-		"organizations": true,
-		"pipelines":     true,
-		"runs":          true,
-		"tools":         true,
-		"users":         true,
+	// Build a map of schemas that have controller configuration
+	schemasWithControllers := make(map[string]bool)
+	for name, processed := range schemas {
+		if processed.XCodegen != nil && processed.XCodegen.Controller != nil {
+			schemasWithControllers[name] = true
+		}
 	}
 
 	// Generate a handler file for each domain
@@ -64,11 +57,9 @@ func (g *Generator) GenerateControllers(
 			continue
 		}
 
-		// Skip domains that don't have CQRS handlers for now
-		// TODO: Generate simpler controllers for non-CQRS domains
-		if !cqrsDomains[strings.ToLower(domain)] {
-			continue
-		}
+		// Check if any schema has a controller configuration for operations in this domain
+		// We generate controllers for all tags that have operations, regardless of x-codegen
+		// This allows flexibility in tagging (e.g., Auth tag can handle Session operations)
 
 		// Capitalize first letter of domain for title case
 		domainTitle := strings.ToUpper(domain[:1]) + domain[1:]
@@ -79,23 +70,13 @@ func (g *Generator) GenerateControllers(
 		// Track which imports are needed for this handler
 		importsNeeded := make(map[string]bool)
 
-		// Process operations to split parameters by type
+		// Process operations to add template data
 		processedOps := make([]map[string]interface{}, 0, len(operations))
 		for _, op := range operations {
-			var pathParams []parsers.ParamDef
-			var queryParams []parsers.ParamDef
-			var headerParams []parsers.ParamDef
-
-			for _, param := range op.Parameters {
-				switch param.In {
-				case "path":
-					pathParams = append(pathParams, param)
-				case "query":
-					queryParams = append(queryParams, param)
-				case "header":
-					headerParams = append(headerParams, param)
-				}
-			}
+			// Use the already-split parameters from OperationDef
+			pathParams := op.PathParams
+			queryParams := op.QueryParams
+			headerParams := op.HeaderParams
 
 			// Determine response type and track imports
 			responseType := ""
@@ -131,8 +112,15 @@ func (g *Generator) GenerateControllers(
 				}
 			}
 
-			// Note: Request body handling removed - operations no longer have inline request bodies
-			// They should be defined as schemas in components instead
+			// Process request body schema if present
+			var requestBodySchema map[string]interface{}
+			if op.RequestBodySchema != nil {
+				requestBodySchema = map[string]interface{}{
+					"Name":           op.RequestBodySchema.Name,
+					"Fields":         op.RequestBodySchema.Fields,
+					"RequiredFields": op.RequestBodySchema.RequiredFields,
+				}
+			}
 
 			processedOps = append(processedOps, map[string]interface{}{
 				"Name":                op.Name,
@@ -146,6 +134,8 @@ func (g *Generator) GenerateControllers(
 				"QueryParams":         queryParams,
 				"HeaderParams":        headerParams,
 				"RequestBodyRequired": op.RequestBodyRequired,
+				"RequestBodySchema":   requestBodySchema,
+				"HasRequestBody":      op.RequestBodySchema != nil,
 				"Responses":           op.Responses,
 				"Security":            op.Security,
 				"ResponseType":        responseType,
@@ -157,6 +147,44 @@ func (g *Generator) GenerateControllers(
 		// Build imports list - no longer needed as we have standard imports in template
 		var imports []map[string]string
 
+		// Determine which handlers are needed based on operations
+		hasCreate := false
+		hasUpdate := false
+		hasDelete := false
+		hasGet := false
+		hasList := false
+
+		for _, op := range operations {
+			method := op.Method
+			path := op.Path
+
+			switch method {
+			case "POST":
+				hasCreate = true
+			case "PATCH", "PUT":
+				hasUpdate = true
+			case "DELETE":
+				hasDelete = true
+			case "GET":
+				// Check the operation name as a more reliable indicator
+				opNameLower := strings.ToLower(op.Name)
+				if strings.HasPrefix(opNameLower, "list") ||
+					strings.HasPrefix(opNameLower, "getall") {
+					hasList = true
+				} else if strings.HasPrefix(opNameLower, "get") {
+					hasGet = true
+				} else {
+					// Fallback to path-based detection
+					// If path ends with a parameter that looks like an ID, it's probably a get
+					if strings.HasSuffix(path, "/{id}") || strings.HasSuffix(path, "/{"+strings.ToLower(domainSingular)+"ID}") {
+						hasGet = true
+					} else {
+						hasList = true
+					}
+				}
+			}
+		}
+
 		data := map[string]interface{}{
 			"Package":             "controllers",
 			"Domain":              domainTitle,                     // e.g., "Labels" (as it comes from tags)
@@ -165,6 +193,11 @@ func (g *Generator) GenerateControllers(
 			"DomainSingularLower": strings.ToLower(domainSingular), // e.g., "label"
 			"Operations":          processedOps,
 			"Imports":             imports,
+			"HasCreate":           hasCreate,
+			"HasUpdate":           hasUpdate,
+			"HasDelete":           hasDelete,
+			"HasGet":              hasGet,
+			"HasList":             hasList,
 		}
 
 		outputPath := filepath.Join(

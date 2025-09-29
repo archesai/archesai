@@ -1,0 +1,120 @@
+get:
+  operationId: getAPIKey
+  summary: Get API key details
+  tags:
+    - APIKeys
+  description: Get details of a specific API key (without the actual key value)
+  parameters:
+    - schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the API key
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: API key details
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/APIKey.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+
+patch:
+  operationId: updateAPIKey
+  summary: Update API key
+  tags:
+    - APIKeys
+  description: Update an API key's name, scopes, or rate limit
+  parameters:
+    - schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the API key
+  security:
+    - bearerAuth: []
+  requestBody:
+    description: API key update data
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              minLength: 1
+              example: Updated Production API Key
+              description: Human-readable name for the API key
+            scopes:
+              type: array
+              items:
+                type: string
+              example: ['read:users', 'write:workflows', 'read:pipelines']
+              description: Array of permission scopes
+            rateLimit:
+              type: integer
+              minimum: 1
+              maximum: 10000
+              example: 2000
+              description: Requests per minute allowed for this API key
+          additionalProperties: false
+  responses:
+    '200':
+      description: API key updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/APIKey.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+
+delete:
+  operationId: deleteAPIKey
+  summary: Delete API key
+  tags:
+    - APIKeys
+  description: Delete an API key permanently. This action cannot be undone.
+  parameters:
+    - schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the API key
+  security:
+    - bearerAuth: []
+  responses:
+    '204':
+      description: API key deleted successfully
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml

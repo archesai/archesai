@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigAuthTwitter represents Twitter OAuth configuration
 type ConfigAuthTwitter struct {
@@ -50,5 +53,11 @@ func (v ConfigAuthTwitter) GetEnabled() bool {
 
 // String returns a string representation of ConfigAuthTwitter
 func (v ConfigAuthTwitter) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("CallbackURL: %v", v.CallbackURL))
+	fields = append(fields, fmt.Sprintf("ConsumerKey: %v", v.ConsumerKey))
+	fields = append(fields, fmt.Sprintf("ConsumerSecret: %v", v.ConsumerSecret))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	return fmt.Sprintf("ConfigAuthTwitter{%s}", strings.Join(fields, ", "))
 }

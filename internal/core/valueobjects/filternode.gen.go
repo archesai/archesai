@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // FilterNode represents A recursive filter node that can be a condition or group
 type FilterNode struct {
@@ -53,5 +56,11 @@ func (v FilterNode) GetValue() *interface{} {
 
 // String returns a string representation of FilterNode
 func (v FilterNode) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Children: %v", v.Children))
+	fields = append(fields, fmt.Sprintf("Field: %v", v.Field))
+	fields = append(fields, fmt.Sprintf("Type: %v", v.Type))
+	fields = append(fields, fmt.Sprintf("Value: %v", v.Value))
+	return fmt.Sprintf("FilterNode{%s}", strings.Join(fields, ", "))
 }

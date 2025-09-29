@@ -44,17 +44,22 @@ var ValidDomainTypes = []string{"entity", "aggregate", "valueobject", "dto"}
 
 // OperationDef represents an API operation
 type OperationDef struct {
-	Name                string        // Original operation ID from OpenAPI
-	GoName              string        // Go-friendly name (PascalCase)
-	Method              string        // HTTP method (GET, POST, etc.)
-	Path                string        // URL path
-	Description         string        // Operation description
-	OperationID         string        // Operation ID from OpenAPI
-	Tags                []string      // Operation tags
-	Parameters          []ParamDef    // All parameters
-	Responses           []ResponseDef // All responses
-	Security            []SecurityDef // Security requirements
-	RequestBodyRequired bool          // Whether request body is required
+	Name                string                      // Original operation ID from OpenAPI
+	GoName              string                      // Go-friendly name (PascalCase)
+	Method              string                      // HTTP method (GET, POST, etc.)
+	Path                string                      // URL path
+	Description         string                      // Operation description
+	OperationID         string                      // Operation ID from OpenAPI
+	Tags                []string                    // Operation tags
+	Parameters          []ParamDef                  // All parameters (backward compat)
+	PathParams          []ParamDef                  // Path parameters
+	QueryParams         []ParamDef                  // Query parameters
+	HeaderParams        []ParamDef                  // Header parameters
+	Responses           []ResponseDef               // All responses
+	Security            []SecurityDef               // Security requirements
+	RequestBodyRequired bool                        // Whether request body is required
+	RequestBodySchema   *ProcessedSchema            // Processed request body schema
+	ResponseSchemas     map[string]*ProcessedSchema // Processed response schemas by status code
 }
 
 func (o *OperationDef) GetSuccessResponse() *ResponseDef {
@@ -170,24 +175,4 @@ type ProcessedSchema struct {
 
 	// Original schema reference
 	Schema *oas3.Schema
-}
-
-// ProcessOperationContext contains all information about an operation
-type ProcessOperationContext struct {
-	Method              string
-	Path                string
-	OperationID         string
-	Name                string
-	GoName              string
-	Description         string
-	Tags                []string
-	Parameters          []ParamDef
-	PathParams          []ParamDef
-	QueryParams         []ParamDef
-	HeaderParams        []ParamDef
-	RequestBodyRequired bool
-	RequestBodySchema   *oas3.Schema
-	Responses           []ResponseDef
-	ResponseSchemas     map[string]*oas3.Schema
-	Security            []SecurityDef
 }

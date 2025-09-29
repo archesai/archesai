@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigDatabase represents Database configuration for PostgreSQL
 type ConfigDatabase struct {
@@ -119,5 +122,20 @@ func (v ConfigDatabase) GetURL() string {
 
 // String returns a string representation of ConfigDatabase
 func (v ConfigDatabase) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("ConnMaxIdleTime: %v", v.ConnMaxIdleTime))
+	fields = append(fields, fmt.Sprintf("ConnMaxLifetime: %v", v.ConnMaxLifetime))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("HealthCheckPeriod: %v", v.HealthCheckPeriod))
+	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
+	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
+	fields = append(fields, fmt.Sprintf("MaxConns: %v", v.MaxConns))
+	fields = append(fields, fmt.Sprintf("MinConns: %v", v.MinConns))
+	fields = append(fields, fmt.Sprintf("Persistence: %v", v.Persistence))
+	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	fields = append(fields, fmt.Sprintf("RunMigrations: %v", v.RunMigrations))
+	fields = append(fields, fmt.Sprintf("Type: %v", v.Type))
+	fields = append(fields, fmt.Sprintf("URL: %v", v.URL))
+	return fmt.Sprintf("ConfigDatabase{%s}", strings.Join(fields, ", "))
 }

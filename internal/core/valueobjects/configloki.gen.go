@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigLoki represents Loki log aggregation service configuration
 type ConfigLoki struct {
@@ -57,5 +60,12 @@ func (v ConfigLoki) GetResources() *ConfigResource {
 
 // String returns a string representation of ConfigLoki
 func (v ConfigLoki) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Host: %v", v.Host))
+	fields = append(fields, fmt.Sprintf("Image: %v", v.Image))
+	fields = append(fields, fmt.Sprintf("Managed: %v", v.Managed))
+	fields = append(fields, fmt.Sprintf("Resources: %v", v.Resources))
+	return fmt.Sprintf("ConfigLoki{%s}", strings.Join(fields, ", "))
 }

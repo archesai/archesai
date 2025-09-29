@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigAuthMicrosoft represents Microsoft/Azure AD OAuth configuration
 type ConfigAuthMicrosoft struct {
@@ -64,5 +67,13 @@ func (v ConfigAuthMicrosoft) GetTenant() *string {
 
 // String returns a string representation of ConfigAuthMicrosoft
 func (v ConfigAuthMicrosoft) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("ClientId: %v", v.ClientId))
+	fields = append(fields, fmt.Sprintf("ClientSecret: %v", v.ClientSecret))
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("RedirectUrl: %v", v.RedirectUrl))
+	fields = append(fields, fmt.Sprintf("Scopes: %v", v.Scopes))
+	fields = append(fields, fmt.Sprintf("Tenant: %v", v.Tenant))
+	return fmt.Sprintf("ConfigAuthMicrosoft{%s}", strings.Join(fields, ", "))
 }

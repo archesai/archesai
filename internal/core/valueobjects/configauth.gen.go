@@ -2,7 +2,10 @@
 
 package valueobjects
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ConfigAuth represents Authentication configuration for the API server
 type ConfigAuth struct {
@@ -78,5 +81,15 @@ func (v ConfigAuth) GetTwitter() *ConfigAuthTwitter {
 
 // String returns a string representation of ConfigAuth
 func (v ConfigAuth) String() string {
-	return fmt.Sprintf("%+v", v)
+	// Build string representation field by field to avoid recursion
+	var fields []string
+	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
+	fields = append(fields, fmt.Sprintf("Firebase: %v", v.Firebase))
+	fields = append(fields, fmt.Sprintf("Github: %v", v.Github))
+	fields = append(fields, fmt.Sprintf("Google: %v", v.Google))
+	fields = append(fields, fmt.Sprintf("Local: %v", v.Local))
+	fields = append(fields, fmt.Sprintf("MagicLink: %v", v.MagicLink))
+	fields = append(fields, fmt.Sprintf("Microsoft: %v", v.Microsoft))
+	fields = append(fields, fmt.Sprintf("Twitter: %v", v.Twitter))
+	return fmt.Sprintf("ConfigAuth{%s}", strings.Join(fields, ", "))
 }

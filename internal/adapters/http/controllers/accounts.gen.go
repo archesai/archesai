@@ -21,7 +21,6 @@ type AccountsController struct {
 	createHandler *commands.CreateAccountCommandHandler
 	updateHandler *commands.UpdateAccountCommandHandler
 	deleteHandler *commands.DeleteAccountCommandHandler
-
 	// Query handlers
 	getHandler  *queries.GetAccountQueryHandler
 	listHandler *queries.ListAccountsQueryHandler
@@ -51,6 +50,12 @@ func RegisterAccountsRoutes(router server.EchoRouter, controller *AccountsContro
 	router.GET("/accounts/:id", controller.GetAccount)
 	router.PATCH("/accounts/:id", controller.UpdateAccount)
 	router.DELETE("/accounts/:id", controller.DeleteAccount)
+	router.POST("/accounts/email-verification/verify", controller.ConfirmEmailVerification)
+	router.POST("/accounts/email-verification/request", controller.RequestEmailVerification)
+	router.POST("/accounts/password-reset/request", controller.RequestPasswordReset)
+	router.POST("/accounts/password-reset/verify", controller.ConfirmPasswordReset)
+	router.POST("/accounts/email-change/request", controller.RequestEmailChange)
+	router.POST("/accounts/email-change/verify", controller.ConfirmEmailChange)
 }
 
 // ============================================================================
@@ -58,9 +63,15 @@ func RegisterAccountsRoutes(router server.EchoRouter, controller *AccountsContro
 // ============================================================================
 
 // Request types
+// ListAccountsParams defines parameters for ListAccounts
+type ListAccountsParams struct {
+	Filter *map[string]interface{}   `json:"filter,omitempty"`
+	Page   *map[string]interface{}   `json:"page,omitempty"`
+	Sort   *[]map[string]interface{} `json:"sort,omitempty"`
+}
 
 type ListAccountsRequest struct {
-	Params dto.ListAccountsParams
+	Params ListAccountsParams
 }
 
 // Response types
@@ -106,9 +117,10 @@ func (response ListAccounts401Response) VisitListAccountsResponse(w http.Respons
 // ListAccounts handles the GET /accounts endpoint.
 func (c *AccountsController) ListAccounts(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := ListAccountsRequest{}
 
 	// Query parameters
-	var params dto.ListAccountsParams
+	var params ListAccountsParams
 	// Optional query parameter "filter"
 	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
@@ -146,8 +158,15 @@ func (c *AccountsController) ListAccounts(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// CreateAccountRequestBody defines the request body for CreateAccount
+type CreateAccountRequestBody struct {
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
 
 type CreateAccountRequest struct {
+	Body *CreateAccountRequestBody
 }
 
 // Response types
@@ -193,11 +212,28 @@ func (response CreateAccount409Response) VisitCreateAccountResponse(w http.Respo
 // CreateAccount handles the POST /accounts endpoint.
 func (c *AccountsController) CreateAccount(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := CreateAccountRequest{}
+
+	// Request body
+	var body CreateAccountRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
 
 	// Determine which handler to call based on operation
-	// Create command from request
+	// Create handler
+	// Available request body fields: Email, Name, Password
+
+	// TODO: Get organization ID from auth context
+	orgID := uuid.New()
+
+	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreateAccountCommand(
-	// TODO: Map request fields to command
+		orgID,
+		"",  // TODO: Map appropriate field from request.Body
+		"",  // TODO: Map appropriate field from request.Body
+		nil, // TODO: Map metadata if available
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -252,6 +288,7 @@ func (response GetAccount404Response) VisitGetAccountResponse(w http.ResponseWri
 // GetAccount handles the GET /accounts/{id} endpoint.
 func (c *AccountsController) GetAccount(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := GetAccountRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -281,9 +318,16 @@ func (c *AccountsController) GetAccount(ctx echo.Context) error {
 // ============================================================================
 
 // Request types
+// UpdateAccountRequestBody defines the request body for UpdateAccount
+type UpdateAccountRequestBody struct {
+	Provider          *string `json:"provider,omitempty"`
+	ProviderAccountID *string `json:"providerAccountID,omitempty"`
+	Type              *string `json:"type,omitempty"`
+}
 
 type UpdateAccountRequest struct {
-	ID uuid.UUID `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateAccountRequestBody
 }
 
 // Response types
@@ -318,6 +362,7 @@ func (response UpdateAccount404Response) VisitUpdateAccountResponse(w http.Respo
 // UpdateAccount handles the PATCH /accounts/{id} endpoint.
 func (c *AccountsController) UpdateAccount(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := UpdateAccountRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -326,10 +371,23 @@ func (c *AccountsController) UpdateAccount(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Request body
+	var body UpdateAccountRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
 	// Determine which handler to call based on operation
-	// Create update command from request
+	// Update handler
+	// Available request body fields: Provider, ProviderAccountID, Type
+
+	// Create update command - adjust field mapping based on your API
 	cmd := commands.NewUpdateAccountCommand(
-	// TODO: Map request fields to command including ID
+		request.ID, // Assumes all update operations have an ID path parameter
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map appropriate field from request.Body
+		nil,        // TODO: Map metadata if available
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)
@@ -384,6 +442,7 @@ func (response DeleteAccount404Response) VisitDeleteAccountResponse(w http.Respo
 // DeleteAccount handles the DELETE /accounts/{id} endpoint.
 func (c *AccountsController) DeleteAccount(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
+	request := DeleteAccountRequest{}
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -404,4 +463,416 @@ func (c *AccountsController) DeleteAccount(ctx echo.Context) error {
 	}
 
 	return ctx.NoContent(http.StatusNoContent)
+}
+
+// ============================================================================
+// ConfirmEmailVerification - POST /accounts/email-verification/verify
+// ============================================================================
+
+// Request types
+// ConfirmEmailVerificationRequestBody defines the request body for ConfirmEmailVerification
+type ConfirmEmailVerificationRequestBody struct {
+	Token string `json:"token"`
+}
+
+type ConfirmEmailVerificationRequest struct {
+	Body *ConfirmEmailVerificationRequestBody
+}
+
+// Response types
+
+type ConfirmEmailVerificationResponse interface {
+	VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error
+}
+
+type ConfirmEmailVerification201JSONResponse struct {
+}
+
+func (response ConfirmEmailVerification201JSONResponse) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmEmailVerification401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response ConfirmEmailVerification401Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ConfirmEmailVerification404Response struct {
+	server.NotFoundResponse
+}
+
+func (response ConfirmEmailVerification404Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// ConfirmEmailVerification handles the POST /accounts/email-verification/verify endpoint.
+func (c *AccountsController) ConfirmEmailVerification(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := ConfirmEmailVerificationRequest{}
+
+	// Request body
+	var body ConfirmEmailVerificationRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
+	// Determine which handler to call based on operation
+	// TODO: Handle custom operation ConfirmEmailVerification
+	_ = reqCtx // Custom operation not yet implemented
+	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+}
+
+// ============================================================================
+// RequestEmailVerification - POST /accounts/email-verification/request
+// ============================================================================
+
+// Request types
+
+type RequestEmailVerificationRequest struct {
+}
+
+// Response types
+
+type RequestEmailVerificationResponse interface {
+	VisitRequestEmailVerificationResponse(w http.ResponseWriter) error
+}
+
+type RequestEmailVerification201JSONResponse struct {
+}
+
+func (response RequestEmailVerification201JSONResponse) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestEmailVerification400Response struct {
+	server.BadRequestResponse
+}
+
+func (response RequestEmailVerification400Response) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type RequestEmailVerification401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response RequestEmailVerification401Response) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// RequestEmailVerification handles the POST /accounts/email-verification/request endpoint.
+func (c *AccountsController) RequestEmailVerification(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+
+	// Determine which handler to call based on operation
+	// TODO: Handle custom operation RequestEmailVerification
+	_ = reqCtx // Custom operation not yet implemented
+	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+}
+
+// ============================================================================
+// RequestPasswordReset - POST /accounts/password-reset/request
+// ============================================================================
+
+// Request types
+// RequestPasswordResetRequestBody defines the request body for RequestPasswordReset
+type RequestPasswordResetRequestBody struct {
+	Email string `json:"email"`
+}
+
+type RequestPasswordResetRequest struct {
+	Body *RequestPasswordResetRequestBody
+}
+
+// Response types
+
+type RequestPasswordResetResponse interface {
+	VisitRequestPasswordResetResponse(w http.ResponseWriter) error
+}
+
+type RequestPasswordReset201JSONResponse struct {
+}
+
+func (response RequestPasswordReset201JSONResponse) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestPasswordReset400Response struct {
+	server.BadRequestResponse
+}
+
+func (response RequestPasswordReset400Response) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+// Handler method
+
+// RequestPasswordReset handles the POST /accounts/password-reset/request endpoint.
+func (c *AccountsController) RequestPasswordReset(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := RequestPasswordResetRequest{}
+
+	// Request body
+	var body RequestPasswordResetRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
+	// Determine which handler to call based on operation
+	// TODO: Handle custom operation RequestPasswordReset
+	_ = reqCtx // Custom operation not yet implemented
+	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+}
+
+// ============================================================================
+// ConfirmPasswordReset - POST /accounts/password-reset/verify
+// ============================================================================
+
+// Request types
+// ConfirmPasswordResetRequestBody defines the request body for ConfirmPasswordReset
+type ConfirmPasswordResetRequestBody struct {
+	NewPassword string `json:"newPassword"`
+	Token       string `json:"token"`
+}
+
+type ConfirmPasswordResetRequest struct {
+	Body *ConfirmPasswordResetRequestBody
+}
+
+// Response types
+
+type ConfirmPasswordResetResponse interface {
+	VisitConfirmPasswordResetResponse(w http.ResponseWriter) error
+}
+
+type ConfirmPasswordReset201JSONResponse struct {
+}
+
+func (response ConfirmPasswordReset201JSONResponse) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmPasswordReset401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response ConfirmPasswordReset401Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ConfirmPasswordReset404Response struct {
+	server.NotFoundResponse
+}
+
+func (response ConfirmPasswordReset404Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// ConfirmPasswordReset handles the POST /accounts/password-reset/verify endpoint.
+func (c *AccountsController) ConfirmPasswordReset(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := ConfirmPasswordResetRequest{}
+
+	// Request body
+	var body ConfirmPasswordResetRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
+	// Determine which handler to call based on operation
+	// TODO: Handle custom operation ConfirmPasswordReset
+	_ = reqCtx // Custom operation not yet implemented
+	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+}
+
+// ============================================================================
+// RequestEmailChange - POST /accounts/email-change/request
+// ============================================================================
+
+// Request types
+// RequestEmailChangeRequestBody defines the request body for RequestEmailChange
+type RequestEmailChangeRequestBody struct {
+	NewEmail string    `json:"newEmail"`
+	UserID   uuid.UUID `json:"userID"`
+}
+
+type RequestEmailChangeRequest struct {
+	Body *RequestEmailChangeRequestBody
+}
+
+// Response types
+
+type RequestEmailChangeResponse interface {
+	VisitRequestEmailChangeResponse(w http.ResponseWriter) error
+}
+
+type RequestEmailChange201JSONResponse struct {
+}
+
+func (response RequestEmailChange201JSONResponse) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestEmailChange400Response struct {
+	server.BadRequestResponse
+}
+
+func (response RequestEmailChange400Response) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type RequestEmailChange401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response RequestEmailChange401Response) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// RequestEmailChange handles the POST /accounts/email-change/request endpoint.
+func (c *AccountsController) RequestEmailChange(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := RequestEmailChangeRequest{}
+
+	// Request body
+	var body RequestEmailChangeRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
+	// Determine which handler to call based on operation
+	// TODO: Handle custom operation RequestEmailChange
+	_ = reqCtx // Custom operation not yet implemented
+	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+}
+
+// ============================================================================
+// ConfirmEmailChange - POST /accounts/email-change/verify
+// ============================================================================
+
+// Request types
+// ConfirmEmailChangeRequestBody defines the request body for ConfirmEmailChange
+type ConfirmEmailChangeRequestBody struct {
+	NewEmail string    `json:"newEmail"`
+	Token    string    `json:"token"`
+	UserID   uuid.UUID `json:"userID"`
+}
+
+type ConfirmEmailChangeRequest struct {
+	Body *ConfirmEmailChangeRequestBody
+}
+
+// Response types
+
+type ConfirmEmailChangeResponse interface {
+	VisitConfirmEmailChangeResponse(w http.ResponseWriter) error
+}
+
+type ConfirmEmailChange201JSONResponse struct {
+}
+
+func (response ConfirmEmailChange201JSONResponse) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmEmailChange401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response ConfirmEmailChange401Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ConfirmEmailChange404Response struct {
+	server.NotFoundResponse
+}
+
+func (response ConfirmEmailChange404Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// ConfirmEmailChange handles the POST /accounts/email-change/verify endpoint.
+func (c *AccountsController) ConfirmEmailChange(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := ConfirmEmailChangeRequest{}
+
+	// Request body
+	var body ConfirmEmailChangeRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	request.Body = &body
+
+	// Determine which handler to call based on operation
+	// TODO: Handle custom operation ConfirmEmailChange
+	_ = reqCtx // Custom operation not yet implemented
+	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
 }
