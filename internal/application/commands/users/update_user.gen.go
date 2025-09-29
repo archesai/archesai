@@ -16,24 +16,21 @@ import (
 
 // UpdateUserCommand represents the command to update a user.
 type UpdateUserCommand struct {
-	ID          uuid.UUID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
+	ID    uuid.UUID
+	Email *string
+	Image *string
 }
 
 // NewUpdateUserCommand creates a new update user command.
 func NewUpdateUserCommand(
 	id uuid.UUID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
+	Email *string,
+	Image *string,
 ) *UpdateUserCommand {
 	return &UpdateUserCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
+		ID:    id,
+		Email: Email,
+		Image: Image,
 	}
 }
 

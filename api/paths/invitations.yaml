@@ -12,7 +12,7 @@ post:
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
       in: path
-      name: id
+      name: organizationID
       required: true
       description: The unique identifier of the organization.
   requestBody:
@@ -71,7 +71,7 @@ get:
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
       in: path
-      name: id
+      name: organizationID
       required: true
       description: The unique identifier of the organization.
     - $ref: ../components/parameters/InvitationsFilter.yaml

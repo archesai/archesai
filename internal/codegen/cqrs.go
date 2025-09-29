@@ -70,6 +70,20 @@ func (g *Generator) generateCommandHandlers(
 				op.Method == "DELETE" {
 				// Determine command type based on operation
 				var commandType string
+				domainSingular := Singularize(strings.Title(domain))
+
+				// Only generate standard CRUD operations for now
+				// Skip custom operations like createPipelineStep
+				// Check for exact match with standard CRUD pattern
+				isStandardCreate := op.OperationID == "create"+domainSingular
+				isStandardUpdate := op.OperationID == "update"+domainSingular
+				isStandardDelete := op.OperationID == "delete"+domainSingular
+
+				if !isStandardCreate && !isStandardUpdate && !isStandardDelete {
+					// Skip non-standard operations
+					continue
+				}
+
 				switch {
 				case strings.HasPrefix(op.OperationID, "create"):
 					commandType = "Create"
@@ -78,12 +92,11 @@ func (g *Generator) generateCommandHandlers(
 				case strings.HasPrefix(op.OperationID, "delete"):
 					commandType = "Delete"
 				default:
-					// Custom command, use operation ID with title case
-					commandType = strings.Title(op.OperationID)
+					continue // Skip custom operations
 				}
 
 				// Get the entity name from the schema if available
-				entityName := Singularize(strings.Title(domain))
+				entityName := domainSingular
 				entityNameLower := strings.ToLower(entityName)
 
 				// Create template data
@@ -92,6 +105,8 @@ func (g *Generator) generateCommandHandlers(
 					"CommandType":     commandType,
 					"EntityName":      entityName,
 					"EntityNameLower": entityNameLower,
+					"Operation":       op,
+					"RequestBody":     op.RequestBodySchema,
 				}
 
 				// Generate the command handler file

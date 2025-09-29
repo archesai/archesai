@@ -16,24 +16,21 @@ import (
 
 // UpdateOrganizationCommand represents the command to update a organization.
 type UpdateOrganizationCommand struct {
-	ID          uuid.UUID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
+	ID             uuid.UUID
+	BillingEmail   *string
+	OrganizationID *uuid.UUID
 }
 
 // NewUpdateOrganizationCommand creates a new update organization command.
 func NewUpdateOrganizationCommand(
 	id uuid.UUID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
+	BillingEmail *string,
+	OrganizationID *uuid.UUID,
 ) *UpdateOrganizationCommand {
 	return &UpdateOrganizationCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
+		ID:             id,
+		BillingEmail:   BillingEmail,
+		OrganizationID: OrganizationID,
 	}
 }
 

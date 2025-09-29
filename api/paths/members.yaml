@@ -6,10 +6,11 @@ post:
   description: Create a member
   parameters:
     - in: path
-      name: id
+      name: organizationID
       required: true
       schema:
         type: string
+        format: uuid
       description: Organization ID
   requestBody:
     content:
@@ -55,10 +56,11 @@ get:
   description: List members
   parameters:
     - in: path
-      name: id
+      name: organizationID
       required: true
       schema:
         type: string
+        format: uuid
       description: Organization ID
     - $ref: ../components/parameters/MembersFilter.yaml
     - $ref: ../components/parameters/PageQuery.yaml

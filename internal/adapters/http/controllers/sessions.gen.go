@@ -217,17 +217,12 @@ func (c *SessionsController) CreateSession(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Create handler
-	// Available request body fields: Email, Password, RememberMe
 
-	// TODO: Get organization ID from auth context
-	orgID := uuid.New()
-
-	// Create command - adjust field mapping based on your API
+	// Map request body fields to command parameters
 	cmd := commands.NewCreateSessionCommand(
-		orgID,
-		"",  // TODO: Map appropriate field from request.Body
-		"",  // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
+		request.Body.Email,      // Email
+		request.Body.Password,   // Password
+		request.Body.RememberMe, // RememberMe
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -459,14 +454,11 @@ func (c *SessionsController) UpdateSession(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Update handler
-	// Available request body fields: OrganizationID
 
-	// Create update command - adjust field mapping based on your API
+	// Map path parameters and request body fields to command parameters
 	cmd := commands.NewUpdateSessionCommand(
-		request.ID, // Assumes all update operations have an ID path parameter
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map metadata if available
+		request.ID,                  // id (entity ID)
+		request.Body.OrganizationID, // OrganizationID
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

@@ -15,17 +15,23 @@ const getBody = <T>(c: Request | Response): Promise<T> => {
 };
 
 const getUrl = (contextUrl: string): string => {
-  const host = import.meta.env.VITE_ARCHES_API_HOST;
-  if (!host) {
-    throw new Error("host URL is not configured.");
+  // Use relative URL for SSR compatibility (Vite proxy handles routing)
+  if (typeof window === "undefined") {
+    // Server-side: use configured host
+    const host = import.meta.env.VITE_ARCHES_API_HOST;
+    if (!host) {
+      throw new Error("host URL is not configured.");
+    }
+    try {
+      const requestUrl = new URL(`http://${host}/api/v1${contextUrl}`);
+      return requestUrl.toString();
+    } catch (error) {
+      throw new Error(`could not parse url: ${error}`);
+    }
   }
 
-  try {
-    const requestUrl = new URL(`http://${host}/api/v1${contextUrl}`);
-    return requestUrl.toString();
-  } catch (error) {
-    throw new Error(`could not parse url: ${error}`);
-  }
+  // Client-side: use Vite proxy (relative URL)
+  return `/api/v1${contextUrl}`;
 };
 
 import type { Problem } from "./generated/orval.schemas";

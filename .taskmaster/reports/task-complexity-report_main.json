@@ -1,253 +1,253 @@
 {
-  "meta": {
-    "generatedAt": "2025-09-25T05:14:06.681Z",
-    "tasksAnalyzed": 30,
-    "totalTasks": 30,
-    "analysisCount": 30,
-    "thresholdScore": 5,
-    "projectName": "Taskmaster",
-    "usedResearch": false
-  },
   "complexityAnalysis": [
     {
-      "taskId": 1,
-      "taskTitle": "Create OpenAPI Parser Module",
       "complexityScore": 3,
-      "recommendedSubtasks": 5,
       "expansionPrompt": "Break down the OpenAPI parser module into: 1) Enhance existing speakeasy-api parser integration, 2) Implement x-codegen extension parsing, 3) Add ref resolution and circular ref detection, 4) Create schema inheritance handler, 5) Build structured data storage format",
-      "reasoning": "Low complexity as base parser already exists using speakeasy-api library. Main work is extending existing functionality for x-codegen extensions and improving validation."
+      "reasoning": "Low complexity as base parser already exists using speakeasy-api library. Main work is extending existing functionality for x-codegen extensions and improving validation.",
+      "recommendedSubtasks": 5,
+      "taskId": 1,
+      "taskTitle": "Create OpenAPI Parser Module"
     },
     {
-      "taskId": 2,
-      "taskTitle": "Design Template Engine System",
       "complexityScore": 4,
-      "recommendedSubtasks": 6,
       "expansionPrompt": "Expand template engine into: 1) Extend existing template loader for multi-language support, 2) Create template inheritance system, 3) Implement template function helpers for type mapping, 4) Add template caching layer, 5) Build partial template support, 6) Create naming convention helpers",
-      "reasoning": "Moderate complexity. Infrastructure/templates package exists with basic functionality. Need to extend for multi-language targets and add advanced features like inheritance and partials."
+      "reasoning": "Moderate complexity. Infrastructure/templates package exists with basic functionality. Need to extend for multi-language targets and add advanced features like inheritance and partials.",
+      "recommendedSubtasks": 6,
+      "taskId": 2,
+      "taskTitle": "Design Template Engine System"
     },
     {
-      "taskId": 3,
-      "taskTitle": "Implement Go Code Generator",
       "complexityScore": 5,
-      "recommendedSubtasks": 8,
       "expansionPrompt": "Break down Go generator into: 1) Create entity generator for core/entities, 2) Build repository interface generator, 3) Implement service layer generator, 4) Create HTTP handler generator, 5) Build DTO generator, 6) Add type mapping from OpenAPI to Go, 7) Implement nullable field handling, 8) Add golangci-lint compliance",
-      "reasoning": "Moderate complexity. Existing generator framework in codegen/generators.go provides foundation. Need to implement generators for each hexagonal layer following established patterns."
+      "reasoning": "Moderate complexity. Existing generator framework in codegen/generators.go provides foundation. Need to implement generators for each hexagonal layer following established patterns.",
+      "recommendedSubtasks": 8,
+      "taskId": 3,
+      "taskTitle": "Implement Go Code Generator"
     },
     {
-      "taskId": 4,
-      "taskTitle": "Create SQLC Schema Generator",
       "complexityScore": 6,
-      "recommendedSubtasks": 7,
       "expansionPrompt": "Expand SQLC generator into: 1) Parse OpenAPI schemas to PostgreSQL DDL, 2) Generate migration files in goose format, 3) Create SQLC query files, 4) Implement type mapping OpenAPI to PostgreSQL, 5) Handle relationship generation from x-codegen, 6) Generate indexes from query patterns, 7) Add foreign key constraint generation",
-      "reasoning": "Higher complexity due to schema translation, migration generation using goose (already in use), and need to handle relationships and indexes intelligently."
+      "reasoning": "Higher complexity due to schema translation, migration generation using goose (already in use), and need to handle relationships and indexes intelligently.",
+      "recommendedSubtasks": 7,
+      "taskId": 4,
+      "taskTitle": "Create SQLC Schema Generator"
     },
     {
-      "taskId": 5,
-      "taskTitle": "Build Project Management System",
       "complexityScore": 4,
-      "recommendedSubtasks": 5,
       "expansionPrompt": "Break down project system into: 1) Create Project entity following existing patterns, 2) Implement PostgreSQL repository with SQLC, 3) Build CRUD HTTP handlers, 4) Add OpenAPI spec storage as JSON, 5) Implement generation history tracking",
-      "reasoning": "Moderate complexity. Follows existing patterns for entities/repositories/handlers. Main complexity is managing OpenAPI specs and generation history."
+      "reasoning": "Moderate complexity. Follows existing patterns for entities/repositories/handlers. Main complexity is managing OpenAPI specs and generation history.",
+      "recommendedSubtasks": 5,
+      "taskId": 5,
+      "taskTitle": "Build Project Management System"
     },
     {
-      "taskId": 6,
-      "taskTitle": "Implement Docker Container Service",
       "complexityScore": 7,
-      "recommendedSubtasks": 8,
       "expansionPrompt": "Expand container service into: 1) Create ContainerService using Docker SDK, 2) Implement container lifecycle methods, 3) Build Alpine-based image with runtimes, 4) Add volume mounting for projects, 5) Implement resource limits, 6) Create container state tracking in Redis, 7) Add container networking, 8) Build cleanup mechanisms",
-      "reasoning": "High complexity. Requires Docker SDK integration, container lifecycle management, resource management, and Redis state tracking. Limited existing container code to leverage."
-    },
-    {
-      "taskId": 7,
-      "taskTitle": "Build Container Orchestration Layer",
-      "complexityScore": 8,
-      "recommendedSubtasks": 9,
-      "expansionPrompt": "Break down orchestration into: 1) Design container pool architecture, 2) Implement scheduling algorithm, 3) Build resource allocation system, 4) Add health check monitoring, 5) Create auto-restart logic, 6) Implement idle timeout cleanup, 7) Add distributed locking with Redis, 8) Build concurrent operation support, 9) Create orchestration metrics",
-      "reasoning": "High complexity. Requires distributed systems concepts, scheduling algorithms, resource management, and coordination with Redis for locking. Minimal existing code to build on."
-    },
-    {
-      "taskId": 8,
-      "taskTitle": "Create WebSocket Server",
-      "complexityScore": 3,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Expand WebSocket server into: 1) Extend existing websocket.go stub, 2) Implement message routing protocol, 3) Add JWT authentication middleware, 4) Support concurrent connections per project, 5) Build connection management and cleanup",
-      "reasoning": "Low complexity. Basic WebSocket handler exists in adapters/http/server/websocket.go. Need to extend for terminal communication and add authentication."
-    },
-    {
-      "taskId": 9,
-      "taskTitle": "Implement Web Terminal",
-      "complexityScore": 5,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Break down terminal into: 1) Create React component with xterm.js, 2) Implement WebSocket connection handler, 3) Add ANSI escape sequence support, 4) Handle terminal resize events, 5) Implement copy/paste functionality, 6) Apply Tailwind styling from design system",
-      "reasoning": "Moderate complexity. Requires frontend work in web/platform with xterm.js integration, WebSocket communication, and terminal emulation features."
-    },
-    {
-      "taskId": 10,
-      "taskTitle": "Build File System API",
-      "complexityScore": 5,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Expand file API into: 1) Create REST endpoints for file operations, 2) Implement Docker SDK file operations, 3) Add file watching with fsnotify, 4) Build WebSocket notifications, 5) Implement permission system, 6) Add file size limits and validation",
-      "reasoning": "Moderate complexity. Requires Docker SDK for container file operations, REST API design, and real-time notifications via WebSocket."
-    },
-    {
-      "taskId": 11,
-      "taskTitle": "Integrate Claude AI API",
-      "complexityScore": 4,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Break down Claude integration into: 1) Extend adapters/llm with Anthropic SDK client, 2) Implement conversation context management, 3) Add prompt engineering for code tasks, 4) Build streaming response handler, 5) Create PostgreSQL conversation storage",
-      "reasoning": "Moderate complexity. LLM package exists with OpenAI/Ollama support. Need to add Anthropic SDK and extend for code generation use cases."
-    },
-    {
-      "taskId": 12,
-      "taskTitle": "Create AI Context Manager",
-      "complexityScore": 6,
-      "recommendedSubtasks": 7,
-      "expansionPrompt": "Expand context manager into: 1) Design context data model, 2) Implement OpenAPI spec inclusion, 3) Add generated code tracking, 4) Build file system state management, 5) Implement context window optimization, 6) Add semantic chunking for large codebases, 7) Create Redis caching layer",
-      "reasoning": "Higher complexity. Requires careful design of context management, optimization algorithms, semantic analysis, and caching strategy."
-    },
-    {
-      "taskId": 13,
-      "taskTitle": "Implement Code AST Parser",
-      "complexityScore": 7,
+      "reasoning": "High complexity. Requires Docker SDK integration, container lifecycle management, resource management, and Redis state tracking. Limited existing container code to leverage.",
       "recommendedSubtasks": 8,
-      "expansionPrompt": "Break down AST parser into: 1) Implement Go AST parsing with go/ast, 2) Build AST modification functions, 3) Preserve formatting and comments, 4) Add tree-sitter for multi-language support, 5) Create unified AST interface, 6) Handle build tags and directives, 7) Implement AST diff generation, 8) Add AST validation",
-      "reasoning": "High complexity. Requires deep understanding of go/ast, tree-sitter integration for multiple languages, and careful handling of code preservation."
+      "taskId": 6,
+      "taskTitle": "Implement Docker Container Service"
     },
     {
-      "taskId": 14,
-      "taskTitle": "Build AI Refinement Engine",
-      "complexityScore": 7,
-      "recommendedSubtasks": 7,
-      "expansionPrompt": "Expand refinement engine into: 1) Parse Claude response format, 2) Extract code modifications, 3) Apply changes via AST, 4) Validate against OpenAPI spec, 5) Implement rollback mechanism, 6) Build modification history, 7) Add undo/redo functionality",
-      "reasoning": "High complexity. Requires integration of AI responses, AST manipulation, validation logic, and complex state management for history/rollback."
-    },
-    {
-      "taskId": 15,
-      "taskTitle": "Create React Component Generator",
-      "complexityScore": 6,
-      "recommendedSubtasks": 7,
-      "expansionPrompt": "Break down React generator into: 1) Map OpenAPI schemas to TypeScript interfaces, 2) Generate form components with React Hook Form, 3) Create display components for responses, 4) Apply Tailwind styles from existing system, 5) Generate prop types and defaults, 6) Create Storybook stories, 7) Add component documentation",
-      "reasoning": "Higher complexity. Requires TypeScript generation, React component patterns, form handling, and integration with existing Tailwind design system in web/platform."
-    },
-    {
-      "taskId": 16,
-      "taskTitle": "Implement TypeScript Type Generator",
-      "complexityScore": 5,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Expand TypeScript generator into: 1) Map OpenAPI types to TypeScript, 2) Handle union types for oneOf/anyOf, 3) Generate enums from schemas, 4) Create runtime type guards, 5) Support generic types, 6) Add JSDoc comments from descriptions",
-      "reasoning": "Moderate complexity. Similar patterns exist in web/client generated types. Need to handle complex type scenarios and runtime validation."
-    },
-    {
-      "taskId": 17,
-      "taskTitle": "Build API Client Generator",
-      "complexityScore": 5,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Break down client generator into: 1) Generate Axios-based client, 2) Create fetch wrapper with types, 3) Implement request/response interceptors, 4) Add retry logic and error handling, 5) Support multiple auth methods, 6) Generate SDK documentation",
-      "reasoning": "Moderate complexity. Can reference existing generated clients in web/client. Need to handle various auth patterns and error scenarios."
-    },
-    {
-      "taskId": 18,
-      "taskTitle": "Create Preview Server",
-      "complexityScore": 6,
-      "recommendedSubtasks": 7,
-      "expansionPrompt": "Expand preview server into: 1) Create container-based preview server, 2) Implement file watching with hot-reload, 3) Build proxy between frontend/backend, 4) Handle CORS configuration, 5) Support multiple environments, 6) Add preview URL generation, 7) Implement preview cleanup",
-      "reasoning": "Higher complexity. Requires container integration, file watching, proxy configuration, and managing multiple preview environments."
-    },
-    {
-      "taskId": 19,
-      "taskTitle": "Implement Component Playground",
-      "complexityScore": 4,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Break down playground into: 1) Create React app shell, 2) Build JSON schema form for props, 3) Add viewport resizing controls, 4) Implement theme switcher, 5) Add configuration export/import",
-      "reasoning": "Moderate complexity. Standard React development with JSON schema forms. Can leverage existing UI components from web/platform."
-    },
-    {
-      "taskId": 20,
-      "taskTitle": "Build Theme System",
-      "complexityScore": 4,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Expand theme system into: 1) Generate design tokens from config, 2) Create CSS variables and Tailwind config, 3) Build theme editor UI, 4) Add color palette generator, 5) Implement typography and spacing scales",
-      "reasoning": "Moderate complexity. Existing Tailwind setup in web/platform provides foundation. Need to add token generation and theme editor."
-    },
-    {
-      "taskId": 21,
-      "taskTitle": "Create Migration System",
-      "complexityScore": 5,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Break down migration system into: 1) Detect schema differences between OpenAPI versions, 2) Generate SQL migrations in goose format, 3) Handle column additions/deletions, 4) Generate type change migrations, 5) Create rollback migrations, 6) Add pre-execution validation",
-      "reasoning": "Moderate complexity. Goose migration system already in use. Need to add schema comparison logic and SQL generation for detected changes."
-    },
-    {
-      "taskId": 22,
-      "taskTitle": "Implement CI/CD Generator",
-      "complexityScore": 4,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Expand CI/CD generator into: 1) Generate GitHub Actions workflows, 2) Create GitLab CI configs, 3) Add Docker build steps, 4) Include test and coverage reporting, 5) Configure cloud deployment steps",
-      "reasoning": "Moderate complexity. Can reference existing GitHub workflows. Main work is templating for different CI/CD platforms."
-    },
-    {
-      "taskId": 23,
-      "taskTitle": "Build Deployment Generator",
-      "complexityScore": 5,
-      "recommendedSubtasks": 6,
-      "expansionPrompt": "Break down deployment generator into: 1) Generate Kubernetes manifests, 2) Create Helm charts, 3) Build Docker Compose files, 4) Generate Terraform modules, 5) Add environment configuration, 6) Include monitoring setup",
-      "reasoning": "Moderate complexity. Existing Helm charts and deployment configs provide templates. Need to parameterize and generate for different scenarios."
-    },
-    {
-      "taskId": 24,
-      "taskTitle": "Create Test Suite Generator",
-      "complexityScore": 6,
-      "recommendedSubtasks": 7,
-      "expansionPrompt": "Expand test generator into: 1) Generate Go unit tests with testify, 2) Create React Testing Library tests, 3) Build API integration tests, 4) Generate fixtures from OpenAPI examples, 5) Add test coverage configuration, 6) Generate mocks with mockery, 7) Create e2e test scenarios",
-      "reasoning": "Higher complexity. Need to generate meaningful tests for multiple languages, handle mocking (mockery already in use), and create realistic test scenarios."
-    },
-    {
-      "taskId": 25,
-      "taskTitle": "Implement Documentation Generator",
-      "complexityScore": 3,
-      "recommendedSubtasks": 5,
-      "expansionPrompt": "Break down docs generator into: 1) Generate API docs with Redoc, 2) Create component documentation, 3) Generate README templates, 4) Add inline code comments, 5) Create architecture diagrams",
-      "reasoning": "Low complexity. Redoc already integrated. Main work is templating documentation and generating diagrams."
-    },
-    {
-      "taskId": 26,
-      "taskTitle": "Build Template Marketplace",
-      "complexityScore": 6,
-      "recommendedSubtasks": 7,
-      "expansionPrompt": "Expand marketplace into: 1) Design template registry schema, 2) Implement versioning system, 3) Build search and filtering API, 4) Create rating/review system, 5) Add template upload/download, 6) Implement access controls, 7) Build marketplace UI",
-      "reasoning": "Higher complexity. Requires full CRUD system, versioning, search functionality, and social features like ratings."
-    },
-    {
-      "taskId": 27,
-      "taskTitle": "Create Plugin System",
       "complexityScore": 8,
+      "expansionPrompt": "Break down orchestration into: 1) Design container pool architecture, 2) Implement scheduling algorithm, 3) Build resource allocation system, 4) Add health check monitoring, 5) Create auto-restart logic, 6) Implement idle timeout cleanup, 7) Add distributed locking with Redis, 8) Build concurrent operation support, 9) Create orchestration metrics",
+      "reasoning": "High complexity. Requires distributed systems concepts, scheduling algorithms, resource management, and coordination with Redis for locking. Minimal existing code to build on.",
       "recommendedSubtasks": 9,
-      "expansionPrompt": "Break down plugin system into: 1) Define plugin interface and protocol, 2) Implement plugin loader, 3) Add WASM runtime for sandboxing, 4) Build plugin configuration system, 5) Create plugin SDK, 6) Add plugin marketplace integration, 7) Implement security sandboxing, 8) Build plugin communication layer, 9) Add plugin dependency management",
-      "reasoning": "Very high complexity. Requires WASM integration, sandboxing, security considerations, and a complete plugin ecosystem."
+      "taskId": 7,
+      "taskTitle": "Build Container Orchestration Layer"
     },
     {
-      "taskId": 28,
-      "taskTitle": "Implement Security Scanner",
+      "complexityScore": 3,
+      "expansionPrompt": "Expand WebSocket server into: 1) Extend existing websocket.go stub, 2) Implement message routing protocol, 3) Add JWT authentication middleware, 4) Support concurrent connections per project, 5) Build connection management and cleanup",
+      "reasoning": "Low complexity. Basic WebSocket handler exists in adapters/http/server/websocket.go. Need to extend for terminal communication and add authentication.",
+      "recommendedSubtasks": 5,
+      "taskId": 8,
+      "taskTitle": "Create WebSocket Server"
+    },
+    {
+      "complexityScore": 5,
+      "expansionPrompt": "Break down terminal into: 1) Create React component with xterm.js, 2) Implement WebSocket connection handler, 3) Add ANSI escape sequence support, 4) Handle terminal resize events, 5) Implement copy/paste functionality, 6) Apply Tailwind styling from design system",
+      "reasoning": "Moderate complexity. Requires frontend work in web/platform with xterm.js integration, WebSocket communication, and terminal emulation features.",
+      "recommendedSubtasks": 6,
+      "taskId": 9,
+      "taskTitle": "Implement Web Terminal"
+    },
+    {
+      "complexityScore": 5,
+      "expansionPrompt": "Expand file API into: 1) Create REST endpoints for file operations, 2) Implement Docker SDK file operations, 3) Add file watching with fsnotify, 4) Build WebSocket notifications, 5) Implement permission system, 6) Add file size limits and validation",
+      "reasoning": "Moderate complexity. Requires Docker SDK for container file operations, REST API design, and real-time notifications via WebSocket.",
+      "recommendedSubtasks": 6,
+      "taskId": 10,
+      "taskTitle": "Build File System API"
+    },
+    {
+      "complexityScore": 4,
+      "expansionPrompt": "Break down Claude integration into: 1) Extend adapters/llm with Anthropic SDK client, 2) Implement conversation context management, 3) Add prompt engineering for code tasks, 4) Build streaming response handler, 5) Create PostgreSQL conversation storage",
+      "reasoning": "Moderate complexity. LLM package exists with OpenAI/Ollama support. Need to add Anthropic SDK and extend for code generation use cases.",
+      "recommendedSubtasks": 5,
+      "taskId": 11,
+      "taskTitle": "Integrate Claude AI API"
+    },
+    {
       "complexityScore": 6,
+      "expansionPrompt": "Expand context manager into: 1) Design context data model, 2) Implement OpenAPI spec inclusion, 3) Add generated code tracking, 4) Build file system state management, 5) Implement context window optimization, 6) Add semantic chunking for large codebases, 7) Create Redis caching layer",
+      "reasoning": "Higher complexity. Requires careful design of context management, optimization algorithms, semantic analysis, and caching strategy.",
       "recommendedSubtasks": 7,
+      "taskId": 12,
+      "taskTitle": "Create AI Context Manager"
+    },
+    {
+      "complexityScore": 7,
+      "expansionPrompt": "Break down AST parser into: 1) Implement Go AST parsing with go/ast, 2) Build AST modification functions, 3) Preserve formatting and comments, 4) Add tree-sitter for multi-language support, 5) Create unified AST interface, 6) Handle build tags and directives, 7) Implement AST diff generation, 8) Add AST validation",
+      "reasoning": "High complexity. Requires deep understanding of go/ast, tree-sitter integration for multiple languages, and careful handling of code preservation.",
+      "recommendedSubtasks": 8,
+      "taskId": 13,
+      "taskTitle": "Implement Code AST Parser"
+    },
+    {
+      "complexityScore": 7,
+      "expansionPrompt": "Expand refinement engine into: 1) Parse Claude response format, 2) Extract code modifications, 3) Apply changes via AST, 4) Validate against OpenAPI spec, 5) Implement rollback mechanism, 6) Build modification history, 7) Add undo/redo functionality",
+      "reasoning": "High complexity. Requires integration of AI responses, AST manipulation, validation logic, and complex state management for history/rollback.",
+      "recommendedSubtasks": 7,
+      "taskId": 14,
+      "taskTitle": "Build AI Refinement Engine"
+    },
+    {
+      "complexityScore": 6,
+      "expansionPrompt": "Break down React generator into: 1) Map OpenAPI schemas to TypeScript interfaces, 2) Generate form components with React Hook Form, 3) Create display components for responses, 4) Apply Tailwind styles from existing system, 5) Generate prop types and defaults, 6) Create Storybook stories, 7) Add component documentation",
+      "reasoning": "Higher complexity. Requires TypeScript generation, React component patterns, form handling, and integration with existing Tailwind design system in web/platform.",
+      "recommendedSubtasks": 7,
+      "taskId": 15,
+      "taskTitle": "Create React Component Generator"
+    },
+    {
+      "complexityScore": 5,
+      "expansionPrompt": "Expand TypeScript generator into: 1) Map OpenAPI types to TypeScript, 2) Handle union types for oneOf/anyOf, 3) Generate enums from schemas, 4) Create runtime type guards, 5) Support generic types, 6) Add JSDoc comments from descriptions",
+      "reasoning": "Moderate complexity. Similar patterns exist in web/client generated types. Need to handle complex type scenarios and runtime validation.",
+      "recommendedSubtasks": 6,
+      "taskId": 16,
+      "taskTitle": "Implement TypeScript Type Generator"
+    },
+    {
+      "complexityScore": 5,
+      "expansionPrompt": "Break down client generator into: 1) Generate Axios-based client, 2) Create fetch wrapper with types, 3) Implement request/response interceptors, 4) Add retry logic and error handling, 5) Support multiple auth methods, 6) Generate SDK documentation",
+      "reasoning": "Moderate complexity. Can reference existing generated clients in web/client. Need to handle various auth patterns and error scenarios.",
+      "recommendedSubtasks": 6,
+      "taskId": 17,
+      "taskTitle": "Build API Client Generator"
+    },
+    {
+      "complexityScore": 6,
+      "expansionPrompt": "Expand preview server into: 1) Create container-based preview server, 2) Implement file watching with hot-reload, 3) Build proxy between frontend/backend, 4) Handle CORS configuration, 5) Support multiple environments, 6) Add preview URL generation, 7) Implement preview cleanup",
+      "reasoning": "Higher complexity. Requires container integration, file watching, proxy configuration, and managing multiple preview environments.",
+      "recommendedSubtasks": 7,
+      "taskId": 18,
+      "taskTitle": "Create Preview Server"
+    },
+    {
+      "complexityScore": 4,
+      "expansionPrompt": "Break down playground into: 1) Create React app shell, 2) Build JSON schema form for props, 3) Add viewport resizing controls, 4) Implement theme switcher, 5) Add configuration export/import",
+      "reasoning": "Moderate complexity. Standard React development with JSON schema forms. Can leverage existing UI components from web/platform.",
+      "recommendedSubtasks": 5,
+      "taskId": 19,
+      "taskTitle": "Implement Component Playground"
+    },
+    {
+      "complexityScore": 4,
+      "expansionPrompt": "Expand theme system into: 1) Generate design tokens from config, 2) Create CSS variables and Tailwind config, 3) Build theme editor UI, 4) Add color palette generator, 5) Implement typography and spacing scales",
+      "reasoning": "Moderate complexity. Existing Tailwind setup in web/platform provides foundation. Need to add token generation and theme editor.",
+      "recommendedSubtasks": 5,
+      "taskId": 20,
+      "taskTitle": "Build Theme System"
+    },
+    {
+      "complexityScore": 5,
+      "expansionPrompt": "Break down migration system into: 1) Detect schema differences between OpenAPI versions, 2) Generate SQL migrations in goose format, 3) Handle column additions/deletions, 4) Generate type change migrations, 5) Create rollback migrations, 6) Add pre-execution validation",
+      "reasoning": "Moderate complexity. Goose migration system already in use. Need to add schema comparison logic and SQL generation for detected changes.",
+      "recommendedSubtasks": 6,
+      "taskId": 21,
+      "taskTitle": "Create Migration System"
+    },
+    {
+      "complexityScore": 4,
+      "expansionPrompt": "Expand CI/CD generator into: 1) Generate GitHub Actions workflows, 2) Create GitLab CI configs, 3) Add Docker build steps, 4) Include test and coverage reporting, 5) Configure cloud deployment steps",
+      "reasoning": "Moderate complexity. Can reference existing GitHub workflows. Main work is templating for different CI/CD platforms.",
+      "recommendedSubtasks": 5,
+      "taskId": 22,
+      "taskTitle": "Implement CI/CD Generator"
+    },
+    {
+      "complexityScore": 5,
+      "expansionPrompt": "Break down deployment generator into: 1) Generate Kubernetes manifests, 2) Create Helm charts, 3) Build Docker Compose files, 4) Generate Terraform modules, 5) Add environment configuration, 6) Include monitoring setup",
+      "reasoning": "Moderate complexity. Existing Helm charts and deployment configs provide templates. Need to parameterize and generate for different scenarios.",
+      "recommendedSubtasks": 6,
+      "taskId": 23,
+      "taskTitle": "Build Deployment Generator"
+    },
+    {
+      "complexityScore": 6,
+      "expansionPrompt": "Expand test generator into: 1) Generate Go unit tests with testify, 2) Create React Testing Library tests, 3) Build API integration tests, 4) Generate fixtures from OpenAPI examples, 5) Add test coverage configuration, 6) Generate mocks with mockery, 7) Create e2e test scenarios",
+      "reasoning": "Higher complexity. Need to generate meaningful tests for multiple languages, handle mocking (mockery already in use), and create realistic test scenarios.",
+      "recommendedSubtasks": 7,
+      "taskId": 24,
+      "taskTitle": "Create Test Suite Generator"
+    },
+    {
+      "complexityScore": 3,
+      "expansionPrompt": "Break down docs generator into: 1) Generate API docs with Redoc, 2) Create component documentation, 3) Generate README templates, 4) Add inline code comments, 5) Create architecture diagrams",
+      "reasoning": "Low complexity. Redoc already integrated. Main work is templating documentation and generating diagrams.",
+      "recommendedSubtasks": 5,
+      "taskId": 25,
+      "taskTitle": "Implement Documentation Generator"
+    },
+    {
+      "complexityScore": 6,
+      "expansionPrompt": "Expand marketplace into: 1) Design template registry schema, 2) Implement versioning system, 3) Build search and filtering API, 4) Create rating/review system, 5) Add template upload/download, 6) Implement access controls, 7) Build marketplace UI",
+      "reasoning": "Higher complexity. Requires full CRUD system, versioning, search functionality, and social features like ratings.",
+      "recommendedSubtasks": 7,
+      "taskId": 26,
+      "taskTitle": "Build Template Marketplace"
+    },
+    {
+      "complexityScore": 8,
+      "expansionPrompt": "Break down plugin system into: 1) Define plugin interface and protocol, 2) Implement plugin loader, 3) Add WASM runtime for sandboxing, 4) Build plugin configuration system, 5) Create plugin SDK, 6) Add plugin marketplace integration, 7) Implement security sandboxing, 8) Build plugin communication layer, 9) Add plugin dependency management",
+      "reasoning": "Very high complexity. Requires WASM integration, sandboxing, security considerations, and a complete plugin ecosystem.",
+      "recommendedSubtasks": 9,
+      "taskId": 27,
+      "taskTitle": "Create Plugin System"
+    },
+    {
+      "complexityScore": 6,
       "expansionPrompt": "Expand security scanner into: 1) Integrate Snyk or similar tools, 2) Implement SQL injection detection, 3) Add XSS vulnerability scanning, 4) Validate authentication patterns, 5) Check dependency vulnerabilities, 6) Generate security reports, 7) Add remediation suggestions",
-      "reasoning": "Higher complexity. Requires integration with security tools, pattern matching for vulnerabilities, and generating actionable remediation advice."
+      "reasoning": "Higher complexity. Requires integration with security tools, pattern matching for vulnerabilities, and generating actionable remediation advice.",
+      "recommendedSubtasks": 7,
+      "taskId": 28,
+      "taskTitle": "Implement Security Scanner"
     },
     {
-      "taskId": 29,
-      "taskTitle": "Build Performance Analyzer",
       "complexityScore": 5,
-      "recommendedSubtasks": 6,
       "expansionPrompt": "Break down analyzer into: 1) Implement bundle size analysis, 2) Add backend profiling with pprof, 3) Create database query analyzer, 4) Generate optimization suggestions, 5) Integrate Lighthouse for web vitals, 6) Build performance dashboard",
-      "reasoning": "Moderate complexity. Can leverage existing tools like pprof and Lighthouse. Main work is integration and generating insights."
+      "reasoning": "Moderate complexity. Can leverage existing tools like pprof and Lighthouse. Main work is integration and generating insights.",
+      "recommendedSubtasks": 6,
+      "taskId": 29,
+      "taskTitle": "Build Performance Analyzer"
     },
     {
-      "taskId": 30,
-      "taskTitle": "Create Admin Dashboard",
       "complexityScore": 5,
-      "recommendedSubtasks": 6,
       "expansionPrompt": "Expand dashboard into: 1) Create dashboard layout in web/platform, 2) Build project metrics components, 3) Add container resource monitoring, 4) Implement user management interface, 5) Create billing and usage analytics, 6) Add real-time updates with WebSocket",
-      "reasoning": "Moderate complexity. Can leverage existing React components in web/platform. Need to integrate metrics, resource monitoring, and real-time updates."
+      "reasoning": "Moderate complexity. Can leverage existing React components in web/platform. Need to integrate metrics, resource monitoring, and real-time updates.",
+      "recommendedSubtasks": 6,
+      "taskId": 30,
+      "taskTitle": "Create Admin Dashboard"
     }
-  ]
+  ],
+  "meta": {
+    "analysisCount": 30,
+    "generatedAt": "2025-09-25T05:14:06.681Z",
+    "projectName": "Taskmaster",
+    "tasksAnalyzed": 30,
+    "thresholdScore": 5,
+    "totalTasks": 30,
+    "usedResearch": false
+  }
 }

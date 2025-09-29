@@ -16,24 +16,18 @@ import (
 
 // UpdateSessionCommand represents the command to update a session.
 type UpdateSessionCommand struct {
-	ID          uuid.UUID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
+	ID             uuid.UUID
+	OrganizationID uuid.UUID
 }
 
 // NewUpdateSessionCommand creates a new update session command.
 func NewUpdateSessionCommand(
 	id uuid.UUID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
+	OrganizationID uuid.UUID,
 ) *UpdateSessionCommand {
 	return &UpdateSessionCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
+		ID:             id,
+		OrganizationID: OrganizationID,
 	}
 }
 

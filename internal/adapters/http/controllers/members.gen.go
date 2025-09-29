@@ -45,15 +45,15 @@ func NewMembersController(
 
 // RegisterMembersRoutes registers all HTTP routes for the members domain.
 func RegisterMembersRoutes(router server.EchoRouter, controller *MembersController) {
-	router.POST("/organizations/:id/members", controller.CreateMember)
-	router.GET("/organizations/:id/members", controller.ListMembers)
-	router.DELETE("/organizations/:id/members/:memberID", controller.DeleteMember)
-	router.GET("/organizations/:id/members/:memberID", controller.GetMember)
-	router.PATCH("/organizations/:id/members/:memberID", controller.UpdateMember)
+	router.POST("/organizations/:organizationID/members", controller.CreateMember)
+	router.GET("/organizations/:organizationID/members", controller.ListMembers)
+	router.DELETE("/organizations/:organizationID/members/:id", controller.DeleteMember)
+	router.GET("/organizations/:organizationID/members/:id", controller.GetMember)
+	router.PATCH("/organizations/:organizationID/members/:id", controller.UpdateMember)
 }
 
 // ============================================================================
-// CreateMember - POST /organizations/{id}/members
+// CreateMember - POST /organizations/{organizationID}/members
 // ============================================================================
 
 // Request types
@@ -63,8 +63,8 @@ type CreateMemberRequestBody struct {
 }
 
 type CreateMemberRequest struct {
-	ID   string `json:"id"`
-	Body *CreateMemberRequestBody
+	OrganizationID uuid.UUID `json:"organizationID"`
+	Body           *CreateMemberRequestBody
 }
 
 // Response types
@@ -107,17 +107,17 @@ func (response CreateMember401Response) VisitCreateMemberResponse(w http.Respons
 
 // Handler method
 
-// CreateMember handles the POST /organizations/{id}/members endpoint.
+// CreateMember handles the POST /organizations/{organizationID}/members endpoint.
 func (c *MembersController) CreateMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreateMemberRequest{}
 
-	// Path parameter "id"
-	var id string
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
 	}
-	request.ID = id
+	request.OrganizationID = organizationID
 
 	// Request body
 	var body CreateMemberRequestBody
@@ -128,17 +128,10 @@ func (c *MembersController) CreateMember(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Create handler
-	// Available request body fields: Role
 
-	// TODO: Get organization ID from auth context
-	orgID := uuid.New()
-
-	// Create command - adjust field mapping based on your API
+	// Map request body fields to command parameters
 	cmd := commands.NewCreateMemberCommand(
-		orgID,
-		"",  // TODO: Map appropriate field from request.Body
-		"",  // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
+		request.Body.Role, // Role
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -152,7 +145,7 @@ func (c *MembersController) CreateMember(ctx echo.Context) error {
 }
 
 // ============================================================================
-// ListMembers - GET /organizations/{id}/members
+// ListMembers - GET /organizations/{organizationID}/members
 // ============================================================================
 
 // Request types
@@ -164,8 +157,8 @@ type ListMembersParams struct {
 }
 
 type ListMembersRequest struct {
-	ID     string `json:"id"`
-	Params ListMembersParams
+	OrganizationID uuid.UUID `json:"organizationID"`
+	Params         ListMembersParams
 }
 
 // Response types
@@ -208,17 +201,17 @@ func (response ListMembers401Response) VisitListMembersResponse(w http.ResponseW
 
 // Handler method
 
-// ListMembers handles the GET /organizations/{id}/members endpoint.
+// ListMembers handles the GET /organizations/{organizationID}/members endpoint.
 func (c *MembersController) ListMembers(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListMembersRequest{}
 
-	// Path parameter "id"
-	var id string
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
 	}
-	request.ID = id
+	request.OrganizationID = organizationID
 
 	// Query parameters
 	var params ListMembersParams
@@ -255,14 +248,14 @@ func (c *MembersController) ListMembers(ctx echo.Context) error {
 }
 
 // ============================================================================
-// DeleteMember - DELETE /organizations/{id}/members/{memberID}
+// DeleteMember - DELETE /organizations/{organizationID}/members/{id}
 // ============================================================================
 
 // Request types
 
 type DeleteMemberRequest struct {
-	ID       uuid.UUID `json:"id"`
-	MemberID uuid.UUID `json:"memberID"`
+	OrganizationID uuid.UUID `json:"organizationID"`
+	ID             uuid.UUID `json:"id"`
 }
 
 // Response types
@@ -294,10 +287,17 @@ func (response DeleteMember404Response) VisitDeleteMemberResponse(w http.Respons
 
 // Handler method
 
-// DeleteMember handles the DELETE /organizations/{id}/members/{memberID} endpoint.
+// DeleteMember handles the DELETE /organizations/{organizationID}/members/{id} endpoint.
 func (c *MembersController) DeleteMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteMemberRequest{}
+
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	}
+	request.OrganizationID = organizationID
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -305,13 +305,6 @@ func (c *MembersController) DeleteMember(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 	request.ID = id
-
-	// Path parameter "memberID"
-	var memberID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "memberID", ctx.Param("memberID"), &memberID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter memberID: %s", err))
-	}
-	request.MemberID = memberID
 
 	// Determine which handler to call based on operation
 	// Create delete command from request
@@ -328,14 +321,14 @@ func (c *MembersController) DeleteMember(ctx echo.Context) error {
 }
 
 // ============================================================================
-// GetMember - GET /organizations/{id}/members/{memberID}
+// GetMember - GET /organizations/{organizationID}/members/{id}
 // ============================================================================
 
 // Request types
 
 type GetMemberRequest struct {
-	ID       uuid.UUID `json:"id"`
-	MemberID uuid.UUID `json:"memberID"`
+	OrganizationID uuid.UUID `json:"organizationID"`
+	ID             uuid.UUID `json:"id"`
 }
 
 // Response types
@@ -367,10 +360,17 @@ func (response GetMember404Response) VisitGetMemberResponse(w http.ResponseWrite
 
 // Handler method
 
-// GetMember handles the GET /organizations/{id}/members/{memberID} endpoint.
+// GetMember handles the GET /organizations/{organizationID}/members/{id} endpoint.
 func (c *MembersController) GetMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetMemberRequest{}
+
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	}
+	request.OrganizationID = organizationID
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -378,13 +378,6 @@ func (c *MembersController) GetMember(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 	request.ID = id
-
-	// Path parameter "memberID"
-	var memberID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "memberID", ctx.Param("memberID"), &memberID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter memberID: %s", err))
-	}
-	request.MemberID = memberID
 
 	// Determine which handler to call based on operation
 	// Create get query from request
@@ -403,7 +396,7 @@ func (c *MembersController) GetMember(ctx echo.Context) error {
 }
 
 // ============================================================================
-// UpdateMember - PATCH /organizations/{id}/members/{memberID}
+// UpdateMember - PATCH /organizations/{organizationID}/members/{id}
 // ============================================================================
 
 // Request types
@@ -413,9 +406,9 @@ type UpdateMemberRequestBody struct {
 }
 
 type UpdateMemberRequest struct {
-	ID       uuid.UUID `json:"id"`
-	MemberID uuid.UUID `json:"memberID"`
-	Body     *UpdateMemberRequestBody
+	OrganizationID uuid.UUID `json:"organizationID"`
+	ID             uuid.UUID `json:"id"`
+	Body           *UpdateMemberRequestBody
 }
 
 // Response types
@@ -447,10 +440,17 @@ func (response UpdateMember404Response) VisitUpdateMemberResponse(w http.Respons
 
 // Handler method
 
-// UpdateMember handles the PATCH /organizations/{id}/members/{memberID} endpoint.
+// UpdateMember handles the PATCH /organizations/{organizationID}/members/{id} endpoint.
 func (c *MembersController) UpdateMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateMemberRequest{}
+
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	}
+	request.OrganizationID = organizationID
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -458,13 +458,6 @@ func (c *MembersController) UpdateMember(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 	request.ID = id
-
-	// Path parameter "memberID"
-	var memberID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "memberID", ctx.Param("memberID"), &memberID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter memberID: %s", err))
-	}
-	request.MemberID = memberID
 
 	// Request body
 	var body UpdateMemberRequestBody
@@ -475,14 +468,11 @@ func (c *MembersController) UpdateMember(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Update handler
-	// Available request body fields: Role
 
-	// Create update command - adjust field mapping based on your API
+	// Map path parameters and request body fields to command parameters
 	cmd := commands.NewUpdateMemberCommand(
-		request.ID, // Assumes all update operations have an ID path parameter
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map metadata if available
+		request.ID,        // id (entity ID)
+		request.Body.Role, // Role
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

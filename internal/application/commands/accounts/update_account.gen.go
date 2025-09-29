@@ -16,24 +16,24 @@ import (
 
 // UpdateAccountCommand represents the command to update a account.
 type UpdateAccountCommand struct {
-	ID          uuid.UUID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
+	ID                uuid.UUID
+	Provider          *string
+	ProviderAccountID *string
+	Type              *string
 }
 
 // NewUpdateAccountCommand creates a new update account command.
 func NewUpdateAccountCommand(
 	id uuid.UUID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
+	Provider *string,
+	ProviderAccountID *string,
+	Type *string,
 ) *UpdateAccountCommand {
 	return &UpdateAccountCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
+		ID:                id,
+		Provider:          Provider,
+		ProviderAccountID: ProviderAccountID,
+		Type:              Type,
 	}
 }
 

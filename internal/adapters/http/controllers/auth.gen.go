@@ -10,26 +10,15 @@ import (
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
-	commands "github.com/archesai/archesai/internal/application/commands/auth"
-	queries "github.com/archesai/archesai/internal/application/queries/auth"
 )
 
 // AuthController handles HTTP requests for auth endpoints.
 type AuthController struct {
-	// Command handlers
-	createHandler *commands.CreateAuthCommandHandler
-	listHandler   *queries.ListAuthQueryHandler
 }
 
 // NewAuthController creates a new auth controller with injected handlers.
-func NewAuthController(
-	createHandler *commands.CreateAuthCommandHandler,
-	listHandler *queries.ListAuthQueryHandler,
-) *AuthController {
-	return &AuthController{
-		createHandler: createHandler,
-		listHandler:   listHandler,
-	}
+func NewAuthController() *AuthController {
+	return &AuthController{}
 }
 
 // RegisterAuthRoutes registers all HTTP routes for the auth domain.

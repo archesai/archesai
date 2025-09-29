@@ -16,24 +16,24 @@ import (
 
 // CreateAPIKeyCommand represents the command to create a apikey.
 type CreateAPIKeyCommand struct {
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
+	ExpiresAt *time.Time
+	Name      string
+	RateLimit *int
+	Scopes    []string
 }
 
 // NewCreateAPIKeyCommand creates a new create apikey command.
 func NewCreateAPIKeyCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	ExpiresAt *time.Time,
+	Name string,
+	RateLimit *int,
+	Scopes []string,
 ) *CreateAPIKeyCommand {
 	return &CreateAPIKeyCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		ExpiresAt: ExpiresAt,
+		Name:      Name,
+		RateLimit: RateLimit,
+		Scopes:    Scopes,
 	}
 }
 

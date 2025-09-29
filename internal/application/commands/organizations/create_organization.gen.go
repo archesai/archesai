@@ -16,24 +16,18 @@ import (
 
 // CreateOrganizationCommand represents the command to create a organization.
 type CreateOrganizationCommand struct {
+	BillingEmail   string
 	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
 }
 
 // NewCreateOrganizationCommand creates a new create organization command.
 func NewCreateOrganizationCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	BillingEmail string,
+	OrganizationID uuid.UUID,
 ) *CreateOrganizationCommand {
 	return &CreateOrganizationCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		BillingEmail:   BillingEmail,
+		OrganizationID: OrganizationID,
 	}
 }
 

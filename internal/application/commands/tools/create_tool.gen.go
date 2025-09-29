@@ -16,24 +16,18 @@ import (
 
 // CreateToolCommand represents the command to create a tool.
 type CreateToolCommand struct {
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
+	Description string
+	Name        string
 }
 
 // NewCreateToolCommand creates a new create tool command.
 func NewCreateToolCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	Description string,
+	Name string,
 ) *CreateToolCommand {
 	return &CreateToolCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		Description: Description,
+		Name:        Name,
 	}
 }
 

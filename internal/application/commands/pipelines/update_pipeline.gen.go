@@ -17,23 +17,20 @@ import (
 // UpdatePipelineCommand represents the command to update a pipeline.
 type UpdatePipelineCommand struct {
 	ID          uuid.UUID
-	Name        *string
 	Description *string
-	Metadata    map[string]interface{}
+	Name        *string
 }
 
 // NewUpdatePipelineCommand creates a new update pipeline command.
 func NewUpdatePipelineCommand(
 	id uuid.UUID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
+	Description *string,
+	Name *string,
 ) *UpdatePipelineCommand {
 	return &UpdatePipelineCommand{
 		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
+		Description: Description,
+		Name:        Name,
 	}
 }
 

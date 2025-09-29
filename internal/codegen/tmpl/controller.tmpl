@@ -367,24 +367,41 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	{{- end }}
 
 	// Determine which handler to call based on operation
-	{{- if hasPrefix .GoName "Create" }}
+	{{- if eq .GoName (printf "Create%s" $.DomainSingular) }}
 	// Create handler
 	{{- if .HasRequestBody }}
 	{{- if .RequestBodySchema }}
-	// Available request body fields: {{ range $i, $field := .RequestBodySchema.Fields }}{{ if $i }}, {{ end }}{{ $field.Name }}{{ end }}
-	{{- end }}
-	{{- end }}
 
-	// TODO: Get organization ID from auth context
+	// Map request body fields to command parameters
+	cmd := commands.NewCreate{{ $.DomainSingular }}Command(
+		{{- range $i, $field := .RequestBodySchema.Fields }}
+		request.Body.{{ $field.FieldName }}, // {{ $field.Name }}
+		{{- end }}
+	)
+	{{- else }}
+	// No request body schema defined, using default parameters
+	// TODO: Get organization ID from auth context if needed
 	orgID := uuid.New()
 
-	// Create command - adjust field mapping based on your API
 	cmd := commands.NewCreate{{ $.DomainSingular }}Command(
 		orgID,
-		"", // TODO: Map appropriate field from request.Body
-		"", // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
+		"", // name
+		"", // description
+		nil, // metadata
 	)
+	{{- end }}
+	{{- else }}
+	// No request body, using default parameters
+	// TODO: Get organization ID from auth context if needed
+	orgID := uuid.New()
+
+	cmd := commands.NewCreate{{ $.DomainSingular }}Command(
+		orgID,
+		"", // name
+		"", // description
+		nil, // metadata
+	)
+	{{- end }}
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
 	if err != nil {
@@ -394,20 +411,27 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
-	{{- else if hasPrefix .GoName "Update" }}
+	{{- else if eq .GoName (printf "Update%s" $.DomainSingular) }}
 	// Update handler
-	{{- if .HasRequestBody }}
-	{{- if .RequestBodySchema }}
-	// Available request body fields: {{ range $i, $field := .RequestBodySchema.Fields }}{{ if $i }}, {{ end }}{{ $field.Name }}{{ end }}
-	{{- end }}
-	{{- end }}
 
-	// Create update command - adjust field mapping based on your API
+	// Map path parameters and request body fields to command parameters
 	cmd := commands.NewUpdate{{ $.DomainSingular }}Command(
-		request.ID, // Assumes all update operations have an ID path parameter
-		nil, // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
+		request.ID, // id (entity ID)
+		{{- if .HasRequestBody }}
+		{{- if .RequestBodySchema }}
+		{{- range .RequestBodySchema.Fields }}
+		request.Body.{{ .FieldName }}, // {{ .Name }}
+		{{- end }}
+		{{- else }}
+		nil, // name
+		nil, // description
+		nil, // metadata
+		{{- end }}
+		{{- else }}
+		nil, // name
+		nil, // description
+		nil, // metadata
+		{{- end }}
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)
@@ -418,7 +442,7 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})
-	{{- else if hasPrefix .GoName "Delete" }}
+	{{- else if eq .GoName (printf "Delete%s" $.DomainSingular) }}
 	// Create delete command from request
 	cmd := commands.NewDelete{{ $.DomainSingular }}Command(
 		request.ID,
@@ -430,7 +454,7 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	}
 
 	return ctx.NoContent(http.StatusNoContent)
-	{{- else if hasPrefix .GoName "List" }}
+	{{- else if eq .GoName (printf "List%s" $.Domain) }}
 	// Create list query from request
 	query := queries.NewList{{ $.Domain }}Query()
 	// TODO: Apply filters, pagination, sorting from request.Params
@@ -446,7 +470,7 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 			"total": total,
 		},
 	})
-	{{- else if hasPrefix .GoName "Get" }}
+	{{- else if eq .GoName (printf "Get%s" $.DomainSingular) }}
 	// Create get query from request
 	{{- if .PathParams }}
 	query := queries.NewGet{{ $.DomainSingular }}Query(

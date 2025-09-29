@@ -208,17 +208,13 @@ func (c *APIKeysController) CreateAPIKey(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Create handler
-	// Available request body fields: ExpiresAt, Name, RateLimit, Scopes
 
-	// TODO: Get organization ID from auth context
-	orgID := uuid.New()
-
-	// Create command - adjust field mapping based on your API
+	// Map request body fields to command parameters
 	cmd := commands.NewCreateAPIKeyCommand(
-		orgID,
-		"",  // TODO: Map appropriate field from request.Body
-		"",  // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
+		request.Body.ExpiresAt, // ExpiresAt
+		request.Body.Name,      // Name
+		request.Body.RateLimit, // RateLimit
+		request.Body.Scopes,    // Scopes
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -409,14 +405,13 @@ func (c *APIKeysController) UpdateAPIKey(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Update handler
-	// Available request body fields: Name, RateLimit, Scopes
 
-	// Create update command - adjust field mapping based on your API
+	// Map path parameters and request body fields to command parameters
 	cmd := commands.NewUpdateAPIKeyCommand(
-		request.ID, // Assumes all update operations have an ID path parameter
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map metadata if available
+		request.ID,             // id (entity ID)
+		request.Body.Name,      // Name
+		request.Body.RateLimit, // RateLimit
+		request.Body.Scopes,    // Scopes
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

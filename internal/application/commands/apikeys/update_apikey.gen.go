@@ -16,24 +16,24 @@ import (
 
 // UpdateAPIKeyCommand represents the command to update a apikey.
 type UpdateAPIKeyCommand struct {
-	ID          uuid.UUID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
+	ID        uuid.UUID
+	Name      *string
+	RateLimit *int
+	Scopes    []string
 }
 
 // NewUpdateAPIKeyCommand creates a new update apikey command.
 func NewUpdateAPIKeyCommand(
 	id uuid.UUID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
+	Name *string,
+	RateLimit *int,
+	Scopes []string,
 ) *UpdateAPIKeyCommand {
 	return &UpdateAPIKeyCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
+		ID:        id,
+		Name:      Name,
+		RateLimit: RateLimit,
+		Scopes:    Scopes,
 	}
 }
 

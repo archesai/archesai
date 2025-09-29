@@ -223,17 +223,12 @@ func (c *AccountsController) CreateAccount(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Create handler
-	// Available request body fields: Email, Name, Password
 
-	// TODO: Get organization ID from auth context
-	orgID := uuid.New()
-
-	// Create command - adjust field mapping based on your API
+	// Map request body fields to command parameters
 	cmd := commands.NewCreateAccountCommand(
-		orgID,
-		"",  // TODO: Map appropriate field from request.Body
-		"",  // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
+		request.Body.Email,    // Email
+		request.Body.Name,     // Name
+		request.Body.Password, // Password
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -380,14 +375,13 @@ func (c *AccountsController) UpdateAccount(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Update handler
-	// Available request body fields: Provider, ProviderAccountID, Type
 
-	// Create update command - adjust field mapping based on your API
+	// Map path parameters and request body fields to command parameters
 	cmd := commands.NewUpdateAccountCommand(
-		request.ID, // Assumes all update operations have an ID path parameter
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map metadata if available
+		request.ID,                     // id (entity ID)
+		request.Body.Provider,          // Provider
+		request.Body.ProviderAccountID, // ProviderAccountID
+		request.Body.Type,              // Type
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

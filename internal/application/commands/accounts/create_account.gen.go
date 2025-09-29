@@ -16,24 +16,21 @@ import (
 
 // CreateAccountCommand represents the command to create a account.
 type CreateAccountCommand struct {
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
+	Email    string
+	Name     string
+	Password string
 }
 
 // NewCreateAccountCommand creates a new create account command.
 func NewCreateAccountCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	Email string,
+	Name string,
+	Password string,
 ) *CreateAccountCommand {
 	return &CreateAccountCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		Email:    Email,
+		Name:     Name,
+		Password: Password,
 	}
 }
 

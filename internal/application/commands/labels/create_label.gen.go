@@ -16,24 +16,15 @@ import (
 
 // CreateLabelCommand represents the command to create a label.
 type CreateLabelCommand struct {
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
+	Name string
 }
 
 // NewCreateLabelCommand creates a new create label command.
 func NewCreateLabelCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	Name string,
 ) *CreateLabelCommand {
 	return &CreateLabelCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		Name: Name,
 	}
 }
 

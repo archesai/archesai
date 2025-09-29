@@ -16,24 +16,18 @@ import (
 
 // UpdateLabelCommand represents the command to update a label.
 type UpdateLabelCommand struct {
-	ID          uuid.UUID
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
+	ID   uuid.UUID
+	Name *string
 }
 
 // NewUpdateLabelCommand creates a new update label command.
 func NewUpdateLabelCommand(
 	id uuid.UUID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
+	Name *string,
 ) *UpdateLabelCommand {
 	return &UpdateLabelCommand{
-		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
+		ID:   id,
+		Name: Name,
 	}
 }
 

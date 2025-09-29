@@ -58,7 +58,7 @@ export function TableView<TEntity extends BaseEntity>(
             <TableRow>
               <TableCell
                 className="h-24 text-center"
-                colSpan={columns.length + 2}
+                colSpan={columns.filter((col) => col.getIsVisible()).length}
               >
                 No items found
               </TableCell>

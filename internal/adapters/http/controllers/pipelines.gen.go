@@ -125,17 +125,11 @@ func (c *PipelinesController) CreatePipeline(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Create handler
-	// Available request body fields: Description, Name
 
-	// TODO: Get organization ID from auth context
-	orgID := uuid.New()
-
-	// Create command - adjust field mapping based on your API
+	// Map request body fields to command parameters
 	cmd := commands.NewCreatePipelineCommand(
-		orgID,
-		"",  // TODO: Map appropriate field from request.Body
-		"",  // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
+		request.Body.Description, // Description
+		request.Body.Name,        // Name
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -441,14 +435,12 @@ func (c *PipelinesController) UpdatePipeline(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Update handler
-	// Available request body fields: Description, Name
 
-	// Create update command - adjust field mapping based on your API
+	// Map path parameters and request body fields to command parameters
 	cmd := commands.NewUpdatePipelineCommand(
-		request.ID, // Assumes all update operations have an ID path parameter
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map metadata if available
+		request.ID,               // id (entity ID)
+		request.Body.Description, // Description
+		request.Body.Name,        // Name
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)
@@ -524,19 +516,9 @@ func (c *PipelinesController) GetPipelineSteps(ctx echo.Context) error {
 	request.ID = id
 
 	// Determine which handler to call based on operation
-	// Create get query from request
-	query := queries.NewGetPipelineQuery(
-		request.ID,
-	)
-
-	result, err := c.getHandler.Handle(reqCtx, query)
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	// TODO: Handle custom operation GetPipelineSteps
+	_ = reqCtx // Custom operation not yet implemented
+	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
 }
 
 // ============================================================================
@@ -630,28 +612,9 @@ func (c *PipelinesController) CreatePipelineStep(ctx echo.Context) error {
 	request.Body = &body
 
 	// Determine which handler to call based on operation
-	// Create handler
-	// Available request body fields: Config, Dependencies, Description, Name, Position, ToolID
-
-	// TODO: Get organization ID from auth context
-	orgID := uuid.New()
-
-	// Create command - adjust field mapping based on your API
-	cmd := commands.NewCreatePipelineCommand(
-		orgID,
-		"",  // TODO: Map appropriate field from request.Body
-		"",  // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
-	)
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(http.StatusCreated, map[string]interface{}{
-		"data": result,
-	})
+	// TODO: Handle custom operation CreatePipelineStep
+	_ = reqCtx // Custom operation not yet implemented
+	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
 }
 
 // ============================================================================
@@ -728,19 +691,9 @@ func (c *PipelinesController) GetPipelineExecutionPlan(ctx echo.Context) error {
 	request.ID = id
 
 	// Determine which handler to call based on operation
-	// Create get query from request
-	query := queries.NewGetPipelineQuery(
-		request.ID,
-	)
-
-	result, err := c.getHandler.Handle(reqCtx, query)
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	// TODO: Handle custom operation GetPipelineExecutionPlan
+	_ = reqCtx // Custom operation not yet implemented
+	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
 }
 
 // ============================================================================

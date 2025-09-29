@@ -16,24 +16,18 @@ import (
 
 // CreateArtifactCommand represents the command to create a artifact.
 type CreateArtifactCommand struct {
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
+	Name *string
+	Text string
 }
 
 // NewCreateArtifactCommand creates a new create artifact command.
 func NewCreateArtifactCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	Name *string,
+	Text string,
 ) *CreateArtifactCommand {
 	return &CreateArtifactCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		Name: Name,
+		Text: Text,
 	}
 }
 

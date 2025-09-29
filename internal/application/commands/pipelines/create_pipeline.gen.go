@@ -16,24 +16,18 @@ import (
 
 // CreatePipelineCommand represents the command to create a pipeline.
 type CreatePipelineCommand struct {
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
+	Description *string
+	Name        *string
 }
 
 // NewCreatePipelineCommand creates a new create pipeline command.
 func NewCreatePipelineCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	Description *string,
+	Name *string,
 ) *CreatePipelineCommand {
 	return &CreatePipelineCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		Description: Description,
+		Name:        Name,
 	}
 }
 

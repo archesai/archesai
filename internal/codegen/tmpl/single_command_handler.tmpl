@@ -28,15 +28,27 @@ type {{ .CommandType }}{{ .EntityName }}Command struct {
 {{- if eq .CommandType "Delete" }}
 	ID uuid.UUID
 {{- else if eq .CommandType "Update" }}
-	ID          uuid.UUID
+	ID uuid.UUID
+	{{- if .RequestBody }}
+	{{- range .RequestBody.Fields }}
+	{{ .FieldName }} {{ .GoType }}
+	{{- end }}
+	{{- else }}
 	Name        *string
 	Description *string
 	Metadata    map[string]interface{}
+	{{- end }}
 {{- else if eq .CommandType "Create" }}
+	{{- if .RequestBody }}
+	{{- range .RequestBody.Fields }}
+	{{ .FieldName }} {{ .GoType }}
+	{{- end }}
+	{{- else }}
 	OrganizationID uuid.UUID
 	Name           string
 	Description    string
 	Metadata       map[string]interface{}
+	{{- end }}
 {{- end }}
 }
 
@@ -46,29 +58,53 @@ func New{{ .CommandType }}{{ .EntityName }}Command(
 	id uuid.UUID,
 {{- else if eq .CommandType "Update" }}
 	id uuid.UUID,
+	{{- if .RequestBody }}
+	{{- range .RequestBody.Fields }}
+	{{ .Name }} {{ .GoType }},
+	{{- end }}
+	{{- else }}
 	name *string,
 	description *string,
 	metadata map[string]interface{},
+	{{- end }}
 {{- else if eq .CommandType "Create" }}
+	{{- if .RequestBody }}
+	{{- range .RequestBody.Fields }}
+	{{ .Name }} {{ .GoType }},
+	{{- end }}
+	{{- else }}
 	organizationID uuid.UUID,
 	name string,
 	description string,
 	metadata map[string]interface{},
+	{{- end }}
 {{- end }}
 ) *{{ .CommandType }}{{ .EntityName }}Command {
 	return &{{ .CommandType }}{{ .EntityName }}Command{
 {{- if eq .CommandType "Delete" }}
 		ID: id,
 {{- else if eq .CommandType "Update" }}
-		ID:          id,
+		ID: id,
+		{{- if .RequestBody }}
+		{{- range .RequestBody.Fields }}
+		{{ .FieldName }}: {{ .Name }},
+		{{- end }}
+		{{- else }}
 		Name:        name,
 		Description: description,
 		Metadata:    metadata,
+		{{- end }}
 {{- else if eq .CommandType "Create" }}
+		{{- if .RequestBody }}
+		{{- range .RequestBody.Fields }}
+		{{ .FieldName }}: {{ .Name }},
+		{{- end }}
+		{{- else }}
 		OrganizationID: organizationID,
 		Name:           name,
 		Description:    description,
 		Metadata:       metadata,
+		{{- end }}
 {{- end }}
 	}
 }

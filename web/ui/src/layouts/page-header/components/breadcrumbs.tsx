@@ -46,7 +46,7 @@ export const BreadCrumbs = ({
         })();
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className="px-2">
       <BreadcrumbList>
         {breadcrumbItems.map((breadcrumb, index) => (
           <BreadcrumbItem

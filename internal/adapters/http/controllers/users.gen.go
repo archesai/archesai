@@ -340,14 +340,12 @@ func (c *UsersController) UpdateUser(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Update handler
-	// Available request body fields: Email, Image
 
-	// Create update command - adjust field mapping based on your API
+	// Map path parameters and request body fields to command parameters
 	cmd := commands.NewUpdateUserCommand(
-		request.ID, // Assumes all update operations have an ID path parameter
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map metadata if available
+		request.ID,         // id (entity ID)
+		request.Body.Email, // Email
+		request.Body.Image, // Image
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

@@ -16,24 +16,21 @@ import (
 
 // CreateSessionCommand represents the command to create a session.
 type CreateSessionCommand struct {
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
+	Email      string
+	Password   string
+	RememberMe *bool
 }
 
 // NewCreateSessionCommand creates a new create session command.
 func NewCreateSessionCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	Email string,
+	Password string,
+	RememberMe *bool,
 ) *CreateSessionCommand {
 	return &CreateSessionCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		Email:      Email,
+		Password:   Password,
+		RememberMe: RememberMe,
 	}
 }
 

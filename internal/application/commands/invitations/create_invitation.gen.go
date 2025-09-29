@@ -16,24 +16,18 @@ import (
 
 // CreateInvitationCommand represents the command to create a invitation.
 type CreateInvitationCommand struct {
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
+	Email string
+	Role  string
 }
 
 // NewCreateInvitationCommand creates a new create invitation command.
 func NewCreateInvitationCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	Email string,
+	Role string,
 ) *CreateInvitationCommand {
 	return &CreateInvitationCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		Email: Email,
+		Role:  Role,
 	}
 }
 

@@ -17,23 +17,20 @@ import (
 // UpdateToolCommand represents the command to update a tool.
 type UpdateToolCommand struct {
 	ID          uuid.UUID
-	Name        *string
 	Description *string
-	Metadata    map[string]interface{}
+	Name        *string
 }
 
 // NewUpdateToolCommand creates a new update tool command.
 func NewUpdateToolCommand(
 	id uuid.UUID,
-	name *string,
-	description *string,
-	metadata map[string]interface{},
+	Description *string,
+	Name *string,
 ) *UpdateToolCommand {
 	return &UpdateToolCommand{
 		ID:          id,
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
+		Description: Description,
+		Name:        Name,
 	}
 }
 

@@ -147,7 +147,8 @@ func (g *Generator) GenerateControllers(
 		// Build imports list - no longer needed as we have standard imports in template
 		var imports []map[string]string
 
-		// Determine which handlers are needed based on operations
+		// Determine which handlers are needed based on operation names, not HTTP methods
+		// This ensures we only generate handlers for actual CRUD operations, not custom ones
 		hasCreate := false
 		hasUpdate := false
 		hasDelete := false
@@ -155,34 +156,26 @@ func (g *Generator) GenerateControllers(
 		hasList := false
 
 		for _, op := range operations {
-			method := op.Method
-			path := op.Path
+			// Use operation name/ID as the primary indicator
+			// The template expects operations that start with these prefixes
+			opNameLower := strings.ToLower(op.Name)
 
-			switch method {
-			case "POST":
+			// Check for standard CRUD operation patterns in the operation name
+			if strings.HasPrefix(opNameLower, "create") {
 				hasCreate = true
-			case "PATCH", "PUT":
+			} else if strings.HasPrefix(opNameLower, "update") || strings.HasPrefix(opNameLower, "patch") {
 				hasUpdate = true
-			case "DELETE":
+			} else if strings.HasPrefix(opNameLower, "delete") || strings.HasPrefix(opNameLower, "remove") {
 				hasDelete = true
-			case "GET":
-				// Check the operation name as a more reliable indicator
-				opNameLower := strings.ToLower(op.Name)
-				if strings.HasPrefix(opNameLower, "list") ||
-					strings.HasPrefix(opNameLower, "getall") {
-					hasList = true
-				} else if strings.HasPrefix(opNameLower, "get") {
-					hasGet = true
-				} else {
-					// Fallback to path-based detection
-					// If path ends with a parameter that looks like an ID, it's probably a get
-					if strings.HasSuffix(path, "/{id}") || strings.HasSuffix(path, "/{"+strings.ToLower(domainSingular)+"ID}") {
-						hasGet = true
-					} else {
-						hasList = true
-					}
-				}
+			} else if strings.HasPrefix(opNameLower, "list") || strings.HasPrefix(opNameLower, "getall") {
+				hasList = true
+			} else if strings.HasPrefix(opNameLower, "get") {
+				// Only consider it a "get" operation if it's explicitly named that way
+				// This avoids treating OAuth callbacks and other GET endpoints as "get" operations
+				hasGet = true
 			}
+			// Custom operations (like oauthAuthorize, requestMagicLink) won't match any of these
+			// and will be handled as custom operations in the template
 		}
 
 		data := map[string]interface{}{

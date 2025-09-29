@@ -100,13 +100,13 @@ paths:
     $ref: paths/organizations.yaml
   /organizations/{id}:
     $ref: paths/organizations_{id}.yaml
-  /organizations/{id}/members:
+  /organizations/{organizationID}/members:
     $ref: paths/members.yaml
-  /organizations/{id}/members/{memberID}:
+  /organizations/{organizationID}/members/{id}:
     $ref: paths/members_{id}.yaml
-  /organizations/{id}/invitations:
+  /organizations/{organizationID}/invitations:
     $ref: paths/invitations.yaml
-  /organizations/{id}/invitations/{invitationID}:
+  /organizations/{organizationID}/invitations/{id}:
     $ref: paths/invitations_{id}.yaml
   # Pipelines domain
   /pipelines:

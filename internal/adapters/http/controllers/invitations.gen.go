@@ -45,15 +45,15 @@ func NewInvitationsController(
 
 // RegisterInvitationsRoutes registers all HTTP routes for the invitations domain.
 func RegisterInvitationsRoutes(router server.EchoRouter, controller *InvitationsController) {
-	router.POST("/organizations/:id/invitations", controller.CreateInvitation)
-	router.GET("/organizations/:id/invitations", controller.ListInvitations)
-	router.DELETE("/organizations/:id/invitations/:invitationID", controller.DeleteInvitation)
-	router.GET("/organizations/:id/invitations/:invitationID", controller.GetInvitation)
-	router.PATCH("/organizations/:id/invitations/:invitationID", controller.UpdateInvitation)
+	router.POST("/organizations/:organizationID/invitations", controller.CreateInvitation)
+	router.GET("/organizations/:organizationID/invitations", controller.ListInvitations)
+	router.DELETE("/organizations/:organizationID/invitations/:id", controller.DeleteInvitation)
+	router.GET("/organizations/:organizationID/invitations/:id", controller.GetInvitation)
+	router.PATCH("/organizations/:organizationID/invitations/:id", controller.UpdateInvitation)
 }
 
 // ============================================================================
-// CreateInvitation - POST /organizations/{id}/invitations
+// CreateInvitation - POST /organizations/{organizationID}/invitations
 // ============================================================================
 
 // Request types
@@ -64,8 +64,8 @@ type CreateInvitationRequestBody struct {
 }
 
 type CreateInvitationRequest struct {
-	ID   uuid.UUID `json:"id"`
-	Body *CreateInvitationRequestBody
+	OrganizationID uuid.UUID `json:"organizationID"`
+	Body           *CreateInvitationRequestBody
 }
 
 // Response types
@@ -108,17 +108,17 @@ func (response CreateInvitation401Response) VisitCreateInvitationResponse(w http
 
 // Handler method
 
-// CreateInvitation handles the POST /organizations/{id}/invitations endpoint.
+// CreateInvitation handles the POST /organizations/{organizationID}/invitations endpoint.
 func (c *InvitationsController) CreateInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreateInvitationRequest{}
 
-	// Path parameter "id"
-	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
 	}
-	request.ID = id
+	request.OrganizationID = organizationID
 
 	// Request body
 	var body CreateInvitationRequestBody
@@ -129,17 +129,11 @@ func (c *InvitationsController) CreateInvitation(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Create handler
-	// Available request body fields: Email, Role
 
-	// TODO: Get organization ID from auth context
-	orgID := uuid.New()
-
-	// Create command - adjust field mapping based on your API
+	// Map request body fields to command parameters
 	cmd := commands.NewCreateInvitationCommand(
-		orgID,
-		"",  // TODO: Map appropriate field from request.Body
-		"",  // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
+		request.Body.Email, // Email
+		request.Body.Role,  // Role
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -153,7 +147,7 @@ func (c *InvitationsController) CreateInvitation(ctx echo.Context) error {
 }
 
 // ============================================================================
-// ListInvitations - GET /organizations/{id}/invitations
+// ListInvitations - GET /organizations/{organizationID}/invitations
 // ============================================================================
 
 // Request types
@@ -165,8 +159,8 @@ type ListInvitationsParams struct {
 }
 
 type ListInvitationsRequest struct {
-	ID     uuid.UUID `json:"id"`
-	Params ListInvitationsParams
+	OrganizationID uuid.UUID `json:"organizationID"`
+	Params         ListInvitationsParams
 }
 
 // Response types
@@ -209,17 +203,17 @@ func (response ListInvitations401Response) VisitListInvitationsResponse(w http.R
 
 // Handler method
 
-// ListInvitations handles the GET /organizations/{id}/invitations endpoint.
+// ListInvitations handles the GET /organizations/{organizationID}/invitations endpoint.
 func (c *InvitationsController) ListInvitations(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListInvitationsRequest{}
 
-	// Path parameter "id"
-	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
 	}
-	request.ID = id
+	request.OrganizationID = organizationID
 
 	// Query parameters
 	var params ListInvitationsParams
@@ -256,14 +250,14 @@ func (c *InvitationsController) ListInvitations(ctx echo.Context) error {
 }
 
 // ============================================================================
-// DeleteInvitation - DELETE /organizations/{id}/invitations/{invitationID}
+// DeleteInvitation - DELETE /organizations/{organizationID}/invitations/{id}
 // ============================================================================
 
 // Request types
 
 type DeleteInvitationRequest struct {
-	ID           uuid.UUID `json:"id"`
-	InvitationID uuid.UUID `json:"invitationID"`
+	OrganizationID uuid.UUID `json:"organizationID"`
+	ID             uuid.UUID `json:"id"`
 }
 
 // Response types
@@ -295,10 +289,17 @@ func (response DeleteInvitation404Response) VisitDeleteInvitationResponse(w http
 
 // Handler method
 
-// DeleteInvitation handles the DELETE /organizations/{id}/invitations/{invitationID} endpoint.
+// DeleteInvitation handles the DELETE /organizations/{organizationID}/invitations/{id} endpoint.
 func (c *InvitationsController) DeleteInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteInvitationRequest{}
+
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	}
+	request.OrganizationID = organizationID
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -306,13 +307,6 @@ func (c *InvitationsController) DeleteInvitation(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 	request.ID = id
-
-	// Path parameter "invitationID"
-	var invitationID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "invitationID", ctx.Param("invitationID"), &invitationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter invitationID: %s", err))
-	}
-	request.InvitationID = invitationID
 
 	// Determine which handler to call based on operation
 	// Create delete command from request
@@ -329,14 +323,14 @@ func (c *InvitationsController) DeleteInvitation(ctx echo.Context) error {
 }
 
 // ============================================================================
-// GetInvitation - GET /organizations/{id}/invitations/{invitationID}
+// GetInvitation - GET /organizations/{organizationID}/invitations/{id}
 // ============================================================================
 
 // Request types
 
 type GetInvitationRequest struct {
-	ID           uuid.UUID `json:"id"`
-	InvitationID uuid.UUID `json:"invitationID"`
+	OrganizationID uuid.UUID `json:"organizationID"`
+	ID             uuid.UUID `json:"id"`
 }
 
 // Response types
@@ -368,10 +362,17 @@ func (response GetInvitation404Response) VisitGetInvitationResponse(w http.Respo
 
 // Handler method
 
-// GetInvitation handles the GET /organizations/{id}/invitations/{invitationID} endpoint.
+// GetInvitation handles the GET /organizations/{organizationID}/invitations/{id} endpoint.
 func (c *InvitationsController) GetInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetInvitationRequest{}
+
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	}
+	request.OrganizationID = organizationID
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -379,13 +380,6 @@ func (c *InvitationsController) GetInvitation(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 	request.ID = id
-
-	// Path parameter "invitationID"
-	var invitationID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "invitationID", ctx.Param("invitationID"), &invitationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter invitationID: %s", err))
-	}
-	request.InvitationID = invitationID
 
 	// Determine which handler to call based on operation
 	// Create get query from request
@@ -404,7 +398,7 @@ func (c *InvitationsController) GetInvitation(ctx echo.Context) error {
 }
 
 // ============================================================================
-// UpdateInvitation - PATCH /organizations/{id}/invitations/{invitationID}
+// UpdateInvitation - PATCH /organizations/{organizationID}/invitations/{id}
 // ============================================================================
 
 // Request types
@@ -415,9 +409,9 @@ type UpdateInvitationRequestBody struct {
 }
 
 type UpdateInvitationRequest struct {
-	ID           uuid.UUID `json:"id"`
-	InvitationID uuid.UUID `json:"invitationID"`
-	Body         *UpdateInvitationRequestBody
+	OrganizationID uuid.UUID `json:"organizationID"`
+	ID             uuid.UUID `json:"id"`
+	Body           *UpdateInvitationRequestBody
 }
 
 // Response types
@@ -449,10 +443,17 @@ func (response UpdateInvitation404Response) VisitUpdateInvitationResponse(w http
 
 // Handler method
 
-// UpdateInvitation handles the PATCH /organizations/{id}/invitations/{invitationID} endpoint.
+// UpdateInvitation handles the PATCH /organizations/{organizationID}/invitations/{id} endpoint.
 func (c *InvitationsController) UpdateInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateInvitationRequest{}
+
+	// Path parameter "organizationID"
+	var organizationID uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	}
+	request.OrganizationID = organizationID
 
 	// Path parameter "id"
 	var id uuid.UUID
@@ -460,13 +461,6 @@ func (c *InvitationsController) UpdateInvitation(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 	request.ID = id
-
-	// Path parameter "invitationID"
-	var invitationID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "invitationID", ctx.Param("invitationID"), &invitationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter invitationID: %s", err))
-	}
-	request.InvitationID = invitationID
 
 	// Request body
 	var body UpdateInvitationRequestBody
@@ -477,14 +471,12 @@ func (c *InvitationsController) UpdateInvitation(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Update handler
-	// Available request body fields: Email, Role
 
-	// Create update command - adjust field mapping based on your API
+	// Map path parameters and request body fields to command parameters
 	cmd := commands.NewUpdateInvitationCommand(
-		request.ID, // Assumes all update operations have an ID path parameter
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map metadata if available
+		request.ID,         // id (entity ID)
+		request.Body.Email, // Email
+		request.Body.Role,  // Role
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

@@ -120,17 +120,10 @@ func (c *RunsController) CreateRun(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Create handler
-	// Available request body fields: PipelineID
 
-	// TODO: Get organization ID from auth context
-	orgID := uuid.New()
-
-	// Create command - adjust field mapping based on your API
+	// Map request body fields to command parameters
 	cmd := commands.NewCreateRunCommand(
-		orgID,
-		"",  // TODO: Map appropriate field from request.Body
-		"",  // TODO: Map appropriate field from request.Body
-		nil, // TODO: Map metadata if available
+		request.Body.PipelineID, // PipelineID
 	)
 
 	result, err := c.createHandler.Handle(reqCtx, cmd)
@@ -435,14 +428,11 @@ func (c *RunsController) UpdateRun(ctx echo.Context) error {
 
 	// Determine which handler to call based on operation
 	// Update handler
-	// Available request body fields: PipelineID
 
-	// Create update command - adjust field mapping based on your API
+	// Map path parameters and request body fields to command parameters
 	cmd := commands.NewUpdateRunCommand(
-		request.ID, // Assumes all update operations have an ID path parameter
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map appropriate field from request.Body
-		nil,        // TODO: Map metadata if available
+		request.ID,              // id (entity ID)
+		request.Body.PipelineID, // PipelineID
 	)
 
 	result, err := c.updateHandler.Handle(reqCtx, cmd)

@@ -16,24 +16,15 @@ import (
 
 // CreateRunCommand represents the command to create a run.
 type CreateRunCommand struct {
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
+	PipelineID uuid.UUID
 }
 
 // NewCreateRunCommand creates a new create run command.
 func NewCreateRunCommand(
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
+	PipelineID uuid.UUID,
 ) *CreateRunCommand {
 	return &CreateRunCommand{
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
+		PipelineID: PipelineID,
 	}
 }
 
