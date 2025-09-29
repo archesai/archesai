@@ -1,4 +1,4 @@
-// Package providers implements OAuth providers for authentication
+// Package oauth implements OAuth providers for authentication
 package oauth
 
 import (
@@ -42,7 +42,7 @@ func (p *GitHubProvider) GetAuthURL(state string) string {
 func (p *GitHubProvider) ExchangeCode(
 	ctx context.Context,
 	code string,
-) (*OAuthTokens, error) {
+) (*Tokens, error) {
 	// Prepare token exchange request
 	data := url.Values{
 		"client_id":     {p.clientID},
@@ -90,7 +90,7 @@ func (p *GitHubProvider) ExchangeCode(
 		return nil, err
 	}
 
-	return &OAuthTokens{
+	return &Tokens{
 		AccessToken:  tokenResp.AccessToken,
 		RefreshToken: "", // GitHub doesn't use refresh tokens
 		IDToken:      "", // GitHub doesn't provide ID tokens
@@ -103,7 +103,7 @@ func (p *GitHubProvider) ExchangeCode(
 func (p *GitHubProvider) GetUserInfo(
 	ctx context.Context,
 	accessToken string,
-) (*OAuthUserInfo, error) {
+) (*UserInfo, error) {
 	// Get user info
 	req, err := http.NewRequestWithContext(
 		ctx,
@@ -161,7 +161,7 @@ func (p *GitHubProvider) GetUserInfo(
 		name = userInfo.Login
 	}
 
-	return &OAuthUserInfo{
+	return &UserInfo{
 		ID:            fmt.Sprintf("%d", userInfo.ID),
 		Email:         email,
 		Name:          name,
@@ -175,7 +175,7 @@ func (p *GitHubProvider) GetUserInfo(
 func (p *GitHubProvider) RefreshToken(
 	_ context.Context,
 	_ string,
-) (*OAuthTokens, error) {
+) (*Tokens, error) {
 	return nil, fmt.Errorf("GitHub does not support token refresh")
 }
 

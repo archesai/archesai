@@ -79,12 +79,12 @@ const (
 // Server represents the API server.
 type Server struct {
 	echo   *echo.Echo
-	config *config.ConfigAPI
+	config *config.API
 	logger *slog.Logger
 }
 
 // NewServer creates a new API server.
-func NewServer(config *config.ConfigAPI, logger *slog.Logger) *Server {
+func NewServer(config *config.API, logger *slog.Logger) *Server {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true

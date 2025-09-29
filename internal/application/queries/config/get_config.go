@@ -1,3 +1,4 @@
+// Package config provides configuration query handlers
 package config
 
 import (
@@ -28,8 +29,8 @@ func NewGetConfigQueryHandler(config *valueobjects.Config) *GetConfigQueryHandle
 
 // Handle executes the get config query.
 func (h *GetConfigQueryHandler) Handle(
-	ctx context.Context,
-	query *GetConfigQuery,
+	_ context.Context,
+	_ *GetConfigQuery,
 ) (*valueobjects.Config, error) {
 	// Return the injected configuration
 	return h.config, nil

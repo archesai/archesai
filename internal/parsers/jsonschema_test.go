@@ -102,22 +102,28 @@ func TestProcessSchema(t *testing.T) {
 				assert.Equal(t, "SimpleSchema", result.Title)
 				assert.NotNil(t, result.Schema)
 				assert.Len(t, result.RequiredFields, 3)
-				assert.Contains(t, result.RequiredFields, "id")
-				assert.Contains(t, result.RequiredFields, "name")
-				assert.Contains(t, result.RequiredFields, "email")
 
-				// Check fields
-				assert.NotNil(t, result.Fields)
-				fieldNames := make(map[string]bool)
-				for _, f := range result.Fields {
-					fieldNames[f.Name] = true
+				// Check required fields by JSON tag
+				requiredJSONTags := make(map[string]bool)
+				for _, f := range result.RequiredFields {
+					requiredJSONTags[f.JSONTag] = true
 				}
-				assert.True(t, fieldNames["id"])
-				assert.True(t, fieldNames["name"])
-				assert.True(t, fieldNames["email"])
-				assert.True(t, fieldNames["age"])
-				assert.True(t, fieldNames["isActive"])
-				assert.True(t, fieldNames["createdAt"])
+				assert.True(t, requiredJSONTags["id"])
+				assert.True(t, requiredJSONTags["name"])
+				assert.True(t, requiredJSONTags["email"])
+
+				// Check fields by JSON tag
+				assert.NotNil(t, result.Fields)
+				fieldJSONTags := make(map[string]bool)
+				for _, f := range result.Fields {
+					fieldJSONTags[f.JSONTag] = true
+				}
+				assert.True(t, fieldJSONTags["id"])
+				assert.True(t, fieldJSONTags["name"])
+				assert.True(t, fieldJSONTags["email"])
+				assert.True(t, fieldJSONTags["age,omitempty"])
+				assert.True(t, fieldJSONTags["isActive,omitempty"])
+				assert.True(t, fieldJSONTags["createdAt,omitempty"])
 			},
 		},
 		{
@@ -129,19 +135,25 @@ func TestProcessSchema(t *testing.T) {
 				assert.NotNil(t, result)
 				assert.Equal(t, "ComplexSchema", result.Name)
 				assert.NotNil(t, result.Schema)
-				assert.Contains(t, result.RequiredFields, "id")
-				assert.Contains(t, result.RequiredFields, "profile")
 
-				// Check fields
-				fieldNames := make(map[string]bool)
-				for _, f := range result.Fields {
-					fieldNames[f.Name] = true
+				// Check required fields by JSON tag
+				requiredJSONTags := make(map[string]bool)
+				for _, f := range result.RequiredFields {
+					requiredJSONTags[f.JSONTag] = true
 				}
-				assert.True(t, fieldNames["id"])
-				assert.True(t, fieldNames["profile"])
-				assert.True(t, fieldNames["tags"])
-				assert.True(t, fieldNames["metadata"])
-				assert.True(t, fieldNames["addresses"])
+				assert.True(t, requiredJSONTags["id"])
+				assert.True(t, requiredJSONTags["profile"])
+
+				// Check fields by JSON tag
+				fieldJSONTags := make(map[string]bool)
+				for _, f := range result.Fields {
+					fieldJSONTags[f.JSONTag] = true
+				}
+				assert.True(t, fieldJSONTags["id"])
+				assert.True(t, fieldJSONTags["profile"])
+				assert.True(t, fieldJSONTags["tags,omitempty"])
+				assert.True(t, fieldJSONTags["metadata,omitempty"])
+				assert.True(t, fieldJSONTags["addresses,omitempty"])
 			},
 		},
 		{
@@ -155,10 +167,14 @@ func TestProcessSchema(t *testing.T) {
 				assert.NotNil(t, result.XCodegen)
 				assert.Equal(t, "entity", result.XCodegen.SchemaType)
 
-				// Check required fields
-				assert.Contains(t, result.RequiredFields, "id")
-				assert.Contains(t, result.RequiredFields, "username")
-				assert.Contains(t, result.RequiredFields, "email")
+				// Check required fields by JSON tag
+				requiredJSONTags := make(map[string]bool)
+				for _, f := range result.RequiredFields {
+					requiredJSONTags[f.JSONTag] = true
+				}
+				assert.True(t, requiredJSONTags["id"])
+				assert.True(t, requiredJSONTags["username"])
+				assert.True(t, requiredJSONTags["email"])
 			},
 		},
 	}
@@ -213,10 +229,10 @@ func TestExtractFields(t *testing.T) {
 		assert.NotEmpty(t, fields)
 		assert.Len(t, fields, 6)
 
-		// Check field details
+		// Check field details - map by JSON tag since field Names are now PascalCase
 		fieldMap := make(map[string]FieldDef)
 		for _, f := range fields {
-			fieldMap[f.Name] = f
+			fieldMap[f.JSONTag] = f
 		}
 
 		// Test id field
@@ -228,18 +244,23 @@ func TestExtractFields(t *testing.T) {
 		nameField := fieldMap["name"]
 		assert.True(t, nameField.Required)
 
-		// Test age field
-		ageField := fieldMap["age"]
+		// Test age field (will have omitempty tag)
+		ageField := fieldMap["age,omitempty"]
 		assert.False(t, ageField.Required)
 
-		// Test isActive field
-		isActiveField := fieldMap["isActive"]
+		// Test isActive field (will have omitempty tag)
+		isActiveField := fieldMap["isActive,omitempty"]
 		assert.False(t, isActiveField.Required)
 
 		// Test email field
 		emailField := fieldMap["email"]
 		assert.Equal(t, "email", emailField.Format)
 		assert.True(t, emailField.Required)
+
+		// Test createdAt field (will have omitempty tag)
+		createdAtField := fieldMap["createdAt,omitempty"]
+		assert.Equal(t, "date-time", createdAtField.Format)
+		assert.False(t, createdAtField.Required)
 	})
 
 	// Test with complex schema
@@ -271,9 +292,10 @@ func TestExtractRequiredFields(t *testing.T) {
 
 	required := ExtractRequiredFields(schema)
 	assert.Len(t, required, 3)
-	assert.Contains(t, required, "id")
-	assert.Contains(t, required, "email")
-	assert.Contains(t, required, "name")
+	// ExtractRequiredFields now returns normalized Go field names (PascalCase)
+	assert.Contains(t, required, "ID")
+	assert.Contains(t, required, "Email")
+	assert.Contains(t, required, "Name")
 
 	// Test with nil schema
 	required = ExtractRequiredFields(nil)

@@ -42,7 +42,7 @@ func (p *GoogleProvider) GetAuthURL(state string) string {
 func (p *GoogleProvider) ExchangeCode(
 	ctx context.Context,
 	code string,
-) (*OAuthTokens, error) {
+) (*Tokens, error) {
 	// Prepare token exchange request
 	data := url.Values{
 		"client_id":     {p.clientID},
@@ -94,7 +94,7 @@ func (p *GoogleProvider) ExchangeCode(
 		return nil, err
 	}
 
-	return &OAuthTokens{
+	return &Tokens{
 		AccessToken:  tokenResp.AccessToken,
 		RefreshToken: tokenResp.RefreshToken,
 		IDToken:      tokenResp.IDToken,
@@ -107,7 +107,7 @@ func (p *GoogleProvider) ExchangeCode(
 func (p *GoogleProvider) GetUserInfo(
 	ctx context.Context,
 	accessToken string,
-) (*OAuthUserInfo, error) {
+) (*UserInfo, error) {
 	req, err := http.NewRequestWithContext(
 		ctx,
 		"GET",
@@ -147,7 +147,7 @@ func (p *GoogleProvider) GetUserInfo(
 		return nil, err
 	}
 
-	return &OAuthUserInfo{
+	return &UserInfo{
 		ID:            userInfo.ID,
 		Email:         userInfo.Email,
 		Name:          userInfo.Name,
@@ -161,7 +161,7 @@ func (p *GoogleProvider) GetUserInfo(
 func (p *GoogleProvider) RefreshToken(
 	ctx context.Context,
 	refreshToken string,
-) (*OAuthTokens, error) {
+) (*Tokens, error) {
 	data := url.Values{
 		"client_id":     {p.clientID},
 		"client_secret": {p.clientSecret},
@@ -207,7 +207,7 @@ func (p *GoogleProvider) RefreshToken(
 		return nil, err
 	}
 
-	return &OAuthTokens{
+	return &Tokens{
 		AccessToken:  tokenResp.AccessToken,
 		RefreshToken: refreshToken, // Reuse the same refresh token
 		ExpiresIn:    tokenResp.ExpiresIn,

@@ -19,11 +19,13 @@ const (
 	schemaTypeValueObject = "valueobject"
 )
 
+// Generator handles code generation from OpenAPI specifications
 type Generator struct {
 	templates  map[string]*template.Template
 	filewriter *FileWriter
 }
 
+// NewGenerator creates a new code generator instance
 func NewGenerator() *Generator {
 	return &Generator{
 		templates:  nil,
@@ -31,6 +33,7 @@ func NewGenerator() *Generator {
 	}
 }
 
+// Initialize sets up the generator with templates and file writer
 func (g *Generator) Initialize() error {
 	filewriter := NewFileWriter()
 	filewriter.WithOverwrite(true)
@@ -46,7 +49,7 @@ func (g *Generator) Initialize() error {
 	return nil
 }
 
-// Generate is the main generation function that orchestrates all code generation
+// GenerateAPI is the main generation function that orchestrates all code generation
 func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	logLevel := os.Getenv("ARCHESAI_LOGGING_LEVEL")
 	if logLevel == "" {
@@ -122,7 +125,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	return outputStr, nil
 }
 
-// Generate is the main generation function that orchestrates all code generation
+// GenerateSchema generates Go structs from a JSON Schema file
 func (g *Generator) GenerateSchema(specPath string, outputDir string) (string, error) {
 	logLevel := os.Getenv("ARCHESAI_LOGGING_LEVEL")
 	if logLevel == "" {

@@ -96,7 +96,7 @@ func runAll(_ *cobra.Command, _ []string) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		log.Printf("🚀 API server starting on %s:%d", &cfg.API.Host, int(cfg.API.Port))
+		log.Printf("🚀 API server starting on %s:%d", cfg.API.Host, int(cfg.API.Port))
 		if err := appContainer.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("api server: %w", err)
 		}

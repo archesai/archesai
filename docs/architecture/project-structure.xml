@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-09-25T23:04:33-04:00
+  Generated: 2025-09-29T15:40:36-04:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -41,16 +41,17 @@
     <dir name="components" purpose="Reusable components" dirs="3">
       <dir name="parameters" files="25" patterns="*.yaml"/>
       <dir name="responses" files="6" patterns="*.yaml"/>
-      <dir name="schemas" files="20" dirs="2" patterns="*.yaml">
+      <dir name="schemas" files="19" dirs="2" patterns="*.yaml">
         <dir name="config" purpose="Configuration management" files="37" patterns="*.yaml"/>
         <dir name="xcodegen" files="2" patterns="*.yaml"/>
       </dir>
     </dir>
-    <dir name="paths" files="39" patterns="*.yaml"/>
+    <dir name="paths" files="37" patterns="*.yaml"/>
   </dir>
   <dir name="assets" purpose="Static assets" files="13"/>
-  <dir name="cmd" dirs="1">
+  <dir name="cmd" dirs="2">
     <dir name="archesai" files="1" key-files="main.go"/>
+    <dir name="codegen" files="1" key-files="main.go"/>
   </dir>
   <dir name="deployments" purpose="Deployment configurations" dirs="8">
     <dir name="development" files="1" patterns="*.yaml"/>
@@ -101,68 +102,75 @@
     <dir name="troubleshooting" files="1"/>
   </dir>
   <dir name="internal" dirs="7">
-    <dir name="adapters" dirs="6">
+    <dir name="adapters" dirs="5">
       <dir name="cli" files="9"/>
-      <dir name="http" dirs="2">
-        <dir name="handlers" files="14" patterns="*.gen.go"/>
-        <dir name="server" purpose="Server infrastructure" files="7" dirs="1"/>
+      <dir name="http" dirs="3">
+        <dir name="controllers" files="15" patterns="*.gen.go"/>
+        <dir name="middleware" purpose="HTTP middleware" files="1"/>
+        <dir name="server" purpose="Server infrastructure" files="8" dirs="1"/>
       </dir>
       <dir name="llm" files="4"/>
       <dir name="notifications" files="3"/>
-      <dir name="oauth" files="3"/>
       <dir name="tui" files="2" dirs="1">
         <dir name="screens"/>
       </dir>
     </dir>
-    <dir name="application" dirs="6">
-      <dir name="app" files="2"/>
-      <dir name="commands" dirs="5">
-        <dir name="artifacts"/>
-        <dir name="labels" files="3"/>
-        <dir name="pipelines" files="5"/>
-        <dir name="runs" files="6"/>
-        <dir name="tools" purpose="Development tools" files="3"/>
+    <dir name="application" dirs="3">
+      <dir name="app" files="2" patterns="*.gen.go"/>
+      <dir name="commands" dirs="13">
+        <dir name="accounts" files="3" patterns="*.gen.go"/>
+        <dir name="apikeys" purpose="API definitions" files="3" patterns="*.gen.go"/>
+        <dir name="artifacts" files="3" patterns="*.gen.go"/>
+        <dir name="auth" purpose="Authentication and authorization" files="3"/>
+        <dir name="invitations" files="3" patterns="*.gen.go"/>
+        <dir name="labels" files="3" patterns="*.gen.go"/>
+        <dir name="members" files="3" patterns="*.gen.go"/>
+        <dir name="organizations" files="3" patterns="*.gen.go"/>
+        <dir name="pipelines" files="3" patterns="*.gen.go"/>
+        <dir name="runs" files="3" patterns="*.gen.go"/>
+        <dir name="sessions" files="3" patterns="*.gen.go"/>
+        <dir name="tools" purpose="Development tools" files="3" patterns="*.gen.go"/>
+        <dir name="users" files="2" patterns="*.gen.go"/>
       </dir>
-      <dir name="dto" files="53" patterns="*.gen.go"/>
-      <dir name="mappers"/>
-      <dir name="queries" dirs="6">
-        <dir name="artifacts"/>
+      <dir name="queries" dirs="16">
+        <dir name="accounts" files="2" patterns="*.gen.go"/>
+        <dir name="apikeys" purpose="API definitions" files="2" patterns="*.gen.go"/>
+        <dir name="artifacts" files="2" patterns="*.gen.go"/>
+        <dir name="auth" purpose="Authentication and authorization"/>
+        <dir name="config" purpose="Configuration management" files="1"/>
         <dir name="health" files="1"/>
-        <dir name="labels" files="3"/>
-        <dir name="pipelines" files="5"/>
-        <dir name="runs" files="4"/>
-        <dir name="tools" purpose="Development tools" files="3"/>
+        <dir name="invitations" files="2" patterns="*.gen.go"/>
+        <dir name="labels" files="2" patterns="*.gen.go"/>
+        <dir name="members" files="2" patterns="*.gen.go"/>
+        <dir name="organizations" files="2" patterns="*.gen.go"/>
+        <dir name="pipelines" files="2" patterns="*.gen.go"/>
+        <dir name="pipelinesteps"/>
+        <dir name="runs" files="2" patterns="*.gen.go"/>
+        <dir name="sessions" files="2" patterns="*.gen.go"/>
+        <dir name="tools" purpose="Development tools" files="2" patterns="*.gen.go"/>
+        <dir name="users" files="2" patterns="*.gen.go"/>
       </dir>
-      <dir name="services" files="3" patterns="*.gen.go"/>
     </dir>
-    <dir name="codegen" files="5" dirs="1">
-      <dir name="tmpl" files="10"/>
+    <dir name="codegen" files="10" dirs="1">
+      <dir name="tmpl" files="11"/>
     </dir>
-    <dir name="core" dirs="7">
-      <dir name="aggregates" files="6" patterns="*.gen.go"/>
-      <dir name="entities" files="9" patterns="*.gen.go"/>
+    <dir name="core" dirs="5">
+      <dir name="entities" files="13" patterns="*.gen.go"/>
       <dir name="errors" files="1"/>
-      <dir name="events" files="14" patterns="*.gen.go"/>
-      <dir name="ports" dirs="3">
-        <dir name="events" files="1"/>
-        <dir name="repositories" files="12" patterns="*.gen.go"/>
-        <dir name="services" files="1"/>
-      </dir>
-      <dir name="services" files="1"/>
+      <dir name="events" files="15" patterns="*.gen.go"/>
+      <dir name="repositories" files="13" patterns="*.gen.go"/>
       <dir name="valueobjects" files="42" patterns="*.gen.go"/>
     </dir>
     <dir name="infrastructure" dirs="8">
+      <dir name="auth" purpose="Authentication and authorization" files="3" dirs="1" key-files="service.go">
+        <dir name="oauth" files="4"/>
+      </dir>
       <dir name="cache" purpose="Caching layer" files="4"/>
       <dir name="config" purpose="Configuration management" files="3"/>
-      <dir name="events" files="4" dirs="3">
-        <dir name="nats"/>
-        <dir name="redis" purpose="Redis operations" files="1"/>
-        <dir name="store"/>
-      </dir>
+      <dir name="events" files="4"/>
       <dir name="http" dirs="1">
         <dir name="middleware" purpose="HTTP middleware" files="2"/>
       </dir>
-      <dir name="middleware" purpose="HTTP middleware" files="1"/>
       <dir name="persistence" files="2" dirs="2">
         <dir name="postgres" type="database" files="1" dirs="3" patterns="*.yaml"/>
         <dir name="sqlite" dirs="3"/>
@@ -173,7 +181,7 @@
         <dir name="s3"/>
       </dir>
     </dir>
-    <dir name="parsers" files="9"/>
+    <dir name="parsers" files="9" patterns="*.gen.go"/>
     <dir name="shared" dirs="3">
       <dir name="logger" purpose="Logging utilities" files="2"/>
       <dir name="middleware" purpose="HTTP middleware" files="2"/>
@@ -182,10 +190,16 @@
   </dir>
   <dir name="scripts" purpose="Utility scripts" files="5"/>
   <dir name="test" type="testing" purpose="Testing utilities" dirs="1">
-    <dir name="data" type="testing" files="4"/>
+    <dir name="data" type="testing" files="4" dirs="1">
+      <dir name="parsers" type="testing" dirs="4">
+        <dir name="invalid" type="testing" files="1" patterns="*.yaml"/>
+        <dir name="openapi" type="testing" files="1" patterns="*.yaml"/>
+        <dir name="schemas" type="testing" files="4" patterns="*.yaml"/>
+        <dir name="x-codegen" type="testing"/>
+      </dir>
+    </dir>
   </dir>
-  <dir name="tools" purpose="Development tools" dirs="3">
-    <dir name="codegen" files="1" key-files="main.go"/>
+  <dir name="tools" purpose="Development tools" dirs="2">
     <dir name="pg-to-sqlite" files="1" key-files="main.go"/>
     <dir name="tsconfig" type="npm-package" files="1" dirs="1" key-files="package.json">
       <dir name="src" files="4"/>
@@ -194,7 +208,7 @@
   <dir name="web" purpose="Web applications" dirs="4">
     <dir name="client" type="npm-package" purpose="Client SDK" files="5" dirs="3" key-files="package.json">
       <dir name="src" files="3" dirs="1" key-files="index.ts">
-        <dir name="generated" type="generated" files="2" dirs="13"/>
+        <dir name="generated" type="generated" files="2" dirs="15"/>
       </dir>
     </dir>
     <dir name="docs" type="npm-package" purpose="Documentation" files="6" dirs="6" patterns="*.tsx" key-files="package.json">

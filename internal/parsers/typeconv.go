@@ -7,83 +7,123 @@ import (
 	"github.com/speakeasy-api/openapi/jsonschema/oas3"
 )
 
+// Schema type constants
+const (
+	schemaTypeString  = "string"
+	schemaTypeInteger = "integer"
+	schemaTypeNumber  = "number"
+	schemaTypeBoolean = "boolean"
+	schemaTypeArray   = "array"
+	schemaTypeObject  = "object"
+)
+
+// Format constants
+const (
+	formatDateTime = "date-time"
+	formatDate     = "date"
+	formatUUID     = "uuid"
+	formatEmail    = "email"
+	formatURI      = "uri"
+	formatHostname = "hostname"
+	formatInt32    = "int32"
+	formatInt64    = "int64"
+	formatFloat    = "float"
+	formatDouble   = "double"
+)
+
+// Go type constants
+const (
+	goTypeInterface = "interface{}"
+	goTypeString    = "string"
+	goTypeInt       = "int"
+	goTypeInt32     = "int32"
+	goTypeInt64     = "int64"
+	goTypeFloat32   = "float32"
+	goTypeFloat64   = "float64"
+	goTypeBool      = "bool"
+	goTypeTime      = "time.Time"
+	goTypeUUID      = "uuid.UUID"
+	goTypeMapString = "map[string]interface{}"
+	goTypeSliceAny  = "[]interface{}"
+)
+
 // SchemaToGoType converts a JSON Schema to a Go type
 func SchemaToGoType(schema *oas3.Schema) string {
 	if schema == nil {
-		return "interface{}"
+		return goTypeInterface
 	}
 
 	// Get the types array from the schema
 	types := schema.GetType()
 	if len(types) == 0 {
-		return "interface{}"
+		return goTypeInterface
 	}
 
 	// Use the first type (most schemas have only one type)
 	schemaType := string(types[0])
 
 	// Check for string types with format
-	if schemaType == "string" {
+	if schemaType == schemaTypeString {
 		if schema.Format != nil {
 			switch *schema.Format {
-			case "date-time":
-				return "time.Time"
-			case "date":
-				return "time.Time"
-			case "uuid":
-				return "uuid.UUID"
-			case "email", "uri", "hostname":
-				return "string"
+			case formatDateTime:
+				return goTypeTime
+			case formatDate:
+				return goTypeTime
+			case formatUUID:
+				return goTypeUUID
+			case formatEmail, formatURI, formatHostname:
+				return goTypeString
 			default:
-				return "string"
+				return goTypeString
 			}
 		}
-		return "string"
+		return goTypeString
 	}
 
 	// Check for numeric types
-	if schemaType == "integer" {
+	if schemaType == schemaTypeInteger {
 		if schema.Format != nil {
 			switch *schema.Format {
-			case "int32":
-				return "int32"
-			case "int64":
-				return "int64"
+			case formatInt32:
+				return goTypeInt32
+			case formatInt64:
+				return goTypeInt64
 			default:
-				return "int"
+				return goTypeInt
 			}
 		}
-		return "int"
+		return goTypeInt
 	}
 
-	if schemaType == "number" {
+	if schemaType == schemaTypeNumber {
 		if schema.Format != nil {
 			switch *schema.Format {
-			case "float":
-				return "float32"
-			case "double":
-				return "float64"
+			case formatFloat:
+				return goTypeFloat32
+			case formatDouble:
+				return goTypeFloat64
 			default:
-				return "float64"
+				return goTypeFloat64
 			}
 		}
-		return "float64"
+		return goTypeFloat64
 	}
 
 	// Check for boolean
-	if schemaType == "boolean" {
-		return "bool"
+	if schemaType == schemaTypeBoolean {
+		return goTypeBool
 	}
 
 	// Check for array
-	if schemaType == "array" {
+	if schemaType == schemaTypeArray {
 		if schema.Items != nil {
 			if schema.Items.IsLeft() {
 				itemSchema := schema.Items.GetLeft()
 				if itemSchema != nil {
 					itemTypes := itemSchema.GetType()
 					// Check if the array item is an object with properties
-					if len(itemTypes) > 0 && string(itemTypes[0]) == "object" &&
+					if len(itemTypes) > 0 && string(itemTypes[0]) == schemaTypeObject &&
 						itemSchema.Properties != nil && itemSchema.Properties.Len() > 0 {
 						// For arrays of objects with properties, we'll need special handling
 						// This will be handled by the caller (processSchemaProperties)
@@ -94,11 +134,11 @@ func SchemaToGoType(schema *oas3.Schema) string {
 				}
 			}
 		}
-		return "[]interface{}"
+		return goTypeSliceAny
 	}
 
 	// Check for object
-	if schemaType == "object" {
+	if schemaType == schemaTypeObject {
 		if schema.AdditionalProperties != nil {
 			if schema.AdditionalProperties.IsLeft() {
 				valueType := SchemaToGoType(schema.AdditionalProperties.GetLeft())
@@ -106,83 +146,83 @@ func SchemaToGoType(schema *oas3.Schema) string {
 			}
 		}
 		// For objects with properties, just use map[string]interface{}
-		return "map[string]interface{}"
+		return goTypeMapString
 	}
 
 	// Default
-	return "interface{}"
+	return goTypeInterface
 }
 
 // SchemaToSQLType converts a JSON Schema to a SQL type
 func SchemaToSQLType(schema *oas3.Schema, dialect string) string {
 	if schema == nil {
-		return "TEXT"
+		return SQLTypeText
 	}
 
 	// Get the types array from the schema
 	types := schema.GetType()
 	if len(types) == 0 {
-		return "TEXT"
+		return SQLTypeText
 	}
 
 	// Use the first type
 	schemaType := string(types[0])
 
 	// Check for string types
-	if schemaType == "string" {
+	if schemaType == schemaTypeString {
 		if schema.Format != nil {
 			switch *schema.Format {
-			case "date-time":
+			case formatDateTime:
 				if dialect == "postgresql" {
 					return "TIMESTAMPTZ"
 				}
 				return "DATETIME"
-			case "date":
+			case formatDate:
 				return "DATE"
-			case "uuid":
+			case formatUUID:
 				return "UUID"
-			case "email":
+			case formatEmail:
 				if schema.MaxLength != nil && *schema.MaxLength > 0 {
 					if strings.ToUpper(dialect) == "POSTGRESQL" {
 						return "VARCHAR(" + strconv.Itoa(int(*schema.MaxLength)) + ")"
 					}
-					return "TEXT"
+					return SQLTypeText
 				}
 				return "VARCHAR(255)"
 			default:
 				if schema.MaxLength != nil && *schema.MaxLength > 0 {
 					return "VARCHAR(" + strconv.Itoa(int(*schema.MaxLength)) + ")"
 				}
-				return "TEXT"
+				return SQLTypeText
 			}
 		}
 		if schema.MaxLength != nil && *schema.MaxLength > 0 {
 			return "VARCHAR(" + strconv.Itoa(int(*schema.MaxLength)) + ")"
 		}
-		return "TEXT"
+		return SQLTypeText
 	}
 
 	// Check for numeric types
-	if schemaType == "integer" {
+	if schemaType == schemaTypeInteger {
 		if schema.Format != nil {
 			switch *schema.Format {
-			case "int32":
-				return "INTEGER"
-			case "int64":
+			case formatInt32:
+				return SQLTypeInteger
+			case formatInt64:
 				return "BIGINT"
 			default:
-				return "INTEGER"
+				return SQLTypeInteger
 			}
 		}
-		return "INTEGER"
+		return SQLTypeInteger
 	}
 
-	if schemaType == "number" {
+	if schemaType == schemaTypeNumber {
 		if schema.Format != nil {
 			switch *schema.Format {
-			case "float":
+			case formatFloat:
 				return "REAL"
-			case "double":
+			case formatDouble:
 				return "DOUBLE PRECISION"
 			default:
 				return "NUMERIC"
@@ -192,71 +232,71 @@ func SchemaToSQLType(schema *oas3.Schema, dialect string) string {
 	}
 
 	// Check for boolean
-	if schemaType == "boolean" {
+	if schemaType == schemaTypeBoolean {
 		return "BOOLEAN"
 	}
 
 	// Check for array or object
-	if schemaType == "array" || schemaType == "object" {
+	if schemaType == schemaTypeArray || schemaType == schemaTypeObject {
 		if dialect == "postgresql" {
 			return "JSONB"
 		}
-		return "TEXT" // SQLite stores JSON as TEXT
+		return SQLTypeText // SQLite stores JSON as TEXT
 	}
 
 	// Default
-	return "TEXT"
+	return SQLTypeText
 }
 
 // InferGoType infers the Go type for a field based on its properties
 func InferGoType(field FieldDef) string {
 	// Check format first
 	switch field.Format {
-	case "uuid":
-		return "uuid.UUID"
-	case "date-time":
-		return "time.Time"
-	case "email":
-		return "string"
-	case "int32":
-		return "int32"
-	case "int64":
-		return "int64"
-	case "float":
-		return "float32"
-	case "double":
-		return "float64"
+	case formatUUID:
+		return goTypeUUID
+	case formatDateTime:
+		return goTypeTime
+	case formatEmail:
+		return goTypeString
+	case formatInt32:
+		return goTypeInt32
+	case formatInt64:
+		return goTypeInt64
+	case formatFloat:
+		return goTypeFloat32
+	case formatDouble:
+		return goTypeFloat64
 	}
 
 	// Check enum
 	if len(field.Enum) > 0 {
-		return "string" // Enums are typically strings
+		return goTypeString // Enums are typically strings
 	}
 
 	// Use the Type field
 	switch field.GoType {
-	case "string", "*string":
-		return "string"
-	case "integer", "*integer":
-		return "int"
-	case "number", "*number":
-		return "float64"
-	case "boolean", "*boolean":
-		return "bool"
-	case "array":
-		return "[]interface{}"
-	case "object":
-		return "map[string]interface{}"
+	case schemaTypeString, "*" + schemaTypeString:
+		return goTypeString
+	case schemaTypeInteger, "*" + schemaTypeInteger:
+		return goTypeInt
+	case schemaTypeNumber, "*" + schemaTypeNumber:
+		return goTypeFloat64
+	case schemaTypeBoolean, "*" + schemaTypeBoolean:
+		return goTypeBool
+	case schemaTypeArray:
+		return goTypeSliceAny
+	case schemaTypeObject:
+		return goTypeMapString
 	default:
 		// If type starts with *, it's a pointer - extract the base type
 		if strings.HasPrefix(field.GoType, "*") {
 			return field.GoType[1:]
 		}
 		// If we have a type, use it
-		if field.GoType != "" && field.GoType != "interface{}" {
+		if field.GoType != "" && field.GoType != goTypeInterface {
 			return field.GoType
 		}
-		return "interface{}"
+		return goTypeInterface
 	}
 }
 

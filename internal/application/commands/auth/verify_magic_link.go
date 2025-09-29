@@ -28,7 +28,7 @@ func NewVerifyMagicLinkCommandHandler(authService *auth.Service) *VerifyMagicLin
 func (h *VerifyMagicLinkCommandHandler) Handle(
 	ctx context.Context,
 	cmd *VerifyMagicLinkCommand,
-) (*auth.AuthTokens, error) {
+) (*auth.Tokens, error) {
 	if cmd.Token == "" {
 		return nil, fmt.Errorf("token is required")
 	}

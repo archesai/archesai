@@ -1,7 +1,7 @@
 package oauth
 
-// OAuthTokens represents OAuth tokens received from providers
-type OAuthTokens struct {
+// Tokens represents OAuth tokens received from providers
+type Tokens struct {
 	AccessToken  string
 	RefreshToken string
 	IDToken      string
@@ -10,8 +10,8 @@ type OAuthTokens struct {
 	Scope        string
 }
 
-// OAuthUserInfo represents user information from OAuth providers
-type OAuthUserInfo struct {
+// UserInfo represents user information from OAuth providers
+type UserInfo struct {
 	ID            string
 	Email         string
 	EmailVerified bool

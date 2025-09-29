@@ -1,3 +1,4 @@
+// Package health provides health check query handlers
 package health
 
 import (
@@ -30,10 +31,10 @@ func NewGetHealthQueryHandler() *GetHealthQueryHandler {
 
 // Handle executes the get health query.
 func (h *GetHealthQueryHandler) Handle(
-	ctx context.Context,
-	query *GetHealthQuery,
-) (*HealthStatusResponse, error) {
-	response := NewHealthStatusResponse()
+	_ context.Context,
+	_ *GetHealthQuery,
+) (*StatusResponse, error) {
+	response := NewStatusResponse()
 
 	// For now, return a simple healthy status
 	// In a real implementation, you would check various components
@@ -46,8 +47,8 @@ func (h *GetHealthQueryHandler) Handle(
 	return response, nil
 }
 
-// HealthStatusResponse represents the response to a health status query.
-type HealthStatusResponse struct {
+// StatusResponse represents the response to a health status query
+type StatusResponse struct {
 	// For single component check
 	ComponentResult *valueobjects.HealthCheckResult
 
@@ -55,29 +56,29 @@ type HealthStatusResponse struct {
 	AggregatedResult *valueobjects.AggregatedHealthCheckResult
 }
 
-// NewHealthStatusResponse creates a new health status response.
-func NewHealthStatusResponse() *HealthStatusResponse {
-	return &HealthStatusResponse{}
+// NewStatusResponse creates a new health status response.
+func NewStatusResponse() *StatusResponse {
+	return &StatusResponse{}
 }
 
 // WithComponentResult sets a single component result.
-func (r *HealthStatusResponse) WithComponentResult(
+func (r *StatusResponse) WithComponentResult(
 	result *valueobjects.HealthCheckResult,
-) *HealthStatusResponse {
+) *StatusResponse {
 	r.ComponentResult = result
 	return r
 }
 
 // WithAggregatedResult sets the aggregated result.
-func (r *HealthStatusResponse) WithAggregatedResult(
+func (r *StatusResponse) WithAggregatedResult(
 	result *valueobjects.AggregatedHealthCheckResult,
-) *HealthStatusResponse {
+) *StatusResponse {
 	r.AggregatedResult = result
 	return r
 }
 
 // IsHealthy returns true if the system/component is healthy.
-func (r *HealthStatusResponse) IsHealthy() bool {
+func (r *StatusResponse) IsHealthy() bool {
 	if r.ComponentResult != nil {
 		return r.ComponentResult.IsHealthy()
 	}
@@ -88,7 +89,7 @@ func (r *HealthStatusResponse) IsHealthy() bool {
 }
 
 // IsOperational returns true if the system/component is operational.
-func (r *HealthStatusResponse) IsOperational() bool {
+func (r *StatusResponse) IsOperational() bool {
 	if r.ComponentResult != nil {
 		return r.ComponentResult.IsOperational()
 	}

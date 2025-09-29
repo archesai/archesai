@@ -22,7 +22,7 @@ func TestParseOpenAPI(t *testing.T) {
 			name:     "valid simple API",
 			specPath: "../../test/data/parsers/openapi/simple-api.yaml",
 			wantErr:  false,
-			validate: func(t *testing.T, doc *openapi.OpenAPI, warnings []string) {
+			validate: func(t *testing.T, doc *openapi.OpenAPI, _ []string) {
 				assert.NotNil(t, doc)
 				assert.NotNil(t, doc.Info)
 				assert.Equal(t, "Simple Test API", doc.Info.Title)

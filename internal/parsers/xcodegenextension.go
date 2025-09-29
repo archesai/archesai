@@ -2,7 +2,6 @@ package parsers
 
 import (
 	"fmt"
-	"slices"
 
 	"github.com/speakeasy-api/openapi/extensions"
 	"github.com/speakeasy-api/openapi/jsonschema/oas3"
@@ -81,9 +80,4 @@ func (p *XCodegenParser) Parse(extensions extensions.Extensions) *XCodegenExtens
 	}
 
 	return &xcodegen
-}
-
-// contains checks if a string is in a slice
-func contains(slice []string, item string) bool {
-	return slices.Contains(slice, item)
 }

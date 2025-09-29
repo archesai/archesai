@@ -20,7 +20,11 @@ func ParseOpenAPI(specPath string) (*openapi.OpenAPI, []string, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to open file: %w", err)
 	}
-	defer f.Close()
+	defer func() {
+		if cerr := f.Close(); cerr != nil {
+			err = fmt.Errorf("failed to close file: %w", cerr)
+		}
+	}()
 
 	// Parse the OpenAPI document
 	doc, validationErrs, err := openapi.Unmarshal(ctx, f)

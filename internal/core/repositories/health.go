@@ -1,3 +1,4 @@
+// Package repositories provides repository interfaces and implementations
 package repositories
 
 import (

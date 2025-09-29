@@ -89,7 +89,6 @@
 │   │       ├── Health.yaml
 │   │       ├── Invitation.yaml
 │   │       ├── Label.yaml
-│   │       ├── ListMetadata.yaml
 │   │       ├── MagicLinkToken.yaml
 │   │       ├── Member.yaml
 │   │       ├── Organization.yaml
@@ -110,6 +109,8 @@
 │   │   ├── accounts_password-reset_request.yaml
 │   │   ├── accounts_password-reset_verify.yaml
 │   │   ├── accounts.yaml
+│   │   ├── api-keys_{id}.yaml
+│   │   ├── api-keys.yaml
 │   │   ├── artifacts_{id}.yaml
 │   │   ├── artifacts.yaml
 │   │   ├── auth_magic-link.yaml
@@ -131,12 +132,8 @@
 │   │   ├── pipelines.yaml
 │   │   ├── runs_{id}.yaml
 │   │   ├── runs.yaml
-│   │   ├── sessions_create.yaml
-│   │   ├── sessions_delete.yaml
 │   │   ├── sessions_{id}.yaml
 │   │   ├── sessions.yaml
-│   │   ├── tokens_{id}.yaml
-│   │   ├── tokens.yaml
 │   │   ├── tools_{id}.yaml
 │   │   ├── tools.yaml
 │   │   ├── users_{id}.yaml
@@ -158,7 +155,9 @@
 │   ├── small-logo.svg
 │   └── small-logo-white.svg
 ├── cmd
-│   └── archesai
+│   ├── archesai
+│   │   └── main.go
+│   └── codegen
 │       └── main.go
 ├── deployments
 │   ├── development
@@ -312,14 +311,16 @@
 │   │   │   ├── web.go
 │   │   │   └── worker.go
 │   │   ├── http
-│   │   │   ├── handlers
-│   │   │   │   └── handlers.go
+│   │   │   ├── controllers
+│   │   │   ├── middleware
+│   │   │   │   └── auth.go
 │   │   │   └── server
 │   │   │       ├── assets
 │   │   │       ├── docs.go
 │   │   │       ├── errors.go
 │   │   │       ├── infra.go
 │   │   │       ├── middleware.go
+│   │   │       ├── responses.go
 │   │   │       ├── router.go
 │   │   │       ├── server.go
 │   │   │       └── websocket.go
@@ -332,109 +333,93 @@
 │   │   │   ├── console.go
 │   │   │   ├── email.go
 │   │   │   └── otp.go
-│   │   ├── oauth
-│   │   │   ├── github.go
-│   │   │   ├── google.go
-│   │   │   └── microsoft.go
 │   │   └── tui
 │   │       ├── screens
 │   │       ├── config_tui.go
 │   │       └── tui.go
 │   ├── application
 │   │   ├── app
-│   │   │   ├── app.go
-│   │   │   └── infrastructure.go
 │   │   ├── commands
+│   │   │   ├── accounts
+│   │   │   ├── apikeys
 │   │   │   ├── artifacts
+│   │   │   ├── auth
+│   │   │   │   ├── oauth_login.go
+│   │   │   │   ├── request_magic_link.go
+│   │   │   │   └── verify_magic_link.go
+│   │   │   ├── invitations
 │   │   │   ├── labels
-│   │   │   │   ├── create_label.go
-│   │   │   │   ├── delete_label.go
-│   │   │   │   └── update_label.go
+│   │   │   ├── members
+│   │   │   ├── organizations
 │   │   │   ├── pipelines
-│   │   │   │   ├── add_pipeline_step.go
-│   │   │   │   ├── create_pipeline.go
-│   │   │   │   ├── delete_pipeline.go
-│   │   │   │   ├── remove_pipeline_step.go
-│   │   │   │   └── update_pipeline.go
 │   │   │   ├── runs
-│   │   │   │   ├── cancel_run.go
-│   │   │   │   ├── complete_run.go
-│   │   │   │   ├── create_run.go
-│   │   │   │   ├── fail_run.go
-│   │   │   │   ├── start_run.go
-│   │   │   │   └── update_run_progress.go
-│   │   │   └── tools
-│   │   │       ├── create_tool.go
-│   │   │       ├── delete_tool.go
-│   │   │       └── update_tool.go
-│   │   ├── dto
-│   │   │   └── responses.go
-│   │   ├── mappers
-│   │   ├── queries
-│   │   │   ├── artifacts
-│   │   │   ├── health
-│   │   │   │   └── get_health_status.go
-│   │   │   ├── labels
-│   │   │   │   ├── get_label.go
-│   │   │   │   ├── list_labels.go
-│   │   │   │   └── search_labels.go
-│   │   │   ├── pipelines
-│   │   │   │   ├── get_pipeline_by_name.go
-│   │   │   │   ├── get_pipeline_execution_plan.go
-│   │   │   │   ├── get_pipeline.go
-│   │   │   │   ├── get_pipeline_steps.go
-│   │   │   │   └── list_pipelines.go
-│   │   │   ├── runs
-│   │   │   │   ├── get_active_runs.go
-│   │   │   │   ├── get_run.go
-│   │   │   │   ├── get_run_status.go
-│   │   │   │   └── list_runs.go
-│   │   │   └── tools
-│   │   │       ├── get_tool_by_type.go
-│   │   │       ├── get_tool.go
-│   │   │       └── list_tools.go
-│   │   └── services
-│   │       └── stub.go
+│   │   │   ├── sessions
+│   │   │   ├── tools
+│   │   │   └── users
+│   │   └── queries
+│   │       ├── accounts
+│   │       ├── apikeys
+│   │       ├── artifacts
+│   │       ├── auth
+│   │       ├── config
+│   │       │   └── get_config.go
+│   │       ├── health
+│   │       │   └── get_health.go
+│   │       ├── invitations
+│   │       ├── labels
+│   │       ├── members
+│   │       ├── organizations
+│   │       ├── pipelines
+│   │       ├── pipelinesteps
+│   │       ├── runs
+│   │       ├── sessions
+│   │       ├── tools
+│   │       └── users
 │   ├── codegen
 │   │   ├── tmpl
-│   │   │   ├── dto.tmpl
-│   │   │   ├── echo_server.tmpl
-│   │   │   ├── entity.tmpl
+│   │   │   ├── app.tmpl
+│   │   │   ├── controller.tmpl
 │   │   │   ├── events.tmpl
 │   │   │   ├── header.tmpl
+│   │   │   ├── infrastructure.tmpl
 │   │   │   ├── repository_postgres.tmpl
 │   │   │   ├── repository_sqlite.tmpl
 │   │   │   ├── repository.tmpl
-│   │   │   ├── service.tmpl
-│   │   │   └── valueobjects.tmpl
-│   │   ├── codegen.go
+│   │   │   ├── schema.tmpl
+│   │   │   ├── single_command_handler.tmpl
+│   │   │   └── single_query_handler.tmpl
+│   │   ├── app.go
+│   │   ├── controllers.go
+│   │   ├── cqrs.go
+│   │   ├── events.go
 │   │   ├── filewriter.go
 │   │   ├── funcs.go
-│   │   ├── generators.go
+│   │   ├── generate.go
+│   │   ├── models.go
+│   │   ├── repositories.go
 │   │   └── templates.go
 │   ├── core
-│   │   ├── aggregates
-│   │   │   └── stub.go
 │   │   ├── entities
-│   │   │   └── stub.go
 │   │   ├── errors
 │   │   │   └── errors.go
 │   │   ├── events
-│   │   │   └── event.go
-│   │   ├── ports
-│   │   │   ├── events
-│   │   │   │   └── publisher.go
-│   │   │   ├── repositories
-│   │   │   │   └── health.go
-│   │   │   └── services
-│   │   │       └── stub.go
-│   │   ├── services
-│   │   │   └── health_checker.go
+│   │   │   ├── event.go
+│   │   │   └── publisher.go
+│   │   ├── repositories
+│   │   │   └── health.go
 │   │   └── valueobjects
 │   │       ├── health.go
-│   │       ├── ids.go
 │   │       └── stub.go
 │   ├── infrastructure
+│   │   ├── auth
+│   │   │   ├── oauth
+│   │   │   │   ├── github.go
+│   │   │   │   ├── google.go
+│   │   │   │   ├── microsoft.go
+│   │   │   │   └── types.go
+│   │   │   ├── magic_link.go
+│   │   │   ├── service.go
+│   │   │   └── token_manager.go
 │   │   ├── cache
 │   │   │   ├── cache.go
 │   │   │   ├── memory.go
@@ -445,10 +430,6 @@
 │   │   │   ├── loader.go
 │   │   │   └── loader_test.go
 │   │   ├── events
-│   │   │   ├── nats
-│   │   │   ├── redis
-│   │   │   │   └── event_publisher.go
-│   │   │   ├── store
 │   │   │   ├── events.go
 │   │   │   ├── noop.go
 │   │   │   ├── publisher.go
@@ -457,8 +438,6 @@
 │   │   │   └── middleware
 │   │   │       ├── auth.go
 │   │   │       └── ratelimit.go
-│   │   ├── middleware
-│   │   │   └── auth.go.bak
 │   │   ├── persistence
 │   │   │   ├── postgres
 │   │   │   │   ├── migrations
@@ -484,15 +463,14 @@
 │   │       ├── storage.go
 │   │       └── storage_test.go
 │   ├── parsers
-│   │   ├── definitions.go
-│   │   ├── errors.go
-│   │   ├── field_extractor.go
 │   │   ├── jsonschema.go
+│   │   ├── jsonschema_test.go
 │   │   ├── openapi.go
-│   │   ├── ref_resolver.go
-│   │   ├── schema_inheritance.go
-│   │   ├── type_converter.go
-│   │   └── x_codegen_parser.go
+│   │   ├── openapi_test.go
+│   │   ├── typeconv.go
+│   │   ├── types.go
+│   │   ├── types_test.go
+│   │   └── xcodegenextension.go
 │   └── shared
 │       ├── logger
 │       │   ├── config.go
@@ -522,13 +500,22 @@
 │   └── state.json
 ├── test
 │   └── data
+│       ├── parsers
+│       │   ├── invalid
+│       │   │   └── missing-type.yaml
+│       │   ├── openapi
+│       │   │   └── simple-api.yaml
+│       │   ├── schemas
+│       │   │   ├── complex.yaml
+│       │   │   ├── simple.yaml
+│       │   │   ├── with-inheritance.yaml
+│       │   │   └── with-x-codegen.yaml
+│       │   └── x-codegen
 │       ├── book.pdf
 │       ├── pdf.png
 │       ├── text.png
 │       └── website.png
 ├── tools
-│   ├── codegen
-│   │   └── main.go
 │   ├── pg-to-sqlite
 │   │   └── main.go
 │   └── tsconfig
@@ -547,6 +534,7 @@
 │   │   ├── src
 │   │   │   ├── generated
 │   │   │   │   ├── accounts
+│   │   │   │   ├── apikeys
 │   │   │   │   ├── artifacts
 │   │   │   │   ├── auth
 │   │   │   │   ├── config
@@ -557,6 +545,7 @@
 │   │   │   │   ├── organizations
 │   │   │   │   ├── pipelines
 │   │   │   │   ├── runs
+│   │   │   │   ├── sessions
 │   │   │   │   ├── tools
 │   │   │   │   ├── users
 │   │   │   │   ├── orval.schemas.ts
@@ -738,5 +727,5 @@
 ├── .redocly.yaml
 └── tsconfig.json
 
-207 directories, 527 files
+222 directories, 501 files
 ```

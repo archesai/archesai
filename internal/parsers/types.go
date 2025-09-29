@@ -27,19 +27,19 @@ const (
 	SQLTypeDouble    = "DOUBLE PRECISION"
 )
 
-// Valid repository operations
+// ValidRepositoryOperations lists all valid repository operations
 var ValidRepositoryOperations = []string{"create", "read", "update", "delete", "list"}
 
-// Valid HTTP methods
+// ValidHTTPMethods lists all valid HTTP methods
 var ValidHTTPMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
 
-// Valid error handling types
+// ValidErrorHandling lists all valid error handling types
 var ValidErrorHandling = []string{"error_return", "panic", "custom"}
 
-// Valid logging levels
+// ValidLogLevels lists all valid logging levels
 var ValidLogLevels = []string{"debug", "info", "warn", "error"}
 
-// Valid domain types
+// ValidDomainTypes lists all valid domain types
 var ValidDomainTypes = []string{"entity", "aggregate", "valueobject", "dto"}
 
 // OperationDef represents an API operation
@@ -62,6 +62,7 @@ type OperationDef struct {
 	ResponseSchemas     map[string]*ProcessedSchema // Processed response schemas by status code
 }
 
+// GetSuccessResponse returns the first successful response (2xx status code)
 func (o *OperationDef) GetSuccessResponse() *ResponseDef {
 	for _, resp := range o.Responses {
 		if resp.IsSuccess {
@@ -71,6 +72,7 @@ func (o *OperationDef) GetSuccessResponse() *ResponseDef {
 	return nil
 }
 
+// GetErrorResponses returns all error responses (non-2xx status codes)
 func (o *OperationDef) GetErrorResponses() []ResponseDef {
 	var errors []ResponseDef
 	for _, resp := range o.Responses {
@@ -81,6 +83,7 @@ func (o *OperationDef) GetErrorResponses() []ResponseDef {
 	return errors
 }
 
+// HasBearerAuth checks if the operation requires bearer token authentication
 func (o *OperationDef) HasBearerAuth() bool {
 	for _, sec := range o.Security {
 		if sec.Type == "http" && strings.EqualFold(sec.Scheme, "bearer") {
@@ -90,6 +93,7 @@ func (o *OperationDef) HasBearerAuth() bool {
 	return false
 }
 
+// HasCookieAuth checks if the operation requires cookie-based authentication
 func (o *OperationDef) HasCookieAuth() bool {
 	for _, sec := range o.Security {
 		if sec.Type == "apiKey" && strings.EqualFold(sec.Scheme, "cookie") {

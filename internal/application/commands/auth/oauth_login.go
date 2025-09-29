@@ -1,3 +1,4 @@
+// Package auth provides authentication command handlers
 package auth
 
 import (
@@ -30,7 +31,7 @@ func NewOAuthLoginCommandHandler(authService *auth.Service) *OAuthLoginCommandHa
 func (h *OAuthLoginCommandHandler) Handle(
 	ctx context.Context,
 	cmd *OAuthLoginCommand,
-) (*auth.AuthTokens, error) {
+) (*auth.Tokens, error) {
 	if cmd.Provider == "" {
 		return nil, fmt.Errorf("provider is required")
 	}

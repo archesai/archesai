@@ -26,8 +26,8 @@ type Service struct {
 // OAuthProvider interface for OAuth providers
 type OAuthProvider interface {
 	GetAuthURL(state string) string
-	ExchangeCode(ctx context.Context, code string) (*oauth.OAuthTokens, error)
-	GetUserInfo(ctx context.Context, accessToken string) (*oauth.OAuthUserInfo, error)
+	ExchangeCode(ctx context.Context, code string) (*oauth.Tokens, error)
+	GetUserInfo(ctx context.Context, accessToken string) (*oauth.UserInfo, error)
 }
 
 // NewService creates a new authentication service.
@@ -94,8 +94,8 @@ func (s *Service) HandleOAuthCallback(
 	ctx context.Context,
 	provider string,
 	code string,
-	state string,
-) (*AuthTokens, error) {
+	_ string,
+) (*Tokens, error) {
 	p, exists := s.oauthProviders[provider]
 	if !exists {
 		return nil, fmt.Errorf("OAuth provider %s not configured", provider)
@@ -129,7 +129,7 @@ func (s *Service) HandleOAuthCallback(
 	}
 
 	// Generate auth tokens
-	return s.generateAuthTokens(user, session)
+	return s.generateTokens(user, session)
 }
 
 // GenerateMagicLink creates a stateless magic link token.
@@ -138,7 +138,7 @@ func (s *Service) GenerateMagicLink(identifier string, redirectURL string) (stri
 }
 
 // VerifyMagicLink validates a magic link token and creates a session.
-func (s *Service) VerifyMagicLink(ctx context.Context, token string) (*AuthTokens, error) {
+func (s *Service) VerifyMagicLink(ctx context.Context, token string) (*Tokens, error) {
 	// Validate the magic link token
 	claims, err := s.magicLink.ValidateLink(token)
 	if err != nil {
@@ -171,11 +171,11 @@ func (s *Service) VerifyMagicLink(ctx context.Context, token string) (*AuthToken
 	}
 
 	// Generate auth tokens
-	return s.generateAuthTokens(user, session)
+	return s.generateTokens(user, session)
 }
 
 // RefreshToken validates a refresh token and issues new tokens.
-func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*AuthTokens, error) {
+func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Tokens, error) {
 	// Validate refresh token
 	claims, err := s.tokenManager.ValidateRefreshToken(refreshToken)
 	if err != nil {
@@ -195,7 +195,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*AuthT
 	}
 
 	// Generate new auth tokens
-	return s.generateAuthTokens(user, session)
+	return s.generateTokens(user, session)
 }
 
 // ValidateAccessToken validates an access token and returns claims.
@@ -207,7 +207,7 @@ func (s *Service) ValidateAccessToken(token string) (*TokenClaims, error) {
 
 func (s *Service) findOrCreateUser(
 	ctx context.Context,
-	userInfo *oauth.OAuthUserInfo,
+	userInfo *oauth.UserInfo,
 ) (*entities.User, error) {
 	// Try to find existing user by email
 	user, err := s.userRepo.GetByEmail(ctx, userInfo.Email)
@@ -265,10 +265,10 @@ func (s *Service) createSession(
 	return s.sessionRepo.Create(ctx, session)
 }
 
-func (s *Service) generateAuthTokens(
+func (s *Service) generateTokens(
 	user *entities.User,
 	session *entities.Session,
-) (*AuthTokens, error) {
+) (*Tokens, error) {
 	// Generate access token (short-lived)
 	accessToken, err := s.tokenManager.CreateAccessToken(user.ID, session.ID)
 	if err != nil {
@@ -281,7 +281,7 @@ func (s *Service) generateAuthTokens(
 		return nil, fmt.Errorf("failed to create refresh token: %w", err)
 	}
 
-	return &AuthTokens{
+	return &Tokens{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		TokenType:    "Bearer",
@@ -290,8 +290,8 @@ func (s *Service) generateAuthTokens(
 	}, nil
 }
 
-// AuthTokens represents the tokens returned after successful authentication.
-type AuthTokens struct {
+// Tokens represents the tokens returned after successful authentication.
+type Tokens struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 	TokenType    string `json:"tokenType"`

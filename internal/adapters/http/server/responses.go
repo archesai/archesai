@@ -17,6 +17,7 @@ type BadRequestResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// NewBadRequestResponse creates a new 400 Bad Request response
 func NewBadRequestResponse(detail string) BadRequestResponse {
 	return BadRequestResponse{
 		Type:      "https://example.com/probs/bad-request",
@@ -37,6 +38,7 @@ type UnauthorizedResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// NewUnauthorizedResponse creates a new 401 Unauthorized response
 func NewUnauthorizedResponse(detail string) UnauthorizedResponse {
 	return UnauthorizedResponse{
 		Type:      "https://example.com/probs/unauthorized",
@@ -57,6 +59,7 @@ type NotFoundResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// NewNotFoundResponse creates a new 404 Not Found response
 func NewNotFoundResponse(resource, id string) NotFoundResponse {
 	detail := resource + " not found"
 	if id != "" {
@@ -81,6 +84,7 @@ type ConflictResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// NewConflictResponse creates a new 409 Conflict response
 func NewConflictResponse(detail string) ConflictResponse {
 	return ConflictResponse{
 		Type:      "https://example.com/probs/conflict",
@@ -101,6 +105,7 @@ type InternalServerErrorResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// NewInternalServerErrorResponse creates a new 500 Internal Server Error response
 func NewInternalServerErrorResponse(detail string) InternalServerErrorResponse {
 	return InternalServerErrorResponse{
 		Type:      "https://example.com/probs/internal-server-error",
@@ -122,6 +127,7 @@ type TooManyRequestsResponse struct {
 	Timestamp  time.Time `json:"timestamp"`
 }
 
+// NewTooManyRequestsResponse creates a new 429 Too Many Requests response
 func NewTooManyRequestsResponse(retryAfter int) TooManyRequestsResponse {
 	return TooManyRequestsResponse{
 		Type:       "https://example.com/probs/too-many-requests",

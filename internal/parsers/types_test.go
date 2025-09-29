@@ -17,9 +17,10 @@ func TestOperationDef_GetSuccessResponse(t *testing.T) {
 	require.NotEmpty(t, operations)
 
 	// Find listUsers operation
+	const listUsersOpID = "listUsers"
 	var listUsersOp *OperationDef
 	for i := range operations {
-		if operations[i].OperationID == "listUsers" {
+		if operations[i].OperationID == listUsersOpID {
 			listUsersOp = &operations[i]
 			break
 		}
@@ -57,9 +58,10 @@ func TestOperationDef_GetErrorResponses(t *testing.T) {
 	require.NotEmpty(t, operations)
 
 	// Find listUsers operation
+	const listUsersOpID = "listUsers"
 	var listUsersOp *OperationDef
 	for i := range operations {
-		if operations[i].OperationID == "listUsers" {
+		if operations[i].OperationID == listUsersOpID {
 			listUsersOp = &operations[i]
 			break
 		}
@@ -92,7 +94,8 @@ func TestOperationDef_HasBearerAuth(t *testing.T) {
 	}
 
 	// listUsers has no security
-	listUsersOp := opsMap["listUsers"]
+	const listUsersOpID = "listUsers"
+	listUsersOp := opsMap[listUsersOpID]
 	assert.False(t, listUsersOp.HasBearerAuth())
 
 	// getUser has bearerAuth
@@ -119,7 +122,8 @@ func TestOperationDef_HasCookieAuth(t *testing.T) {
 	}
 
 	// listUsers has no security
-	listUsersOp := opsMap["listUsers"]
+	const listUsersOpID = "listUsers"
+	listUsersOp := opsMap[listUsersOpID]
 	assert.False(t, listUsersOp.HasCookieAuth())
 
 	// getUser has only bearerAuth, no cookie

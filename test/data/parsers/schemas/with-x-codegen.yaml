@@ -1,6 +1,6 @@
 # Schema with x-codegen extension
 x-codegen:
-  type: entity
+  schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
     indices: [email, username]

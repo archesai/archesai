@@ -34,16 +34,20 @@ var openapiCmd = &cobra.Command{
 
 If no path is provided, defaults to api/openapi.bundled.yaml`,
 	Args: cobra.MaximumNArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		path := "api/openapi.bundled.yaml"
 		if len(args) > 0 {
 			path = args[0]
 		}
 
 		if verbose {
-			os.Setenv("ARCHESAI_LOGGING_LEVEL", "debug")
+			if err := os.Setenv("ARCHESAI_LOGGING_LEVEL", "debug"); err != nil {
+				return fmt.Errorf("failed to set logging level: %w", err)
+			}
 		} else {
-			os.Setenv("ARCHESAI_LOGGING_LEVEL", "error")
+			if err := os.Setenv("ARCHESAI_LOGGING_LEVEL", "error"); err != nil {
+				return fmt.Errorf("failed to set logging level: %w", err)
+			}
 		}
 
 		generator := codegen.NewGenerator()
@@ -70,7 +74,7 @@ The path argument is the JSON Schema file to process.
 Requires --output flag for the output directory.
 The package name is automatically inferred from the output directory.`,
 	Args: cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		schemaPath := args[0]
 
 		if outputPath == "" {
@@ -78,9 +82,13 @@ The package name is automatically inferred from the output directory.`,
 		}
 
 		if verbose {
-			os.Setenv("ARCHESAI_LOGGING_LEVEL", "debug")
+			if err := os.Setenv("ARCHESAI_LOGGING_LEVEL", "debug"); err != nil {
+				return fmt.Errorf("failed to set logging level: %w", err)
+			}
 		} else {
-			os.Setenv("ARCHESAI_LOGGING_LEVEL", "error")
+			if err := os.Setenv("ARCHESAI_LOGGING_LEVEL", "error"); err != nil {
+				return fmt.Errorf("failed to set logging level: %w", err)
+			}
 		}
 
 		generator := codegen.NewGenerator()

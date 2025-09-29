@@ -390,7 +390,7 @@ clean-go: ## Clean Go build artifacts
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
 	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
-	@find . -type f -name "*.gen.go" ! -name "*.keep.gen.go" -exec rm -f {} +
+	@find . -type f -name "*.gen.go" ! -name "xcodegenextension.gen.go" -exec rm -f {} +
 	@find . -type f -name "mocks_test.go" -exec rm -f {} +
 	@rm -rf ./web/client/src/generated
 	@rm -f ./api/openapi.bundled.yaml

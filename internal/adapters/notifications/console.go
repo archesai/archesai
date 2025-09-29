@@ -1,4 +1,4 @@
-// Package deliverers provides delivery implementations for authentication services
+// Package notifications provides notification delivery implementations
 package notifications
 
 import (

@@ -28,7 +28,7 @@ func NewRequestMagicLinkCommandHandler(authService *auth.Service) *RequestMagicL
 
 // Handle executes the magic link request command.
 func (h *RequestMagicLinkCommandHandler) Handle(
-	ctx context.Context,
+	_ context.Context,
 	cmd *RequestMagicLinkCommand,
 ) (string, error) {
 	if cmd.Identifier == "" {

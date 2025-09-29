@@ -80,7 +80,7 @@ func (g *Generator) GenerateAppWiring(schemas map[string]*parsers.ProcessedSchem
 		if schema.XCodegen.Commands != nil {
 			domain.HasCommands = true
 			for _, op := range schema.XCodegen.Commands.Operations {
-				commandName := strings.Title(strings.ToLower(op))
+				commandName := Title(strings.ToLower(op))
 				if !contains(domain.Commands, commandName) {
 					domain.Commands = append(domain.Commands, commandName)
 				}
@@ -90,7 +90,7 @@ func (g *Generator) GenerateAppWiring(schemas map[string]*parsers.ProcessedSchem
 		if schema.XCodegen.Queries != nil {
 			domain.HasQueries = true
 			for _, op := range schema.XCodegen.Queries.Operations {
-				queryName := strings.Title(strings.ToLower(op))
+				queryName := Title(strings.ToLower(op))
 				if !contains(domain.Queries, queryName) {
 					domain.Queries = append(domain.Queries, queryName)
 				}

@@ -70,7 +70,7 @@ func (g *Generator) generateCommandHandlers(
 				op.Method == "DELETE" {
 				// Determine command type based on operation
 				var commandType string
-				domainSingular := Singularize(strings.Title(domain))
+				domainSingular := Singularize(Title(domain))
 
 				// Only generate standard CRUD operations for now
 				// Skip custom operations like createPipelineStep
@@ -184,11 +184,11 @@ func (g *Generator) generateQueryHandlers(
 					usesPluralName = true
 				default:
 					// Custom query, use operation ID with title case
-					queryType = strings.Title(op.OperationID)
+					queryType = Title(op.OperationID)
 				}
 
 				// Get the entity name from the schema if available
-				entityName := Singularize(strings.Title(domain))
+				entityName := Singularize(Title(domain))
 				entityNameLower := strings.ToLower(entityName)
 				entityNamePlural := Pluralize(entityName)
 

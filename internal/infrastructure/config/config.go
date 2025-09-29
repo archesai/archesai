@@ -11,15 +11,23 @@ import (
 	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
-// Type aliases for convenience
+// Config is the main application configuration structure
+type Config = valueobjects.Config
+
+// Type aliases for convenience - avoiding stuttering names
 type (
-	Config          = valueobjects.Config
-	ConfigAPI       = valueobjects.ConfigAPI
-	ConfigAuth      = valueobjects.ConfigAuth
-	ConfigAuthLocal = valueobjects.ConfigAuthLocal
-	ConfigDatabase  = valueobjects.ConfigDatabase
-	ConfigRedis     = valueobjects.ConfigRedis
-	ConfigLogging   = valueobjects.ConfigLogging
+	// API configuration
+	API = valueobjects.ConfigAPI
+	// Auth configuration
+	Auth = valueobjects.ConfigAuth
+	// AuthLocal configuration
+	AuthLocal = valueobjects.ConfigAuthLocal
+	// Database configuration
+	Database = valueobjects.ConfigDatabase
+	// Redis configuration
+	Redis = valueobjects.ConfigRedis
+	// Logging configuration
+	Logging = valueobjects.ConfigLogging
 )
 
 // Configuration constants.
@@ -51,7 +59,7 @@ var ConfigFileNames = []string{
 // New returns the default configuration.
 func New() *Config {
 	return &Config{
-		API: &ConfigAPI{
+		API: &API{
 			Host:        "0.0.0.0",
 			Port:        8080,
 			Cors:        "*",
@@ -59,7 +67,7 @@ func New() *Config {
 			Environment: "development",
 			Validate:    true,
 		},
-		Database: &ConfigDatabase{
+		Database: &Database{
 			Enabled:       true,
 			URL:           "postgres://localhost/archesai",
 			Type:          "postgresql",
@@ -67,22 +75,22 @@ func New() *Config {
 			MinConns:      5,
 			RunMigrations: true,
 		},
-		Redis: &ConfigRedis{
+		Redis: &Redis{
 			Enabled: true,
 			Host:    "localhost",
 			Port:    6379,
 			Auth:    "password",
 		},
-		Auth: &ConfigAuth{
+		Auth: &Auth{
 			Enabled: true,
-			Local: &ConfigAuthLocal{
+			Local: &AuthLocal{
 				Enabled:         true,
 				JWTSecret:       "change-me-in-production",
 				AccessTokenTTL:  "15m",
 				RefreshTokenTTL: "7d",
 			},
 		},
-		Logging: &ConfigLogging{
+		Logging: &Logging{
 			Level:  "info",
 			Pretty: true,
 		},

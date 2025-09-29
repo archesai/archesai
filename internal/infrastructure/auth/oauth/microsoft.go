@@ -46,7 +46,7 @@ func (p *MicrosoftProvider) GetAuthURL(state string) string {
 func (p *MicrosoftProvider) ExchangeCode(
 	ctx context.Context,
 	code string,
-) (*OAuthTokens, error) {
+) (*Tokens, error) {
 	// Prepare token exchange request
 	data := url.Values{
 		"client_id":     {p.clientID},
@@ -98,7 +98,7 @@ func (p *MicrosoftProvider) ExchangeCode(
 		return nil, err
 	}
 
-	return &OAuthTokens{
+	return &Tokens{
 		AccessToken:  tokenResp.AccessToken,
 		RefreshToken: tokenResp.RefreshToken,
 		IDToken:      tokenResp.IDToken,
@@ -111,7 +111,7 @@ func (p *MicrosoftProvider) ExchangeCode(
 func (p *MicrosoftProvider) GetUserInfo(
 	ctx context.Context,
 	accessToken string,
-) (*OAuthUserInfo, error) {
+) (*UserInfo, error) {
 	req, err := http.NewRequestWithContext(
 		ctx,
 		"GET",
@@ -156,7 +156,7 @@ func (p *MicrosoftProvider) GetUserInfo(
 		email = userInfo.UserPrincipalName
 	}
 
-	return &OAuthUserInfo{
+	return &UserInfo{
 		ID:            userInfo.ID,
 		Email:         email,
 		Name:          userInfo.DisplayName,
@@ -170,7 +170,7 @@ func (p *MicrosoftProvider) GetUserInfo(
 func (p *MicrosoftProvider) RefreshToken(
 	ctx context.Context,
 	refreshToken string,
-) (*OAuthTokens, error) {
+) (*Tokens, error) {
 	data := url.Values{
 		"client_id":     {p.clientID},
 		"client_secret": {p.clientSecret},
@@ -216,7 +216,7 @@ func (p *MicrosoftProvider) RefreshToken(
 		return nil, err
 	}
 
-	return &OAuthTokens{
+	return &Tokens{
 		AccessToken:  tokenResp.AccessToken,
 		RefreshToken: refreshToken, // Reuse the same refresh token
 		ExpiresIn:    tokenResp.ExpiresIn,

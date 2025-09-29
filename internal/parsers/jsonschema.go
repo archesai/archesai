@@ -1,3 +1,4 @@
+// Package parsers provides OpenAPI and JSON Schema parsing functionality
 package parsers
 
 import (
@@ -10,6 +11,10 @@ import (
 
 	"github.com/speakeasy-api/openapi/jsonschema/oas3"
 	"github.com/speakeasy-api/openapi/marshaller"
+)
+
+const (
+	tagOmitempty = ",omitempty"
 )
 
 // ParseJSONSchema loads a schema from a YAML file
@@ -145,11 +150,11 @@ func ExtractFields(schema *oas3.Schema) []FieldDef {
 
 		// Handle optional fields
 		if !field.Required {
-			if !strings.Contains(field.JSONTag, ",omitempty") {
-				field.JSONTag += ",omitempty"
+			if !strings.Contains(field.JSONTag, tagOmitempty) {
+				field.JSONTag += tagOmitempty
 			}
-			if field.YAMLTag != "" && !strings.Contains(field.YAMLTag, ",omitempty") {
-				field.YAMLTag += ",omitempty"
+			if field.YAMLTag != "" && !strings.Contains(field.YAMLTag, tagOmitempty) {
+				field.YAMLTag += tagOmitempty
 			}
 		}
 
@@ -212,9 +217,9 @@ func processDirectProperties(
 }
 
 // generateInlineStructType generates an inline struct type definition for nested objects
-func generateInlineStructType(schema *oas3.Schema, parentFieldName string) string {
+func generateInlineStructType(schema *oas3.Schema) string {
 	if schema == nil || schema.Properties == nil || schema.Properties.Len() == 0 {
-		return "interface{}"
+		return goTypeInterface
 	}
 
 	var structFields []string
@@ -222,93 +227,23 @@ func generateInlineStructType(schema *oas3.Schema, parentFieldName string) strin
 	// Process each property in the nested object
 	for propName := range schema.Properties.Keys() {
 		propRef := schema.Properties.GetOrZero(propName)
-		if propRef == nil {
+		if propRef == nil || !propRef.IsLeft() {
 			continue
 		}
 
-		fieldName := NormalizeFieldName(propName)
-		var goType string
-
-		if propRef.IsLeft() {
-			prop := propRef.GetLeft()
-			if prop != nil {
-				if prop.Ref != nil && prop.Ref.String() != "" {
-					// It's a reference to another schema
-					goType = extractTypeFromRef(prop.Ref.String())
-				} else {
-					types := prop.GetType()
-					if len(types) > 0 && string(types[0]) == "object" && prop.Properties != nil && prop.Properties.Len() > 0 {
-						// Recursively handle nested objects - use field name for the nested struct
-						goType = fieldName + " " + generateInlineStructType(prop, fieldName)
-					} else if len(types) > 0 && string(types[0]) == "array" {
-						// Handle arrays specially
-						if prop.Items != nil && prop.Items.IsLeft() {
-							itemSchema := prop.Items.GetLeft()
-							if itemSchema != nil {
-								itemTypes := itemSchema.GetType()
-								if len(itemTypes) > 0 && string(itemTypes[0]) == "object" &&
-									itemSchema.Properties != nil && itemSchema.Properties.Len() > 0 {
-									// Array of objects with properties
-									goType = "[]" + generateInlineStructType(itemSchema, fieldName+"Item")
-								} else {
-									goType = SchemaToGoType(prop)
-								}
-							}
-						} else {
-							goType = SchemaToGoType(prop)
-						}
-					} else {
-						goType = SchemaToGoType(prop)
-					}
-				}
-			}
+		prop := propRef.GetLeft()
+		if prop == nil {
+			continue
 		}
 
-		if goType == "" {
-			goType = "interface{}"
-		}
-
-		// Check if field is required
-		isRequired := false
-		for _, req := range schema.Required {
-			if req == propName {
-				isRequired = true
-				break
-			}
-		}
-
-		// For nested structs, extract just the type name part after field name
-		if strings.HasPrefix(goType, fieldName+" struct") {
-			// Keep as is - it's a named inline struct
-		} else {
-			// Make optional fields pointers
-			if !isRequired && !strings.HasPrefix(goType, "*") &&
-				!strings.HasPrefix(goType, "[]") &&
-				!strings.HasPrefix(goType, "map[") &&
-				!strings.HasPrefix(goType, "struct{") {
-				goType = "*" + goType
-			}
-		}
-
-		jsonTag := propName
-		if !isRequired {
-			jsonTag += ",omitempty"
-		}
-
-		// Format the field definition properly
-		if strings.HasPrefix(goType, fieldName+" ") {
-			// It's a named inline struct, format it specially
-			structDef := strings.TrimPrefix(goType, fieldName+" ")
-			structFields = append(structFields, fmt.Sprintf("%s %s `json:\"%s\" yaml:\"%s\"`",
-				fieldName, structDef, jsonTag, propName))
-		} else {
-			structFields = append(structFields, fmt.Sprintf("%s %s `json:\"%s\" yaml:\"%s\"`",
-				fieldName, goType, jsonTag, propName))
+		fieldDef := generateStructField(schema, propName, prop)
+		if fieldDef != "" {
+			structFields = append(structFields, fieldDef)
 		}
 	}
 
 	if len(structFields) == 0 {
-		return "interface{}"
+		return goTypeInterface
 	}
 
 	// Sort fields for consistency
@@ -316,6 +251,95 @@ func generateInlineStructType(schema *oas3.Schema, parentFieldName string) strin
 
 	// Build the inline struct type
 	return "struct {\n\t\t" + strings.Join(structFields, "\n\t\t") + "\n\t}"
+}
+
+// generateStructField generates a single struct field definition
+func generateStructField(
+	schema *oas3.Schema,
+	propName string,
+	prop *oas3.Schema,
+) string {
+	fieldName := NormalizeFieldName(propName)
+	goType := determineGoType(prop, fieldName)
+
+	if goType == "" {
+		goType = "interface{}"
+	}
+
+	isRequired := isFieldRequired(schema, propName)
+
+	// Make optional fields pointers
+	if !isRequired && !strings.HasPrefix(goType, fieldName+" struct") &&
+		!strings.HasPrefix(goType, "*") && !strings.HasPrefix(goType, "[]") &&
+		!strings.HasPrefix(goType, "map[") && !strings.HasPrefix(goType, "struct{") {
+		goType = "*" + goType
+	}
+
+	jsonTag := propName
+	if !isRequired {
+		jsonTag += tagOmitempty
+	}
+
+	// Format the field definition
+	if strings.HasPrefix(goType, fieldName+" ") {
+		// It's a named inline struct, format it specially
+		structDef := strings.TrimPrefix(goType, fieldName+" ")
+		return fmt.Sprintf("%s %s `json:\"%s\" yaml:\"%s\"`",
+			fieldName, structDef, jsonTag, propName)
+	}
+
+	return fmt.Sprintf("%s %s `json:\"%s\" yaml:\"%s\"`",
+		fieldName, goType, jsonTag, propName)
+}
+
+// determineGoType determines the Go type for a property
+func determineGoType(prop *oas3.Schema, fieldName string) string {
+	if prop == nil {
+		return ""
+	}
+
+	// Handle references
+	if prop.Ref != nil && prop.Ref.String() != "" {
+		return extractTypeFromRef(prop.Ref.String())
+	}
+
+	// Handle nested objects
+	types := prop.GetType()
+	if len(types) > 0 {
+		switch string(types[0]) {
+		case schemaTypeObject:
+			if prop.Properties != nil && prop.Properties.Len() > 0 {
+				// Recursively generate inline struct
+				return fieldName + " " + generateInlineStructType(prop)
+			}
+		case "array":
+			// Handle array of objects specially
+			if prop.Items != nil && prop.Items.IsLeft() {
+				itemSchema := prop.Items.GetLeft()
+				if itemSchema != nil {
+					itemTypes := itemSchema.GetType()
+					if len(itemTypes) > 0 && string(itemTypes[0]) == "object" &&
+						itemSchema.Properties != nil && itemSchema.Properties.Len() > 0 {
+						// Array of objects with properties
+						return "[]" + generateInlineStructType(itemSchema)
+					}
+				}
+			}
+		}
+	}
+
+	// Use the existing SchemaToGoType for everything else
+	return SchemaToGoType(prop)
+}
+
+// isFieldRequired checks if a field is required
+func isFieldRequired(schema *oas3.Schema, propName string) bool {
+	for _, req := range schema.Required {
+		if req == propName {
+			return true
+		}
+	}
+	return false
 }
 
 // processSchemaProperties extracts properties from a schema
@@ -348,9 +372,9 @@ func processSchemaProperties(
 				} else {
 					// Handle nested objects and arrays as inline structs
 					types := prop.GetType()
-					if len(types) > 0 && string(types[0]) == "object" && prop.Properties != nil && prop.Properties.Len() > 0 {
+					if len(types) > 0 && string(types[0]) == schemaTypeObject && prop.Properties != nil && prop.Properties.Len() > 0 {
 						// Generate inline struct type recursively
-						goType = generateInlineStructType(prop, fieldName)
+						goType = generateInlineStructType(prop)
 					} else if len(types) > 0 && string(types[0]) == "array" {
 						// Handle arrays specially
 						if prop.Items != nil && prop.Items.IsLeft() {
@@ -360,7 +384,7 @@ func processSchemaProperties(
 								if len(itemTypes) > 0 && string(itemTypes[0]) == "object" &&
 									itemSchema.Properties != nil && itemSchema.Properties.Len() > 0 {
 									// Array of objects with properties - generate inline struct
-									goType = "[]" + generateInlineStructType(itemSchema, fieldName+"Item")
+									goType = "[]" + generateInlineStructType(itemSchema)
 								} else {
 									goType = SchemaToGoType(prop)
 								}
@@ -559,7 +583,7 @@ func ExtractProperties(schema *oas3.Schema) map[string]*oas3.Schema {
 
 // extractTitle extracts the title from a schema or uses the default name
 func extractTitle(schema *oas3.Schema, defaultName string) string {
-	if schema.Title != nil && *schema.Title != "" {
+	if schema != nil && schema.Title != nil && *schema.Title != "" {
 		return *schema.Title
 	}
 	return defaultName
