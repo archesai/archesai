@@ -30,11 +30,13 @@ func NewPostgresPipelineRepository(db *pgxpool.Pool) *PostgresPipelineRepository
 
 // Create creates a new pipeline
 func (r *PostgresPipelineRepository) Create(ctx context.Context, entity *entities.Pipeline) (*entities.Pipeline, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreatePipelineParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/pipeline.sql
 	params := CreatePipelineParams{
-		ID: entity.ID,
-		// Add required fields here based on CreatePipelineParams struct
+		ID:             entity.ID,
+		Description:    entity.Description,
+		Name:           entity.Name,
+		OrganizationID: entity.OrganizationID,
 	}
 
 	result, err := r.queries.CreatePipeline(ctx, params)
@@ -60,11 +62,12 @@ func (r *PostgresPipelineRepository) Get(ctx context.Context, id uuid.UUID) (*en
 
 // Update updates an existing pipeline
 func (r *PostgresPipelineRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Pipeline) (*entities.Pipeline, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdatePipelineParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/pipeline.sql
 	params := UpdatePipelineParams{
-		ID: id,
-		// Add updatable fields here based on UpdatePipelineParams struct
+		ID:          id,
+		Description: entity.Description,
+		Name:        entity.Name,
 	}
 
 	result, err := r.queries.UpdatePipeline(ctx, params)

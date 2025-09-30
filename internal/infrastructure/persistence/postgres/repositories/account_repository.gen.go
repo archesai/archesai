@@ -30,11 +30,19 @@ func NewPostgresAccountRepository(db *pgxpool.Pool) *PostgresAccountRepository {
 
 // Create creates a new account
 func (r *PostgresAccountRepository) Create(ctx context.Context, entity *entities.Account) (*entities.Account, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateAccountParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/account.sql
 	params := CreateAccountParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateAccountParams struct
+		ID:                    entity.ID,
+		AccessToken:           entity.AccessToken,
+		AccessTokenExpiresAt:  entity.AccessTokenExpiresAt,
+		AccountIdentifier:     entity.AccountIdentifier,
+		IDToken:               entity.IdToken,
+		Provider:              string(entity.Provider),
+		RefreshToken:          entity.RefreshToken,
+		RefreshTokenExpiresAt: entity.RefreshTokenExpiresAt,
+		Scope:                 entity.Scope,
+		UserID:                entity.UserID,
 	}
 
 	result, err := r.queries.CreateAccount(ctx, params)
@@ -60,11 +68,16 @@ func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*ent
 
 // Update updates an existing account
 func (r *PostgresAccountRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Account) (*entities.Account, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateAccountParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/account.sql
 	params := UpdateAccountParams{
-		ID: id,
-		// Add updatable fields here based on UpdateAccountParams struct
+		ID:                    id,
+		AccessToken:           entity.AccessToken,
+		AccessTokenExpiresAt:  entity.AccessTokenExpiresAt,
+		IDToken:               entity.IdToken,
+		RefreshToken:          entity.RefreshToken,
+		RefreshTokenExpiresAt: entity.RefreshTokenExpiresAt,
+		Scope:                 entity.Scope,
 	}
 
 	result, err := r.queries.UpdateAccount(ctx, params)

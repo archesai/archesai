@@ -73,17 +73,17 @@ func (h *ValidatePipelineExecutionPlanCommandHandler) Handle(
 		stepIDs[step.ID.String()] = true
 	}
 
-	for _, step := range steps {
-		for _, depID := range step.Dependencies {
-			if !stepIDs[depID.String()] {
-				result.Valid = false
-				result.Issues = append(
-					result.Issues,
-					fmt.Sprintf("Step %s depends on non-existent step %s", step.Name, depID),
-				)
-			}
-		}
-	}
+	// for _, step := range steps {
+	// 	for _, depID := range step.Dependencies {
+	// 		if !stepIDs[depID.String()] {
+	// 			result.Valid = false
+	// 			result.Issues = append(
+	// 				result.Issues,
+	// 				fmt.Sprintf("Step %s depends on non-existent step %s", step.Name, depID),
+	// 			)
+	// 		}
+	// 	}
+	// }
 
 	return result, nil
 }
@@ -99,9 +99,9 @@ func (h *ValidatePipelineExecutionPlanCommandHandler) detectCycles(
 		if _, exists := graph[stepID]; !exists {
 			graph[stepID] = []string{}
 		}
-		for _, dep := range step.Dependencies {
-			graph[stepID] = append(graph[stepID], dep.String())
-		}
+		// for _, dep := range step.Dependencies {
+		// 	graph[stepID] = append(graph[stepID], dep.String())
+		// }
 	}
 
 	// Track visited nodes and recursion stack

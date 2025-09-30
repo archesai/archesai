@@ -6,6 +6,9 @@ x-codegen:
   repository:
     operations: [create, read, update, delete, list]
     indices: [organizationID, userID]
+    excludeFromUpdate:
+      - OrganizationID
+      - UserID
     additional_methods:
       - name: ListMembersByOrganization
         params: [organizationID]

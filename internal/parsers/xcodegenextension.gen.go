@@ -50,9 +50,11 @@ type XCodegenExtension struct {
 			Params  []string `json:"params,omitempty" yaml:"params"`
 			Returns string   `json:"returns" yaml:"returns"`
 		} `json:"additional_methods,omitempty" yaml:"additional_methods"`
-		Indices    []string `json:"indices,omitempty" yaml:"indices"`
-		Operations []string `json:"operations,omitempty" yaml:"operations"`
-		TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
+		ExcludeFromCreate []string `json:"excludeFromCreate,omitempty" yaml:"excludeFromCreate"`
+		ExcludeFromUpdate []string `json:"excludeFromUpdate,omitempty" yaml:"excludeFromUpdate"`
+		Indices           []string `json:"indices,omitempty" yaml:"indices"`
+		Operations        []string `json:"operations,omitempty" yaml:"operations"`
+		TableName         *string  `json:"table_name,omitempty" yaml:"table_name"`
 	} `json:"repository,omitempty" yaml:"repository,omitempty"` // Repository generation configuration
 	SchemaType XCodegenExtensionSchemaType `json:"schemaType" yaml:"schemaType"` // Type of domain object (entity, valueobject)
 }
@@ -65,9 +67,11 @@ func NewXCodegenExtension(repository *struct {
 		Params  []string `json:"params,omitempty" yaml:"params"`
 		Returns string   `json:"returns" yaml:"returns"`
 	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
-	Indices    []string `json:"indices,omitempty" yaml:"indices"`
-	Operations []string `json:"operations,omitempty" yaml:"operations"`
-	TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
+	ExcludeFromCreate []string `json:"excludeFromCreate,omitempty" yaml:"excludeFromCreate"`
+	ExcludeFromUpdate []string `json:"excludeFromUpdate,omitempty" yaml:"excludeFromUpdate"`
+	Indices           []string `json:"indices,omitempty" yaml:"indices"`
+	Operations        []string `json:"operations,omitempty" yaml:"operations"`
+	TableName         *string  `json:"table_name,omitempty" yaml:"table_name"`
 }, schemaType string) (XCodegenExtension, error) {
 	// Validate all fields
 	schemaTypeEnum := XCodegenExtensionSchemaType(schemaType)
@@ -89,9 +93,11 @@ func MustXCodegenExtension(repository *struct {
 		Params  []string `json:"params,omitempty" yaml:"params"`
 		Returns string   `json:"returns" yaml:"returns"`
 	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
-	Indices    []string `json:"indices,omitempty" yaml:"indices"`
-	Operations []string `json:"operations,omitempty" yaml:"operations"`
-	TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
+	ExcludeFromCreate []string `json:"excludeFromCreate,omitempty" yaml:"excludeFromCreate"`
+	ExcludeFromUpdate []string `json:"excludeFromUpdate,omitempty" yaml:"excludeFromUpdate"`
+	Indices           []string `json:"indices,omitempty" yaml:"indices"`
+	Operations        []string `json:"operations,omitempty" yaml:"operations"`
+	TableName         *string  `json:"table_name,omitempty" yaml:"table_name"`
 }, schemaType string) XCodegenExtension {
 	v, err := NewXCodegenExtension(repository, schemaType)
 	if err != nil {
@@ -114,9 +120,11 @@ func (v XCodegenExtension) GetRepository() *struct {
 		Params  []string `json:"params,omitempty" yaml:"params"`
 		Returns string   `json:"returns" yaml:"returns"`
 	} `json:"additional_methods,omitempty" yaml:"additional_methods"`
-	Indices    []string `json:"indices,omitempty" yaml:"indices"`
-	Operations []string `json:"operations,omitempty" yaml:"operations"`
-	TableName  *string  `json:"table_name,omitempty" yaml:"table_name"`
+	ExcludeFromCreate []string `json:"excludeFromCreate,omitempty" yaml:"excludeFromCreate"`
+	ExcludeFromUpdate []string `json:"excludeFromUpdate,omitempty" yaml:"excludeFromUpdate"`
+	Indices           []string `json:"indices,omitempty" yaml:"indices"`
+	Operations        []string `json:"operations,omitempty" yaml:"operations"`
+	TableName         *string  `json:"table_name,omitempty" yaml:"table_name"`
 } {
 	return v.Repository
 }

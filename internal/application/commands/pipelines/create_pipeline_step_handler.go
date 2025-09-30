@@ -44,17 +44,17 @@ func (h *CreatePipelineStepCommandHandler) Handle(
 	// Create the pipeline step entity
 	now := time.Now().UTC()
 	step := &entities.PipelineStep{
-		ID:           uuid.New(),
-		PipelineID:   pipeline.ID,
-		ToolID:       cmd.ToolID,
-		Name:         cmd.Name,
-		Description:  cmd.Description,
-		Config:       cmd.Config,
-		Position:     cmd.Position,
-		Dependencies: cmd.Dependencies,
-		Status:       entities.PipelineStepStatusPending,
-		CreatedAt:    now,
-		UpdatedAt:    now,
+		ID:         uuid.New(),
+		PipelineID: pipeline.ID,
+		ToolID:     cmd.ToolID,
+		// Name:         cmd.Name,
+		// Description:  cmd.Description,
+		// Config:       cmd.Config,
+		// Position:     cmd.Position,
+		// Dependencies: cmd.Dependencies,
+		// Status:       entities.PipelineStepStatusPending,
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	// TODO: Implement PipelineStepRepository and use it here

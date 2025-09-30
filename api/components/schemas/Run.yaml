@@ -6,6 +6,12 @@ x-codegen:
   repository:
     operations: [create, read, update, delete, list]
     indices: [pipelineID, organizationID, toolID]
+    excludeFromCreate:
+      - CompletedAt
+      - Error
+      - StartedAt
+    excludeFromUpdate:
+      - OrganizationID
     additional_methods:
       - name: ListByPipeline
         params: [pipelineID]

@@ -26,6 +26,16 @@ properties:
         type: array
         items:
           type: string
+      excludeFromCreate:
+        description: Fields to exclude from Create operations (e.g., auto-generated or DB-set fields)
+        type: array
+        items:
+          type: string
+      excludeFromUpdate:
+        description: Fields to exclude from Update operations (e.g., immutable fields)
+        type: array
+        items:
+          type: string
       additional_methods:
         description: Additional repository methods to generate
         type: array

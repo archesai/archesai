@@ -6,6 +6,8 @@ import (
 	"strings"
 	"text/template"
 	"unicode"
+
+	"github.com/archesai/archesai/internal/parsers"
 )
 
 // Constants for commonly used type strings
@@ -49,6 +51,7 @@ func TemplateFuncs() template.FuncMap {
 		// Type checking and validation
 		"isPointer":       IsPointer,
 		"isSlice":         IsSlice,
+		"isSliceType":     IsSliceType,
 		"isMap":           IsMap,
 		"isStruct":        IsStruct,
 		"isPrimitive":     IsPrimitive,
@@ -64,6 +67,15 @@ func TemplateFuncs() template.FuncMap {
 		"echoPath":          EchoPath,
 		"fieldName":         FieldName,
 		"exportedFieldName": ExportedFieldName,
+
+		// Repository field mapping
+		"isCreateExcluded":    IsCreateExcluded,
+		"isImmutableField":    IsImmutableField,
+		"paramFieldName":      ParamFieldName,
+		"addressOf":           AddressOf,
+		"needsPointer":        NeedsPointer,
+		"isPointerType":       IsPointerType,
+		"fieldNeedsAddressOf": FieldNeedsAddressOf,
 	}
 }
 
@@ -375,6 +387,7 @@ func ToConstantCase(s string) string {
 		"Css":  "CSS",
 		"Js":   "JS",
 		"Jwt":  "JWT",
+		"Ip":   "IP",
 	}
 
 	// Replace any word that is an initialism
@@ -668,6 +681,11 @@ func IsSlice(goType string) bool {
 	return strings.HasPrefix(goType, "[]")
 }
 
+// IsSliceType is an alias for IsSlice for template compatibility
+func IsSliceType(goType string) bool {
+	return IsSlice(goType)
+}
+
 // IsMap checks if a Go type string represents a map type
 func IsMap(goType string) bool {
 	return strings.HasPrefix(goType, "map[")
@@ -781,4 +799,95 @@ func ExportedFieldName(name string) string {
 	r := []rune(name)
 	r[0] = unicode.ToUpper(r[0])
 	return string(r)
+}
+
+// IsCreateExcluded checks if a field should be excluded from Create operations
+// These fields are typically auto-generated or set by the database
+func IsCreateExcluded(fieldName string) bool {
+	excludedFields := []string{"ID", "CreatedAt", "UpdatedAt"}
+	for _, excluded := range excludedFields {
+		if fieldName == excluded {
+			return true
+		}
+	}
+	return false
+}
+
+// IsImmutableField checks if a field is immutable and should be excluded from Update operations
+// These fields cannot be changed after creation
+func IsImmutableField(fieldName string) bool {
+	immutableFields := []string{"ID", "CreatedAt", "UpdatedAt"}
+	for _, immutable := range immutableFields {
+		if fieldName == immutable {
+			return true
+		}
+	}
+	return false
+}
+
+// ParamFieldName converts an entity field name to the corresponding param field name
+// This handles the casing conversion needed for sqlc-generated params
+func ParamFieldName(fieldName string) string {
+	// Entity fields are already in PascalCase (exported), which matches sqlc param fields
+	return fieldName
+}
+
+// AddressOf returns a string that takes the address of a value for pointer conversion
+// Used when SQLc params expect a pointer but entity field is not
+func AddressOf(value string) string {
+	return "&" + value
+}
+
+// NeedsPointer checks if a field needs to be converted to a pointer for update operations
+// This is typically needed for nullable fields in update operations
+func NeedsPointer(fieldName string, operation string) bool {
+	// For update operations, certain fields need to be pointers
+	if operation == "update" {
+		// Common fields that are nullable in updates
+		nullableFields := []string{
+			"RateLimit",
+			"Credits",
+			"MimeType",
+			"Email",
+			"ExpiresAt",
+			"Name",
+			"Role",
+			"EmailVerified",
+			"Image",
+		}
+		for _, field := range nullableFields {
+			if fieldName == field {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// IsPointerType checks if a Go type is already a pointer
+func IsPointerType(goType string) bool {
+	return strings.HasPrefix(goType, "*")
+}
+
+// FieldNeedsAddressOf checks if we need to take the address of a field value
+// This happens when the entity field is not a pointer but SQLc param expects a pointer
+func FieldNeedsAddressOf(field parsers.FieldDef, operation string) bool {
+	// If the field type is already a pointer, we don't need to take its address
+	if IsPointerType(field.GoType) {
+		return false
+	}
+
+	// For update operations, check if this field typically needs to be a pointer
+	if operation == "update" {
+		// Check common patterns where SQLc expects pointers
+		// Non-required fields in updates are usually pointers in SQLc
+		if !field.Required || field.Nullable {
+			return true
+		}
+
+		// Check specific field names that are known to need pointers in updates
+		return NeedsPointer(field.FieldName, operation)
+	}
+
+	return false
 }

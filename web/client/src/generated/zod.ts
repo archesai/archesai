@@ -888,15 +888,15 @@ export const listAPIKeysResponse = zod.object({
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "userID": zod.uuid().min(listAPIKeysResponseDataItemUserIDMin).optional().describe('The user who owns this API key'),
-  "organizationID": zod.uuid().min(listAPIKeysResponseDataItemOrganizationIDMin).optional().describe('The organization this API key belongs to'),
-  "keyHash": zod.string().min(1).optional().describe('Hashed version of the API key for secure storage'),
-  "name": zod.string().min(1),
-  "prefix": zod.string().min(1),
+  "userID": zod.uuid().min(listAPIKeysResponseDataItemUserIDMin).describe('The user who owns this API key'),
+  "organizationID": zod.uuid().min(listAPIKeysResponseDataItemOrganizationIDMin).describe('The organization this API key belongs to'),
+  "keyHash": zod.string().min(1).describe('Hashed version of the API key for secure storage'),
+  "name": zod.string().min(1).optional(),
+  "prefix": zod.string().min(1).optional(),
   "scopes": zod.array(zod.string()),
   "rateLimit": zod.number().describe('Requests per minute allowed for this API key'),
   "lastUsedAt": zod.iso.datetime({}).min(1).optional().describe('When this API key was last used'),
-  "expiresAt": zod.iso.datetime({}).min(1).describe('When this API key expires')
+  "expiresAt": zod.iso.datetime({}).min(1).optional().describe('When this API key expires')
 })).describe('Schema for API Key entity')),
   "meta": zod.object({
   "total": zod.number()
@@ -942,15 +942,15 @@ export const getAPIKeyResponse = zod.object({
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "userID": zod.uuid().min(getAPIKeyResponseUserIDMin).optional().describe('The user who owns this API key'),
-  "organizationID": zod.uuid().min(getAPIKeyResponseOrganizationIDMin).optional().describe('The organization this API key belongs to'),
-  "keyHash": zod.string().min(1).optional().describe('Hashed version of the API key for secure storage'),
-  "name": zod.string().min(1),
-  "prefix": zod.string().min(1),
+  "userID": zod.uuid().min(getAPIKeyResponseUserIDMin).describe('The user who owns this API key'),
+  "organizationID": zod.uuid().min(getAPIKeyResponseOrganizationIDMin).describe('The organization this API key belongs to'),
+  "keyHash": zod.string().min(1).describe('Hashed version of the API key for secure storage'),
+  "name": zod.string().min(1).optional(),
+  "prefix": zod.string().min(1).optional(),
   "scopes": zod.array(zod.string()),
   "rateLimit": zod.number().describe('Requests per minute allowed for this API key'),
   "lastUsedAt": zod.iso.datetime({}).min(1).optional().describe('When this API key was last used'),
-  "expiresAt": zod.iso.datetime({}).min(1).describe('When this API key expires')
+  "expiresAt": zod.iso.datetime({}).min(1).optional().describe('When this API key expires')
 })).describe('Schema for API Key entity')
 
 
@@ -984,15 +984,15 @@ export const updateAPIKeyResponse = zod.object({
   "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "userID": zod.uuid().min(updateAPIKeyResponseUserIDMin).optional().describe('The user who owns this API key'),
-  "organizationID": zod.uuid().min(updateAPIKeyResponseOrganizationIDMin).optional().describe('The organization this API key belongs to'),
-  "keyHash": zod.string().min(1).optional().describe('Hashed version of the API key for secure storage'),
-  "name": zod.string().min(1),
-  "prefix": zod.string().min(1),
+  "userID": zod.uuid().min(updateAPIKeyResponseUserIDMin).describe('The user who owns this API key'),
+  "organizationID": zod.uuid().min(updateAPIKeyResponseOrganizationIDMin).describe('The organization this API key belongs to'),
+  "keyHash": zod.string().min(1).describe('Hashed version of the API key for secure storage'),
+  "name": zod.string().min(1).optional(),
+  "prefix": zod.string().min(1).optional(),
   "scopes": zod.array(zod.string()),
   "rateLimit": zod.number().describe('Requests per minute allowed for this API key'),
   "lastUsedAt": zod.iso.datetime({}).min(1).optional().describe('When this API key was last used'),
-  "expiresAt": zod.iso.datetime({}).min(1).describe('When this API key expires')
+  "expiresAt": zod.iso.datetime({}).min(1).optional().describe('When this API key expires')
 })).describe('Schema for API Key entity')
 
 
@@ -1744,17 +1744,7 @@ export const getPipelineStepsParams = zod.object({
 export const getPipelineStepsResponseDataItemIdMin = 36;
 export const getPipelineStepsResponseDataItemPipelineIDMin = 36;
 export const getPipelineStepsResponseDataItemToolIDMin = 36;
-export const getPipelineStepsResponseDataItemNameMax = 255;
-export const getPipelineStepsResponseDataItemDescriptionMax = 1000;
-export const getPipelineStepsResponseDataItemPositionMin = 0;
-export const getPipelineStepsResponseDataItemRetriesDefault = 0;
-export const getPipelineStepsResponseDataItemRetriesMin = 0;
 
-export const getPipelineStepsResponseDataItemRetriesMax = 10;
-export const getPipelineStepsResponseDataItemTimeoutDefault = 3600;
-export const getPipelineStepsResponseDataItemTimeoutMax = 86400;
-export const getPipelineStepsResponseDataItemDependenciesItemMin = 36;
-export const getPipelineStepsResponseDataItemStatusDefault = "pending";
 
 export const getPipelineStepsResponse = zod.object({
   "data": zod.array(zod.object({
@@ -1763,15 +1753,7 @@ export const getPipelineStepsResponse = zod.object({
   "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "pipelineID": zod.uuid().min(getPipelineStepsResponseDataItemPipelineIDMin).describe('The pipeline this step belongs to'),
-  "toolID": zod.uuid().min(getPipelineStepsResponseDataItemToolIDMin).describe('The tool used in this step'),
-  "name": zod.string().min(1).max(getPipelineStepsResponseDataItemNameMax).describe('Name of the step'),
-  "description": zod.string().max(getPipelineStepsResponseDataItemDescriptionMax).optional().describe('Description of what this step does'),
-  "config": zod.record(zod.string(), zod.any()).optional().describe('Configuration parameters for the tool'),
-  "position": zod.number().min(getPipelineStepsResponseDataItemPositionMin).optional().describe('Position in the pipeline for ordering'),
-  "retries": zod.number().min(getPipelineStepsResponseDataItemRetriesMin).max(getPipelineStepsResponseDataItemRetriesMax).optional().describe('Number of retries on failure'),
-  "timeout": zod.number().min(1).max(getPipelineStepsResponseDataItemTimeoutMax).default(getPipelineStepsResponseDataItemTimeoutDefault).describe('Timeout in seconds'),
-  "dependencies": zod.array(zod.uuid().min(getPipelineStepsResponseDataItemDependenciesItemMin).describe('UUID of a step this step depends on')).optional().describe('IDs of steps this step depends on'),
-  "status": zod.enum(['pending', 'ready', 'running', 'completed', 'failed', 'skipped']).default(getPipelineStepsResponseDataItemStatusDefault).describe('Current status of the step')
+  "toolID": zod.uuid().min(getPipelineStepsResponseDataItemToolIDMin).describe('The tool used in this step')
 })).describe('Schema for PipelineStep entity'))
 })
 

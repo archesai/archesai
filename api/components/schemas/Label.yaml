@@ -5,6 +5,8 @@ x-codegen:
   schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
+    excludeFromUpdate:
+      - OrganizationID
     indices: [organizationID, name]
     additional_methods:
       - name: ListByOrganization

@@ -30,11 +30,12 @@ func NewPostgresPipelineStepRepository(db *pgxpool.Pool) *PostgresPipelineStepRe
 
 // Create creates a new pipelinestep
 func (r *PostgresPipelineStepRepository) Create(ctx context.Context, entity *entities.PipelineStep) (*entities.PipelineStep, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreatePipelineStepParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/pipeline-step.sql
 	params := CreatePipelineStepParams{
-		ID: entity.ID,
-		// Add required fields here based on CreatePipelineStepParams struct
+		ID:         entity.ID,
+		PipelineID: entity.PipelineID,
+		ToolID:     entity.ToolID,
 	}
 
 	result, err := r.queries.CreatePipelineStep(ctx, params)
@@ -60,11 +61,11 @@ func (r *PostgresPipelineStepRepository) Get(ctx context.Context, id uuid.UUID) 
 
 // Update updates an existing pipelinestep
 func (r *PostgresPipelineStepRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.PipelineStep) (*entities.PipelineStep, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdatePipelineStepParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/pipeline-step.sql
 	params := UpdatePipelineStepParams{
-		ID: id,
-		// Add updatable fields here based on UpdatePipelineStepParams struct
+		ID:     id,
+		ToolID: &entity.ToolID,
 	}
 
 	result, err := r.queries.UpdatePipelineStep(ctx, params)
@@ -120,11 +121,11 @@ func mapPipelineStepFromDB(db *PipelineStep) *entities.PipelineStep {
 	}
 
 	result := &entities.PipelineStep{
-		ID:           db.ID,
-		CreatedAt:    db.CreatedAt,
-		UpdatedAt:    db.UpdatedAt,
-		PipelineID:   db.PipelineID,
-		ToolID:       db.ToolID,
+		ID:         db.ID,
+		CreatedAt:  db.CreatedAt,
+		UpdatedAt:  db.UpdatedAt,
+		PipelineID: db.PipelineID,
+		ToolID:     db.ToolID,
 	}
 
 	return result

@@ -3,6 +3,8 @@ x-codegen:
   schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
+    excludeFromCreate: [CreatedAt, UpdatedAt]
+    excludeFromUpdate: [CreatedAt, UpdatedAt, PipelineID]
 title: PipelineStep
 description: Schema for PipelineStep entity
 allOf:
@@ -21,67 +23,67 @@ allOf:
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
-      name:
-        description: Name of the step
-        type: string
-        minLength: 1
-        maxLength: 255
-        example: 'Data Validation'
-      description:
-        description: Description of what this step does
-        type: string
-        maxLength: 1000
-        example: 'Validates incoming data against schema'
-      config:
-        description: Configuration parameters for the tool
-        type: object
-        additionalProperties: true
-        example:
-          schema: 'v1.0'
-          strict: true
-          maxErrors: 10
-      position:
-        description: Position in the pipeline for ordering
-        type: integer
-        minimum: 0
-        example: 1
-      retries:
-        description: Number of retries on failure
-        type: integer
-        minimum: 0
-        maximum: 10
-        default: 0
-        example: 3
-      timeout:
-        description: Timeout in seconds
-        type: integer
-        minimum: 1
-        maximum: 86400
-        default: 3600
-        example: 1800
-      dependencies:
-        description: IDs of steps this step depends on
-        type: array
-        items:
-          description: UUID of a step this step depends on
-          type: string
-          format: uuid
-          minLength: 36
-        example: ['123e4567-e89b-12d3-a456-426614174000']
-      status:
-        description: Current status of the step
-        type: string
-        enum:
-          - pending
-          - ready
-          - running
-          - completed
-          - failed
-          - skipped
-        default: pending
-        example: pending
+      # name:
+      #   description: Name of the step
+      #   type: string
+      #   minLength: 1
+      #   maxLength: 255
+      #   example: 'Data Validation'
+      # description:
+      #   description: Description of what this step does
+      #   type: string
+      #   maxLength: 1000
+      #   example: 'Validates incoming data against schema'
+      # config:
+      #   description: Configuration parameters for the tool
+      #   type: object
+      #   additionalProperties: true
+      #   example:
+      #     schema: 'v1.0'
+      #     strict: true
+      #     maxErrors: 10
+      # position:
+      #   description: Position in the pipeline for ordering
+      #   type: integer
+      #   minimum: 0
+      #   example: 1
+      # retries:
+      #   description: Number of retries on failure
+      #   type: integer
+      #   minimum: 0
+      #   maximum: 10
+      #   default: 0
+      #   example: 3
+      # timeout:
+      #   description: Timeout in seconds
+      #   type: integer
+      #   minimum: 1
+      #   maximum: 86400
+      #   default: 3600
+      #   example: 1800
+      # dependencies:
+      #   description: IDs of steps this step depends on
+      #   type: array
+      #   items:
+      #     description: UUID of a step this step depends on
+      #     type: string
+      #     format: uuid
+      #     minLength: 36
+      #   example: ['123e4567-e89b-12d3-a456-426614174000']
+      # status:
+      #   description: Current status of the step
+      #   type: string
+      #   enum:
+      #     - pending
+      #     - ready
+      #     - running
+      #     - completed
+      #     - failed
+      #     - skipped
+      #   default: pending
+      #   example: pending
     required:
       - pipelineID
       - toolID
-      - name
+      # - name
 unevaluatedProperties: false

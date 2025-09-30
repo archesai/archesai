@@ -3,6 +3,11 @@ x-codegen:
   schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
+    excludeFromUpdate:
+      - IpAddress
+      - UserID
+      - UserAgent
+      - Token
 description: Schema for Session entity
 title: Session
 allOf:

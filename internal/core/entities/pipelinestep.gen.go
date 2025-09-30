@@ -3,95 +3,34 @@
 package entities
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/google/uuid"
 )
 
-// PipelineStepStatus represents the enumeration of valid values for Status
-type PipelineStepStatus string
-
-// Valid Status values
-const (
-	PipelineStepStatusPending   PipelineStepStatus = "pending"
-	PipelineStepStatusReady     PipelineStepStatus = "ready"
-	PipelineStepStatusRunning   PipelineStepStatus = "running"
-	PipelineStepStatusCompleted PipelineStepStatus = "completed"
-	PipelineStepStatusFailed    PipelineStepStatus = "failed"
-	PipelineStepStatusSkipped   PipelineStepStatus = "skipped"
-)
-
-// String returns the string representation
-func (e PipelineStepStatus) String() string {
-	return string(e)
-}
-
-// IsValid checks if the value is valid
-func (e PipelineStepStatus) IsValid() bool {
-	switch e {
-	case PipelineStepStatusPending:
-		return true
-	case PipelineStepStatusReady:
-		return true
-	case PipelineStepStatusRunning:
-		return true
-	case PipelineStepStatusCompleted:
-		return true
-	case PipelineStepStatusFailed:
-		return true
-	case PipelineStepStatusSkipped:
-		return true
-	default:
-		return false
-	}
-}
-
-// ParsePipelineStepStatus parses a string into the enum type
-func ParsePipelineStepStatus(s string) (PipelineStepStatus, error) {
-	v := PipelineStepStatus(s)
-	if !v.IsValid() {
-		return "", fmt.Errorf("invalid Status: %s", s)
-	}
-	return v, nil
-}
-
 // PipelineStep represents Schema for PipelineStep entity
 type PipelineStep struct {
-	Config       map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`             // Configuration parameters for the tool
-	CreatedAt    time.Time              `json:"createdAt" yaml:"createdAt"`                           // The date and time when the resource was created
-	Dependencies []uuid.UUID            `json:"dependencies,omitempty" yaml:"dependencies,omitempty"` // IDs of steps this step depends on
-	Description  *string                `json:"description,omitempty" yaml:"description,omitempty"`   // Description of what this step does
-	ID           uuid.UUID              `json:"id" yaml:"id"`                                         // Unique identifier for the resource
-	Name         string                 `json:"name" yaml:"name"`                                     // Name of the step
-	PipelineID   uuid.UUID              `json:"pipelineID" yaml:"pipelineID"`                         // The pipeline this step belongs to
-	Position     *int                   `json:"position,omitempty" yaml:"position,omitempty"`         // Position in the pipeline for ordering
-	Retries      *int                   `json:"retries,omitempty" yaml:"retries,omitempty"`           // Number of retries on failure
-	Status       PipelineStepStatus     `json:"status,omitempty" yaml:"status,omitempty"`             // Current status of the step
-	Timeout      *int                   `json:"timeout,omitempty" yaml:"timeout,omitempty"`           // Timeout in seconds
-	ToolID       uuid.UUID              `json:"toolID" yaml:"toolID"`                                 // The tool used in this step
-	UpdatedAt    time.Time              `json:"updatedAt" yaml:"updatedAt"`                           // The date and time when the resource was last updated
-	events       []events.DomainEvent   `json:"-" yaml:"-"`
+	CreatedAt  time.Time            `json:"createdAt" yaml:"createdAt"`   // The date and time when the resource was created
+	ID         uuid.UUID            `json:"id" yaml:"id"`                 // Unique identifier for the resource
+	PipelineID uuid.UUID            `json:"pipelineID" yaml:"pipelineID"` // The pipeline this step belongs to
+	ToolID     uuid.UUID            `json:"toolID" yaml:"toolID"`         // The tool used in this step
+	UpdatedAt  time.Time            `json:"updatedAt" yaml:"updatedAt"`   // The date and time when the resource was last updated
+	events     []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewPipelineStep creates a new PipelineStep entity with validation.
 // All required fields must be provided and valid.
 func NewPipelineStep(
-	name string,
 	pipelineID uuid.UUID,
 	toolID uuid.UUID,
 ) (*PipelineStep, error) {
 	// Validate required fields
-	if name == "" {
-		return nil, fmt.Errorf("Name cannot be empty")
-	}
 
 	now := time.Now().UTC()
 	pipelinestep := &PipelineStep{
 		CreatedAt:  now,
 		ID:         uuid.New(),
-		Name:       name,
 		PipelineID: pipelineID,
 		ToolID:     toolID,
 		UpdatedAt:  now,
@@ -102,24 +41,9 @@ func NewPipelineStep(
 	return pipelinestep, nil
 }
 
-// GetConfig returns the Config
-func (e *PipelineStep) GetConfig() map[string]interface{} {
-	return e.Config
-}
-
 // GetCreatedAt returns the CreatedAt
 func (e *PipelineStep) GetCreatedAt() time.Time {
 	return e.CreatedAt
-}
-
-// GetDependencies returns the Dependencies
-func (e *PipelineStep) GetDependencies() []uuid.UUID {
-	return e.Dependencies
-}
-
-// GetDescription returns the Description
-func (e *PipelineStep) GetDescription() *string {
-	return e.Description
 }
 
 // GetID returns the ID
@@ -127,34 +51,9 @@ func (e *PipelineStep) GetID() uuid.UUID {
 	return e.ID
 }
 
-// GetName returns the Name
-func (e *PipelineStep) GetName() string {
-	return e.Name
-}
-
 // GetPipelineID returns the PipelineID
 func (e *PipelineStep) GetPipelineID() uuid.UUID {
 	return e.PipelineID
-}
-
-// GetPosition returns the Position
-func (e *PipelineStep) GetPosition() *int {
-	return e.Position
-}
-
-// GetRetries returns the Retries
-func (e *PipelineStep) GetRetries() *int {
-	return e.Retries
-}
-
-// GetStatus returns the Status
-func (e *PipelineStep) GetStatus() string {
-	return string(e.Status)
-}
-
-// GetTimeout returns the Timeout
-func (e *PipelineStep) GetTimeout() *int {
-	return e.Timeout
 }
 
 // GetToolID returns the ToolID
@@ -184,34 +83,18 @@ func (e *PipelineStep) addEvent(event events.DomainEvent) {
 
 // ReconstructPipelineStep reconstructs a PipelineStep from persistence
 func ReconstructPipelineStep(
-	config map[string]interface{},
 	createdAt time.Time,
-	dependencies []uuid.UUID,
-	description *string,
 	id uuid.UUID,
-	name string,
 	pipelineID uuid.UUID,
-	position *int,
-	retries *int,
-	status string,
-	timeout *int,
 	toolID uuid.UUID,
 	updatedAt time.Time,
 ) *PipelineStep {
 	return &PipelineStep{
-		Config:       config,
-		CreatedAt:    createdAt,
-		Dependencies: dependencies,
-		Description:  description,
-		ID:           id,
-		Name:         name,
-		PipelineID:   pipelineID,
-		Position:     position,
-		Retries:      retries,
-		Status:       PipelineStepStatus(status),
-		Timeout:      timeout,
-		ToolID:       toolID,
-		UpdatedAt:    updatedAt,
-		events:       []events.DomainEvent{},
+		CreatedAt:  createdAt,
+		ID:         id,
+		PipelineID: pipelineID,
+		ToolID:     toolID,
+		UpdatedAt:  updatedAt,
+		events:     []events.DomainEvent{},
 	}
 }

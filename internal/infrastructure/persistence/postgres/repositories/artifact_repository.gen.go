@@ -30,11 +30,18 @@ func NewPostgresArtifactRepository(db *pgxpool.Pool) *PostgresArtifactRepository
 
 // Create creates a new artifact
 func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *entities.Artifact) (*entities.Artifact, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateArtifactParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/artifact.sql
 	params := CreateArtifactParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateArtifactParams struct
+		ID:             entity.ID,
+		Credits:        entity.Credits,
+		Description:    entity.Description,
+		MimeType:       entity.MimeType,
+		Name:           entity.Name,
+		OrganizationID: entity.OrganizationID,
+		PreviewImage:   entity.PreviewImage,
+		ProducerID:     entity.ProducerID,
+		Text:           entity.Text,
 	}
 
 	result, err := r.queries.CreateArtifact(ctx, params)
@@ -60,11 +67,16 @@ func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*en
 
 // Update updates an existing artifact
 func (r *PostgresArtifactRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Artifact) (*entities.Artifact, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateArtifactParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/artifact.sql
 	params := UpdateArtifactParams{
-		ID: id,
-		// Add updatable fields here based on UpdateArtifactParams struct
+		ID:           id,
+		Credits:      &entity.Credits,
+		Description:  entity.Description,
+		MimeType:     &entity.MimeType,
+		Name:         entity.Name,
+		PreviewImage: entity.PreviewImage,
+		Text:         entity.Text,
 	}
 
 	result, err := r.queries.UpdateArtifact(ctx, params)

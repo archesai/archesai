@@ -30,11 +30,18 @@ func NewPostgresAPIKeyRepository(db *pgxpool.Pool) *PostgresAPIKeyRepository {
 
 // Create creates a new apikey
 func (r *PostgresAPIKeyRepository) Create(ctx context.Context, entity *entities.APIKey) (*entities.APIKey, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateAPIKeyParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/a-p-i-key.sql
 	params := CreateAPIKeyParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateAPIKeyParams struct
+		ID:             entity.ID,
+		ExpiresAt:      entity.ExpiresAt,
+		KeyHash:        entity.KeyHash,
+		Name:           entity.Name,
+		OrganizationID: entity.OrganizationID,
+		Prefix:         entity.Prefix,
+		RateLimit:      entity.RateLimit,
+		Scopes:         entity.Scopes,
+		UserID:         entity.UserID,
 	}
 
 	result, err := r.queries.CreateAPIKey(ctx, params)
@@ -60,11 +67,14 @@ func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*enti
 
 // Update updates an existing apikey
 func (r *PostgresAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.APIKey) (*entities.APIKey, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateAPIKeyParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/a-p-i-key.sql
 	params := UpdateAPIKeyParams{
-		ID: id,
-		// Add updatable fields here based on UpdateAPIKeyParams struct
+		ID:        id,
+		ExpiresAt: entity.ExpiresAt,
+		Name:      entity.Name,
+		RateLimit: &entity.RateLimit,
+		Scopes:    entity.Scopes,
 	}
 
 	result, err := r.queries.UpdateAPIKey(ctx, params)
@@ -123,7 +133,15 @@ func mapAPIKeyFromDB(db *APIKey) *entities.APIKey {
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,
-
+		ExpiresAt:      db.ExpiresAt,
+		KeyHash:        db.KeyHash,
+		LastUsedAt:     db.LastUsedAt,
+		Name:           db.Name,
+		OrganizationID: db.OrganizationID,
+		Prefix:         db.Prefix,
+		RateLimit:      db.RateLimit,
+		Scopes:         db.Scopes,
+		UserID:         db.UserID,
 	}
 
 	return result

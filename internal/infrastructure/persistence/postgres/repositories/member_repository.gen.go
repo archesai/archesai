@@ -30,11 +30,13 @@ func NewPostgresMemberRepository(db *pgxpool.Pool) *PostgresMemberRepository {
 
 // Create creates a new member
 func (r *PostgresMemberRepository) Create(ctx context.Context, entity *entities.Member) (*entities.Member, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateMemberParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/member.sql
 	params := CreateMemberParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateMemberParams struct
+		ID:             entity.ID,
+		OrganizationID: entity.OrganizationID,
+		Role:           string(entity.Role),
+		UserID:         entity.UserID,
 	}
 
 	result, err := r.queries.CreateMember(ctx, params)
@@ -60,11 +62,12 @@ func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*enti
 
 // Update updates an existing member
 func (r *PostgresMemberRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Member) (*entities.Member, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateMemberParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/member.sql
+	roleStr := string(entity.Role)
 	params := UpdateMemberParams{
-		ID: id,
-		// Add updatable fields here based on UpdateMemberParams struct
+		ID:   id,
+		Role: &roleStr,
 	}
 
 	result, err := r.queries.UpdateMember(ctx, params)

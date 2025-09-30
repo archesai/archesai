@@ -53,6 +53,14 @@ func (g *Generator) generateRepositoryForSchema(
 		}
 	}
 
+	// Extract exclusion lists from schema
+	excludeFromCreate := []string{}
+	excludeFromUpdate := []string{}
+	if schema.XCodegen != nil && schema.XCodegen.Repository != nil {
+		excludeFromCreate = schema.XCodegen.Repository.ExcludeFromCreate
+		excludeFromUpdate = schema.XCodegen.Repository.ExcludeFromUpdate
+	}
+
 	// Generate repository interface
 	data := map[string]interface{}{
 		"Package": "repositories",
@@ -62,6 +70,8 @@ func (g *Generator) generateRepositoryForSchema(
 				"Type":              schema.Name,
 				"Fields":            schema.Fields,
 				"AdditionalMethods": additionalMethods,
+				"ExcludeFromCreate": excludeFromCreate,
+				"ExcludeFromUpdate": excludeFromUpdate,
 			},
 		},
 	}
@@ -90,6 +100,8 @@ func (g *Generator) generateRepositoryForSchema(
 				"Type":              schema.Name,
 				"Fields":            schema.Fields,
 				"AdditionalMethods": additionalMethods,
+				"ExcludeFromCreate": excludeFromCreate,
+				"ExcludeFromUpdate": excludeFromUpdate,
 			},
 		},
 	}

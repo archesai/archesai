@@ -30,11 +30,14 @@ func NewPostgresUserRepository(db *pgxpool.Pool) *PostgresUserRepository {
 
 // Create creates a new user
 func (r *PostgresUserRepository) Create(ctx context.Context, entity *entities.User) (*entities.User, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateUserParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/user.sql
 	params := CreateUserParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateUserParams struct
+		ID:            entity.ID,
+		Email:         entity.Email,
+		EmailVerified: entity.EmailVerified,
+		Image:         entity.Image,
+		Name:          entity.Name,
 	}
 
 	result, err := r.queries.CreateUser(ctx, params)
@@ -60,11 +63,14 @@ func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*entiti
 
 // Update updates an existing user
 func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.User) (*entities.User, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateUserParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/user.sql
 	params := UpdateUserParams{
-		ID: id,
-		// Add updatable fields here based on UpdateUserParams struct
+		ID:            id,
+		Email:         &entity.Email,
+		EmailVerified: &entity.EmailVerified,
+		Image:         entity.Image,
+		Name:          &entity.Name,
 	}
 
 	result, err := r.queries.UpdateUser(ctx, params)

@@ -30,11 +30,17 @@ func NewPostgresOrganizationRepository(db *pgxpool.Pool) *PostgresOrganizationRe
 
 // Create creates a new organization
 func (r *PostgresOrganizationRepository) Create(ctx context.Context, entity *entities.Organization) (*entities.Organization, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateOrganizationParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/organization.sql
 	params := CreateOrganizationParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateOrganizationParams struct
+		ID:                       entity.ID,
+		BillingEmail:             entity.BillingEmail,
+		Credits:                  entity.Credits,
+		Logo:                     entity.Logo,
+		Name:                     entity.Name,
+		Plan:                     string(entity.Plan),
+		Slug:                     entity.Slug,
+		StripeCustomerIdentifier: entity.StripeCustomerIdentifier,
 	}
 
 	result, err := r.queries.CreateOrganization(ctx, params)
@@ -60,11 +66,16 @@ func (r *PostgresOrganizationRepository) Get(ctx context.Context, id uuid.UUID) 
 
 // Update updates an existing organization
 func (r *PostgresOrganizationRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Organization) (*entities.Organization, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateOrganizationParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/organization.sql
+	planStr := string(entity.Plan)
 	params := UpdateOrganizationParams{
-		ID: id,
-		// Add updatable fields here based on UpdateOrganizationParams struct
+		ID:           id,
+		BillingEmail: entity.BillingEmail,
+		Credits:      &entity.Credits,
+		Logo:         entity.Logo,
+		Name:         &entity.Name,
+		Plan:         &planStr,
 	}
 
 	result, err := r.queries.UpdateOrganization(ctx, params)

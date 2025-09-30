@@ -30,11 +30,12 @@ func NewPostgresLabelRepository(db *pgxpool.Pool) *PostgresLabelRepository {
 
 // Create creates a new label
 func (r *PostgresLabelRepository) Create(ctx context.Context, entity *entities.Label) (*entities.Label, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateLabelParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/label.sql
 	params := CreateLabelParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateLabelParams struct
+		ID:             entity.ID,
+		Name:           entity.Name,
+		OrganizationID: entity.OrganizationID,
 	}
 
 	result, err := r.queries.CreateLabel(ctx, params)
@@ -60,11 +61,11 @@ func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*entit
 
 // Update updates an existing label
 func (r *PostgresLabelRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Label) (*entities.Label, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateLabelParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/label.sql
 	params := UpdateLabelParams{
-		ID: id,
-		// Add updatable fields here based on UpdateLabelParams struct
+		ID:   id,
+		Name: &entity.Name,
 	}
 
 	result, err := r.queries.UpdateLabel(ctx, params)

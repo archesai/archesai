@@ -304,21 +304,21 @@ export type APIKeyAllOf = {
    * The user who owns this API key
    * @minLength 36
    */
-  userID?: string;
+  userID: string;
   /**
    * The organization this API key belongs to
    * @minLength 36
    */
-  organizationID?: string;
+  organizationID: string;
   /**
    * Hashed version of the API key for secure storage
    * @minLength 1
    */
-  keyHash?: string;
+  keyHash: string;
   /** @minLength 1 */
-  name: string;
+  name?: string;
   /** @minLength 1 */
-  prefix: string;
+  prefix?: string;
   scopes: string[];
   /** Requests per minute allowed for this API key */
   rateLimit: number;
@@ -331,7 +331,7 @@ export type APIKeyAllOf = {
    * When this API key expires
    * @minLength 1
    */
-  expiresAt: string;
+  expiresAt?: string;
 };
 
 /**
@@ -493,27 +493,6 @@ export type PipelineAllOf = {
  */
 export type Pipeline = Base & PipelineAllOf;
 
-/**
- * Configuration parameters for the tool
- */
-export type PipelineStepAllOfConfig = { [key: string]: unknown };
-
-/**
- * Current status of the step
- */
-export type PipelineStepAllOfStatus = typeof PipelineStepAllOfStatus[keyof typeof PipelineStepAllOfStatus];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelineStepAllOfStatus = {
-  pending: 'pending',
-  ready: 'ready',
-  running: 'running',
-  completed: 'completed',
-  failed: 'failed',
-  skipped: 'skipped',
-} as const;
-
 export type PipelineStepAllOf = {
   /**
    * The pipeline this step belongs to
@@ -525,40 +504,6 @@ export type PipelineStepAllOf = {
    * @minLength 36
    */
   toolID: string;
-  /**
-   * Name of the step
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-  /**
-   * Description of what this step does
-   * @maxLength 1000
-   */
-  description?: string;
-  /** Configuration parameters for the tool */
-  config?: PipelineStepAllOfConfig;
-  /**
-   * Position in the pipeline for ordering
-   * @minimum 0
-   */
-  position?: number;
-  /**
-   * Number of retries on failure
-   * @minimum 0
-   * @maximum 10
-   */
-  retries?: number;
-  /**
-   * Timeout in seconds
-   * @minimum 1
-   * @maximum 86400
-   */
-  timeout?: number;
-  /** IDs of steps this step depends on */
-  dependencies?: string[];
-  /** Current status of the step */
-  status?: PipelineStepAllOfStatus;
 };
 
 /**

@@ -13,51 +13,45 @@ import (
 // APIKey represents Schema for API Key entity
 type APIKey struct {
 	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`                       // The date and time when the resource was created
-	ExpiresAt      time.Time            `json:"expiresAt" yaml:"expiresAt"`                       // When this API key expires
+	ExpiresAt      *time.Time           `json:"expiresAt,omitempty" yaml:"expiresAt,omitempty"`   // When this API key expires
 	ID             uuid.UUID            `json:"id" yaml:"id"`                                     // Unique identifier for the resource
-	KeyHash        *string              `json:"keyHash,omitempty" yaml:"keyHash,omitempty"`       // Hashed version of the API key for secure storage
+	KeyHash        string               `json:"keyHash" yaml:"keyHash"`                           // Hashed version of the API key for secure storage
 	LastUsedAt     *time.Time           `json:"lastUsedAt,omitempty" yaml:"lastUsedAt,omitempty"` // When this API key was last used
-	Name           string               `json:"name" yaml:"name"`
-	OrganizationID *uuid.UUID           `json:"organizationID,omitempty" yaml:"organizationID,omitempty"` // The organization this API key belongs to
-	Prefix         string               `json:"prefix" yaml:"prefix"`
-	RateLimit      int                  `json:"rateLimit" yaml:"rateLimit"` // Requests per minute allowed for this API key
+	Name           *string              `json:"name,omitempty" yaml:"name,omitempty"`
+	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"` // The organization this API key belongs to
+	Prefix         *string              `json:"prefix,omitempty" yaml:"prefix,omitempty"`
+	RateLimit      int32                `json:"rateLimit" yaml:"rateLimit"` // Requests per minute allowed for this API key
 	Scopes         []string             `json:"scopes" yaml:"scopes"`
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`               // The date and time when the resource was last updated
-	UserID         *uuid.UUID           `json:"userID,omitempty" yaml:"userID,omitempty"` // The user who owns this API key
+	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"` // The date and time when the resource was last updated
+	UserID         uuid.UUID            `json:"userID" yaml:"userID"`       // The user who owns this API key
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewAPIKey creates a new APIKey entity with validation.
 // All required fields must be provided and valid.
 func NewAPIKey(
-	expiresAt time.Time,
-	name string,
-	prefix string,
-	rateLimit int,
+	keyHash string,
+	organizationID uuid.UUID,
+	rateLimit int32,
 	scopes []string,
+	userID uuid.UUID,
 ) (*APIKey, error) {
 	// Validate required fields
-	if name == "" {
-		return nil, fmt.Errorf("Name cannot be empty")
-	}
-	if prefix == "" {
-		return nil, fmt.Errorf("Prefix cannot be empty")
-	}
-	if rateLimit < 0 {
-		return nil, fmt.Errorf("RateLimit cannot be negative")
+	if keyHash == "" {
+		return nil, fmt.Errorf("KeyHash cannot be empty")
 	}
 
 	now := time.Now().UTC()
 	apikey := &APIKey{
-		CreatedAt: now,
-		ExpiresAt: expiresAt,
-		ID:        uuid.New(),
-		Name:      name,
-		Prefix:    prefix,
-		RateLimit: rateLimit,
-		Scopes:    scopes,
-		UpdatedAt: now,
-		events:    []events.DomainEvent{},
+		CreatedAt:      now,
+		ID:             uuid.New(),
+		KeyHash:        keyHash,
+		OrganizationID: organizationID,
+		RateLimit:      rateLimit,
+		Scopes:         scopes,
+		UpdatedAt:      now,
+		UserID:         userID,
+		events:         []events.DomainEvent{},
 	}
 	apikey.addEvent(events.NewAPIKeyCreatedEvent(apikey.ID))
 
@@ -70,7 +64,7 @@ func (e *APIKey) GetCreatedAt() time.Time {
 }
 
 // GetExpiresAt returns the ExpiresAt
-func (e *APIKey) GetExpiresAt() time.Time {
+func (e *APIKey) GetExpiresAt() *time.Time {
 	return e.ExpiresAt
 }
 
@@ -80,7 +74,7 @@ func (e *APIKey) GetID() uuid.UUID {
 }
 
 // GetKeyHash returns the KeyHash
-func (e *APIKey) GetKeyHash() *string {
+func (e *APIKey) GetKeyHash() string {
 	return e.KeyHash
 }
 
@@ -90,22 +84,22 @@ func (e *APIKey) GetLastUsedAt() *time.Time {
 }
 
 // GetName returns the Name
-func (e *APIKey) GetName() string {
+func (e *APIKey) GetName() *string {
 	return e.Name
 }
 
 // GetOrganizationID returns the OrganizationID
-func (e *APIKey) GetOrganizationID() *uuid.UUID {
+func (e *APIKey) GetOrganizationID() uuid.UUID {
 	return e.OrganizationID
 }
 
 // GetPrefix returns the Prefix
-func (e *APIKey) GetPrefix() string {
+func (e *APIKey) GetPrefix() *string {
 	return e.Prefix
 }
 
 // GetRateLimit returns the RateLimit
-func (e *APIKey) GetRateLimit() int {
+func (e *APIKey) GetRateLimit() int32 {
 	return e.RateLimit
 }
 
@@ -120,7 +114,7 @@ func (e *APIKey) GetUpdatedAt() time.Time {
 }
 
 // GetUserID returns the UserID
-func (e *APIKey) GetUserID() *uuid.UUID {
+func (e *APIKey) GetUserID() uuid.UUID {
 	return e.UserID
 }
 
@@ -142,17 +136,17 @@ func (e *APIKey) addEvent(event events.DomainEvent) {
 // ReconstructAPIKey reconstructs a APIKey from persistence
 func ReconstructAPIKey(
 	createdAt time.Time,
-	expiresAt time.Time,
+	expiresAt *time.Time,
 	id uuid.UUID,
-	keyHash *string,
+	keyHash string,
 	lastUsedAt *time.Time,
-	name string,
-	organizationID *uuid.UUID,
-	prefix string,
-	rateLimit int,
+	name *string,
+	organizationID uuid.UUID,
+	prefix *string,
+	rateLimit int32,
 	scopes []string,
 	updatedAt time.Time,
-	userID *uuid.UUID,
+	userID uuid.UUID,
 ) *APIKey {
 	return &APIKey{
 		CreatedAt:      createdAt,

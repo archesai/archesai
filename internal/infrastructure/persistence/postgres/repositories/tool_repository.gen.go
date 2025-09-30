@@ -30,11 +30,15 @@ func NewPostgresToolRepository(db *pgxpool.Pool) *PostgresToolRepository {
 
 // Create creates a new tool
 func (r *PostgresToolRepository) Create(ctx context.Context, entity *entities.Tool) (*entities.Tool, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateToolParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/tool.sql
 	params := CreateToolParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateToolParams struct
+		ID:             entity.ID,
+		Description:    entity.Description,
+		InputMimeType:  entity.InputMimeType,
+		Name:           entity.Name,
+		OrganizationID: entity.OrganizationID,
+		OutputMimeType: entity.OutputMimeType,
 	}
 
 	result, err := r.queries.CreateTool(ctx, params)
@@ -60,11 +64,14 @@ func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*entiti
 
 // Update updates an existing tool
 func (r *PostgresToolRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Tool) (*entities.Tool, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateToolParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/tool.sql
 	params := UpdateToolParams{
-		ID: id,
-		// Add updatable fields here based on UpdateToolParams struct
+		ID:             id,
+		Description:    &entity.Description,
+		InputMimeType:  &entity.InputMimeType,
+		Name:           &entity.Name,
+		OutputMimeType: &entity.OutputMimeType,
 	}
 
 	result, err := r.queries.UpdateTool(ctx, params)

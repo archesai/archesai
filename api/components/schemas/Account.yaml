@@ -6,6 +6,10 @@ x-codegen:
   repository:
     operations: [create, read, update, delete, list]
     indices: [userID, accountIdentifier]
+    excludeFromUpdate:
+      - AccountIdentifier
+      - Provider
+      - UserID
     additional_methods:
       - name: GetAccountByProvider
         params: [provider, accountIdentifier]

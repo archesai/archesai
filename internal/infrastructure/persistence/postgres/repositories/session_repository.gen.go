@@ -30,11 +30,18 @@ func NewPostgresSessionRepository(db *pgxpool.Pool) *PostgresSessionRepository {
 
 // Create creates a new session
 func (r *PostgresSessionRepository) Create(ctx context.Context, entity *entities.Session) (*entities.Session, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateSessionParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/session.sql
 	params := CreateSessionParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateSessionParams struct
+		ID:             entity.ID,
+		AuthMethod:     entity.AuthMethod,
+		AuthProvider:   entity.AuthProvider,
+		ExpiresAt:      entity.ExpiresAt,
+		IPAddress:      entity.IpAddress,
+		OrganizationID: entity.OrganizationID,
+		Token:          entity.Token,
+		UserAgent:      entity.UserAgent,
+		UserID:         entity.UserID,
 	}
 
 	result, err := r.queries.CreateSession(ctx, params)
@@ -60,11 +67,14 @@ func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*ent
 
 // Update updates an existing session
 func (r *PostgresSessionRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Session) (*entities.Session, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateSessionParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/session.sql
 	params := UpdateSessionParams{
-		ID: id,
-		// Add updatable fields here based on UpdateSessionParams struct
+		ID:             id,
+		AuthMethod:     entity.AuthMethod,
+		AuthProvider:   entity.AuthProvider,
+		ExpiresAt:      &entity.ExpiresAt,
+		OrganizationID: entity.OrganizationID,
 	}
 
 	result, err := r.queries.UpdateSession(ctx, params)
@@ -126,6 +136,7 @@ func mapSessionFromDB(db *Session) *entities.Session {
 		AuthMethod:     db.AuthMethod,
 		AuthProvider:   db.AuthProvider,
 		ExpiresAt:      db.ExpiresAt,
+		IpAddress:      db.IPAddress,
 		OrganizationID: db.OrganizationID,
 		Token:          db.Token,
 		UserAgent:      db.UserAgent,

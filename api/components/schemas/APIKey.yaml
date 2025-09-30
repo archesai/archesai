@@ -3,6 +3,17 @@ x-codegen:
   schemaType: entity
   repository:
     operations: [create, update, delete, read, list]
+    excludeFromCreate: [CreatedAt, UpdatedAt, LastUsedAt]
+    excludeFromUpdate:
+      [
+        CreatedAt,
+        UpdatedAt,
+        UserID,
+        OrganizationID,
+        KeyHash,
+        Prefix,
+        LastUsedAt,
+      ]
 title: APIKey
 description: Schema for API Key entity
 allOf:
@@ -41,6 +52,7 @@ allOf:
         example: ['read:users', 'write:workflows']
       rateLimit:
         type: integer
+        format: int32
         example: 1000
         description: Requests per minute allowed for this API key
       lastUsedAt:
@@ -56,9 +68,9 @@ allOf:
         example: '2025-01-15T09:30:00Z'
         description: When this API key expires
     required:
-      - name
-      - prefix
       - scopes
       - rateLimit
-      - expiresAt
+      - keyHash
+      - organizationID
+      - userID
 unevaluatedProperties: false

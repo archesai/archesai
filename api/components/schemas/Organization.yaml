@@ -5,6 +5,9 @@ x-codegen:
   schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
+    excludeFromUpdate:
+      - Slug
+      - StripeCustomerIdentifier
     indices: [slug, stripeCustomerIdentifier]
     additional_methods:
       - name: GetOrganizationBySlug

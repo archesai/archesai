@@ -31,11 +31,11 @@ func NewPostgres{{.Name}}Repository(db *pgxpool.Pool) *Postgres{{.Name}}Reposito
 
 // Create creates a new {{lower .Name}}
 func (r *Postgres{{.Name}}Repository) Create(ctx context.Context, entity *entities.{{.Type}}) (*entities.{{.Type}}, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to Create{{.Name}}Params based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/{{kebabCase .Name}}.sql
 	params := Create{{.Name}}Params{
-		ID: entity.ID,
-		// Add required fields here based on Create{{.Name}}Params struct
+		ID: entity.ID,{{range .Fields}}{{if and (ne .FieldName "ID") (ne .FieldName "CreatedAt") (ne .FieldName "UpdatedAt")}}{{if not (contains $entity.ExcludeFromCreate .FieldName)}}
+		{{ToConstantCase .FieldName}}: {{if .IsEnumType}}string(entity.{{.FieldName}}){{else}}entity.{{.FieldName}}{{end}},{{end}}{{end}}{{end}}
 	}
 
 	result, err := r.queries.Create{{.Name}}(ctx, params)
@@ -61,11 +61,12 @@ func (r *Postgres{{.Name}}Repository) Get(ctx context.Context, id uuid.UUID) (*e
 
 // Update updates an existing {{lower .Name}}
 func (r *Postgres{{.Name}}Repository) Update(ctx context.Context, id uuid.UUID, entity *entities.{{.Type}}) (*entities.{{.Type}}, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to Update{{.Name}}Params based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/{{kebabCase .Name}}.sql{{range .Fields}}{{if and (ne .FieldName "ID") (ne .FieldName "CreatedAt") (ne .FieldName "UpdatedAt")}}{{if not (contains $entity.ExcludeFromUpdate .FieldName)}}{{if and .IsEnumType (not (isPointerType .GoType))}}
+	{{camelCase .FieldName}}Str := string(entity.{{.FieldName}}){{end}}{{end}}{{end}}{{end}}
 	params := Update{{.Name}}Params{
-		ID: id,
-		// Add updatable fields here based on Update{{.Name}}Params struct
+		ID: id,{{range .Fields}}{{if and (ne .FieldName "ID") (ne .FieldName "CreatedAt") (ne .FieldName "UpdatedAt")}}{{if not (contains $entity.ExcludeFromUpdate .FieldName)}}
+		{{ToConstantCase .FieldName}}: {{if .IsEnumType}}{{if not (isPointerType .GoType)}}&{{camelCase .FieldName}}Str{{else}}string(entity.{{.FieldName}}){{end}}{{else if or (isPointerType .GoType) (isSliceType .GoType)}}entity.{{.FieldName}}{{else}}&entity.{{.FieldName}}{{end}},{{end}}{{end}}{{end}}
 	}
 
 	result, err := r.queries.Update{{.Name}}(ctx, params)

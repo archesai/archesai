@@ -30,11 +30,15 @@ func NewPostgresRunRepository(db *pgxpool.Pool) *PostgresRunRepository {
 
 // Create creates a new run
 func (r *PostgresRunRepository) Create(ctx context.Context, entity *entities.Run) (*entities.Run, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateRunParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/run.sql
 	params := CreateRunParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateRunParams struct
+		ID:             entity.ID,
+		OrganizationID: entity.OrganizationID,
+		PipelineID:     entity.PipelineID,
+		Progress:       entity.Progress,
+		Status:         string(entity.Status),
+		ToolID:         entity.ToolID,
 	}
 
 	result, err := r.queries.CreateRun(ctx, params)
@@ -60,11 +64,18 @@ func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*entitie
 
 // Update updates an existing run
 func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Run) (*entities.Run, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateRunParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/run.sql
+	statusStr := string(entity.Status)
 	params := UpdateRunParams{
-		ID: id,
-		// Add updatable fields here based on UpdateRunParams struct
+		ID:          id,
+		CompletedAt: entity.CompletedAt,
+		Error:       entity.Error,
+		PipelineID:  &entity.PipelineID,
+		Progress:    &entity.Progress,
+		StartedAt:   entity.StartedAt,
+		Status:      &statusStr,
+		ToolID:      &entity.ToolID,
 	}
 
 	result, err := r.queries.UpdateRun(ctx, params)

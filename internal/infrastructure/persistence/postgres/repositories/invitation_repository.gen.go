@@ -30,11 +30,16 @@ func NewPostgresInvitationRepository(db *pgxpool.Pool) *PostgresInvitationReposi
 
 // Create creates a new invitation
 func (r *PostgresInvitationRepository) Create(ctx context.Context, entity *entities.Invitation) (*entities.Invitation, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// SQL params may have different pointer/type requirements than entity fields
+	// Map entity fields to CreateInvitationParams based on SQL INSERT statement
+	// See: internal/infrastructure/persistence/postgres/queries/invitation.sql
 	params := CreateInvitationParams{
-		ID: entity.ID,
-		// Add required fields here based on CreateInvitationParams struct
+		ID:             entity.ID,
+		Email:          entity.Email,
+		ExpiresAt:      entity.ExpiresAt,
+		InviterID:      entity.InviterID,
+		OrganizationID: entity.OrganizationID,
+		Role:           string(entity.Role),
+		Status:         entity.Status,
 	}
 
 	result, err := r.queries.CreateInvitation(ctx, params)
@@ -60,11 +65,15 @@ func (r *PostgresInvitationRepository) Get(ctx context.Context, id uuid.UUID) (*
 
 // Update updates an existing invitation
 func (r *PostgresInvitationRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Invitation) (*entities.Invitation, error) {
-	// TODO: Review and adjust field mappings based on SQL schema
-	// Only include fields that are updatable (check SQL UPDATE query)
+	// Map entity fields to UpdateInvitationParams based on SQL UPDATE statement
+	// See: internal/infrastructure/persistence/postgres/queries/invitation.sql
+	roleStr := string(entity.Role)
 	params := UpdateInvitationParams{
-		ID: id,
-		// Add updatable fields here based on UpdateInvitationParams struct
+		ID:        id,
+		Email:     &entity.Email,
+		ExpiresAt: &entity.ExpiresAt,
+		Role:      &roleStr,
+		Status:    &entity.Status,
 	}
 
 	result, err := r.queries.UpdateInvitation(ctx, params)
