@@ -28,7 +28,7 @@ INSERT INTO
 VALUES
   ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING
-  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+  id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 `
 
 type CreateAPIKeyParams struct {
@@ -62,13 +62,13 @@ func (q *Queries) CreateAPIKey(ctx context.Context, arg CreateAPIKeyParams) (API
 		&i.UpdatedAt,
 		&i.ExpiresAt,
 		&i.KeyHash,
-		&i.Name,
-		&i.Prefix,
-		&i.UserID,
-		&i.OrganizationID,
-		&i.Scopes,
-		&i.RateLimit,
 		&i.LastUsedAt,
+		&i.Name,
+		&i.OrganizationID,
+		&i.Prefix,
+		&i.RateLimit,
+		&i.Scopes,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -109,7 +109,7 @@ func (q *Queries) DeleteExpiredAPIKeys(ctx context.Context) error {
 
 const getAPIKey = `-- name: GetAPIKey :one
 SELECT
-  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+  id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
   api_keys
 WHERE
@@ -127,20 +127,20 @@ func (q *Queries) GetAPIKey(ctx context.Context, id uuid.UUID) (APIKey, error) {
 		&i.UpdatedAt,
 		&i.ExpiresAt,
 		&i.KeyHash,
-		&i.Name,
-		&i.Prefix,
-		&i.UserID,
-		&i.OrganizationID,
-		&i.Scopes,
-		&i.RateLimit,
 		&i.LastUsedAt,
+		&i.Name,
+		&i.OrganizationID,
+		&i.Prefix,
+		&i.RateLimit,
+		&i.Scopes,
+		&i.UserID,
 	)
 	return i, err
 }
 
 const getAPIKeyByKeyHash = `-- name: GetAPIKeyByKeyHash :one
 SELECT
-  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+  id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
   api_keys
 WHERE
@@ -158,20 +158,20 @@ func (q *Queries) GetAPIKeyByKeyHash(ctx context.Context, keyHash string) (APIKe
 		&i.UpdatedAt,
 		&i.ExpiresAt,
 		&i.KeyHash,
-		&i.Name,
-		&i.Prefix,
-		&i.UserID,
-		&i.OrganizationID,
-		&i.Scopes,
-		&i.RateLimit,
 		&i.LastUsedAt,
+		&i.Name,
+		&i.OrganizationID,
+		&i.Prefix,
+		&i.RateLimit,
+		&i.Scopes,
+		&i.UserID,
 	)
 	return i, err
 }
 
 const listAPIKeys = `-- name: ListAPIKeys :many
 SELECT
-  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+  id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
   api_keys
 ORDER BY
@@ -202,13 +202,13 @@ func (q *Queries) ListAPIKeys(ctx context.Context, arg ListAPIKeysParams) ([]API
 			&i.UpdatedAt,
 			&i.ExpiresAt,
 			&i.KeyHash,
-			&i.Name,
-			&i.Prefix,
-			&i.UserID,
-			&i.OrganizationID,
-			&i.Scopes,
-			&i.RateLimit,
 			&i.LastUsedAt,
+			&i.Name,
+			&i.OrganizationID,
+			&i.Prefix,
+			&i.RateLimit,
+			&i.Scopes,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -222,7 +222,7 @@ func (q *Queries) ListAPIKeys(ctx context.Context, arg ListAPIKeysParams) ([]API
 
 const listAPIKeysByOrganization = `-- name: ListAPIKeysByOrganization :many
 SELECT
-  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+  id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
   api_keys
 WHERE
@@ -256,13 +256,13 @@ func (q *Queries) ListAPIKeysByOrganization(ctx context.Context, arg ListAPIKeys
 			&i.UpdatedAt,
 			&i.ExpiresAt,
 			&i.KeyHash,
-			&i.Name,
-			&i.Prefix,
-			&i.UserID,
-			&i.OrganizationID,
-			&i.Scopes,
-			&i.RateLimit,
 			&i.LastUsedAt,
+			&i.Name,
+			&i.OrganizationID,
+			&i.Prefix,
+			&i.RateLimit,
+			&i.Scopes,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -276,7 +276,7 @@ func (q *Queries) ListAPIKeysByOrganization(ctx context.Context, arg ListAPIKeys
 
 const listAPIKeysByUser = `-- name: ListAPIKeysByUser :many
 SELECT
-  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+  id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
   api_keys
 WHERE
@@ -310,13 +310,13 @@ func (q *Queries) ListAPIKeysByUser(ctx context.Context, arg ListAPIKeysByUserPa
 			&i.UpdatedAt,
 			&i.ExpiresAt,
 			&i.KeyHash,
-			&i.Name,
-			&i.Prefix,
-			&i.UserID,
-			&i.OrganizationID,
-			&i.Scopes,
-			&i.RateLimit,
 			&i.LastUsedAt,
+			&i.Name,
+			&i.OrganizationID,
+			&i.Prefix,
+			&i.RateLimit,
+			&i.Scopes,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -339,7 +339,7 @@ SET
 WHERE
   id = $5
 RETURNING
-  id, created_at, updated_at, expires_at, key_hash, name, prefix, user_id, organization_id, scopes, rate_limit, last_used_at
+  id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 `
 
 type UpdateAPIKeyParams struct {
@@ -365,13 +365,13 @@ func (q *Queries) UpdateAPIKey(ctx context.Context, arg UpdateAPIKeyParams) (API
 		&i.UpdatedAt,
 		&i.ExpiresAt,
 		&i.KeyHash,
-		&i.Name,
-		&i.Prefix,
-		&i.UserID,
-		&i.OrganizationID,
-		&i.Scopes,
-		&i.RateLimit,
 		&i.LastUsedAt,
+		&i.Name,
+		&i.OrganizationID,
+		&i.Prefix,
+		&i.RateLimit,
+		&i.Scopes,
+		&i.UserID,
 	)
 	return i, err
 }

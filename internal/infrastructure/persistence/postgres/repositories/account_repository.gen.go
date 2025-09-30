@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresAccountRepository(db *pgxpool.Pool) *PostgresAccountRepository {
 
 // Create creates a new account
 func (r *PostgresAccountRepository) Create(ctx context.Context, entity *entities.Account) (*entities.Account, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateAccountParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateAccountParams struct
 	}
 
 	result, err := r.queries.CreateAccount(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresAccountRepository) Create(ctx context.Context, entity *entities
 func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Account, error) {
 	result, err := r.queries.GetAccount(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrAccountNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrAccountNotFound
 		}
 		return nil, fmt.Errorf("failed to get account: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*ent
 
 // Update updates an existing account
 func (r *PostgresAccountRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Account) (*entities.Account, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateAccountParams{
 		ID: id,
+		// Add updatable fields here based on UpdateAccountParams struct
 	}
 
 	result, err := r.queries.UpdateAccount(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrAccountNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrAccountNotFound
 		}
 		return nil, fmt.Errorf("failed to update account: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresAccountRepository) Update(ctx context.Context, id uuid.UUID, en
 func (r *PostgresAccountRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteAccount(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrAccountNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrAccountNotFound
 		}
 		return fmt.Errorf("failed to delete account: %w", err)
 	}
@@ -117,8 +125,8 @@ func (r *PostgresAccountRepository) GetAccountByProvider(ctx context.Context, pr
 
 	result, err := r.queries.GetAccountByProvider(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrAccountNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrAccountNotFound
 		}
 		return nil, fmt.Errorf("failed to GetAccountByProvider: %w", err)
 	}
@@ -138,9 +146,18 @@ func mapAccountFromDB(db *Account) *entities.Account {
 	}
 
 	result := &entities.Account{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:                    db.ID,
+		CreatedAt:             db.CreatedAt,
+		UpdatedAt:             db.UpdatedAt,
+		AccessToken:           db.AccessToken,
+		AccessTokenExpiresAt:  db.AccessTokenExpiresAt,
+		AccountIdentifier:     db.AccountIdentifier,
+		IdToken:               db.IDToken,
+		Provider:              entities.AccountProvider(db.Provider),
+		RefreshToken:          db.RefreshToken,
+		RefreshTokenExpiresAt: db.RefreshTokenExpiresAt,
+		Scope:                 db.Scope,
+		UserID:                db.UserID,
 	}
 
 	return result

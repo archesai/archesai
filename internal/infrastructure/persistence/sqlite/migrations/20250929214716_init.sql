@@ -6,6 +6,10 @@
 -- +goose StatementBegin
 -- PostgreSQL schema for sqlc
 -- This is the source of truth for the database schema
+
+-- Enable pgvector extension for AI embeddings
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- Create user table
 CREATE TABLE "user" (
   id TEXT PRIMARY KEY,
@@ -25,7 +29,6 @@ CREATE TABLE organization (
   billing_email TEXT,
   credits INTEGER NOT NULL DEFAULT 0,
   logo TEXT,
-  metadata TEXT,
   name TEXT NOT NULL,
   plan TEXT NOT NULL DEFAULT 'FREE' CHECK (
     plan IN (
@@ -36,7 +39,9 @@ CREATE TABLE organization (
       'UNLIMITED'
     )
   ),
-  stripe_customer_id TEXT UNIQUE NOT NULL
+  slug VARCHAR(50) NOT NULL,
+  stripe_customer_identifier TEXT UNIQUE NOT NULL,
+  CONSTRAINT organization_slug_format CHECK (slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$')
 );
 
 -- Create account table
@@ -61,9 +66,12 @@ CREATE TABLE session (
   id TEXT PRIMARY KEY,
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now')),
-  active_organization_id TEXT,
+  auth_method VARCHAR(50),
+  auth_provider VARCHAR(50),
   expires_at TEXT NOT NULL,
   ip_address TEXT,
+  metadata JSONB,
+  organization_id TEXT,
   token TEXT NOT NULL UNIQUE,
   user_agent TEXT,
   user_id TEXT NOT NULL REFERENCES "user" (id) ON DELETE CASCADE
@@ -102,29 +110,35 @@ CREATE TABLE verification_token (
   value TEXT NOT NULL
 );
 
--- Create api_token table
-CREATE TABLE api_token (
+-- Create magic link tokens table
+CREATE TABLE magic_link_tokens (
+  id TEXT PRIMARY KEY,
+  code VARCHAR(6),
+  created_at TIMESTAMP DEFAULT NOW(),
+  delivery_method VARCHAR(50),
+  expires_at TIMESTAMP NOT NULL,
+  identifier VARCHAR(255) NOT NULL,
+  ip_address VARCHAR(45),
+  token_hash VARCHAR(255) UNIQUE NOT NULL,
+  used_at TIMESTAMP,
+  user_agent TEXT,
+  user_id TEXT REFERENCES "user"(id) ON DELETE CASCADE
+);
+
+-- Create api_keys table
+CREATE TABLE api_keys (
   id TEXT PRIMARY KEY,
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now')),
-  enabled INTEGER NOT NULL,
   expires_at TEXT,
-  key TEXT NOT NULL,
-  last_refill TEXT,
-  last_request TEXT,
-  metadata TEXT,
+  key_hash TEXT NOT NULL,
+  last_used_at TEXT,
   name TEXT,
-  permissions TEXT,
+  organization_id TEXT NOT NULL,
   prefix TEXT,
-  rate_limit_enabled INTEGER NOT NULL,
-  rate_limit_max INTEGER,
-  rate_limit_time_window INTEGER,
-  refill_amount INTEGER,
-  refill_interval INTEGER,
-  remaining INTEGER,
-  request_count INTEGER NOT NULL DEFAULT 0,
-  start TEXT,
-  user_id TEXT NOT NULL REFERENCES organization (id) ON DELETE CASCADE ON UPDATE CASCADE
+  rate_limit INTEGER NOT NULL DEFAULT 60,
+  scopes TEXT[] NOT NULL DEFAULT '{}',
+  user_id TEXT NOT NULL
 );
 
 -- Create pipeline table
@@ -179,7 +193,7 @@ CREATE TABLE run (
   status TEXT NOT NULL DEFAULT 'QUEUED' CHECK (
     status IN ('COMPLETED', 'FAILED', 'PROCESSING', 'QUEUED')
   ),
-  tool_id TEXT NOT NULL REFERENCES tool (id) ON DELETE SET NULL ON UPDATE CASCADE 
+  tool_id TEXT NOT NULL REFERENCES tool (id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- Create artifact table
@@ -189,6 +203,7 @@ CREATE TABLE artifact (
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now')),
   credits INTEGER NOT NULL DEFAULT 0,
   description TEXT,
+  embedding vector(1536),
   mime_type TEXT NOT NULL DEFAULT 'application/octet-stream',
   name TEXT,
   organization_id TEXT NOT NULL REFERENCES organization (id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -221,78 +236,85 @@ CREATE TABLE label_to_artifact (
   PRIMARY KEY (label_id, artifact_id)
 );
 
+-- Add foreign key constraints for api_keys
+ALTER TABLE api_keys
+ADD CONSTRAINT api_keys_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
+
+ALTER TABLE api_keys
+ADD CONSTRAINT api_keys_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization (id) ON DELETE CASCADE;
+
 -- Create indexes
 CREATE INDEX idx_account_user_id ON account (user_id);
-
 CREATE INDEX idx_session_user_id ON session (user_id);
-
 CREATE INDEX idx_member_organization_id ON member (organization_id);
-
 CREATE INDEX idx_member_user_id ON member (user_id);
-
 CREATE INDEX idx_invitation_organization_id ON invitation (organization_id);
-
 CREATE INDEX idx_invitation_inviter_id ON invitation (inviter_id);
-
-CREATE INDEX idx_api_token_user_id ON api_token (user_id);
-
+CREATE INDEX idx_api_keys_user_id ON api_keys (user_id);
+CREATE INDEX idx_api_keys_organization_id ON api_keys (organization_id);
+CREATE INDEX idx_api_keys_last_used_at ON api_keys (last_used_at);
+CREATE INDEX idx_api_keys_key_hash ON api_keys (key_hash);
 CREATE INDEX idx_pipeline_organization_id ON pipeline (organization_id);
-
 CREATE INDEX idx_tool_organization_id ON tool (organization_id);
-
 CREATE INDEX idx_pipeline_step_pipeline_id ON pipeline_step (pipeline_id);
-
 CREATE INDEX idx_pipeline_step_tool_id ON pipeline_step (tool_id);
-
 CREATE INDEX idx_run_organization_id ON run (organization_id);
-
 CREATE INDEX idx_run_pipeline_id ON run (pipeline_id);
-
 CREATE INDEX idx_run_tool_id ON run (tool_id);
-
 CREATE INDEX idx_artifact_organization_id ON artifact (organization_id);
-
 CREATE INDEX idx_artifact_producer_id ON artifact (producer_id);
-
 CREATE UNIQUE INDEX idx_label_name_organization ON label (name, organization_id);
+CREATE UNIQUE INDEX idx_organization_slug ON organization(slug);
+
+-- Magic link token indexes
+CREATE INDEX idx_magic_link_tokens_token_hash ON magic_link_tokens(token_hash);
+CREATE INDEX idx_magic_link_tokens_code ON magic_link_tokens(code) WHERE code IS NOT NULL;
+CREATE INDEX idx_magic_link_tokens_identifier ON magic_link_tokens(identifier);
+CREATE INDEX idx_magic_link_tokens_expires_at ON magic_link_tokens(expires_at) WHERE used_at IS NULL;
+
+-- Artifact embedding index for vector similarity search
+CREATE INDEX ON artifact USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+
+-- Create function to clean up expired tokens
+CREATE OR REPLACE FUNCTION cleanup_expired_magic_links() RETURNS void AS $$
+BEGIN
+    DELETE FROM magic_link_tokens
+    WHERE expires_at < NOW()
+    AND used_at IS NULL;
+END;
+$$ LANGUAGE plpgsql;
 
 -- +goose StatementEnd
+
 -- +goose Down
 -- +goose StatementBegin
+
+-- Drop function
+DROP FUNCTION IF EXISTS cleanup_expired_magic_links();
+
 -- Drop junction tables first (they have foreign keys)
 DROP TABLE IF EXISTS label_to_artifact CASCADE;
-
 DROP TABLE IF EXISTS run_to_artifact CASCADE;
-
 DROP TABLE IF EXISTS pipeline_step_to_dependency CASCADE;
 
 -- Drop main tables in reverse dependency order
 DROP TABLE IF EXISTS label CASCADE;
-
 DROP TABLE IF EXISTS artifact CASCADE;
-
 DROP TABLE IF EXISTS run CASCADE;
-
 DROP TABLE IF EXISTS pipeline_step CASCADE;
-
 DROP TABLE IF EXISTS tool CASCADE;
-
 DROP TABLE IF EXISTS pipeline CASCADE;
-
-DROP TABLE IF EXISTS api_token CASCADE;
-
+DROP TABLE IF EXISTS api_keys CASCADE;
+DROP TABLE IF EXISTS magic_link_tokens CASCADE;
 DROP TABLE IF EXISTS verification_token CASCADE;
-
 DROP TABLE IF EXISTS invitation CASCADE;
-
 DROP TABLE IF EXISTS member CASCADE;
-
 DROP TABLE IF EXISTS session CASCADE;
-
 DROP TABLE IF EXISTS account CASCADE;
-
 DROP TABLE IF EXISTS organization CASCADE;
-
 DROP TABLE IF EXISTS "user" CASCADE;
+
+-- Drop pgvector extension
+DROP EXTENSION IF EXISTS vector;
 
 -- +goose StatementEnd

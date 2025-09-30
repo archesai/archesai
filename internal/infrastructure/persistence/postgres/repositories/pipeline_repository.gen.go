@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresPipelineRepository(db *pgxpool.Pool) *PostgresPipelineRepository
 
 // Create creates a new pipeline
 func (r *PostgresPipelineRepository) Create(ctx context.Context, entity *entities.Pipeline) (*entities.Pipeline, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreatePipelineParams{
 		ID: entity.ID,
+		// Add required fields here based on CreatePipelineParams struct
 	}
 
 	result, err := r.queries.CreatePipeline(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresPipelineRepository) Create(ctx context.Context, entity *entitie
 func (r *PostgresPipelineRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Pipeline, error) {
 	result, err := r.queries.GetPipeline(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrPipelineNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrPipelineNotFound
 		}
 		return nil, fmt.Errorf("failed to get pipeline: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresPipelineRepository) Get(ctx context.Context, id uuid.UUID) (*en
 
 // Update updates an existing pipeline
 func (r *PostgresPipelineRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Pipeline) (*entities.Pipeline, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdatePipelineParams{
 		ID: id,
+		// Add updatable fields here based on UpdatePipelineParams struct
 	}
 
 	result, err := r.queries.UpdatePipeline(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrPipelineNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrPipelineNotFound
 		}
 		return nil, fmt.Errorf("failed to update pipeline: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresPipelineRepository) Update(ctx context.Context, id uuid.UUID, e
 func (r *PostgresPipelineRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeletePipeline(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrPipelineNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrPipelineNotFound
 		}
 		return fmt.Errorf("failed to delete pipeline: %w", err)
 	}
@@ -120,9 +128,12 @@ func mapPipelineFromDB(db *Pipeline) *entities.Pipeline {
 	}
 
 	result := &entities.Pipeline{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:             db.ID,
+		CreatedAt:      db.CreatedAt,
+		UpdatedAt:      db.UpdatedAt,
+		Description:    db.Description,
+		Name:           db.Name,
+		OrganizationID: db.OrganizationID,
 	}
 
 	return result

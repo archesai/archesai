@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresSessionRepository(db *pgxpool.Pool) *PostgresSessionRepository {
 
 // Create creates a new session
 func (r *PostgresSessionRepository) Create(ctx context.Context, entity *entities.Session) (*entities.Session, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateSessionParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateSessionParams struct
 	}
 
 	result, err := r.queries.CreateSession(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresSessionRepository) Create(ctx context.Context, entity *entities
 func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Session, error) {
 	result, err := r.queries.GetSession(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrSessionNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrSessionNotFound
 		}
 		return nil, fmt.Errorf("failed to get session: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*ent
 
 // Update updates an existing session
 func (r *PostgresSessionRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Session) (*entities.Session, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateSessionParams{
 		ID: id,
+		// Add updatable fields here based on UpdateSessionParams struct
 	}
 
 	result, err := r.queries.UpdateSession(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrSessionNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrSessionNotFound
 		}
 		return nil, fmt.Errorf("failed to update session: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresSessionRepository) Update(ctx context.Context, id uuid.UUID, en
 func (r *PostgresSessionRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteSession(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrSessionNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrSessionNotFound
 		}
 		return fmt.Errorf("failed to delete session: %w", err)
 	}
@@ -112,9 +120,16 @@ func mapSessionFromDB(db *Session) *entities.Session {
 	}
 
 	result := &entities.Session{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:             db.ID,
+		CreatedAt:      db.CreatedAt,
+		UpdatedAt:      db.UpdatedAt,
+		AuthMethod:     db.AuthMethod,
+		AuthProvider:   db.AuthProvider,
+		ExpiresAt:      db.ExpiresAt,
+		OrganizationID: db.OrganizationID,
+		Token:          db.Token,
+		UserAgent:      db.UserAgent,
+		UserID:         db.UserID,
 	}
 
 	return result

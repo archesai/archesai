@@ -2,32 +2,53 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/internal/core/entities"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 	"github.com/archesai/archesai/internal/infrastructure/auth/oauth"
 	"github.com/archesai/archesai/internal/infrastructure/cache"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 )
 
+const (
+	bindHost = "0.0.0.0"
+)
+
 // Service provides authentication functionality across all transport layers.
 type Service struct {
-	config         *config.Config
-	sessionRepo    repositories.SessionRepository
-	sessionsRepo   repositories.SessionRepository
-	userRepo       repositories.UserRepository
-	accountRepo    repositories.AccountRepository
-	accountsRepo   repositories.AccountRepository
-	tokenManager   *TokenManager
-	magicLink      *MagicLinkProvider
-	oauthProviders map[string]OAuthProvider
-	cache          cache.Cache[string]
-	jwtSecret      string
+	config             *config.Config
+	logger             *slog.Logger
+	sessionRepo        repositories.SessionRepository
+	sessionsRepo       repositories.SessionRepository
+	userRepo           repositories.UserRepository
+	accountRepo        repositories.AccountRepository
+	accountsRepo       repositories.AccountRepository
+	tokenManager       *TokenManager
+	magicLink          *MagicLinkProvider
+	oauthProviders     map[string]OAuthProvider
+	cache              cache.Cache[string]
+	jwtSecret          string
+	magicLinkDeliverer MagicLinkDeliverer
+	oTPDeliverer       OTPDeliverer
+}
+
+// MagicLinkDeliverer handles magic link notification delivery.
+type MagicLinkDeliverer interface {
+	Deliver(ctx context.Context, token *valueobjects.MagicLinkToken, baseURL string) error
+}
+
+// OTPDeliverer handles OTP notification delivery.
+type OTPDeliverer interface {
+	Deliver(ctx context.Context, token *valueobjects.MagicLinkToken, baseURL string) error
 }
 
 // OAuthProvider interface for OAuth providers
@@ -44,25 +65,31 @@ func NewService(
 	userRepo repositories.UserRepository,
 	accountRepo repositories.AccountRepository,
 	cacheService cache.Cache[string],
+	magicLinkDeliverer MagicLinkDeliverer,
+	otpDeliverer OTPDeliverer,
+	logger *slog.Logger,
 ) *Service {
 	// Build base URL from API config
 	baseURL := fmt.Sprintf("http://%s:%d", cfg.API.Host, int(cfg.API.Port))
-	if cfg.API.Host == "0.0.0.0" {
+	if cfg.API.Host == bindHost {
 		baseURL = fmt.Sprintf("http://localhost:%d", int(cfg.API.Port))
 	}
 
 	s := &Service{
-		config:         cfg,
-		sessionRepo:    sessionRepo,
-		sessionsRepo:   sessionRepo,
-		userRepo:       userRepo,
-		accountRepo:    accountRepo,
-		accountsRepo:   accountRepo,
-		tokenManager:   NewTokenManager(cfg.Auth.Local.JWTSecret),
-		magicLink:      NewMagicLinkProvider(cfg.Auth.Local.JWTSecret, baseURL),
-		oauthProviders: make(map[string]OAuthProvider),
-		cache:          cacheService,
-		jwtSecret:      cfg.Auth.Local.JWTSecret,
+		config:             cfg,
+		logger:             logger,
+		sessionRepo:        sessionRepo,
+		sessionsRepo:       sessionRepo,
+		userRepo:           userRepo,
+		accountRepo:        accountRepo,
+		accountsRepo:       accountRepo,
+		tokenManager:       NewTokenManager(cfg.Auth.Local.JWTSecret),
+		magicLink:          NewMagicLinkProvider(cfg.Auth.Local.JWTSecret, baseURL),
+		oauthProviders:     make(map[string]OAuthProvider),
+		cache:              cacheService,
+		jwtSecret:          cfg.Auth.Local.JWTSecret,
+		magicLinkDeliverer: magicLinkDeliverer,
+		oTPDeliverer:       otpDeliverer,
 	}
 
 	// Initialize OAuth providers based on config
@@ -146,9 +173,36 @@ func (s *Service) HandleOAuthCallback(
 	return s.generateTokens(user, session)
 }
 
-// GenerateMagicLink creates a stateless magic link token.
-func (s *Service) GenerateMagicLink(identifier string, redirectURL string) (string, error) {
-	return s.magicLink.GenerateLink(identifier, redirectURL)
+// GenerateMagicLink creates a stateless magic link token and sends it via the deliverer.
+func (s *Service) GenerateMagicLink(
+	ctx context.Context,
+	identifier, redirectURL string,
+) (string, error) {
+	link, err := s.magicLink.GenerateLink(identifier, redirectURL)
+	if err != nil {
+		return "", err
+	}
+
+	// Extract token from link for notification
+	tokenStr := link[strings.LastIndex(link, "token=")+6:]
+	token := &valueobjects.MagicLinkToken{
+		Token:      &tokenStr,
+		Identifier: identifier,
+		ExpiresAt:  time.Now().Add(15 * time.Minute),
+	}
+
+	// Send notification if deliverer is configured
+	if s.magicLinkDeliverer != nil {
+		baseURL := fmt.Sprintf("http://%s:%d", s.config.API.Host, int(s.config.API.Port))
+		if s.config.API.Host == bindHost {
+			baseURL = fmt.Sprintf("http://localhost:%d", int(s.config.API.Port))
+		}
+		if err := s.magicLinkDeliverer.Deliver(ctx, token, baseURL); err != nil {
+			return "", fmt.Errorf("failed to deliver magic link: %w", err)
+		}
+	}
+
+	return link, nil
 }
 
 // VerifyMagicLink validates a magic link token and creates a session.
@@ -162,21 +216,41 @@ func (s *Service) VerifyMagicLink(ctx context.Context, token string) (*Tokens, e
 	// Find or create user by identifier (email)
 	user, err := s.userRepo.GetUserByEmail(ctx, claims.Identifier)
 	if err != nil {
-		// Create new user if not exists
-		user, err = s.userRepo.Create(ctx, &entities.User{
-			ID:            uuid.New(),
-			Email:         claims.Identifier,
-			EmailVerified: true,              // Magic link verifies email
-			Name:          claims.Identifier, // Default to email
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
-		})
-		if err != nil {
-			return nil, fmt.Errorf("failed to create user: %w", err)
+		// Debug: log the error
+		s.logger.Info("GetUserByEmail returned error",
+			"error", err,
+			"is_user_not_found", errors.Is(err, corerrors.ErrUserNotFound),
+			"email", claims.Identifier,
+		)
+
+		// Only create new user if not found, otherwise propagate the error
+		if !errors.Is(err, corerrors.ErrUserNotFound) {
+			return nil, fmt.Errorf("failed to get user: %w", err)
 		}
+
+		// Create new user if not exists
+		newUser, createErr := entities.NewUser(
+			claims.Identifier,
+			true,              // Magic link verifies email
+			claims.Identifier, // Default name to email
+		)
+		if createErr != nil {
+			return nil, fmt.Errorf("failed to create user entity: %w", createErr)
+		}
+
+		user, err = s.userRepo.Create(ctx, newUser)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create user in database: %w", err)
+		}
+
+		// Verify the user was actually created by trying to fetch it again
+		_, verifyErr := s.userRepo.Get(ctx, user.ID)
+		if verifyErr != nil {
+			return nil, fmt.Errorf("user creation verification failed: %w", verifyErr)
+		}
+
 	}
 
-	// Create session
 	session, err := s.createSession(ctx, user.ID, map[string]interface{}{
 		"auth_method": "magic_link",
 	})
@@ -322,6 +396,8 @@ func (s *Service) createSession(
 	// Generate a secure session token
 	token := uuid.New().String()
 
+	ipAddr := bindHost
+	userAgent := "unknown"
 	session := &entities.Session{
 		ID:           uuid.New(),
 		UserID:       userID,
@@ -329,13 +405,18 @@ func (s *Service) createSession(
 		ExpiresAt:    time.Now().Add(7 * 24 * time.Hour), // 7 days
 		AuthMethod:   &authMethod,
 		AuthProvider: &authProvider,
-		IpAddress:    "0.0.0.0", // TODO: Get from request context
-		UserAgent:    "unknown", // TODO: Get from request context
+		IpAddress:    &ipAddr,
+		UserAgent:    &userAgent,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
 
-	return s.sessionRepo.Create(ctx, session)
+	createdSession, err := s.sessionRepo.Create(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdSession, nil
 }
 
 func (s *Service) generateTokens(

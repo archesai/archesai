@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresPipelineStepRepository(db *pgxpool.Pool) *PostgresPipelineStepRe
 
 // Create creates a new pipelinestep
 func (r *PostgresPipelineStepRepository) Create(ctx context.Context, entity *entities.PipelineStep) (*entities.PipelineStep, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreatePipelineStepParams{
 		ID: entity.ID,
+		// Add required fields here based on CreatePipelineStepParams struct
 	}
 
 	result, err := r.queries.CreatePipelineStep(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresPipelineStepRepository) Create(ctx context.Context, entity *ent
 func (r *PostgresPipelineStepRepository) Get(ctx context.Context, id uuid.UUID) (*entities.PipelineStep, error) {
 	result, err := r.queries.GetPipelineStep(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrPipelineStepNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrPipelineStepNotFound
 		}
 		return nil, fmt.Errorf("failed to get pipelinestep: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresPipelineStepRepository) Get(ctx context.Context, id uuid.UUID) 
 
 // Update updates an existing pipelinestep
 func (r *PostgresPipelineStepRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.PipelineStep) (*entities.PipelineStep, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdatePipelineStepParams{
 		ID: id,
+		// Add updatable fields here based on UpdatePipelineStepParams struct
 	}
 
 	result, err := r.queries.UpdatePipelineStep(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrPipelineStepNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrPipelineStepNotFound
 		}
 		return nil, fmt.Errorf("failed to update pipelinestep: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresPipelineStepRepository) Update(ctx context.Context, id uuid.UUI
 func (r *PostgresPipelineStepRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeletePipelineStep(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrPipelineStepNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrPipelineStepNotFound
 		}
 		return fmt.Errorf("failed to delete pipelinestep: %w", err)
 	}
@@ -112,9 +120,11 @@ func mapPipelineStepFromDB(db *PipelineStep) *entities.PipelineStep {
 	}
 
 	result := &entities.PipelineStep{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:           db.ID,
+		CreatedAt:    db.CreatedAt,
+		UpdatedAt:    db.UpdatedAt,
+		PipelineID:   db.PipelineID,
+		ToolID:       db.ToolID,
 	}
 
 	return result

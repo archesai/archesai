@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresArtifactRepository(db *pgxpool.Pool) *PostgresArtifactRepository
 
 // Create creates a new artifact
 func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *entities.Artifact) (*entities.Artifact, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateArtifactParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateArtifactParams struct
 	}
 
 	result, err := r.queries.CreateArtifact(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *entitie
 func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Artifact, error) {
 	result, err := r.queries.GetArtifact(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrArtifactNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrArtifactNotFound
 		}
 		return nil, fmt.Errorf("failed to get artifact: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*en
 
 // Update updates an existing artifact
 func (r *PostgresArtifactRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Artifact) (*entities.Artifact, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateArtifactParams{
 		ID: id,
+		// Add updatable fields here based on UpdateArtifactParams struct
 	}
 
 	result, err := r.queries.UpdateArtifact(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrArtifactNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrArtifactNotFound
 		}
 		return nil, fmt.Errorf("failed to update artifact: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresArtifactRepository) Update(ctx context.Context, id uuid.UUID, e
 func (r *PostgresArtifactRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteArtifact(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrArtifactNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrArtifactNotFound
 		}
 		return fmt.Errorf("failed to delete artifact: %w", err)
 	}
@@ -126,9 +134,17 @@ func mapArtifactFromDB(db *Artifact) *entities.Artifact {
 	}
 
 	result := &entities.Artifact{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:             db.ID,
+		CreatedAt:      db.CreatedAt,
+		UpdatedAt:      db.UpdatedAt,
+		Credits:        db.Credits,
+		Description:    db.Description,
+		MimeType:       db.MimeType,
+		Name:           db.Name,
+		OrganizationID: db.OrganizationID,
+		PreviewImage:   db.PreviewImage,
+		ProducerID:     db.ProducerID,
+		Text:           db.Text,
 	}
 
 	return result

@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresOrganizationRepository(db *pgxpool.Pool) *PostgresOrganizationRe
 
 // Create creates a new organization
 func (r *PostgresOrganizationRepository) Create(ctx context.Context, entity *entities.Organization) (*entities.Organization, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateOrganizationParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateOrganizationParams struct
 	}
 
 	result, err := r.queries.CreateOrganization(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresOrganizationRepository) Create(ctx context.Context, entity *ent
 func (r *PostgresOrganizationRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Organization, error) {
 	result, err := r.queries.GetOrganization(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrOrganizationNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrOrganizationNotFound
 		}
 		return nil, fmt.Errorf("failed to get organization: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresOrganizationRepository) Get(ctx context.Context, id uuid.UUID) 
 
 // Update updates an existing organization
 func (r *PostgresOrganizationRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Organization) (*entities.Organization, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateOrganizationParams{
 		ID: id,
+		// Add updatable fields here based on UpdateOrganizationParams struct
 	}
 
 	result, err := r.queries.UpdateOrganization(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrOrganizationNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrOrganizationNotFound
 		}
 		return nil, fmt.Errorf("failed to update organization: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresOrganizationRepository) Update(ctx context.Context, id uuid.UUI
 func (r *PostgresOrganizationRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteOrganization(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrOrganizationNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrOrganizationNotFound
 		}
 		return fmt.Errorf("failed to delete organization: %w", err)
 	}
@@ -112,8 +120,8 @@ func (r *PostgresOrganizationRepository) List(ctx context.Context, limit, offset
 func (r *PostgresOrganizationRepository) GetOrganizationBySlug(ctx context.Context, slug string) (*entities.Organization, error) {
 	result, err := r.queries.GetOrganizationBySlug(ctx, slug)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrOrganizationNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrOrganizationNotFound
 		}
 		return nil, fmt.Errorf("failed to GetOrganizationBySlug: %w", err)
 	}
@@ -125,8 +133,8 @@ func (r *PostgresOrganizationRepository) GetOrganizationBySlug(ctx context.Conte
 func (r *PostgresOrganizationRepository) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (*entities.Organization, error) {
 	result, err := r.queries.GetOrganizationByStripeCustomerID(ctx, stripeCustomerIdentifier)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrOrganizationNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrOrganizationNotFound
 		}
 		return nil, fmt.Errorf("failed to GetOrganizationByStripeCustomerID: %w", err)
 	}
@@ -140,9 +148,16 @@ func mapOrganizationFromDB(db *Organization) *entities.Organization {
 	}
 
 	result := &entities.Organization{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:                       db.ID,
+		CreatedAt:                db.CreatedAt,
+		UpdatedAt:                db.UpdatedAt,
+		BillingEmail:             db.BillingEmail,
+		Credits:                  db.Credits,
+		Logo:                     db.Logo,
+		Name:                     db.Name,
+		Plan:                     entities.OrganizationPlan(db.Plan),
+		Slug:                     db.Slug,
+		StripeCustomerIdentifier: db.StripeCustomerIdentifier,
 	}
 
 	return result

@@ -181,9 +181,9 @@ export const listSessionsResponse = zod.object({
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
-  "ipAddress": zod.string().min(1).describe('The IP address of the session'),
+  "ipAddress": zod.string().min(1).optional().describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
-  "userAgent": zod.string().min(1).describe('The user agent of the session'),
+  "userAgent": zod.string().min(1).optional().describe('The user agent of the session'),
   "userID": zod.uuid().min(listSessionsResponseDataItemUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')),
   "meta": zod.object({
@@ -218,9 +218,9 @@ export const deleteSessionResponse = zod.object({
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
-  "ipAddress": zod.string().min(1).describe('The IP address of the session'),
+  "ipAddress": zod.string().min(1).optional().describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
-  "userAgent": zod.string().min(1).describe('The user agent of the session'),
+  "userAgent": zod.string().min(1).optional().describe('The user agent of the session'),
   "userID": zod.uuid().min(deleteSessionResponseDataUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 })
@@ -252,9 +252,9 @@ export const getSessionResponse = zod.object({
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
-  "ipAddress": zod.string().min(1).describe('The IP address of the session'),
+  "ipAddress": zod.string().min(1).optional().describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
-  "userAgent": zod.string().min(1).describe('The user agent of the session'),
+  "userAgent": zod.string().min(1).optional().describe('The user agent of the session'),
   "userID": zod.uuid().min(getSessionResponseDataUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 })
@@ -293,9 +293,9 @@ export const updateSessionResponse = zod.object({
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
-  "ipAddress": zod.string().min(1).describe('The IP address of the session'),
+  "ipAddress": zod.string().min(1).optional().describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
-  "userAgent": zod.string().min(1).describe('The user agent of the session'),
+  "userAgent": zod.string().min(1).optional().describe('The user agent of the session'),
   "userID": zod.uuid().min(updateSessionResponseDataUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 })
@@ -471,9 +471,9 @@ export const confirmEmailVerificationResponse = zod.object({
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
-  "ipAddress": zod.string().min(1).describe('The IP address of the session'),
+  "ipAddress": zod.string().min(1).optional().describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
-  "userAgent": zod.string().min(1).describe('The user agent of the session'),
+  "userAgent": zod.string().min(1).optional().describe('The user agent of the session'),
   "userID": zod.uuid().min(confirmEmailVerificationResponseSessionUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity'),
   "user": zod.object({
@@ -836,9 +836,9 @@ export const oauthCallbackResponse = zod.object({
   "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
   "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
-  "ipAddress": zod.string().min(1).describe('The IP address of the session'),
+  "ipAddress": zod.string().min(1).optional().describe('The IP address of the session'),
   "token": zod.string().min(1).describe('The session token'),
-  "userAgent": zod.string().min(1).describe('The user agent of the session'),
+  "userAgent": zod.string().min(1).optional().describe('The user agent of the session'),
   "userID": zod.uuid().min(oauthCallbackResponseUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 
@@ -1078,7 +1078,7 @@ export const listOrganizationsResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(listOrganizationsResponseDataItemCreditsMin).describe('Available credits for this organization'),
-  "stripeCustomerIdentifier": zod.string().optional().describe('Stripe customer identifier')
+  "stripeCustomerIdentifier": zod.string().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')),
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
@@ -1120,7 +1120,7 @@ export const deleteOrganizationResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(deleteOrganizationResponseDataCreditsMin).describe('Available credits for this organization'),
-  "stripeCustomerIdentifier": zod.string().optional().describe('Stripe customer identifier')
+  "stripeCustomerIdentifier": zod.string().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')
 })
 
@@ -1159,7 +1159,7 @@ export const getOrganizationResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(getOrganizationResponseDataCreditsMin).describe('Available credits for this organization'),
-  "stripeCustomerIdentifier": zod.string().optional().describe('Stripe customer identifier')
+  "stripeCustomerIdentifier": zod.string().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')
 })
 
@@ -1206,7 +1206,7 @@ export const updateOrganizationResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(updateOrganizationResponseDataCreditsMin).describe('Available credits for this organization'),
-  "stripeCustomerIdentifier": zod.string().optional().describe('Stripe customer identifier')
+  "stripeCustomerIdentifier": zod.string().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')
 })
 
@@ -1617,7 +1617,7 @@ export const listPipelinesResponseDataItemIdMin = 36;
 export const listPipelinesResponseDataItemOrganizationIDMin = 36;
 export const listPipelinesResponseDataItemNameMax = 255;
 export const listPipelinesResponseDataItemDescriptionMax = 1000;
-export const listPipelinesResponseDataItemIsEnabledDefault = false;
+
 
 export const listPipelinesResponse = zod.object({
   "data": zod.array(zod.object({
@@ -1627,8 +1627,7 @@ export const listPipelinesResponse = zod.object({
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "organizationID": zod.uuid().min(listPipelinesResponseDataItemOrganizationIDMin).describe('The organization identifier'),
   "name": zod.string().min(1).max(listPipelinesResponseDataItemNameMax).optional().describe('The pipeline\'s display name'),
-  "description": zod.string().max(listPipelinesResponseDataItemDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose'),
-  "isEnabled": zod.boolean().optional().describe('Whether the pipeline is enabled for execution')
+  "description": zod.string().max(listPipelinesResponseDataItemDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')),
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
@@ -1651,7 +1650,7 @@ export const deletePipelineResponseDataIdMin = 36;
 export const deletePipelineResponseDataOrganizationIDMin = 36;
 export const deletePipelineResponseDataNameMax = 255;
 export const deletePipelineResponseDataDescriptionMax = 1000;
-export const deletePipelineResponseDataIsEnabledDefault = false;
+
 
 export const deletePipelineResponse = zod.object({
   "data": zod.object({
@@ -1661,8 +1660,7 @@ export const deletePipelineResponse = zod.object({
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "organizationID": zod.uuid().min(deletePipelineResponseDataOrganizationIDMin).describe('The organization identifier'),
   "name": zod.string().min(1).max(deletePipelineResponseDataNameMax).optional().describe('The pipeline\'s display name'),
-  "description": zod.string().max(deletePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose'),
-  "isEnabled": zod.boolean().optional().describe('Whether the pipeline is enabled for execution')
+  "description": zod.string().max(deletePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')
 })
 
@@ -1682,7 +1680,7 @@ export const getPipelineResponseDataIdMin = 36;
 export const getPipelineResponseDataOrganizationIDMin = 36;
 export const getPipelineResponseDataNameMax = 255;
 export const getPipelineResponseDataDescriptionMax = 1000;
-export const getPipelineResponseDataIsEnabledDefault = false;
+
 
 export const getPipelineResponse = zod.object({
   "data": zod.object({
@@ -1692,8 +1690,7 @@ export const getPipelineResponse = zod.object({
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "organizationID": zod.uuid().min(getPipelineResponseDataOrganizationIDMin).describe('The organization identifier'),
   "name": zod.string().min(1).max(getPipelineResponseDataNameMax).optional().describe('The pipeline\'s display name'),
-  "description": zod.string().max(getPipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose'),
-  "isEnabled": zod.boolean().optional().describe('Whether the pipeline is enabled for execution')
+  "description": zod.string().max(getPipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')
 })
 
@@ -1718,7 +1715,7 @@ export const updatePipelineResponseDataIdMin = 36;
 export const updatePipelineResponseDataOrganizationIDMin = 36;
 export const updatePipelineResponseDataNameMax = 255;
 export const updatePipelineResponseDataDescriptionMax = 1000;
-export const updatePipelineResponseDataIsEnabledDefault = false;
+
 
 export const updatePipelineResponse = zod.object({
   "data": zod.object({
@@ -1728,8 +1725,7 @@ export const updatePipelineResponse = zod.object({
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "organizationID": zod.uuid().min(updatePipelineResponseDataOrganizationIDMin).describe('The organization identifier'),
   "name": zod.string().min(1).max(updatePipelineResponseDataNameMax).optional().describe('The pipeline\'s display name'),
-  "description": zod.string().max(updatePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose'),
-  "isEnabled": zod.boolean().optional().describe('Whether the pipeline is enabled for execution')
+  "description": zod.string().max(updatePipelineResponseDataDescriptionMax).optional().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')
 })
 

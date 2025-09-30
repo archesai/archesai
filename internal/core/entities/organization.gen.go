@@ -56,16 +56,16 @@ func ParseOrganizationPlan(s string) (OrganizationPlan, error) {
 
 // Organization represents Schema for Organization entity
 type Organization struct {
-	BillingEmail             *string              `json:"billingEmail,omitempty" yaml:"billingEmail,omitempty"`                         // Email address for billing communications
-	CreatedAt                time.Time            `json:"createdAt" yaml:"createdAt"`                                                   // The date and time when the resource was created
-	Credits                  int32                `json:"credits" yaml:"credits"`                                                       // Available credits for this organization
-	ID                       uuid.UUID            `json:"id" yaml:"id"`                                                                 // Unique identifier for the resource
-	Logo                     *string              `json:"logo,omitempty" yaml:"logo,omitempty"`                                         // The organization's logo URL
-	Name                     string               `json:"name" yaml:"name"`                                                             // The organization's display name
-	Plan                     OrganizationPlan     `json:"plan" yaml:"plan"`                                                             // The current subscription plan
-	Slug                     string               `json:"slug" yaml:"slug"`                                                             // URL-friendly unique identifier for the organization
-	StripeCustomerIdentifier *string              `json:"stripeCustomerIdentifier,omitempty" yaml:"stripeCustomerIdentifier,omitempty"` // Stripe customer identifier
-	UpdatedAt                time.Time            `json:"updatedAt" yaml:"updatedAt"`                                                   // The date and time when the resource was last updated
+	BillingEmail             *string              `json:"billingEmail,omitempty" yaml:"billingEmail,omitempty"`     // Email address for billing communications
+	CreatedAt                time.Time            `json:"createdAt" yaml:"createdAt"`                               // The date and time when the resource was created
+	Credits                  int32                `json:"credits" yaml:"credits"`                                   // Available credits for this organization
+	ID                       uuid.UUID            `json:"id" yaml:"id"`                                             // Unique identifier for the resource
+	Logo                     *string              `json:"logo,omitempty" yaml:"logo,omitempty"`                     // The organization's logo URL
+	Name                     string               `json:"name" yaml:"name"`                                         // The organization's display name
+	Plan                     OrganizationPlan     `json:"plan" yaml:"plan"`                                         // The current subscription plan
+	Slug                     string               `json:"slug" yaml:"slug"`                                         // URL-friendly unique identifier for the organization
+	StripeCustomerIdentifier string               `json:"stripeCustomerIdentifier" yaml:"stripeCustomerIdentifier"` // Stripe customer identifier
+	UpdatedAt                time.Time            `json:"updatedAt" yaml:"updatedAt"`                               // The date and time when the resource was last updated
 	events                   []events.DomainEvent `json:"-" yaml:"-"`
 }
 
@@ -76,6 +76,7 @@ func NewOrganization(
 	name string,
 	plan OrganizationPlan,
 	slug string,
+	stripeCustomerIdentifier string,
 ) (*Organization, error) {
 	// Validate required fields
 	if name == "" {
@@ -87,17 +88,21 @@ func NewOrganization(
 	if slug == "" {
 		return nil, fmt.Errorf("Slug cannot be empty")
 	}
+	if stripeCustomerIdentifier == "" {
+		return nil, fmt.Errorf("StripeCustomerIdentifier cannot be empty")
+	}
 
 	now := time.Now().UTC()
 	organization := &Organization{
-		CreatedAt: now,
-		Credits:   credits,
-		ID:        uuid.New(),
-		Name:      name,
-		Plan:      plan,
-		Slug:      slug,
-		UpdatedAt: now,
-		events:    []events.DomainEvent{},
+		CreatedAt:                now,
+		Credits:                  credits,
+		ID:                       uuid.New(),
+		Name:                     name,
+		Plan:                     plan,
+		Slug:                     slug,
+		StripeCustomerIdentifier: stripeCustomerIdentifier,
+		UpdatedAt:                now,
+		events:                   []events.DomainEvent{},
 	}
 	organization.addEvent(events.NewOrganizationCreatedEvent(organization.ID))
 
@@ -145,7 +150,7 @@ func (e *Organization) GetSlug() string {
 }
 
 // GetStripeCustomerIdentifier returns the StripeCustomerIdentifier
-func (e *Organization) GetStripeCustomerIdentifier() *string {
+func (e *Organization) GetStripeCustomerIdentifier() string {
 	return e.StripeCustomerIdentifier
 }
 
@@ -179,7 +184,7 @@ func ReconstructOrganization(
 	name string,
 	plan string,
 	slug string,
-	stripeCustomerIdentifier *string,
+	stripeCustomerIdentifier string,
 	updatedAt time.Time,
 ) *Organization {
 	return &Organization{

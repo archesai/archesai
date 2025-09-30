@@ -18,13 +18,13 @@ type APIKey struct {
 	UpdatedAt      time.Time
 	ExpiresAt      *time.Time
 	KeyHash        string
-	Name           *string
-	Prefix         *string
-	UserID         uuid.UUID
-	OrganizationID uuid.UUID
-	Scopes         []string
-	RateLimit      int32
 	LastUsedAt     *time.Time
+	Name           *string
+	OrganizationID uuid.UUID
+	Prefix         *string
+	RateLimit      int32
+	Scopes         []string
+	UserID         uuid.UUID
 }
 
 type Account struct {
@@ -49,6 +49,7 @@ type Artifact struct {
 	UpdatedAt      time.Time
 	Credits        int32
 	Description    *string
+	Embedding      *pgvector.Vector
 	MimeType       string
 	Name           *string
 	OrganizationID uuid.UUID
@@ -56,7 +57,6 @@ type Artifact struct {
 	ProducerID     *uuid.UUID
 	Text           *string
 	URL            *string
-	Embedding      *pgvector.Vector
 }
 
 type Invitation struct {
@@ -86,16 +86,16 @@ type LabelToArtifact struct {
 
 type MagicLinkToken struct {
 	ID             uuid.UUID
-	UserID         *uuid.UUID
-	TokenHash      string
 	Code           *string
-	Identifier     string
+	CreatedAt      pgtype.Timestamp
 	DeliveryMethod *string
 	ExpiresAt      pgtype.Timestamp
-	UsedAt         pgtype.Timestamp
+	Identifier     string
 	IPAddress      *string
+	TokenHash      string
+	UsedAt         pgtype.Timestamp
 	UserAgent      *string
-	CreatedAt      pgtype.Timestamp
+	UserID         *uuid.UUID
 }
 
 type Member struct {
@@ -108,16 +108,16 @@ type Member struct {
 }
 
 type Organization struct {
-	ID               uuid.UUID
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	BillingEmail     *string
-	Credits          int32
-	Logo             *string
-	Name             string
-	Plan             string
-	StripeCustomerID string
-	Slug             string
+	ID                       uuid.UUID
+	CreatedAt                time.Time
+	UpdatedAt                time.Time
+	BillingEmail             *string
+	Credits                  int32
+	Logo                     *string
+	Name                     string
+	Plan                     string
+	Slug                     string
+	StripeCustomerIdentifier string
 }
 
 type Pipeline struct {
@@ -165,15 +165,15 @@ type Session struct {
 	ID             uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
-	OrganizationID *uuid.UUID
+	AuthMethod     *string
+	AuthProvider   *string
 	ExpiresAt      time.Time
 	IPAddress      *string
+	Metadata       []byte
+	OrganizationID *uuid.UUID
 	Token          string
 	UserAgent      *string
 	UserID         uuid.UUID
-	AuthMethod     *string
-	AuthProvider   *string
-	Metadata       []byte
 }
 
 type Tool struct {

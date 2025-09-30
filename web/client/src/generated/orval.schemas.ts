@@ -45,7 +45,7 @@ export type SessionAllOf = {
    * The IP address of the session
    * @minLength 1
    */
-  ipAddress: string;
+  ipAddress?: string;
   /**
    * The session token
    * @minLength 1
@@ -55,7 +55,7 @@ export type SessionAllOf = {
    * The user agent of the session
    * @minLength 1
    */
-  userAgent: string;
+  userAgent?: string;
   /**
    * The user who owns this session
    * @minLength 36
@@ -380,7 +380,7 @@ export type OrganizationAllOf = {
    */
   credits: number;
   /** Stripe customer identifier */
-  stripeCustomerIdentifier?: string;
+  stripeCustomerIdentifier: string;
 };
 
 /**
@@ -486,8 +486,6 @@ export type PipelineAllOf = {
    * @maxLength 1000
    */
   description?: string;
-  /** Whether the pipeline is enabled for execution */
-  isEnabled?: boolean;
 };
 
 /**

@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresInvitationRepository(db *pgxpool.Pool) *PostgresInvitationReposi
 
 // Create creates a new invitation
 func (r *PostgresInvitationRepository) Create(ctx context.Context, entity *entities.Invitation) (*entities.Invitation, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateInvitationParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateInvitationParams struct
 	}
 
 	result, err := r.queries.CreateInvitation(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresInvitationRepository) Create(ctx context.Context, entity *entit
 func (r *PostgresInvitationRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Invitation, error) {
 	result, err := r.queries.GetInvitation(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrInvitationNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrInvitationNotFound
 		}
 		return nil, fmt.Errorf("failed to get invitation: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresInvitationRepository) Get(ctx context.Context, id uuid.UUID) (*
 
 // Update updates an existing invitation
 func (r *PostgresInvitationRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Invitation) (*entities.Invitation, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateInvitationParams{
 		ID: id,
+		// Add updatable fields here based on UpdateInvitationParams struct
 	}
 
 	result, err := r.queries.UpdateInvitation(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrInvitationNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrInvitationNotFound
 		}
 		return nil, fmt.Errorf("failed to update invitation: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresInvitationRepository) Update(ctx context.Context, id uuid.UUID,
 func (r *PostgresInvitationRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteInvitation(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrInvitationNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrInvitationNotFound
 		}
 		return fmt.Errorf("failed to delete invitation: %w", err)
 	}
@@ -123,8 +131,8 @@ func (r *PostgresInvitationRepository) GetInvitationByEmail(ctx context.Context,
 
 	result, err := r.queries.GetInvitationByEmail(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrInvitationNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrInvitationNotFound
 		}
 		return nil, fmt.Errorf("failed to GetInvitationByEmail: %w", err)
 	}
@@ -144,9 +152,15 @@ func mapInvitationFromDB(db *Invitation) *entities.Invitation {
 	}
 
 	result := &entities.Invitation{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:             db.ID,
+		CreatedAt:      db.CreatedAt,
+		UpdatedAt:      db.UpdatedAt,
+		Email:          db.Email,
+		ExpiresAt:      db.ExpiresAt,
+		InviterID:      db.InviterID,
+		OrganizationID: db.OrganizationID,
+		Role:           entities.InvitationRole(db.Role),
+		Status:         db.Status,
 	}
 
 	return result

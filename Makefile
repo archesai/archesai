@@ -433,6 +433,7 @@ prepare-docs: bundle-openapi ## Copy markdown docs to web/docs/docs
 # ------------------------------------------
 
 MIGRATION_PATH := internal/infrastructure/persistence/postgres/migrations
+DATABASE_URL ?= "postgres://admin:password@localhost:5432/archesai"
 
 .PHONY: db-migrate
 db-migrate: db-migrate-up ## Alias for db-migrate-up

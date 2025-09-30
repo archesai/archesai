@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresUserRepository(db *pgxpool.Pool) *PostgresUserRepository {
 
 // Create creates a new user
 func (r *PostgresUserRepository) Create(ctx context.Context, entity *entities.User) (*entities.User, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateUserParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateUserParams struct
 	}
 
 	result, err := r.queries.CreateUser(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresUserRepository) Create(ctx context.Context, entity *entities.Us
 func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*entities.User, error) {
 	result, err := r.queries.GetUser(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrUserNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*entiti
 
 // Update updates an existing user
 func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.User) (*entities.User, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateUserParams{
 		ID: id,
+		// Add updatable fields here based on UpdateUserParams struct
 	}
 
 	result, err := r.queries.UpdateUser(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrUserNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entit
 func (r *PostgresUserRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteUser(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrUserNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrUserNotFound
 		}
 		return fmt.Errorf("failed to delete user: %w", err)
 	}
@@ -112,8 +120,8 @@ func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) 
 func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
 	result, err := r.queries.GetUserByEmail(ctx, email)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrUserNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to GetUserByEmail: %w", err)
 	}
@@ -125,8 +133,8 @@ func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email strin
 func (r *PostgresUserRepository) GetUserBySessionID(ctx context.Context, sessionID string) (*entities.User, error) {
 	result, err := r.queries.GetUserBySessionID(ctx, uuid.MustParse(sessionID))
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrUserNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrUserNotFound
 		}
 		return nil, fmt.Errorf("failed to GetUserBySessionID: %w", err)
 	}
@@ -140,9 +148,13 @@ func mapUserFromDB(db *User) *entities.User {
 	}
 
 	result := &entities.User{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:            db.ID,
+		CreatedAt:     db.CreatedAt,
+		UpdatedAt:     db.UpdatedAt,
+		Email:         db.Email,
+		EmailVerified: db.EmailVerified,
+		Image:         db.Image,
+		Name:          db.Name,
 	}
 
 	return result

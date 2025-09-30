@@ -40,6 +40,7 @@ import (
 	"github.com/archesai/archesai/internal/infrastructure/auth"
 	"github.com/archesai/archesai/internal/infrastructure/cache"
 	"github.com/archesai/archesai/internal/infrastructure/config"
+	"github.com/archesai/archesai/internal/infrastructure/notifications"
 	database "github.com/archesai/archesai/internal/infrastructure/persistence"
 )
 
@@ -107,7 +108,12 @@ func NewApp(cfg *config.Config) (*App, error) {
 	} else {
 		stringCache = cache.NewMemoryCache[string]()
 	}
-	infra.AuthService = auth.NewService(cfg, repos.Sessions, repos.Users, repos.Accounts, stringCache)
+
+	// Initialize notification deliverers
+	magicLinkDeliverer := notifications.NewConsoleDeliverer(log)
+	otpDeliverer := notifications.NewOTPDeliverer(log)
+
+	infra.AuthService = auth.NewService(cfg, repos.Sessions, repos.Users, repos.Accounts, stringCache, magicLinkDeliverer, otpDeliverer, log)
 	log.Info("auth service ready")
 
 	// Create app instance to populate

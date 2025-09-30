@@ -74,7 +74,7 @@ type Querier interface {
 	GetMemberByUserAndOrganization(ctx context.Context, arg GetMemberByUserAndOrganizationParams) (Member, error)
 	GetOrganization(ctx context.Context, id uuid.UUID) (Organization, error)
 	GetOrganizationBySlug(ctx context.Context, slug string) (Organization, error)
-	GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerID string) (Organization, error)
+	GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (Organization, error)
 	GetPipeline(ctx context.Context, id uuid.UUID) (Pipeline, error)
 	GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineStep, error)
 	GetPipelineStepDependencies(ctx context.Context, pipelineID uuid.UUID) ([]GetPipelineStepDependenciesRow, error)

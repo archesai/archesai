@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresLabelRepository(db *pgxpool.Pool) *PostgresLabelRepository {
 
 // Create creates a new label
 func (r *PostgresLabelRepository) Create(ctx context.Context, entity *entities.Label) (*entities.Label, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateLabelParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateLabelParams struct
 	}
 
 	result, err := r.queries.CreateLabel(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresLabelRepository) Create(ctx context.Context, entity *entities.L
 func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Label, error) {
 	result, err := r.queries.GetLabel(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrLabelNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrLabelNotFound
 		}
 		return nil, fmt.Errorf("failed to get label: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*entit
 
 // Update updates an existing label
 func (r *PostgresLabelRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Label) (*entities.Label, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateLabelParams{
 		ID: id,
+		// Add updatable fields here based on UpdateLabelParams struct
 	}
 
 	result, err := r.queries.UpdateLabel(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrLabelNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrLabelNotFound
 		}
 		return nil, fmt.Errorf("failed to update label: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresLabelRepository) Update(ctx context.Context, id uuid.UUID, enti
 func (r *PostgresLabelRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteLabel(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrLabelNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrLabelNotFound
 		}
 		return fmt.Errorf("failed to delete label: %w", err)
 	}
@@ -123,8 +131,8 @@ func (r *PostgresLabelRepository) GetLabelByName(ctx context.Context, name strin
 
 	result, err := r.queries.GetLabelByName(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrLabelNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrLabelNotFound
 		}
 		return nil, fmt.Errorf("failed to GetLabelByName: %w", err)
 	}
@@ -138,9 +146,11 @@ func mapLabelFromDB(db *Label) *entities.Label {
 	}
 
 	result := &entities.Label{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:             db.ID,
+		CreatedAt:      db.CreatedAt,
+		UpdatedAt:      db.UpdatedAt,
+		Name:           db.Name,
+		OrganizationID: db.OrganizationID,
 	}
 
 	return result

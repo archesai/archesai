@@ -28,7 +28,7 @@ INSERT INTO
 VALUES
   ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING
-  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
 `
 
 type CreateArtifactParams struct {
@@ -64,6 +64,7 @@ func (q *Queries) CreateArtifact(ctx context.Context, arg CreateArtifactParams) 
 		&i.UpdatedAt,
 		&i.Credits,
 		&i.Description,
+		&i.Embedding,
 		&i.MimeType,
 		&i.Name,
 		&i.OrganizationID,
@@ -71,7 +72,6 @@ func (q *Queries) CreateArtifact(ctx context.Context, arg CreateArtifactParams) 
 		&i.ProducerID,
 		&i.Text,
 		&i.URL,
-		&i.Embedding,
 	)
 	return i, err
 }
@@ -100,7 +100,7 @@ func (q *Queries) DeleteArtifactsByOrganization(ctx context.Context, organizatio
 
 const getArtifact = `-- name: GetArtifact :one
 SELECT
-  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
 FROM
   artifact
 WHERE
@@ -118,6 +118,7 @@ func (q *Queries) GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, erro
 		&i.UpdatedAt,
 		&i.Credits,
 		&i.Description,
+		&i.Embedding,
 		&i.MimeType,
 		&i.Name,
 		&i.OrganizationID,
@@ -125,14 +126,13 @@ func (q *Queries) GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, erro
 		&i.ProducerID,
 		&i.Text,
 		&i.URL,
-		&i.Embedding,
 	)
 	return i, err
 }
 
 const listArtifacts = `-- name: ListArtifacts :many
 SELECT
-  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
 FROM
   artifact
 ORDER BY
@@ -163,6 +163,7 @@ func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([
 			&i.UpdatedAt,
 			&i.Credits,
 			&i.Description,
+			&i.Embedding,
 			&i.MimeType,
 			&i.Name,
 			&i.OrganizationID,
@@ -170,7 +171,6 @@ func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([
 			&i.ProducerID,
 			&i.Text,
 			&i.URL,
-			&i.Embedding,
 		); err != nil {
 			return nil, err
 		}
@@ -184,7 +184,7 @@ func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([
 
 const listArtifactsByOrganization = `-- name: ListArtifactsByOrganization :many
 SELECT
-  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
 FROM
   artifact
 WHERE
@@ -218,6 +218,7 @@ func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtif
 			&i.UpdatedAt,
 			&i.Credits,
 			&i.Description,
+			&i.Embedding,
 			&i.MimeType,
 			&i.Name,
 			&i.OrganizationID,
@@ -225,7 +226,6 @@ func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtif
 			&i.ProducerID,
 			&i.Text,
 			&i.URL,
-			&i.Embedding,
 		); err != nil {
 			return nil, err
 		}
@@ -239,7 +239,7 @@ func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtif
 
 const listArtifactsByProducer = `-- name: ListArtifactsByProducer :many
 SELECT
-  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
 FROM
   artifact
 WHERE
@@ -273,6 +273,7 @@ func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifacts
 			&i.UpdatedAt,
 			&i.Credits,
 			&i.Description,
+			&i.Embedding,
 			&i.MimeType,
 			&i.Name,
 			&i.OrganizationID,
@@ -280,7 +281,6 @@ func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifacts
 			&i.ProducerID,
 			&i.Text,
 			&i.URL,
-			&i.Embedding,
 		); err != nil {
 			return nil, err
 		}
@@ -305,7 +305,7 @@ SET
 WHERE
   id = $1
 RETURNING
-  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url, embedding
+  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
 `
 
 type UpdateArtifactParams struct {
@@ -337,6 +337,7 @@ func (q *Queries) UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) 
 		&i.UpdatedAt,
 		&i.Credits,
 		&i.Description,
+		&i.Embedding,
 		&i.MimeType,
 		&i.Name,
 		&i.OrganizationID,
@@ -344,7 +345,6 @@ func (q *Queries) UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) 
 		&i.ProducerID,
 		&i.Text,
 		&i.URL,
-		&i.Embedding,
 	)
 	return i, err
 }

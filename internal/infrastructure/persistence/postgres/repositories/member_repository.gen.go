@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresMemberRepository(db *pgxpool.Pool) *PostgresMemberRepository {
 
 // Create creates a new member
 func (r *PostgresMemberRepository) Create(ctx context.Context, entity *entities.Member) (*entities.Member, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateMemberParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateMemberParams struct
 	}
 
 	result, err := r.queries.CreateMember(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresMemberRepository) Create(ctx context.Context, entity *entities.
 func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Member, error) {
 	result, err := r.queries.GetMember(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrMemberNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrMemberNotFound
 		}
 		return nil, fmt.Errorf("failed to get member: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*enti
 
 // Update updates an existing member
 func (r *PostgresMemberRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Member) (*entities.Member, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateMemberParams{
 		ID: id,
+		// Add updatable fields here based on UpdateMemberParams struct
 	}
 
 	result, err := r.queries.UpdateMember(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrMemberNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrMemberNotFound
 		}
 		return nil, fmt.Errorf("failed to update member: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresMemberRepository) Update(ctx context.Context, id uuid.UUID, ent
 func (r *PostgresMemberRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteMember(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrMemberNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrMemberNotFound
 		}
 		return fmt.Errorf("failed to delete member: %w", err)
 	}
@@ -129,8 +137,8 @@ func (r *PostgresMemberRepository) GetMemberByUserAndOrganization(ctx context.Co
 
 	result, err := r.queries.GetMemberByUserAndOrganization(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrMemberNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrMemberNotFound
 		}
 		return nil, fmt.Errorf("failed to GetMemberByUserAndOrganization: %w", err)
 	}
@@ -144,9 +152,12 @@ func mapMemberFromDB(db *Member) *entities.Member {
 	}
 
 	result := &entities.Member{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:             db.ID,
+		CreatedAt:      db.CreatedAt,
+		UpdatedAt:      db.UpdatedAt,
+		OrganizationID: db.OrganizationID,
+		Role:           entities.MemberRole(db.Role),
+		UserID:         db.UserID,
 	}
 
 	return result

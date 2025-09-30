@@ -4,11 +4,13 @@ package {{.Package}}
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -29,10 +31,11 @@ func NewPostgres{{.Name}}Repository(db *pgxpool.Pool) *Postgres{{.Name}}Reposito
 
 // Create creates a new {{lower .Name}}
 func (r *Postgres{{.Name}}Repository) Create(ctx context.Context, entity *entities.{{.Type}}) (*entities.{{.Type}}, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := Create{{.Name}}Params{
 		ID: entity.ID,
-		{{range .Fields}}{{if ne .Name "ID"}}{{if ne .Name "CreatedAt"}}{{if ne .Name "UpdatedAt"}}{{if ne .Name "CompletedAt"}}{{if ne .Name "StartedAt"}}{{if ne .Name "Error"}}{{if .SQLCType}}
-		{{.FieldName}}: {{if .IsEnumType}}string(entity.{{.FieldName}}){{else}}entity.{{.FieldName}}{{end}},{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}
+		// Add required fields here based on Create{{.Name}}Params struct
 	}
 
 	result, err := r.queries.Create{{.Name}}(ctx, params)
@@ -47,8 +50,8 @@ func (r *Postgres{{.Name}}Repository) Create(ctx context.Context, entity *entiti
 func (r *Postgres{{.Name}}Repository) Get(ctx context.Context, id uuid.UUID) (*entities.{{.Type}}, error) {
 	result, err := r.queries.Get{{.Name}}(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.Err{{.Name}}NotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.Err{{.Name}}NotFound
 		}
 		return nil, fmt.Errorf("failed to get {{lower .Name}}: %w", err)
 	}
@@ -58,16 +61,17 @@ func (r *Postgres{{.Name}}Repository) Get(ctx context.Context, id uuid.UUID) (*e
 
 // Update updates an existing {{lower .Name}}
 func (r *Postgres{{.Name}}Repository) Update(ctx context.Context, id uuid.UUID, entity *entities.{{.Type}}) (*entities.{{.Type}}, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := Update{{.Name}}Params{
 		ID: id,
-		{{range .Fields}}{{if not (isUpdateExcluded .Name $entity.UpdateExclude)}}{{if ne .Name "ID"}}{{if ne .Name "CreatedAt"}}{{if ne .Name "UpdatedAt"}}{{if ne .Name "OrganizationID"}}{{if ne .Name "UserID"}}{{if ne .Name "AccountIdentifier"}}{{if ne .Name "ProviderID"}}{{if ne .Name "PipelineID"}}{{if ne .Name "ToolID"}}{{if ne .Name "InviterID"}}{{if .SQLCType}}
-		{{.FieldName}}: {{if .IsEnumType}}func() *string { s := string(entity.{{.FieldName}}); return &s }(){{else}}{{if and (hasPrefix .GoType "*")}}entity.{{.FieldName}}{{else}}&entity.{{.FieldName}}{{end}}{{end}},{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}
+		// Add updatable fields here based on Update{{.Name}}Params struct
 	}
 
 	result, err := r.queries.Update{{.Name}}(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.Err{{.Name}}NotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.Err{{.Name}}NotFound
 		}
 		return nil, fmt.Errorf("failed to update {{lower .Name}}: %w", err)
 	}
@@ -79,8 +83,8 @@ func (r *Postgres{{.Name}}Repository) Update(ctx context.Context, id uuid.UUID, 
 func (r *Postgres{{.Name}}Repository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.Delete{{.Name}}(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.Err{{.Name}}NotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.Err{{.Name}}NotFound
 		}
 		return fmt.Errorf("failed to delete {{lower .Name}}: %w", err)
 	}
@@ -124,8 +128,8 @@ func (r *Postgres{{$entity.Name}}Repository) {{.Name}}(ctx context.Context{{rang
 
 	result, err := r.queries.{{.Name}}(ctx, params){{else}}	result, err := r.queries.{{.Name}}(ctx{{range .Parameters}}{{if and (eq .Type "string") (or (eq .Name "sessionID") (eq .Name "SessionID") (hasSuffix .Name "ID"))}}, uuid.MustParse({{.Name}}){{else}}, {{.Name}}{{end}}{{end}}){{end}}
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.Err{{$entity.Name}}NotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.Err{{$entity.Name}}NotFound
 		}
 		return nil, fmt.Errorf("failed to {{.Name}}: %w", err)
 	}
@@ -138,7 +142,7 @@ func (r *Postgres{{$entity.Name}}Repository) {{.Name}}(ctx context.Context{{rang
 {{end}}}
 {{end}}{{end}}
 
-func map{{.Name}}FromDB(db *{{.Name}}) *entities.{{.Type}} {
+{{$entity := .}}func map{{.Name}}FromDB(db *{{.Name}}) *entities.{{.Type}} {
 	if db == nil {
 		return nil
 	}
@@ -146,10 +150,8 @@ func map{{.Name}}FromDB(db *{{.Name}}) *entities.{{.Type}} {
 	result := &entities.{{.Type}}{
 		ID:        db.ID,
 		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
-		{{range .Fields}}{{if ne .Name "ID"}}{{if ne .Name "CreatedAt"}}{{if ne .Name "UpdatedAt"}}{{if .SQLCType}}
-		{{.FieldName}}: {{if .IsEnumType}}{{.GoType}}(db.{{.FieldName}}){{else}}db.{{.FieldName}}{{end}},
-		{{end}}{{end}}{{end}}{{end}}{{end}}
+		UpdatedAt: db.UpdatedAt,{{range .Fields}}{{if ne .Name "ID"}}{{if ne .Name "CreatedAt"}}{{if ne .Name "UpdatedAt"}}
+		{{.FieldName}}: {{if .IsEnumType}}entities.{{$entity.Type}}{{.FieldName}}(db.{{ToConstantCase .FieldName}}){{else}}db.{{ToConstantCase .FieldName}}{{end}},{{end}}{{end}}{{end}}{{end}}
 	}
 
 	return result

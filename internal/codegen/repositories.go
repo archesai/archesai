@@ -60,6 +60,7 @@ func (g *Generator) generateRepositoryForSchema(
 			{
 				"Name":              schema.Name,
 				"Type":              schema.Name,
+				"Fields":            schema.Fields,
 				"AdditionalMethods": additionalMethods,
 			},
 		},
@@ -87,6 +88,7 @@ func (g *Generator) generateRepositoryForSchema(
 			{
 				"Name":              schema.Name,
 				"Type":              schema.Name,
+				"Fields":            schema.Fields,
 				"AdditionalMethods": additionalMethods,
 			},
 		},

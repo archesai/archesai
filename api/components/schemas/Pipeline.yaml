@@ -31,11 +31,6 @@ allOf:
         type: string
         maxLength: 1000
         example: 'Processes incoming data through validation, transformation, and storage steps'
-      isEnabled:
-        description: Whether the pipeline is enabled for execution
-        type: boolean
-        default: false
-        example: true
     required:
       - organizationID
 unevaluatedProperties: false

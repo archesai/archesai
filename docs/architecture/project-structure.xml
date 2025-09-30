@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-09-29T21:27:19-04:00
+  Generated: 2025-09-30T01:21:32-04:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -102,7 +102,7 @@
     <dir name="troubleshooting" files="1"/>
   </dir>
   <dir name="internal" dirs="7">
-    <dir name="adapters" dirs="5">
+    <dir name="adapters" dirs="4">
       <dir name="cli" files="9"/>
       <dir name="http" dirs="3">
         <dir name="controllers" files="13" patterns="*.gen.go"/>
@@ -110,7 +110,6 @@
         <dir name="server" purpose="Server infrastructure" files="8" dirs="1"/>
       </dir>
       <dir name="llm" files="4"/>
-      <dir name="notifications" files="3"/>
       <dir name="tui" files="2" dirs="1">
         <dir name="screens"/>
       </dir>
@@ -156,7 +155,7 @@
       <dir name="repositories" files="14" patterns="*.gen.go"/>
       <dir name="valueobjects" files="42" patterns="*.gen.go"/>
     </dir>
-    <dir name="infrastructure" dirs="8">
+    <dir name="infrastructure" dirs="9">
       <dir name="auth" purpose="Authentication and authorization" files="4" dirs="1" key-files="service.go">
         <dir name="oauth" files="4"/>
       </dir>
@@ -166,6 +165,7 @@
       <dir name="http" dirs="1">
         <dir name="middleware" purpose="HTTP middleware" files="2"/>
       </dir>
+      <dir name="notifications" files="4" key-files="service.go"/>
       <dir name="persistence" files="2" dirs="2">
         <dir name="postgres" type="database" files="1" dirs="3" patterns="*.yaml"/>
         <dir name="sqlite" dirs="3"/>

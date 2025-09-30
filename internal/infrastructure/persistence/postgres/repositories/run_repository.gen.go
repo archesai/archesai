@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresRunRepository(db *pgxpool.Pool) *PostgresRunRepository {
 
 // Create creates a new run
 func (r *PostgresRunRepository) Create(ctx context.Context, entity *entities.Run) (*entities.Run, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateRunParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateRunParams struct
 	}
 
 	result, err := r.queries.CreateRun(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresRunRepository) Create(ctx context.Context, entity *entities.Run
 func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Run, error) {
 	result, err := r.queries.GetRun(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrRunNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrRunNotFound
 		}
 		return nil, fmt.Errorf("failed to get run: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*entitie
 
 // Update updates an existing run
 func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Run) (*entities.Run, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateRunParams{
 		ID: id,
+		// Add updatable fields here based on UpdateRunParams struct
 	}
 
 	result, err := r.queries.UpdateRun(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrRunNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrRunNotFound
 		}
 		return nil, fmt.Errorf("failed to update run: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity
 func (r *PostgresRunRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteRun(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrRunNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrRunNotFound
 		}
 		return fmt.Errorf("failed to delete run: %w", err)
 	}
@@ -132,9 +140,17 @@ func mapRunFromDB(db *Run) *entities.Run {
 	}
 
 	result := &entities.Run{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:             db.ID,
+		CreatedAt:      db.CreatedAt,
+		UpdatedAt:      db.UpdatedAt,
+		CompletedAt:    db.CompletedAt,
+		Error:          db.Error,
+		OrganizationID: db.OrganizationID,
+		PipelineID:     db.PipelineID,
+		Progress:       db.Progress,
+		StartedAt:      db.StartedAt,
+		Status:         entities.RunStatus(db.Status),
+		ToolID:         db.ToolID,
 	}
 
 	return result

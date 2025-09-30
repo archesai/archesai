@@ -17,11 +17,11 @@ type Session struct {
 	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`                               // The date and time when the resource was created
 	ExpiresAt      time.Time            `json:"expiresAt" yaml:"expiresAt"`                               // The expiration date of the session
 	ID             uuid.UUID            `json:"id" yaml:"id"`                                             // Unique identifier for the resource
-	IpAddress      string               `json:"ipAddress" yaml:"ipAddress"`                               // The IP address of the session
+	IpAddress      *string              `json:"ipAddress,omitempty" yaml:"ipAddress,omitempty"`           // The IP address of the session
 	OrganizationID *uuid.UUID           `json:"organizationID,omitempty" yaml:"organizationID,omitempty"` // The organization ID for this session (nullable for users without org)
 	Token          string               `json:"token" yaml:"token"`                                       // The session token
 	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`                               // The date and time when the resource was last updated
-	UserAgent      string               `json:"userAgent" yaml:"userAgent"`                               // The user agent of the session
+	UserAgent      *string              `json:"userAgent,omitempty" yaml:"userAgent,omitempty"`           // The user agent of the session
 	UserID         uuid.UUID            `json:"userID" yaml:"userID"`                                     // The user who owns this session
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
@@ -30,20 +30,12 @@ type Session struct {
 // All required fields must be provided and valid.
 func NewSession(
 	expiresAt time.Time,
-	ipAddress string,
 	token string,
-	userAgent string,
 	userID uuid.UUID,
 ) (*Session, error) {
 	// Validate required fields
-	if ipAddress == "" {
-		return nil, fmt.Errorf("IpAddress cannot be empty")
-	}
 	if token == "" {
 		return nil, fmt.Errorf("Token cannot be empty")
-	}
-	if userAgent == "" {
-		return nil, fmt.Errorf("UserAgent cannot be empty")
 	}
 
 	now := time.Now().UTC()
@@ -51,10 +43,8 @@ func NewSession(
 		CreatedAt: now,
 		ExpiresAt: expiresAt,
 		ID:        uuid.New(),
-		IpAddress: ipAddress,
 		Token:     token,
 		UpdatedAt: now,
-		UserAgent: userAgent,
 		UserID:    userID,
 		events:    []events.DomainEvent{},
 	}
@@ -89,7 +79,7 @@ func (e *Session) GetID() uuid.UUID {
 }
 
 // GetIpAddress returns the IpAddress
-func (e *Session) GetIpAddress() string {
+func (e *Session) GetIpAddress() *string {
 	return e.IpAddress
 }
 
@@ -109,7 +99,7 @@ func (e *Session) GetUpdatedAt() time.Time {
 }
 
 // GetUserAgent returns the UserAgent
-func (e *Session) GetUserAgent() string {
+func (e *Session) GetUserAgent() *string {
 	return e.UserAgent
 }
 
@@ -140,11 +130,11 @@ func ReconstructSession(
 	createdAt time.Time,
 	expiresAt time.Time,
 	id uuid.UUID,
-	ipAddress string,
+	ipAddress *string,
 	organizationID *uuid.UUID,
 	token string,
 	updatedAt time.Time,
-	userAgent string,
+	userAgent *string,
 	userID uuid.UUID,
 ) *Session {
 	return &Session{

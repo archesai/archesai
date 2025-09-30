@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresToolRepository(db *pgxpool.Pool) *PostgresToolRepository {
 
 // Create creates a new tool
 func (r *PostgresToolRepository) Create(ctx context.Context, entity *entities.Tool) (*entities.Tool, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateToolParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateToolParams struct
 	}
 
 	result, err := r.queries.CreateTool(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresToolRepository) Create(ctx context.Context, entity *entities.To
 func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Tool, error) {
 	result, err := r.queries.GetTool(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrToolNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrToolNotFound
 		}
 		return nil, fmt.Errorf("failed to get tool: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresToolRepository) Get(ctx context.Context, id uuid.UUID) (*entiti
 
 // Update updates an existing tool
 func (r *PostgresToolRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Tool) (*entities.Tool, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateToolParams{
 		ID: id,
+		// Add updatable fields here based on UpdateToolParams struct
 	}
 
 	result, err := r.queries.UpdateTool(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrToolNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrToolNotFound
 		}
 		return nil, fmt.Errorf("failed to update tool: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresToolRepository) Update(ctx context.Context, id uuid.UUID, entit
 func (r *PostgresToolRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteTool(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrToolNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrToolNotFound
 		}
 		return fmt.Errorf("failed to delete tool: %w", err)
 	}
@@ -120,9 +128,14 @@ func mapToolFromDB(db *Tool) *entities.Tool {
 	}
 
 	result := &entities.Tool{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:             db.ID,
+		CreatedAt:      db.CreatedAt,
+		UpdatedAt:      db.UpdatedAt,
+		Description:    db.Description,
+		InputMimeType:  db.InputMimeType,
+		Name:           db.Name,
+		OrganizationID: db.OrganizationID,
+		OutputMimeType: db.OutputMimeType,
 	}
 
 	return result

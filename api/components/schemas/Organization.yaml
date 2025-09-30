@@ -67,4 +67,5 @@ allOf:
       - slug
       - plan
       - credits
+      - stripeCustomerIdentifier
 unevaluatedProperties: false

@@ -4,11 +4,13 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/errors"
+	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,8 +30,11 @@ func NewPostgresAPIKeyRepository(db *pgxpool.Pool) *PostgresAPIKeyRepository {
 
 // Create creates a new apikey
 func (r *PostgresAPIKeyRepository) Create(ctx context.Context, entity *entities.APIKey) (*entities.APIKey, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// SQL params may have different pointer/type requirements than entity fields
 	params := CreateAPIKeyParams{
 		ID: entity.ID,
+		// Add required fields here based on CreateAPIKeyParams struct
 	}
 
 	result, err := r.queries.CreateAPIKey(ctx, params)
@@ -44,8 +49,8 @@ func (r *PostgresAPIKeyRepository) Create(ctx context.Context, entity *entities.
 func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*entities.APIKey, error) {
 	result, err := r.queries.GetAPIKey(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrAPIKeyNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrAPIKeyNotFound
 		}
 		return nil, fmt.Errorf("failed to get apikey: %w", err)
 	}
@@ -55,14 +60,17 @@ func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*enti
 
 // Update updates an existing apikey
 func (r *PostgresAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.APIKey) (*entities.APIKey, error) {
+	// TODO: Review and adjust field mappings based on SQL schema
+	// Only include fields that are updatable (check SQL UPDATE query)
 	params := UpdateAPIKeyParams{
 		ID: id,
+		// Add updatable fields here based on UpdateAPIKeyParams struct
 	}
 
 	result, err := r.queries.UpdateAPIKey(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.ErrAPIKeyNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return nil, corerrors.ErrAPIKeyNotFound
 		}
 		return nil, fmt.Errorf("failed to update apikey: %w", err)
 	}
@@ -74,8 +82,8 @@ func (r *PostgresAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, ent
 func (r *PostgresAPIKeyRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := r.queries.DeleteAPIKey(ctx, id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return errors.ErrAPIKeyNotFound
+		if errors.Is(err, pgx.ErrNoRows) || err == sql.ErrNoRows {
+			return corerrors.ErrAPIKeyNotFound
 		}
 		return fmt.Errorf("failed to delete apikey: %w", err)
 	}
@@ -112,9 +120,10 @@ func mapAPIKeyFromDB(db *APIKey) *entities.APIKey {
 	}
 
 	result := &entities.APIKey{
-		ID:        db.ID,
-		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,
+		ID:             db.ID,
+		CreatedAt:      db.CreatedAt,
+		UpdatedAt:      db.UpdatedAt,
+
 	}
 
 	return result

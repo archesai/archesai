@@ -14,7 +14,6 @@ type Pipeline struct {
 	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`                         // The date and time when the resource was created
 	Description    *string              `json:"description,omitempty" yaml:"description,omitempty"` // Detailed description of the pipeline's purpose
 	ID             uuid.UUID            `json:"id" yaml:"id"`                                       // Unique identifier for the resource
-	IsEnabled      *bool                `json:"isEnabled,omitempty" yaml:"isEnabled,omitempty"`     // Whether the pipeline is enabled for execution
 	Name           *string              `json:"name,omitempty" yaml:"name,omitempty"`               // The pipeline's display name
 	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"`               // The organization identifier
 	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`                         // The date and time when the resource was last updated
@@ -56,11 +55,6 @@ func (e *Pipeline) GetID() uuid.UUID {
 	return e.ID
 }
 
-// GetIsEnabled returns the IsEnabled
-func (e *Pipeline) GetIsEnabled() *bool {
-	return e.IsEnabled
-}
-
 // GetName returns the Name
 func (e *Pipeline) GetName() *string {
 	return e.Name
@@ -96,7 +90,6 @@ func ReconstructPipeline(
 	createdAt time.Time,
 	description *string,
 	id uuid.UUID,
-	isEnabled *bool,
 	name *string,
 	organizationID uuid.UUID,
 	updatedAt time.Time,
@@ -105,7 +98,6 @@ func ReconstructPipeline(
 		CreatedAt:      createdAt,
 		Description:    description,
 		ID:             id,
-		IsEnabled:      isEnabled,
 		Name:           name,
 		OrganizationID: organizationID,
 		UpdatedAt:      updatedAt,

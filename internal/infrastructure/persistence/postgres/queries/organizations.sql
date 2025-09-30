@@ -8,7 +8,7 @@ INSERT INTO
     plan,
     credits,
     logo,
-    stripe_customer_id
+    stripe_customer_identifier
   )
 VALUES
   ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -46,9 +46,9 @@ SET
   plan = COALESCE(sqlc.narg (plan), plan),
   credits = COALESCE(sqlc.narg (credits), credits),
   logo = COALESCE(sqlc.narg (logo), logo),
-  stripe_customer_id = COALESCE(
-    sqlc.narg (stripe_customer_id),
-    stripe_customer_id
+  stripe_customer_identifier = COALESCE(
+    sqlc.narg (stripe_customer_identifier),
+    stripe_customer_identifier
   )
 WHERE
   id = $1
@@ -76,6 +76,6 @@ SELECT
 FROM
   organization
 WHERE
-  stripe_customer_id = $1
+  stripe_customer_identifier = $1
 LIMIT
   1;

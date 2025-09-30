@@ -21,23 +21,23 @@ INSERT INTO
     plan,
     credits,
     logo,
-    stripe_customer_id
+    stripe_customer_identifier
   )
 VALUES
   ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING
-  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, slug, stripe_customer_identifier
 `
 
 type CreateOrganizationParams struct {
-	ID               uuid.UUID
-	Name             string
-	Slug             string
-	BillingEmail     *string
-	Plan             string
-	Credits          int32
-	Logo             *string
-	StripeCustomerID string
+	ID                       uuid.UUID
+	Name                     string
+	Slug                     string
+	BillingEmail             *string
+	Plan                     string
+	Credits                  int32
+	Logo                     *string
+	StripeCustomerIdentifier string
 }
 
 func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganizationParams) (Organization, error) {
@@ -49,7 +49,7 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 		arg.Plan,
 		arg.Credits,
 		arg.Logo,
-		arg.StripeCustomerID,
+		arg.StripeCustomerIdentifier,
 	)
 	var i Organization
 	err := row.Scan(
@@ -61,8 +61,8 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 		&i.Logo,
 		&i.Name,
 		&i.Plan,
-		&i.StripeCustomerID,
 		&i.Slug,
+		&i.StripeCustomerIdentifier,
 	)
 	return i, err
 }
@@ -80,7 +80,7 @@ func (q *Queries) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
 
 const getOrganization = `-- name: GetOrganization :one
 SELECT
-  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, slug, stripe_customer_identifier
 FROM
   organization
 WHERE
@@ -101,15 +101,15 @@ func (q *Queries) GetOrganization(ctx context.Context, id uuid.UUID) (Organizati
 		&i.Logo,
 		&i.Name,
 		&i.Plan,
-		&i.StripeCustomerID,
 		&i.Slug,
+		&i.StripeCustomerIdentifier,
 	)
 	return i, err
 }
 
 const getOrganizationBySlug = `-- name: GetOrganizationBySlug :one
 SELECT
-  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, slug, stripe_customer_identifier
 FROM
   organization
 WHERE
@@ -130,25 +130,25 @@ func (q *Queries) GetOrganizationBySlug(ctx context.Context, slug string) (Organ
 		&i.Logo,
 		&i.Name,
 		&i.Plan,
-		&i.StripeCustomerID,
 		&i.Slug,
+		&i.StripeCustomerIdentifier,
 	)
 	return i, err
 }
 
 const getOrganizationByStripeCustomerID = `-- name: GetOrganizationByStripeCustomerID :one
 SELECT
-  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, slug, stripe_customer_identifier
 FROM
   organization
 WHERE
-  stripe_customer_id = $1
+  stripe_customer_identifier = $1
 LIMIT
   1
 `
 
-func (q *Queries) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerID string) (Organization, error) {
-	row := q.db.QueryRow(ctx, getOrganizationByStripeCustomerID, stripeCustomerID)
+func (q *Queries) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (Organization, error) {
+	row := q.db.QueryRow(ctx, getOrganizationByStripeCustomerID, stripeCustomerIdentifier)
 	var i Organization
 	err := row.Scan(
 		&i.ID,
@@ -159,15 +159,15 @@ func (q *Queries) GetOrganizationByStripeCustomerID(ctx context.Context, stripeC
 		&i.Logo,
 		&i.Name,
 		&i.Plan,
-		&i.StripeCustomerID,
 		&i.Slug,
+		&i.StripeCustomerIdentifier,
 	)
 	return i, err
 }
 
 const listOrganizations = `-- name: ListOrganizations :many
 SELECT
-  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, slug, stripe_customer_identifier
 FROM
   organization
 ORDER BY
@@ -201,8 +201,8 @@ func (q *Queries) ListOrganizations(ctx context.Context, arg ListOrganizationsPa
 			&i.Logo,
 			&i.Name,
 			&i.Plan,
-			&i.StripeCustomerID,
 			&i.Slug,
+			&i.StripeCustomerIdentifier,
 		); err != nil {
 			return nil, err
 		}
@@ -223,25 +223,25 @@ SET
   plan = COALESCE($5, plan),
   credits = COALESCE($6, credits),
   logo = COALESCE($7, logo),
-  stripe_customer_id = COALESCE(
+  stripe_customer_identifier = COALESCE(
     $8,
-    stripe_customer_id
+    stripe_customer_identifier
   )
 WHERE
   id = $1
 RETURNING
-  id, created_at, updated_at, billing_email, credits, logo, name, plan, stripe_customer_id, slug
+  id, created_at, updated_at, billing_email, credits, logo, name, plan, slug, stripe_customer_identifier
 `
 
 type UpdateOrganizationParams struct {
-	ID               uuid.UUID
-	Name             *string
-	Slug             *string
-	BillingEmail     *string
-	Plan             *string
-	Credits          *int32
-	Logo             *string
-	StripeCustomerID *string
+	ID                       uuid.UUID
+	Name                     *string
+	Slug                     *string
+	BillingEmail             *string
+	Plan                     *string
+	Credits                  *int32
+	Logo                     *string
+	StripeCustomerIdentifier *string
 }
 
 func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganizationParams) (Organization, error) {
@@ -253,7 +253,7 @@ func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganization
 		arg.Plan,
 		arg.Credits,
 		arg.Logo,
-		arg.StripeCustomerID,
+		arg.StripeCustomerIdentifier,
 	)
 	var i Organization
 	err := row.Scan(
@@ -265,8 +265,8 @@ func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganization
 		&i.Logo,
 		&i.Name,
 		&i.Plan,
-		&i.StripeCustomerID,
 		&i.Slug,
+		&i.StripeCustomerIdentifier,
 	)
 	return i, err
 }

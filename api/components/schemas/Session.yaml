@@ -52,8 +52,6 @@ allOf:
         minLength: 36
     required:
       - expiresAt
-      - ipAddress
       - token
-      - userAgent
       - userID
 unevaluatedProperties: false

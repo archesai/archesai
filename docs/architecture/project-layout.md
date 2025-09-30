@@ -336,10 +336,6 @@
 │   │   │   ├── llm.go
 │   │   │   ├── ollama.go
 │   │   │   └── openai.go
-│   │   ├── notifications
-│   │   │   ├── console.go
-│   │   │   ├── email.go
-│   │   │   └── otp.go
 │   │   └── tui
 │   │       ├── screens
 │   │       ├── config_tui.go
@@ -464,6 +460,11 @@
 │   │   │   └── middleware
 │   │   │       ├── auth.go
 │   │   │       └── ratelimit.go
+│   │   ├── notifications
+│   │   │   ├── console.go
+│   │   │   ├── email.go
+│   │   │   ├── otp.go
+│   │   │   └── service.go
 │   │   ├── persistence
 │   │   │   ├── postgres
 │   │   │   │   ├── migrations
@@ -753,5 +754,5 @@
 ├── .redocly.yaml
 └── tsconfig.json
 
-216 directories, 533 files
+216 directories, 534 files
 ```

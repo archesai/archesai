@@ -38,7 +38,7 @@ func (h *ValidatePipelineExecutionPlanCommandHandler) Handle(
 	cmd *ValidatePipelineExecutionPlanCommand,
 ) (*ValidationResult, error) {
 	// Verify pipeline exists
-	pipeline, err := h.pipelineRepo.Get(ctx, cmd.ID)
+	_, err := h.pipelineRepo.Get(ctx, cmd.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pipeline: %w", err)
 	}
@@ -83,11 +83,6 @@ func (h *ValidatePipelineExecutionPlanCommandHandler) Handle(
 				)
 			}
 		}
-	}
-
-	// Check if pipeline is enabled
-	if pipeline.IsEnabled != nil && !*pipeline.IsEnabled {
-		result.Issues = append(result.Issues, "Pipeline is not enabled")
 	}
 
 	return result, nil
