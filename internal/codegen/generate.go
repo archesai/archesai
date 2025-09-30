@@ -106,7 +106,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	}
 
 	log.Info("Generating app wiring")
-	if err := g.GenerateAppWiring(schemas); err != nil {
+	if err := g.GenerateAppWiring(schemas, operations); err != nil {
 		return "", fmt.Errorf("failed to generate app wiring: %w", err)
 	}
 
@@ -155,7 +155,11 @@ func (g *Generator) GenerateSchema(specPath string, outputDir string) (string, e
 	var output bytes.Buffer
 
 	log.Info("Generating models (DTOs, entities, value objects)")
-	if err := g.generateModel(schema, schema.Title, xcodegen.GetSchemaType(), &outputDir); err != nil {
+	schemaType := ""
+	if xcodegen != nil {
+		schemaType = xcodegen.GetSchemaType()
+	}
+	if err := g.generateModel(schema, schema.Title, schemaType, &outputDir); err != nil {
 		return "", fmt.Errorf("failed to generate models: %w", err)
 	}
 

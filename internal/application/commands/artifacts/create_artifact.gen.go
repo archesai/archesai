@@ -16,18 +16,21 @@ import (
 
 // CreateArtifactCommand represents the command to create a artifact.
 type CreateArtifactCommand struct {
-	Name *string
-	Text string
+	SessionID uuid.UUID
+	Name      *string
+	Text      string
 }
 
 // NewCreateArtifactCommand creates a new create artifact command.
 func NewCreateArtifactCommand(
+	SessionID uuid.UUID,
 	Name *string,
 	Text string,
 ) *CreateArtifactCommand {
 	return &CreateArtifactCommand{
-		Name: Name,
-		Text: Text,
+		SessionID: SessionID,
+		Name:      Name,
+		Text:      Text,
 	}
 }
 

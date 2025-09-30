@@ -1,0 +1,41 @@
+get:
+  operationId: listSessions
+  summary: List sessions
+  tags:
+    - Auth
+  description: List all active sessions for the current user
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  parameters:
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/SessionsSort.yaml
+  responses:
+    '200':
+      description: List of user sessions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: ../components/schemas/Session.yaml
+              meta:
+                type: object
+                properties:
+                  total:
+                    description: Total number of sessions
+                    type: integer
+                    minimum: 0
+                    example: 3
+                required:
+                  - total
+                additionalProperties: false
+            required:
+              - data
+              - meta
+            additionalProperties: false
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

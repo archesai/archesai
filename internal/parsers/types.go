@@ -60,6 +60,7 @@ type OperationDef struct {
 	RequestBodyRequired bool                        // Whether request body is required
 	RequestBodySchema   *ProcessedSchema            // Processed request body schema
 	ResponseSchemas     map[string]*ProcessedSchema // Processed response schemas by status code
+	CustomHandler       bool                        // Whether this operation has a custom handler implementation
 }
 
 // GetSuccessResponse returns the first successful response (2xx status code)

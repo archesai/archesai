@@ -23,8 +23,6 @@ security:
 tags:
   - name: APIKeys
     description: API key management
-  - name: Accounts
-    description: User account management
   - name: Artifacts
     description: Content artifact management
   - name: Auth
@@ -56,28 +54,45 @@ tags:
   - name: Users
     description: User profile management
 paths:
-  /accounts:
-    $ref: paths/accounts.yaml
-  /accounts/{id}:
-    $ref: paths/accounts_{id}.yaml
-  /accounts/email-verification/verify:
-    $ref: paths/accounts_email-verification_verify.yaml
-  /accounts/email-verification/request:
-    $ref: paths/accounts_email-verification_request.yaml
-  /accounts/password-reset/request:
-    $ref: paths/accounts_password-reset_request.yaml
-  /accounts/password-reset/verify:
-    $ref: paths/accounts_password-reset_verify.yaml
-  /accounts/email-change/request:
-    $ref: paths/accounts_email-change_request.yaml
-  /accounts/email-change/verify:
-    $ref: paths/accounts_email-change_verify.yaml
-  /sessions:
-    $ref: paths/sessions.yaml
-  /sessions/{id}:
-    $ref: paths/sessions_{id}.yaml
+  # Authentication - Simplified flat structure
+  /auth/login:
+    $ref: paths/auth_login.yaml
+  /auth/logout:
+    $ref: paths/auth_logout.yaml
+  /auth/logout-all:
+    $ref: paths/auth_logout-all.yaml
+  /auth/register:
+    $ref: paths/auth_register.yaml
+  /auth/magic-links/request:
+    $ref: paths/auth_magic-link-request.yaml
+  /auth/magic-links/verify:
+    $ref: paths/auth_magic-link-verify.yaml
+  /auth/link:
+    $ref: paths/auth_link.yaml
+  /auth/sessions:
+    $ref: paths/auth_sessions.yaml
+  /auth/sessions/{id}:
+    $ref: paths/auth_sessions_{id}.yaml
+  /auth/accounts:
+    $ref: paths/auth_accounts.yaml
+  /auth/accounts/{id}:
+    $ref: paths/auth_accounts_{id}.yaml
+  /auth/request-verification:
+    $ref: paths/auth_request-verification.yaml
+  /auth/verify-email:
+    $ref: paths/auth_verify-email.yaml
+  /auth/forgot-password:
+    $ref: paths/auth_forgot-password.yaml
+  /auth/reset-password:
+    $ref: paths/auth_reset-password.yaml
+  /auth/change-email:
+    $ref: paths/auth_change-email.yaml
+  /auth/confirm-email:
+    $ref: paths/auth_confirm-email.yaml
   /users:
     $ref: paths/users.yaml
+  /users/me:
+    $ref: paths/users_me.yaml
   /users/{id}:
     $ref: paths/users_{id}.yaml
   # OAuth domain
@@ -85,11 +100,6 @@ paths:
     $ref: paths/oauth_authorize.yaml
   /auth/oauth/{provider}/callback:
     $ref: paths/oauth_callback.yaml
-  # Magic Link Authentication
-  /auth/magic-links/request:
-    $ref: paths/auth_magic-link.yaml#/~1auth~1magic-links~1request
-  /auth/magic-links/verify:
-    $ref: paths/auth_magic-link.yaml#/~1auth~1magic-links~1verify
   # API Keys domain
   /api-keys:
     $ref: paths/api-keys.yaml

@@ -101,19 +101,27 @@
 │   │       ├── Tool.yaml
 │   │       └── User.yaml
 │   ├── paths
-│   │   ├── accounts_email-change_request.yaml
-│   │   ├── accounts_email-change_verify.yaml
-│   │   ├── accounts_email-verification_request.yaml
-│   │   ├── accounts_email-verification_verify.yaml
-│   │   ├── accounts_{id}.yaml
-│   │   ├── accounts_password-reset_request.yaml
-│   │   ├── accounts_password-reset_verify.yaml
-│   │   ├── accounts.yaml
 │   │   ├── api-keys_{id}.yaml
 │   │   ├── api-keys.yaml
 │   │   ├── artifacts_{id}.yaml
 │   │   ├── artifacts.yaml
-│   │   ├── auth_magic-link.yaml
+│   │   ├── auth_accounts_{id}.yaml
+│   │   ├── auth_accounts.yaml
+│   │   ├── auth_change-email.yaml
+│   │   ├── auth_confirm-email.yaml
+│   │   ├── auth_forgot-password.yaml
+│   │   ├── auth_link.yaml
+│   │   ├── auth_login.yaml
+│   │   ├── auth_logout-all.yaml
+│   │   ├── auth_logout.yaml
+│   │   ├── auth_magic-link-request.yaml
+│   │   ├── auth_magic-link-verify.yaml
+│   │   ├── auth_register.yaml
+│   │   ├── auth_request-verification.yaml
+│   │   ├── auth_reset-password.yaml
+│   │   ├── auth_sessions_{id}.yaml
+│   │   ├── auth_sessions.yaml
+│   │   ├── auth_verify-email.yaml
 │   │   ├── config.yaml
 │   │   ├── health.yaml
 │   │   ├── invitations_{id}.yaml
@@ -132,11 +140,10 @@
 │   │   ├── pipelines.yaml
 │   │   ├── runs_{id}.yaml
 │   │   ├── runs.yaml
-│   │   ├── sessions_{id}.yaml
-│   │   ├── sessions.yaml
 │   │   ├── tools_{id}.yaml
 │   │   ├── tools.yaml
 │   │   ├── users_{id}.yaml
+│   │   ├── users_me.yaml
 │   │   └── users.yaml
 │   ├── openapi.bundled.yaml
 │   └── openapi.yaml
@@ -340,27 +347,44 @@
 │   ├── application
 │   │   ├── app
 │   │   ├── commands
-│   │   │   ├── accounts
 │   │   │   ├── apikeys
 │   │   │   ├── artifacts
 │   │   │   ├── auth
-│   │   │   │   ├── oauth_login.go
-│   │   │   │   ├── request_magic_link.go
-│   │   │   │   └── verify_magic_link.go
+│   │   │   │   ├── confirm_email_change_handler.go
+│   │   │   │   ├── confirm_email_verification_handler.go
+│   │   │   │   ├── confirm_password_reset_handler.go
+│   │   │   │   ├── delete_account_handler.go
+│   │   │   │   ├── delete_session_handler.go
+│   │   │   │   ├── link_account_handler.go
+│   │   │   │   ├── login_handler.go
+│   │   │   │   ├── logout_all_handler.go
+│   │   │   │   ├── logout_handler.go
+│   │   │   │   ├── register_handler.go
+│   │   │   │   ├── request_email_change_handler.go
+│   │   │   │   ├── request_email_verification_handler.go
+│   │   │   │   ├── request_magic_link_handler.go
+│   │   │   │   ├── request_password_reset_handler.go
+│   │   │   │   ├── update_account_handler.go
+│   │   │   │   ├── update_session_handler.go
+│   │   │   │   └── verify_magic_link_handler.go
 │   │   │   ├── invitations
 │   │   │   ├── labels
 │   │   │   ├── members
 │   │   │   ├── organizations
 │   │   │   ├── pipelines
+│   │   │   │   ├── create_pipeline_step_handler.go
+│   │   │   │   └── validate_pipeline_execution_plan_handler.go
 │   │   │   ├── runs
-│   │   │   ├── sessions
 │   │   │   ├── tools
 │   │   │   └── users
+│   │   │       ├── delete_current_user_handler.go
+│   │   │       └── update_current_user_handler.go
 │   │   └── queries
-│   │       ├── accounts
 │   │       ├── apikeys
 │   │       ├── artifacts
 │   │       ├── auth
+│   │       │   ├── oauth_authorize_handler.go
+│   │       │   └── oauth_callback_handler.go
 │   │       ├── config
 │   │       │   └── get_config.go
 │   │       ├── health
@@ -370,11 +394,12 @@
 │   │       ├── members
 │   │       ├── organizations
 │   │       ├── pipelines
-│   │       ├── pipelinesteps
+│   │       │   ├── get_pipeline_execution_plan_handler.go
+│   │       │   └── get_pipeline_steps_handler.go
 │   │       ├── runs
-│   │       ├── sessions
 │   │       ├── tools
 │   │       └── users
+│   │           └── get_current_user_handler.go
 │   ├── codegen
 │   │   ├── tmpl
 │   │   │   ├── app.tmpl
@@ -418,6 +443,7 @@
 │   │   │   │   ├── microsoft.go
 │   │   │   │   └── types.go
 │   │   │   ├── magic_link.go
+│   │   │   ├── password.go
 │   │   │   ├── service.go
 │   │   │   └── token_manager.go
 │   │   ├── cache
@@ -515,6 +541,8 @@
 │       ├── pdf.png
 │       ├── text.png
 │       └── website.png
+├── tmp
+│   └── archesai
 ├── tools
 │   ├── pg-to-sqlite
 │   │   └── main.go
@@ -533,7 +561,6 @@
 │   ├── client
 │   │   ├── src
 │   │   │   ├── generated
-│   │   │   │   ├── accounts
 │   │   │   │   ├── apikeys
 │   │   │   │   ├── artifacts
 │   │   │   │   ├── auth
@@ -545,7 +572,6 @@
 │   │   │   │   ├── organizations
 │   │   │   │   ├── pipelines
 │   │   │   │   ├── runs
-│   │   │   │   ├── sessions
 │   │   │   │   ├── tools
 │   │   │   │   ├── users
 │   │   │   │   ├── orval.schemas.ts
@@ -727,5 +753,5 @@
 ├── .redocly.yaml
 └── tsconfig.json
 
-222 directories, 501 files
+216 directories, 533 files
 ```

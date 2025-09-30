@@ -10,12 +10,6 @@ x-codegen:
       - name: ListByOrganization
         params: [organizationID]
         returns: multiple
-  commands:
-    operations: [create, update, delete]
-  queries:
-    operations: [get, list]
-  controller:
-    operations: [create, read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object

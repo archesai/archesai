@@ -14,33 +14,34 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/apikeys"
 	queries "github.com/archesai/archesai/internal/application/queries/apikeys"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // APIKeysController handles HTTP requests for apikeys endpoints.
 type APIKeysController struct {
 	// Command handlers
-	createHandler *commands.CreateAPIKeyCommandHandler
-	updateHandler *commands.UpdateAPIKeyCommandHandler
-	deleteHandler *commands.DeleteAPIKeyCommandHandler
+	createAPIKeyHandler *commands.CreateAPIKeyCommandHandler
+	deleteAPIKeyHandler *commands.DeleteAPIKeyCommandHandler
+	updateAPIKeyHandler *commands.UpdateAPIKeyCommandHandler
 	// Query handlers
-	getHandler  *queries.GetAPIKeyQueryHandler
-	listHandler *queries.ListAPIKeysQueryHandler
+	getAPIKeyHandler   *queries.GetAPIKeyQueryHandler
+	listAPIKeysHandler *queries.ListAPIKeysQueryHandler
 }
 
 // NewAPIKeysController creates a new apikeys controller with injected handlers.
 func NewAPIKeysController(
-	createHandler *commands.CreateAPIKeyCommandHandler,
-	updateHandler *commands.UpdateAPIKeyCommandHandler,
-	deleteHandler *commands.DeleteAPIKeyCommandHandler,
-	getHandler *queries.GetAPIKeyQueryHandler,
-	listHandler *queries.ListAPIKeysQueryHandler,
+	createAPIKeyHandler *commands.CreateAPIKeyCommandHandler,
+	deleteAPIKeyHandler *commands.DeleteAPIKeyCommandHandler,
+	updateAPIKeyHandler *commands.UpdateAPIKeyCommandHandler,
+	getAPIKeyHandler *queries.GetAPIKeyQueryHandler,
+	listAPIKeysHandler *queries.ListAPIKeysQueryHandler,
 ) *APIKeysController {
 	return &APIKeysController{
-		createHandler: createHandler,
-		updateHandler: updateHandler,
-		deleteHandler: deleteHandler,
-		getHandler:    getHandler,
-		listHandler:   listHandler,
+		createAPIKeyHandler: createAPIKeyHandler,
+		deleteAPIKeyHandler: deleteAPIKeyHandler,
+		updateAPIKeyHandler: updateAPIKeyHandler,
+		getAPIKeyHandler:    getAPIKeyHandler,
+		listAPIKeysHandler:  listAPIKeysHandler,
 	}
 }
 
@@ -103,6 +104,14 @@ func (c *APIKeysController) ListAPIKeys(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListAPIKeysRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Query parameters
 	var params ListAPIKeysParams
 	// Optional query parameter "filter"
@@ -119,12 +128,17 @@ func (c *APIKeysController) ListAPIKeys(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create list query from request
-	query := queries.NewListAPIKeysQuery()
+	// Query handler
+	query := queries.NewListAPIKeysQuery(
+		sessionID, // SessionID for authenticated operations
+	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.listAPIKeysHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -199,29 +213,38 @@ func (c *APIKeysController) CreateAPIKey(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreateAPIKeyRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Request body
-	var body CreateAPIKeyRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &CreateAPIKeyRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Create handler
+	// Command handler
 
-	// Map request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewCreateAPIKeyCommand(
+		sessionID,              // SessionID for authenticated operations
 		request.Body.ExpiresAt, // ExpiresAt
 		request.Body.Name,      // Name
 		request.Body.RateLimit, // RateLimit
 		request.Body.Scopes,    // Scopes
 	)
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
+	result, err := c.createAPIKeyHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
@@ -293,6 +316,14 @@ func (c *APIKeysController) GetAPIKey(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetAPIKeyRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -300,13 +331,17 @@ func (c *APIKeysController) GetAPIKey(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetAPIKeyQuery(
-		request.ID,
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
 	)
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getAPIKeyHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -389,6 +424,14 @@ func (c *APIKeysController) UpdateAPIKey(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateAPIKeyRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -397,28 +440,29 @@ func (c *APIKeysController) UpdateAPIKey(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body UpdateAPIKeyRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &UpdateAPIKeyRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Update handler
+	// Command handler
 
-	// Map path parameters and request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewUpdateAPIKeyCommand(
-		request.ID,             // id (entity ID)
+		sessionID,              // SessionID for authenticated operations
+		request.ID,             // id
 		request.Body.Name,      // Name
 		request.Body.RateLimit, // RateLimit
 		request.Body.Scopes,    // Scopes
 	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
+	result, err := c.updateAPIKeyHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})
@@ -490,6 +534,14 @@ func (c *APIKeysController) DeleteAPIKey(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteAPIKeyRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -497,16 +549,20 @@ func (c *APIKeysController) DeleteAPIKey(ctx echo.Context) error {
 	}
 	request.ID = id
 
-	// Determine which handler to call based on operation
-	// Create delete command from request
-	cmd := commands.NewDeleteAPIKeyCommand(
-		request.ID,
-	)
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
-	err := c.deleteHandler.Handle(reqCtx, cmd)
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteAPIKeyCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	err := c.deleteAPIKeyHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.NoContent(http.StatusNoContent)
 }

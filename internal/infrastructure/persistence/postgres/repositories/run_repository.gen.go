@@ -110,26 +110,20 @@ func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) (
 
 // ListByPipeline retrieves multiple runs by pipelineID
 func (r *PostgresRunRepository) ListByPipeline(ctx context.Context, pipelineID string) ([]*entities.Run, error) {
-
 	// TODO: Implement ListByPipeline - fetch multiple runs
 	return nil, fmt.Errorf("ListByPipeline not yet implemented")
-
 }
 
 // ListByOrganization retrieves multiple runs by organizationID
 func (r *PostgresRunRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Run, error) {
-
 	// TODO: Implement ListByOrganization - fetch multiple runs
 	return nil, fmt.Errorf("ListByOrganization not yet implemented")
-
 }
 
 // ListByTool retrieves multiple runs by toolID
 func (r *PostgresRunRepository) ListByTool(ctx context.Context, toolID string) ([]*entities.Run, error) {
-
 	// TODO: Implement ListByTool - fetch multiple runs
 	return nil, fmt.Errorf("ListByTool not yet implemented")
-
 }
 
 func mapRunFromDB(db *Run) *entities.Run {

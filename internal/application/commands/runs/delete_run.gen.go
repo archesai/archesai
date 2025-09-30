@@ -14,15 +14,18 @@ import (
 
 // DeleteRunCommand represents the command to delete a run.
 type DeleteRunCommand struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewDeleteRunCommand creates a new delete run command.
 func NewDeleteRunCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 ) *DeleteRunCommand {
 	return &DeleteRunCommand{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 

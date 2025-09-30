@@ -6,62 +6,6 @@
  * OpenAPI spec version: v0.0.0
  */
 /**
- * The type of filter operation
- */
-export type FilterNodeType = typeof FilterNodeType[keyof typeof FilterNodeType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterNodeType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
-} as const;
-
-/**
- * A recursive filter node that can be a condition or group
- */
-export interface FilterNode {
-  /** The type of filter operation */
-  type: FilterNodeType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-  /** Child filter nodes (for logical operators) */
-  children?: FilterNode[];
-}
-
-/**
- * Pagination parameters (limit & offset)
- */
-export interface Page {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-}
-
-/**
  * Base schema for all entities with common fields
  */
 export interface Base {
@@ -80,82 +24,6 @@ export interface Base {
    * @minLength 1
    */
   updatedAt: string;
-}
-
-/**
- * The authentication provider identifier
- */
-export type AccountAllOfProviderID = typeof AccountAllOfProviderID[keyof typeof AccountAllOfProviderID];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountAllOfProviderID = {
-  local: 'local',
-  google: 'google',
-  github: 'github',
-  microsoft: 'microsoft',
-  apple: 'apple',
-} as const;
-
-export type AccountAllOf = {
-  /**
-   * The unique identifier for the account from the provider
-   * @minLength 1
-   */
-  accountID: string;
-  /**
-   * The user ID this account belongs to
-   * @minLength 36
-   */
-  userID: string;
-  /** The authentication provider identifier */
-  providerID: AccountAllOfProviderID;
-  /** The OAuth access token */
-  accessToken?: string;
-  /** The access token expiration timestamp */
-  accessTokenExpiresAt?: string;
-  /** The OAuth refresh token */
-  refreshToken?: string;
-  /** The refresh token expiration timestamp */
-  refreshTokenExpiresAt?: string;
-  /** The OpenID Connect ID token */
-  idToken?: string;
-  /** The OAuth scope granted */
-  scope?: string;
-};
-
-/**
- * Schema for Account entity (authentication provider account)
- */
-export type Account = Base & AccountAllOf;
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export interface Problem {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 }
 
 export type SessionAllOf = {
@@ -199,6 +67,35 @@ export type SessionAllOf = {
  * Schema for Session entity
  */
 export type Session = Base & SessionAllOf;
+
+/**
+ * RFC 7807 (Problem Details) compliant error response
+ */
+export interface Problem {
+  /**
+   * HTTP status code
+   * @minimum 100
+   * @maximum 599
+   */
+  status: number;
+  /**
+   * URI identifying the problem type
+   * @minLength 1
+   */
+  type?: string;
+  /**
+   * Short, human-readable summary
+   * @minLength 1
+   */
+  title: string;
+  /**
+   * Human-readable explanation specific to this occurrence
+   * @minLength 1
+   */
+  detail?: string;
+  /** URI identifying the specific occurrence */
+  instance?: string;
+}
 
 export type UserAllOf = {
   /**
@@ -299,6 +196,109 @@ export interface MagicLinkToken {
   createdAt: string;
 }
 
+/**
+ * Pagination parameters (limit & offset)
+ */
+export interface Page {
+  /**
+   * Maximum number of items to return
+   * @minimum 1
+   * @maximum 100
+   */
+  limit?: number;
+  /**
+   * Number of items to skip before starting to collect the result set
+   * @minimum 0
+   * @maximum 9007199254740991
+   */
+  offset?: number;
+}
+
+/**
+ * The authentication provider identifier
+ */
+export type AccountAllOfProvider = typeof AccountAllOfProvider[keyof typeof AccountAllOfProvider];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AccountAllOfProvider = {
+  local: 'local',
+  google: 'google',
+  github: 'github',
+  microsoft: 'microsoft',
+  apple: 'apple',
+} as const;
+
+export type AccountAllOf = {
+  /**
+   * The unique identifier for the account from the provider
+   * @minLength 1
+   */
+  accountIdentifier: string;
+  /**
+   * The user ID this account belongs to
+   * @minLength 36
+   */
+  userID: string;
+  /** The authentication provider identifier */
+  provider: AccountAllOfProvider;
+  /** The OAuth access token */
+  accessToken?: string;
+  /** The access token expiration timestamp */
+  accessTokenExpiresAt?: string;
+  /** The OAuth refresh token */
+  refreshToken?: string;
+  /** The refresh token expiration timestamp */
+  refreshTokenExpiresAt?: string;
+  /** The OpenID Connect ID token */
+  idToken?: string;
+  /** The OAuth scope granted */
+  scope?: string;
+};
+
+/**
+ * Schema for Account entity (authentication provider account)
+ */
+export type Account = Base & AccountAllOf;
+
+/**
+ * The type of filter operation
+ */
+export type FilterNodeType = typeof FilterNodeType[keyof typeof FilterNodeType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FilterNodeType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  starts_with: 'starts_with',
+  ends_with: 'ends_with',
+} as const;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export interface FilterNode {
+  /** The type of filter operation */
+  type: FilterNodeType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: unknown;
+  /** Child filter nodes (for logical operators) */
+  children?: FilterNode[];
+}
+
 export type APIKeyAllOf = {
   /**
    * The user who owns this API key
@@ -380,7 +380,7 @@ export type OrganizationAllOf = {
    */
   credits: number;
   /** Stripe customer identifier */
-  stripeCustomerID?: string;
+  stripeCustomerIdentifier?: string;
 };
 
 /**
@@ -1505,16 +1505,6 @@ export type BadRequestResponse = Problem;
 export type UnauthorizedResponse = Problem;
 
 /**
- * 404 Not Found
- */
-export type NotFoundResponse = Problem;
-
-/**
- * 204 No Content
- */
-export type NoContentResponse = void;
-
-/**
  * Too many requests - rate limit exceeded
  */
 export type TooManyRequestsResponse = Problem;
@@ -1525,42 +1515,14 @@ export type TooManyRequestsResponse = Problem;
 export type InternalServerErrorResponse = Problem;
 
 /**
- * The type of filter operation
+ * 404 Not Found
  */
-export type AccountsFilterParameterType = typeof AccountsFilterParameterType[keyof typeof AccountsFilterParameterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsFilterParameterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
-} as const;
+export type NotFoundResponse = Problem;
 
 /**
- * A recursive filter node that can be a condition or group
+ * 204 No Content
  */
-export type AccountsFilterParameter = {
-  /** The type of filter operation */
-  type: AccountsFilterParameterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-  /** Child filter nodes (for logical operators) */
-  children?: FilterNode[];
-};
+export type NoContentResponse = void;
 
 /**
  * Pagination parameters (limit & offset)
@@ -1578,82 +1540,6 @@ export type PageQueryParameter = {
    * @maximum 9007199254740991
    */
   offset?: number;
-};
-
-export type AccountsSortParameterItemField = typeof AccountsSortParameterItemField[keyof typeof AccountsSortParameterItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  accessToken: 'accessToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountID: 'accountID',
-  idToken: 'idToken',
-  providerID: 'providerID',
-  refreshToken: 'refreshToken',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  userID: 'userID',
-} as const;
-
-export type AccountsSortParameterItemOrder = typeof AccountsSortParameterItemOrder[keyof typeof AccountsSortParameterItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type AccountsSortParameterItem = {
-  field: AccountsSortParameterItemField;
-  order: AccountsSortParameterItemOrder;
-};
-
-/**
- * The sort parameter
- */
-export type AccountsSortParameter = AccountsSortParameterItem[];
-
-/**
- * The type of filter operation
- */
-export type SessionsFilterParameterType = typeof SessionsFilterParameterType[keyof typeof SessionsFilterParameterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsFilterParameterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
-} as const;
-
-/**
- * A recursive filter node that can be a condition or group
- */
-export type SessionsFilterParameter = {
-  /** The type of filter operation */
-  type: SessionsFilterParameterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-  /** Child filter nodes (for logical operators) */
-  children?: FilterNode[];
 };
 
 export type SessionsSortParameterItemField = typeof SessionsSortParameterItemField[keyof typeof SessionsSortParameterItemField];
@@ -1890,7 +1776,7 @@ export const OrganizationsSortParameterItemField = {
   name: 'name',
   plan: 'plan',
   slug: 'slug',
-  stripeCustomerID: 'stripeCustomerID',
+  stripeCustomerIdentifier: 'stripeCustomerIdentifier',
 } as const;
 
 export type OrganizationsSortParameterItemOrder = typeof OrganizationsSortParameterItemOrder[keyof typeof OrganizationsSortParameterItemOrder];
@@ -2417,31 +2303,7 @@ export type LabelsSortParameterItem = {
  */
 export type LabelsSortParameter = LabelsSortParameterItem[];
 
-export type ListAccountsParams = {
-/**
- * A recursive filter node that can be a condition or group
- */
-filter?: AccountsFilterParameter;
-/**
- * Pagination parameters (limit & offset)
- */
-page?: PageQueryParameter;
-/**
- * The sort parameter
- */
-sort?: AccountsSortParameter;
-};
-
-export type ListAccounts200Meta = {
-  total: number;
-};
-
-export type ListAccounts200 = {
-  data: Account[];
-  meta: ListAccounts200Meta;
-};
-
-export type CreateAccountBody = {
+export type LoginBody = {
   /**
    * The email address associated with the account
    * @minLength 1
@@ -2449,7 +2311,38 @@ export type CreateAccountBody = {
    */
   email: string;
   /**
-   * The name of the user creating the account
+   * The password for the account
+   * @minLength 1
+   */
+  password: string;
+  /** Whether to create a long-lived session */
+  rememberMe?: boolean;
+};
+
+export type Logout200 = {
+  /** @minLength 1 */
+  message: string;
+};
+
+export type LogoutAll200 = {
+  /** @minLength 1 */
+  message: string;
+  /**
+   * Number of sessions that were terminated
+   * @minimum 0
+   */
+  count: number;
+};
+
+export type RegisterBody = {
+  /**
+   * The email address for the new account
+   * @minLength 1
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
+  email: string;
+  /**
+   * The name of the user
    * @minLength 1
    */
   name: string;
@@ -2460,6 +2353,143 @@ export type CreateAccountBody = {
   password: string;
 };
 
+/**
+ * How to deliver the magic link
+ */
+export type RequestMagicLinkBodyDeliveryMethod = typeof RequestMagicLinkBodyDeliveryMethod[keyof typeof RequestMagicLinkBodyDeliveryMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RequestMagicLinkBodyDeliveryMethod = {
+  email: 'email',
+  console: 'console',
+  otp: 'otp',
+  webhook: 'webhook',
+} as const;
+
+export type RequestMagicLinkBody = {
+  /**
+   * Email address or username
+   * @minLength 1
+   */
+  identifier: string;
+  /** How to deliver the magic link */
+  deliveryMethod?: RequestMagicLinkBodyDeliveryMethod;
+  /** URL to redirect to after successful authentication */
+  redirectUrl?: string;
+};
+
+export type RequestMagicLink200 = {
+  message?: string;
+  /**
+   * OTP code (only returned if deliveryMethod is 'otp')
+   * @minLength 6
+   * @maxLength 6
+   */
+  otpCode?: string;
+  /** Token expiry in seconds */
+  expiresIn?: number;
+  /** Magic link token details (for internal use) */
+  token?: MagicLinkToken;
+};
+
+export type VerifyMagicLinkBody = {
+  /**
+   * Magic link token from URL
+   * @minLength 32
+   */
+  token?: string;
+  /**
+   * OTP code (alternative to token)
+   * @minLength 6
+   * @maxLength 6
+   * @pattern ^[0-9]{6}$
+   */
+  code?: string;
+  /** Required when using OTP code */
+  identifier?: string;
+};
+
+/**
+ * The authentication provider to link
+ */
+export type LinkAccountBodyProvider = typeof LinkAccountBodyProvider[keyof typeof LinkAccountBodyProvider];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LinkAccountBodyProvider = {
+  google: 'google',
+  github: 'github',
+  microsoft: 'microsoft',
+  apple: 'apple',
+} as const;
+
+export type LinkAccountBody = {
+  /** The authentication provider to link */
+  provider: LinkAccountBodyProvider;
+  /** URL to redirect to after successful linking */
+  redirectUrl?: string;
+};
+
+export type LinkAccount200 = {
+  /** URL to redirect the user to for provider authorization */
+  authorizationUrl: string;
+};
+
+export type ListSessionsParams = {
+/**
+ * Pagination parameters (limit & offset)
+ */
+page?: PageQueryParameter;
+/**
+ * The sort parameter
+ */
+sort?: SessionsSortParameter;
+};
+
+export type ListSessions200Meta = {
+  /**
+   * Total number of sessions
+   * @minimum 0
+   */
+  total: number;
+};
+
+export type ListSessions200 = {
+  data: Session[];
+  meta: ListSessions200Meta;
+};
+
+export type DeleteSession200 = {
+  data: Session;
+};
+
+export type GetSession200 = {
+  data: Session;
+};
+
+export type UpdateSessionBody = {
+  /**
+   * The organization ID to set as active for this session
+   * @minLength 36
+   */
+  organizationID: string;
+};
+
+export type UpdateSession200 = {
+  data: Session;
+};
+
+export type ListAccounts200Meta = {
+  /** @minimum 0 */
+  total: number;
+};
+
+export type ListAccounts200 = {
+  data: Account[];
+  meta: ListAccounts200Meta;
+};
+
 export type GetAccount200 = {
   data: Account;
 };
@@ -2468,7 +2498,7 @@ export type UpdateAccountBody = {
   /** The account provider */
   provider?: string;
   /** The provider account ID */
-  providerAccountID?: string;
+  providerAccountIdentifier?: string;
   /** The account type */
   type?: string;
 };
@@ -2548,67 +2578,6 @@ export type ConfirmEmailChangeBody = {
   userID: string;
 };
 
-export type ListSessionsParams = {
-/**
- * A recursive filter node that can be a condition or group
- */
-filter?: SessionsFilterParameter;
-/**
- * Pagination parameters (limit & offset)
- */
-page?: PageQueryParameter;
-/**
- * The sort parameter
- */
-sort?: SessionsSortParameter;
-};
-
-export type ListSessions200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListSessions200 = {
-  data: Session[];
-  meta: ListSessions200Meta;
-};
-
-export type CreateSessionBody = {
-  /**
-   * The email address associated with the account
-   * @minLength 1
-   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-   */
-  email: string;
-  /**
-   * The password for the account
-   * @minLength 1
-   */
-  password: string;
-  /** Whether to create a long-lived session */
-  rememberMe?: boolean;
-};
-
-export type DeleteSession200 = {
-  data: Session;
-};
-
-export type GetSession200 = {
-  data: Session;
-};
-
-export type UpdateSessionBody = {
-  /**
-   * The organization ID to set as active for this session
-   * @minLength 36
-   */
-  organizationID: string;
-};
-
-export type UpdateSession200 = {
-  data: Session;
-};
-
 export type ListUsersParams = {
 /**
  * A recursive filter node that can be a condition or group
@@ -2632,6 +2601,49 @@ export type ListUsers200Meta = {
 export type ListUsers200 = {
   data: User[];
   meta: ListUsers200Meta;
+};
+
+export type GetCurrentUser200 = {
+  data: User;
+};
+
+export type UpdateCurrentUserBody = {
+  /**
+   * The user's display name
+   * @minLength 1
+   * @maxLength 255
+   */
+  name?: string;
+  /**
+   * The user's avatar image URL
+   * @minLength 5
+   * @maxLength 2048
+   */
+  image?: string;
+};
+
+export type UpdateCurrentUser200 = {
+  data: User;
+};
+
+/**
+ * Confirmation string to prevent accidental deletion
+ */
+export type DeleteCurrentUserBodyConfirmation = typeof DeleteCurrentUserBodyConfirmation[keyof typeof DeleteCurrentUserBodyConfirmation];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const DeleteCurrentUserBodyConfirmation = {
+  DELETE_MY_ACCOUNT: 'DELETE_MY_ACCOUNT',
+} as const;
+
+export type DeleteCurrentUserBody = {
+  /** Confirmation string to prevent accidental deletion */
+  confirmation: DeleteCurrentUserBodyConfirmation;
+};
+
+export type DeleteCurrentUser200 = {
+  message: string;
 };
 
 export type DeleteUser200 = {
@@ -2696,63 +2708,6 @@ error?: string;
  * Human-readable error description
  */
 error_description?: string;
-};
-
-/**
- * How to deliver the magic link
- */
-export type RequestMagicLinkBodyDeliveryMethod = typeof RequestMagicLinkBodyDeliveryMethod[keyof typeof RequestMagicLinkBodyDeliveryMethod];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RequestMagicLinkBodyDeliveryMethod = {
-  email: 'email',
-  console: 'console',
-  otp: 'otp',
-  webhook: 'webhook',
-} as const;
-
-export type RequestMagicLinkBody = {
-  /**
-   * Email address or username
-   * @minLength 1
-   */
-  identifier: string;
-  /** How to deliver the magic link */
-  deliveryMethod?: RequestMagicLinkBodyDeliveryMethod;
-  /** URL to redirect to after successful authentication */
-  redirectUrl?: string;
-};
-
-export type RequestMagicLink200 = {
-  message?: string;
-  /**
-   * OTP code (only returned if deliveryMethod is 'otp')
-   * @minLength 6
-   * @maxLength 6
-   */
-  otpCode?: string;
-  /** Token expiry in seconds */
-  expiresIn?: number;
-  /** Magic link token details (for internal use) */
-  token?: MagicLinkToken;
-};
-
-export type VerifyMagicLinkBody = {
-  /**
-   * Magic link token from URL
-   * @minLength 32
-   */
-  token?: string;
-  /**
-   * OTP code (alternative to token)
-   * @minLength 6
-   * @maxLength 6
-   * @pattern ^[0-9]{6}$
-   */
-  code?: string;
-  /** Required when using OTP code */
-  identifier?: string;
 };
 
 export type ListAPIKeysParams = {

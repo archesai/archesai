@@ -1,0 +1,37 @@
+post:
+  operationId: requestEmailChange
+  summary: Request e-mail change
+  tags:
+    - Auth
+  description: This endpoint will request your e-mail change with a token
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            newEmail:
+              description: The e-mail to send the confirmation token to
+              type: string
+              format: email
+              pattern: >-
+                ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+              example: user@example.com
+              minLength: 1
+            userID:
+              description: The user ID of the user requesting the email change
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+              minLength: 36
+          required:
+            - newEmail
+            - userID
+    required: true
+  responses:
+    '204':
+      $ref: ../components/responses/NoContent.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

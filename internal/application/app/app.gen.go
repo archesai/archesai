@@ -13,21 +13,20 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/controllers"
 	"github.com/archesai/archesai/internal/adapters/http/server"
-	accountCommands "github.com/archesai/archesai/internal/application/commands/accounts"
 	apikeyCommands "github.com/archesai/archesai/internal/application/commands/apikeys"
 	artifactCommands "github.com/archesai/archesai/internal/application/commands/artifacts"
+	authCommands "github.com/archesai/archesai/internal/application/commands/auth"
 	invitationCommands "github.com/archesai/archesai/internal/application/commands/invitations"
 	labelCommands "github.com/archesai/archesai/internal/application/commands/labels"
 	memberCommands "github.com/archesai/archesai/internal/application/commands/members"
 	organizationCommands "github.com/archesai/archesai/internal/application/commands/organizations"
 	pipelineCommands "github.com/archesai/archesai/internal/application/commands/pipelines"
 	runCommands "github.com/archesai/archesai/internal/application/commands/runs"
-	sessionCommands "github.com/archesai/archesai/internal/application/commands/sessions"
 	toolCommands "github.com/archesai/archesai/internal/application/commands/tools"
 	userCommands "github.com/archesai/archesai/internal/application/commands/users"
-	accountQueries "github.com/archesai/archesai/internal/application/queries/accounts"
 	apikeyQueries "github.com/archesai/archesai/internal/application/queries/apikeys"
 	artifactQueries "github.com/archesai/archesai/internal/application/queries/artifacts"
+	authQueries "github.com/archesai/archesai/internal/application/queries/auth"
 	configQueries "github.com/archesai/archesai/internal/application/queries/config"
 	healthQueries "github.com/archesai/archesai/internal/application/queries/health"
 	invitationQueries "github.com/archesai/archesai/internal/application/queries/invitations"
@@ -36,9 +35,10 @@ import (
 	organizationQueries "github.com/archesai/archesai/internal/application/queries/organizations"
 	pipelineQueries "github.com/archesai/archesai/internal/application/queries/pipelines"
 	runQueries "github.com/archesai/archesai/internal/application/queries/runs"
-	sessionQueries "github.com/archesai/archesai/internal/application/queries/sessions"
 	toolQueries "github.com/archesai/archesai/internal/application/queries/tools"
 	userQueries "github.com/archesai/archesai/internal/application/queries/users"
+	"github.com/archesai/archesai/internal/infrastructure/auth"
+	"github.com/archesai/archesai/internal/infrastructure/cache"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 	database "github.com/archesai/archesai/internal/infrastructure/persistence"
 )
@@ -54,20 +54,19 @@ type App struct {
 	Server *server.Server
 
 	// HTTP Controllers
-	APIKeysHandler       *controllers.APIKeysController
-	AccountsHandler      *controllers.AccountsController
-	ArtifactsHandler     *controllers.ArtifactsController
-	ConfigHandler        *controllers.ConfigController
-	HealthHandler        *controllers.HealthController
-	InvitationsHandler   *controllers.InvitationsController
-	LabelsHandler        *controllers.LabelsController
-	MembersHandler       *controllers.MembersController
-	OrganizationsHandler *controllers.OrganizationsController
-	PipelinesHandler     *controllers.PipelinesController
-	RunsHandler          *controllers.RunsController
-	SessionsHandler      *controllers.SessionsController
-	ToolsHandler         *controllers.ToolsController
-	UsersHandler         *controllers.UsersController
+	AuthController          *controllers.AuthController
+	APIKeysController       *controllers.APIKeysController
+	ArtifactsController     *controllers.ArtifactsController
+	ConfigController        *controllers.ConfigController
+	HealthController        *controllers.HealthController
+	InvitationsController   *controllers.InvitationsController
+	LabelsController        *controllers.LabelsController
+	MembersController       *controllers.MembersController
+	OrganizationsController *controllers.OrganizationsController
+	PipelinesController     *controllers.PipelinesController
+	RunsController          *controllers.RunsController
+	ToolsController         *controllers.ToolsController
+	UsersController         *controllers.UsersController
 }
 
 // NewApp creates and initializes all application dependencies.
@@ -100,6 +99,17 @@ func NewApp(cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("failed to create repositories: %w", err)
 	}
 
+	// Initialize auth service after repositories are available
+	log.Info("initializing auth service")
+	var stringCache cache.Cache[string]
+	if infra.redisClient != nil {
+		stringCache = cache.NewRedisCache[string](infra.redisClient.GetRedisClient(), "auth:tokens")
+	} else {
+		stringCache = cache.NewMemoryCache[string]()
+	}
+	infra.AuthService = auth.NewService(cfg, repos.Sessions, repos.Users, repos.Accounts, stringCache)
+	log.Info("auth service ready")
+
 	// Create app instance to populate
 	app := &App{
 		// Infrastructure
@@ -114,14 +124,76 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Initialize config domain (infrastructure query - needs special handling)
 	log.Info("initializing config domain")
 	getConfigHandler := configQueries.NewGetConfigQueryHandler(cfg)
-	app.ConfigHandler = controllers.NewConfigController(getConfigHandler)
+	app.ConfigController = controllers.NewConfigController(getConfigHandler)
 	log.Info("config domain ready")
 
 	// Initialize health domain (infrastructure query - needs special handling)
 	log.Info("initializing health domain")
 	getHealthHandler := healthQueries.NewGetHealthQueryHandler()
-	app.HealthHandler = controllers.NewHealthController(getHealthHandler)
+	app.HealthController = controllers.NewHealthController(getHealthHandler)
 	log.Info("health domain ready")
+
+	// Initialize auth domain (cross-cutting concern spanning multiple entities)
+	g.Go(func() error {
+		log.Info("initializing auth domain")
+
+		// Create command handlers - all use auth.Service
+		confirmEmailChangeHandler := authCommands.NewConfirmEmailChangeCommandHandler(infra.AuthService)
+		confirmEmailVerificationHandler := authCommands.NewConfirmEmailVerificationCommandHandler(infra.AuthService)
+		confirmPasswordResetHandler := authCommands.NewConfirmPasswordResetCommandHandler(infra.AuthService)
+		deleteAccountHandler := authCommands.NewDeleteAccountCommandHandler(infra.AuthService)
+		deleteSessionHandler := authCommands.NewDeleteSessionCommandHandler(repos.Sessions)
+		linkAccountHandler := authCommands.NewLinkAccountCommandHandler(infra.AuthService)
+		loginHandler := authCommands.NewLoginCommandHandler(infra.AuthService)
+		logoutHandler := authCommands.NewLogoutCommandHandler(infra.AuthService)
+		logoutAllHandler := authCommands.NewLogoutAllCommandHandler(infra.AuthService)
+		registerHandler := authCommands.NewRegisterCommandHandler(infra.AuthService, repos.Users, repos.Accounts)
+		requestEmailChangeHandler := authCommands.NewRequestEmailChangeCommandHandler(infra.AuthService)
+		requestEmailVerificationHandler := authCommands.NewRequestEmailVerificationCommandHandler(infra.AuthService)
+		requestMagicLinkHandler := authCommands.NewRequestMagicLinkCommandHandler(infra.AuthService)
+		requestPasswordResetHandler := authCommands.NewRequestPasswordResetCommandHandler(infra.AuthService)
+		updateAccountHandler := authCommands.NewUpdateAccountCommandHandler(infra.AuthService)
+		updateSessionHandler := authCommands.NewUpdateSessionCommandHandler(repos.Sessions)
+		verifyMagicLinkHandler := authCommands.NewVerifyMagicLinkCommandHandler(infra.AuthService)
+
+		// Create query handlers
+		getAccountHandler := authQueries.NewGetAccountQueryHandler(repos.Accounts)
+		getSessionHandler := authQueries.NewGetSessionQueryHandler(repos.Sessions)
+		listAccountsHandler := authQueries.NewListAccountsQueryHandler(repos.Accounts)
+		listSessionsHandler := authQueries.NewListSessionsQueryHandler(repos.Sessions)
+		oauthAuthorizeHandler := authQueries.NewOAuthAuthorizeQueryHandler(infra.AuthService)
+		oauthCallbackHandler := authQueries.NewOAuthCallbackQueryHandler(infra.AuthService, infra.EventPublisher)
+
+		// Create controller with handlers
+		app.AuthController = controllers.NewAuthController(
+			confirmEmailChangeHandler,
+			confirmEmailVerificationHandler,
+			confirmPasswordResetHandler,
+			deleteAccountHandler,
+			deleteSessionHandler,
+			linkAccountHandler,
+			loginHandler,
+			logoutHandler,
+			logoutAllHandler,
+			registerHandler,
+			requestEmailChangeHandler,
+			requestEmailVerificationHandler,
+			requestMagicLinkHandler,
+			requestPasswordResetHandler,
+			updateAccountHandler,
+			updateSessionHandler,
+			verifyMagicLinkHandler,
+			getAccountHandler,
+			getSessionHandler,
+			listAccountsHandler,
+			listSessionsHandler,
+			oauthAuthorizeHandler,
+			oauthCallbackHandler,
+		)
+
+		log.Info("auth domain ready")
+		return nil
+	})
 
 	// Initialize apikeys domain
 	g.Go(func() error {
@@ -131,67 +203,31 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.APIKeys,
 			infra.EventPublisher,
 		)
-		updateAPIKeyHandler := apikeyCommands.NewUpdateAPIKeyCommandHandler(
+		deleteAPIKeyHandler := apikeyCommands.NewDeleteAPIKeyCommandHandler(
 			repos.APIKeys,
 			infra.EventPublisher,
 		)
-		deleteAPIKeyHandler := apikeyCommands.NewDeleteAPIKeyCommandHandler(
+		updateAPIKeyHandler := apikeyCommands.NewUpdateAPIKeyCommandHandler(
 			repos.APIKeys,
 			infra.EventPublisher,
 		)
 		getAPIKeyHandler := apikeyQueries.NewGetAPIKeyQueryHandler(
 			repos.APIKeys,
 		)
-		listAPIKeyHandler := apikeyQueries.NewListAPIKeysQueryHandler(
+		listAPIKeysHandler := apikeyQueries.NewListAPIKeysQueryHandler(
 			repos.APIKeys,
 		)
 
 		// Create controller with handlers
-		app.APIKeysHandler = controllers.NewAPIKeysController(
+		app.APIKeysController = controllers.NewAPIKeysController(
 			createAPIKeyHandler,
-			updateAPIKeyHandler,
 			deleteAPIKeyHandler,
+			updateAPIKeyHandler,
 			getAPIKeyHandler,
-			listAPIKeyHandler,
+			listAPIKeysHandler,
 		)
 
 		log.Info("apikeys domain ready")
-		return nil
-	})
-
-	// Initialize accounts domain
-	g.Go(func() error {
-		log.Info("initializing accounts domain")
-		// Create command and query handlers
-		createAccountHandler := accountCommands.NewCreateAccountCommandHandler(
-			repos.Accounts,
-			infra.EventPublisher,
-		)
-		updateAccountHandler := accountCommands.NewUpdateAccountCommandHandler(
-			repos.Accounts,
-			infra.EventPublisher,
-		)
-		deleteAccountHandler := accountCommands.NewDeleteAccountCommandHandler(
-			repos.Accounts,
-			infra.EventPublisher,
-		)
-		getAccountHandler := accountQueries.NewGetAccountQueryHandler(
-			repos.Accounts,
-		)
-		listAccountHandler := accountQueries.NewListAccountsQueryHandler(
-			repos.Accounts,
-		)
-
-		// Create controller with handlers
-		app.AccountsHandler = controllers.NewAccountsController(
-			createAccountHandler,
-			updateAccountHandler,
-			deleteAccountHandler,
-			getAccountHandler,
-			listAccountHandler,
-		)
-
-		log.Info("accounts domain ready")
 		return nil
 	})
 
@@ -203,28 +239,28 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Artifacts,
 			infra.EventPublisher,
 		)
-		updateArtifactHandler := artifactCommands.NewUpdateArtifactCommandHandler(
+		deleteArtifactHandler := artifactCommands.NewDeleteArtifactCommandHandler(
 			repos.Artifacts,
 			infra.EventPublisher,
 		)
-		deleteArtifactHandler := artifactCommands.NewDeleteArtifactCommandHandler(
+		updateArtifactHandler := artifactCommands.NewUpdateArtifactCommandHandler(
 			repos.Artifacts,
 			infra.EventPublisher,
 		)
 		getArtifactHandler := artifactQueries.NewGetArtifactQueryHandler(
 			repos.Artifacts,
 		)
-		listArtifactHandler := artifactQueries.NewListArtifactsQueryHandler(
+		listArtifactsHandler := artifactQueries.NewListArtifactsQueryHandler(
 			repos.Artifacts,
 		)
 
 		// Create controller with handlers
-		app.ArtifactsHandler = controllers.NewArtifactsController(
+		app.ArtifactsController = controllers.NewArtifactsController(
 			createArtifactHandler,
-			updateArtifactHandler,
 			deleteArtifactHandler,
+			updateArtifactHandler,
 			getArtifactHandler,
-			listArtifactHandler,
+			listArtifactsHandler,
 		)
 
 		log.Info("artifacts domain ready")
@@ -239,28 +275,28 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Invitations,
 			infra.EventPublisher,
 		)
-		updateInvitationHandler := invitationCommands.NewUpdateInvitationCommandHandler(
+		deleteInvitationHandler := invitationCommands.NewDeleteInvitationCommandHandler(
 			repos.Invitations,
 			infra.EventPublisher,
 		)
-		deleteInvitationHandler := invitationCommands.NewDeleteInvitationCommandHandler(
+		updateInvitationHandler := invitationCommands.NewUpdateInvitationCommandHandler(
 			repos.Invitations,
 			infra.EventPublisher,
 		)
 		getInvitationHandler := invitationQueries.NewGetInvitationQueryHandler(
 			repos.Invitations,
 		)
-		listInvitationHandler := invitationQueries.NewListInvitationsQueryHandler(
+		listInvitationsHandler := invitationQueries.NewListInvitationsQueryHandler(
 			repos.Invitations,
 		)
 
 		// Create controller with handlers
-		app.InvitationsHandler = controllers.NewInvitationsController(
+		app.InvitationsController = controllers.NewInvitationsController(
 			createInvitationHandler,
-			updateInvitationHandler,
 			deleteInvitationHandler,
+			updateInvitationHandler,
 			getInvitationHandler,
-			listInvitationHandler,
+			listInvitationsHandler,
 		)
 
 		log.Info("invitations domain ready")
@@ -275,28 +311,28 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Labels,
 			infra.EventPublisher,
 		)
-		updateLabelHandler := labelCommands.NewUpdateLabelCommandHandler(
+		deleteLabelHandler := labelCommands.NewDeleteLabelCommandHandler(
 			repos.Labels,
 			infra.EventPublisher,
 		)
-		deleteLabelHandler := labelCommands.NewDeleteLabelCommandHandler(
+		updateLabelHandler := labelCommands.NewUpdateLabelCommandHandler(
 			repos.Labels,
 			infra.EventPublisher,
 		)
 		getLabelHandler := labelQueries.NewGetLabelQueryHandler(
 			repos.Labels,
 		)
-		listLabelHandler := labelQueries.NewListLabelsQueryHandler(
+		listLabelsHandler := labelQueries.NewListLabelsQueryHandler(
 			repos.Labels,
 		)
 
 		// Create controller with handlers
-		app.LabelsHandler = controllers.NewLabelsController(
+		app.LabelsController = controllers.NewLabelsController(
 			createLabelHandler,
-			updateLabelHandler,
 			deleteLabelHandler,
+			updateLabelHandler,
 			getLabelHandler,
-			listLabelHandler,
+			listLabelsHandler,
 		)
 
 		log.Info("labels domain ready")
@@ -311,28 +347,28 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Members,
 			infra.EventPublisher,
 		)
-		updateMemberHandler := memberCommands.NewUpdateMemberCommandHandler(
+		deleteMemberHandler := memberCommands.NewDeleteMemberCommandHandler(
 			repos.Members,
 			infra.EventPublisher,
 		)
-		deleteMemberHandler := memberCommands.NewDeleteMemberCommandHandler(
+		updateMemberHandler := memberCommands.NewUpdateMemberCommandHandler(
 			repos.Members,
 			infra.EventPublisher,
 		)
 		getMemberHandler := memberQueries.NewGetMemberQueryHandler(
 			repos.Members,
 		)
-		listMemberHandler := memberQueries.NewListMembersQueryHandler(
+		listMembersHandler := memberQueries.NewListMembersQueryHandler(
 			repos.Members,
 		)
 
 		// Create controller with handlers
-		app.MembersHandler = controllers.NewMembersController(
+		app.MembersController = controllers.NewMembersController(
 			createMemberHandler,
-			updateMemberHandler,
 			deleteMemberHandler,
+			updateMemberHandler,
 			getMemberHandler,
-			listMemberHandler,
+			listMembersHandler,
 		)
 
 		log.Info("members domain ready")
@@ -347,28 +383,28 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Organizations,
 			infra.EventPublisher,
 		)
-		updateOrganizationHandler := organizationCommands.NewUpdateOrganizationCommandHandler(
+		deleteOrganizationHandler := organizationCommands.NewDeleteOrganizationCommandHandler(
 			repos.Organizations,
 			infra.EventPublisher,
 		)
-		deleteOrganizationHandler := organizationCommands.NewDeleteOrganizationCommandHandler(
+		updateOrganizationHandler := organizationCommands.NewUpdateOrganizationCommandHandler(
 			repos.Organizations,
 			infra.EventPublisher,
 		)
 		getOrganizationHandler := organizationQueries.NewGetOrganizationQueryHandler(
 			repos.Organizations,
 		)
-		listOrganizationHandler := organizationQueries.NewListOrganizationsQueryHandler(
+		listOrganizationsHandler := organizationQueries.NewListOrganizationsQueryHandler(
 			repos.Organizations,
 		)
 
 		// Create controller with handlers
-		app.OrganizationsHandler = controllers.NewOrganizationsController(
+		app.OrganizationsController = controllers.NewOrganizationsController(
 			createOrganizationHandler,
-			updateOrganizationHandler,
 			deleteOrganizationHandler,
+			updateOrganizationHandler,
 			getOrganizationHandler,
-			listOrganizationHandler,
+			listOrganizationsHandler,
 		)
 
 		log.Info("organizations domain ready")
@@ -383,7 +419,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Pipelines,
 			infra.EventPublisher,
 		)
-		updatePipelineHandler := pipelineCommands.NewUpdatePipelineCommandHandler(
+		createPipelineStepHandler := pipelineCommands.NewCreatePipelineStepCommandHandler(
 			repos.Pipelines,
 			infra.EventPublisher,
 		)
@@ -391,20 +427,38 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Pipelines,
 			infra.EventPublisher,
 		)
+		updatePipelineHandler := pipelineCommands.NewUpdatePipelineCommandHandler(
+			repos.Pipelines,
+			infra.EventPublisher,
+		)
+		validatePipelineExecutionPlanHandler := pipelineCommands.NewValidatePipelineExecutionPlanCommandHandler(
+			repos.Pipelines,
+			infra.EventPublisher,
+		)
 		getPipelineHandler := pipelineQueries.NewGetPipelineQueryHandler(
 			repos.Pipelines,
 		)
-		listPipelineHandler := pipelineQueries.NewListPipelinesQueryHandler(
+		getPipelineExecutionPlanHandler := pipelineQueries.NewGetPipelineExecutionPlanQueryHandler(
+			repos.Pipelines,
+		)
+		getPipelineStepsHandler := pipelineQueries.NewGetPipelineStepsQueryHandler(
+			repos.Pipelines,
+		)
+		listPipelinesHandler := pipelineQueries.NewListPipelinesQueryHandler(
 			repos.Pipelines,
 		)
 
 		// Create controller with handlers
-		app.PipelinesHandler = controllers.NewPipelinesController(
+		app.PipelinesController = controllers.NewPipelinesController(
 			createPipelineHandler,
-			updatePipelineHandler,
+			createPipelineStepHandler,
 			deletePipelineHandler,
+			updatePipelineHandler,
+			validatePipelineExecutionPlanHandler,
 			getPipelineHandler,
-			listPipelineHandler,
+			getPipelineExecutionPlanHandler,
+			getPipelineStepsHandler,
+			listPipelinesHandler,
 		)
 
 		log.Info("pipelines domain ready")
@@ -419,67 +473,31 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Runs,
 			infra.EventPublisher,
 		)
-		updateRunHandler := runCommands.NewUpdateRunCommandHandler(
+		deleteRunHandler := runCommands.NewDeleteRunCommandHandler(
 			repos.Runs,
 			infra.EventPublisher,
 		)
-		deleteRunHandler := runCommands.NewDeleteRunCommandHandler(
+		updateRunHandler := runCommands.NewUpdateRunCommandHandler(
 			repos.Runs,
 			infra.EventPublisher,
 		)
 		getRunHandler := runQueries.NewGetRunQueryHandler(
 			repos.Runs,
 		)
-		listRunHandler := runQueries.NewListRunsQueryHandler(
+		listRunsHandler := runQueries.NewListRunsQueryHandler(
 			repos.Runs,
 		)
 
 		// Create controller with handlers
-		app.RunsHandler = controllers.NewRunsController(
+		app.RunsController = controllers.NewRunsController(
 			createRunHandler,
-			updateRunHandler,
 			deleteRunHandler,
+			updateRunHandler,
 			getRunHandler,
-			listRunHandler,
+			listRunsHandler,
 		)
 
 		log.Info("runs domain ready")
-		return nil
-	})
-
-	// Initialize sessions domain
-	g.Go(func() error {
-		log.Info("initializing sessions domain")
-		// Create command and query handlers
-		createSessionHandler := sessionCommands.NewCreateSessionCommandHandler(
-			repos.Sessions,
-			infra.EventPublisher,
-		)
-		updateSessionHandler := sessionCommands.NewUpdateSessionCommandHandler(
-			repos.Sessions,
-			infra.EventPublisher,
-		)
-		deleteSessionHandler := sessionCommands.NewDeleteSessionCommandHandler(
-			repos.Sessions,
-			infra.EventPublisher,
-		)
-		getSessionHandler := sessionQueries.NewGetSessionQueryHandler(
-			repos.Sessions,
-		)
-		listSessionHandler := sessionQueries.NewListSessionsQueryHandler(
-			repos.Sessions,
-		)
-
-		// Create controller with handlers
-		app.SessionsHandler = controllers.NewSessionsController(
-			createSessionHandler,
-			updateSessionHandler,
-			deleteSessionHandler,
-			getSessionHandler,
-			listSessionHandler,
-		)
-
-		log.Info("sessions domain ready")
 		return nil
 	})
 
@@ -491,28 +509,28 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Tools,
 			infra.EventPublisher,
 		)
-		updateToolHandler := toolCommands.NewUpdateToolCommandHandler(
+		deleteToolHandler := toolCommands.NewDeleteToolCommandHandler(
 			repos.Tools,
 			infra.EventPublisher,
 		)
-		deleteToolHandler := toolCommands.NewDeleteToolCommandHandler(
+		updateToolHandler := toolCommands.NewUpdateToolCommandHandler(
 			repos.Tools,
 			infra.EventPublisher,
 		)
 		getToolHandler := toolQueries.NewGetToolQueryHandler(
 			repos.Tools,
 		)
-		listToolHandler := toolQueries.NewListToolsQueryHandler(
+		listToolsHandler := toolQueries.NewListToolsQueryHandler(
 			repos.Tools,
 		)
 
 		// Create controller with handlers
-		app.ToolsHandler = controllers.NewToolsController(
+		app.ToolsController = controllers.NewToolsController(
 			createToolHandler,
-			updateToolHandler,
 			deleteToolHandler,
+			updateToolHandler,
 			getToolHandler,
-			listToolHandler,
+			listToolsHandler,
 		)
 
 		log.Info("tools domain ready")
@@ -523,7 +541,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		log.Info("initializing users domain")
 		// Create command and query handlers
-		updateUserHandler := userCommands.NewUpdateUserCommandHandler(
+		deleteCurrentUserHandler := userCommands.NewDeleteCurrentUserCommandHandler(
 			repos.Users,
 			infra.EventPublisher,
 		)
@@ -531,19 +549,33 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Users,
 			infra.EventPublisher,
 		)
+		updateCurrentUserHandler := userCommands.NewUpdateCurrentUserCommandHandler(
+			repos.Users,
+			infra.EventPublisher,
+		)
+		updateUserHandler := userCommands.NewUpdateUserCommandHandler(
+			repos.Users,
+			infra.EventPublisher,
+		)
+		getCurrentUserHandler := userQueries.NewGetCurrentUserQueryHandler(
+			repos.Users,
+		)
 		getUserHandler := userQueries.NewGetUserQueryHandler(
 			repos.Users,
 		)
-		listUserHandler := userQueries.NewListUsersQueryHandler(
+		listUsersHandler := userQueries.NewListUsersQueryHandler(
 			repos.Users,
 		)
 
 		// Create controller with handlers
-		app.UsersHandler = controllers.NewUsersController(
-			updateUserHandler,
+		app.UsersController = controllers.NewUsersController(
+			deleteCurrentUserHandler,
 			deleteUserHandler,
+			updateCurrentUserHandler,
+			updateUserHandler,
+			getCurrentUserHandler,
 			getUserHandler,
-			listUserHandler,
+			listUsersHandler,
 		)
 
 		log.Info("users domain ready")
@@ -623,48 +655,45 @@ func (a *App) RegisterRoutes(e *echo.Echo) {
 	// ========================================
 	// API ROUTES
 	// ========================================
+	// Auth routes
+	a.Logger.Info("registering auth routes")
+	controllers.RegisterAuthRoutes(v1, a.AuthController)
 	// APIKeys routes
 	a.Logger.Info("registering apikeys routes")
-	controllers.RegisterAPIKeysRoutes(v1, a.APIKeysHandler)
-	// Accounts routes
-	a.Logger.Info("registering accounts routes")
-	controllers.RegisterAccountsRoutes(v1, a.AccountsHandler)
+	controllers.RegisterAPIKeysRoutes(v1, a.APIKeysController)
 	// Artifacts routes
 	a.Logger.Info("registering artifacts routes")
-	controllers.RegisterArtifactsRoutes(v1, a.ArtifactsHandler)
+	controllers.RegisterArtifactsRoutes(v1, a.ArtifactsController)
 	// Config routes
 	a.Logger.Info("registering config routes")
-	controllers.RegisterConfigRoutes(v1, a.ConfigHandler)
+	controllers.RegisterConfigRoutes(v1, a.ConfigController)
 	// Health routes
 	a.Logger.Info("registering health routes")
-	controllers.RegisterHealthRoutes(v1, a.HealthHandler)
+	controllers.RegisterHealthRoutes(v1, a.HealthController)
 	// Invitations routes
 	a.Logger.Info("registering invitations routes")
-	controllers.RegisterInvitationsRoutes(v1, a.InvitationsHandler)
+	controllers.RegisterInvitationsRoutes(v1, a.InvitationsController)
 	// Labels routes
 	a.Logger.Info("registering labels routes")
-	controllers.RegisterLabelsRoutes(v1, a.LabelsHandler)
+	controllers.RegisterLabelsRoutes(v1, a.LabelsController)
 	// Members routes
 	a.Logger.Info("registering members routes")
-	controllers.RegisterMembersRoutes(v1, a.MembersHandler)
+	controllers.RegisterMembersRoutes(v1, a.MembersController)
 	// Organizations routes
 	a.Logger.Info("registering organizations routes")
-	controllers.RegisterOrganizationsRoutes(v1, a.OrganizationsHandler)
+	controllers.RegisterOrganizationsRoutes(v1, a.OrganizationsController)
 	// Pipelines routes
 	a.Logger.Info("registering pipelines routes")
-	controllers.RegisterPipelinesRoutes(v1, a.PipelinesHandler)
+	controllers.RegisterPipelinesRoutes(v1, a.PipelinesController)
 	// Runs routes
 	a.Logger.Info("registering runs routes")
-	controllers.RegisterRunsRoutes(v1, a.RunsHandler)
-	// Sessions routes
-	a.Logger.Info("registering sessions routes")
-	controllers.RegisterSessionsRoutes(v1, a.SessionsHandler)
+	controllers.RegisterRunsRoutes(v1, a.RunsController)
 	// Tools routes
 	a.Logger.Info("registering tools routes")
-	controllers.RegisterToolsRoutes(v1, a.ToolsHandler)
+	controllers.RegisterToolsRoutes(v1, a.ToolsController)
 	// Users routes
 	a.Logger.Info("registering users routes")
-	controllers.RegisterUsersRoutes(v1, a.UsersHandler)
+	controllers.RegisterUsersRoutes(v1, a.UsersController)
 
 	a.Logger.Info("all routes registered successfully")
 }

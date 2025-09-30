@@ -14,15 +14,21 @@ import (
 
 // DeleteMemberCommand represents the command to delete a member.
 type DeleteMemberCommand struct {
-	ID uuid.UUID
+	SessionID      uuid.UUID
+	OrganizationID uuid.UUID
+	ID             uuid.UUID
 }
 
 // NewDeleteMemberCommand creates a new delete member command.
 func NewDeleteMemberCommand(
+	SessionID uuid.UUID,
+	organizationID uuid.UUID,
 	id uuid.UUID,
 ) *DeleteMemberCommand {
 	return &DeleteMemberCommand{
-		ID: id,
+		SessionID:      SessionID,
+		OrganizationID: organizationID,
+		ID:             id,
 	}
 }
 

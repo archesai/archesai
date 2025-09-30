@@ -23,91 +23,52 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// {{ .CommandType }}{{ .EntityName }}Command represents the command to {{ lower .CommandType }} a {{ .EntityNameLower }}.
-type {{ .CommandType }}{{ .EntityName }}Command struct {
-{{- if eq .CommandType "Delete" }}
-	ID uuid.UUID
-{{- else if eq .CommandType "Update" }}
-	ID uuid.UUID
-	{{- if .RequestBody }}
-	{{- range .RequestBody.Fields }}
+// {{ .CommandType }}{{ .CommandEntityName }}Command represents the command to {{ lower .CommandType }} a {{ .EntityNameLower }}.
+type {{ .CommandType }}{{ .CommandEntityName }}Command struct {
+{{- if .RequiresAuth }}
+	SessionID uuid.UUID
+{{- end }}
+{{- if .PathParams }}
+{{- range .PathParams }}
+	{{ pascalCase .Name }} {{ .Type }}
+{{- end }}
+{{- end }}
+{{- if .RequestBody }}
+{{- range .RequestBody.Fields }}
 	{{ .FieldName }} {{ .GoType }}
-	{{- end }}
-	{{- else }}
-	Name        *string
-	Description *string
-	Metadata    map[string]interface{}
-	{{- end }}
-{{- else if eq .CommandType "Create" }}
-	{{- if .RequestBody }}
-	{{- range .RequestBody.Fields }}
-	{{ .FieldName }} {{ .GoType }}
-	{{- end }}
-	{{- else }}
-	OrganizationID uuid.UUID
-	Name           string
-	Description    string
-	Metadata       map[string]interface{}
-	{{- end }}
+{{- end }}
 {{- end }}
 }
 
-// New{{ .CommandType }}{{ .EntityName }}Command creates a new {{ lower .CommandType }} {{ .EntityNameLower }} command.
-func New{{ .CommandType }}{{ .EntityName }}Command(
-{{- if eq .CommandType "Delete" }}
-	id uuid.UUID,
-{{- else if eq .CommandType "Update" }}
-	id uuid.UUID,
-	{{- if .RequestBody }}
-	{{- range .RequestBody.Fields }}
-	{{ .Name }} {{ .GoType }},
-	{{- end }}
-	{{- else }}
-	name *string,
-	description *string,
-	metadata map[string]interface{},
-	{{- end }}
-{{- else if eq .CommandType "Create" }}
-	{{- if .RequestBody }}
-	{{- range .RequestBody.Fields }}
-	{{ .Name }} {{ .GoType }},
-	{{- end }}
-	{{- else }}
-	organizationID uuid.UUID,
-	name string,
-	description string,
-	metadata map[string]interface{},
-	{{- end }}
+// New{{ .CommandType }}{{ .CommandEntityName }}Command creates a new {{ lower .CommandType }} {{ .EntityNameLower }} command.
+func New{{ .CommandType }}{{ .CommandEntityName }}Command(
+{{- if .RequiresAuth }}
+	SessionID uuid.UUID,
 {{- end }}
-) *{{ .CommandType }}{{ .EntityName }}Command {
-	return &{{ .CommandType }}{{ .EntityName }}Command{
-{{- if eq .CommandType "Delete" }}
-		ID: id,
-{{- else if eq .CommandType "Update" }}
-		ID: id,
-		{{- if .RequestBody }}
-		{{- range .RequestBody.Fields }}
+{{- range .PathParams }}
+	{{ .Name }} {{ .Type }},
+{{- end }}
+{{- if .RequestBody }}
+{{- range .RequestBody.Fields }}
+	{{ .Name }} {{ .GoType }},
+{{- end }}
+{{- end }}
+) *{{ .CommandType }}{{ .CommandEntityName }}Command {
+	return &{{ .CommandType }}{{ .CommandEntityName }}Command{
+{{- if .RequiresAuth }}
+		SessionID: SessionID,
+{{- end }}
+{{- range .PathParams }}
+		{{ pascalCase .Name }}: {{ .Name }},
+{{- end }}
+{{- if .RequestBody }}
+{{- range .RequestBody.Fields }}
 		{{ .FieldName }}: {{ .Name }},
-		{{- end }}
-		{{- else }}
-		Name:        name,
-		Description: description,
-		Metadata:    metadata,
-		{{- end }}
-{{- else if eq .CommandType "Create" }}
-		{{- if .RequestBody }}
-		{{- range .RequestBody.Fields }}
-		{{ .FieldName }}: {{ .Name }},
-		{{- end }}
-		{{- else }}
-		OrganizationID: organizationID,
-		Name:           name,
-		Description:    description,
-		Metadata:       metadata,
-		{{- end }}
+{{- end }}
 {{- end }}
 	}
 }
+{{- if not .CustomHandler }}
 
 {{- if eq .CommandType "Create" }}
 
@@ -231,4 +192,5 @@ func (h *{{ .CommandType }}{{ .EntityName }}CommandHandler) Handle(ctx context.C
 
 	return nil
 }
+{{- end }}
 {{- end }}

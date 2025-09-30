@@ -6,23 +6,29 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // ListUsersQuery represents a query to list users.
 type ListUsersQuery struct {
-	Limit          int
-	Offset         int
+	SessionID      uuid.UUID
+	Limit          int32
+	Offset         int32
 	OrderBy        string
 	OrderDirection string
 }
 
 // NewListUsersQuery creates a new list users query.
-func NewListUsersQuery() *ListUsersQuery {
+func NewListUsersQuery(
+	SessionID uuid.UUID,
+) *ListUsersQuery {
 	return &ListUsersQuery{
-		Limit:  100,
-		Offset: 0,
+		SessionID: SessionID,
+		Limit:     100,
+		Offset:    0,
 	}
 }
 
@@ -40,12 +46,8 @@ func NewListUsersQueryHandler(repo repositories.UserRepository) *ListUsersQueryH
 
 // Handle executes the list users query.
 func (h *ListUsersQueryHandler) Handle(ctx context.Context, query *ListUsersQuery) ([]*entities.User, int64, error) {
-	// Convert to int32 for repository
-	limit := int32(query.Limit)
-	offset := int32(query.Offset)
-
-	// Execute query with pagination
-	results, total, err := h.repo.List(ctx, limit, offset)
+	// TODO: Apply filters based on query parameters
+	results, total, err := h.repo.List(ctx, query.Limit, query.Offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list users: %w", err)
 	}

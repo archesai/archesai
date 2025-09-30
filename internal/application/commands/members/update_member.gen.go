@@ -16,18 +16,24 @@ import (
 
 // UpdateMemberCommand represents the command to update a member.
 type UpdateMemberCommand struct {
-	ID   uuid.UUID
-	Role *string
+	SessionID      uuid.UUID
+	OrganizationID uuid.UUID
+	ID             uuid.UUID
+	Role           *string
 }
 
 // NewUpdateMemberCommand creates a new update member command.
 func NewUpdateMemberCommand(
+	SessionID uuid.UUID,
+	organizationID uuid.UUID,
 	id uuid.UUID,
 	Role *string,
 ) *UpdateMemberCommand {
 	return &UpdateMemberCommand{
-		ID:   id,
-		Role: Role,
+		SessionID:      SessionID,
+		OrganizationID: organizationID,
+		ID:             id,
+		Role:           Role,
 	}
 }
 

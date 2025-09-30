@@ -110,26 +110,32 @@ func (r *PostgresInvitationRepository) List(ctx context.Context, limit, offset i
 
 // ListByOrganization retrieves multiple invitations by organizationID
 func (r *PostgresInvitationRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Invitation, error) {
-
 	// TODO: Implement ListByOrganization - fetch multiple invitations
 	return nil, fmt.Errorf("ListByOrganization not yet implemented")
-
 }
 
-// GetByEmail retrieves a single invitation by email and organizationID
-func (r *PostgresInvitationRepository) GetByEmail(ctx context.Context, email string, organizationID string) (*entities.Invitation, error) {
+// GetInvitationByEmail retrieves a single invitation by email and organizationID
+func (r *PostgresInvitationRepository) GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*entities.Invitation, error) {
+	params := GetInvitationByEmailParams{
+		Email:          email,
+		OrganizationID: uuid.MustParse(organizationID),
+	}
 
-	// TODO: Implement GetByEmail - fetch single invitation
-	return nil, fmt.Errorf("GetByEmail not yet implemented")
+	result, err := r.queries.GetInvitationByEmail(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrInvitationNotFound
+		}
+		return nil, fmt.Errorf("failed to GetInvitationByEmail: %w", err)
+	}
 
+	return mapInvitationFromDB(&result), nil
 }
 
 // ListByInviter retrieves multiple invitations by inviterID
 func (r *PostgresInvitationRepository) ListByInviter(ctx context.Context, inviterID string) ([]*entities.Invitation, error) {
-
 	// TODO: Implement ListByInviter - fetch multiple invitations
 	return nil, fmt.Errorf("ListByInviter not yet implemented")
-
 }
 
 func mapInvitationFromDB(db *Invitation) *entities.Invitation {

@@ -6,23 +6,29 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // ListPipelinesQuery represents a query to list pipelines.
 type ListPipelinesQuery struct {
-	Limit          int
-	Offset         int
+	SessionID      uuid.UUID
+	Limit          int32
+	Offset         int32
 	OrderBy        string
 	OrderDirection string
 }
 
 // NewListPipelinesQuery creates a new list pipelines query.
-func NewListPipelinesQuery() *ListPipelinesQuery {
+func NewListPipelinesQuery(
+	SessionID uuid.UUID,
+) *ListPipelinesQuery {
 	return &ListPipelinesQuery{
-		Limit:  100,
-		Offset: 0,
+		SessionID: SessionID,
+		Limit:     100,
+		Offset:    0,
 	}
 }
 
@@ -40,12 +46,8 @@ func NewListPipelinesQueryHandler(repo repositories.PipelineRepository) *ListPip
 
 // Handle executes the list pipelines query.
 func (h *ListPipelinesQueryHandler) Handle(ctx context.Context, query *ListPipelinesQuery) ([]*entities.Pipeline, int64, error) {
-	// Convert to int32 for repository
-	limit := int32(query.Limit)
-	offset := int32(query.Offset)
-
-	// Execute query with pagination
-	results, total, err := h.repo.List(ctx, limit, offset)
+	// TODO: Apply filters based on query parameters
+	results, total, err := h.repo.List(ctx, query.Limit, query.Offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list pipelines: %w", err)
 	}

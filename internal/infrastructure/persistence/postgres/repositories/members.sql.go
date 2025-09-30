@@ -93,7 +93,7 @@ func (q *Queries) GetMember(ctx context.Context, id uuid.UUID) (Member, error) {
 	return i, err
 }
 
-const getMemberByUserAndOrg = `-- name: GetMemberByUserAndOrg :one
+const getMemberByUserAndOrganization = `-- name: GetMemberByUserAndOrganization :one
 SELECT
   id, created_at, updated_at, organization_id, role, user_id
 FROM
@@ -105,13 +105,13 @@ LIMIT
   1
 `
 
-type GetMemberByUserAndOrgParams struct {
+type GetMemberByUserAndOrganizationParams struct {
 	UserID         uuid.UUID
 	OrganizationID uuid.UUID
 }
 
-func (q *Queries) GetMemberByUserAndOrg(ctx context.Context, arg GetMemberByUserAndOrgParams) (Member, error) {
-	row := q.db.QueryRow(ctx, getMemberByUserAndOrg, arg.UserID, arg.OrganizationID)
+func (q *Queries) GetMemberByUserAndOrganization(ctx context.Context, arg GetMemberByUserAndOrganizationParams) (Member, error) {
+	row := q.db.QueryRow(ctx, getMemberByUserAndOrganization, arg.UserID, arg.OrganizationID)
 	var i Member
 	err := row.Scan(
 		&i.ID,

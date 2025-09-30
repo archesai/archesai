@@ -6,23 +6,29 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // ListToolsQuery represents a query to list tools.
 type ListToolsQuery struct {
-	Limit          int
-	Offset         int
+	SessionID      uuid.UUID
+	Limit          int32
+	Offset         int32
 	OrderBy        string
 	OrderDirection string
 }
 
 // NewListToolsQuery creates a new list tools query.
-func NewListToolsQuery() *ListToolsQuery {
+func NewListToolsQuery(
+	SessionID uuid.UUID,
+) *ListToolsQuery {
 	return &ListToolsQuery{
-		Limit:  100,
-		Offset: 0,
+		SessionID: SessionID,
+		Limit:     100,
+		Offset:    0,
 	}
 }
 
@@ -40,12 +46,8 @@ func NewListToolsQueryHandler(repo repositories.ToolRepository) *ListToolsQueryH
 
 // Handle executes the list tools query.
 func (h *ListToolsQueryHandler) Handle(ctx context.Context, query *ListToolsQuery) ([]*entities.Tool, int64, error) {
-	// Convert to int32 for repository
-	limit := int32(query.Limit)
-	offset := int32(query.Offset)
-
-	// Execute query with pagination
-	results, total, err := h.repo.List(ctx, limit, offset)
+	// TODO: Apply filters based on query parameters
+	results, total, err := h.repo.List(ctx, query.Limit, query.Offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list tools: %w", err)
 	}

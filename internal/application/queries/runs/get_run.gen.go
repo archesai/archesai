@@ -12,15 +12,20 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// GetRunQuery represents a query to get a run.
+// GetRunQuery represents a query to get run.
 type GetRunQuery struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewGetRunQuery creates a new get run query.
-func NewGetRunQuery(id uuid.UUID) *GetRunQuery {
+func NewGetRunQuery(
+	SessionID uuid.UUID,
+	id uuid.UUID,
+) *GetRunQuery {
 	return &GetRunQuery{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 
@@ -38,6 +43,7 @@ func NewGetRunQueryHandler(repo repositories.RunRepository) *GetRunQueryHandler 
 
 // Handle executes the get run query.
 func (h *GetRunQueryHandler) Handle(ctx context.Context, query *GetRunQuery) (*entities.Run, error) {
+	// Use path parameters to get the entity
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)

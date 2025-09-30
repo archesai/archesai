@@ -7,21 +7,15 @@ x-codegen:
     operations: [create, read, update, delete, list]
     indices: [organizationID, userID]
     additional_methods:
-      - name: ListByOrganization
+      - name: ListMembersByOrganization
         params: [organizationID]
         returns: multiple
-      - name: ListByUser
+      - name: ListMembersByUser
         params: [userID]
         returns: multiple
-      - name: GetByUserAndOrganization
+      - name: GetMemberByUserAndOrganization
         params: [userID, organizationID]
         returns: single
-  commands:
-    operations: [create, update, delete]
-  queries:
-    operations: [get, list]
-  controller:
-    operations: [create, read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object

@@ -13,33 +13,34 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/labels"
 	queries "github.com/archesai/archesai/internal/application/queries/labels"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // LabelsController handles HTTP requests for labels endpoints.
 type LabelsController struct {
 	// Command handlers
-	createHandler *commands.CreateLabelCommandHandler
-	updateHandler *commands.UpdateLabelCommandHandler
-	deleteHandler *commands.DeleteLabelCommandHandler
+	createLabelHandler *commands.CreateLabelCommandHandler
+	deleteLabelHandler *commands.DeleteLabelCommandHandler
+	updateLabelHandler *commands.UpdateLabelCommandHandler
 	// Query handlers
-	getHandler  *queries.GetLabelQueryHandler
-	listHandler *queries.ListLabelsQueryHandler
+	getLabelHandler   *queries.GetLabelQueryHandler
+	listLabelsHandler *queries.ListLabelsQueryHandler
 }
 
 // NewLabelsController creates a new labels controller with injected handlers.
 func NewLabelsController(
-	createHandler *commands.CreateLabelCommandHandler,
-	updateHandler *commands.UpdateLabelCommandHandler,
-	deleteHandler *commands.DeleteLabelCommandHandler,
-	getHandler *queries.GetLabelQueryHandler,
-	listHandler *queries.ListLabelsQueryHandler,
+	createLabelHandler *commands.CreateLabelCommandHandler,
+	deleteLabelHandler *commands.DeleteLabelCommandHandler,
+	updateLabelHandler *commands.UpdateLabelCommandHandler,
+	getLabelHandler *queries.GetLabelQueryHandler,
+	listLabelsHandler *queries.ListLabelsQueryHandler,
 ) *LabelsController {
 	return &LabelsController{
-		createHandler: createHandler,
-		updateHandler: updateHandler,
-		deleteHandler: deleteHandler,
-		getHandler:    getHandler,
-		listHandler:   listHandler,
+		createLabelHandler: createLabelHandler,
+		deleteLabelHandler: deleteLabelHandler,
+		updateLabelHandler: updateLabelHandler,
+		getLabelHandler:    getLabelHandler,
+		listLabelsHandler:  listLabelsHandler,
 	}
 }
 
@@ -111,26 +112,35 @@ func (c *LabelsController) CreateLabel(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreateLabelRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Request body
-	var body CreateLabelRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &CreateLabelRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Create handler
+	// Command handler
 
-	// Map request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewCreateLabelCommand(
+		sessionID,         // SessionID for authenticated operations
 		request.Body.Name, // Name
 	)
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
+	result, err := c.createLabelHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
@@ -197,6 +207,14 @@ func (c *LabelsController) ListLabels(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListLabelsRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Query parameters
 	var params ListLabelsParams
 	// Optional query parameter "filter"
@@ -213,12 +231,17 @@ func (c *LabelsController) ListLabels(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create list query from request
-	query := queries.NewListLabelsQuery()
+	// Query handler
+	query := queries.NewListLabelsQuery(
+		sessionID, // SessionID for authenticated operations
+	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.listLabelsHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -275,6 +298,14 @@ func (c *LabelsController) DeleteLabel(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteLabelRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -282,17 +313,21 @@ func (c *LabelsController) DeleteLabel(ctx echo.Context) error {
 	}
 	request.ID = id
 
-	// Determine which handler to call based on operation
-	// Create delete command from request
-	cmd := commands.NewDeleteLabelCommand(
-		request.ID,
-	)
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
-	err := c.deleteHandler.Handle(reqCtx, cmd)
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteLabelCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	err := c.deleteLabelHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.NoContent(http.StatusNoContent)
 }
 
@@ -340,6 +375,14 @@ func (c *LabelsController) GetLabel(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetLabelRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -347,13 +390,17 @@ func (c *LabelsController) GetLabel(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetLabelQuery(
-		request.ID,
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
 	)
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getLabelHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -412,6 +459,14 @@ func (c *LabelsController) UpdateLabel(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateLabelRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -420,26 +475,27 @@ func (c *LabelsController) UpdateLabel(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body UpdateLabelRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &UpdateLabelRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Update handler
+	// Command handler
 
-	// Map path parameters and request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewUpdateLabelCommand(
-		request.ID,        // id (entity ID)
+		sessionID,         // SessionID for authenticated operations
+		request.ID,        // id
 		request.Body.Name, // Name
 	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
+	result, err := c.updateLabelHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})

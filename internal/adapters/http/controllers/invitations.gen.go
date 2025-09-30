@@ -13,33 +13,34 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/invitations"
 	queries "github.com/archesai/archesai/internal/application/queries/invitations"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // InvitationsController handles HTTP requests for invitations endpoints.
 type InvitationsController struct {
 	// Command handlers
-	createHandler *commands.CreateInvitationCommandHandler
-	updateHandler *commands.UpdateInvitationCommandHandler
-	deleteHandler *commands.DeleteInvitationCommandHandler
+	createInvitationHandler *commands.CreateInvitationCommandHandler
+	deleteInvitationHandler *commands.DeleteInvitationCommandHandler
+	updateInvitationHandler *commands.UpdateInvitationCommandHandler
 	// Query handlers
-	getHandler  *queries.GetInvitationQueryHandler
-	listHandler *queries.ListInvitationsQueryHandler
+	getInvitationHandler   *queries.GetInvitationQueryHandler
+	listInvitationsHandler *queries.ListInvitationsQueryHandler
 }
 
 // NewInvitationsController creates a new invitations controller with injected handlers.
 func NewInvitationsController(
-	createHandler *commands.CreateInvitationCommandHandler,
-	updateHandler *commands.UpdateInvitationCommandHandler,
-	deleteHandler *commands.DeleteInvitationCommandHandler,
-	getHandler *queries.GetInvitationQueryHandler,
-	listHandler *queries.ListInvitationsQueryHandler,
+	createInvitationHandler *commands.CreateInvitationCommandHandler,
+	deleteInvitationHandler *commands.DeleteInvitationCommandHandler,
+	updateInvitationHandler *commands.UpdateInvitationCommandHandler,
+	getInvitationHandler *queries.GetInvitationQueryHandler,
+	listInvitationsHandler *queries.ListInvitationsQueryHandler,
 ) *InvitationsController {
 	return &InvitationsController{
-		createHandler: createHandler,
-		updateHandler: updateHandler,
-		deleteHandler: deleteHandler,
-		getHandler:    getHandler,
-		listHandler:   listHandler,
+		createInvitationHandler: createInvitationHandler,
+		deleteInvitationHandler: deleteInvitationHandler,
+		updateInvitationHandler: updateInvitationHandler,
+		getInvitationHandler:    getInvitationHandler,
+		listInvitationsHandler:  listInvitationsHandler,
 	}
 }
 
@@ -113,6 +114,14 @@ func (c *InvitationsController) CreateInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreateInvitationRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -121,26 +130,28 @@ func (c *InvitationsController) CreateInvitation(ctx echo.Context) error {
 	request.OrganizationID = organizationID
 
 	// Request body
-	var body CreateInvitationRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &CreateInvitationRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Create handler
+	// Command handler
 
-	// Map request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewCreateInvitationCommand(
-		request.Body.Email, // Email
-		request.Body.Role,  // Role
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+		request.Body.Email,     // Email
+		request.Body.Role,      // Role
 	)
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
+	result, err := c.createInvitationHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
@@ -208,6 +219,14 @@ func (c *InvitationsController) ListInvitations(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListInvitationsRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -231,12 +250,18 @@ func (c *InvitationsController) ListInvitations(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create list query from request
-	query := queries.NewListInvitationsQuery()
+	// Query handler
+	query := queries.NewListInvitationsQuery(
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.listInvitationsHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -294,6 +319,14 @@ func (c *InvitationsController) DeleteInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteInvitationRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -308,17 +341,22 @@ func (c *InvitationsController) DeleteInvitation(ctx echo.Context) error {
 	}
 	request.ID = id
 
-	// Determine which handler to call based on operation
-	// Create delete command from request
-	cmd := commands.NewDeleteInvitationCommand(
-		request.ID,
-	)
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
-	err := c.deleteHandler.Handle(reqCtx, cmd)
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteInvitationCommand(
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+		request.ID,             // id
+	)
+	err := c.deleteInvitationHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.NoContent(http.StatusNoContent)
 }
 
@@ -367,6 +405,14 @@ func (c *InvitationsController) GetInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetInvitationRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -381,13 +427,18 @@ func (c *InvitationsController) GetInvitation(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetInvitationQuery(
-		request.ID,
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+		request.ID,             // id
 	)
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getInvitationHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -448,6 +499,14 @@ func (c *InvitationsController) UpdateInvitation(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateInvitationRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -463,27 +522,29 @@ func (c *InvitationsController) UpdateInvitation(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body UpdateInvitationRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &UpdateInvitationRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Update handler
+	// Command handler
 
-	// Map path parameters and request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewUpdateInvitationCommand(
-		request.ID,         // id (entity ID)
-		request.Body.Email, // Email
-		request.Body.Role,  // Role
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+		request.ID,             // id
+		request.Body.Email,     // Email
+		request.Body.Role,      // Role
 	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
+	result, err := c.updateInvitationHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})

@@ -16,21 +16,27 @@ import (
 
 // UpdateInvitationCommand represents the command to update a invitation.
 type UpdateInvitationCommand struct {
-	ID    uuid.UUID
-	Email *string
-	Role  *string
+	SessionID      uuid.UUID
+	OrganizationID uuid.UUID
+	ID             uuid.UUID
+	Email          *string
+	Role           *string
 }
 
 // NewUpdateInvitationCommand creates a new update invitation command.
 func NewUpdateInvitationCommand(
+	SessionID uuid.UUID,
+	organizationID uuid.UUID,
 	id uuid.UUID,
 	Email *string,
 	Role *string,
 ) *UpdateInvitationCommand {
 	return &UpdateInvitationCommand{
-		ID:    id,
-		Email: Email,
-		Role:  Role,
+		SessionID:      SessionID,
+		OrganizationID: organizationID,
+		ID:             id,
+		Email:          Email,
+		Role:           Role,
 	}
 }
 

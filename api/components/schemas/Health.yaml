@@ -3,12 +3,6 @@ title: Health
 description: Health check response
 x-codegen:
   schemaType: valueobject
-  queries:
-    operations:
-      - get
-  controller:
-    operations:
-      - read
 type: object
 properties:
   services:

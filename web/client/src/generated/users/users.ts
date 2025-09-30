@@ -29,12 +29,17 @@ import type {
 
 import type {
   BadRequestResponse,
+  DeleteCurrentUser200,
+  DeleteCurrentUserBody,
   DeleteUser200,
+  GetCurrentUser200,
   GetUser200,
   ListUsers200,
   ListUsersParams,
   NotFoundResponse,
   UnauthorizedResponse,
+  UpdateCurrentUser200,
+  UpdateCurrentUserBody,
   UpdateUser200,
   UpdateUserBody
 } from '../orval.schemas';
@@ -214,6 +219,300 @@ export function useListUsersSuspense<TData = Awaited<ReturnType<typeof listUsers
 
 
 /**
+ * Get the currently authenticated user's profile
+ * @summary Get current user
+ */
+export const getGetCurrentUserUrl = () => {
+
+
+  
+
+  return `/users/me`
+}
+
+export const getCurrentUser = async ( options?: RequestInit): Promise<GetCurrentUser200> => {
+  
+  return customFetch<GetCurrentUser200>(getGetCurrentUserUrl(),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+export const getGetCurrentUserQueryKey = () => {
+    return [`/users/me`] as const;
+    }
+
+    
+export const getGetCurrentUserQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentUserQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentUser>>> = ({ signal }) => getCurrentUser({ signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentUserQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
+export type GetCurrentUserQueryError = UnauthorizedResponse
+
+
+export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentUser>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentUser>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCurrentUser>>,
+          TError,
+          Awaited<ReturnType<typeof getCurrentUser>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get current user
+ */
+
+export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentUserQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getGetCurrentUserSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>( options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCurrentUserQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCurrentUser>>> = ({ signal }) => getCurrentUser({ signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCurrentUserSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
+export type GetCurrentUserSuspenseQueryError = UnauthorizedResponse
+
+
+export function useGetCurrentUserSuspense<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>(
+  options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentUserSuspense<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCurrentUserSuspense<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get current user
+ */
+
+export function useGetCurrentUserSuspense<TData = Awaited<ReturnType<typeof getCurrentUser>>, TError = UnauthorizedResponse>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getCurrentUser>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCurrentUserSuspenseQueryOptions(options)
+
+  const query = useSuspenseQuery(queryOptions , queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * Update the currently authenticated user's profile
+ * @summary Update current user
+ */
+export const getUpdateCurrentUserUrl = () => {
+
+
+  
+
+  return `/users/me`
+}
+
+export const updateCurrentUser = async (updateCurrentUserBody: UpdateCurrentUserBody, options?: RequestInit): Promise<UpdateCurrentUser200> => {
+  
+  return customFetch<UpdateCurrentUser200>(getUpdateCurrentUserUrl(),
+  {      
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateCurrentUserBody,)
+  }
+);}
+
+
+
+
+export const getUpdateCurrentUserMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCurrentUser>>, TError,{data: UpdateCurrentUserBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateCurrentUser>>, TError,{data: UpdateCurrentUserBody}, TContext> => {
+
+const mutationKey = ['updateCurrentUser'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCurrentUser>>, {data: UpdateCurrentUserBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateCurrentUser(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateCurrentUserMutationResult = NonNullable<Awaited<ReturnType<typeof updateCurrentUser>>>
+    export type UpdateCurrentUserMutationBody = UpdateCurrentUserBody
+    export type UpdateCurrentUserMutationError = BadRequestResponse | UnauthorizedResponse
+
+    /**
+ * @summary Update current user
+ */
+export const useUpdateCurrentUser = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCurrentUser>>, TError,{data: UpdateCurrentUserBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateCurrentUser>>,
+        TError,
+        {data: UpdateCurrentUserBody},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateCurrentUserMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * Delete the currently authenticated user's account (cascades to all sessions and accounts)
+ * @summary Delete current user
+ */
+export const getDeleteCurrentUserUrl = () => {
+
+
+  
+
+  return `/users/me`
+}
+
+export const deleteCurrentUser = async (deleteCurrentUserBody: DeleteCurrentUserBody, options?: RequestInit): Promise<DeleteCurrentUser200> => {
+  
+  return customFetch<DeleteCurrentUser200>(getDeleteCurrentUserUrl(),
+  {      
+    ...options,
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      deleteCurrentUserBody,)
+  }
+);}
+
+
+
+
+export const getDeleteCurrentUserMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCurrentUser>>, TError,{data: DeleteCurrentUserBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteCurrentUser>>, TError,{data: DeleteCurrentUserBody}, TContext> => {
+
+const mutationKey = ['deleteCurrentUser'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCurrentUser>>, {data: DeleteCurrentUserBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  deleteCurrentUser(data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteCurrentUserMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCurrentUser>>>
+    export type DeleteCurrentUserMutationBody = DeleteCurrentUserBody
+    export type DeleteCurrentUserMutationError = BadRequestResponse | UnauthorizedResponse
+
+    /**
+ * @summary Delete current user
+ */
+export const useDeleteCurrentUser = <TError = BadRequestResponse | UnauthorizedResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCurrentUser>>, TError,{data: DeleteCurrentUserBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteCurrentUser>>,
+        TError,
+        {data: DeleteCurrentUserBody},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteCurrentUserMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * Delete a user
  * @summary Delete a user
  */

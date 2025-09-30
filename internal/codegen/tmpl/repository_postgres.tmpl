@@ -60,7 +60,7 @@ func (r *Postgres{{.Name}}Repository) Get(ctx context.Context, id uuid.UUID) (*e
 func (r *Postgres{{.Name}}Repository) Update(ctx context.Context, id uuid.UUID, entity *entities.{{.Type}}) (*entities.{{.Type}}, error) {
 	params := Update{{.Name}}Params{
 		ID: id,
-		{{range .Fields}}{{if not (isUpdateExcluded .Name $entity.UpdateExclude)}}{{if ne .Name "ID"}}{{if ne .Name "CreatedAt"}}{{if ne .Name "UpdatedAt"}}{{if ne .Name "OrganizationID"}}{{if ne .Name "UserID"}}{{if ne .Name "AccountID"}}{{if ne .Name "ProviderID"}}{{if ne .Name "PipelineID"}}{{if ne .Name "ToolID"}}{{if ne .Name "InviterID"}}{{if .SQLCType}}
+		{{range .Fields}}{{if not (isUpdateExcluded .Name $entity.UpdateExclude)}}{{if ne .Name "ID"}}{{if ne .Name "CreatedAt"}}{{if ne .Name "UpdatedAt"}}{{if ne .Name "OrganizationID"}}{{if ne .Name "UserID"}}{{if ne .Name "AccountIdentifier"}}{{if ne .Name "ProviderID"}}{{if ne .Name "PipelineID"}}{{if ne .Name "ToolID"}}{{if ne .Name "InviterID"}}{{if .SQLCType}}
 		{{.FieldName}}: {{if .IsEnumType}}func() *string { s := string(entity.{{.FieldName}}); return &s }(){{else}}{{if and (hasPrefix .GoType "*")}}entity.{{.FieldName}}{{else}}&entity.{{.FieldName}}{{end}}{{end}},{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}{{end}}
 	}
 
@@ -116,22 +116,26 @@ func (r *Postgres{{.Name}}Repository) List(ctx context.Context, limit, offset in
 {{range .AdditionalMethods}}
 // {{.Name}} retrieves {{if hasPrefix .Name "List"}}multiple {{$entity.Type | singularize | lower}}s{{else}}a single {{$entity.Type | singularize | lower}}{{end}}{{if .Parameters}} by {{range $i, $p := .Parameters}}{{if $i}} and {{end}}{{$p.Name}}{{end}}{{end}}
 func (r *Postgres{{$entity.Name}}Repository) {{.Name}}(ctx context.Context{{range .Parameters}}, {{.Name}} {{.Type}}{{end}}) ({{range $i, $ret := .Returns}}{{if $i}}, {{end}}{{if eq $ret (print "*" $entity.Type)}}*entities.{{$entity.Type}}{{else if eq $ret (print "[]*" $entity.Type)}}[]*entities.{{$entity.Type}}{{else}}{{$ret}}{{end}}{{end}}) {
-	{{if eq (len .Returns) 2}}
-	{{if hasPrefix .Name "List"}}
-	// TODO: Implement {{.Name}} - fetch multiple {{$entity.Type | singularize | lower}}s
-	return nil, fmt.Errorf("{{.Name}} not yet implemented")
-	{{else}}
-	// TODO: Implement {{.Name}} - fetch single {{$entity.Type | singularize | lower}}
-	return nil, fmt.Errorf("{{.Name}} not yet implemented")
-	{{end}}
-	{{else if eq (len .Returns) 1}}
-	// TODO: Implement {{.Name}}
+{{if eq (len .Returns) 2}}{{if hasPrefix .Name "List"}}	// TODO: Implement {{.Name}} - fetch multiple {{$entity.Type | singularize | lower}}s
+	return nil, fmt.Errorf("{{.Name}} not yet implemented"){{else}}{{if gt (len .Parameters) 1}}	params := {{.Name}}Params{
+		{{range .Parameters}}{{title .Name}}: {{if and (eq .Type "string") (hasSuffix .Name "ID")}}uuid.MustParse({{.Name}}){{else}}{{.Name}}{{end}},
+		{{end}}
+	}
+
+	result, err := r.queries.{{.Name}}(ctx, params){{else}}	result, err := r.queries.{{.Name}}(ctx{{range .Parameters}}{{if and (eq .Type "string") (or (eq .Name "sessionID") (eq .Name "SessionID") (hasSuffix .Name "ID"))}}, uuid.MustParse({{.Name}}){{else}}, {{.Name}}{{end}}{{end}}){{end}}
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.Err{{$entity.Name}}NotFound
+		}
+		return nil, fmt.Errorf("failed to {{.Name}}: %w", err)
+	}
+
+	return map{{$entity.Name}}FromDB(&result), nil{{end}}
+{{else if eq (len .Returns) 1}}	// TODO: Implement {{.Name}}
 	return fmt.Errorf("{{.Name}} not yet implemented")
-	{{else}}
-	// TODO: Implement {{.Name}}
+{{else}}	// TODO: Implement {{.Name}}
 	return fmt.Errorf("{{.Name}} not yet implemented with {{len .Returns}} returns")
-	{{end}}
-}
+{{end}}}
 {{end}}{{end}}
 
 func map{{.Name}}FromDB(db *{{.Name}}) *entities.{{.Type}} {

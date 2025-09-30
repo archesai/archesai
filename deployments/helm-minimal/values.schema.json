@@ -1988,12 +1988,6 @@
   "title": "Config",
   "type": "object",
   "x-codegen": {
-    "controller": {
-      "operations": ["read"]
-    },
-    "queries": {
-      "operations": ["get"]
-    },
     "schemaType": "valueobject"
   }
 }

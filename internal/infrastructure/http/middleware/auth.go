@@ -25,6 +25,9 @@ const (
 	// AuthClaimsContextKey is the context key for auth claims
 	AuthClaimsContextKey contextKey = "auth.claims"
 
+	// SessionIDContextKey is the context key for session ID
+	SessionIDContextKey contextKey = "auth.sessionID"
+
 	// BearerAuthScopes is used by generated handlers for bearer token authentication
 	BearerAuthScopes = "bearerAuth.Scopes"
 
@@ -41,6 +44,7 @@ const (
 // Claims represents JWT claims with user information
 type Claims struct {
 	UserID         uuid.UUID `json:"user_id"`
+	SessionID      uuid.UUID `json:"session_id"`
 	Email          string    `json:"email"`
 	OrganizationID uuid.UUID `json:"organization_id,omitempty"`
 	Roles          []string  `json:"roles,omitempty"`
@@ -90,7 +94,11 @@ func AuthMiddleware(cfg *config.Config) echo.MiddlewareFunc {
 				// Set claims in context
 				ctx := context.WithValue(c.Request().Context(), AuthClaimsContextKey, claims)
 				ctx = context.WithValue(ctx, AuthUserContextKey, claims.UserID)
+				ctx = context.WithValue(ctx, SessionIDContextKey, claims.SessionID)
 				c.SetRequest(c.Request().WithContext(ctx))
+
+				// Also set in Echo context for controllers
+				c.Set("sessionID", claims.SessionID)
 				return next(c)
 			}
 
@@ -138,7 +146,11 @@ func OptionalAuthMiddleware(cfg *config.Config) echo.MiddlewareFunc {
 					// Set claims in context
 					ctx := context.WithValue(c.Request().Context(), AuthClaimsContextKey, claims)
 					ctx = context.WithValue(ctx, AuthUserContextKey, claims.UserID)
+					ctx = context.WithValue(ctx, SessionIDContextKey, claims.SessionID)
 					c.SetRequest(c.Request().WithContext(ctx))
+
+					// Also set in Echo context for controllers
+					c.Set("sessionID", claims.SessionID)
 				}
 			}
 
@@ -151,6 +163,12 @@ func OptionalAuthMiddleware(cfg *config.Config) echo.MiddlewareFunc {
 func GetUserFromContext(ctx context.Context) (uuid.UUID, bool) {
 	userID, ok := ctx.Value(AuthUserContextKey).(uuid.UUID)
 	return userID, ok
+}
+
+// GetSessionIDFromContext retrieves the session ID from the context
+func GetSessionIDFromContext(ctx context.Context) (uuid.UUID, bool) {
+	sessionID, ok := ctx.Value(SessionIDContextKey).(uuid.UUID)
+	return sessionID, ok
 }
 
 // GetClaimsFromContext retrieves the claims from the context

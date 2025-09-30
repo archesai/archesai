@@ -20,6 +20,6 @@ type LabelRepository interface {
 	// Additional operations
 	// ListByOrganization retrieves multiple labels by organizationID
 	ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Label, error)
-	// GetByName retrieves a single label by name and organizationID
-	GetByName(ctx context.Context, name string, organizationID string) (*entities.Label, error)
+	// GetLabelByName retrieves a single label by name and organizationID
+	GetLabelByName(ctx context.Context, name string, organizationID string) (*entities.Label, error)
 }

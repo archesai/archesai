@@ -17,8 +17,8 @@ INSERT INTO
   account (
     id,
     user_id,
-    provider_id,
-    account_id,
+    provider,
+    account_identifier,
     access_token,
     refresh_token,
     access_token_expires_at,
@@ -42,14 +42,14 @@ VALUES
     $11
   )
 RETURNING
-  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, password, provider, refresh_token, refresh_token_expires_at, scope, user_id
 `
 
 type CreateAccountParams struct {
 	ID                    uuid.UUID
 	UserID                uuid.UUID
-	ProviderID            string
-	AccountID             string
+	Provider              string
+	AccountIdentifier     string
 	AccessToken           *string
 	RefreshToken          *string
 	AccessTokenExpiresAt  *time.Time
@@ -63,8 +63,8 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 	row := q.db.QueryRow(ctx, createAccount,
 		arg.ID,
 		arg.UserID,
-		arg.ProviderID,
-		arg.AccountID,
+		arg.Provider,
+		arg.AccountIdentifier,
 		arg.AccessToken,
 		arg.RefreshToken,
 		arg.AccessTokenExpiresAt,
@@ -80,10 +80,10 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountID,
+		&i.AccountIdentifier,
 		&i.IDToken,
 		&i.Password,
-		&i.ProviderID,
+		&i.Provider,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
@@ -116,7 +116,7 @@ func (q *Queries) DeleteAccountsByUser(ctx context.Context, userID uuid.UUID) er
 
 const getAccount = `-- name: GetAccount :one
 SELECT
-  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, password, provider, refresh_token, refresh_token_expires_at, scope, user_id
 FROM
   account
 WHERE
@@ -134,10 +134,10 @@ func (q *Queries) GetAccount(ctx context.Context, id uuid.UUID) (Account, error)
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountID,
+		&i.AccountIdentifier,
 		&i.IDToken,
 		&i.Password,
-		&i.ProviderID,
+		&i.Provider,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
@@ -146,25 +146,25 @@ func (q *Queries) GetAccount(ctx context.Context, id uuid.UUID) (Account, error)
 	return i, err
 }
 
-const getAccountByProviderID = `-- name: GetAccountByProviderID :one
+const getAccountByProvider = `-- name: GetAccountByProvider :one
 SELECT
-  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, password, provider, refresh_token, refresh_token_expires_at, scope, user_id
 FROM
   account
 WHERE
-  provider_id = $1
-  AND account_id = $2
+  provider = $1
+  AND account_identifier = $2
 LIMIT
   1
 `
 
-type GetAccountByProviderIDParams struct {
-	ProviderID string
-	AccountID  string
+type GetAccountByProviderParams struct {
+	Provider          string
+	AccountIdentifier string
 }
 
-func (q *Queries) GetAccountByProviderID(ctx context.Context, arg GetAccountByProviderIDParams) (Account, error) {
-	row := q.db.QueryRow(ctx, getAccountByProviderID, arg.ProviderID, arg.AccountID)
+func (q *Queries) GetAccountByProvider(ctx context.Context, arg GetAccountByProviderParams) (Account, error) {
+	row := q.db.QueryRow(ctx, getAccountByProvider, arg.Provider, arg.AccountIdentifier)
 	var i Account
 	err := row.Scan(
 		&i.ID,
@@ -172,10 +172,10 @@ func (q *Queries) GetAccountByProviderID(ctx context.Context, arg GetAccountByPr
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountID,
+		&i.AccountIdentifier,
 		&i.IDToken,
 		&i.Password,
-		&i.ProviderID,
+		&i.Provider,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
@@ -186,23 +186,23 @@ func (q *Queries) GetAccountByProviderID(ctx context.Context, arg GetAccountByPr
 
 const getAccountByUser = `-- name: GetAccountByUser :one
 SELECT
-  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, password, provider, refresh_token, refresh_token_expires_at, scope, user_id
 FROM
   account
 WHERE
   user_id = $1
-  AND provider_id = $2
+  AND provider = $2
 LIMIT
   1
 `
 
 type GetAccountByUserParams struct {
-	UserID     uuid.UUID
-	ProviderID string
+	UserID   uuid.UUID
+	Provider string
 }
 
 func (q *Queries) GetAccountByUser(ctx context.Context, arg GetAccountByUserParams) (Account, error) {
-	row := q.db.QueryRow(ctx, getAccountByUser, arg.UserID, arg.ProviderID)
+	row := q.db.QueryRow(ctx, getAccountByUser, arg.UserID, arg.Provider)
 	var i Account
 	err := row.Scan(
 		&i.ID,
@@ -210,10 +210,10 @@ func (q *Queries) GetAccountByUser(ctx context.Context, arg GetAccountByUserPara
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountID,
+		&i.AccountIdentifier,
 		&i.IDToken,
 		&i.Password,
-		&i.ProviderID,
+		&i.Provider,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
@@ -224,7 +224,7 @@ func (q *Queries) GetAccountByUser(ctx context.Context, arg GetAccountByUserPara
 
 const listAccounts = `-- name: ListAccounts :many
 SELECT
-  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, password, provider, refresh_token, refresh_token_expires_at, scope, user_id
 FROM
   account
 ORDER BY
@@ -255,10 +255,10 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]A
 			&i.UpdatedAt,
 			&i.AccessToken,
 			&i.AccessTokenExpiresAt,
-			&i.AccountID,
+			&i.AccountIdentifier,
 			&i.IDToken,
 			&i.Password,
-			&i.ProviderID,
+			&i.Provider,
 			&i.RefreshToken,
 			&i.RefreshTokenExpiresAt,
 			&i.Scope,
@@ -276,7 +276,7 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]A
 
 const listAccountsByUser = `-- name: ListAccountsByUser :many
 SELECT
-  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, password, provider, refresh_token, refresh_token_expires_at, scope, user_id
 FROM
   account
 WHERE
@@ -300,10 +300,10 @@ func (q *Queries) ListAccountsByUser(ctx context.Context, userID uuid.UUID) ([]A
 			&i.UpdatedAt,
 			&i.AccessToken,
 			&i.AccessTokenExpiresAt,
-			&i.AccountID,
+			&i.AccountIdentifier,
 			&i.IDToken,
 			&i.Password,
-			&i.ProviderID,
+			&i.Provider,
 			&i.RefreshToken,
 			&i.RefreshTokenExpiresAt,
 			&i.Scope,
@@ -339,7 +339,7 @@ SET
 WHERE
   id = $1
 RETURNING
-  id, created_at, updated_at, access_token, access_token_expires_at, account_id, id_token, password, provider_id, refresh_token, refresh_token_expires_at, scope, user_id
+  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, password, provider, refresh_token, refresh_token_expires_at, scope, user_id
 `
 
 type UpdateAccountParams struct {
@@ -371,10 +371,10 @@ func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (A
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountID,
+		&i.AccountIdentifier,
 		&i.IDToken,
 		&i.Password,
-		&i.ProviderID,
+		&i.Provider,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,

@@ -16,16 +16,19 @@ import (
 
 // UpdateRunCommand represents the command to update a run.
 type UpdateRunCommand struct {
+	SessionID  uuid.UUID
 	ID         uuid.UUID
 	PipelineID *uuid.UUID
 }
 
 // NewUpdateRunCommand creates a new update run command.
 func NewUpdateRunCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 	PipelineID *uuid.UUID,
 ) *UpdateRunCommand {
 	return &UpdateRunCommand{
+		SessionID:  SessionID,
 		ID:         id,
 		PipelineID: PipelineID,
 	}

@@ -13,33 +13,34 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/members"
 	queries "github.com/archesai/archesai/internal/application/queries/members"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // MembersController handles HTTP requests for members endpoints.
 type MembersController struct {
 	// Command handlers
-	createHandler *commands.CreateMemberCommandHandler
-	updateHandler *commands.UpdateMemberCommandHandler
-	deleteHandler *commands.DeleteMemberCommandHandler
+	createMemberHandler *commands.CreateMemberCommandHandler
+	deleteMemberHandler *commands.DeleteMemberCommandHandler
+	updateMemberHandler *commands.UpdateMemberCommandHandler
 	// Query handlers
-	getHandler  *queries.GetMemberQueryHandler
-	listHandler *queries.ListMembersQueryHandler
+	getMemberHandler   *queries.GetMemberQueryHandler
+	listMembersHandler *queries.ListMembersQueryHandler
 }
 
 // NewMembersController creates a new members controller with injected handlers.
 func NewMembersController(
-	createHandler *commands.CreateMemberCommandHandler,
-	updateHandler *commands.UpdateMemberCommandHandler,
-	deleteHandler *commands.DeleteMemberCommandHandler,
-	getHandler *queries.GetMemberQueryHandler,
-	listHandler *queries.ListMembersQueryHandler,
+	createMemberHandler *commands.CreateMemberCommandHandler,
+	deleteMemberHandler *commands.DeleteMemberCommandHandler,
+	updateMemberHandler *commands.UpdateMemberCommandHandler,
+	getMemberHandler *queries.GetMemberQueryHandler,
+	listMembersHandler *queries.ListMembersQueryHandler,
 ) *MembersController {
 	return &MembersController{
-		createHandler: createHandler,
-		updateHandler: updateHandler,
-		deleteHandler: deleteHandler,
-		getHandler:    getHandler,
-		listHandler:   listHandler,
+		createMemberHandler: createMemberHandler,
+		deleteMemberHandler: deleteMemberHandler,
+		updateMemberHandler: updateMemberHandler,
+		getMemberHandler:    getMemberHandler,
+		listMembersHandler:  listMembersHandler,
 	}
 }
 
@@ -112,6 +113,14 @@ func (c *MembersController) CreateMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreateMemberRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -120,25 +129,27 @@ func (c *MembersController) CreateMember(ctx echo.Context) error {
 	request.OrganizationID = organizationID
 
 	// Request body
-	var body CreateMemberRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &CreateMemberRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Create handler
+	// Command handler
 
-	// Map request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewCreateMemberCommand(
-		request.Body.Role, // Role
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+		request.Body.Role,      // Role
 	)
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
+	result, err := c.createMemberHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
@@ -206,6 +217,14 @@ func (c *MembersController) ListMembers(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListMembersRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -229,12 +248,18 @@ func (c *MembersController) ListMembers(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create list query from request
-	query := queries.NewListMembersQuery()
+	// Query handler
+	query := queries.NewListMembersQuery(
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.listMembersHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -292,6 +317,14 @@ func (c *MembersController) DeleteMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteMemberRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -306,17 +339,22 @@ func (c *MembersController) DeleteMember(ctx echo.Context) error {
 	}
 	request.ID = id
 
-	// Determine which handler to call based on operation
-	// Create delete command from request
-	cmd := commands.NewDeleteMemberCommand(
-		request.ID,
-	)
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
-	err := c.deleteHandler.Handle(reqCtx, cmd)
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteMemberCommand(
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+		request.ID,             // id
+	)
+	err := c.deleteMemberHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.NoContent(http.StatusNoContent)
 }
 
@@ -365,6 +403,14 @@ func (c *MembersController) GetMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetMemberRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -379,13 +425,18 @@ func (c *MembersController) GetMember(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetMemberQuery(
-		request.ID,
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+		request.ID,             // id
 	)
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getMemberHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -445,6 +496,14 @@ func (c *MembersController) UpdateMember(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateMemberRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -460,26 +519,28 @@ func (c *MembersController) UpdateMember(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body UpdateMemberRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &UpdateMemberRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Update handler
+	// Command handler
 
-	// Map path parameters and request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewUpdateMemberCommand(
-		request.ID,        // id (entity ID)
-		request.Body.Role, // Role
+		sessionID,              // SessionID for authenticated operations
+		request.OrganizationID, // organizationID
+		request.ID,             // id
+		request.Body.Role,      // Role
 	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
+	result, err := c.updateMemberHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})

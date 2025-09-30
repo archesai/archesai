@@ -108,28 +108,34 @@ func (r *PostgresMemberRepository) List(ctx context.Context, limit, offset int32
 
 // Additional methods
 
-// ListByOrganization retrieves multiple members by organizationID
-func (r *PostgresMemberRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Member, error) {
-
-	// TODO: Implement ListByOrganization - fetch multiple members
-	return nil, fmt.Errorf("ListByOrganization not yet implemented")
-
+// ListMembersByOrganization retrieves multiple members by organizationID
+func (r *PostgresMemberRepository) ListMembersByOrganization(ctx context.Context, organizationID string) ([]*entities.Member, error) {
+	// TODO: Implement ListMembersByOrganization - fetch multiple members
+	return nil, fmt.Errorf("ListMembersByOrganization not yet implemented")
 }
 
-// ListByUser retrieves multiple members by userID
-func (r *PostgresMemberRepository) ListByUser(ctx context.Context, userID string) ([]*entities.Member, error) {
-
-	// TODO: Implement ListByUser - fetch multiple members
-	return nil, fmt.Errorf("ListByUser not yet implemented")
-
+// ListMembersByUser retrieves multiple members by userID
+func (r *PostgresMemberRepository) ListMembersByUser(ctx context.Context, userID string) ([]*entities.Member, error) {
+	// TODO: Implement ListMembersByUser - fetch multiple members
+	return nil, fmt.Errorf("ListMembersByUser not yet implemented")
 }
 
-// GetByUserAndOrganization retrieves a single member by userID and organizationID
-func (r *PostgresMemberRepository) GetByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*entities.Member, error) {
+// GetMemberByUserAndOrganization retrieves a single member by userID and organizationID
+func (r *PostgresMemberRepository) GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*entities.Member, error) {
+	params := GetMemberByUserAndOrganizationParams{
+		UserID:         uuid.MustParse(userID),
+		OrganizationID: uuid.MustParse(organizationID),
+	}
 
-	// TODO: Implement GetByUserAndOrganization - fetch single member
-	return nil, fmt.Errorf("GetByUserAndOrganization not yet implemented")
+	result, err := r.queries.GetMemberByUserAndOrganization(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrMemberNotFound
+		}
+		return nil, fmt.Errorf("failed to GetMemberByUserAndOrganization: %w", err)
+	}
 
+	return mapMemberFromDB(&result), nil
 }
 
 func mapMemberFromDB(db *Member) *entities.Member {

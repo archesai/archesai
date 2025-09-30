@@ -3,8 +3,8 @@ INSERT INTO
   account (
     id,
     user_id,
-    provider_id,
-    account_id,
+    provider,
+    account_identifier,
     access_token,
     refresh_token,
     access_token_expires_at,
@@ -47,18 +47,18 @@ FROM
   account
 WHERE
   user_id = $1
-  AND provider_id = $2
+  AND provider = $2
 LIMIT
   1;
 
--- name: GetAccountByProviderID :one
+-- name: GetAccountByProvider :one
 SELECT
   *
 FROM
   account
 WHERE
-  provider_id = $1
-  AND account_id = $2
+  provider = $1
+  AND account_identifier = $2
 LIMIT
   1;
 
@@ -115,3 +115,4 @@ WHERE
 DELETE FROM account
 WHERE
   user_id = $1;
+

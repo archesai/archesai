@@ -3,12 +3,6 @@ description: Arches AI configuration schema
 title: Config
 x-codegen:
   schemaType: valueobject
-  queries:
-    operations:
-      - get
-  controller:
-    operations:
-      - read
 type: object
 properties:
   api:

@@ -14,15 +14,18 @@ import (
 
 // DeleteLabelCommand represents the command to delete a label.
 type DeleteLabelCommand struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewDeleteLabelCommand creates a new delete label command.
 func NewDeleteLabelCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 ) *DeleteLabelCommand {
 	return &DeleteLabelCommand{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 

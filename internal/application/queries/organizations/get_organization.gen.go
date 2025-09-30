@@ -12,15 +12,20 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// GetOrganizationQuery represents a query to get a organization.
+// GetOrganizationQuery represents a query to get organization.
 type GetOrganizationQuery struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewGetOrganizationQuery creates a new get organization query.
-func NewGetOrganizationQuery(id uuid.UUID) *GetOrganizationQuery {
+func NewGetOrganizationQuery(
+	SessionID uuid.UUID,
+	id uuid.UUID,
+) *GetOrganizationQuery {
 	return &GetOrganizationQuery{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 
@@ -38,6 +43,7 @@ func NewGetOrganizationQueryHandler(repo repositories.OrganizationRepository) *G
 
 // Handle executes the get organization query.
 func (h *GetOrganizationQueryHandler) Handle(ctx context.Context, query *GetOrganizationQuery) (*entities.Organization, error) {
+	// Use path parameters to get the entity
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get organization: %w", err)

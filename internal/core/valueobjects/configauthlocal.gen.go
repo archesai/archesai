@@ -17,12 +17,12 @@ type ConfigAuthLocal struct {
 
 // NewConfigAuthLocal creates a new immutable ConfigAuthLocal value object.
 // Value objects are immutable and validated upon creation.
-func NewConfigAuthLocal(accessTokenTtl string, enabled bool, jwtsecret string, refreshTokenTtl string) (ConfigAuthLocal, error) {
+func NewConfigAuthLocal(accessTokenTtl string, enabled bool, jwtSecret string, refreshTokenTtl string) (ConfigAuthLocal, error) {
 	// Validate all fields
 	if accessTokenTtl == "" {
 		return ConfigAuthLocal{}, fmt.Errorf("AccessTokenTTL cannot be empty")
 	}
-	if jwtsecret == "" {
+	if jwtSecret == "" {
 		return ConfigAuthLocal{}, fmt.Errorf("JWTSecret cannot be empty")
 	}
 	if refreshTokenTtl == "" {
@@ -32,15 +32,15 @@ func NewConfigAuthLocal(accessTokenTtl string, enabled bool, jwtsecret string, r
 	return ConfigAuthLocal{
 		AccessTokenTTL:  accessTokenTtl,
 		Enabled:         enabled,
-		JWTSecret:       jwtsecret,
+		JWTSecret:       jwtSecret,
 		RefreshTokenTTL: refreshTokenTtl,
 	}, nil
 }
 
 // MustConfigAuthLocal creates a new ConfigAuthLocal value object and panics on validation error.
 // Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
-func MustConfigAuthLocal(accessTokenTtl string, enabled bool, jwtsecret string, refreshTokenTtl string) ConfigAuthLocal {
-	v, err := NewConfigAuthLocal(accessTokenTtl, enabled, jwtsecret, refreshTokenTtl)
+func MustConfigAuthLocal(accessTokenTtl string, enabled bool, jwtSecret string, refreshTokenTtl string) ConfigAuthLocal {
+	v, err := NewConfigAuthLocal(accessTokenTtl, enabled, jwtSecret, refreshTokenTtl)
 	if err != nil {
 		panic(fmt.Sprintf("failed to create ConfigAuthLocal: %v", err))
 	}

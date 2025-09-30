@@ -7,15 +7,12 @@ x-codegen:
     operations: [read, update, delete, list] # No create endpoint in API
     indices: [email]
     additional_methods:
-      - name: GetByEmail
+      - name: GetUserByEmail
         params: [email]
         returns: single
-  commands:
-    operations: [update, delete] # No create command
-  queries:
-    operations: [get, list]
-  controller:
-    operations: [read, update, delete, list]
+      - name: GetUserBySessionID
+        params: [sessionID]
+        returns: single
 allOf:
   - $ref: ./Base.yaml
   - type: object

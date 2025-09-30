@@ -13,33 +13,34 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/tools"
 	queries "github.com/archesai/archesai/internal/application/queries/tools"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // ToolsController handles HTTP requests for tools endpoints.
 type ToolsController struct {
 	// Command handlers
-	createHandler *commands.CreateToolCommandHandler
-	updateHandler *commands.UpdateToolCommandHandler
-	deleteHandler *commands.DeleteToolCommandHandler
+	createToolHandler *commands.CreateToolCommandHandler
+	deleteToolHandler *commands.DeleteToolCommandHandler
+	updateToolHandler *commands.UpdateToolCommandHandler
 	// Query handlers
-	getHandler  *queries.GetToolQueryHandler
-	listHandler *queries.ListToolsQueryHandler
+	getToolHandler   *queries.GetToolQueryHandler
+	listToolsHandler *queries.ListToolsQueryHandler
 }
 
 // NewToolsController creates a new tools controller with injected handlers.
 func NewToolsController(
-	createHandler *commands.CreateToolCommandHandler,
-	updateHandler *commands.UpdateToolCommandHandler,
-	deleteHandler *commands.DeleteToolCommandHandler,
-	getHandler *queries.GetToolQueryHandler,
-	listHandler *queries.ListToolsQueryHandler,
+	createToolHandler *commands.CreateToolCommandHandler,
+	deleteToolHandler *commands.DeleteToolCommandHandler,
+	updateToolHandler *commands.UpdateToolCommandHandler,
+	getToolHandler *queries.GetToolQueryHandler,
+	listToolsHandler *queries.ListToolsQueryHandler,
 ) *ToolsController {
 	return &ToolsController{
-		createHandler: createHandler,
-		updateHandler: updateHandler,
-		deleteHandler: deleteHandler,
-		getHandler:    getHandler,
-		listHandler:   listHandler,
+		createToolHandler: createToolHandler,
+		deleteToolHandler: deleteToolHandler,
+		updateToolHandler: updateToolHandler,
+		getToolHandler:    getToolHandler,
+		listToolsHandler:  listToolsHandler,
 	}
 }
 
@@ -112,27 +113,36 @@ func (c *ToolsController) CreateTool(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreateToolRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Request body
-	var body CreateToolRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &CreateToolRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Create handler
+	// Command handler
 
-	// Map request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewCreateToolCommand(
+		sessionID,                // SessionID for authenticated operations
 		request.Body.Description, // Description
 		request.Body.Name,        // Name
 	)
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
+	result, err := c.createToolHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
@@ -199,6 +209,14 @@ func (c *ToolsController) ListTools(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListToolsRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Query parameters
 	var params ListToolsParams
 	// Optional query parameter "filter"
@@ -215,12 +233,17 @@ func (c *ToolsController) ListTools(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create list query from request
-	query := queries.NewListToolsQuery()
+	// Query handler
+	query := queries.NewListToolsQuery(
+		sessionID, // SessionID for authenticated operations
+	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.listToolsHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -277,6 +300,14 @@ func (c *ToolsController) DeleteTool(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteToolRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -284,17 +315,21 @@ func (c *ToolsController) DeleteTool(ctx echo.Context) error {
 	}
 	request.ID = id
 
-	// Determine which handler to call based on operation
-	// Create delete command from request
-	cmd := commands.NewDeleteToolCommand(
-		request.ID,
-	)
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
-	err := c.deleteHandler.Handle(reqCtx, cmd)
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteToolCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	err := c.deleteToolHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.NoContent(http.StatusNoContent)
 }
 
@@ -342,6 +377,14 @@ func (c *ToolsController) GetTool(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetToolRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -349,13 +392,17 @@ func (c *ToolsController) GetTool(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetToolQuery(
-		request.ID,
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
 	)
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getToolHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -415,6 +462,14 @@ func (c *ToolsController) UpdateTool(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateToolRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -423,27 +478,28 @@ func (c *ToolsController) UpdateTool(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body UpdateToolRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &UpdateToolRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Update handler
+	// Command handler
 
-	// Map path parameters and request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewUpdateToolCommand(
-		request.ID,               // id (entity ID)
+		sessionID,                // SessionID for authenticated operations
+		request.ID,               // id
 		request.Body.Description, // Description
 		request.Body.Name,        // Name
 	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
+	result, err := c.updateToolHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})

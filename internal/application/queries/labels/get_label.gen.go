@@ -12,15 +12,20 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// GetLabelQuery represents a query to get a label.
+// GetLabelQuery represents a query to get label.
 type GetLabelQuery struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewGetLabelQuery creates a new get label query.
-func NewGetLabelQuery(id uuid.UUID) *GetLabelQuery {
+func NewGetLabelQuery(
+	SessionID uuid.UUID,
+	id uuid.UUID,
+) *GetLabelQuery {
 	return &GetLabelQuery{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 
@@ -38,6 +43,7 @@ func NewGetLabelQueryHandler(repo repositories.LabelRepository) *GetLabelQueryHa
 
 // Handle executes the get label query.
 func (h *GetLabelQueryHandler) Handle(ctx context.Context, query *GetLabelQuery) (*entities.Label, error) {
+	// Use path parameters to get the entity
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get label: %w", err)

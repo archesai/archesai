@@ -14,15 +14,18 @@ import (
 
 // DeleteToolCommand represents the command to delete a tool.
 type DeleteToolCommand struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewDeleteToolCommand creates a new delete tool command.
 func NewDeleteToolCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 ) *DeleteToolCommand {
 	return &DeleteToolCommand{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 

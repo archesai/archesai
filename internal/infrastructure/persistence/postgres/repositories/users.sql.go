@@ -80,6 +80,32 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const getByEmail = `-- name: GetByEmail :one
+SELECT
+  id, created_at, updated_at, email, email_verified, image, name
+FROM
+  "user"
+WHERE
+  email = $1
+LIMIT
+  1
+`
+
+func (q *Queries) GetByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.EmailVerified,
+		&i.Image,
+		&i.Name,
+	)
+	return i, err
+}
+
 const getUser = `-- name: GetUser :one
 SELECT
   id, created_at, updated_at, email, email_verified, image, name
@@ -119,6 +145,29 @@ LIMIT
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.EmailVerified,
+		&i.Image,
+		&i.Name,
+	)
+	return i, err
+}
+
+const getUserBySessionID = `-- name: GetUserBySessionID :one
+SELECT u.id, u.created_at, u.updated_at, u.email, u.email_verified, u.image, u.name
+FROM "user" u
+JOIN "session" s ON u.id = s.user_id
+WHERE s.id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetUserBySessionID(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, getUserBySessionID, id)
 	var i User
 	err := row.Scan(
 		&i.ID,

@@ -6,23 +6,29 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // ListLabelsQuery represents a query to list labels.
 type ListLabelsQuery struct {
-	Limit          int
-	Offset         int
+	SessionID      uuid.UUID
+	Limit          int32
+	Offset         int32
 	OrderBy        string
 	OrderDirection string
 }
 
 // NewListLabelsQuery creates a new list labels query.
-func NewListLabelsQuery() *ListLabelsQuery {
+func NewListLabelsQuery(
+	SessionID uuid.UUID,
+) *ListLabelsQuery {
 	return &ListLabelsQuery{
-		Limit:  100,
-		Offset: 0,
+		SessionID: SessionID,
+		Limit:     100,
+		Offset:    0,
 	}
 }
 
@@ -40,12 +46,8 @@ func NewListLabelsQueryHandler(repo repositories.LabelRepository) *ListLabelsQue
 
 // Handle executes the list labels query.
 func (h *ListLabelsQueryHandler) Handle(ctx context.Context, query *ListLabelsQuery) ([]*entities.Label, int64, error) {
-	// Convert to int32 for repository
-	limit := int32(query.Limit)
-	offset := int32(query.Offset)
-
-	// Execute query with pagination
-	results, total, err := h.repo.List(ctx, limit, offset)
+	// TODO: Apply filters based on query parameters
+	results, total, err := h.repo.List(ctx, query.Limit, query.Offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list labels: %w", err)
 	}

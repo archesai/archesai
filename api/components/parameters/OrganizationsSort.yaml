@@ -24,7 +24,7 @@ schema:
           - name
           - plan
           - slug
-          - stripeCustomerID
+          - stripeCustomerIdentifier
         example: createdAt
       order:
         type: string

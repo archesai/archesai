@@ -108,20 +108,30 @@ func (r *PostgresOrganizationRepository) List(ctx context.Context, limit, offset
 
 // Additional methods
 
-// GetBySlug retrieves a single organization by slug
-func (r *PostgresOrganizationRepository) GetBySlug(ctx context.Context, slug string) (*entities.Organization, error) {
+// GetOrganizationBySlug retrieves a single organization by slug
+func (r *PostgresOrganizationRepository) GetOrganizationBySlug(ctx context.Context, slug string) (*entities.Organization, error) {
+	result, err := r.queries.GetOrganizationBySlug(ctx, slug)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrOrganizationNotFound
+		}
+		return nil, fmt.Errorf("failed to GetOrganizationBySlug: %w", err)
+	}
 
-	// TODO: Implement GetBySlug - fetch single organization
-	return nil, fmt.Errorf("GetBySlug not yet implemented")
-
+	return mapOrganizationFromDB(&result), nil
 }
 
-// GetByStripeCustomerID retrieves a single organization by stripeCustomerID
-func (r *PostgresOrganizationRepository) GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*entities.Organization, error) {
+// GetOrganizationByStripeCustomerID retrieves a single organization by stripeCustomerIdentifier
+func (r *PostgresOrganizationRepository) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (*entities.Organization, error) {
+	result, err := r.queries.GetOrganizationByStripeCustomerID(ctx, stripeCustomerIdentifier)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrOrganizationNotFound
+		}
+		return nil, fmt.Errorf("failed to GetOrganizationByStripeCustomerID: %w", err)
+	}
 
-	// TODO: Implement GetByStripeCustomerID - fetch single organization
-	return nil, fmt.Errorf("GetByStripeCustomerID not yet implemented")
-
+	return mapOrganizationFromDB(&result), nil
 }
 
 func mapOrganizationFromDB(db *Organization) *entities.Organization {

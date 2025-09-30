@@ -108,12 +108,30 @@ func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) 
 
 // Additional methods
 
-// GetByEmail retrieves a single user by email
-func (r *PostgresUserRepository) GetByEmail(ctx context.Context, email string) (*entities.User, error) {
+// GetUserByEmail retrieves a single user by email
+func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
+	result, err := r.queries.GetUserByEmail(ctx, email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to GetUserByEmail: %w", err)
+	}
 
-	// TODO: Implement GetByEmail - fetch single user
-	return nil, fmt.Errorf("GetByEmail not yet implemented")
+	return mapUserFromDB(&result), nil
+}
 
+// GetUserBySessionID retrieves a single user by sessionID
+func (r *PostgresUserRepository) GetUserBySessionID(ctx context.Context, sessionID string) (*entities.User, error) {
+	result, err := r.queries.GetUserBySessionID(ctx, uuid.MustParse(sessionID))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to GetUserBySessionID: %w", err)
+	}
+
+	return mapUserFromDB(&result), nil
 }
 
 func mapUserFromDB(db *User) *entities.User {

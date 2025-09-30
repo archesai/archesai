@@ -14,15 +14,18 @@ import (
 
 // DeleteArtifactCommand represents the command to delete a artifact.
 type DeleteArtifactCommand struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewDeleteArtifactCommand creates a new delete artifact command.
 func NewDeleteArtifactCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 ) *DeleteArtifactCommand {
 	return &DeleteArtifactCommand{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 

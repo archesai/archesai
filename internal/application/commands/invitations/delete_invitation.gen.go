@@ -14,15 +14,21 @@ import (
 
 // DeleteInvitationCommand represents the command to delete a invitation.
 type DeleteInvitationCommand struct {
-	ID uuid.UUID
+	SessionID      uuid.UUID
+	OrganizationID uuid.UUID
+	ID             uuid.UUID
 }
 
 // NewDeleteInvitationCommand creates a new delete invitation command.
 func NewDeleteInvitationCommand(
+	SessionID uuid.UUID,
+	organizationID uuid.UUID,
 	id uuid.UUID,
 ) *DeleteInvitationCommand {
 	return &DeleteInvitationCommand{
-		ID: id,
+		SessionID:      SessionID,
+		OrganizationID: organizationID,
+		ID:             id,
 	}
 }
 

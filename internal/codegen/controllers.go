@@ -3,6 +3,7 @@ package codegen
 import (
 	"fmt"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/archesai/archesai/internal/parsers"
@@ -88,8 +89,21 @@ func (g *Generator) generateDomainController(
 	// Process operations to add template data
 	processedOps := g.processOperations(operations, schemaTypeMap, domainTitle, importsNeeded)
 
-	// Determine which handlers are needed
-	crudFlags := g.determineCRUDHandlers(operations)
+	// Collect command and query handlers from operations and sort them
+	// Use raw operationIds to preserve casing
+	commands := []string{}
+	queries := []string{}
+	for _, op := range operations {
+		if op.Method == "GET" {
+			queries = append(queries, op.OperationID)
+		} else {
+			commands = append(commands, op.OperationID)
+		}
+	}
+
+	// Sort alphabetically
+	sort.Strings(commands)
+	sort.Strings(queries)
 
 	data := map[string]interface{}{
 		"Package":             "controllers",
@@ -98,12 +112,9 @@ func (g *Generator) generateDomainController(
 		"DomainLower":         strings.ToLower(domain),
 		"DomainSingularLower": strings.ToLower(domainSingular),
 		"Operations":          processedOps,
+		"Commands":            commands,
+		"Queries":             queries,
 		"Imports":             []map[string]string{}, // no longer needed as we have standard imports in template
-		"HasCreate":           crudFlags["create"],
-		"HasUpdate":           crudFlags["update"],
-		"HasDelete":           crudFlags["delete"],
-		"HasGet":              crudFlags["get"],
-		"HasList":             crudFlags["list"],
 	}
 
 	outputPath := filepath.Join(
@@ -172,6 +183,19 @@ func (g *Generator) processOperation(
 		}
 	}
 
+	// Check for authentication requirements
+	hasBearerAuth := false
+	hasSessionAuth := false
+	for _, sec := range op.Security {
+		if sec.Name == securityBearerAuth {
+			hasBearerAuth = true
+		}
+		if sec.Name == securitySession {
+			hasSessionAuth = true
+		}
+	}
+	hasSecurity := len(op.Security) > 0
+
 	return map[string]interface{}{
 		"Name":                op.Name,
 		"GoName":              op.GoName,
@@ -188,6 +212,10 @@ func (g *Generator) processOperation(
 		"HasRequestBody":      op.RequestBodySchema != nil,
 		"Responses":           op.Responses,
 		"Security":            op.Security,
+		"HasSecurity":         hasSecurity,
+		"HasBearerAuth":       hasBearerAuth,
+		"HasSessionAuth":      hasSessionAuth,
+		"RequiresAuth":        hasBearerAuth || hasSessionAuth,
 		"ResponseType":        responseType,
 		"ResponsePackage":     responsePackage,
 		"SuccessResponse":     successResponse,
@@ -223,33 +251,4 @@ func (g *Generator) extractResponseInfo(
 	}
 
 	return responseType, responsePackage, successResponse
-}
-
-// determineCRUDHandlers determines which CRUD handlers are needed based on operation names
-func (g *Generator) determineCRUDHandlers(operations []parsers.OperationDef) map[string]bool {
-	flags := map[string]bool{
-		"create": false,
-		"update": false,
-		"delete": false,
-		"get":    false,
-		"list":   false,
-	}
-
-	for _, op := range operations {
-		opNameLower := strings.ToLower(op.Name)
-
-		if strings.HasPrefix(opNameLower, "create") {
-			flags["create"] = true
-		} else if strings.HasPrefix(opNameLower, "update") || strings.HasPrefix(opNameLower, "patch") {
-			flags["update"] = true
-		} else if strings.HasPrefix(opNameLower, "delete") || strings.HasPrefix(opNameLower, "remove") {
-			flags["delete"] = true
-		} else if strings.HasPrefix(opNameLower, "list") || strings.HasPrefix(opNameLower, "getall") {
-			flags["list"] = true
-		} else if strings.HasPrefix(opNameLower, "get") {
-			flags["get"] = true
-		}
-	}
-
-	return flags
 }

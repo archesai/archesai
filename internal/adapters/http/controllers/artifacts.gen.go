@@ -13,33 +13,34 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/artifacts"
 	queries "github.com/archesai/archesai/internal/application/queries/artifacts"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // ArtifactsController handles HTTP requests for artifacts endpoints.
 type ArtifactsController struct {
 	// Command handlers
-	createHandler *commands.CreateArtifactCommandHandler
-	updateHandler *commands.UpdateArtifactCommandHandler
-	deleteHandler *commands.DeleteArtifactCommandHandler
+	createArtifactHandler *commands.CreateArtifactCommandHandler
+	deleteArtifactHandler *commands.DeleteArtifactCommandHandler
+	updateArtifactHandler *commands.UpdateArtifactCommandHandler
 	// Query handlers
-	getHandler  *queries.GetArtifactQueryHandler
-	listHandler *queries.ListArtifactsQueryHandler
+	getArtifactHandler   *queries.GetArtifactQueryHandler
+	listArtifactsHandler *queries.ListArtifactsQueryHandler
 }
 
 // NewArtifactsController creates a new artifacts controller with injected handlers.
 func NewArtifactsController(
-	createHandler *commands.CreateArtifactCommandHandler,
-	updateHandler *commands.UpdateArtifactCommandHandler,
-	deleteHandler *commands.DeleteArtifactCommandHandler,
-	getHandler *queries.GetArtifactQueryHandler,
-	listHandler *queries.ListArtifactsQueryHandler,
+	createArtifactHandler *commands.CreateArtifactCommandHandler,
+	deleteArtifactHandler *commands.DeleteArtifactCommandHandler,
+	updateArtifactHandler *commands.UpdateArtifactCommandHandler,
+	getArtifactHandler *queries.GetArtifactQueryHandler,
+	listArtifactsHandler *queries.ListArtifactsQueryHandler,
 ) *ArtifactsController {
 	return &ArtifactsController{
-		createHandler: createHandler,
-		updateHandler: updateHandler,
-		deleteHandler: deleteHandler,
-		getHandler:    getHandler,
-		listHandler:   listHandler,
+		createArtifactHandler: createArtifactHandler,
+		deleteArtifactHandler: deleteArtifactHandler,
+		updateArtifactHandler: updateArtifactHandler,
+		getArtifactHandler:    getArtifactHandler,
+		listArtifactsHandler:  listArtifactsHandler,
 	}
 }
 
@@ -112,27 +113,36 @@ func (c *ArtifactsController) CreateArtifact(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreateArtifactRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Request body
-	var body CreateArtifactRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &CreateArtifactRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Create handler
+	// Command handler
 
-	// Map request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewCreateArtifactCommand(
+		sessionID,         // SessionID for authenticated operations
 		request.Body.Name, // Name
 		request.Body.Text, // Text
 	)
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
+	result, err := c.createArtifactHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
@@ -199,6 +209,14 @@ func (c *ArtifactsController) ListArtifacts(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListArtifactsRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Query parameters
 	var params ListArtifactsParams
 	// Optional query parameter "filter"
@@ -215,12 +233,17 @@ func (c *ArtifactsController) ListArtifacts(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create list query from request
-	query := queries.NewListArtifactsQuery()
+	// Query handler
+	query := queries.NewListArtifactsQuery(
+		sessionID, // SessionID for authenticated operations
+	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.listArtifactsHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -277,6 +300,14 @@ func (c *ArtifactsController) DeleteArtifact(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteArtifactRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -284,17 +315,21 @@ func (c *ArtifactsController) DeleteArtifact(ctx echo.Context) error {
 	}
 	request.ID = id
 
-	// Determine which handler to call based on operation
-	// Create delete command from request
-	cmd := commands.NewDeleteArtifactCommand(
-		request.ID,
-	)
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
-	err := c.deleteHandler.Handle(reqCtx, cmd)
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteArtifactCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	err := c.deleteArtifactHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.NoContent(http.StatusNoContent)
 }
 
@@ -342,6 +377,14 @@ func (c *ArtifactsController) GetArtifact(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetArtifactRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -349,13 +392,17 @@ func (c *ArtifactsController) GetArtifact(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetArtifactQuery(
-		request.ID,
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
 	)
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getArtifactHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -416,6 +463,14 @@ func (c *ArtifactsController) UpdateArtifact(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateArtifactRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -424,28 +479,29 @@ func (c *ArtifactsController) UpdateArtifact(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body UpdateArtifactRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &UpdateArtifactRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Update handler
+	// Command handler
 
-	// Map path parameters and request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewUpdateArtifactCommand(
-		request.ID,        // id (entity ID)
+		sessionID,         // SessionID for authenticated operations
+		request.ID,        // id
 		request.Body.Name, // Name
 		request.Body.Text, // Text
 		request.Body.URL,  // URL
 	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
+	result, err := c.updateArtifactHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})

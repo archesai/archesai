@@ -16,24 +16,27 @@ import (
 
 // UpdateArtifactCommand represents the command to update a artifact.
 type UpdateArtifactCommand struct {
-	ID   uuid.UUID
-	Name *string
-	Text *string
-	URL  *string
+	SessionID uuid.UUID
+	ID        uuid.UUID
+	Name      *string
+	Text      *string
+	URL       *string
 }
 
 // NewUpdateArtifactCommand creates a new update artifact command.
 func NewUpdateArtifactCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 	Name *string,
 	Text *string,
 	URL *string,
 ) *UpdateArtifactCommand {
 	return &UpdateArtifactCommand{
-		ID:   id,
-		Name: Name,
-		Text: Text,
-		URL:  URL,
+		SessionID: SessionID,
+		ID:        id,
+		Name:      Name,
+		Text:      Text,
+		URL:       URL,
 	}
 }
 

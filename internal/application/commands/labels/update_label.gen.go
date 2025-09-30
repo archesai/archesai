@@ -16,18 +16,21 @@ import (
 
 // UpdateLabelCommand represents the command to update a label.
 type UpdateLabelCommand struct {
-	ID   uuid.UUID
-	Name *string
+	SessionID uuid.UUID
+	ID        uuid.UUID
+	Name      *string
 }
 
 // NewUpdateLabelCommand creates a new update label command.
 func NewUpdateLabelCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 	Name *string,
 ) *UpdateLabelCommand {
 	return &UpdateLabelCommand{
-		ID:   id,
-		Name: Name,
+		SessionID: SessionID,
+		ID:        id,
+		Name:      Name,
 	}
 }
 

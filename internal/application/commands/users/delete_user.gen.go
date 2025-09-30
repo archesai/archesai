@@ -14,15 +14,18 @@ import (
 
 // DeleteUserCommand represents the command to delete a user.
 type DeleteUserCommand struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewDeleteUserCommand creates a new delete user command.
 func NewDeleteUserCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 ) *DeleteUserCommand {
 	return &DeleteUserCommand{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 

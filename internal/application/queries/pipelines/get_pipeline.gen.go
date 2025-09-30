@@ -12,15 +12,20 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// GetPipelineQuery represents a query to get a pipeline.
+// GetPipelineQuery represents a query to get pipeline.
 type GetPipelineQuery struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewGetPipelineQuery creates a new get pipeline query.
-func NewGetPipelineQuery(id uuid.UUID) *GetPipelineQuery {
+func NewGetPipelineQuery(
+	SessionID uuid.UUID,
+	id uuid.UUID,
+) *GetPipelineQuery {
 	return &GetPipelineQuery{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 
@@ -38,6 +43,7 @@ func NewGetPipelineQueryHandler(repo repositories.PipelineRepository) *GetPipeli
 
 // Handle executes the get pipeline query.
 func (h *GetPipelineQueryHandler) Handle(ctx context.Context, query *GetPipelineQuery) (*entities.Pipeline, error) {
+	// Use path parameters to get the entity
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pipeline: %w", err)

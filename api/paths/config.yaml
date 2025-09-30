@@ -13,3 +13,4 @@ get:
             $ref: ../components/schemas/config/Config.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
+  security: []

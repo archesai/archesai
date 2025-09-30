@@ -32,7 +32,7 @@ CREATE TABLE organization (
       'UNLIMITED'
     )
   ),
-  stripe_customer_id TEXT UNIQUE
+  stripe_customer_id TEXT UNIQUE NOT NULL
 );
 
 -- Create account table
@@ -42,10 +42,10 @@ CREATE TABLE account (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   access_token TEXT,
   access_token_expires_at TIMESTAMPTZ,
-  account_id TEXT NOT NULL,
+  account_identifier TEXT NOT NULL,
   id_token TEXT,
   password TEXT,
-  provider_id TEXT NOT NULL,
+  provider TEXT NOT NULL,
   refresh_token TEXT,
   refresh_token_expires_at TIMESTAMPTZ,
   scope TEXT,

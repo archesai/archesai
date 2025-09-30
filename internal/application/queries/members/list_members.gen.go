@@ -6,23 +6,32 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // ListMembersQuery represents a query to list members.
 type ListMembersQuery struct {
-	Limit          int
-	Offset         int
+	SessionID      uuid.UUID
+	OrganizationID uuid.UUID
+	Limit          int32
+	Offset         int32
 	OrderBy        string
 	OrderDirection string
 }
 
 // NewListMembersQuery creates a new list members query.
-func NewListMembersQuery() *ListMembersQuery {
+func NewListMembersQuery(
+	SessionID uuid.UUID,
+	organizationID uuid.UUID,
+) *ListMembersQuery {
 	return &ListMembersQuery{
-		Limit:  100,
-		Offset: 0,
+		SessionID:      SessionID,
+		OrganizationID: organizationID,
+		Limit:          100,
+		Offset:         0,
 	}
 }
 
@@ -40,12 +49,8 @@ func NewListMembersQueryHandler(repo repositories.MemberRepository) *ListMembers
 
 // Handle executes the list members query.
 func (h *ListMembersQueryHandler) Handle(ctx context.Context, query *ListMembersQuery) ([]*entities.Member, int64, error) {
-	// Convert to int32 for repository
-	limit := int32(query.Limit)
-	offset := int32(query.Offset)
-
-	// Execute query with pagination
-	results, total, err := h.repo.List(ctx, limit, offset)
+	// TODO: Apply filters based on query parameters
+	results, total, err := h.repo.List(ctx, query.Limit, query.Offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list members: %w", err)
 	}

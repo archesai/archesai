@@ -6,27 +6,1943 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
+	commands "github.com/archesai/archesai/internal/application/commands/auth"
+	queries "github.com/archesai/archesai/internal/application/queries/auth"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // AuthController handles HTTP requests for auth endpoints.
 type AuthController struct {
+	// Command handlers
+	confirmEmailChangeHandler       *commands.ConfirmEmailChangeCommandHandler
+	confirmEmailVerificationHandler *commands.ConfirmEmailVerificationCommandHandler
+	confirmPasswordResetHandler     *commands.ConfirmPasswordResetCommandHandler
+	deleteAccountHandler            *commands.DeleteAccountCommandHandler
+	deleteSessionHandler            *commands.DeleteSessionCommandHandler
+	linkAccountHandler              *commands.LinkAccountCommandHandler
+	loginHandler                    *commands.LoginCommandHandler
+	logoutHandler                   *commands.LogoutCommandHandler
+	logoutAllHandler                *commands.LogoutAllCommandHandler
+	registerHandler                 *commands.RegisterCommandHandler
+	requestEmailChangeHandler       *commands.RequestEmailChangeCommandHandler
+	requestEmailVerificationHandler *commands.RequestEmailVerificationCommandHandler
+	requestMagicLinkHandler         *commands.RequestMagicLinkCommandHandler
+	requestPasswordResetHandler     *commands.RequestPasswordResetCommandHandler
+	updateAccountHandler            *commands.UpdateAccountCommandHandler
+	updateSessionHandler            *commands.UpdateSessionCommandHandler
+	verifyMagicLinkHandler          *commands.VerifyMagicLinkCommandHandler
+	// Query handlers
+	getAccountHandler     *queries.GetAccountQueryHandler
+	getSessionHandler     *queries.GetSessionQueryHandler
+	listAccountsHandler   *queries.ListAccountsQueryHandler
+	listSessionsHandler   *queries.ListSessionsQueryHandler
+	oauthAuthorizeHandler *queries.OAuthAuthorizeQueryHandler
+	oauthCallbackHandler  *queries.OAuthCallbackQueryHandler
 }
 
 // NewAuthController creates a new auth controller with injected handlers.
-func NewAuthController() *AuthController {
-	return &AuthController{}
+func NewAuthController(
+	confirmEmailChangeHandler *commands.ConfirmEmailChangeCommandHandler,
+	confirmEmailVerificationHandler *commands.ConfirmEmailVerificationCommandHandler,
+	confirmPasswordResetHandler *commands.ConfirmPasswordResetCommandHandler,
+	deleteAccountHandler *commands.DeleteAccountCommandHandler,
+	deleteSessionHandler *commands.DeleteSessionCommandHandler,
+	linkAccountHandler *commands.LinkAccountCommandHandler,
+	loginHandler *commands.LoginCommandHandler,
+	logoutHandler *commands.LogoutCommandHandler,
+	logoutAllHandler *commands.LogoutAllCommandHandler,
+	registerHandler *commands.RegisterCommandHandler,
+	requestEmailChangeHandler *commands.RequestEmailChangeCommandHandler,
+	requestEmailVerificationHandler *commands.RequestEmailVerificationCommandHandler,
+	requestMagicLinkHandler *commands.RequestMagicLinkCommandHandler,
+	requestPasswordResetHandler *commands.RequestPasswordResetCommandHandler,
+	updateAccountHandler *commands.UpdateAccountCommandHandler,
+	updateSessionHandler *commands.UpdateSessionCommandHandler,
+	verifyMagicLinkHandler *commands.VerifyMagicLinkCommandHandler,
+	getAccountHandler *queries.GetAccountQueryHandler,
+	getSessionHandler *queries.GetSessionQueryHandler,
+	listAccountsHandler *queries.ListAccountsQueryHandler,
+	listSessionsHandler *queries.ListSessionsQueryHandler,
+	oauthAuthorizeHandler *queries.OAuthAuthorizeQueryHandler,
+	oauthCallbackHandler *queries.OAuthCallbackQueryHandler,
+) *AuthController {
+	return &AuthController{
+		confirmEmailChangeHandler:       confirmEmailChangeHandler,
+		confirmEmailVerificationHandler: confirmEmailVerificationHandler,
+		confirmPasswordResetHandler:     confirmPasswordResetHandler,
+		deleteAccountHandler:            deleteAccountHandler,
+		deleteSessionHandler:            deleteSessionHandler,
+		linkAccountHandler:              linkAccountHandler,
+		loginHandler:                    loginHandler,
+		logoutHandler:                   logoutHandler,
+		logoutAllHandler:                logoutAllHandler,
+		registerHandler:                 registerHandler,
+		requestEmailChangeHandler:       requestEmailChangeHandler,
+		requestEmailVerificationHandler: requestEmailVerificationHandler,
+		requestMagicLinkHandler:         requestMagicLinkHandler,
+		requestPasswordResetHandler:     requestPasswordResetHandler,
+		updateAccountHandler:            updateAccountHandler,
+		updateSessionHandler:            updateSessionHandler,
+		verifyMagicLinkHandler:          verifyMagicLinkHandler,
+		getAccountHandler:               getAccountHandler,
+		getSessionHandler:               getSessionHandler,
+		listAccountsHandler:             listAccountsHandler,
+		listSessionsHandler:             listSessionsHandler,
+		oauthAuthorizeHandler:           oauthAuthorizeHandler,
+		oauthCallbackHandler:            oauthCallbackHandler,
+	}
 }
 
 // RegisterAuthRoutes registers all HTTP routes for the auth domain.
 func RegisterAuthRoutes(router server.EchoRouter, controller *AuthController) {
-	router.GET("/auth/oauth/:provider/authorize", controller.OauthAuthorize)
-	router.GET("/auth/oauth/:provider/callback", controller.OauthCallback)
+	router.POST("/auth/login", controller.Login)
+	router.POST("/auth/logout", controller.Logout)
+	router.POST("/auth/logout-all", controller.LogoutAll)
+	router.POST("/auth/register", controller.Register)
 	router.POST("/auth/magic-links/request", controller.RequestMagicLink)
 	router.POST("/auth/magic-links/verify", controller.VerifyMagicLink)
+	router.POST("/auth/link", controller.LinkAccount)
+	router.GET("/auth/sessions", controller.ListSessions)
+	router.DELETE("/auth/sessions/:id", controller.DeleteSession)
+	router.GET("/auth/sessions/:id", controller.GetSession)
+	router.PATCH("/auth/sessions/:id", controller.UpdateSession)
+	router.GET("/auth/accounts", controller.ListAccounts)
+	router.GET("/auth/accounts/:id", controller.GetAccount)
+	router.PATCH("/auth/accounts/:id", controller.UpdateAccount)
+	router.DELETE("/auth/accounts/:id", controller.DeleteAccount)
+	router.POST("/auth/request-verification", controller.RequestEmailVerification)
+	router.POST("/auth/verify-email", controller.ConfirmEmailVerification)
+	router.POST("/auth/forgot-password", controller.RequestPasswordReset)
+	router.POST("/auth/reset-password", controller.ConfirmPasswordReset)
+	router.POST("/auth/change-email", controller.RequestEmailChange)
+	router.POST("/auth/confirm-email", controller.ConfirmEmailChange)
+	router.GET("/auth/oauth/:provider/authorize", controller.OauthAuthorize)
+	router.GET("/auth/oauth/:provider/callback", controller.OauthCallback)
+}
+
+// ============================================================================
+// Login - POST /auth/login
+// ============================================================================
+
+// Request types
+// LoginRequestBody defines the request body for Login
+type LoginRequestBody struct {
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+	RememberMe *bool  `json:"rememberMe,omitempty"`
+}
+
+type LoginRequest struct {
+	Body *LoginRequestBody
+}
+
+// Response types
+
+type LoginResponse interface {
+	VisitLoginResponse(w http.ResponseWriter) error
+}
+
+type Login201JSONResponse struct {
+}
+
+func (response Login201JSONResponse) VisitLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type Login400Response struct {
+	server.BadRequestResponse
+}
+
+func (response Login400Response) VisitLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type Login401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response Login401Response) VisitLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// Login handles the POST /auth/login endpoint.
+func (c *AuthController) Login(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := LoginRequest{}
+
+	// Request body
+	request.Body = &LoginRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewLoginCommand(
+		request.Body.Email,      // Email
+		request.Body.Password,   // Password
+		request.Body.RememberMe, // RememberMe
+	)
+	result, err := c.loginHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// Logout - POST /auth/logout
+// ============================================================================
+
+// Request types
+
+type LogoutRequest struct {
+}
+
+// Response types
+
+type LogoutResponse interface {
+	VisitLogoutResponse(w http.ResponseWriter) error
+}
+
+type Logout201JSONResponse struct {
+}
+
+func (response Logout201JSONResponse) VisitLogoutResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type Logout401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response Logout401Response) VisitLogoutResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// Logout handles the POST /auth/logout endpoint.
+func (c *AuthController) Logout(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewLogoutCommand(
+		sessionID, // SessionID for authenticated operations
+	)
+	result, err := c.logoutHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// LogoutAll - POST /auth/logout-all
+// ============================================================================
+
+// Request types
+
+type LogoutAllRequest struct {
+}
+
+// Response types
+
+type LogoutAllResponse interface {
+	VisitLogoutAllResponse(w http.ResponseWriter) error
+}
+
+type LogoutAll201JSONResponse struct {
+}
+
+func (response LogoutAll201JSONResponse) VisitLogoutAllResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type LogoutAll401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response LogoutAll401Response) VisitLogoutAllResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// LogoutAll handles the POST /auth/logout-all endpoint.
+func (c *AuthController) LogoutAll(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewLogoutAllCommand(
+		sessionID, // SessionID for authenticated operations
+	)
+	result, err := c.logoutAllHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// Register - POST /auth/register
+// ============================================================================
+
+// Request types
+// RegisterRequestBody defines the request body for Register
+type RegisterRequestBody struct {
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+type RegisterRequest struct {
+	Body *RegisterRequestBody
+}
+
+// Response types
+
+type RegisterResponse interface {
+	VisitRegisterResponse(w http.ResponseWriter) error
+}
+
+type Register201JSONResponse struct {
+}
+
+func (response Register201JSONResponse) VisitRegisterResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type Register400Response struct {
+	server.BadRequestResponse
+}
+
+func (response Register400Response) VisitRegisterResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type Register409Response struct {
+	server.ConflictResponse
+}
+
+func (response Register409Response) VisitRegisterResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(409)
+
+	return json.NewEncoder(w).Encode(response.ConflictResponse)
+}
+
+// Handler method
+
+// Register handles the POST /auth/register endpoint.
+func (c *AuthController) Register(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := RegisterRequest{}
+
+	// Request body
+	request.Body = &RegisterRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewRegisterCommand(
+		request.Body.Email,    // Email
+		request.Body.Name,     // Name
+		request.Body.Password, // Password
+	)
+	result, err := c.registerHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// RequestMagicLink - POST /auth/magic-links/request
+// ============================================================================
+
+// Request types
+// RequestMagicLinkRequestBody defines the request body for RequestMagicLink
+type RequestMagicLinkRequestBody struct {
+	DeliveryMethod *string `json:"deliveryMethod,omitempty"`
+	Identifier     string  `json:"identifier"`
+	RedirectUrl    *string `json:"redirectUrl,omitempty"`
+}
+
+type RequestMagicLinkRequest struct {
+	Body *RequestMagicLinkRequestBody
+}
+
+// Response types
+
+type RequestMagicLinkResponse interface {
+	VisitRequestMagicLinkResponse(w http.ResponseWriter) error
+}
+
+type RequestMagicLink201JSONResponse struct {
+}
+
+func (response RequestMagicLink201JSONResponse) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestMagicLink400Response struct {
+	server.BadRequestResponse
+}
+
+func (response RequestMagicLink400Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type RequestMagicLink429Response struct {
+	server.BadRequestResponse
+}
+
+func (response RequestMagicLink429Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type RequestMagicLink500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response RequestMagicLink500Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+// Handler method
+
+// RequestMagicLink handles the POST /auth/magic-links/request endpoint.
+func (c *AuthController) RequestMagicLink(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := RequestMagicLinkRequest{}
+
+	// Request body
+	request.Body = &RequestMagicLinkRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewRequestMagicLinkCommand(
+		request.Body.DeliveryMethod, // DeliveryMethod
+		request.Body.Identifier,     // Identifier
+		request.Body.RedirectUrl,    // RedirectUrl
+	)
+	result, err := c.requestMagicLinkHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// VerifyMagicLink - POST /auth/magic-links/verify
+// ============================================================================
+
+// Request types
+// VerifyMagicLinkRequestBody defines the request body for VerifyMagicLink
+type VerifyMagicLinkRequestBody struct {
+	Code       *string `json:"code,omitempty"`
+	Identifier *string `json:"identifier,omitempty"`
+	Token      *string `json:"token,omitempty"`
+}
+
+type VerifyMagicLinkRequest struct {
+	Body *VerifyMagicLinkRequestBody
+}
+
+// Response types
+
+type VerifyMagicLinkResponse interface {
+	VisitVerifyMagicLinkResponse(w http.ResponseWriter) error
+}
+
+type VerifyMagicLink201JSONResponse struct {
+}
+
+func (response VerifyMagicLink201JSONResponse) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type VerifyMagicLink400Response struct {
+	server.BadRequestResponse
+}
+
+func (response VerifyMagicLink400Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type VerifyMagicLink401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response VerifyMagicLink401Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type VerifyMagicLink404Response struct {
+	server.NotFoundResponse
+}
+
+func (response VerifyMagicLink404Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type VerifyMagicLink500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response VerifyMagicLink500Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+// Handler method
+
+// VerifyMagicLink handles the POST /auth/magic-links/verify endpoint.
+func (c *AuthController) VerifyMagicLink(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := VerifyMagicLinkRequest{}
+
+	// Request body
+	request.Body = &VerifyMagicLinkRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewVerifyMagicLinkCommand(
+		request.Body.Code,       // Code
+		request.Body.Identifier, // Identifier
+		request.Body.Token,      // Token
+	)
+	result, err := c.verifyMagicLinkHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// LinkAccount - POST /auth/link
+// ============================================================================
+
+// Request types
+// LinkAccountRequestBody defines the request body for LinkAccount
+type LinkAccountRequestBody struct {
+	Provider    string  `json:"provider"`
+	RedirectUrl *string `json:"redirectUrl,omitempty"`
+}
+
+type LinkAccountRequest struct {
+	Body *LinkAccountRequestBody
+}
+
+// Response types
+
+type LinkAccountResponse interface {
+	VisitLinkAccountResponse(w http.ResponseWriter) error
+}
+
+type LinkAccount201JSONResponse struct {
+}
+
+func (response LinkAccount201JSONResponse) VisitLinkAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type LinkAccount400Response struct {
+	server.BadRequestResponse
+}
+
+func (response LinkAccount400Response) VisitLinkAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type LinkAccount401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response LinkAccount401Response) VisitLinkAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type LinkAccount409Response struct {
+	server.ConflictResponse
+}
+
+func (response LinkAccount409Response) VisitLinkAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(409)
+
+	return json.NewEncoder(w).Encode(response.ConflictResponse)
+}
+
+// Handler method
+
+// LinkAccount handles the POST /auth/link endpoint.
+func (c *AuthController) LinkAccount(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := LinkAccountRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Request body
+	request.Body = &LinkAccountRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewLinkAccountCommand(
+		sessionID,                // SessionID for authenticated operations
+		request.Body.Provider,    // Provider
+		request.Body.RedirectUrl, // RedirectUrl
+	)
+	result, err := c.linkAccountHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// ListSessions - GET /auth/sessions
+// ============================================================================
+
+// Request types
+// ListSessionsParams defines parameters for ListSessions
+type ListSessionsParams struct {
+	Page *map[string]interface{}   `json:"page,omitempty"`
+	Sort *[]map[string]interface{} `json:"sort,omitempty"`
+}
+
+type ListSessionsRequest struct {
+	Params ListSessionsParams
+}
+
+// Response types
+
+type ListSessionsResponse interface {
+	VisitListSessionsResponse(w http.ResponseWriter) error
+}
+
+type ListSessions200JSONResponse struct {
+}
+
+func (response ListSessions200JSONResponse) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListSessions401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response ListSessions401Response) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// ListSessions handles the GET /auth/sessions endpoint.
+func (c *AuthController) ListSessions(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := ListSessionsRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Query parameters
+	var params ListSessionsParams
+	// Optional query parameter "page"
+	if err := runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+	// Optional query parameter "sort"
+	if err := runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+	}
+	request.Params = params
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Query handler
+	query := queries.NewListSessionsQuery(
+		sessionID, // SessionID for authenticated operations
+	)
+	// TODO: Apply filters, pagination, sorting from request.Params
+
+	results, total, err := c.listSessionsHandler.Handle(reqCtx, query)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": results,
+		"meta": map[string]interface{}{
+			"total": total,
+		},
+	})
+}
+
+// ============================================================================
+// DeleteSession - DELETE /auth/sessions/{id}
+// ============================================================================
+
+// Request types
+
+type DeleteSessionRequest struct {
+	ID uuid.UUID `json:"id"`
+}
+
+// Response types
+
+type DeleteSessionResponse interface {
+	VisitDeleteSessionResponse(w http.ResponseWriter) error
+}
+
+type DeleteSession200JSONResponse struct {
+}
+
+func (response DeleteSession200JSONResponse) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteSession401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteSession401Response) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeleteSession404Response struct {
+	server.NotFoundResponse
+}
+
+func (response DeleteSession404Response) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// DeleteSession handles the DELETE /auth/sessions/{id} endpoint.
+func (c *AuthController) DeleteSession(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := DeleteSessionRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Path parameter "id"
+	var id uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+	request.ID = id
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteSessionCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	err := c.deleteSessionHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.NoContent(http.StatusNoContent)
+}
+
+// ============================================================================
+// GetSession - GET /auth/sessions/{id}
+// ============================================================================
+
+// Request types
+
+type GetSessionRequest struct {
+	ID uuid.UUID `json:"id"`
+}
+
+// Response types
+
+type GetSessionResponse interface {
+	VisitGetSessionResponse(w http.ResponseWriter) error
+}
+
+type GetSession200JSONResponse struct {
+}
+
+func (response GetSession200JSONResponse) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSession404Response struct {
+	server.NotFoundResponse
+}
+
+func (response GetSession404Response) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// GetSession handles the GET /auth/sessions/{id} endpoint.
+func (c *AuthController) GetSession(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := GetSessionRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Path parameter "id"
+	var id uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+	request.ID = id
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Query handler
+	query := queries.NewGetSessionQuery(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+
+	result, err := c.getSessionHandler.Handle(reqCtx, query)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// UpdateSession - PATCH /auth/sessions/{id}
+// ============================================================================
+
+// Request types
+// UpdateSessionRequestBody defines the request body for UpdateSession
+type UpdateSessionRequestBody struct {
+	OrganizationID uuid.UUID `json:"organizationID"`
+}
+
+type UpdateSessionRequest struct {
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateSessionRequestBody
+}
+
+// Response types
+
+type UpdateSessionResponse interface {
+	VisitUpdateSessionResponse(w http.ResponseWriter) error
+}
+
+type UpdateSession200JSONResponse struct {
+}
+
+func (response UpdateSession200JSONResponse) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateSession401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateSession401Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdateSession404Response struct {
+	server.NotFoundResponse
+}
+
+func (response UpdateSession404Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// UpdateSession handles the PATCH /auth/sessions/{id} endpoint.
+func (c *AuthController) UpdateSession(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := UpdateSessionRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Path parameter "id"
+	var id uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+	request.ID = id
+
+	// Request body
+	request.Body = &UpdateSessionRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewUpdateSessionCommand(
+		sessionID,                   // SessionID for authenticated operations
+		request.ID,                  // id
+		request.Body.OrganizationID, // OrganizationID
+	)
+	result, err := c.updateSessionHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// ListAccounts - GET /auth/accounts
+// ============================================================================
+
+// Request types
+
+type ListAccountsRequest struct {
+}
+
+// Response types
+
+type ListAccountsResponse interface {
+	VisitListAccountsResponse(w http.ResponseWriter) error
+}
+
+type ListAccounts200JSONResponse struct {
+}
+
+func (response ListAccounts200JSONResponse) VisitListAccountsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAccounts401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response ListAccounts401Response) VisitListAccountsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// ListAccounts handles the GET /auth/accounts endpoint.
+func (c *AuthController) ListAccounts(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Query handler
+	query := queries.NewListAccountsQuery(
+		sessionID, // SessionID for authenticated operations
+	)
+	// TODO: Apply filters, pagination, sorting from request.Params
+
+	results, total, err := c.listAccountsHandler.Handle(reqCtx, query)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": results,
+		"meta": map[string]interface{}{
+			"total": total,
+		},
+	})
+}
+
+// ============================================================================
+// GetAccount - GET /auth/accounts/{id}
+// ============================================================================
+
+// Request types
+
+type GetAccountRequest struct {
+	ID uuid.UUID `json:"id"`
+}
+
+// Response types
+
+type GetAccountResponse interface {
+	VisitGetAccountResponse(w http.ResponseWriter) error
+}
+
+type GetAccount200JSONResponse struct {
+}
+
+func (response GetAccount200JSONResponse) VisitGetAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAccount404Response struct {
+	server.NotFoundResponse
+}
+
+func (response GetAccount404Response) VisitGetAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// GetAccount handles the GET /auth/accounts/{id} endpoint.
+func (c *AuthController) GetAccount(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := GetAccountRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Path parameter "id"
+	var id uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+	request.ID = id
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Query handler
+	query := queries.NewGetAccountQuery(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+
+	result, err := c.getAccountHandler.Handle(reqCtx, query)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// UpdateAccount - PATCH /auth/accounts/{id}
+// ============================================================================
+
+// Request types
+// UpdateAccountRequestBody defines the request body for UpdateAccount
+type UpdateAccountRequestBody struct {
+	Provider                  *string `json:"provider,omitempty"`
+	ProviderAccountIdentifier *string `json:"providerAccountIdentifier,omitempty"`
+	Type                      *string `json:"type,omitempty"`
+}
+
+type UpdateAccountRequest struct {
+	ID   uuid.UUID `json:"id"`
+	Body *UpdateAccountRequestBody
+}
+
+// Response types
+
+type UpdateAccountResponse interface {
+	VisitUpdateAccountResponse(w http.ResponseWriter) error
+}
+
+type UpdateAccount200JSONResponse struct {
+}
+
+func (response UpdateAccount200JSONResponse) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAccount404Response struct {
+	server.NotFoundResponse
+}
+
+func (response UpdateAccount404Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// UpdateAccount handles the PATCH /auth/accounts/{id} endpoint.
+func (c *AuthController) UpdateAccount(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := UpdateAccountRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Path parameter "id"
+	var id uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+	request.ID = id
+
+	// Request body
+	request.Body = &UpdateAccountRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewUpdateAccountCommand(
+		sessionID,                              // SessionID for authenticated operations
+		request.ID,                             // id
+		request.Body.Provider,                  // Provider
+		request.Body.ProviderAccountIdentifier, // ProviderAccountIdentifier
+		request.Body.Type,                      // Type
+	)
+	result, err := c.updateAccountHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// DeleteAccount - DELETE /auth/accounts/{id}
+// ============================================================================
+
+// Request types
+
+type DeleteAccountRequest struct {
+	ID uuid.UUID `json:"id"`
+}
+
+// Response types
+
+type DeleteAccountResponse interface {
+	VisitDeleteAccountResponse(w http.ResponseWriter) error
+}
+
+type DeleteAccount200JSONResponse struct {
+}
+
+func (response DeleteAccount200JSONResponse) VisitDeleteAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteAccount404Response struct {
+	server.NotFoundResponse
+}
+
+func (response DeleteAccount404Response) VisitDeleteAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// DeleteAccount handles the DELETE /auth/accounts/{id} endpoint.
+func (c *AuthController) DeleteAccount(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := DeleteAccountRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Path parameter "id"
+	var id uuid.UUID
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+	request.ID = id
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteAccountCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	err := c.deleteAccountHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.NoContent(http.StatusNoContent)
+}
+
+// ============================================================================
+// RequestEmailVerification - POST /auth/request-verification
+// ============================================================================
+
+// Request types
+
+type RequestEmailVerificationRequest struct {
+}
+
+// Response types
+
+type RequestEmailVerificationResponse interface {
+	VisitRequestEmailVerificationResponse(w http.ResponseWriter) error
+}
+
+type RequestEmailVerification201JSONResponse struct {
+}
+
+func (response RequestEmailVerification201JSONResponse) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestEmailVerification400Response struct {
+	server.BadRequestResponse
+}
+
+func (response RequestEmailVerification400Response) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type RequestEmailVerification401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response RequestEmailVerification401Response) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// RequestEmailVerification handles the POST /auth/request-verification endpoint.
+func (c *AuthController) RequestEmailVerification(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewRequestEmailVerificationCommand(
+		sessionID, // SessionID for authenticated operations
+	)
+	result, err := c.requestEmailVerificationHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// ConfirmEmailVerification - POST /auth/verify-email
+// ============================================================================
+
+// Request types
+// ConfirmEmailVerificationRequestBody defines the request body for ConfirmEmailVerification
+type ConfirmEmailVerificationRequestBody struct {
+	Token string `json:"token"`
+}
+
+type ConfirmEmailVerificationRequest struct {
+	Body *ConfirmEmailVerificationRequestBody
+}
+
+// Response types
+
+type ConfirmEmailVerificationResponse interface {
+	VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error
+}
+
+type ConfirmEmailVerification201JSONResponse struct {
+}
+
+func (response ConfirmEmailVerification201JSONResponse) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmEmailVerification401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response ConfirmEmailVerification401Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ConfirmEmailVerification404Response struct {
+	server.NotFoundResponse
+}
+
+func (response ConfirmEmailVerification404Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// ConfirmEmailVerification handles the POST /auth/verify-email endpoint.
+func (c *AuthController) ConfirmEmailVerification(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := ConfirmEmailVerificationRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Request body
+	request.Body = &ConfirmEmailVerificationRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewConfirmEmailVerificationCommand(
+		sessionID,          // SessionID for authenticated operations
+		request.Body.Token, // Token
+	)
+	result, err := c.confirmEmailVerificationHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// RequestPasswordReset - POST /auth/forgot-password
+// ============================================================================
+
+// Request types
+// RequestPasswordResetRequestBody defines the request body for RequestPasswordReset
+type RequestPasswordResetRequestBody struct {
+	Email string `json:"email"`
+}
+
+type RequestPasswordResetRequest struct {
+	Body *RequestPasswordResetRequestBody
+}
+
+// Response types
+
+type RequestPasswordResetResponse interface {
+	VisitRequestPasswordResetResponse(w http.ResponseWriter) error
+}
+
+type RequestPasswordReset201JSONResponse struct {
+}
+
+func (response RequestPasswordReset201JSONResponse) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestPasswordReset400Response struct {
+	server.BadRequestResponse
+}
+
+func (response RequestPasswordReset400Response) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+// Handler method
+
+// RequestPasswordReset handles the POST /auth/forgot-password endpoint.
+func (c *AuthController) RequestPasswordReset(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := RequestPasswordResetRequest{}
+
+	// Request body
+	request.Body = &RequestPasswordResetRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewRequestPasswordResetCommand(
+		request.Body.Email, // Email
+	)
+	result, err := c.requestPasswordResetHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// ConfirmPasswordReset - POST /auth/reset-password
+// ============================================================================
+
+// Request types
+// ConfirmPasswordResetRequestBody defines the request body for ConfirmPasswordReset
+type ConfirmPasswordResetRequestBody struct {
+	NewPassword string `json:"newPassword"`
+	Token       string `json:"token"`
+}
+
+type ConfirmPasswordResetRequest struct {
+	Body *ConfirmPasswordResetRequestBody
+}
+
+// Response types
+
+type ConfirmPasswordResetResponse interface {
+	VisitConfirmPasswordResetResponse(w http.ResponseWriter) error
+}
+
+type ConfirmPasswordReset201JSONResponse struct {
+}
+
+func (response ConfirmPasswordReset201JSONResponse) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmPasswordReset401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response ConfirmPasswordReset401Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ConfirmPasswordReset404Response struct {
+	server.NotFoundResponse
+}
+
+func (response ConfirmPasswordReset404Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// ConfirmPasswordReset handles the POST /auth/reset-password endpoint.
+func (c *AuthController) ConfirmPasswordReset(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := ConfirmPasswordResetRequest{}
+
+	// Request body
+	request.Body = &ConfirmPasswordResetRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewConfirmPasswordResetCommand(
+		request.Body.NewPassword, // NewPassword
+		request.Body.Token,       // Token
+	)
+	result, err := c.confirmPasswordResetHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// RequestEmailChange - POST /auth/change-email
+// ============================================================================
+
+// Request types
+// RequestEmailChangeRequestBody defines the request body for RequestEmailChange
+type RequestEmailChangeRequestBody struct {
+	NewEmail string    `json:"newEmail"`
+	UserID   uuid.UUID `json:"userID"`
+}
+
+type RequestEmailChangeRequest struct {
+	Body *RequestEmailChangeRequestBody
+}
+
+// Response types
+
+type RequestEmailChangeResponse interface {
+	VisitRequestEmailChangeResponse(w http.ResponseWriter) error
+}
+
+type RequestEmailChange201JSONResponse struct {
+}
+
+func (response RequestEmailChange201JSONResponse) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestEmailChange400Response struct {
+	server.BadRequestResponse
+}
+
+func (response RequestEmailChange400Response) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type RequestEmailChange401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response RequestEmailChange401Response) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// RequestEmailChange handles the POST /auth/change-email endpoint.
+func (c *AuthController) RequestEmailChange(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := RequestEmailChangeRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Request body
+	request.Body = &RequestEmailChangeRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewRequestEmailChangeCommand(
+		sessionID,             // SessionID for authenticated operations
+		request.Body.NewEmail, // NewEmail
+		request.Body.UserID,   // UserID
+	)
+	result, err := c.requestEmailChangeHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// ConfirmEmailChange - POST /auth/confirm-email
+// ============================================================================
+
+// Request types
+// ConfirmEmailChangeRequestBody defines the request body for ConfirmEmailChange
+type ConfirmEmailChangeRequestBody struct {
+	NewEmail string    `json:"newEmail"`
+	Token    string    `json:"token"`
+	UserID   uuid.UUID `json:"userID"`
+}
+
+type ConfirmEmailChangeRequest struct {
+	Body *ConfirmEmailChangeRequestBody
+}
+
+// Response types
+
+type ConfirmEmailChangeResponse interface {
+	VisitConfirmEmailChangeResponse(w http.ResponseWriter) error
+}
+
+type ConfirmEmailChange201JSONResponse struct {
+}
+
+func (response ConfirmEmailChange201JSONResponse) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmEmailChange401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response ConfirmEmailChange401Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ConfirmEmailChange404Response struct {
+	server.NotFoundResponse
+}
+
+func (response ConfirmEmailChange404Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+// Handler method
+
+// ConfirmEmailChange handles the POST /auth/confirm-email endpoint.
+func (c *AuthController) ConfirmEmailChange(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := ConfirmEmailChangeRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Request body
+	request.Body = &ConfirmEmailChangeRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewConfirmEmailChangeCommand(
+		sessionID,             // SessionID for authenticated operations
+		request.Body.NewEmail, // NewEmail
+		request.Body.Token,    // Token
+		request.Body.UserID,   // UserID
+	)
+	result, err := c.confirmEmailChangeHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
 }
 
 // ============================================================================
@@ -102,6 +2018,14 @@ func (c *AuthController) OauthAuthorize(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := OauthAuthorizeRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "provider"
 	var provider string
 	if err := runtime.BindStyledParameterWithOptions("simple", "provider", ctx.Param("provider"), &provider, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -125,10 +2049,24 @@ func (c *AuthController) OauthAuthorize(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// TODO: Handle custom operation OauthAuthorize
-	_ = reqCtx // Custom operation not yet implemented
-	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+	// Query handler
+	query := queries.NewOAuthAuthorizeQuery(
+		sessionID,        // SessionID for authenticated operations
+		request.Provider, // provider
+	)
+
+	result, err := c.oauthAuthorizeHandler.Handle(reqCtx, query)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
 }
 
 // ============================================================================
@@ -216,6 +2154,14 @@ func (c *AuthController) OauthCallback(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := OauthCallbackRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "provider"
 	var provider string
 	if err := runtime.BindStyledParameterWithOptions("simple", "provider", ctx.Param("provider"), &provider, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -243,189 +2189,22 @@ func (c *AuthController) OauthCallback(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// TODO: Handle custom operation OauthCallback
-	_ = reqCtx // Custom operation not yet implemented
-	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
-}
+	// Query handler
+	query := queries.NewOAuthCallbackQuery(
+		sessionID,        // SessionID for authenticated operations
+		request.Provider, // provider
+	)
 
-// ============================================================================
-// RequestMagicLink - POST /auth/magic-links/request
-// ============================================================================
-
-// Request types
-// RequestMagicLinkRequestBody defines the request body for RequestMagicLink
-type RequestMagicLinkRequestBody struct {
-	DeliveryMethod *string `json:"deliveryMethod,omitempty"`
-	Identifier     string  `json:"identifier"`
-	RedirectUrl    *string `json:"redirectUrl,omitempty"`
-}
-
-type RequestMagicLinkRequest struct {
-	Body *RequestMagicLinkRequestBody
-}
-
-// Response types
-
-type RequestMagicLinkResponse interface {
-	VisitRequestMagicLinkResponse(w http.ResponseWriter) error
-}
-
-type RequestMagicLink201JSONResponse struct {
-}
-
-func (response RequestMagicLink201JSONResponse) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type RequestMagicLink400Response struct {
-	server.BadRequestResponse
-}
-
-func (response RequestMagicLink400Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(400)
-
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
-}
-
-type RequestMagicLink429Response struct {
-	server.BadRequestResponse
-}
-
-func (response RequestMagicLink429Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
-
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
-}
-
-type RequestMagicLink500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response RequestMagicLink500Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
-}
-
-// Handler method
-
-// RequestMagicLink handles the POST /auth/magic-links/request endpoint.
-func (c *AuthController) RequestMagicLink(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
-	request := RequestMagicLinkRequest{}
-
-	// Request body
-	var body RequestMagicLinkRequestBody
-	if err := ctx.Bind(&body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	result, err := c.oauthCallbackHandler.Handle(reqCtx, query)
+	if err != nil {
+		return err
 	}
-	request.Body = &body
 
-	// Determine which handler to call based on operation
-	// TODO: Handle custom operation RequestMagicLink
-	_ = reqCtx // Custom operation not yet implemented
-	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
-}
-
-// ============================================================================
-// VerifyMagicLink - POST /auth/magic-links/verify
-// ============================================================================
-
-// Request types
-// VerifyMagicLinkRequestBody defines the request body for VerifyMagicLink
-type VerifyMagicLinkRequestBody struct {
-	Code       *string `json:"code,omitempty"`
-	Identifier *string `json:"identifier,omitempty"`
-	Token      *string `json:"token,omitempty"`
-}
-
-type VerifyMagicLinkRequest struct {
-	Body *VerifyMagicLinkRequestBody
-}
-
-// Response types
-
-type VerifyMagicLinkResponse interface {
-	VisitVerifyMagicLinkResponse(w http.ResponseWriter) error
-}
-
-type VerifyMagicLink201JSONResponse struct {
-}
-
-func (response VerifyMagicLink201JSONResponse) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type VerifyMagicLink400Response struct {
-	server.BadRequestResponse
-}
-
-func (response VerifyMagicLink400Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(400)
-
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
-}
-
-type VerifyMagicLink401Response struct {
-	server.UnauthorizedResponse
-}
-
-func (response VerifyMagicLink401Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(401)
-
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
-}
-
-type VerifyMagicLink404Response struct {
-	server.NotFoundResponse
-}
-
-func (response VerifyMagicLink404Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type VerifyMagicLink500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response VerifyMagicLink500Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
-}
-
-// Handler method
-
-// VerifyMagicLink handles the POST /auth/magic-links/verify endpoint.
-func (c *AuthController) VerifyMagicLink(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
-	request := VerifyMagicLinkRequest{}
-
-	// Request body
-	var body VerifyMagicLinkRequestBody
-	if err := ctx.Bind(&body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-	request.Body = &body
-
-	// Determine which handler to call based on operation
-	// TODO: Handle custom operation VerifyMagicLink
-	_ = reqCtx // Custom operation not yet implemented
-	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
 }

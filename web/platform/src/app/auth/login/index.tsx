@@ -1,5 +1,5 @@
-import type { CreateSessionBody } from "@archesai/client";
-import { useCreateSession } from "@archesai/client";
+import type { LoginBody } from "@archesai/client";
+import { useLogin } from "@archesai/client";
 import type { FormFieldConfig } from "@archesai/ui";
 import { Button, GenericForm, Input, toast } from "@archesai/ui";
 import { useQueryClient } from "@tanstack/react-query";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/auth/login/")({
 function LoginPage(): JSX.Element {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { mutateAsync: createSession } = useCreateSession();
+  const { mutateAsync: login } = useLogin();
   const [authMethod, setAuthMethod] = useState<"password" | "magic-link">(
     "password",
   );
@@ -73,7 +73,7 @@ function LoginPage(): JSX.Element {
     window.location.href = authUrl;
   };
 
-  const formFields: FormFieldConfig<CreateSessionBody>[] =
+  const formFields: FormFieldConfig<LoginBody>[] =
     authMethod === "password"
       ? [
           {
@@ -147,7 +147,7 @@ function LoginPage(): JSX.Element {
           </Button>
         </div>
       ) : (
-        <GenericForm<CreateSessionBody, never>
+        <GenericForm<LoginBody, never>
           description={
             authMethod === "password"
               ? "Enter your email and password to login"
@@ -163,7 +163,7 @@ function LoginPage(): JSX.Element {
             }
 
             try {
-              await createSession({
+              await login({
                 data: {
                   email: data.email,
                   password: data.password || "",

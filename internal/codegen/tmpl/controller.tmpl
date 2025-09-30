@@ -48,58 +48,35 @@ import (
 
 // {{ .Domain }}Controller handles HTTP requests for {{ .Domain | lower }} endpoints.
 type {{ .Domain }}Controller struct {
-{{- if .HasCreate }}
+{{- if .Commands }}
 	// Command handlers
-	createHandler *commands.Create{{ .DomainSingular }}CommandHandler
+{{- range .Commands }}
+	{{ camelCase . }}Handler *commands.{{ pascalCase . }}CommandHandler
 {{- end }}
-{{- if .HasUpdate }}
-	updateHandler *commands.Update{{ .DomainSingular }}CommandHandler
 {{- end }}
-{{- if .HasDelete }}
-	deleteHandler *commands.Delete{{ .DomainSingular }}CommandHandler
-{{- end }}
-{{- if .HasGet }}
+{{- if .Queries }}
 	// Query handlers
-	getHandler    *queries.Get{{ .DomainSingular }}QueryHandler
+{{- range .Queries }}
+	{{ camelCase . }}Handler *queries.{{ pascalCase . }}QueryHandler
 {{- end }}
-{{- if .HasList }}
-	listHandler   *queries.List{{ .Domain }}QueryHandler
 {{- end }}
 }
 
 // New{{ .Domain }}Controller creates a new {{ .Domain | lower }} controller with injected handlers.
 func New{{ .Domain }}Controller(
-{{- if .HasCreate }}
-	createHandler *commands.Create{{ .DomainSingular }}CommandHandler,
+{{- range .Commands }}
+	{{ camelCase . }}Handler *commands.{{ pascalCase . }}CommandHandler,
 {{- end }}
-{{- if .HasUpdate }}
-	updateHandler *commands.Update{{ .DomainSingular }}CommandHandler,
-{{- end }}
-{{- if .HasDelete }}
-	deleteHandler *commands.Delete{{ .DomainSingular }}CommandHandler,
-{{- end }}
-{{- if .HasGet }}
-	getHandler *queries.Get{{ .DomainSingular }}QueryHandler,
-{{- end }}
-{{- if .HasList }}
-	listHandler *queries.List{{ .Domain }}QueryHandler,
+{{- range .Queries }}
+	{{ camelCase . }}Handler *queries.{{ pascalCase . }}QueryHandler,
 {{- end }}
 ) *{{ .Domain }}Controller {
 	return &{{ .Domain }}Controller{
-{{- if .HasCreate }}
-		createHandler: createHandler,
+{{- range .Commands }}
+		{{ camelCase . }}Handler: {{ camelCase . }}Handler,
 {{- end }}
-{{- if .HasUpdate }}
-		updateHandler: updateHandler,
-{{- end }}
-{{- if .HasDelete }}
-		deleteHandler: deleteHandler,
-{{- end }}
-{{- if .HasGet }}
-		getHandler:    getHandler,
-{{- end }}
-{{- if .HasList }}
-		listHandler:   listHandler,
+{{- range .Queries }}
+		{{ camelCase . }}Handler: {{ camelCase . }}Handler,
 {{- end }}
 	}
 }
@@ -315,6 +292,16 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	{{- if or .PathParams .QueryParams .HasRequestBody }}
 	request := {{ .GoName }}Request{}
 	{{- end }}
+	{{- if .RequiresAuth }}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+	{{- end }}
 
 	{{- if .PathParams }}
 	{{- range .PathParams }}
@@ -350,11 +337,10 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	{{- if .HasRequestBody }}
 
 	// Request body
-	var body {{ .GoName }}RequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &{{ .GoName }}RequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
 	{{- end }}
 
 	{{- if .HasBearerAuth }}
@@ -367,99 +353,65 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	{{- end }}
 
 	// Determine which handler to call based on operation
-	{{- if eq .GoName (printf "Create%s" $.DomainSingular) }}
-	// Create handler
-	{{- if .HasRequestBody }}
-	{{- if .RequestBodySchema }}
+	{{- if ne .Method "GET" }}
+	// Command handler
 
-	// Map request body fields to command parameters
-	cmd := commands.NewCreate{{ $.DomainSingular }}Command(
+	// Map request to command parameters
+	cmd := commands.New{{ pascalCase .GoName }}Command(
+		{{- if .RequiresAuth }}
+		sessionID, // SessionID for authenticated operations
+		{{- end }}
+		{{- range .PathParams }}
+		request.{{ pascalCase .Name }}, // {{ .Name }}
+		{{- end }}
+		{{- if .HasRequestBody }}
+		{{- if .RequestBodySchema }}
 		{{- range $i, $field := .RequestBodySchema.Fields }}
 		request.Body.{{ $field.FieldName }}, // {{ $field.Name }}
 		{{- end }}
+		{{- end }}
+		{{- end }}
 	)
-	{{- else }}
-	// No request body schema defined, using default parameters
-	// TODO: Get organization ID from auth context if needed
-	orgID := uuid.New()
 
-	cmd := commands.NewCreate{{ $.DomainSingular }}Command(
-		orgID,
-		"", // name
-		"", // description
-		nil, // metadata
-	)
-	{{- end }}
-	{{- else }}
-	// No request body, using default parameters
-	// TODO: Get organization ID from auth context if needed
-	orgID := uuid.New()
-
-	cmd := commands.NewCreate{{ $.DomainSingular }}Command(
-		orgID,
-		"", // name
-		"", // description
-		nil, // metadata
-	)
-	{{- end }}
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
+	{{- if and (eq .Method "DELETE") (not .ResponseType) }}
+	err := c.{{ camelCase .GoName }}Handler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
+	return ctx.NoContent(http.StatusNoContent)
+	{{- else }}
+	result, err := c.{{ camelCase .GoName }}Handler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	{{- if eq .Method "POST" }}
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
-	{{- else if eq .GoName (printf "Update%s" $.DomainSingular) }}
-	// Update handler
-
-	// Map path parameters and request body fields to command parameters
-	cmd := commands.NewUpdate{{ $.DomainSingular }}Command(
-		request.ID, // id (entity ID)
-		{{- if .HasRequestBody }}
-		{{- if .RequestBodySchema }}
-		{{- range .RequestBodySchema.Fields }}
-		request.Body.{{ .FieldName }}, // {{ .Name }}
-		{{- end }}
-		{{- else }}
-		nil, // name
-		nil, // description
-		nil, // metadata
-		{{- end }}
-		{{- else }}
-		nil, // name
-		nil, // description
-		nil, // metadata
-		{{- end }}
-	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
-	if err != nil {
-		return err
-	}
-
+	{{- else if eq .Method "DELETE" }}
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})
-	{{- else if eq .GoName (printf "Delete%s" $.DomainSingular) }}
-	// Create delete command from request
-	cmd := commands.NewDelete{{ $.DomainSingular }}Command(
-		request.ID,
+	{{- else }}
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
+	{{- end }}
+	{{- end }}
+	{{- else }}
+	// Query handler
+	query := queries.New{{ pascalCase .GoName }}Query(
+		{{- if .RequiresAuth }}
+		sessionID, // SessionID for authenticated operations
+		{{- end }}
+		{{- range .PathParams }}
+		request.{{ pascalCase .Name }}, // {{ .Name }}
+		{{- end }}
 	)
-
-	err := c.deleteHandler.Handle(reqCtx, cmd)
-	if err != nil {
-		return err
-	}
-
-	return ctx.NoContent(http.StatusNoContent)
-	{{- else if eq .GoName (printf "List%s" $.Domain) }}
-	// Create list query from request
-	query := queries.NewList{{ $.Domain }}Query()
+	{{- if hasPrefix .GoName "List" }}
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.{{ camelCase .GoName }}Handler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -470,17 +422,9 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 			"total": total,
 		},
 	})
-	{{- else if eq .GoName (printf "Get%s" $.DomainSingular) }}
-	// Create get query from request
-	{{- if .PathParams }}
-	query := queries.NewGet{{ $.DomainSingular }}Query(
-		request.ID,
-	)
 	{{- else }}
-	query := queries.NewGet{{ $.DomainSingular }}Query()
-	{{- end }}
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.{{ camelCase .GoName }}Handler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -488,10 +432,7 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})
-	{{- else }}
-	// TODO: Handle custom operation {{ .GoName }}
-	_ = reqCtx // Custom operation not yet implemented
-	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+	{{- end }}
 	{{- end }}
 }
 {{- end }}

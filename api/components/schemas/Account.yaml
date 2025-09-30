@@ -5,25 +5,19 @@ x-codegen:
   schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
-    indices: [userID, accountID]
+    indices: [userID, accountIdentifier]
     additional_methods:
-      - name: GetByProviderID
-        params: [provider, providerAccountID]
+      - name: GetAccountByProvider
+        params: [provider, accountIdentifier]
         returns: single
-      - name: ListByUserID
+      - name: ListAccountsByUserID
         params: [userID]
         returns: multiple
-  commands:
-    operations: [create, update, delete]
-  queries:
-    operations: [get, list]
-  controller:
-    operations: [create, read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object
     properties:
-      accountID:
+      accountIdentifier:
         description: The unique identifier for the account from the provider
         type: string
         example: google_123456789
@@ -34,7 +28,7 @@ allOf:
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
-      providerID:
+      provider:
         description: The authentication provider identifier
         type: string
         enum:
@@ -74,7 +68,7 @@ allOf:
         type: string
         example: 'openid profile email'
     required:
-      - accountID
+      - accountIdentifier
       - userID
-      - providerID
+      - provider
 unevaluatedProperties: false

@@ -184,7 +184,7 @@ generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 .PHONY: generate-codegen-types
 generate-codegen-types: ## Generate types for codegen configuration
 	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
-	@go run cmd/codegen/main.go jsonschema api/components/schemas/xcodegen/CodegenExtension.yaml --output internal/parsers --verbose
+	@go run cmd/codegen/main.go jsonschema api/components/schemas/xcodegen/CodegenExtension.yaml --output internal/parsers
 	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
 
 .PHONY: generate-codegen

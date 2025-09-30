@@ -20,8 +20,8 @@ type InvitationRepository interface {
 	// Additional operations
 	// ListByOrganization retrieves multiple invitations by organizationID
 	ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Invitation, error)
-	// GetByEmail retrieves a single invitation by email and organizationID
-	GetByEmail(ctx context.Context, email string, organizationID string) (*entities.Invitation, error)
+	// GetInvitationByEmail retrieves a single invitation by email and organizationID
+	GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*entities.Invitation, error)
 	// ListByInviter retrieves multiple invitations by inviterID
 	ListByInviter(ctx context.Context, inviterID string) ([]*entities.Invitation, error)
 }

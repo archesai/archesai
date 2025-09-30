@@ -10,46 +10,46 @@ import (
 	"github.com/google/uuid"
 )
 
-// AccountProviderID represents the enumeration of valid values for ProviderID
-type AccountProviderID string
+// AccountProvider represents the enumeration of valid values for Provider
+type AccountProvider string
 
-// Valid ProviderID values
+// Valid Provider values
 const (
-	AccountProviderIDLocal     AccountProviderID = "local"
-	AccountProviderIDGoogle    AccountProviderID = "google"
-	AccountProviderIDGithub    AccountProviderID = "github"
-	AccountProviderIDMicrosoft AccountProviderID = "microsoft"
-	AccountProviderIDApple     AccountProviderID = "apple"
+	AccountProviderLocal     AccountProvider = "local"
+	AccountProviderGoogle    AccountProvider = "google"
+	AccountProviderGithub    AccountProvider = "github"
+	AccountProviderMicrosoft AccountProvider = "microsoft"
+	AccountProviderApple     AccountProvider = "apple"
 )
 
 // String returns the string representation
-func (e AccountProviderID) String() string {
+func (e AccountProvider) String() string {
 	return string(e)
 }
 
 // IsValid checks if the value is valid
-func (e AccountProviderID) IsValid() bool {
+func (e AccountProvider) IsValid() bool {
 	switch e {
-	case AccountProviderIDLocal:
+	case AccountProviderLocal:
 		return true
-	case AccountProviderIDGoogle:
+	case AccountProviderGoogle:
 		return true
-	case AccountProviderIDGithub:
+	case AccountProviderGithub:
 		return true
-	case AccountProviderIDMicrosoft:
+	case AccountProviderMicrosoft:
 		return true
-	case AccountProviderIDApple:
+	case AccountProviderApple:
 		return true
 	default:
 		return false
 	}
 }
 
-// ParseAccountProviderID parses a string into the enum type
-func ParseAccountProviderID(s string) (AccountProviderID, error) {
-	v := AccountProviderID(s)
+// ParseAccountProvider parses a string into the enum type
+func ParseAccountProvider(s string) (AccountProvider, error) {
+	v := AccountProvider(s)
 	if !v.IsValid() {
-		return "", fmt.Errorf("invalid ProviderID: %s", s)
+		return "", fmt.Errorf("invalid Provider: %s", s)
 	}
 	return v, nil
 }
@@ -58,11 +58,11 @@ func ParseAccountProviderID(s string) (AccountProviderID, error) {
 type Account struct {
 	AccessToken           *string              `json:"accessToken,omitempty" yaml:"accessToken,omitempty"`                     // The OAuth access token
 	AccessTokenExpiresAt  *time.Time           `json:"accessTokenExpiresAt,omitempty" yaml:"accessTokenExpiresAt,omitempty"`   // The access token expiration timestamp
-	AccountID             string               `json:"accountID" yaml:"accountID"`                                             // The unique identifier for the account from the provider
+	AccountIdentifier     string               `json:"accountIdentifier" yaml:"accountIdentifier"`                             // The unique identifier for the account from the provider
 	CreatedAt             time.Time            `json:"createdAt" yaml:"createdAt"`                                             // The date and time when the resource was created
 	ID                    uuid.UUID            `json:"id" yaml:"id"`                                                           // Unique identifier for the resource
 	IdToken               *string              `json:"idToken,omitempty" yaml:"idToken,omitempty"`                             // The OpenID Connect ID token
-	ProviderID            AccountProviderID    `json:"providerID" yaml:"providerID"`                                           // The authentication provider identifier
+	Provider              AccountProvider      `json:"provider" yaml:"provider"`                                               // The authentication provider identifier
 	RefreshToken          *string              `json:"refreshToken,omitempty" yaml:"refreshToken,omitempty"`                   // The OAuth refresh token
 	RefreshTokenExpiresAt *time.Time           `json:"refreshTokenExpiresAt,omitempty" yaml:"refreshTokenExpiresAt,omitempty"` // The refresh token expiration timestamp
 	Scope                 *string              `json:"scope,omitempty" yaml:"scope,omitempty"`                                 // The OAuth scope granted
@@ -74,27 +74,27 @@ type Account struct {
 // NewAccount creates a new Account entity with validation.
 // All required fields must be provided and valid.
 func NewAccount(
-	accountID string,
-	providerID AccountProviderID,
+	accountIdentifier string,
+	provider AccountProvider,
 	userID uuid.UUID,
 ) (*Account, error) {
 	// Validate required fields
-	if accountID == "" {
-		return nil, fmt.Errorf("AccountID cannot be empty")
+	if accountIdentifier == "" {
+		return nil, fmt.Errorf("AccountIdentifier cannot be empty")
 	}
-	if !providerID.IsValid() {
-		return nil, fmt.Errorf("invalid ProviderID: %s", providerID)
+	if !provider.IsValid() {
+		return nil, fmt.Errorf("invalid Provider: %s", provider)
 	}
 
 	now := time.Now().UTC()
 	account := &Account{
-		AccountID:  accountID,
-		CreatedAt:  now,
-		ID:         uuid.New(),
-		ProviderID: providerID,
-		UpdatedAt:  now,
-		UserID:     userID,
-		events:     []events.DomainEvent{},
+		AccountIdentifier: accountIdentifier,
+		CreatedAt:         now,
+		ID:                uuid.New(),
+		Provider:          provider,
+		UpdatedAt:         now,
+		UserID:            userID,
+		events:            []events.DomainEvent{},
 	}
 	account.addEvent(events.NewAccountCreatedEvent(account.ID))
 
@@ -111,9 +111,9 @@ func (e *Account) GetAccessTokenExpiresAt() *time.Time {
 	return e.AccessTokenExpiresAt
 }
 
-// GetAccountID returns the AccountID
-func (e *Account) GetAccountID() string {
-	return e.AccountID
+// GetAccountIdentifier returns the AccountIdentifier
+func (e *Account) GetAccountIdentifier() string {
+	return e.AccountIdentifier
 }
 
 // GetCreatedAt returns the CreatedAt
@@ -131,9 +131,9 @@ func (e *Account) GetIdToken() *string {
 	return e.IdToken
 }
 
-// GetProviderID returns the ProviderID
-func (e *Account) GetProviderID() string {
-	return string(e.ProviderID)
+// GetProvider returns the Provider
+func (e *Account) GetProvider() string {
+	return string(e.Provider)
 }
 
 // GetRefreshToken returns the RefreshToken
@@ -180,11 +180,11 @@ func (e *Account) addEvent(event events.DomainEvent) {
 func ReconstructAccount(
 	accessToken *string,
 	accessTokenExpiresAt *time.Time,
-	accountID string,
+	accountIdentifier string,
 	createdAt time.Time,
 	id uuid.UUID,
 	idToken *string,
-	providerID string,
+	provider string,
 	refreshToken *string,
 	refreshTokenExpiresAt *time.Time,
 	scope *string,
@@ -194,11 +194,11 @@ func ReconstructAccount(
 	return &Account{
 		AccessToken:           accessToken,
 		AccessTokenExpiresAt:  accessTokenExpiresAt,
-		AccountID:             accountID,
+		AccountIdentifier:     accountIdentifier,
 		CreatedAt:             createdAt,
 		ID:                    id,
 		IdToken:               idToken,
-		ProviderID:            AccountProviderID(providerID),
+		Provider:              AccountProvider(provider),
 		RefreshToken:          refreshToken,
 		RefreshTokenExpiresAt: refreshTokenExpiresAt,
 		Scope:                 scope,

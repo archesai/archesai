@@ -13,35 +13,49 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/users"
 	queries "github.com/archesai/archesai/internal/application/queries/users"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // UsersController handles HTTP requests for users endpoints.
 type UsersController struct {
-	updateHandler *commands.UpdateUserCommandHandler
-	deleteHandler *commands.DeleteUserCommandHandler
+	// Command handlers
+	deleteCurrentUserHandler *commands.DeleteCurrentUserCommandHandler
+	deleteUserHandler        *commands.DeleteUserCommandHandler
+	updateCurrentUserHandler *commands.UpdateCurrentUserCommandHandler
+	updateUserHandler        *commands.UpdateUserCommandHandler
 	// Query handlers
-	getHandler  *queries.GetUserQueryHandler
-	listHandler *queries.ListUsersQueryHandler
+	getCurrentUserHandler *queries.GetCurrentUserQueryHandler
+	getUserHandler        *queries.GetUserQueryHandler
+	listUsersHandler      *queries.ListUsersQueryHandler
 }
 
 // NewUsersController creates a new users controller with injected handlers.
 func NewUsersController(
-	updateHandler *commands.UpdateUserCommandHandler,
-	deleteHandler *commands.DeleteUserCommandHandler,
-	getHandler *queries.GetUserQueryHandler,
-	listHandler *queries.ListUsersQueryHandler,
+	deleteCurrentUserHandler *commands.DeleteCurrentUserCommandHandler,
+	deleteUserHandler *commands.DeleteUserCommandHandler,
+	updateCurrentUserHandler *commands.UpdateCurrentUserCommandHandler,
+	updateUserHandler *commands.UpdateUserCommandHandler,
+	getCurrentUserHandler *queries.GetCurrentUserQueryHandler,
+	getUserHandler *queries.GetUserQueryHandler,
+	listUsersHandler *queries.ListUsersQueryHandler,
 ) *UsersController {
 	return &UsersController{
-		updateHandler: updateHandler,
-		deleteHandler: deleteHandler,
-		getHandler:    getHandler,
-		listHandler:   listHandler,
+		deleteCurrentUserHandler: deleteCurrentUserHandler,
+		deleteUserHandler:        deleteUserHandler,
+		updateCurrentUserHandler: updateCurrentUserHandler,
+		updateUserHandler:        updateUserHandler,
+		getCurrentUserHandler:    getCurrentUserHandler,
+		getUserHandler:           getUserHandler,
+		listUsersHandler:         listUsersHandler,
 	}
 }
 
 // RegisterUsersRoutes registers all HTTP routes for the users domain.
 func RegisterUsersRoutes(router server.EchoRouter, controller *UsersController) {
 	router.GET("/users", controller.ListUsers)
+	router.GET("/users/me", controller.GetCurrentUser)
+	router.PATCH("/users/me", controller.UpdateCurrentUser)
+	router.DELETE("/users/me", controller.DeleteCurrentUser)
 	router.DELETE("/users/:id", controller.DeleteUser)
 	router.GET("/users/:id", controller.GetUser)
 	router.PATCH("/users/:id", controller.UpdateUser)
@@ -108,6 +122,14 @@ func (c *UsersController) ListUsers(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListUsersRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Query parameters
 	var params ListUsersParams
 	// Optional query parameter "filter"
@@ -124,12 +146,17 @@ func (c *UsersController) ListUsers(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create list query from request
-	query := queries.NewListUsersQuery()
+	// Query handler
+	query := queries.NewListUsersQuery(
+		sessionID, // SessionID for authenticated operations
+	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.listUsersHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -140,6 +167,261 @@ func (c *UsersController) ListUsers(ctx echo.Context) error {
 			"total": total,
 		},
 	})
+}
+
+// ============================================================================
+// GetCurrentUser - GET /users/me
+// ============================================================================
+
+// Request types
+
+type GetCurrentUserRequest struct {
+}
+
+// Response types
+
+type GetCurrentUserResponse interface {
+	VisitGetCurrentUserResponse(w http.ResponseWriter) error
+}
+
+type GetCurrentUser200JSONResponse struct {
+}
+
+func (response GetCurrentUser200JSONResponse) VisitGetCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetCurrentUser401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetCurrentUser401Response) VisitGetCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// GetCurrentUser handles the GET /users/me endpoint.
+func (c *UsersController) GetCurrentUser(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Query handler
+	query := queries.NewGetCurrentUserQuery(
+		sessionID, // SessionID for authenticated operations
+	)
+
+	result, err := c.getCurrentUserHandler.Handle(reqCtx, query)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// UpdateCurrentUser - PATCH /users/me
+// ============================================================================
+
+// Request types
+// UpdateCurrentUserRequestBody defines the request body for UpdateCurrentUser
+type UpdateCurrentUserRequestBody struct {
+	Image *string `json:"image,omitempty"`
+	Name  *string `json:"name,omitempty"`
+}
+
+type UpdateCurrentUserRequest struct {
+	Body *UpdateCurrentUserRequestBody
+}
+
+// Response types
+
+type UpdateCurrentUserResponse interface {
+	VisitUpdateCurrentUserResponse(w http.ResponseWriter) error
+}
+
+type UpdateCurrentUser200JSONResponse struct {
+}
+
+func (response UpdateCurrentUser200JSONResponse) VisitUpdateCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateCurrentUser400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateCurrentUser400Response) VisitUpdateCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdateCurrentUser401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateCurrentUser401Response) VisitUpdateCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// UpdateCurrentUser handles the PATCH /users/me endpoint.
+func (c *UsersController) UpdateCurrentUser(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := UpdateCurrentUserRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Request body
+	request.Body = &UpdateCurrentUserRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewUpdateCurrentUserCommand(
+		sessionID,          // SessionID for authenticated operations
+		request.Body.Image, // Image
+		request.Body.Name,  // Name
+	)
+	result, err := c.updateCurrentUserHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
+}
+
+// ============================================================================
+// DeleteCurrentUser - DELETE /users/me
+// ============================================================================
+
+// Request types
+// DeleteCurrentUserRequestBody defines the request body for DeleteCurrentUser
+type DeleteCurrentUserRequestBody struct {
+	Confirmation string `json:"confirmation"`
+}
+
+type DeleteCurrentUserRequest struct {
+	Body *DeleteCurrentUserRequestBody
+}
+
+// Response types
+
+type DeleteCurrentUserResponse interface {
+	VisitDeleteCurrentUserResponse(w http.ResponseWriter) error
+}
+
+type DeleteCurrentUser200JSONResponse struct {
+}
+
+func (response DeleteCurrentUser200JSONResponse) VisitDeleteCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteCurrentUser400Response struct {
+	server.BadRequestResponse
+}
+
+func (response DeleteCurrentUser400Response) VisitDeleteCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type DeleteCurrentUser401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteCurrentUser401Response) VisitDeleteCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+// Handler method
+
+// DeleteCurrentUser handles the DELETE /users/me endpoint.
+func (c *UsersController) DeleteCurrentUser(ctx echo.Context) error {
+	reqCtx := ctx.Request().Context()
+	request := DeleteCurrentUserRequest{}
+
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
+	// Request body
+	request.Body = &DeleteCurrentUserRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteCurrentUserCommand(
+		sessionID,                 // SessionID for authenticated operations
+		request.Body.Confirmation, // Confirmation
+	)
+	err := c.deleteCurrentUserHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 // ============================================================================
@@ -186,6 +468,14 @@ func (c *UsersController) DeleteUser(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteUserRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -193,17 +483,21 @@ func (c *UsersController) DeleteUser(ctx echo.Context) error {
 	}
 	request.ID = id
 
-	// Determine which handler to call based on operation
-	// Create delete command from request
-	cmd := commands.NewDeleteUserCommand(
-		request.ID,
-	)
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
-	err := c.deleteHandler.Handle(reqCtx, cmd)
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteUserCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	err := c.deleteUserHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.NoContent(http.StatusNoContent)
 }
 
@@ -251,6 +545,14 @@ func (c *UsersController) GetUser(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetUserRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -258,13 +560,17 @@ func (c *UsersController) GetUser(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetUserQuery(
-		request.ID,
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
 	)
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getUserHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -324,6 +630,14 @@ func (c *UsersController) UpdateUser(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateUserRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -332,27 +646,28 @@ func (c *UsersController) UpdateUser(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body UpdateUserRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &UpdateUserRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Update handler
+	// Command handler
 
-	// Map path parameters and request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewUpdateUserCommand(
-		request.ID,         // id (entity ID)
+		sessionID,          // SessionID for authenticated operations
+		request.ID,         // id
 		request.Body.Email, // Email
 		request.Body.Image, // Image
 	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
+	result, err := c.updateUserHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})

@@ -104,8 +104,8 @@ var (
 	// ErrAccountInactive indicates that the account is inactive.
 	ErrAccountInactive = errors.New("account is inactive")
 
-	// ErrInvalidAccountID indicates that the account ID is invalid.
-	ErrInvalidAccountID = errors.New("invalid account ID")
+	// ErrInvalidAccountIdentifier indicates that the account ID is invalid.
+	ErrInvalidAccountIdentifier = errors.New("invalid account ID")
 )
 
 // ValidationError represents a validation failure
@@ -170,6 +170,10 @@ var (
 	// Pipeline errors
 	ErrPipelineNotFound = errors.New("pipeline not found")
 	ErrPipelineExists   = errors.New("pipeline already exists")
+
+	// PipelineStep errors
+	ErrPipelineStepNotFound = errors.New("pipeline step not found")
+	ErrPipelineStepExists   = errors.New("pipeline step already exists")
 
 	// Run errors
 	ErrRunNotFound = errors.New("run not found")

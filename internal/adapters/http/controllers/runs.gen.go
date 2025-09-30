@@ -13,33 +13,34 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/runs"
 	queries "github.com/archesai/archesai/internal/application/queries/runs"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // RunsController handles HTTP requests for runs endpoints.
 type RunsController struct {
 	// Command handlers
-	createHandler *commands.CreateRunCommandHandler
-	updateHandler *commands.UpdateRunCommandHandler
-	deleteHandler *commands.DeleteRunCommandHandler
+	createRunHandler *commands.CreateRunCommandHandler
+	deleteRunHandler *commands.DeleteRunCommandHandler
+	updateRunHandler *commands.UpdateRunCommandHandler
 	// Query handlers
-	getHandler  *queries.GetRunQueryHandler
-	listHandler *queries.ListRunsQueryHandler
+	getRunHandler   *queries.GetRunQueryHandler
+	listRunsHandler *queries.ListRunsQueryHandler
 }
 
 // NewRunsController creates a new runs controller with injected handlers.
 func NewRunsController(
-	createHandler *commands.CreateRunCommandHandler,
-	updateHandler *commands.UpdateRunCommandHandler,
-	deleteHandler *commands.DeleteRunCommandHandler,
-	getHandler *queries.GetRunQueryHandler,
-	listHandler *queries.ListRunsQueryHandler,
+	createRunHandler *commands.CreateRunCommandHandler,
+	deleteRunHandler *commands.DeleteRunCommandHandler,
+	updateRunHandler *commands.UpdateRunCommandHandler,
+	getRunHandler *queries.GetRunQueryHandler,
+	listRunsHandler *queries.ListRunsQueryHandler,
 ) *RunsController {
 	return &RunsController{
-		createHandler: createHandler,
-		updateHandler: updateHandler,
-		deleteHandler: deleteHandler,
-		getHandler:    getHandler,
-		listHandler:   listHandler,
+		createRunHandler: createRunHandler,
+		deleteRunHandler: deleteRunHandler,
+		updateRunHandler: updateRunHandler,
+		getRunHandler:    getRunHandler,
+		listRunsHandler:  listRunsHandler,
 	}
 }
 
@@ -111,26 +112,35 @@ func (c *RunsController) CreateRun(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreateRunRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Request body
-	var body CreateRunRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &CreateRunRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Create handler
+	// Command handler
 
-	// Map request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewCreateRunCommand(
+		sessionID,               // SessionID for authenticated operations
 		request.Body.PipelineID, // PipelineID
 	)
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
+	result, err := c.createRunHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
@@ -197,6 +207,14 @@ func (c *RunsController) ListRuns(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListRunsRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Query parameters
 	var params ListRunsParams
 	// Optional query parameter "filter"
@@ -213,12 +231,17 @@ func (c *RunsController) ListRuns(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create list query from request
-	query := queries.NewListRunsQuery()
+	// Query handler
+	query := queries.NewListRunsQuery(
+		sessionID, // SessionID for authenticated operations
+	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.listRunsHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -275,6 +298,14 @@ func (c *RunsController) DeleteRun(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteRunRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -282,17 +313,21 @@ func (c *RunsController) DeleteRun(ctx echo.Context) error {
 	}
 	request.ID = id
 
-	// Determine which handler to call based on operation
-	// Create delete command from request
-	cmd := commands.NewDeleteRunCommand(
-		request.ID,
-	)
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
-	err := c.deleteHandler.Handle(reqCtx, cmd)
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeleteRunCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	err := c.deleteRunHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.NoContent(http.StatusNoContent)
 }
 
@@ -340,6 +375,14 @@ func (c *RunsController) GetRun(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetRunRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -347,13 +390,17 @@ func (c *RunsController) GetRun(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetRunQuery(
-		request.ID,
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
 	)
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getRunHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -412,6 +459,14 @@ func (c *RunsController) UpdateRun(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateRunRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -420,26 +475,27 @@ func (c *RunsController) UpdateRun(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body UpdateRunRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &UpdateRunRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Update handler
+	// Command handler
 
-	// Map path parameters and request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewUpdateRunCommand(
-		request.ID,              // id (entity ID)
+		sessionID,               // SessionID for authenticated operations
+		request.ID,              // id
 		request.Body.PipelineID, // PipelineID
 	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
+	result, err := c.updateRunHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})

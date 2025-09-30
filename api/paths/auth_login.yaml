@@ -1,0 +1,52 @@
+post:
+  operationId: login
+  summary: Login
+  tags:
+    - Auth
+  description: Authenticate user and create a session
+  security: []
+  x-codegen-custom-handler: true
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              description: The email address associated with the account
+              type: string
+              format: email
+              pattern: >-
+                ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+              example: user@example.com
+              minLength: 1
+            password:
+              description: The password for the account
+              type: string
+              minLength: 1
+              example: secure-password-123
+            rememberMe:
+              description: Whether to create a long-lived session
+              type: boolean
+              default: false
+              example: true
+          required:
+            - email
+            - password
+    required: true
+  responses:
+    '201':
+      description: Login successful
+      headers:
+        Set-Cookie:
+          description: Session cookies for authentication
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Session.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

@@ -37,7 +37,7 @@ type CreateOrganizationParams struct {
 	Plan             string
 	Credits          int32
 	Logo             *string
-	StripeCustomerID *string
+	StripeCustomerID string
 }
 
 func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganizationParams) (Organization, error) {
@@ -147,7 +147,7 @@ LIMIT
   1
 `
 
-func (q *Queries) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerID *string) (Organization, error) {
+func (q *Queries) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerID string) (Organization, error) {
 	row := q.db.QueryRow(ctx, getOrganizationByStripeCustomerID, stripeCustomerID)
 	var i Organization
 	err := row.Scan(

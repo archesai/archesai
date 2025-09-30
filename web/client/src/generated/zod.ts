@@ -10,287 +10,140 @@ import {
 } from 'zod';
 
 /**
- * List accounts
- * @summary List accounts
+ * Authenticate user and create a session
+ * @summary Login
  */
-export const listAccountsQueryPageLimitDefault = 10;
-export const listAccountsQueryPageLimitMax = 100;
-export const listAccountsQueryPageOffsetDefault = 0;
-export const listAccountsQueryPageOffsetMin = 0;
+export const loginBodyEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
+export const loginBodyRememberMeDefault = false;
 
-export const listAccountsQueryPageOffsetMax = 9007199254740991;
-
-
-export const listAccountsQueryParams = zod.object({
-  "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
-  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
-  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
-  "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
-  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
-  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
-  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
-}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
-}).optional().describe('Filter accounts by field values. Supported fields:\n- createdAt, id, updatedAt, accessToken, accessTokenExpiresAt\n- accountID, idToken, password, providerID, refreshToken\n- refreshTokenExpiresAt, scope, userID\n'),
-  "page": zod.object({
-  "limit": zod.number().min(1).max(listAccountsQueryPageLimitMax).default(listAccountsQueryPageLimitDefault).describe('Maximum number of items to return'),
-  "offset": zod.number().min(listAccountsQueryPageOffsetMin).max(listAccountsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
-}).optional().describe('The page parameter'),
-  "sort": zod.array(zod.object({
-  "field": zod.enum(['createdAt', 'id', 'updatedAt', 'accessToken', 'accessTokenExpiresAt', 'accountID', 'idToken', 'providerID', 'refreshToken', 'refreshTokenExpiresAt', 'scope', 'userID']),
-  "order": zod.enum(['asc', 'desc'])
-})).optional().describe('The sort parameter')
+export const loginBody = zod.object({
+  "email": zod.email().min(1).regex(loginBodyEmailRegExp).describe('The email address associated with the account'),
+  "password": zod.string().min(1).describe('The password for the account'),
+  "rememberMe": zod.boolean().optional().describe('Whether to create a long-lived session')
 })
 
-export const listAccountsResponseDataItemIdMin = 36;
-export const listAccountsResponseDataItemUserIDMin = 36;
 
-
-export const listAccountsResponse = zod.object({
-  "data": zod.array(zod.object({
-  "id": zod.uuid().min(listAccountsResponseDataItemIdMin).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
-}).describe('Base schema for all entities with common fields').and(zod.object({
-  "accountID": zod.string().min(1).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(listAccountsResponseDataItemUserIDMin).describe('The user ID this account belongs to'),
-  "providerID": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
-  "accessToken": zod.string().optional().describe('The OAuth access token'),
-  "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
-  "refreshToken": zod.string().optional().describe('The OAuth refresh token'),
-  "refreshTokenExpiresAt": zod.iso.datetime({}).optional().describe('The refresh token expiration timestamp'),
-  "idToken": zod.string().optional().describe('The OpenID Connect ID token'),
-  "scope": zod.string().optional().describe('The OAuth scope granted')
-})).describe('Schema for Account entity (authentication provider account)')),
-  "meta": zod.object({
-  "total": zod.number()
+/**
+ * Logout from current session
+ * @summary Logout
+ */
+export const logoutResponse = zod.object({
+  "message": zod.string().min(1)
 })
+
+
+/**
+ * Logout from all sessions across all devices
+ * @summary Logout all sessions
+ */
+export const logoutAllResponseCountMin = 0;
+
+
+export const logoutAllResponse = zod.object({
+  "message": zod.string().min(1),
+  "count": zod.number().min(logoutAllResponseCountMin).describe('Number of sessions that were terminated')
 })
 
 
 /**
  * Register a new user account with email and password
- * @summary Create account
+ * @summary Register
  */
-export const createAccountBodyEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const createAccountBodyPasswordMin = 8;
+export const registerBodyEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
+export const registerBodyPasswordMin = 8;
 
 
-export const createAccountBody = zod.object({
-  "email": zod.email().min(1).regex(createAccountBodyEmailRegExp).describe('The email address associated with the account'),
-  "name": zod.string().min(1).describe('The name of the user creating the account'),
-  "password": zod.string().min(createAccountBodyPasswordMin).describe('The password for the account')
+export const registerBody = zod.object({
+  "email": zod.email().min(1).regex(registerBodyEmailRegExp).describe('The email address for the new account'),
+  "name": zod.string().min(1).describe('The name of the user'),
+  "password": zod.string().min(registerBodyPasswordMin).describe('The password for the account')
 })
 
 
 /**
- * Get an account
- * @summary Find an account
+ * Request a magic link to be sent via email or generate an OTP code
+ * @summary Request a magic link
  */
-export const getAccountPathIdMin = 36;
+export const requestMagicLinkBodyDeliveryMethodDefault = "email";
 
-
-export const getAccountParams = zod.object({
-  "id": zod.uuid().min(getAccountPathIdMin).describe('The unique identifier of the resource')
+export const requestMagicLinkBody = zod.object({
+  "identifier": zod.string().min(1).describe('Email address or username'),
+  "deliveryMethod": zod.enum(['email', 'console', 'otp', 'webhook']).default(requestMagicLinkBodyDeliveryMethodDefault).describe('How to deliver the magic link'),
+  "redirectUrl": zod.url().optional().describe('URL to redirect to after successful authentication')
 })
 
-export const getAccountResponseDataIdMin = 36;
-export const getAccountResponseDataUserIDMin = 36;
+export const requestMagicLinkResponseOtpCodeMin = 6;
+
+export const requestMagicLinkResponseOtpCodeMax = 6;
+export const requestMagicLinkResponseTokenIdMin = 36;
+export const requestMagicLinkResponseTokenUserIDMin = 36;
+export const requestMagicLinkResponseTokenTokenMin = 32;
+export const requestMagicLinkResponseTokenTokenHashMin = 64;
+
+export const requestMagicLinkResponseTokenTokenHashMax = 64;
+export const requestMagicLinkResponseTokenCodeMin = 6;
+
+export const requestMagicLinkResponseTokenCodeMax = 6;
+
+export const requestMagicLinkResponseTokenCodeRegExp = new RegExp('^[0-9]{6}$');
 
 
-export const getAccountResponse = zod.object({
-  "data": zod.object({
-  "id": zod.uuid().min(getAccountResponseDataIdMin).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
-}).describe('Base schema for all entities with common fields').and(zod.object({
-  "accountID": zod.string().min(1).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(getAccountResponseDataUserIDMin).describe('The user ID this account belongs to'),
-  "providerID": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
-  "accessToken": zod.string().optional().describe('The OAuth access token'),
-  "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
-  "refreshToken": zod.string().optional().describe('The OAuth refresh token'),
-  "refreshTokenExpiresAt": zod.iso.datetime({}).optional().describe('The refresh token expiration timestamp'),
-  "idToken": zod.string().optional().describe('The OpenID Connect ID token'),
-  "scope": zod.string().optional().describe('The OAuth scope granted')
-})).describe('Schema for Account entity (authentication provider account)')
+export const requestMagicLinkResponse = zod.object({
+  "message": zod.string().optional(),
+  "otpCode": zod.string().min(requestMagicLinkResponseOtpCodeMin).max(requestMagicLinkResponseOtpCodeMax).optional().describe('OTP code (only returned if deliveryMethod is \'otp\')'),
+  "expiresIn": zod.number().optional().describe('Token expiry in seconds'),
+  "token": zod.object({
+  "id": zod.uuid().min(requestMagicLinkResponseTokenIdMin).describe('Unique identifier for the magic link token'),
+  "userID": zod.uuid().min(requestMagicLinkResponseTokenUserIDMin).optional().describe('User ID if token is for existing user'),
+  "token": zod.string().min(requestMagicLinkResponseTokenTokenMin).optional().describe('The raw magic link token'),
+  "tokenHash": zod.string().min(requestMagicLinkResponseTokenTokenHashMin).max(requestMagicLinkResponseTokenTokenHashMax).describe('SHA256 hash of the magic link token'),
+  "code": zod.string().min(requestMagicLinkResponseTokenCodeMin).max(requestMagicLinkResponseTokenCodeMax).regex(requestMagicLinkResponseTokenCodeRegExp).optional().describe('Optional 6-digit OTP code'),
+  "identifier": zod.string().min(1).describe('Email or username for authentication'),
+  "deliveryMethod": zod.enum(['email', 'console', 'webhook', 'otp', 'file']).optional().describe('How the magic link was delivered'),
+  "expiresAt": zod.iso.datetime({}).describe('When the token expires'),
+  "usedAt": zod.union([zod.iso.datetime({}),zod.null()]).optional().describe('When the token was used (null if unused)'),
+  "ipAddress": zod.string().optional().describe('IP address of the request'),
+  "userAgent": zod.string().optional().describe('User agent of the request'),
+  "createdAt": zod.iso.datetime({}).describe('When the token was created')
+}).optional().describe('Schema for MagicLinkToken entity')
 })
 
 
 /**
- * Update an account
- * @summary Update an account
+ * Verify a magic link token or OTP code and create a session
+ * @summary Verify a magic link token
  */
-export const updateAccountPathIdMin = 36;
+export const verifyMagicLinkBodyTokenMin = 32;
+export const verifyMagicLinkBodyCodeMin = 6;
+
+export const verifyMagicLinkBodyCodeMax = 6;
+
+export const verifyMagicLinkBodyCodeRegExp = new RegExp('^[0-9]{6}$');
 
 
-export const updateAccountParams = zod.object({
-  "id": zod.uuid().min(updateAccountPathIdMin).describe('The unique identifier of the resource')
-})
-
-export const updateAccountBody = zod.object({
-  "provider": zod.string().optional().describe('The account provider'),
-  "providerAccountID": zod.string().optional().describe('The provider account ID'),
-  "type": zod.string().optional().describe('The account type')
-})
-
-export const updateAccountResponseDataIdMin = 36;
-export const updateAccountResponseDataUserIDMin = 36;
-
-
-export const updateAccountResponse = zod.object({
-  "data": zod.object({
-  "id": zod.uuid().min(updateAccountResponseDataIdMin).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
-}).describe('Base schema for all entities with common fields').and(zod.object({
-  "accountID": zod.string().min(1).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(updateAccountResponseDataUserIDMin).describe('The user ID this account belongs to'),
-  "providerID": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
-  "accessToken": zod.string().optional().describe('The OAuth access token'),
-  "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
-  "refreshToken": zod.string().optional().describe('The OAuth refresh token'),
-  "refreshTokenExpiresAt": zod.iso.datetime({}).optional().describe('The refresh token expiration timestamp'),
-  "idToken": zod.string().optional().describe('The OpenID Connect ID token'),
-  "scope": zod.string().optional().describe('The OAuth scope granted')
-})).describe('Schema for Account entity (authentication provider account)')
+export const verifyMagicLinkBody = zod.object({
+  "token": zod.string().min(verifyMagicLinkBodyTokenMin).optional().describe('Magic link token from URL'),
+  "code": zod.string().min(verifyMagicLinkBodyCodeMin).max(verifyMagicLinkBodyCodeMax).regex(verifyMagicLinkBodyCodeRegExp).optional().describe('OTP code (alternative to token)'),
+  "identifier": zod.string().optional().describe('Required when using OTP code')
 })
 
 
 /**
- * Delete an account
- * @summary Delete an account
+ * Link an additional authentication provider to the current user account
+ * @summary Link authentication provider
  */
-export const deleteAccountPathIdMin = 36;
-
-
-export const deleteAccountParams = zod.object({
-  "id": zod.uuid().min(deleteAccountPathIdMin).describe('The unique identifier of the resource')
+export const linkAccountBody = zod.object({
+  "provider": zod.enum(['google', 'github', 'microsoft', 'apple']).describe('The authentication provider to link'),
+  "redirectUrl": zod.url().optional().describe('URL to redirect to after successful linking')
 })
 
-export const deleteAccountResponseDataIdMin = 36;
-export const deleteAccountResponseDataUserIDMin = 36;
-
-
-export const deleteAccountResponse = zod.object({
-  "data": zod.object({
-  "id": zod.uuid().min(deleteAccountResponseDataIdMin).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
-}).describe('Base schema for all entities with common fields').and(zod.object({
-  "accountID": zod.string().min(1).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(deleteAccountResponseDataUserIDMin).describe('The user ID this account belongs to'),
-  "providerID": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
-  "accessToken": zod.string().optional().describe('The OAuth access token'),
-  "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
-  "refreshToken": zod.string().optional().describe('The OAuth refresh token'),
-  "refreshTokenExpiresAt": zod.iso.datetime({}).optional().describe('The refresh token expiration timestamp'),
-  "idToken": zod.string().optional().describe('The OpenID Connect ID token'),
-  "scope": zod.string().optional().describe('The OAuth scope granted')
-})).describe('Schema for Account entity (authentication provider account)')
+export const linkAccountResponse = zod.object({
+  "authorizationUrl": zod.url().describe('URL to redirect the user to for provider authorization')
 })
 
 
 /**
- * This endpoint will confirm your e-mail with a token
- * @summary Confirm e-mail verification
- */
-export const confirmEmailVerificationBody = zod.object({
-  "token": zod.string().min(1).describe('The password reset token')
-})
-
-export const confirmEmailVerificationResponseSessionIdMin = 36;
-export const confirmEmailVerificationResponseSessionOrganizationIDMin = 36;
-export const confirmEmailVerificationResponseSessionUserIDMin = 36;
-export const confirmEmailVerificationResponseUserIdMin = 36;
-export const confirmEmailVerificationResponseUserEmailMin = 5;
-
-export const confirmEmailVerificationResponseUserEmailMax = 255;
-export const confirmEmailVerificationResponseUserEmailVerifiedDefault = false;export const confirmEmailVerificationResponseUserImageMin = 5;
-
-export const confirmEmailVerificationResponseUserImageMax = 2048;
-export const confirmEmailVerificationResponseUserNameMax = 255;
-
-
-export const confirmEmailVerificationResponse = zod.object({
-  "session": zod.object({
-  "id": zod.uuid().min(confirmEmailVerificationResponseSessionIdMin).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
-}).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(confirmEmailVerificationResponseSessionOrganizationIDMin).optional().describe('The organization ID for this session (nullable for users without org)'),
-  "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
-  "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
-  "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
-  "ipAddress": zod.string().min(1).describe('The IP address of the session'),
-  "token": zod.string().min(1).describe('The session token'),
-  "userAgent": zod.string().min(1).describe('The user agent of the session'),
-  "userID": zod.uuid().min(confirmEmailVerificationResponseSessionUserIDMin).describe('The user who owns this session')
-})).describe('Schema for Session entity'),
-  "user": zod.object({
-  "id": zod.uuid().min(confirmEmailVerificationResponseUserIdMin).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
-}).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(confirmEmailVerificationResponseUserEmailMin).max(confirmEmailVerificationResponseUserEmailMax).describe('The user\'s email address'),
-  "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.url().min(confirmEmailVerificationResponseUserImageMin).max(confirmEmailVerificationResponseUserImageMax).optional().describe('The user\'s avatar image URL'),
-  "name": zod.string().min(1).max(confirmEmailVerificationResponseUserNameMax).describe('The user\'s display name')
-})).describe('Schema for User entity')
-})
-
-
-/**
- * This endpoint will request a password reset link
- * @summary Request password reset
- */
-export const requestPasswordResetBody = zod.object({
-  "email": zod.string().min(1).describe('The e-mail to send the password reset token to')
-})
-
-
-/**
- * This endpoint will verify your password change with a token
- * @summary Verify password reset
- */
-export const confirmPasswordResetBody = zod.object({
-  "newPassword": zod.string().min(1).describe('The new password'),
-  "token": zod.string().min(1).describe('The password reset token')
-})
-
-
-/**
- * This endpoint will request your e-mail change with a token
- * @summary Request e-mail change
- */
-export const requestEmailChangeBodyNewEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const requestEmailChangeBodyUserIDMin = 36;
-
-
-export const requestEmailChangeBody = zod.object({
-  "newEmail": zod.email().min(1).regex(requestEmailChangeBodyNewEmailRegExp).describe('The e-mail to send the confirmation token to'),
-  "userID": zod.uuid().min(requestEmailChangeBodyUserIDMin).describe('The user ID of the user requesting the email change')
-})
-
-
-/**
- * This endpoint will verify your e-mail change with a token
- * @summary Verify e-mail change
- */
-export const confirmEmailChangeBodyNewEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const confirmEmailChangeBodyUserIDMin = 36;
-
-
-export const confirmEmailChangeBody = zod.object({
-  "newEmail": zod.email().min(1).regex(confirmEmailChangeBodyNewEmailRegExp).describe('The e-mail to send the confirmation token to'),
-  "token": zod.string().min(1).describe('The password reset token'),
-  "userID": zod.uuid().min(confirmEmailChangeBodyUserIDMin).describe('The user ID of the user requesting the email change')
-})
-
-
-/**
- * List user sessions
+ * List all active sessions for the current user
  * @summary List sessions
  */
 export const listSessionsQueryPageLimitDefault = 10;
@@ -302,17 +155,6 @@ export const listSessionsQueryPageOffsetMax = 9007199254740991;
 
 
 export const listSessionsQueryParams = zod.object({
-  "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
-  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
-  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
-  "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
-  "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
-  "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
-  "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
-}).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
-}).optional().describe('Filter sessions by field values. Supported fields:\n- createdAt, id, updatedAt, organizationID, expiresAt\n- ipAddress, token, userAgent, userID\n'),
   "page": zod.object({
   "limit": zod.number().min(1).max(listSessionsQueryPageLimitMax).default(listSessionsQueryPageLimitDefault).describe('Maximum number of items to return'),
   "offset": zod.number().min(listSessionsQueryPageOffsetMin).max(listSessionsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
@@ -326,6 +168,7 @@ export const listSessionsQueryParams = zod.object({
 export const listSessionsResponseDataItemIdMin = 36;
 export const listSessionsResponseDataItemOrganizationIDMin = 36;
 export const listSessionsResponseDataItemUserIDMin = 36;
+export const listSessionsResponseMetaTotalMin = 0;
 
 
 export const listSessionsResponse = zod.object({
@@ -344,22 +187,8 @@ export const listSessionsResponse = zod.object({
   "userID": zod.uuid().min(listSessionsResponseDataItemUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')),
   "meta": zod.object({
-  "total": zod.number().describe('Total number of items in the collection')
+  "total": zod.number().min(listSessionsResponseMetaTotalMin).describe('Total number of sessions')
 })
-})
-
-
-/**
- * Authenticate user and Create a session
- * @summary Create session (Login)
- */
-export const createSessionBodyEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const createSessionBodyRememberMeDefault = false;
-
-export const createSessionBody = zod.object({
-  "email": zod.email().min(1).regex(createSessionBodyEmailRegExp).describe('The email address associated with the account'),
-  "password": zod.string().min(1).describe('The password for the account'),
-  "rememberMe": zod.boolean().optional().describe('Whether to create a long-lived session')
 })
 
 
@@ -473,6 +302,242 @@ export const updateSessionResponse = zod.object({
 
 
 /**
+ * List all linked authentication providers for the current user
+ * @summary List linked accounts
+ */
+export const listAccountsResponseDataItemIdMin = 36;
+export const listAccountsResponseDataItemUserIDMin = 36;
+export const listAccountsResponseMetaTotalMin = 0;
+
+
+export const listAccountsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.uuid().min(listAccountsResponseDataItemIdMin).describe('Unique identifier for the resource'),
+  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
+  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
+}).describe('Base schema for all entities with common fields').and(zod.object({
+  "accountIdentifier": zod.string().min(1).describe('The unique identifier for the account from the provider'),
+  "userID": zod.uuid().min(listAccountsResponseDataItemUserIDMin).describe('The user ID this account belongs to'),
+  "provider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
+  "accessToken": zod.string().optional().describe('The OAuth access token'),
+  "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
+  "refreshToken": zod.string().optional().describe('The OAuth refresh token'),
+  "refreshTokenExpiresAt": zod.iso.datetime({}).optional().describe('The refresh token expiration timestamp'),
+  "idToken": zod.string().optional().describe('The OpenID Connect ID token'),
+  "scope": zod.string().optional().describe('The OAuth scope granted')
+})).describe('Schema for Account entity (authentication provider account)')),
+  "meta": zod.object({
+  "total": zod.number().min(listAccountsResponseMetaTotalMin)
+})
+})
+
+
+/**
+ * Get an account
+ * @summary Find an account
+ */
+export const getAccountPathIdMin = 36;
+
+
+export const getAccountParams = zod.object({
+  "id": zod.uuid().min(getAccountPathIdMin).describe('The unique identifier of the resource')
+})
+
+export const getAccountResponseDataIdMin = 36;
+export const getAccountResponseDataUserIDMin = 36;
+
+
+export const getAccountResponse = zod.object({
+  "data": zod.object({
+  "id": zod.uuid().min(getAccountResponseDataIdMin).describe('Unique identifier for the resource'),
+  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
+  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
+}).describe('Base schema for all entities with common fields').and(zod.object({
+  "accountIdentifier": zod.string().min(1).describe('The unique identifier for the account from the provider'),
+  "userID": zod.uuid().min(getAccountResponseDataUserIDMin).describe('The user ID this account belongs to'),
+  "provider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
+  "accessToken": zod.string().optional().describe('The OAuth access token'),
+  "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
+  "refreshToken": zod.string().optional().describe('The OAuth refresh token'),
+  "refreshTokenExpiresAt": zod.iso.datetime({}).optional().describe('The refresh token expiration timestamp'),
+  "idToken": zod.string().optional().describe('The OpenID Connect ID token'),
+  "scope": zod.string().optional().describe('The OAuth scope granted')
+})).describe('Schema for Account entity (authentication provider account)')
+})
+
+
+/**
+ * Update an account
+ * @summary Update an account
+ */
+export const updateAccountPathIdMin = 36;
+
+
+export const updateAccountParams = zod.object({
+  "id": zod.uuid().min(updateAccountPathIdMin).describe('The unique identifier of the resource')
+})
+
+export const updateAccountBody = zod.object({
+  "provider": zod.string().optional().describe('The account provider'),
+  "providerAccountIdentifier": zod.string().optional().describe('The provider account ID'),
+  "type": zod.string().optional().describe('The account type')
+})
+
+export const updateAccountResponseDataIdMin = 36;
+export const updateAccountResponseDataUserIDMin = 36;
+
+
+export const updateAccountResponse = zod.object({
+  "data": zod.object({
+  "id": zod.uuid().min(updateAccountResponseDataIdMin).describe('Unique identifier for the resource'),
+  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
+  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
+}).describe('Base schema for all entities with common fields').and(zod.object({
+  "accountIdentifier": zod.string().min(1).describe('The unique identifier for the account from the provider'),
+  "userID": zod.uuid().min(updateAccountResponseDataUserIDMin).describe('The user ID this account belongs to'),
+  "provider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
+  "accessToken": zod.string().optional().describe('The OAuth access token'),
+  "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
+  "refreshToken": zod.string().optional().describe('The OAuth refresh token'),
+  "refreshTokenExpiresAt": zod.iso.datetime({}).optional().describe('The refresh token expiration timestamp'),
+  "idToken": zod.string().optional().describe('The OpenID Connect ID token'),
+  "scope": zod.string().optional().describe('The OAuth scope granted')
+})).describe('Schema for Account entity (authentication provider account)')
+})
+
+
+/**
+ * Delete an account
+ * @summary Delete an account
+ */
+export const deleteAccountPathIdMin = 36;
+
+
+export const deleteAccountParams = zod.object({
+  "id": zod.uuid().min(deleteAccountPathIdMin).describe('The unique identifier of the resource')
+})
+
+export const deleteAccountResponseDataIdMin = 36;
+export const deleteAccountResponseDataUserIDMin = 36;
+
+
+export const deleteAccountResponse = zod.object({
+  "data": zod.object({
+  "id": zod.uuid().min(deleteAccountResponseDataIdMin).describe('Unique identifier for the resource'),
+  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
+  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
+}).describe('Base schema for all entities with common fields').and(zod.object({
+  "accountIdentifier": zod.string().min(1).describe('The unique identifier for the account from the provider'),
+  "userID": zod.uuid().min(deleteAccountResponseDataUserIDMin).describe('The user ID this account belongs to'),
+  "provider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
+  "accessToken": zod.string().optional().describe('The OAuth access token'),
+  "accessTokenExpiresAt": zod.iso.datetime({}).optional().describe('The access token expiration timestamp'),
+  "refreshToken": zod.string().optional().describe('The OAuth refresh token'),
+  "refreshTokenExpiresAt": zod.iso.datetime({}).optional().describe('The refresh token expiration timestamp'),
+  "idToken": zod.string().optional().describe('The OpenID Connect ID token'),
+  "scope": zod.string().optional().describe('The OAuth scope granted')
+})).describe('Schema for Account entity (authentication provider account)')
+})
+
+
+/**
+ * This endpoint will confirm your e-mail with a token
+ * @summary Confirm e-mail verification
+ */
+export const confirmEmailVerificationBody = zod.object({
+  "token": zod.string().min(1).describe('The password reset token')
+})
+
+export const confirmEmailVerificationResponseSessionIdMin = 36;
+export const confirmEmailVerificationResponseSessionOrganizationIDMin = 36;
+export const confirmEmailVerificationResponseSessionUserIDMin = 36;
+export const confirmEmailVerificationResponseUserIdMin = 36;
+export const confirmEmailVerificationResponseUserEmailMin = 5;
+
+export const confirmEmailVerificationResponseUserEmailMax = 255;
+export const confirmEmailVerificationResponseUserEmailVerifiedDefault = false;export const confirmEmailVerificationResponseUserImageMin = 5;
+
+export const confirmEmailVerificationResponseUserImageMax = 2048;
+export const confirmEmailVerificationResponseUserNameMax = 255;
+
+
+export const confirmEmailVerificationResponse = zod.object({
+  "session": zod.object({
+  "id": zod.uuid().min(confirmEmailVerificationResponseSessionIdMin).describe('Unique identifier for the resource'),
+  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
+  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
+}).describe('Base schema for all entities with common fields').and(zod.object({
+  "organizationID": zod.uuid().min(confirmEmailVerificationResponseSessionOrganizationIDMin).optional().describe('The organization ID for this session (nullable for users without org)'),
+  "authMethod": zod.string().optional().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
+  "authProvider": zod.string().optional().describe('The authentication provider (google, github, microsoft, local)'),
+  "expiresAt": zod.iso.datetime({}).min(1).describe('The expiration date of the session'),
+  "ipAddress": zod.string().min(1).describe('The IP address of the session'),
+  "token": zod.string().min(1).describe('The session token'),
+  "userAgent": zod.string().min(1).describe('The user agent of the session'),
+  "userID": zod.uuid().min(confirmEmailVerificationResponseSessionUserIDMin).describe('The user who owns this session')
+})).describe('Schema for Session entity'),
+  "user": zod.object({
+  "id": zod.uuid().min(confirmEmailVerificationResponseUserIdMin).describe('Unique identifier for the resource'),
+  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
+  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
+}).describe('Base schema for all entities with common fields').and(zod.object({
+  "email": zod.email().min(confirmEmailVerificationResponseUserEmailMin).max(confirmEmailVerificationResponseUserEmailMax).describe('The user\'s email address'),
+  "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
+  "image": zod.url().min(confirmEmailVerificationResponseUserImageMin).max(confirmEmailVerificationResponseUserImageMax).optional().describe('The user\'s avatar image URL'),
+  "name": zod.string().min(1).max(confirmEmailVerificationResponseUserNameMax).describe('The user\'s display name')
+})).describe('Schema for User entity')
+})
+
+
+/**
+ * This endpoint will request a password reset link
+ * @summary Request password reset
+ */
+export const requestPasswordResetBody = zod.object({
+  "email": zod.string().min(1).describe('The e-mail to send the password reset token to')
+})
+
+
+/**
+ * This endpoint will verify your password change with a token
+ * @summary Verify password reset
+ */
+export const confirmPasswordResetBody = zod.object({
+  "newPassword": zod.string().min(1).describe('The new password'),
+  "token": zod.string().min(1).describe('The password reset token')
+})
+
+
+/**
+ * This endpoint will request your e-mail change with a token
+ * @summary Request e-mail change
+ */
+export const requestEmailChangeBodyNewEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
+export const requestEmailChangeBodyUserIDMin = 36;
+
+
+export const requestEmailChangeBody = zod.object({
+  "newEmail": zod.email().min(1).regex(requestEmailChangeBodyNewEmailRegExp).describe('The e-mail to send the confirmation token to'),
+  "userID": zod.uuid().min(requestEmailChangeBodyUserIDMin).describe('The user ID of the user requesting the email change')
+})
+
+
+/**
+ * This endpoint will verify your e-mail change with a token
+ * @summary Verify e-mail change
+ */
+export const confirmEmailChangeBodyNewEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
+export const confirmEmailChangeBodyUserIDMin = 36;
+
+
+export const confirmEmailChangeBody = zod.object({
+  "newEmail": zod.email().min(1).regex(confirmEmailChangeBodyNewEmailRegExp).describe('The e-mail to send the confirmation token to'),
+  "token": zod.string().min(1).describe('The password reset token'),
+  "userID": zod.uuid().min(confirmEmailChangeBodyUserIDMin).describe('The user ID of the user requesting the email change')
+})
+
+
+/**
  * List users
  * @summary List users
  */
@@ -530,6 +595,86 @@ export const listUsersResponse = zod.object({
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
 })
+})
+
+
+/**
+ * Get the currently authenticated user's profile
+ * @summary Get current user
+ */
+export const getCurrentUserResponseDataIdMin = 36;
+export const getCurrentUserResponseDataEmailMin = 5;
+
+export const getCurrentUserResponseDataEmailMax = 255;
+export const getCurrentUserResponseDataEmailVerifiedDefault = false;export const getCurrentUserResponseDataImageMin = 5;
+
+export const getCurrentUserResponseDataImageMax = 2048;
+export const getCurrentUserResponseDataNameMax = 255;
+
+
+export const getCurrentUserResponse = zod.object({
+  "data": zod.object({
+  "id": zod.uuid().min(getCurrentUserResponseDataIdMin).describe('Unique identifier for the resource'),
+  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
+  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
+}).describe('Base schema for all entities with common fields').and(zod.object({
+  "email": zod.email().min(getCurrentUserResponseDataEmailMin).max(getCurrentUserResponseDataEmailMax).describe('The user\'s email address'),
+  "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
+  "image": zod.url().min(getCurrentUserResponseDataImageMin).max(getCurrentUserResponseDataImageMax).optional().describe('The user\'s avatar image URL'),
+  "name": zod.string().min(1).max(getCurrentUserResponseDataNameMax).describe('The user\'s display name')
+})).describe('Schema for User entity')
+})
+
+
+/**
+ * Update the currently authenticated user's profile
+ * @summary Update current user
+ */
+export const updateCurrentUserBodyNameMax = 255;
+export const updateCurrentUserBodyImageMin = 5;
+
+export const updateCurrentUserBodyImageMax = 2048;
+
+
+export const updateCurrentUserBody = zod.object({
+  "name": zod.string().min(1).max(updateCurrentUserBodyNameMax).optional().describe('The user\'s display name'),
+  "image": zod.url().min(updateCurrentUserBodyImageMin).max(updateCurrentUserBodyImageMax).optional().describe('The user\'s avatar image URL')
+})
+
+export const updateCurrentUserResponseDataIdMin = 36;
+export const updateCurrentUserResponseDataEmailMin = 5;
+
+export const updateCurrentUserResponseDataEmailMax = 255;
+export const updateCurrentUserResponseDataEmailVerifiedDefault = false;export const updateCurrentUserResponseDataImageMin = 5;
+
+export const updateCurrentUserResponseDataImageMax = 2048;
+export const updateCurrentUserResponseDataNameMax = 255;
+
+
+export const updateCurrentUserResponse = zod.object({
+  "data": zod.object({
+  "id": zod.uuid().min(updateCurrentUserResponseDataIdMin).describe('Unique identifier for the resource'),
+  "createdAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was created'),
+  "updatedAt": zod.iso.datetime({}).min(1).describe('The date and time when the resource was last updated')
+}).describe('Base schema for all entities with common fields').and(zod.object({
+  "email": zod.email().min(updateCurrentUserResponseDataEmailMin).max(updateCurrentUserResponseDataEmailMax).describe('The user\'s email address'),
+  "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
+  "image": zod.url().min(updateCurrentUserResponseDataImageMin).max(updateCurrentUserResponseDataImageMax).optional().describe('The user\'s avatar image URL'),
+  "name": zod.string().min(1).max(updateCurrentUserResponseDataNameMax).describe('The user\'s display name')
+})).describe('Schema for User entity')
+})
+
+
+/**
+ * Delete the currently authenticated user's account (cascades to all sessions and accounts)
+ * @summary Delete current user
+ */
+export const deleteCurrentUserBody = zod.object({
+  "confirmation": zod.enum(['DELETE_MY_ACCOUNT']).describe('Confirmation string to prevent accidental deletion')
+})
+
+export const deleteCurrentUserResponse = zod.object({
+  "message": zod.string()
 })
 
 
@@ -696,74 +841,6 @@ export const oauthCallbackResponse = zod.object({
   "userAgent": zod.string().min(1).describe('The user agent of the session'),
   "userID": zod.uuid().min(oauthCallbackResponseUserIDMin).describe('The user who owns this session')
 })).describe('Schema for Session entity')
-
-
-/**
- * Request a magic link to be sent via email or generate an OTP code
- * @summary Request a magic link
- */
-export const requestMagicLinkBodyDeliveryMethodDefault = "email";
-
-export const requestMagicLinkBody = zod.object({
-  "identifier": zod.string().min(1).describe('Email address or username'),
-  "deliveryMethod": zod.enum(['email', 'console', 'otp', 'webhook']).default(requestMagicLinkBodyDeliveryMethodDefault).describe('How to deliver the magic link'),
-  "redirectUrl": zod.url().optional().describe('URL to redirect to after successful authentication')
-})
-
-export const requestMagicLinkResponseOtpCodeMin = 6;
-
-export const requestMagicLinkResponseOtpCodeMax = 6;
-export const requestMagicLinkResponseTokenIdMin = 36;
-export const requestMagicLinkResponseTokenUserIDMin = 36;
-export const requestMagicLinkResponseTokenTokenMin = 32;
-export const requestMagicLinkResponseTokenTokenHashMin = 64;
-
-export const requestMagicLinkResponseTokenTokenHashMax = 64;
-export const requestMagicLinkResponseTokenCodeMin = 6;
-
-export const requestMagicLinkResponseTokenCodeMax = 6;
-
-export const requestMagicLinkResponseTokenCodeRegExp = new RegExp('^[0-9]{6}$');
-
-
-export const requestMagicLinkResponse = zod.object({
-  "message": zod.string().optional(),
-  "otpCode": zod.string().min(requestMagicLinkResponseOtpCodeMin).max(requestMagicLinkResponseOtpCodeMax).optional().describe('OTP code (only returned if deliveryMethod is \'otp\')'),
-  "expiresIn": zod.number().optional().describe('Token expiry in seconds'),
-  "token": zod.object({
-  "id": zod.uuid().min(requestMagicLinkResponseTokenIdMin).describe('Unique identifier for the magic link token'),
-  "userID": zod.uuid().min(requestMagicLinkResponseTokenUserIDMin).optional().describe('User ID if token is for existing user'),
-  "token": zod.string().min(requestMagicLinkResponseTokenTokenMin).optional().describe('The raw magic link token'),
-  "tokenHash": zod.string().min(requestMagicLinkResponseTokenTokenHashMin).max(requestMagicLinkResponseTokenTokenHashMax).describe('SHA256 hash of the magic link token'),
-  "code": zod.string().min(requestMagicLinkResponseTokenCodeMin).max(requestMagicLinkResponseTokenCodeMax).regex(requestMagicLinkResponseTokenCodeRegExp).optional().describe('Optional 6-digit OTP code'),
-  "identifier": zod.string().min(1).describe('Email or username for authentication'),
-  "deliveryMethod": zod.enum(['email', 'console', 'webhook', 'otp', 'file']).optional().describe('How the magic link was delivered'),
-  "expiresAt": zod.iso.datetime({}).describe('When the token expires'),
-  "usedAt": zod.union([zod.iso.datetime({}),zod.null()]).optional().describe('When the token was used (null if unused)'),
-  "ipAddress": zod.string().optional().describe('IP address of the request'),
-  "userAgent": zod.string().optional().describe('User agent of the request'),
-  "createdAt": zod.iso.datetime({}).describe('When the token was created')
-}).optional().describe('Schema for MagicLinkToken entity')
-})
-
-
-/**
- * Verify a magic link token or OTP code and create a session
- * @summary Verify a magic link token
- */
-export const verifyMagicLinkBodyTokenMin = 32;
-export const verifyMagicLinkBodyCodeMin = 6;
-
-export const verifyMagicLinkBodyCodeMax = 6;
-
-export const verifyMagicLinkBodyCodeRegExp = new RegExp('^[0-9]{6}$');
-
-
-export const verifyMagicLinkBody = zod.object({
-  "token": zod.string().min(verifyMagicLinkBodyTokenMin).optional().describe('Magic link token from URL'),
-  "code": zod.string().min(verifyMagicLinkBodyCodeMin).max(verifyMagicLinkBodyCodeMax).regex(verifyMagicLinkBodyCodeRegExp).optional().describe('OTP code (alternative to token)'),
-  "identifier": zod.string().optional().describe('Required when using OTP code')
-})
 
 
 /**
@@ -967,13 +1044,13 @@ export const listOrganizationsQueryParams = zod.object({
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
 }).describe('A recursive filter node that can be a condition or group')).optional().describe('Child filter nodes (for logical operators)')
-}).optional().describe('Filter organizations by field values. Supported fields:\n- createdAt, id, updatedAt, billingEmail, credits, logo\n- metadata, name, plan, slug, stripeCustomerID\n'),
+}).optional().describe('Filter organizations by field values. Supported fields:\n- createdAt, id, updatedAt, billingEmail, credits, logo\n- metadata, name, plan, slug, stripeCustomerIdentifier\n'),
   "page": zod.object({
   "limit": zod.number().min(1).max(listOrganizationsQueryPageLimitMax).default(listOrganizationsQueryPageLimitDefault).describe('Maximum number of items to return'),
   "offset": zod.number().min(listOrganizationsQueryPageOffsetMin).max(listOrganizationsQueryPageOffsetMax).optional().describe('Number of items to skip before starting to collect the result set')
 }).optional().describe('The page parameter'),
   "sort": zod.array(zod.object({
-  "field": zod.enum(['createdAt', 'id', 'updatedAt', 'billingEmail', 'credits', 'logo', 'metadata', 'name', 'plan', 'slug', 'stripeCustomerID']),
+  "field": zod.enum(['createdAt', 'id', 'updatedAt', 'billingEmail', 'credits', 'logo', 'metadata', 'name', 'plan', 'slug', 'stripeCustomerIdentifier']),
   "order": zod.enum(['asc', 'desc'])
 })).optional().describe('The sort parameter')
 })
@@ -1001,7 +1078,7 @@ export const listOrganizationsResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(listOrganizationsResponseDataItemCreditsMin).describe('Available credits for this organization'),
-  "stripeCustomerID": zod.string().optional().describe('Stripe customer identifier')
+  "stripeCustomerIdentifier": zod.string().optional().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')),
   "meta": zod.object({
   "total": zod.number().describe('Total number of items in the collection')
@@ -1043,7 +1120,7 @@ export const deleteOrganizationResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(deleteOrganizationResponseDataCreditsMin).describe('Available credits for this organization'),
-  "stripeCustomerID": zod.string().optional().describe('Stripe customer identifier')
+  "stripeCustomerIdentifier": zod.string().optional().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')
 })
 
@@ -1082,7 +1159,7 @@ export const getOrganizationResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(getOrganizationResponseDataCreditsMin).describe('Available credits for this organization'),
-  "stripeCustomerID": zod.string().optional().describe('Stripe customer identifier')
+  "stripeCustomerIdentifier": zod.string().optional().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')
 })
 
@@ -1129,7 +1206,7 @@ export const updateOrganizationResponse = zod.object({
   "billingEmail": zod.email().optional().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(updateOrganizationResponseDataCreditsMin).describe('Available credits for this organization'),
-  "stripeCustomerID": zod.string().optional().describe('Stripe customer identifier')
+  "stripeCustomerIdentifier": zod.string().optional().describe('Stripe customer identifier')
 })).describe('Schema for Organization entity')
 })
 

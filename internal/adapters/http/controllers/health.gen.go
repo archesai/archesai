@@ -14,15 +14,15 @@ import (
 // HealthController handles HTTP requests for health endpoints.
 type HealthController struct {
 	// Query handlers
-	getHandler *queries.GetHealthQueryHandler
+	getHealthHandler *queries.GetHealthQueryHandler
 }
 
 // NewHealthController creates a new health controller with injected handlers.
 func NewHealthController(
-	getHandler *queries.GetHealthQueryHandler,
+	getHealthHandler *queries.GetHealthQueryHandler,
 ) *HealthController {
 	return &HealthController{
-		getHandler: getHandler,
+		getHealthHandler: getHealthHandler,
 	}
 }
 
@@ -74,10 +74,10 @@ func (c *HealthController) GetHealth(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetHealthQuery()
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getHealthHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}

@@ -30,7 +30,7 @@ func (d *OTPDeliverer) Deliver(
 ) error {
 	d.logger.Info("🔐 OTP Code Generated",
 		"identifier", token.Identifier,
-		"code", token.Code,
+		"code", token.Token,
 		"expires_in", time.Until(token.ExpiresAt).Round(time.Second),
 	)
 
@@ -38,7 +38,7 @@ func (d *OTPDeliverer) Deliver(
 	fmt.Println("🔐 ONE-TIME PASSWORD")
 	fmt.Println(strings.Repeat("-", 80))
 	fmt.Printf("For: %s\n", token.Identifier)
-	fmt.Printf("Code: %s\n", *token.Code)
+	fmt.Printf("Code: %s\n", *token.Token)
 	fmt.Printf("Expires in: %v\n", time.Until(token.ExpiresAt).Round(time.Second))
 	fmt.Println(strings.Repeat("=", 80) + "\n")
 

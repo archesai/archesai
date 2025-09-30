@@ -9,6 +9,13 @@ import (
 	"github.com/archesai/archesai/internal/parsers"
 )
 
+const (
+	schemaNameSession  = "session"
+	httpMethodGet      = "GET"
+	securityBearerAuth = "bearerAuth"
+	securitySession    = "sessionCookie"
+)
+
 // DomainData represents data for a single domain in the app template
 type DomainData struct {
 	Name                  string // e.g., "Account"
@@ -23,13 +30,25 @@ type DomainData struct {
 	Queries               []string // e.g., ["Get", "List"]
 	IsPublic              bool
 	RequiresOrgMembership bool
+	Operations            []parsers.OperationDef // Operations for this domain
 }
 
 // GenerateAppWiring generates the main application wiring file
-func (g *Generator) GenerateAppWiring(schemas map[string]*parsers.ProcessedSchema) error {
+func (g *Generator) GenerateAppWiring(
+	schemas map[string]*parsers.ProcessedSchema,
+	operations []parsers.OperationDef,
+) error {
 	// Collect domain data from schemas with x-codegen
 	domains := make([]DomainData, 0)
 	domainMap := make(map[string]*DomainData)
+
+	// First, collect all tags that have actual operations
+	tagsWithOperations := make(map[string]bool)
+	for _, op := range operations {
+		for _, tag := range op.Tags {
+			tagsWithOperations[strings.ToLower(tag)] = true
+		}
+	}
 
 	// Process each schema to build domain information
 	for name, schema := range schemas {
@@ -42,6 +61,17 @@ func (g *Generator) GenerateAppWiring(schemas map[string]*parsers.ProcessedSchem
 		namePlural := Pluralize(name)
 		nameSingular := name
 
+		// Check if this schema should be included
+		hasAPIOperations := tagsWithOperations[strings.ToLower(namePlural)]
+		hasRepository := schema.XCodegen.Repository != nil
+
+		// Include schemas that either:
+		// 1. Have API operations tagged with their plural name
+		// 2. Have a repository defined (needed for cross-cutting concerns like auth)
+		if !hasAPIOperations && !hasRepository {
+			continue
+		}
+
 		// Get or create domain data
 		domain, exists := domainMap[namePlural]
 		if !exists {
@@ -52,54 +82,85 @@ func (g *Generator) GenerateAppWiring(schemas map[string]*parsers.ProcessedSchem
 				NamePluralLower: strings.ToLower(namePlural),
 				Commands:        []string{},
 				Queries:         []string{},
+				Operations:      []parsers.OperationDef{},
 			}
 			domainMap[namePlural] = domain
 		}
 
 		// Update domain based on x-codegen settings
-		if schema.XCodegen.Controller != nil {
+		// Controllers are only created for schemas with operations
+		if hasAPIOperations {
 			domain.HasController = true
-
-			// Determine route protection level based on domain name
-			// This is a simplified logic - you may need to adjust based on your needs
-			lowerName := strings.ToLower(namePlural)
-			if strings.Contains(lowerName, "auth") ||
-				strings.Contains(lowerName, "health") ||
-				strings.Contains(lowerName, "config") {
-				domain.IsPublic = true
-			} else if strings.Contains(lowerName, "member") ||
-				strings.Contains(lowerName, "organization") {
-				domain.RequiresOrgMembership = true
-			}
 		}
 
-		if schema.XCodegen.Repository != nil {
+		// Determine route protection level based on domain name
+		// This is a simplified logic - you may need to adjust based on your needs
+		lowerName := strings.ToLower(namePlural)
+		if strings.Contains(lowerName, "auth") ||
+			strings.Contains(lowerName, "health") ||
+			strings.Contains(lowerName, "config") {
+			domain.IsPublic = true
+		} else if strings.Contains(lowerName, "member") ||
+			strings.Contains(lowerName, "organization") {
+			domain.RequiresOrgMembership = true
+		}
+
+		if hasRepository {
 			domain.HasRepository = true
 		}
 
-		if schema.XCodegen.Commands != nil {
+		// Commands and Queries are now auto-determined from operations
+		// For entities, we assume they have both commands and queries
+		if schema.XCodegen.SchemaType == schemaTypeEntity {
 			domain.HasCommands = true
-			for _, op := range schema.XCodegen.Commands.Operations {
-				commandName := Title(strings.ToLower(op))
-				if !contains(domain.Commands, commandName) {
-					domain.Commands = append(domain.Commands, commandName)
-				}
-			}
+			domain.HasQueries = true
+		}
+	}
+
+	// Now populate Commands, Queries, and Operations from operations
+	for _, op := range operations {
+		if len(op.Tags) == 0 {
+			continue
 		}
 
-		if schema.XCodegen.Queries != nil {
-			domain.HasQueries = true
-			for _, op := range schema.XCodegen.Queries.Operations {
-				queryName := Title(strings.ToLower(op))
-				if !contains(domain.Queries, queryName) {
-					domain.Queries = append(domain.Queries, queryName)
-				}
+		// Get the domain from the first tag (plural form)
+		// Need to find the domain by case-insensitive comparison
+		tagLower := strings.ToLower(op.Tags[0])
+		var domain *DomainData
+		for domainName, d := range domainMap {
+			if strings.ToLower(domainName) == tagLower {
+				domain = d
+				break
+			}
+		}
+		if domain == nil {
+			continue
+		}
+
+		// Add operation to the domain's operations list
+		domain.Operations = append(domain.Operations, op)
+
+		// Determine if it's a command or query based on HTTP method
+		// Use raw operationID to preserve original casing
+		operationID := op.OperationID
+		if op.Method == httpMethodGet {
+			// It's a query
+			if !contains(domain.Queries, operationID) {
+				domain.Queries = append(domain.Queries, operationID)
+			}
+		} else {
+			// It's a command (POST, PUT, PATCH, DELETE)
+			if !contains(domain.Commands, operationID) {
+				domain.Commands = append(domain.Commands, operationID)
 			}
 		}
 	}
 
 	// Convert map to slice and sort for consistent order
 	for _, domain := range domainMap {
+		// Sort commands and queries for consistent ordering
+		domain.Commands = sortCommands(domain.Commands)
+		domain.Queries = sortQueries(domain.Queries)
 		domains = append(domains, *domain)
 	}
 
@@ -145,4 +206,20 @@ func contains(slice []string, item string) bool {
 		}
 	}
 	return false
+}
+
+// sortCommands sorts command names alphabetically
+func sortCommands(commands []string) []string {
+	sorted := make([]string, len(commands))
+	copy(sorted, commands)
+	sort.Strings(sorted)
+	return sorted
+}
+
+// sortQueries sorts query names alphabetically
+func sortQueries(queries []string) []string {
+	sorted := make([]string, len(queries))
+	copy(sorted, queries)
+	sort.Strings(sorted)
+	return sorted
 }

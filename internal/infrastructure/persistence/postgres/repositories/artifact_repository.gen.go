@@ -110,18 +110,14 @@ func (r *PostgresArtifactRepository) List(ctx context.Context, limit, offset int
 
 // ListByOrganization retrieves multiple artifacts by organizationID
 func (r *PostgresArtifactRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Artifact, error) {
-
 	// TODO: Implement ListByOrganization - fetch multiple artifacts
 	return nil, fmt.Errorf("ListByOrganization not yet implemented")
-
 }
 
 // ListByProducer retrieves multiple artifacts by producerID
 func (r *PostgresArtifactRepository) ListByProducer(ctx context.Context, producerID string) ([]*entities.Artifact, error) {
-
 	// TODO: Implement ListByProducer - fetch multiple artifacts
 	return nil, fmt.Errorf("ListByProducer not yet implemented")
-
 }
 
 func mapArtifactFromDB(db *Artifact) *entities.Artifact {

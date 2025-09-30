@@ -110,18 +110,26 @@ func (r *PostgresLabelRepository) List(ctx context.Context, limit, offset int32)
 
 // ListByOrganization retrieves multiple labels by organizationID
 func (r *PostgresLabelRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Label, error) {
-
 	// TODO: Implement ListByOrganization - fetch multiple labels
 	return nil, fmt.Errorf("ListByOrganization not yet implemented")
-
 }
 
-// GetByName retrieves a single label by name and organizationID
-func (r *PostgresLabelRepository) GetByName(ctx context.Context, name string, organizationID string) (*entities.Label, error) {
+// GetLabelByName retrieves a single label by name and organizationID
+func (r *PostgresLabelRepository) GetLabelByName(ctx context.Context, name string, organizationID string) (*entities.Label, error) {
+	params := GetLabelByNameParams{
+		Name:           name,
+		OrganizationID: uuid.MustParse(organizationID),
+	}
 
-	// TODO: Implement GetByName - fetch single label
-	return nil, fmt.Errorf("GetByName not yet implemented")
+	result, err := r.queries.GetLabelByName(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrLabelNotFound
+		}
+		return nil, fmt.Errorf("failed to GetLabelByName: %w", err)
+	}
 
+	return mapLabelFromDB(&result), nil
 }
 
 func mapLabelFromDB(db *Label) *entities.Label {

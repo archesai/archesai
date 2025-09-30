@@ -116,10 +116,37 @@ func Title(s string) string {
 	return result
 }
 
-// CamelCase converts a string to camelCase.
+// CamelCase converts a string to camelCase, preserving common acronyms.
 func CamelCase(s string) string {
 	s = strings.TrimSpace(s)
 	if s == "" {
+		return s
+	}
+
+	// Special case for single acronyms - just lowercase them
+	if acronym, ok := commonAcronyms[strings.ToLower(s)]; ok {
+		if s == acronym {
+			// It's an acronym in uppercase (e.g., "ID", "API"), return lowercase
+			return strings.ToLower(s)
+		}
+	}
+
+	// Check if string already has the right format with acronyms
+	// e.g., "createAPIKey" should become "createAPIKey" (already correct)
+	// e.g., "CreateAPIKey" should become "createAPIKey" (lowercase first)
+	if hasCorrectCasing(s) {
+		// Just lowercase the first character if it's uppercase
+		if len(s) > 0 && unicode.IsUpper(rune(s[0])) {
+			// Check if it starts with an acronym
+			for _, acronym := range commonAcronyms {
+				if strings.HasPrefix(s, acronym) {
+					// Lowercase the entire acronym at the beginning
+					return strings.ToLower(acronym) + s[len(acronym):]
+				}
+			}
+			// Otherwise just lowercase the first character
+			return strings.ToLower(s[:1]) + s[1:]
+		}
 		return s
 	}
 
@@ -128,18 +155,24 @@ func CamelCase(s string) string {
 		return s
 	}
 
-	// First part is lowercase
-	result := strings.ToLower(parts[0])
+	// First part is lowercase (but preserve acronym if it is one)
+	firstPart := strings.ToLower(parts[0])
+	var result string
+	if acronym, ok := commonAcronyms[firstPart]; ok && len(parts) == 1 {
+		// If it's just a single acronym, keep it lowercase
+		result = strings.ToLower(acronym)
+	} else {
+		result = firstPart
+	}
 
-	// Remaining parts are title case with initialism fixes
+	// Remaining parts are title case with acronym handling
 	for i := 1; i < len(parts); i++ {
 		if parts[i] != "" {
-			// Check if this part should be an initialism
-			part := strings.ToLower(parts[i])
-			if part == "id" || part == "uuid" {
-				result += strings.ToUpper(part)
+			lowerPart := strings.ToLower(parts[i])
+			if acronym, ok := commonAcronyms[lowerPart]; ok {
+				result += acronym
 			} else {
-				result += Title(part)
+				result += Title(lowerPart)
 			}
 		}
 	}
@@ -164,11 +197,65 @@ func sanitizeGoKeyword(name string) string {
 	return name
 }
 
-// PascalCase converts a string to PascalCase.
+// Common acronyms that should be preserved in uppercase
+var commonAcronyms = map[string]string{
+	"api":   "API",
+	"url":   "URL",
+	"uri":   "URI",
+	"uuid":  "UUID",
+	"id":    "ID",
+	"http":  "HTTP",
+	"https": "HTTPS",
+	"sql":   "SQL",
+	"json":  "JSON",
+	"xml":   "XML",
+	"csv":   "CSV",
+	"jwt":   "JWT",
+	"oauth": "OAuth",
+	"saml":  "SAML",
+	"ldap":  "LDAP",
+	"dns":   "DNS",
+	"tcp":   "TCP",
+	"udp":   "UDP",
+	"ip":    "IP",
+	"vm":    "VM",
+	"os":    "OS",
+	"cpu":   "CPU",
+	"gpu":   "GPU",
+	"ram":   "RAM",
+	"ssd":   "SSD",
+	"hdd":   "HDD",
+	"cdn":   "CDN",
+	"vpn":   "VPN",
+	"ssh":   "SSH",
+	"ftp":   "FTP",
+	"sftp":  "SFTP",
+	"smtp":  "SMTP",
+	"imap":  "IMAP",
+	"pop":   "POP",
+	"aws":   "AWS",
+	"gcp":   "GCP",
+	"sdk":   "SDK",
+	"ci":    "CI",
+	"cd":    "CD",
+}
+
+// PascalCase converts a string to PascalCase, preserving common acronyms.
 func PascalCase(s string) string {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return s
+	}
+
+	// If the string is already in PascalCase with correct acronyms (e.g., "CreateAPIKey"), preserve it
+	// But if it starts with lowercase (e.g., "createAPIKey"), we need to capitalize
+	if len(s) > 0 && unicode.IsUpper(rune(s[0])) && hasCorrectCasing(s) {
+		return s
+	}
+
+	// If it starts with lowercase but has correct acronyms (e.g., "createAPIKey"), just capitalize first letter
+	if hasCorrectCasing(s) && len(s) > 0 && unicode.IsLower(rune(s[0])) {
+		return strings.ToUpper(s[:1]) + s[1:]
 	}
 
 	parts := splitWords(s)
@@ -176,11 +263,27 @@ func PascalCase(s string) string {
 
 	for _, part := range parts {
 		if part != "" {
-			result += Title(strings.ToLower(part))
+			lowerPart := strings.ToLower(part)
+			if acronym, ok := commonAcronyms[lowerPart]; ok {
+				result += acronym
+			} else {
+				result += Title(lowerPart)
+			}
 		}
 	}
 
 	return result
+}
+
+// hasCorrectCasing checks if a string already has correct PascalCase with acronyms
+func hasCorrectCasing(s string) bool {
+	// Check if string contains known acronyms in uppercase
+	for _, acronym := range commonAcronyms {
+		if strings.Contains(s, acronym) {
+			return true
+		}
+	}
+	return false
 }
 
 // SnakeCase converts a string to snake_case.
@@ -191,13 +294,29 @@ func SnakeCase(s string) string {
 	}
 
 	var result bytes.Buffer
-	for i, r := range s {
-		if i > 0 && unicode.IsUpper(r) {
-			// Add underscore before uppercase letters (except at the start)
-			if i > 0 && s[i-1] != '_' && s[i-1] != '-' && s[i-1] != ' ' {
-				result.WriteRune('_')
+	runes := []rune(s)
+
+	for i, r := range runes {
+		if unicode.IsUpper(r) && i > 0 {
+			// Look at the previous character
+			prevIsLower := unicode.IsLower(runes[i-1])
+			prevIsDigit := unicode.IsDigit(runes[i-1])
+
+			// Look at the next character if it exists
+			nextIsLower := i+1 < len(runes) && unicode.IsLower(runes[i+1])
+
+			// Add underscore before uppercase letter if:
+			// 1. Previous char is lowercase or digit
+			// 2. OR this is the start of a new word (current is upper, next is lower)
+			if prevIsLower || prevIsDigit || nextIsLower {
+				// But don't add if previous char is already a separator
+				if runes[i-1] != '_' && runes[i-1] != '-' && runes[i-1] != ' ' {
+					result.WriteRune('_')
+				}
 			}
 		}
+
+		// Convert separators to underscores
 		if r == '-' || r == ' ' {
 			result.WriteRune('_')
 		} else {

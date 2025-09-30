@@ -14,15 +14,18 @@ import (
 
 // DeletePipelineCommand represents the command to delete a pipeline.
 type DeletePipelineCommand struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewDeletePipelineCommand creates a new delete pipeline command.
 func NewDeletePipelineCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 ) *DeletePipelineCommand {
 	return &DeletePipelineCommand{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 

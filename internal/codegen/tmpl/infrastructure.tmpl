@@ -24,6 +24,7 @@ import (
 	"github.com/archesai/archesai/internal/core/entities"
 	coreEvents "github.com/archesai/archesai/internal/core/events"
 	ports "github.com/archesai/archesai/internal/core/repositories"
+	"github.com/archesai/archesai/internal/infrastructure/auth"
 	"github.com/archesai/archesai/internal/infrastructure/cache"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 	"github.com/archesai/archesai/internal/infrastructure/events"
@@ -38,6 +39,7 @@ type Infrastructure struct {
 	Logger         *slog.Logger
 	Database       *database.Database
 	EventPublisher coreEvents.Publisher
+	AuthService    *auth.Service
 	AuthCache      cache.Cache[entities.Session]
 	UsersCache     cache.Cache[entities.User]
 	// Single Redis client shared across components

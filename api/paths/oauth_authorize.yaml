@@ -4,6 +4,7 @@ get:
   tags:
     - Auth
   description: Redirect user to OAuth provider authorization page
+  x-codegen-custom-handler: true
   parameters:
     - schema:
         type: string

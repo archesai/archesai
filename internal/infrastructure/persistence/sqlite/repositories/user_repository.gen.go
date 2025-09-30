@@ -61,10 +61,18 @@ func (r *SQLiteUserRepository) List(ctx context.Context, limit, offset int32) ([
 
 // Additional methods
 
-// GetByEmail retrieves a single user by email
-func (r *SQLiteUserRepository) GetByEmail(ctx context.Context, email string) (*entities.User, error) {
+// GetUserByEmail retrieves a single user by email
+func (r *SQLiteUserRepository) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
 
-	// TODO: Implement GetByEmail - fetch single record
-	return nil, fmt.Errorf("GetByEmail not yet implemented - requires custom mapping")
+	// TODO: Implement GetUserByEmail - fetch single record
+	return nil, fmt.Errorf("GetUserByEmail not yet implemented - requires custom mapping")
+
+}
+
+// GetUserBySessionID retrieves a single user by sessionID
+func (r *SQLiteUserRepository) GetUserBySessionID(ctx context.Context, sessionID string) (*entities.User, error) {
+
+	// TODO: Implement GetUserBySessionID - fetch single record
+	return nil, fmt.Errorf("GetUserBySessionID not yet implemented - requires custom mapping")
 
 }

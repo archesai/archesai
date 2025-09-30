@@ -12,15 +12,23 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// GetInvitationQuery represents a query to get a invitation.
+// GetInvitationQuery represents a query to get invitation.
 type GetInvitationQuery struct {
-	ID uuid.UUID
+	SessionID      uuid.UUID
+	OrganizationID uuid.UUID
+	ID             uuid.UUID
 }
 
 // NewGetInvitationQuery creates a new get invitation query.
-func NewGetInvitationQuery(id uuid.UUID) *GetInvitationQuery {
+func NewGetInvitationQuery(
+	SessionID uuid.UUID,
+	organizationID uuid.UUID,
+	id uuid.UUID,
+) *GetInvitationQuery {
 	return &GetInvitationQuery{
-		ID: id,
+		SessionID:      SessionID,
+		OrganizationID: organizationID,
+		ID:             id,
 	}
 }
 
@@ -38,6 +46,7 @@ func NewGetInvitationQueryHandler(repo repositories.InvitationRepository) *GetIn
 
 // Handle executes the get invitation query.
 func (h *GetInvitationQueryHandler) Handle(ctx context.Context, query *GetInvitationQuery) (*entities.Invitation, error) {
+	// Use path parameters to get the entity
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get invitation: %w", err)

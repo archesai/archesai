@@ -16,7 +16,7 @@ WHERE
 LIMIT
   1;
 
--- name: GetMemberByUserAndOrg :one
+-- name: GetMemberByUserAndOrganization :one
 SELECT
   *
 FROM

@@ -1,0 +1,37 @@
+post:
+  operationId: logoutAll
+  summary: Logout all sessions
+  tags:
+    - Auth
+  description: Logout from all sessions across all devices
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  responses:
+    '200':
+      description: All sessions terminated
+      headers:
+        Set-Cookie:
+          description: Clears session cookies
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - message
+              - count
+            properties:
+              message:
+                type: string
+                minLength: 1
+                example: Successfully logged out from all devices
+              count:
+                type: integer
+                description: Number of sessions that were terminated
+                minimum: 0
+                example: 3
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

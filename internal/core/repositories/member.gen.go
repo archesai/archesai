@@ -18,10 +18,10 @@ type MemberRepository interface {
 	List(ctx context.Context, limit, offset int32) ([]*entities.Member, int64, error)
 
 	// Additional operations
-	// ListByOrganization retrieves multiple members by organizationID
-	ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Member, error)
-	// ListByUser retrieves multiple members by userID
-	ListByUser(ctx context.Context, userID string) ([]*entities.Member, error)
-	// GetByUserAndOrganization retrieves a single member by userID and organizationID
-	GetByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*entities.Member, error)
+	// ListMembersByOrganization retrieves multiple members by organizationID
+	ListMembersByOrganization(ctx context.Context, organizationID string) ([]*entities.Member, error)
+	// ListMembersByUser retrieves multiple members by userID
+	ListMembersByUser(ctx context.Context, userID string) ([]*entities.Member, error)
+	// GetMemberByUserAndOrganization retrieves a single member by userID and organizationID
+	GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*entities.Member, error)
 }

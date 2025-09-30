@@ -61,26 +61,26 @@ func (r *SQLiteMemberRepository) List(ctx context.Context, limit, offset int32) 
 
 // Additional methods
 
-// ListByOrganization retrieves multiple members by organizationID
-func (r *SQLiteMemberRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Member, error) {
+// ListMembersByOrganization retrieves multiple members by organizationID
+func (r *SQLiteMemberRepository) ListMembersByOrganization(ctx context.Context, organizationID string) ([]*entities.Member, error) {
 
-	// TODO: Implement ListByOrganization - fetch multiple records
-	return nil, fmt.Errorf("ListByOrganization not yet implemented - requires custom mapping")
-
-}
-
-// ListByUser retrieves multiple members by userID
-func (r *SQLiteMemberRepository) ListByUser(ctx context.Context, userID string) ([]*entities.Member, error) {
-
-	// TODO: Implement ListByUser - fetch multiple records
-	return nil, fmt.Errorf("ListByUser not yet implemented - requires custom mapping")
+	// TODO: Implement ListMembersByOrganization - fetch multiple records
+	return nil, fmt.Errorf("ListMembersByOrganization not yet implemented - requires custom mapping")
 
 }
 
-// GetByUserAndOrganization retrieves a single member by userID and organizationID
-func (r *SQLiteMemberRepository) GetByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*entities.Member, error) {
+// ListMembersByUser retrieves multiple members by userID
+func (r *SQLiteMemberRepository) ListMembersByUser(ctx context.Context, userID string) ([]*entities.Member, error) {
 
-	// TODO: Implement GetByUserAndOrganization - fetch single record
-	return nil, fmt.Errorf("GetByUserAndOrganization not yet implemented - requires custom mapping")
+	// TODO: Implement ListMembersByUser - fetch multiple records
+	return nil, fmt.Errorf("ListMembersByUser not yet implemented - requires custom mapping")
+
+}
+
+// GetMemberByUserAndOrganization retrieves a single member by userID and organizationID
+func (r *SQLiteMemberRepository) GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*entities.Member, error) {
+
+	// TODO: Implement GetMemberByUserAndOrganization - fetch single record
+	return nil, fmt.Errorf("GetMemberByUserAndOrganization not yet implemented - requires custom mapping")
 
 }

@@ -16,16 +16,19 @@ import (
 
 // CreateToolCommand represents the command to create a tool.
 type CreateToolCommand struct {
+	SessionID   uuid.UUID
 	Description string
 	Name        string
 }
 
 // NewCreateToolCommand creates a new create tool command.
 func NewCreateToolCommand(
+	SessionID uuid.UUID,
 	Description string,
 	Name string,
 ) *CreateToolCommand {
 	return &CreateToolCommand{
+		SessionID:   SessionID,
 		Description: Description,
 		Name:        Name,
 	}

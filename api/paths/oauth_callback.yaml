@@ -1,5 +1,6 @@
 get:
   operationId: oauthCallback
+  x-codegen-custom-handler: true
   summary: Handle OAuth callback
   tags:
     - Auth

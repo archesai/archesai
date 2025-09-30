@@ -12,15 +12,20 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// GetUserQuery represents a query to get a user.
+// GetUserQuery represents a query to get user.
 type GetUserQuery struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewGetUserQuery creates a new get user query.
-func NewGetUserQuery(id uuid.UUID) *GetUserQuery {
+func NewGetUserQuery(
+	SessionID uuid.UUID,
+	id uuid.UUID,
+) *GetUserQuery {
 	return &GetUserQuery{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 
@@ -38,6 +43,7 @@ func NewGetUserQueryHandler(repo repositories.UserRepository) *GetUserQueryHandl
 
 // Handle executes the get user query.
 func (h *GetUserQueryHandler) Handle(ctx context.Context, query *GetUserQuery) (*entities.User, error) {
+	// Use path parameters to get the entity
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)

@@ -3,12 +3,6 @@ x-codegen:
   schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
-  commands:
-    operations: [create, update, delete]
-  queries:
-    operations: [get, list]
-  controller:
-    operations: [create, read, update, delete, list]
 description: Schema for Session entity
 title: Session
 allOf:

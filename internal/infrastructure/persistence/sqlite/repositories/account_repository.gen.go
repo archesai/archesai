@@ -61,18 +61,18 @@ func (r *SQLiteAccountRepository) List(ctx context.Context, limit, offset int32)
 
 // Additional methods
 
-// GetByProviderID retrieves a single account by provider and providerAccountID
-func (r *SQLiteAccountRepository) GetByProviderID(ctx context.Context, provider string, providerAccountID string) (*entities.Account, error) {
+// GetAccountByProvider retrieves a single account by provider and accountIdentifier
+func (r *SQLiteAccountRepository) GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*entities.Account, error) {
 
-	// TODO: Implement GetByProviderID - fetch single record
-	return nil, fmt.Errorf("GetByProviderID not yet implemented - requires custom mapping")
+	// TODO: Implement GetAccountByProvider - fetch single record
+	return nil, fmt.Errorf("GetAccountByProvider not yet implemented - requires custom mapping")
 
 }
 
-// ListByUserID retrieves multiple accounts by userID
-func (r *SQLiteAccountRepository) ListByUserID(ctx context.Context, userID string) ([]*entities.Account, error) {
+// ListAccountsByUserID retrieves multiple accounts by userID
+func (r *SQLiteAccountRepository) ListAccountsByUserID(ctx context.Context, userID string) ([]*entities.Account, error) {
 
-	// TODO: Implement ListByUserID - fetch multiple records
-	return nil, fmt.Errorf("ListByUserID not yet implemented - requires custom mapping")
+	// TODO: Implement ListAccountsByUserID - fetch multiple records
+	return nil, fmt.Errorf("ListAccountsByUserID not yet implemented - requires custom mapping")
 
 }

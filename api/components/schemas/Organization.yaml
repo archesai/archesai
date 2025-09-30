@@ -5,20 +5,14 @@ x-codegen:
   schemaType: entity
   repository:
     operations: [create, read, update, delete, list]
-    indices: [slug, stripeCustomerID]
+    indices: [slug, stripeCustomerIdentifier]
     additional_methods:
-      - name: GetBySlug
+      - name: GetOrganizationBySlug
         params: [slug]
         returns: single
-      - name: GetByStripeCustomerID
-        params: [stripeCustomerID]
+      - name: GetOrganizationByStripeCustomerID
+        params: [stripeCustomerIdentifier]
         returns: single
-  commands:
-    operations: [create, update, delete]
-  queries:
-    operations: [get, list]
-  controller:
-    operations: [create, read, update, delete, list]
 allOf:
   - $ref: ./Base.yaml
   - type: object
@@ -63,7 +57,7 @@ allOf:
         minimum: 0
         default: 0
         example: 1000
-      stripeCustomerID:
+      stripeCustomerIdentifier:
         description: Stripe customer identifier
         type: string
         example: 'cus_1234567890'

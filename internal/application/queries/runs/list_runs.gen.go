@@ -6,23 +6,29 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // ListRunsQuery represents a query to list runs.
 type ListRunsQuery struct {
-	Limit          int
-	Offset         int
+	SessionID      uuid.UUID
+	Limit          int32
+	Offset         int32
 	OrderBy        string
 	OrderDirection string
 }
 
 // NewListRunsQuery creates a new list runs query.
-func NewListRunsQuery() *ListRunsQuery {
+func NewListRunsQuery(
+	SessionID uuid.UUID,
+) *ListRunsQuery {
 	return &ListRunsQuery{
-		Limit:  100,
-		Offset: 0,
+		SessionID: SessionID,
+		Limit:     100,
+		Offset:    0,
 	}
 }
 
@@ -40,12 +46,8 @@ func NewListRunsQueryHandler(repo repositories.RunRepository) *ListRunsQueryHand
 
 // Handle executes the list runs query.
 func (h *ListRunsQueryHandler) Handle(ctx context.Context, query *ListRunsQuery) ([]*entities.Run, int64, error) {
-	// Convert to int32 for repository
-	limit := int32(query.Limit)
-	offset := int32(query.Offset)
-
-	// Execute query with pagination
-	results, total, err := h.repo.List(ctx, limit, offset)
+	// TODO: Apply filters based on query parameters
+	results, total, err := h.repo.List(ctx, query.Limit, query.Offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list runs: %w", err)
 	}

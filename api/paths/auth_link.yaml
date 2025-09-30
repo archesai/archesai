@@ -1,0 +1,58 @@
+post:
+  operationId: linkAccount
+  summary: Link authentication provider
+  tags:
+    - Auth
+  description: Link an additional authentication provider to the current user account
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - provider
+          properties:
+            provider:
+              description: The authentication provider to link
+              type: string
+              enum:
+                - google
+                - github
+                - microsoft
+                - apple
+              example: github
+            redirectUrl:
+              description: URL to redirect to after successful linking
+              type: string
+              format: uri
+              example: 'https://app.archesai.com/settings/security'
+  responses:
+    '200':
+      description: Provider linking initiated
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - authorizationUrl
+            properties:
+              authorizationUrl:
+                description: URL to redirect the user to for provider authorization
+                type: string
+                format: uri
+                example: 'https://github.com/login/oauth/authorize?client_id=...'
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '409':
+      description: Provider already linked
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../components/schemas/Problem.yaml

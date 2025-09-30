@@ -14,15 +14,15 @@ import (
 // ConfigController handles HTTP requests for config endpoints.
 type ConfigController struct {
 	// Query handlers
-	getHandler *queries.GetConfigQueryHandler
+	getConfigHandler *queries.GetConfigQueryHandler
 }
 
 // NewConfigController creates a new config controller with injected handlers.
 func NewConfigController(
-	getHandler *queries.GetConfigQueryHandler,
+	getConfigHandler *queries.GetConfigQueryHandler,
 ) *ConfigController {
 	return &ConfigController{
-		getHandler: getHandler,
+		getConfigHandler: getConfigHandler,
 	}
 }
 
@@ -74,10 +74,10 @@ func (c *ConfigController) GetConfig(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetConfigQuery()
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getConfigHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}

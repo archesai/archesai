@@ -108,20 +108,28 @@ func (r *PostgresAccountRepository) List(ctx context.Context, limit, offset int3
 
 // Additional methods
 
-// GetByProviderID retrieves a single account by provider and providerAccountID
-func (r *PostgresAccountRepository) GetByProviderID(ctx context.Context, provider string, providerAccountID string) (*entities.Account, error) {
+// GetAccountByProvider retrieves a single account by provider and accountIdentifier
+func (r *PostgresAccountRepository) GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*entities.Account, error) {
+	params := GetAccountByProviderParams{
+		Provider:          provider,
+		AccountIdentifier: accountIdentifier,
+	}
 
-	// TODO: Implement GetByProviderID - fetch single account
-	return nil, fmt.Errorf("GetByProviderID not yet implemented")
+	result, err := r.queries.GetAccountByProvider(ctx, params)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.ErrAccountNotFound
+		}
+		return nil, fmt.Errorf("failed to GetAccountByProvider: %w", err)
+	}
 
+	return mapAccountFromDB(&result), nil
 }
 
-// ListByUserID retrieves multiple accounts by userID
-func (r *PostgresAccountRepository) ListByUserID(ctx context.Context, userID string) ([]*entities.Account, error) {
-
-	// TODO: Implement ListByUserID - fetch multiple accounts
-	return nil, fmt.Errorf("ListByUserID not yet implemented")
-
+// ListAccountsByUserID retrieves multiple accounts by userID
+func (r *PostgresAccountRepository) ListAccountsByUserID(ctx context.Context, userID string) ([]*entities.Account, error) {
+	// TODO: Implement ListAccountsByUserID - fetch multiple accounts
+	return nil, fmt.Errorf("ListAccountsByUserID not yet implemented")
 }
 
 func mapAccountFromDB(db *Account) *entities.Account {

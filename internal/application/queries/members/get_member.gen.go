@@ -12,15 +12,23 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// GetMemberQuery represents a query to get a member.
+// GetMemberQuery represents a query to get member.
 type GetMemberQuery struct {
-	ID uuid.UUID
+	SessionID      uuid.UUID
+	OrganizationID uuid.UUID
+	ID             uuid.UUID
 }
 
 // NewGetMemberQuery creates a new get member query.
-func NewGetMemberQuery(id uuid.UUID) *GetMemberQuery {
+func NewGetMemberQuery(
+	SessionID uuid.UUID,
+	organizationID uuid.UUID,
+	id uuid.UUID,
+) *GetMemberQuery {
 	return &GetMemberQuery{
-		ID: id,
+		SessionID:      SessionID,
+		OrganizationID: organizationID,
+		ID:             id,
 	}
 }
 
@@ -38,6 +46,7 @@ func NewGetMemberQueryHandler(repo repositories.MemberRepository) *GetMemberQuer
 
 // Handle executes the get member query.
 func (h *GetMemberQueryHandler) Handle(ctx context.Context, query *GetMemberQuery) (*entities.Member, error) {
+	// Use path parameters to get the entity
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get member: %w", err)

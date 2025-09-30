@@ -69,10 +69,10 @@ func (r *SQLiteLabelRepository) ListByOrganization(ctx context.Context, organiza
 
 }
 
-// GetByName retrieves a single label by name and organizationID
-func (r *SQLiteLabelRepository) GetByName(ctx context.Context, name string, organizationID string) (*entities.Label, error) {
+// GetLabelByName retrieves a single label by name and organizationID
+func (r *SQLiteLabelRepository) GetLabelByName(ctx context.Context, name string, organizationID string) (*entities.Label, error) {
 
-	// TODO: Implement GetByName - fetch single record
-	return nil, fmt.Errorf("GetByName not yet implemented - requires custom mapping")
+	// TODO: Implement GetLabelByName - fetch single record
+	return nil, fmt.Errorf("GetLabelByName not yet implemented - requires custom mapping")
 
 }

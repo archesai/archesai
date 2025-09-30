@@ -66,3 +66,20 @@ RETURNING
 DELETE FROM "user"
 WHERE
   id = $1;
+
+-- name: GetUserBySessionID :one
+SELECT u.*
+FROM "user" u
+JOIN "session" s ON u.id = s.user_id
+WHERE s.id = $1
+LIMIT 1;
+
+-- name: GetByEmail :one
+SELECT
+  *
+FROM
+  "user"
+WHERE
+  email = $1
+LIMIT
+  1;

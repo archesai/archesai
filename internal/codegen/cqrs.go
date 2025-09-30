@@ -39,13 +39,19 @@ func (g *Generator) generateCommandHandlers(
 		return nil
 	}
 
-	// Build a map of domains that have commands configuration
-	domainsWithCommands := make(map[string]bool)
+	// Build a map of schemas that are entities (not value objects)
+	entitySchemas := make(map[string]bool)
 	for name, processed := range schemas {
-		if processed.XCodegen != nil && processed.XCodegen.Commands != nil {
-			// Mark this domain as having commands
-			// Use the plural form of the name as the domain (e.g., "Tool" -> "tools")
-			domainsWithCommands[strings.ToLower(name+"s")] = true
+		if processed.XCodegen != nil && processed.XCodegen.SchemaType == "entity" {
+			// Use both singular and plural forms of the name as the domain
+			// (e.g., "Tool" -> "tools", "Auth" -> "auth")
+			entitySchemas[strings.ToLower(name)] = true     // Singular form
+			entitySchemas[strings.ToLower(name+"s")] = true // Plural form
+
+			// Special case: Session entity is used for Auth domain
+			if strings.ToLower(name) == schemaNameSession {
+				entitySchemas["auth"] = true
+			}
 		}
 	}
 
@@ -60,70 +66,99 @@ func (g *Generator) generateCommandHandlers(
 
 	// For each domain, generate command handlers for write operations
 	for domain, operations := range operationsByDomain {
-		// Only generate commands for domains that have x-codegen configuration
-		if !domainsWithCommands[domain] {
+		// Only generate commands for entity domains
+		if !entitySchemas[domain] {
 			continue
 		}
 		for _, op := range operations {
-			// Only generate command handlers for write operations
-			if op.Method == "POST" || op.Method == "PUT" || op.Method == "PATCH" ||
-				op.Method == "DELETE" {
-				// Determine command type based on operation
-				var commandType string
-				domainSingular := Singularize(Title(domain))
+			// Only generate command handlers for write operations (POST, PUT, PATCH, DELETE)
+			if op.Method == httpMethodGet {
+				continue // Skip read operations
+			}
 
-				// Only generate standard CRUD operations for now
-				// Skip custom operations like createPipelineStep
-				// Check for exact match with standard CRUD pattern
-				isStandardCreate := op.OperationID == "create"+domainSingular
-				isStandardUpdate := op.OperationID == "update"+domainSingular
-				isStandardDelete := op.OperationID == "delete"+domainSingular
+			// Use the operationId directly for naming
+			commandName := PascalCase(op.OperationID) + "Command"
+			fileName := SnakeCase(op.OperationID)
 
-				if !isStandardCreate && !isStandardUpdate && !isStandardDelete {
-					// Skip non-standard operations
-					continue
+			// Extract command type from operationId for template compatibility
+			var commandType string
+			entityName := Singularize(Title(domain))
+			entityNameLower := strings.ToLower(entityName)
+
+			// For naming the command types
+			commandEntityName := entityName
+
+			// Check if it's a standard CRUD operation
+			standardCreate := op.OperationID == "create"+entityName
+			standardUpdate := op.OperationID == "update"+entityName
+			standardDelete := op.OperationID == "delete"+entityName
+
+			isStandardCRUD := false
+			if standardCreate {
+				commandType = "Create"
+				isStandardCRUD = true
+			} else if standardUpdate {
+				commandType = "Update"
+				isStandardCRUD = true
+			} else if standardDelete {
+				commandType = "Delete"
+				isStandardCRUD = true
+			} else {
+				// For non-standard operations, use the full operationId as type
+				commandType = PascalCase(op.OperationID)
+			}
+
+			// Automatically set CustomHandler for non-standard operations if not explicitly set
+			customHandler := op.CustomHandler
+			if !isStandardCRUD && !customHandler {
+				customHandler = true
+			}
+
+			// For non-standard operations, clear entity name to avoid redundant suffixes
+			// Standard CRUD operations keep the entity name to avoid conflicts
+			if !isStandardCRUD {
+				commandEntityName = ""
+			}
+
+			// Check for authentication requirements
+			requiresAuth := false
+			for _, sec := range op.Security {
+				if sec.Name == "bearerAuth" || sec.Name == "sessionCookie" {
+					requiresAuth = true
+					break
 				}
+			}
 
-				switch {
-				case strings.HasPrefix(op.OperationID, "create"):
-					commandType = "Create"
-				case strings.HasPrefix(op.OperationID, "update"):
-					commandType = "Update"
-				case strings.HasPrefix(op.OperationID, "delete"):
-					commandType = "Delete"
-				default:
-					continue // Skip custom operations
-				}
+			// Create template data
+			data := map[string]interface{}{
+				"Package":           domain,
+				"CommandName":       commandName,
+				"CommandType":       commandType,
+				"EntityName":        entityName,        // Keep original for repository and return types
+				"EntityNameLower":   entityNameLower,   // Keep original for descriptions
+				"CommandEntityName": commandEntityName, // Use for command type names
+				"Operation":         op,
+				"RequestBody":       op.RequestBodySchema,
+				"PathParams":        op.PathParams,
+				"QueryParams":       op.QueryParams,
+				"RequiresAuth":      requiresAuth,
+				"CustomHandler":     customHandler, // Pass custom handler flag
+			}
 
-				// Get the entity name from the schema if available
-				entityName := domainSingular
-				entityNameLower := strings.ToLower(entityName)
+			// Generate the command handler file
+			outputPath := filepath.Join(
+				"internal/application/commands",
+				domain,
+				fmt.Sprintf("%s.gen.go", fileName),
+			)
 
-				// Create template data
-				data := map[string]interface{}{
-					"Package":         domain,
-					"CommandType":     commandType,
-					"EntityName":      entityName,
-					"EntityNameLower": entityNameLower,
-					"Operation":       op,
-					"RequestBody":     op.RequestBodySchema,
-				}
-
-				// Generate the command handler file
-				outputPath := filepath.Join(
-					"internal/application/commands",
-					domain,
-					fmt.Sprintf("%s_%s.gen.go", strings.ToLower(commandType), entityNameLower),
+			// Write the handler file
+			if err := g.filewriter.WriteTemplate(outputPath, tmpl, data); err != nil {
+				return fmt.Errorf(
+					"failed to generate command handler for %s: %w",
+					op.OperationID,
+					err,
 				)
-
-				// Write the handler file
-				if err := g.filewriter.WriteTemplate(outputPath, tmpl, data); err != nil {
-					return fmt.Errorf(
-						"failed to generate command handler for %s: %w",
-						op.OperationID,
-						err,
-					)
-				}
 			}
 		}
 	}
@@ -142,13 +177,19 @@ func (g *Generator) generateQueryHandlers(
 		return nil
 	}
 
-	// Build a map of domains that have queries configuration
-	domainsWithQueries := make(map[string]bool)
+	// Build a map of schemas that are entities (not value objects)
+	entitySchemas := make(map[string]bool)
 	for name, processed := range schemas {
-		if processed.XCodegen != nil && processed.XCodegen.Queries != nil {
-			// Mark this domain as having queries
-			// Use the plural form of the name as the domain (e.g., "Tool" -> "tools")
-			domainsWithQueries[strings.ToLower(name+"s")] = true
+		if processed.XCodegen != nil && processed.XCodegen.SchemaType == "entity" {
+			// Use both singular and plural forms of the name as the domain
+			// (e.g., "Tool" -> "tools", "Auth" -> "auth")
+			entitySchemas[strings.ToLower(name)] = true     // Singular form
+			entitySchemas[strings.ToLower(name+"s")] = true // Plural form
+
+			// Special case: Session entity is used for Auth domain
+			if strings.ToLower(name) == schemaNameSession {
+				entitySchemas["auth"] = true
+			}
 		}
 	}
 
@@ -163,70 +204,122 @@ func (g *Generator) generateQueryHandlers(
 
 	// For each domain, generate query handlers for read operations
 	for domain, operations := range operationsByDomain {
-		// Only generate queries for domains that have x-codegen configuration
-		if !domainsWithQueries[domain] {
+		// Only generate queries for entity domains
+		if !entitySchemas[domain] {
 			continue
 		}
 		for _, op := range operations {
-			// Only generate query handlers for read operations
-			if op.Method == "GET" {
-				// Determine query type based on operation
-				var queryType string
-				var usesPluralName bool
-				switch {
-				case strings.HasPrefix(op.OperationID, "list"):
-					queryType = "List"
-					usesPluralName = true
-				case strings.HasPrefix(op.OperationID, "get"):
-					queryType = "Get"
-				case strings.HasPrefix(op.OperationID, "search"):
-					queryType = "Search"
-					usesPluralName = true
-				default:
-					// Custom query, use operation ID with title case
-					queryType = Title(op.OperationID)
-				}
+			// Only generate query handlers for read operations (GET)
+			if op.Method != "GET" {
+				continue // Skip write operations
+			}
 
-				// Get the entity name from the schema if available
-				entityName := Singularize(Title(domain))
-				entityNameLower := strings.ToLower(entityName)
-				entityNamePlural := Pluralize(entityName)
+			// Use the operationId directly for naming
+			queryName := PascalCase(op.OperationID) + "Query"
+			fileName := SnakeCase(op.OperationID)
 
-				// Create template data
-				data := map[string]interface{}{
-					"Package":          domain,
-					"QueryType":        queryType,
-					"EntityName":       entityName,
-					"EntityNameLower":  entityNameLower,
-					"EntityNamePlural": entityNamePlural,
-				}
+			// Extract query type from operationId for template compatibility
+			var queryType string
+			entityName := Singularize(Title(domain))
+			entityNameLower := strings.ToLower(entityName)
+			entityNamePlural := Pluralize(entityName)
 
-				// Generate the query handler file
-				var fileName string
-				if usesPluralName {
-					fileName = fmt.Sprintf(
-						"%s_%s.gen.go",
-						strings.ToLower(queryType),
-						strings.ToLower(entityNamePlural),
-					)
+			// Special handling for auth domain entity names
+			if domain == "auth" {
+				// Determine the actual entity based on the operation
+				if strings.Contains(strings.ToLower(op.OperationID), "session") {
+					entityName = "Session"
+					entityNameLower = "session"
+					entityNamePlural = "Sessions"
+				} else if strings.Contains(strings.ToLower(op.OperationID), "account") {
+					entityName = "Account"
+					entityNameLower = "account"
+					entityNamePlural = "Accounts"
 				} else {
-					fileName = fmt.Sprintf("%s_%s.gen.go", strings.ToLower(queryType), entityNameLower)
+					// Default to User for other auth operations
+					entityName = "User"
+					entityNameLower = "user"
+					entityNamePlural = "Users"
 				}
+			}
 
-				outputPath := filepath.Join(
-					"internal/application/queries",
-					domain,
-					fileName,
+			// For naming the query/command types
+			queryEntityName := entityName
+			queryEntityNamePlural := entityNamePlural
+
+			// Check if it's a standard CRUD operation
+			standardGet := op.OperationID == "get"+entityName
+			standardList := op.OperationID == "list"+entityNamePlural
+
+			// Special case for auth domain - only clear entity names for non-standard operations
+			// Standard CRUD operations keep the entity name to avoid conflicts
+			isStandardCRUD := false
+			if standardGet {
+				queryType = "Get"
+				isStandardCRUD = true
+			} else if standardList {
+				queryType = "List"
+				isStandardCRUD = true
+			} else if strings.HasPrefix(op.OperationID, "search") {
+				queryType = "Search"
+			} else {
+				// For non-standard operations, use the full operationId as type
+				queryType = PascalCase(op.OperationID)
+			}
+
+			// Automatically set CustomHandler for non-standard operations if not explicitly set
+			customHandler := op.CustomHandler
+			if !isStandardCRUD && !customHandler {
+				customHandler = true
+			}
+
+			// For non-standard operations, clear entity names to avoid redundant suffixes
+			// Standard CRUD operations keep the entity name to avoid conflicts
+			if !isStandardCRUD {
+				queryEntityName = ""
+				queryEntityNamePlural = ""
+			}
+
+			// Check for authentication requirements
+			requiresAuth := false
+			for _, sec := range op.Security {
+				if sec.Name == "bearerAuth" || sec.Name == "sessionCookie" {
+					requiresAuth = true
+					break
+				}
+			}
+
+			// Create template data
+			data := map[string]interface{}{
+				"Package":               domain,
+				"QueryName":             queryName,
+				"QueryType":             queryType,
+				"EntityName":            entityName,            // Keep original for repository and return types
+				"EntityNameLower":       entityNameLower,       // Keep original for descriptions
+				"EntityNamePlural":      entityNamePlural,      // Keep original for return types
+				"QueryEntityName":       queryEntityName,       // Use for query type names
+				"QueryEntityNamePlural": queryEntityNamePlural, // Use for query type names
+				"Operation":             op,
+				"PathParams":            op.PathParams,
+				"QueryParams":           op.QueryParams,
+				"RequiresAuth":          requiresAuth,
+				"CustomHandler":         customHandler, // Pass custom handler flag
+			}
+
+			// Generate the query handler file
+			outputPath := filepath.Join(
+				"internal/application/queries",
+				domain,
+				fmt.Sprintf("%s.gen.go", fileName),
+			)
+
+			// Write the handler file
+			if err := g.filewriter.WriteTemplate(outputPath, tmpl, data); err != nil {
+				return fmt.Errorf(
+					"failed to generate query handler for %s: %w",
+					op.OperationID,
+					err,
 				)
-
-				// Write the handler file
-				if err := g.filewriter.WriteTemplate(outputPath, tmpl, data); err != nil {
-					return fmt.Errorf(
-						"failed to generate query handler for %s: %w",
-						op.OperationID,
-						err,
-					)
-				}
 			}
 		}
 	}

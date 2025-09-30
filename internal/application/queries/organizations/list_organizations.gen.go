@@ -6,23 +6,29 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
 // ListOrganizationsQuery represents a query to list organizations.
 type ListOrganizationsQuery struct {
-	Limit          int
-	Offset         int
+	SessionID      uuid.UUID
+	Limit          int32
+	Offset         int32
 	OrderBy        string
 	OrderDirection string
 }
 
 // NewListOrganizationsQuery creates a new list organizations query.
-func NewListOrganizationsQuery() *ListOrganizationsQuery {
+func NewListOrganizationsQuery(
+	SessionID uuid.UUID,
+) *ListOrganizationsQuery {
 	return &ListOrganizationsQuery{
-		Limit:  100,
-		Offset: 0,
+		SessionID: SessionID,
+		Limit:     100,
+		Offset:    0,
 	}
 }
 
@@ -40,12 +46,8 @@ func NewListOrganizationsQueryHandler(repo repositories.OrganizationRepository) 
 
 // Handle executes the list organizations query.
 func (h *ListOrganizationsQueryHandler) Handle(ctx context.Context, query *ListOrganizationsQuery) ([]*entities.Organization, int64, error) {
-	// Convert to int32 for repository
-	limit := int32(query.Limit)
-	offset := int32(query.Offset)
-
-	// Execute query with pagination
-	results, total, err := h.repo.List(ctx, limit, offset)
+	// TODO: Apply filters based on query parameters
+	results, total, err := h.repo.List(ctx, query.Limit, query.Offset)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list organizations: %w", err)
 	}

@@ -165,7 +165,7 @@ func TestProcessSchema(t *testing.T) {
 				assert.NotNil(t, result)
 				assert.Equal(t, "UserEntity", result.Name)
 				assert.NotNil(t, result.XCodegen)
-				assert.Equal(t, "entity", result.XCodegen.SchemaType)
+				assert.Equal(t, XCodegenExtensionSchemaType("entity"), result.XCodegen.SchemaType)
 
 				// Check required fields by JSON tag
 				requiredJSONTags := make(map[string]bool)

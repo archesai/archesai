@@ -13,6 +13,7 @@ import (
 	"github.com/archesai/archesai/internal/core/entities"
 	coreEvents "github.com/archesai/archesai/internal/core/events"
 	ports "github.com/archesai/archesai/internal/core/repositories"
+	"github.com/archesai/archesai/internal/infrastructure/auth"
 	"github.com/archesai/archesai/internal/infrastructure/cache"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 	"github.com/archesai/archesai/internal/infrastructure/events"
@@ -27,6 +28,7 @@ type Infrastructure struct {
 	Logger         *slog.Logger
 	Database       *database.Database
 	EventPublisher coreEvents.Publisher
+	AuthService    *auth.Service
 	AuthCache      cache.Cache[entities.Session]
 	UsersCache     cache.Cache[entities.User]
 	// Single Redis client shared across components
@@ -43,6 +45,7 @@ type Repositories struct {
 	Members       ports.MemberRepository
 	Organizations ports.OrganizationRepository
 	Pipelines     ports.PipelineRepository
+	PipelineSteps ports.PipelineStepRepository
 	Runs          ports.RunRepository
 	Sessions      ports.SessionRepository
 	Tools         ports.ToolRepository
@@ -176,6 +179,8 @@ func NewRepositories(infra *Infrastructure) (*Repositories, error) {
 		repos.Organizations = repositories.NewPostgresOrganizationRepository(pool)
 		// Pipeline repository
 		repos.Pipelines = repositories.NewPostgresPipelineRepository(pool)
+		// PipelineStep repository
+		repos.PipelineSteps = repositories.NewPostgresPipelineStepRepository(pool)
 		// Run repository
 		repos.Runs = repositories.NewPostgresRunRepository(pool)
 		// Session repository

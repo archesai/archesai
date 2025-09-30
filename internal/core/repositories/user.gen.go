@@ -18,6 +18,8 @@ type UserRepository interface {
 	List(ctx context.Context, limit, offset int32) ([]*entities.User, int64, error)
 
 	// Additional operations
-	// GetByEmail retrieves a single user by email
-	GetByEmail(ctx context.Context, email string) (*entities.User, error)
+	// GetUserByEmail retrieves a single user by email
+	GetUserByEmail(ctx context.Context, email string) (*entities.User, error)
+	// GetUserBySessionID retrieves a single user by sessionID
+	GetUserBySessionID(ctx context.Context, sessionID string) (*entities.User, error)
 }

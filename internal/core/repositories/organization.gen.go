@@ -18,8 +18,8 @@ type OrganizationRepository interface {
 	List(ctx context.Context, limit, offset int32) ([]*entities.Organization, int64, error)
 
 	// Additional operations
-	// GetBySlug retrieves a single organization by slug
-	GetBySlug(ctx context.Context, slug string) (*entities.Organization, error)
-	// GetByStripeCustomerID retrieves a single organization by stripeCustomerID
-	GetByStripeCustomerID(ctx context.Context, stripeCustomerID string) (*entities.Organization, error)
+	// GetOrganizationBySlug retrieves a single organization by slug
+	GetOrganizationBySlug(ctx context.Context, slug string) (*entities.Organization, error)
+	// GetOrganizationByStripeCustomerID retrieves a single organization by stripeCustomerIdentifier
+	GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (*entities.Organization, error)
 }

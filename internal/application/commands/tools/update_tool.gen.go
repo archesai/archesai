@@ -16,6 +16,7 @@ import (
 
 // UpdateToolCommand represents the command to update a tool.
 type UpdateToolCommand struct {
+	SessionID   uuid.UUID
 	ID          uuid.UUID
 	Description *string
 	Name        *string
@@ -23,11 +24,13 @@ type UpdateToolCommand struct {
 
 // NewUpdateToolCommand creates a new update tool command.
 func NewUpdateToolCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 	Description *string,
 	Name *string,
 ) *UpdateToolCommand {
 	return &UpdateToolCommand{
+		SessionID:   SessionID,
 		ID:          id,
 		Description: Description,
 		Name:        Name,

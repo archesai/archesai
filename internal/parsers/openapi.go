@@ -115,6 +115,14 @@ func ExtractOperations(doc *openapi.OpenAPI) []OperationDef {
 					}
 				}
 
+				// Extract x-codegen-custom-handler extension
+				if op.Extensions != nil {
+					if customHandlerExt := op.Extensions.GetOrZero("x-codegen-custom-handler"); customHandlerExt != nil {
+						// The Value field is a string in the speakeasy openapi library
+						operationDef.CustomHandler = (customHandlerExt.Value == "true")
+					}
+				}
+
 				// Extract security requirements
 				operationDef.Security = extractSecurityRequirements(op, doc)
 
@@ -204,8 +212,16 @@ func extractSecurityRequirements(op *openapi.Operation, doc *openapi.OpenAPI) []
 	var securityDefs []SecurityDef
 
 	securityRequirements := op.Security
+
+	// Important: If operation explicitly sets empty security array, it means no auth
+	// Only use global security if the operation has no security field at all (nil)
 	if securityRequirements == nil && doc != nil && doc.Security != nil {
 		securityRequirements = doc.Security
+	}
+
+	// If security is explicitly empty, return empty slice (no auth required)
+	if securityRequirements != nil && len(securityRequirements) == 0 {
+		return securityDefs
 	}
 
 	for _, secReq := range securityRequirements {

@@ -69,11 +69,11 @@ func (r *SQLiteInvitationRepository) ListByOrganization(ctx context.Context, org
 
 }
 
-// GetByEmail retrieves a single invitation by email and organizationID
-func (r *SQLiteInvitationRepository) GetByEmail(ctx context.Context, email string, organizationID string) (*entities.Invitation, error) {
+// GetInvitationByEmail retrieves a single invitation by email and organizationID
+func (r *SQLiteInvitationRepository) GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*entities.Invitation, error) {
 
-	// TODO: Implement GetByEmail - fetch single record
-	return nil, fmt.Errorf("GetByEmail not yet implemented - requires custom mapping")
+	// TODO: Implement GetInvitationByEmail - fetch single record
+	return nil, fmt.Errorf("GetInvitationByEmail not yet implemented - requires custom mapping")
 
 }
 

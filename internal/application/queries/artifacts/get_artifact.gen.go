@@ -12,15 +12,20 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// GetArtifactQuery represents a query to get a artifact.
+// GetArtifactQuery represents a query to get artifact.
 type GetArtifactQuery struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewGetArtifactQuery creates a new get artifact query.
-func NewGetArtifactQuery(id uuid.UUID) *GetArtifactQuery {
+func NewGetArtifactQuery(
+	SessionID uuid.UUID,
+	id uuid.UUID,
+) *GetArtifactQuery {
 	return &GetArtifactQuery{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 
@@ -38,6 +43,7 @@ func NewGetArtifactQueryHandler(repo repositories.ArtifactRepository) *GetArtifa
 
 // Handle executes the get artifact query.
 func (h *GetArtifactQueryHandler) Handle(ctx context.Context, query *GetArtifactQuery) (*entities.Artifact, error) {
+	// Use path parameters to get the entity
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get artifact: %w", err)

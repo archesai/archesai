@@ -18,8 +18,8 @@ type AccountRepository interface {
 	List(ctx context.Context, limit, offset int32) ([]*entities.Account, int64, error)
 
 	// Additional operations
-	// GetByProviderID retrieves a single account by provider and providerAccountID
-	GetByProviderID(ctx context.Context, provider string, providerAccountID string) (*entities.Account, error)
-	// ListByUserID retrieves multiple accounts by userID
-	ListByUserID(ctx context.Context, userID string) ([]*entities.Account, error)
+	// GetAccountByProvider retrieves a single account by provider and accountIdentifier
+	GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*entities.Account, error)
+	// ListAccountsByUserID retrieves multiple accounts by userID
+	ListAccountsByUserID(ctx context.Context, userID string) ([]*entities.Account, error)
 }

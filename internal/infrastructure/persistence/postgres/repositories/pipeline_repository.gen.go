@@ -110,10 +110,8 @@ func (r *PostgresPipelineRepository) List(ctx context.Context, limit, offset int
 
 // ListByOrganization retrieves multiple pipelines by organizationID
 func (r *PostgresPipelineRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Pipeline, error) {
-
 	// TODO: Implement ListByOrganization - fetch multiple pipelines
 	return nil, fmt.Errorf("ListByOrganization not yet implemented")
-
 }
 
 func mapPipelineFromDB(db *Pipeline) *entities.Pipeline {

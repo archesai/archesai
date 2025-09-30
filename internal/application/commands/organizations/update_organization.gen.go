@@ -16,6 +16,7 @@ import (
 
 // UpdateOrganizationCommand represents the command to update a organization.
 type UpdateOrganizationCommand struct {
+	SessionID      uuid.UUID
 	ID             uuid.UUID
 	BillingEmail   *string
 	OrganizationID *uuid.UUID
@@ -23,11 +24,13 @@ type UpdateOrganizationCommand struct {
 
 // NewUpdateOrganizationCommand creates a new update organization command.
 func NewUpdateOrganizationCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 	BillingEmail *string,
 	OrganizationID *uuid.UUID,
 ) *UpdateOrganizationCommand {
 	return &UpdateOrganizationCommand{
+		SessionID:      SessionID,
 		ID:             id,
 		BillingEmail:   BillingEmail,
 		OrganizationID: OrganizationID,

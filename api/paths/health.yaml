@@ -13,3 +13,4 @@ get:
             $ref: ../components/schemas/Health.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
+  security: []

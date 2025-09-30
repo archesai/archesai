@@ -14,15 +14,18 @@ import (
 
 // DeleteOrganizationCommand represents the command to delete a organization.
 type DeleteOrganizationCommand struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewDeleteOrganizationCommand creates a new delete organization command.
 func NewDeleteOrganizationCommand(
+	SessionID uuid.UUID,
 	id uuid.UUID,
 ) *DeleteOrganizationCommand {
 	return &DeleteOrganizationCommand{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 

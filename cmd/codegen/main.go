@@ -59,7 +59,6 @@ If no path is provided, defaults to api/openapi.bundled.yaml`,
 			return fmt.Errorf("code generation failed: %w", err)
 		}
 
-		fmt.Printf("Successfully generated code from %s\n", path)
 		return nil
 	},
 }
@@ -100,7 +99,6 @@ The package name is automatically inferred from the output directory.`,
 			return fmt.Errorf("code generation failed: %w", err)
 		}
 
-		fmt.Printf("Successfully generated %s\n", outputPath)
 		return nil
 	},
 }

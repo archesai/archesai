@@ -33,10 +33,10 @@ type Account struct {
 	UpdatedAt             time.Time
 	AccessToken           *string
 	AccessTokenExpiresAt  *time.Time
-	AccountID             string
+	AccountIdentifier     string
 	IDToken               *string
 	Password              *string
-	ProviderID            string
+	Provider              string
 	RefreshToken          *string
 	RefreshTokenExpiresAt *time.Time
 	Scope                 *string
@@ -116,7 +116,7 @@ type Organization struct {
 	Logo             *string
 	Name             string
 	Plan             string
-	StripeCustomerID *string
+	StripeCustomerID string
 	Slug             string
 }
 

@@ -16,15 +16,21 @@ import (
 
 // CreateMemberCommand represents the command to create a member.
 type CreateMemberCommand struct {
-	Role string
+	SessionID      uuid.UUID
+	OrganizationID uuid.UUID
+	Role           string
 }
 
 // NewCreateMemberCommand creates a new create member command.
 func NewCreateMemberCommand(
+	SessionID uuid.UUID,
+	organizationID uuid.UUID,
 	Role string,
 ) *CreateMemberCommand {
 	return &CreateMemberCommand{
-		Role: Role,
+		SessionID:      SessionID,
+		OrganizationID: organizationID,
+		Role:           Role,
 	}
 }
 

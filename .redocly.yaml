@@ -31,6 +31,20 @@ rules:
       - logout
       - authorize
       - callback
+      - current
+      - all
+      - link
+      - me
+      - logout-all
+      - request-verification
+      - verify-email
+      - forgot-password
+      - reset-password
+      - change-email
+      - confirm-email
+      - magic-links
+      - magic-link
+      - verify-magic-link
   spec-strict-refs: error
   operation-4xx-problem-details-rfc7807: error
   operation-description: error

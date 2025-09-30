@@ -12,15 +12,20 @@ import (
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
-// GetToolQuery represents a query to get a tool.
+// GetToolQuery represents a query to get tool.
 type GetToolQuery struct {
-	ID uuid.UUID
+	SessionID uuid.UUID
+	ID        uuid.UUID
 }
 
 // NewGetToolQuery creates a new get tool query.
-func NewGetToolQuery(id uuid.UUID) *GetToolQuery {
+func NewGetToolQuery(
+	SessionID uuid.UUID,
+	id uuid.UUID,
+) *GetToolQuery {
 	return &GetToolQuery{
-		ID: id,
+		SessionID: SessionID,
+		ID:        id,
 	}
 }
 
@@ -38,6 +43,7 @@ func NewGetToolQueryHandler(repo repositories.ToolRepository) *GetToolQueryHandl
 
 // Handle executes the get tool query.
 func (h *GetToolQueryHandler) Handle(ctx context.Context, query *GetToolQuery) (*entities.Tool, error) {
+	// Use path parameters to get the entity
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get tool: %w", err)

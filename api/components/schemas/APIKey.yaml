@@ -1,13 +1,7 @@
 # yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 x-codegen:
   schemaType: entity
-  commands:
-    operations: [create, update, delete]
-  queries:
-    operations: [get, list]
   repository:
-    operations: [create, update, delete, read, list]
-  controller:
     operations: [create, update, delete, read, list]
 title: APIKey
 description: Schema for API Key entity

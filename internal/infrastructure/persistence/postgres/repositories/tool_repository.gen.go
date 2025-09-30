@@ -110,10 +110,8 @@ func (r *PostgresToolRepository) List(ctx context.Context, limit, offset int32) 
 
 // ListByOrganization retrieves multiple tools by organizationID
 func (r *PostgresToolRepository) ListByOrganization(ctx context.Context, organizationID string) ([]*entities.Tool, error) {
-
 	// TODO: Implement ListByOrganization - fetch multiple tools
 	return nil, fmt.Errorf("ListByOrganization not yet implemented")
-
 }
 
 func mapToolFromDB(db *Tool) *entities.Tool {

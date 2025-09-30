@@ -13,33 +13,46 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/pipelines"
 	queries "github.com/archesai/archesai/internal/application/queries/pipelines"
+	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // PipelinesController handles HTTP requests for pipelines endpoints.
 type PipelinesController struct {
 	// Command handlers
-	createHandler *commands.CreatePipelineCommandHandler
-	updateHandler *commands.UpdatePipelineCommandHandler
-	deleteHandler *commands.DeletePipelineCommandHandler
+	createPipelineHandler                *commands.CreatePipelineCommandHandler
+	createPipelineStepHandler            *commands.CreatePipelineStepCommandHandler
+	deletePipelineHandler                *commands.DeletePipelineCommandHandler
+	updatePipelineHandler                *commands.UpdatePipelineCommandHandler
+	validatePipelineExecutionPlanHandler *commands.ValidatePipelineExecutionPlanCommandHandler
 	// Query handlers
-	getHandler  *queries.GetPipelineQueryHandler
-	listHandler *queries.ListPipelinesQueryHandler
+	getPipelineHandler              *queries.GetPipelineQueryHandler
+	getPipelineExecutionPlanHandler *queries.GetPipelineExecutionPlanQueryHandler
+	getPipelineStepsHandler         *queries.GetPipelineStepsQueryHandler
+	listPipelinesHandler            *queries.ListPipelinesQueryHandler
 }
 
 // NewPipelinesController creates a new pipelines controller with injected handlers.
 func NewPipelinesController(
-	createHandler *commands.CreatePipelineCommandHandler,
-	updateHandler *commands.UpdatePipelineCommandHandler,
-	deleteHandler *commands.DeletePipelineCommandHandler,
-	getHandler *queries.GetPipelineQueryHandler,
-	listHandler *queries.ListPipelinesQueryHandler,
+	createPipelineHandler *commands.CreatePipelineCommandHandler,
+	createPipelineStepHandler *commands.CreatePipelineStepCommandHandler,
+	deletePipelineHandler *commands.DeletePipelineCommandHandler,
+	updatePipelineHandler *commands.UpdatePipelineCommandHandler,
+	validatePipelineExecutionPlanHandler *commands.ValidatePipelineExecutionPlanCommandHandler,
+	getPipelineHandler *queries.GetPipelineQueryHandler,
+	getPipelineExecutionPlanHandler *queries.GetPipelineExecutionPlanQueryHandler,
+	getPipelineStepsHandler *queries.GetPipelineStepsQueryHandler,
+	listPipelinesHandler *queries.ListPipelinesQueryHandler,
 ) *PipelinesController {
 	return &PipelinesController{
-		createHandler: createHandler,
-		updateHandler: updateHandler,
-		deleteHandler: deleteHandler,
-		getHandler:    getHandler,
-		listHandler:   listHandler,
+		createPipelineHandler:                createPipelineHandler,
+		createPipelineStepHandler:            createPipelineStepHandler,
+		deletePipelineHandler:                deletePipelineHandler,
+		updatePipelineHandler:                updatePipelineHandler,
+		validatePipelineExecutionPlanHandler: validatePipelineExecutionPlanHandler,
+		getPipelineHandler:                   getPipelineHandler,
+		getPipelineExecutionPlanHandler:      getPipelineExecutionPlanHandler,
+		getPipelineStepsHandler:              getPipelineStepsHandler,
+		listPipelinesHandler:                 listPipelinesHandler,
 	}
 }
 
@@ -116,27 +129,36 @@ func (c *PipelinesController) CreatePipeline(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreatePipelineRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Request body
-	var body CreatePipelineRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &CreatePipelineRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Create handler
+	// Command handler
 
-	// Map request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewCreatePipelineCommand(
+		sessionID,                // SessionID for authenticated operations
 		request.Body.Description, // Description
 		request.Body.Name,        // Name
 	)
-
-	result, err := c.createHandler.Handle(reqCtx, cmd)
+	result, err := c.createPipelineHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusCreated, map[string]interface{}{
 		"data": result,
 	})
@@ -203,6 +225,14 @@ func (c *PipelinesController) ListPipelines(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := ListPipelinesRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Query parameters
 	var params ListPipelinesParams
 	// Optional query parameter "filter"
@@ -219,12 +249,17 @@ func (c *PipelinesController) ListPipelines(ctx echo.Context) error {
 	}
 	request.Params = params
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create list query from request
-	query := queries.NewListPipelinesQuery()
+	// Query handler
+	query := queries.NewListPipelinesQuery(
+		sessionID, // SessionID for authenticated operations
+	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listHandler.Handle(reqCtx, query)
+	results, total, err := c.listPipelinesHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -281,6 +316,14 @@ func (c *PipelinesController) DeletePipeline(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeletePipelineRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -288,17 +331,21 @@ func (c *PipelinesController) DeletePipeline(ctx echo.Context) error {
 	}
 	request.ID = id
 
-	// Determine which handler to call based on operation
-	// Create delete command from request
-	cmd := commands.NewDeletePipelineCommand(
-		request.ID,
-	)
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
-	err := c.deleteHandler.Handle(reqCtx, cmd)
+	// Determine which handler to call based on operation
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewDeletePipelineCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	err := c.deletePipelineHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.NoContent(http.StatusNoContent)
 }
 
@@ -346,6 +393,14 @@ func (c *PipelinesController) GetPipeline(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetPipelineRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -353,13 +408,17 @@ func (c *PipelinesController) GetPipeline(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// Create get query from request
+	// Query handler
 	query := queries.NewGetPipelineQuery(
-		request.ID,
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
 	)
 
-	result, err := c.getHandler.Handle(reqCtx, query)
+	result, err := c.getPipelineHandler.Handle(reqCtx, query)
 	if err != nil {
 		return err
 	}
@@ -419,6 +478,14 @@ func (c *PipelinesController) UpdatePipeline(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdatePipelineRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -427,27 +494,28 @@ func (c *PipelinesController) UpdatePipeline(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body UpdatePipelineRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &UpdatePipelineRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// Update handler
+	// Command handler
 
-	// Map path parameters and request body fields to command parameters
+	// Map request to command parameters
 	cmd := commands.NewUpdatePipelineCommand(
-		request.ID,               // id (entity ID)
+		sessionID,                // SessionID for authenticated operations
+		request.ID,               // id
 		request.Body.Description, // Description
 		request.Body.Name,        // Name
 	)
-
-	result, err := c.updateHandler.Handle(reqCtx, cmd)
+	result, err := c.updatePipelineHandler.Handle(reqCtx, cmd)
 	if err != nil {
 		return err
 	}
-
 	return ctx.JSON(http.StatusOK, map[string]interface{}{
 		"data": result,
 	})
@@ -508,6 +576,14 @@ func (c *PipelinesController) GetPipelineSteps(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetPipelineStepsRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -515,10 +591,24 @@ func (c *PipelinesController) GetPipelineSteps(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// TODO: Handle custom operation GetPipelineSteps
-	_ = reqCtx // Custom operation not yet implemented
-	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+	// Query handler
+	query := queries.NewGetPipelineStepsQuery(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+
+	result, err := c.getPipelineStepsHandler.Handle(reqCtx, query)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
 }
 
 // ============================================================================
@@ -597,6 +687,14 @@ func (c *PipelinesController) CreatePipelineStep(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := CreatePipelineStepRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -605,16 +703,35 @@ func (c *PipelinesController) CreatePipelineStep(ctx echo.Context) error {
 	request.ID = id
 
 	// Request body
-	var body CreatePipelineStepRequestBody
-	if err := ctx.Bind(&body); err != nil {
+	request.Body = &CreatePipelineStepRequestBody{}
+	if err := ctx.Bind(request.Body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	request.Body = &body
+
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
-	// TODO: Handle custom operation CreatePipelineStep
-	_ = reqCtx // Custom operation not yet implemented
-	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewCreatePipelineStepCommand(
+		sessionID,                 // SessionID for authenticated operations
+		request.ID,                // id
+		request.Body.Config,       // Config
+		request.Body.Dependencies, // Dependencies
+		request.Body.Description,  // Description
+		request.Body.Name,         // Name
+		request.Body.Position,     // Position
+		request.Body.ToolID,       // ToolID
+	)
+	result, err := c.createPipelineStepHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
 }
 
 // ============================================================================
@@ -683,6 +800,14 @@ func (c *PipelinesController) GetPipelineExecutionPlan(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := GetPipelineExecutionPlanRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -690,10 +815,24 @@ func (c *PipelinesController) GetPipelineExecutionPlan(ctx echo.Context) error {
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// TODO: Handle custom operation GetPipelineExecutionPlan
-	_ = reqCtx // Custom operation not yet implemented
-	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+	// Query handler
+	query := queries.NewGetPipelineExecutionPlanQuery(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+
+	result, err := c.getPipelineExecutionPlanHandler.Handle(reqCtx, query)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]interface{}{
+		"data": result,
+	})
 }
 
 // ============================================================================
@@ -762,6 +901,14 @@ func (c *PipelinesController) ValidatePipelineExecutionPlan(ctx echo.Context) er
 	reqCtx := ctx.Request().Context()
 	request := ValidatePipelineExecutionPlanRequest{}
 
+	// Extract session ID from context for authenticated operations
+	var sessionID uuid.UUID
+	if sid := ctx.Get("sessionID"); sid != nil {
+		sessionID = sid.(uuid.UUID)
+	} else {
+		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	}
+
 	// Path parameter "id"
 	var id uuid.UUID
 	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
@@ -769,8 +916,22 @@ func (c *PipelinesController) ValidatePipelineExecutionPlan(ctx echo.Context) er
 	}
 	request.ID = id
 
+	// Set auth scopes
+	ctx.Set(middleware.BearerAuthScopes, []string{})
+
 	// Determine which handler to call based on operation
-	// TODO: Handle custom operation ValidatePipelineExecutionPlan
-	_ = reqCtx // Custom operation not yet implemented
-	return echo.NewHTTPError(http.StatusNotImplemented, "Operation not implemented")
+	// Command handler
+
+	// Map request to command parameters
+	cmd := commands.NewValidatePipelineExecutionPlanCommand(
+		sessionID,  // SessionID for authenticated operations
+		request.ID, // id
+	)
+	result, err := c.validatePipelineExecutionPlanHandler.Handle(reqCtx, cmd)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(http.StatusCreated, map[string]interface{}{
+		"data": result,
+	})
 }
