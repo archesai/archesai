@@ -13,7 +13,6 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/artifacts"
 	queries "github.com/archesai/archesai/internal/application/queries/artifacts"
-	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // ArtifactsController handles HTTP requests for artifacts endpoints.
@@ -128,7 +127,7 @@ func (c *ArtifactsController) CreateArtifact(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -234,7 +233,7 @@ func (c *ArtifactsController) ListArtifacts(ctx echo.Context) error {
 	request.Params = params
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -316,7 +315,7 @@ func (c *ArtifactsController) DeleteArtifact(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -393,7 +392,7 @@ func (c *ArtifactsController) GetArtifact(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -485,7 +484,7 @@ func (c *ArtifactsController) UpdateArtifact(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler

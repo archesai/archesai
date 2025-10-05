@@ -13,7 +13,6 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/members"
 	queries "github.com/archesai/archesai/internal/application/queries/members"
-	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // MembersController handles HTTP requests for members endpoints.
@@ -135,7 +134,7 @@ func (c *MembersController) CreateMember(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -249,7 +248,7 @@ func (c *MembersController) ListMembers(ctx echo.Context) error {
 	request.Params = params
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -340,7 +339,7 @@ func (c *MembersController) DeleteMember(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -426,7 +425,7 @@ func (c *MembersController) GetMember(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -525,7 +524,7 @@ func (c *MembersController) UpdateMember(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler

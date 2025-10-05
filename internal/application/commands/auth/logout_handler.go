@@ -6,16 +6,16 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/infrastructure/auth"
+	"github.com/archesai/archesai/internal/core/services"
 )
 
 // LogoutCommandHandler handles logout commands.
 type LogoutCommandHandler struct {
-	authService *auth.Service
+	authService services.AuthService
 }
 
 // NewLogoutCommandHandler creates a new logout command handler.
-func NewLogoutCommandHandler(authService *auth.Service) *LogoutCommandHandler {
+func NewLogoutCommandHandler(authService services.AuthService) *LogoutCommandHandler {
 	return &LogoutCommandHandler{
 		authService: authService,
 	}

@@ -8,7 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/archesai/archesai/internal/adapters/llm"
+	"github.com/archesai/archesai/internal/infrastructure/llm"
 )
 
 // Model represents the TUI application state.

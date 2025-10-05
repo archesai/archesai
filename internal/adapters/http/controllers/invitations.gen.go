@@ -13,7 +13,6 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/invitations"
 	queries "github.com/archesai/archesai/internal/application/queries/invitations"
-	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // InvitationsController handles HTTP requests for invitations endpoints.
@@ -136,7 +135,7 @@ func (c *InvitationsController) CreateInvitation(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -251,7 +250,7 @@ func (c *InvitationsController) ListInvitations(ctx echo.Context) error {
 	request.Params = params
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -342,7 +341,7 @@ func (c *InvitationsController) DeleteInvitation(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -428,7 +427,7 @@ func (c *InvitationsController) GetInvitation(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -528,7 +527,7 @@ func (c *InvitationsController) UpdateInvitation(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler

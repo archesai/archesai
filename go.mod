@@ -15,15 +15,16 @@ require (
 	github.com/ollama/ollama v0.12.3
 	github.com/openai/openai-go v1.12.0
 	github.com/pgvector/pgvector-go v0.3.0
-	github.com/pressly/goose/v3 v3.25.0
+	github.com/pressly/goose/v3 v3.26.0
 	github.com/redis/go-redis/v9 v9.14.0
-	github.com/speakeasy-api/openapi v1.7.3
+	github.com/speakeasy-api/openapi v1.7.7
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.39.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.39.0
 	github.com/testcontainers/testcontainers-go/modules/redis v0.39.0
+	golang.org/x/crypto v0.42.0
 	golang.org/x/sync v0.17.0
 	golang.org/x/time v0.13.0
 	golang.org/x/tools v0.37.0
@@ -138,7 +139,7 @@ require (
 	github.com/charmbracelet/colorprofile v0.3.2 // indirect
 	github.com/charmbracelet/fang v0.4.0 // indirect
 	github.com/charmbracelet/lipgloss/v2 v2.0.0-beta.3 // indirect
-	github.com/charmbracelet/x/ansi v0.10.1 // indirect
+	github.com/charmbracelet/x/ansi v0.10.2 // indirect
 	github.com/charmbracelet/x/cellbuf v0.0.13 // indirect
 	github.com/charmbracelet/x/exp/charmtone v0.0.0-20250603201427-c31516f43444 // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
@@ -169,7 +170,7 @@ require (
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/cli v28.2.2+incompatible // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
-	github.com/docker/docker v28.4.0+incompatible // indirect
+	github.com/docker/docker v28.5.0+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.9.3 // indirect
 	github.com/docker/go-connections v0.6.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
@@ -199,7 +200,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.6.2 // indirect
 	github.com/go-git/go-git/v5 v5.16.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.1 // indirect
-	github.com/go-logfmt/logfmt v0.6.0 // indirect
+	github.com/go-logfmt/logfmt v0.6.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
@@ -380,7 +381,7 @@ require (
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
-	github.com/shirou/gopsutil/v4 v4.25.8 // indirect
+	github.com/shirou/gopsutil/v4 v4.25.9 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sigstore/cosign/v2 v2.5.0 // indirect
 	github.com/sigstore/protobuf-specs v0.5.0 // indirect
@@ -456,8 +457,7 @@ require (
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	gocloud.dev v0.42.0 // indirect
-	golang.org/x/crypto v0.42.0 // indirect
-	golang.org/x/exp v0.0.0-20250911091902-df9299821621 // indirect
+	golang.org/x/exp v0.0.0-20251002181428-27f1f14c8bb9 // indirect
 	golang.org/x/mod v0.28.0 // indirect
 	golang.org/x/net v0.44.0 // indirect
 	golang.org/x/oauth2 v0.31.0 // indirect

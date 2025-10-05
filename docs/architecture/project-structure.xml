@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-09-30T02:17:49-04:00
+  Generated: 2025-10-05T14:46:26-04:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -53,7 +53,7 @@
     <dir name="archesai" files="1" key-files="main.go"/>
     <dir name="codegen" files="1" key-files="main.go"/>
   </dir>
-  <dir name="deployments" purpose="Deployment configurations" dirs="8">
+  <dir name="deployments" purpose="Deployment configurations" dirs="7">
     <dir name="development" files="1" patterns="*.yaml"/>
     <dir name="docker" type="container" files="3" patterns="*.yaml" key-files="Dockerfile"/>
     <dir name="gcp" files="1" patterns="*.yaml"/>
@@ -88,7 +88,6 @@
         <dir name="unstructured" files="3" patterns="*.yaml"/>
       </dir>
     </dir>
-    <dir name="scripts" purpose="Utility scripts" files="1"/>
   </dir>
   <dir name="docs" purpose="Documentation" files="2" dirs="9">
     <dir name="api-reference" purpose="API definitions" files="1"/>
@@ -102,20 +101,17 @@
     <dir name="troubleshooting" files="1"/>
   </dir>
   <dir name="internal" dirs="7">
-    <dir name="adapters" dirs="4">
+    <dir name="adapters" dirs="3">
       <dir name="cli" files="9"/>
-      <dir name="http" dirs="3">
+      <dir name="http" dirs="2">
         <dir name="controllers" files="13" patterns="*.gen.go"/>
-        <dir name="middleware" purpose="HTTP middleware" files="1"/>
-        <dir name="server" purpose="Server infrastructure" files="8" dirs="1"/>
+        <dir name="server" purpose="Server infrastructure" files="9" dirs="1"/>
       </dir>
-      <dir name="llm" files="4"/>
       <dir name="tui" files="2" dirs="1">
         <dir name="screens"/>
       </dir>
     </dir>
-    <dir name="application" dirs="3">
-      <dir name="app" files="2" patterns="*.gen.go"/>
+    <dir name="application" dirs="2">
       <dir name="commands" dirs="11">
         <dir name="apikeys" purpose="API definitions" files="3" patterns="*.gen.go"/>
         <dir name="artifacts" files="3" patterns="*.gen.go"/>
@@ -148,23 +144,24 @@
     <dir name="codegen" files="10" dirs="1">
       <dir name="tmpl" files="11"/>
     </dir>
-    <dir name="core" dirs="5">
+    <dir name="core" dirs="6">
       <dir name="entities" files="13" patterns="*.gen.go"/>
       <dir name="errors" files="1"/>
       <dir name="events" files="15" patterns="*.gen.go"/>
       <dir name="repositories" files="14" patterns="*.gen.go"/>
-      <dir name="valueobjects" files="42" patterns="*.gen.go"/>
+      <dir name="services" files="2"/>
+      <dir name="valueobjects" files="44" patterns="*.gen.go"/>
     </dir>
-    <dir name="infrastructure" dirs="9">
+    <dir name="infrastructure" dirs="11">
       <dir name="auth" purpose="Authentication and authorization" files="4" dirs="1" key-files="service.go">
         <dir name="oauth" files="4"/>
       </dir>
+      <dir name="bootstrap" files="2" patterns="*.gen.go"/>
       <dir name="cache" purpose="Caching layer" files="4"/>
       <dir name="config" purpose="Configuration management" files="3"/>
       <dir name="events" files="4"/>
-      <dir name="http" dirs="1">
-        <dir name="middleware" purpose="HTTP middleware" files="2"/>
-      </dir>
+      <dir name="http"/>
+      <dir name="llm" files="4"/>
       <dir name="notifications" files="4" key-files="service.go"/>
       <dir name="persistence" files="2" dirs="2">
         <dir name="postgres" type="database" files="1" dirs="3" patterns="*.yaml"/>
@@ -177,9 +174,8 @@
       </dir>
     </dir>
     <dir name="parsers" files="9" patterns="*.gen.go"/>
-    <dir name="shared" dirs="3">
+    <dir name="shared" dirs="2">
       <dir name="logger" purpose="Logging utilities" files="2"/>
-      <dir name="middleware" purpose="HTTP middleware" files="2"/>
       <dir name="testutil" type="testing" purpose="Testing utilities" files="1"/>
     </dir>
   </dir>
@@ -210,7 +206,7 @@
       <dir name="apis" type="api-spec" purpose="API definitions" files="1" patterns="*.yaml"/>
       <dir name="pages" files="2" dirs="10">
         <dir name="api-reference" purpose="API definitions" files="1"/>
-        <dir name="architecture" files="4"/>
+        <dir name="architecture" files="5"/>
         <dir name="deployment" files="4"/>
         <dir name="documentation" purpose="Documentation"/>
         <dir name="features" files="6"/>
@@ -223,7 +219,7 @@
       <dir name="public" files="1"/>
       <dir name="src" files="3" patterns="*.tsx"/>
     </dir>
-    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="5" key-files="package.json,Dockerfile">
+    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="4" key-files="package.json,Dockerfile">
       <dir name="public" files="1"/>
       <dir name="src" files="2" dirs="5" patterns="*.tsx">
         <dir name="app" files="1" dirs="2" patterns="*.tsx"/>

@@ -13,7 +13,6 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/labels"
 	queries "github.com/archesai/archesai/internal/application/queries/labels"
-	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // LabelsController handles HTTP requests for labels endpoints.
@@ -127,7 +126,7 @@ func (c *LabelsController) CreateLabel(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -232,7 +231,7 @@ func (c *LabelsController) ListLabels(ctx echo.Context) error {
 	request.Params = params
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -314,7 +313,7 @@ func (c *LabelsController) DeleteLabel(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -391,7 +390,7 @@ func (c *LabelsController) GetLabel(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -481,7 +480,7 @@ func (c *LabelsController) UpdateLabel(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler

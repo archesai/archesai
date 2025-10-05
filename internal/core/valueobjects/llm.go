@@ -1,15 +1,10 @@
-package llm
-
-import (
-	"context"
-)
+package valueobjects
 
 // Role represents the role of a message participant.
 type Role string
 
 // Role constants define the different types of roles in a conversation.
 const (
-	// RoleSystem represents system messages.
 	RoleSystem    Role = "system"
 	RoleUser      Role = "user"
 	RoleAssistant Role = "assistant"
@@ -22,15 +17,14 @@ type Provider string
 
 // Provider constants define supported AI providers.
 const (
-	// OpenAI represents the OpenAI provider.
-	OpenAI          Provider = "OPEN_AI"
-	Azure           Provider = "AZURE"
-	AzureAD         Provider = "AZURE_AD"
-	CloudflareAzure Provider = "CLOUDFLARE_AZURE"
-	Gemini          Provider = "GEMINI"
-	Claude          Provider = "CLAUDE"
-	Ollama          Provider = "OLLAMA"
-	DeepSeek        Provider = "DEEPSEEK"
+	ProviderOpenAI          Provider = "OPEN_AI"
+	ProviderAzure           Provider = "AZURE"
+	ProviderAzureAD         Provider = "AZURE_AD"
+	ProviderCloudflareAzure Provider = "CLOUDFLARE_AZURE"
+	ProviderGemini          Provider = "GEMINI"
+	ProviderClaude          Provider = "CLAUDE"
+	ProviderOllama          Provider = "OLLAMA"
+	ProviderDeepSeek        Provider = "DEEPSEEK"
 )
 
 // Message represents a single message in a chat conversation.
@@ -76,24 +70,6 @@ type Usage struct {
 	PromptTokens     int `json:"prompt_tokens"`
 	CompletionTokens int `json:"completion_tokens"`
 	TotalTokens      int `json:"total_tokens"`
-}
-
-// LLM defines the interface that all LLM providers must implement.
-type LLM interface {
-	CreateChatCompletion(
-		ctx context.Context,
-		req ChatCompletionRequest,
-	) (ChatCompletionResponse, error)
-	CreateChatCompletionStream(
-		ctx context.Context,
-		req ChatCompletionRequest,
-	) (ChatCompletionStream, error)
-}
-
-// ChatCompletionStream represents a streaming response.
-type ChatCompletionStream interface {
-	Recv() (ChatCompletionResponse, error)
-	Close() error
 }
 
 // StreamDelta represents a delta in a streaming response.

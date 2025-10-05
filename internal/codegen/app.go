@@ -174,7 +174,7 @@ func (g *Generator) GenerateAppWiring(
 		"Domains": domains,
 	}
 
-	appPath := filepath.Join("internal/application/app", "app.gen.go")
+	appPath := filepath.Join("internal/infrastructure/bootstrap", "app.gen.go")
 	appTmpl, ok := g.templates["app.tmpl"]
 	if !ok {
 		return fmt.Errorf("app template not found")
@@ -185,7 +185,7 @@ func (g *Generator) GenerateAppWiring(
 	}
 
 	// Generate infrastructure.go
-	infraPath := filepath.Join("internal/application/app", "infrastructure.gen.go")
+	infraPath := filepath.Join("internal/infrastructure/bootstrap", "infrastructure.gen.go")
 	infraTmpl, ok := g.templates["infrastructure.tmpl"]
 	if !ok {
 		return fmt.Errorf("infrastructure template not found")

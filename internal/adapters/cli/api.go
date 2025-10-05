@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/archesai/archesai/internal/application/app"
+	"github.com/archesai/archesai/internal/infrastructure/bootstrap"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 )
 
@@ -70,7 +70,7 @@ func runAPI(cmd *cobra.Command, _ []string) error {
 	}
 
 	// Create application container
-	appContainer, err := app.NewApp(cfg.Config)
+	appContainer, err := bootstrap.NewApp(cfg.Config)
 	if err != nil {
 		return fmt.Errorf("failed to create application: %w", err)
 	}

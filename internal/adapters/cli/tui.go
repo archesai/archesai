@@ -7,8 +7,9 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 
-	"github.com/archesai/archesai/internal/adapters/llm"
 	"github.com/archesai/archesai/internal/adapters/tui"
+	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/infrastructure/llm"
 )
 
 // tuiCmd represents the tui command.
@@ -87,30 +88,30 @@ func runTUI(_ *cobra.Command, _ []string) error {
 	}
 
 	// Convert provider string to LLMProvider
-	var provider llm.Provider
+	var provider valueobjects.Provider
 	switch tuiProvider {
 	case "openai":
-		provider = llm.OpenAI
+		provider = valueobjects.ProviderOpenAI
 	case "claude":
-		provider = llm.Claude
+		provider = valueobjects.ProviderClaude
 	case "gemini":
-		provider = llm.Gemini
+		provider = valueobjects.ProviderGemini
 	case providerOllama:
-		provider = llm.Ollama
+		provider = valueobjects.ProviderOllama
 	case "deepseek":
-		provider = llm.DeepSeek
+		provider = valueobjects.ProviderDeepSeek
 	default:
 		return fmt.Errorf("unsupported provider: %s", tuiProvider)
 	}
 
 	// Initialize LLM client
-	var llmClient llm.LLM
+	var llmService llm.LLM
 	switch provider {
-	case llm.OpenAI:
-		llmClient = llm.NewOpenAILLM(tuiAPIKey)
-	case llm.Ollama:
+	case valueobjects.ProviderOpenAI:
+		llmService = llm.NewOpenAILLM(tuiAPIKey)
+	case valueobjects.ProviderOllama:
 		var err error
-		llmClient, err = llm.NewOllamaLLM()
+		llmService, err = llm.NewOllamaLLM()
 		if err != nil {
 			return fmt.Errorf("failed to create Ollama client: %w", err)
 		}
@@ -118,12 +119,12 @@ func runTUI(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("provider %s not yet implemented in new chat interface", tuiProvider)
 	}
 
-	if llmClient == nil {
+	if llmService == nil {
 		return fmt.Errorf("failed to initialize LLM client")
 	}
 
 	// Create chat client
-	chatClient := llm.NewChatClient(llmClient)
+	chatClient := llm.NewChatClient(llmService)
 
 	// Create sample personas with the specified model
 	modelName := getModelForProvider(provider)
@@ -178,15 +179,15 @@ func createSamplePersonas(model string) []*llm.ChatPersona {
 	return personas
 }
 
-func getModelForProvider(provider llm.Provider) string {
+func getModelForProvider(provider valueobjects.Provider) string {
 	switch provider {
-	case llm.Claude:
+	case valueobjects.ProviderClaude:
 		return "claude-3-opus-20240229"
-	case llm.Gemini:
+	case valueobjects.ProviderGemini:
 		return "gemini-pro"
-	case llm.Ollama:
+	case valueobjects.ProviderOllama:
 		return "llama2"
-	case llm.DeepSeek:
+	case valueobjects.ProviderDeepSeek:
 		return "deepseek-chat"
 	default:
 		return "gpt-4"

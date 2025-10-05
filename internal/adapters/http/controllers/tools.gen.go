@@ -13,7 +13,6 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/tools"
 	queries "github.com/archesai/archesai/internal/application/queries/tools"
-	"github.com/archesai/archesai/internal/infrastructure/http/middleware"
 )
 
 // ToolsController handles HTTP requests for tools endpoints.
@@ -128,7 +127,7 @@ func (c *ToolsController) CreateTool(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -234,7 +233,7 @@ func (c *ToolsController) ListTools(ctx echo.Context) error {
 	request.Params = params
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -316,7 +315,7 @@ func (c *ToolsController) DeleteTool(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -393,7 +392,7 @@ func (c *ToolsController) GetTool(ctx echo.Context) error {
 	request.ID = id
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -484,7 +483,7 @@ func (c *ToolsController) UpdateTool(ctx echo.Context) error {
 	}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler

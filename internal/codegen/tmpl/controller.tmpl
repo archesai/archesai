@@ -346,10 +346,10 @@ func (c *{{ $.Domain }}Controller) {{ .GoName }}(ctx echo.Context) error {
 	{{- if .HasBearerAuth }}
 
 	// Set auth scopes
-	ctx.Set(middleware.BearerAuthScopes, []string{})
+	ctx.Set(server.BearerAuthScopes, []string{})
 	{{- end }}
 	{{- if .HasCookieAuth }}
-	ctx.Set(middleware.SessionCookieScopes, []string{})
+	ctx.Set(server.SessionCookieScopes, []string{})
 	{{- end }}
 
 	// Determine which handler to call based on operation

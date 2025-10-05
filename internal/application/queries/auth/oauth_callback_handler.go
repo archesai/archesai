@@ -5,18 +5,19 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/events"
-	"github.com/archesai/archesai/internal/infrastructure/auth"
+	"github.com/archesai/archesai/internal/core/services"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // OAuthCallbackQueryHandler handles the OAuth callback query.
 type OAuthCallbackQueryHandler struct {
-	authService *auth.Service
+	authService services.AuthService
 	publisher   events.Publisher
 }
 
 // NewOAuthCallbackQueryHandler creates a new OAuth callback query handler.
 func NewOAuthCallbackQueryHandler(
-	authService *auth.Service,
+	authService services.AuthService,
 	publisher events.Publisher,
 ) *OAuthCallbackQueryHandler {
 	return &OAuthCallbackQueryHandler{
@@ -29,7 +30,7 @@ func NewOAuthCallbackQueryHandler(
 func (h *OAuthCallbackQueryHandler) Handle(
 	_ context.Context,
 	query *OAuthCallbackQuery,
-) (*auth.Tokens, error) {
+) (*valueobjects.AuthTokens, error) {
 	if query.Provider == "" {
 		return nil, fmt.Errorf("provider is required")
 	}

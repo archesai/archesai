@@ -158,6 +158,13 @@
             "schemaType": "valueobject"
           }
         },
+        "url": {
+          "default": "http://localhost:3001",
+          "description": "The public URL for the API",
+          "example": "http://localhost:3001",
+          "format": "uri",
+          "type": "string"
+        },
         "validate": {
           "default": true,
           "description": "Enable or disable request validation",
@@ -1557,13 +1564,6 @@
           "example": true,
           "type": "boolean"
         },
-        "host": {
-          "default": "localhost",
-          "description": "Host address where the platform service will be accessible",
-          "example": "example-string",
-          "minLength": 1,
-          "type": "string"
-        },
         "image": {
           "additionalProperties": false,
           "description": "Container image configuration",
@@ -1655,6 +1655,13 @@
           "x-codegen": {
             "schemaType": "valueobject"
           }
+        },
+        "url": {
+          "default": "http://localhost:3000",
+          "description": "Platform URL",
+          "example": "https://platform.archesai.dev",
+          "format": "uri",
+          "type": "string"
         }
       },
       "required": ["enabled"],

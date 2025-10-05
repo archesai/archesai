@@ -13,6 +13,7 @@ import (
 	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/repositories"
+	"github.com/archesai/archesai/internal/core/services"
 	"github.com/archesai/archesai/internal/core/valueobjects"
 	"github.com/archesai/archesai/internal/infrastructure/auth/oauth"
 	"github.com/archesai/archesai/internal/infrastructure/cache"
@@ -24,6 +25,7 @@ const (
 )
 
 // Service provides authentication functionality across all transport layers.
+// It implements the core services.AuthService interface.
 type Service struct {
 	config             *config.Config
 	logger             *slog.Logger
@@ -50,6 +52,9 @@ type MagicLinkDeliverer interface {
 type OTPDeliverer interface {
 	Deliver(ctx context.Context, token *valueobjects.MagicLinkToken, baseURL string) error
 }
+
+// Ensure Service implements services.AuthService
+var _ services.AuthService = (*Service)(nil)
 
 // OAuthProvider interface for OAuth providers
 type OAuthProvider interface {
@@ -136,7 +141,7 @@ func (s *Service) HandleOAuthCallback(
 	provider string,
 	code string,
 	_ string,
-) (*Tokens, error) {
+) (*valueobjects.AuthTokens, error) {
 	p, exists := s.oauthProviders[provider]
 	if !exists {
 		return nil, fmt.Errorf("OAuth provider %s not configured", provider)
@@ -193,11 +198,11 @@ func (s *Service) GenerateMagicLink(
 
 	// Send notification if deliverer is configured
 	if s.magicLinkDeliverer != nil {
-		baseURL := fmt.Sprintf("http://%s:%d", s.config.API.Host, int(s.config.API.Port))
-		if s.config.API.Host == bindHost {
-			baseURL = fmt.Sprintf("http://localhost:%d", int(s.config.API.Port))
+		baseURL := s.config.Platform.URL
+		if baseURL == nil || *baseURL == "" {
+			return "", fmt.Errorf("platform URL not configured for magic link delivery")
 		}
-		if err := s.magicLinkDeliverer.Deliver(ctx, token, baseURL); err != nil {
+		if err := s.magicLinkDeliverer.Deliver(ctx, token, *baseURL); err != nil {
 			return "", fmt.Errorf("failed to deliver magic link: %w", err)
 		}
 	}
@@ -206,7 +211,10 @@ func (s *Service) GenerateMagicLink(
 }
 
 // VerifyMagicLink validates a magic link token and creates a session.
-func (s *Service) VerifyMagicLink(ctx context.Context, token string) (*Tokens, error) {
+func (s *Service) VerifyMagicLink(
+	ctx context.Context,
+	token string,
+) (*valueobjects.AuthTokens, error) {
 	// Validate the magic link token
 	claims, err := s.magicLink.ValidateLink(token)
 	if err != nil {
@@ -267,7 +275,7 @@ func (s *Service) AuthenticateWithPassword(
 	ctx context.Context,
 	email string,
 	password string,
-) (*Tokens, error) {
+) (*valueobjects.AuthTokens, error) {
 	// Find user by email
 	user, err := s.userRepo.GetUserByEmail(ctx, email)
 	if err != nil {
@@ -302,7 +310,10 @@ func (s *Service) AuthenticateWithPassword(
 }
 
 // RefreshToken validates a refresh token and issues new tokens.
-func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Tokens, error) {
+func (s *Service) RefreshToken(
+	ctx context.Context,
+	refreshToken string,
+) (*valueobjects.AuthTokens, error) {
 	// Validate refresh token
 	claims, err := s.tokenManager.ValidateRefreshToken(refreshToken)
 	if err != nil {
@@ -422,7 +433,7 @@ func (s *Service) createSession(
 func (s *Service) generateTokens(
 	user *entities.User,
 	session *entities.Session,
-) (*Tokens, error) {
+) (*valueobjects.AuthTokens, error) {
 	// Generate access token (short-lived)
 	accessToken, err := s.tokenManager.CreateAccessToken(user.ID, session.ID)
 	if err != nil {
@@ -435,7 +446,7 @@ func (s *Service) generateTokens(
 		return nil, fmt.Errorf("failed to create refresh token: %w", err)
 	}
 
-	return &Tokens{
+	return &valueobjects.AuthTokens{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		TokenType:    "Bearer",
@@ -444,17 +455,11 @@ func (s *Service) generateTokens(
 	}, nil
 }
 
-// Tokens represents the tokens returned after successful authentication.
-type Tokens struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
-	TokenType    string `json:"tokenType"`
-	ExpiresIn    int    `json:"expiresIn"`
-	SessionID    string `json:"sessionId"`
-}
-
 // Register creates a new user account and session
-func (s *Service) Register(ctx context.Context, email, password, name string) (*Tokens, error) {
+func (s *Service) Register(
+	ctx context.Context,
+	email, password, name string,
+) (*valueobjects.AuthTokens, error) {
 	// Check if user already exists
 	existingUser, _ := s.userRepo.GetUserByEmail(ctx, email)
 	if existingUser != nil {

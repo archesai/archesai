@@ -9,6 +9,8 @@ import (
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
 	"github.com/openai/openai-go/packages/ssestream"
+
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // OpenAILLM implements the LLM interface for OpenAI.
@@ -43,20 +45,22 @@ func NewOpenAILLMWithHost(apiKey string, host string) *OpenAILLM {
 }
 
 // convertToOpenAIMessages converts our generic Message type to OpenAI's message param type.
-func convertToOpenAIMessages(messages []Message) []openai.ChatCompletionMessageParamUnion {
+func convertToOpenAIMessages(
+	messages []valueobjects.Message,
+) []openai.ChatCompletionMessageParamUnion {
 	var openAIMessages []openai.ChatCompletionMessageParamUnion
 
 	for _, msg := range messages {
 		switch msg.Role {
-		case RoleSystem:
+		case valueobjects.RoleSystem:
 			openAIMessages = append(openAIMessages, openai.SystemMessage(msg.Content))
-		case RoleUser:
+		case valueobjects.RoleUser:
 			openAIMessages = append(openAIMessages, openai.UserMessage(msg.Content))
-		case RoleAssistant:
+		case valueobjects.RoleAssistant:
 			// AssistantMessage constructor doesn't support tool calls directly
 			// Tool calls would need to be handled with a custom message type
 			openAIMessages = append(openAIMessages, openai.AssistantMessage(msg.Content))
-		case RoleFunction:
+		case valueobjects.RoleFunction:
 			// Tool/Function messages
 			openAIMessages = append(openAIMessages, openai.ToolMessage(msg.Name, msg.Content))
 		}
@@ -66,7 +70,7 @@ func convertToOpenAIMessages(messages []Message) []openai.ChatCompletionMessageP
 }
 
 // convertToOpenAITools converts our Tool type to OpenAI's tool param.
-func convertToOpenAITools(tools []Tool) []openai.ChatCompletionToolParam {
+func convertToOpenAITools(tools []valueobjects.Tool) []openai.ChatCompletionToolParam {
 	if len(tools) == 0 {
 		return nil
 	}
@@ -95,8 +99,8 @@ func convertToOpenAITools(tools []Tool) []openai.ChatCompletionToolParam {
 // CreateChatCompletion implements the LLM interface for OpenAI.
 func (o *OpenAILLM) CreateChatCompletion(
 	ctx context.Context,
-	req ChatCompletionRequest,
-) (ChatCompletionResponse, error) {
+	req valueobjects.ChatCompletionRequest,
+) (valueobjects.ChatCompletionResponse, error) {
 	params := openai.ChatCompletionNewParams{
 		Model:    req.Model,
 		Messages: convertToOpenAIMessages(req.Messages),
@@ -130,24 +134,24 @@ func (o *OpenAILLM) CreateChatCompletion(
 	// Make the API call
 	completion, err := o.client.Chat.Completions.New(ctx, params)
 	if err != nil {
-		return ChatCompletionResponse{}, fmt.Errorf("OpenAI API error: %w", err)
+		return valueobjects.ChatCompletionResponse{}, fmt.Errorf("OpenAI API error: %w", err)
 	}
 
 	// Convert response
-	var choices []Choice
+	var choices []valueobjects.Choice
 	for _, c := range completion.Choices {
-		msg := Message{
-			Role:    RoleAssistant,
+		msg := valueobjects.Message{
+			Role:    valueobjects.RoleAssistant,
 			Content: c.Message.Content,
 		}
 
 		// Convert tool calls
 		if len(c.Message.ToolCalls) > 0 {
 			for _, tc := range c.Message.ToolCalls {
-				msg.ToolCalls = append(msg.ToolCalls, ToolCall{
+				msg.ToolCalls = append(msg.ToolCalls, valueobjects.ToolCall{
 					ID:   tc.ID,
 					Type: string(tc.Type),
-					Function: ToolCallFunction{
+					Function: valueobjects.ToolCallFunction{
 						Name:      tc.Function.Name,
 						Arguments: tc.Function.Arguments,
 					},
@@ -155,17 +159,17 @@ func (o *OpenAILLM) CreateChatCompletion(
 			}
 		}
 
-		choices = append(choices, Choice{
+		choices = append(choices, valueobjects.Choice{
 			Index:        int(c.Index),
 			Message:      msg,
 			FinishReason: c.FinishReason,
 		})
 	}
 
-	return ChatCompletionResponse{
+	return valueobjects.ChatCompletionResponse{
 		ID:      completion.ID,
 		Choices: choices,
-		Usage: Usage{
+		Usage: valueobjects.Usage{
 			PromptTokens:     int(completion.Usage.PromptTokens),
 			CompletionTokens: int(completion.Usage.CompletionTokens),
 			TotalTokens:      int(completion.Usage.TotalTokens),
@@ -186,34 +190,34 @@ func newOpenAIStreamWrapper(
 	}
 }
 
-func (w *openAIStreamWrapper) Recv() (ChatCompletionResponse, error) {
+func (w *openAIStreamWrapper) Recv() (valueobjects.ChatCompletionResponse, error) {
 	if !w.stream.Next() {
 		err := w.stream.Err()
 		if err == nil {
-			return ChatCompletionResponse{}, io.EOF
+			return valueobjects.ChatCompletionResponse{}, io.EOF
 		}
-		return ChatCompletionResponse{}, err
+		return valueobjects.ChatCompletionResponse{}, err
 	}
 
 	chunk := w.stream.Current()
 
-	var choices []Choice
+	var choices []valueobjects.Choice
 	for _, c := range chunk.Choices {
-		msg := Message{}
+		msg := valueobjects.Message{}
 
 		// Handle delta content
 		if c.Delta.Content != "" {
 			msg.Content = c.Delta.Content
-			msg.Role = RoleAssistant
+			msg.Role = valueobjects.RoleAssistant
 		}
 
 		// Handle delta tool calls
 		if len(c.Delta.ToolCalls) > 0 {
 			for _, tc := range c.Delta.ToolCalls {
-				msg.ToolCalls = append(msg.ToolCalls, ToolCall{
+				msg.ToolCalls = append(msg.ToolCalls, valueobjects.ToolCall{
 					ID:   tc.ID,
 					Type: tc.Type,
-					Function: ToolCallFunction{
+					Function: valueobjects.ToolCallFunction{
 						Name:      tc.Function.Name,
 						Arguments: tc.Function.Arguments,
 					},
@@ -221,14 +225,14 @@ func (w *openAIStreamWrapper) Recv() (ChatCompletionResponse, error) {
 			}
 		}
 
-		choices = append(choices, Choice{
+		choices = append(choices, valueobjects.Choice{
 			Index:        int(c.Index),
 			Message:      msg,
 			FinishReason: c.FinishReason,
 		})
 	}
 
-	return ChatCompletionResponse{
+	return valueobjects.ChatCompletionResponse{
 		ID:      chunk.ID,
 		Choices: choices,
 	}, nil
@@ -242,7 +246,7 @@ func (w *openAIStreamWrapper) Close() error {
 // CreateChatCompletionStream implements the LLM interface for OpenAI streaming.
 func (o *OpenAILLM) CreateChatCompletionStream(
 	ctx context.Context,
-	req ChatCompletionRequest,
+	req valueobjects.ChatCompletionRequest,
 ) (ChatCompletionStream, error) {
 	params := openai.ChatCompletionNewParams{
 		Model:    req.Model,

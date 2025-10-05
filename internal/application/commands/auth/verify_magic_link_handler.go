@@ -4,16 +4,19 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/infrastructure/auth"
+	"github.com/archesai/archesai/internal/core/services"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // VerifyMagicLinkCommandHandler handles magic link verification commands.
 type VerifyMagicLinkCommandHandler struct {
-	authService *auth.Service
+	authService services.AuthService
 }
 
 // NewVerifyMagicLinkCommandHandler creates a new magic link verification command handler.
-func NewVerifyMagicLinkCommandHandler(authService *auth.Service) *VerifyMagicLinkCommandHandler {
+func NewVerifyMagicLinkCommandHandler(
+	authService services.AuthService,
+) *VerifyMagicLinkCommandHandler {
 	return &VerifyMagicLinkCommandHandler{
 		authService: authService,
 	}
@@ -23,7 +26,7 @@ func NewVerifyMagicLinkCommandHandler(authService *auth.Service) *VerifyMagicLin
 func (h *VerifyMagicLinkCommandHandler) Handle(
 	ctx context.Context,
 	cmd *VerifyMagicLinkCommand,
-) (*auth.Tokens, error) {
+) (*valueobjects.AuthTokens, error) {
 	// Check for token
 	token := ""
 	if cmd.Token != nil {

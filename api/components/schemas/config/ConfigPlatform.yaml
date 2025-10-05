@@ -12,12 +12,12 @@ properties:
     type: boolean
     default: false
     example: true
-  host:
-    description: Host address where the platform service will be accessible
+  url:
+    description: Platform URL
     type: string
-    default: localhost
-    minLength: 1
-    example: example-string
+    default: http://localhost:3000
+    format: uri
+    example: https://platform.archesai.dev
   image:
     $ref: ./ConfigImage.yaml
   resources:

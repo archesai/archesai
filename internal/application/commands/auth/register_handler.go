@@ -5,19 +5,20 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/infrastructure/auth"
+	"github.com/archesai/archesai/internal/core/services"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // RegisterCommandHandler handles registration commands.
 type RegisterCommandHandler struct {
-	authService *auth.Service
+	authService services.AuthService
 	userRepo    repositories.UserRepository
 	accountRepo repositories.AccountRepository
 }
 
 // NewRegisterCommandHandler creates a new register command handler.
 func NewRegisterCommandHandler(
-	authService *auth.Service,
+	authService services.AuthService,
 	userRepo repositories.UserRepository,
 	accountRepo repositories.AccountRepository,
 ) *RegisterCommandHandler {
@@ -32,7 +33,7 @@ func NewRegisterCommandHandler(
 func (h *RegisterCommandHandler) Handle(
 	ctx context.Context,
 	cmd *RegisterCommand,
-) (*auth.Tokens, error) {
+) (*valueobjects.AuthTokens, error) {
 	if cmd.Email == "" {
 		return nil, fmt.Errorf("email is required")
 	}

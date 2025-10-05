@@ -4,27 +4,28 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/infrastructure/auth"
+	"github.com/archesai/archesai/internal/core/services"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // LoginCommandHandler handles login commands.
 type LoginCommandHandler struct {
-	authService *auth.Service
+	authService services.AuthService
 }
 
 // NewLoginCommandHandler creates a new login command handler.
-func NewLoginCommandHandler(authService *auth.Service) *LoginCommandHandler {
+func NewLoginCommandHandler(authService services.AuthService) *LoginCommandHandler {
 	return &LoginCommandHandler{
 		authService: authService,
 	}
 }
 
-// Handle executes the login command.
+// Handle executes the login command and returns authentication tokens.
+// This is pure business logic with no knowledge of HTTP or cookies.
 func (h *LoginCommandHandler) Handle(
 	ctx context.Context,
 	cmd *LoginCommand,
-) (*entities.Session, error) {
+) (*valueobjects.AuthTokens, error) {
 	if cmd.Email == "" {
 		return nil, fmt.Errorf("email is required")
 	}
@@ -32,17 +33,11 @@ func (h *LoginCommandHandler) Handle(
 		return nil, fmt.Errorf("password is required")
 	}
 
-	// Authenticate user and create session
+	// Authenticate user and return tokens
 	tokens, err := h.authService.AuthenticateWithPassword(ctx, cmd.Email, cmd.Password)
 	if err != nil {
 		return nil, fmt.Errorf("authentication failed: %w", err)
 	}
 
-	// Get the session from the auth service
-	session, err := h.authService.GetSessionByToken(ctx, tokens.AccessToken)
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve session: %w", err)
-	}
-
-	return session, nil
+	return tokens, nil
 }

@@ -4,17 +4,19 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/infrastructure/auth"
+	"github.com/archesai/archesai/internal/core/services"
 )
 
 // RequestMagicLinkCommandHandler handles magic link request commands.
 type RequestMagicLinkCommandHandler struct {
-	authService *auth.Service
+	authService services.AuthService
 	// TODO: Add notification service for sending emails
 }
 
 // NewRequestMagicLinkCommandHandler creates a new magic link request command handler.
-func NewRequestMagicLinkCommandHandler(authService *auth.Service) *RequestMagicLinkCommandHandler {
+func NewRequestMagicLinkCommandHandler(
+	authService services.AuthService,
+) *RequestMagicLinkCommandHandler {
 	return &RequestMagicLinkCommandHandler{
 		authService: authService,
 	}

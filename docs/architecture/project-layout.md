@@ -210,61 +210,55 @@
 │   │   └── values.yaml
 │   ├── k3d
 │   │   └── k3d.yaml
-│   ├── kustomize
-│   │   ├── base
-│   │   │   ├── kustomization.yaml
-│   │   │   ├── namespace.yaml
-│   │   │   └── serviceaccount.yaml
-│   │   └── components
-│   │       ├── api
-│   │       │   ├── deployment.yaml
-│   │       │   ├── kustomization.yaml
-│   │       │   └── service.yaml
-│   │       ├── database
-│   │       │   ├── kustomization.yaml
-│   │       │   ├── service.yaml
-│   │       │   └── statefulset.yaml
-│   │       ├── ingress
-│   │       │   ├── api-ingress.yaml
-│   │       │   ├── kustomization.yaml
-│   │       │   └── platform-ingress.yaml
-│   │       ├── migrations
-│   │       │   ├── job.yaml
-│   │       │   └── kustomization.yaml
-│   │       ├── monitoring
-│   │       │   ├── grafana-deployment.yaml
-│   │       │   ├── grafana-service.yaml
-│   │       │   ├── kustomization.yaml
-│   │       │   ├── loki-deployment.yaml
-│   │       │   └── loki-service.yaml
-│   │       ├── platform
-│   │       │   ├── deployment.yaml
-│   │       │   ├── kustomization.yaml
-│   │       │   └── service.yaml
-│   │       ├── redis
-│   │       │   ├── deployment.yaml
-│   │       │   ├── kustomization.yaml
-│   │       │   ├── pvc.yaml
-│   │       │   └── service.yaml
-│   │       ├── scraper
-│   │       │   ├── deployment.yaml
-│   │       │   ├── kustomization.yaml
-│   │       │   └── service.yaml
-│   │       ├── storage
-│   │       │   ├── deployment.yaml
-│   │       │   ├── kustomization.yaml
-│   │       │   ├── pvc.yaml
-│   │       │   └── service.yaml
-│   │       └── unstructured
-│   │           ├── deployment.yaml
-│   │           ├── kustomization.yaml
-│   │           └── service.yaml
-│   └── scripts
-│       └── deploy.sh
-├── .devcontainer
-│   ├── devcontainer.json
-│   ├── Dockerfile
-│   └── init-firewall.sh
+│   └── kustomize
+│       ├── base
+│       │   ├── kustomization.yaml
+│       │   ├── namespace.yaml
+│       │   └── serviceaccount.yaml
+│       └── components
+│           ├── api
+│           │   ├── deployment.yaml
+│           │   ├── kustomization.yaml
+│           │   └── service.yaml
+│           ├── database
+│           │   ├── kustomization.yaml
+│           │   ├── service.yaml
+│           │   └── statefulset.yaml
+│           ├── ingress
+│           │   ├── api-ingress.yaml
+│           │   ├── kustomization.yaml
+│           │   └── platform-ingress.yaml
+│           ├── migrations
+│           │   ├── job.yaml
+│           │   └── kustomization.yaml
+│           ├── monitoring
+│           │   ├── grafana-deployment.yaml
+│           │   ├── grafana-service.yaml
+│           │   ├── kustomization.yaml
+│           │   ├── loki-deployment.yaml
+│           │   └── loki-service.yaml
+│           ├── platform
+│           │   ├── deployment.yaml
+│           │   ├── kustomization.yaml
+│           │   └── service.yaml
+│           ├── redis
+│           │   ├── deployment.yaml
+│           │   ├── kustomization.yaml
+│           │   ├── pvc.yaml
+│           │   └── service.yaml
+│           ├── scraper
+│           │   ├── deployment.yaml
+│           │   ├── kustomization.yaml
+│           │   └── service.yaml
+│           ├── storage
+│           │   ├── deployment.yaml
+│           │   ├── kustomization.yaml
+│           │   ├── pvc.yaml
+│           │   └── service.yaml
+│           └── unstructured
+│               ├── deployment.yaml
+│               ├── kustomization.yaml
+│               └── service.yaml
 ├── docs
 │   ├── api-reference
 │   │   └── overview.md
@@ -319,10 +313,9 @@
 │   │   │   └── worker.go
 │   │   ├── http
 │   │   │   ├── controllers
-│   │   │   ├── middleware
-│   │   │   │   └── auth.go
 │   │   │   └── server
 │   │   │       ├── assets
+│   │   │       ├── cookies.go
 │   │   │       ├── docs.go
 │   │   │       ├── errors.go
 │   │   │       ├── infra.go
@@ -331,17 +324,11 @@
 │   │   │       ├── router.go
 │   │   │       ├── server.go
 │   │   │       └── websocket.go
-│   │   ├── llm
-│   │   │   ├── chat.go
-│   │   │   ├── llm.go
-│   │   │   ├── ollama.go
-│   │   │   └── openai.go
 │   │   └── tui
 │   │       ├── screens
 │   │       ├── config_tui.go
 │   │       └── tui.go
 │   ├── application
-│   │   ├── app
 │   │   ├── commands
 │   │   │   ├── apikeys
 │   │   │   ├── artifacts
@@ -428,8 +415,13 @@
 │   │   │   └── publisher.go
 │   │   ├── repositories
 │   │   │   └── health.go
+│   │   ├── services
+│   │   │   ├── auth.go
+│   │   │   └── llm.go
 │   │   └── valueobjects
+│   │       ├── auth_tokens.go
 │   │       ├── health.go
+│   │       ├── llm.go
 │   │       └── stub.go
 │   ├── infrastructure
 │   │   ├── auth
@@ -442,6 +434,7 @@
 │   │   │   ├── password.go
 │   │   │   ├── service.go
 │   │   │   └── token_manager.go
+│   │   ├── bootstrap
 │   │   ├── cache
 │   │   │   ├── cache.go
 │   │   │   ├── memory.go
@@ -457,9 +450,11 @@
 │   │   │   ├── publisher.go
 │   │   │   └── redis.go
 │   │   ├── http
-│   │   │   └── middleware
-│   │   │       ├── auth.go
-│   │   │       └── ratelimit.go
+│   │   ├── llm
+│   │   │   ├── chat.go
+│   │   │   ├── llm.go
+│   │   │   ├── ollama.go
+│   │   │   └── openai.go
 │   │   ├── notifications
 │   │   │   ├── console.go
 │   │   │   ├── email.go
@@ -502,9 +497,6 @@
 │       ├── logger
 │       │   ├── config.go
 │       │   └── logger.go
-│       ├── middleware
-│       │   ├── auth.go
-│       │   └── ratelimit.go
 │       └── testutil
 │           └── containers.go
 ├── scripts
@@ -595,6 +587,7 @@
 │   │   │   │   ├── authentication.md
 │   │   │   │   ├── overview.md
 │   │   │   │   ├── project-layout.md
+│   │   │   │   ├── project-structure.xml
 │   │   │   │   └── system-design.md
 │   │   │   ├── deployment
 │   │   │   │   ├── docker.md
@@ -754,5 +747,5 @@
 ├── .redocly.yaml
 └── tsconfig.json
 
-216 directories, 534 files
+212 directories, 531 files
 ```

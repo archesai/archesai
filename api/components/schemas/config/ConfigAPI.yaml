@@ -11,6 +11,12 @@ properties:
     default: 'localhost'
     minLength: 1
     example: 'localhost,https://platform.archesai.com'
+  url:
+    description: The public URL for the API
+    default: 'http://localhost:3001'
+    type: string
+    format: uri
+    example: 'http://localhost:3001'
   docs:
     description: Enable or disable API documentation
     type: boolean

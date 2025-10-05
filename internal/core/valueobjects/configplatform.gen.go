@@ -9,31 +9,31 @@ import (
 
 // ConfigPlatform represents Platform configuration (host, image, resources)
 type ConfigPlatform struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"`               // Enable platform service
-	Host      *string         `json:"host,omitempty" yaml:"host,omitempty"` // Host address where the platform service will be accessible
+	Enabled   bool            `json:"enabled" yaml:"enabled"` // Enable platform service
 	Image     *ConfigImage    `json:"image,omitempty" yaml:"image,omitempty"`
 	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed platform deployment
 	Resources *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
+	URL       *string         `json:"url,omitempty" yaml:"url,omitempty"` // Platform URL
 }
 
 // NewConfigPlatform creates a new immutable ConfigPlatform value object.
 // Value objects are immutable and validated upon creation.
-func NewConfigPlatform(enabled bool, host *string, image *ConfigImage, managed *bool, resources *ConfigResource) (ConfigPlatform, error) {
+func NewConfigPlatform(enabled bool, image *ConfigImage, managed *bool, resources *ConfigResource, url *string) (ConfigPlatform, error) {
 	// Validate all fields
 
 	return ConfigPlatform{
 		Enabled:   enabled,
-		Host:      host,
 		Image:     image,
 		Managed:   managed,
 		Resources: resources,
+		URL:       url,
 	}, nil
 }
 
 // MustConfigPlatform creates a new ConfigPlatform value object and panics on validation error.
 // Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
-func MustConfigPlatform(enabled bool, host *string, image *ConfigImage, managed *bool, resources *ConfigResource) ConfigPlatform {
-	v, err := NewConfigPlatform(enabled, host, image, managed, resources)
+func MustConfigPlatform(enabled bool, image *ConfigImage, managed *bool, resources *ConfigResource, url *string) ConfigPlatform {
+	v, err := NewConfigPlatform(enabled, image, managed, resources, url)
 	if err != nil {
 		panic(fmt.Sprintf("failed to create ConfigPlatform: %v", err))
 	}
@@ -50,12 +50,6 @@ func ZeroConfigPlatform() ConfigPlatform {
 // Value objects are immutable, so this returns a copy of the value.
 func (v ConfigPlatform) GetEnabled() bool {
 	return v.Enabled
-}
-
-// GetHost returns the Host value.
-// Value objects are immutable, so this returns a copy of the value.
-func (v ConfigPlatform) GetHost() *string {
-	return v.Host
 }
 
 // GetImage returns the Image value.
@@ -76,6 +70,12 @@ func (v ConfigPlatform) GetResources() *ConfigResource {
 	return v.Resources
 }
 
+// GetURL returns the URL value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v ConfigPlatform) GetURL() *string {
+	return v.URL
+}
+
 // IsZero returns true if this is the zero value.
 func (v ConfigPlatform) IsZero() bool {
 	zero := ZeroConfigPlatform()
@@ -93,11 +93,6 @@ func (v ConfigPlatform) Validate() error {
 func (v ConfigPlatform) String() string {
 	var fields []string
 	fields = append(fields, fmt.Sprintf("Enabled: %v", v.Enabled))
-	if v.Host != nil {
-		fields = append(fields, fmt.Sprintf("Host: %v", *v.Host))
-	} else {
-		fields = append(fields, "Host: <nil>")
-	}
 	if v.Image != nil {
 		fields = append(fields, fmt.Sprintf("Image: %v", *v.Image))
 	} else {
@@ -112,6 +107,11 @@ func (v ConfigPlatform) String() string {
 		fields = append(fields, fmt.Sprintf("Resources: %v", *v.Resources))
 	} else {
 		fields = append(fields, "Resources: <nil>")
+	}
+	if v.URL != nil {
+		fields = append(fields, fmt.Sprintf("URL: %v", *v.URL))
+	} else {
+		fields = append(fields, "URL: <nil>")
 	}
 	return fmt.Sprintf("ConfigPlatform{%s}", strings.Join(fields, ", "))
 }

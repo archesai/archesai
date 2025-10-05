@@ -574,35 +574,17 @@ k8s-cluster-start: ## Start k3d cluster
 k8s-cluster-stop: ## Stop k3d cluster
 	@k3d cluster delete -a
 
-.PHONY: k8s-deploy
-k8s-deploy: ## Deploy with Helm
+.PHONY: k8s-helm-install
+k8s-helm-install: ## Deploy with Helm
 	@helm install dev deployments/helm/arches -f deployments/helm/dev-overrides.yaml
 
-.PHONY: k8s-upgrade
-k8s-upgrade: ## Upgrade Helm deployment
+.PHONY: k8s-helm-upgrade
+k8s-helm-upgrade: ## Upgrade Helm deployment
 	@helm upgrade dev deployments/helm/arches -f deployments/helm/dev-overrides.yaml
 
-.PHONY: k8s-deploy-dev
-k8s-deploy-dev: ## Deploy to development with Kustomize + Helm
-	@echo -e "$(YELLOW)▶ Deploying to development environment...$(NC)"
-	@./deployments/scripts/deploy.sh dev
-	@echo -e "$(GREEN)✓ Development deployment complete!$(NC)"
-
-.PHONY: k8s-deploy-prod
-k8s-deploy-prod: ## Deploy to production with Kustomize + Helm
-	@echo -e "$(YELLOW)▶ Deploying to production environment...$(NC)"
-	@./deployments/scripts/deploy.sh prod
-	@echo -e "$(GREEN)✓ Production deployment complete!$(NC)"
-
-.PHONY: k8s-preview
-k8s-preview: ## Preview Kustomize deployment
-	@echo -e "$(YELLOW)▶ Previewing deployment...$(NC)"
-	@./deployments/scripts/deploy.sh preview
-
-.PHONY: k8s-dry-run
-k8s-dry-run: ## Dry run deployment to development
-	@echo -e "$(YELLOW)▶ Dry run deployment to development...$(NC)"
-	@./deployments/scripts/deploy.sh dev archesai-dev true
+.PHONY: k8s-helm-uninstall
+k8s-helm-uninstall: ## Upgrade Helm deployment
+	@helm uninstall dev
 
 # ------------------------------------------
 # Skaffold Commands

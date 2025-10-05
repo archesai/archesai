@@ -8,6 +8,8 @@ import (
 	"net/url"
 
 	"github.com/ollama/ollama/api"
+
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // OllamaLLM implements the LLM interface for Ollama.
@@ -35,23 +37,23 @@ func NewOllamaLLMWithURL(baseURL string) (*OllamaLLM, error) {
 }
 
 // convertToOllamaRole converts our Role type to Ollama's role string.
-func convertToOllamaRole(role Role) string {
-	if role == RoleFunction {
+func convertToOllamaRole(role valueobjects.Role) string {
+	if role == valueobjects.RoleFunction {
 		return "tool"
 	}
 	return string(role)
 }
 
 // convertFromOllamaRole converts Ollama's role string to our Role type.
-func convertFromOllamaRole(role string) Role {
+func convertFromOllamaRole(role string) valueobjects.Role {
 	if role == "tool" {
-		return RoleFunction
+		return valueobjects.RoleFunction
 	}
-	return Role(role)
+	return valueobjects.Role(role)
 }
 
-// convertToOllamaMessages converts our generic Message type to Ollama's message format.
-func convertToOllamaMessages(messages []Message) []api.Message {
+// convertToOllamaMessages converts our generic valueobjects.Message type to Ollama's message format.
+func convertToOllamaMessages(messages []valueobjects.Message) []api.Message {
 	ollamaMessages := make([]api.Message, len(messages))
 	for i, msg := range messages {
 		ollamaMessages[i] = api.Message{
@@ -64,7 +66,7 @@ func convertToOllamaMessages(messages []Message) []api.Message {
 }
 
 // convertToOllamaTools converts our generic Tool type to Ollama's tool type.
-func convertToOllamaTools(tools []Tool) api.Tools {
+func convertToOllamaTools(tools []valueobjects.Tool) api.Tools {
 	if len(tools) == 0 {
 		return nil
 	}
@@ -126,7 +128,7 @@ func convertToOllamaTools(tools []Tool) api.Tools {
 }
 
 // convertToOllamaToolCalls converts our generic ToolCall type to Ollama's type.
-func convertToOllamaToolCalls(toolCalls []ToolCall) []api.ToolCall {
+func convertToOllamaToolCalls(toolCalls []valueobjects.ToolCall) []api.ToolCall {
 	if len(toolCalls) == 0 {
 		return nil
 	}
@@ -152,19 +154,19 @@ func convertToOllamaToolCalls(toolCalls []ToolCall) []api.ToolCall {
 }
 
 // convertFromOllamaToolCalls converts Ollama's tool calls to our generic type.
-func convertFromOllamaToolCalls(toolCalls []api.ToolCall) []ToolCall {
+func convertFromOllamaToolCalls(toolCalls []api.ToolCall) []valueobjects.ToolCall {
 	if len(toolCalls) == 0 {
 		return nil
 	}
 
-	calls := make([]ToolCall, len(toolCalls))
+	calls := make([]valueobjects.ToolCall, len(toolCalls))
 	for i, call := range toolCalls {
 		// Convert api.ToolCallFunctionArguments to map[string]interface{}
 
-		calls[i] = ToolCall{
+		calls[i] = valueobjects.ToolCall{
 			ID:   call.Function.Name, // Using name as ID since Ollama doesn't have a separate ID field
 			Type: "function",
-			Function: ToolCallFunction{
+			Function: valueobjects.ToolCallFunction{
 				Name:      call.Function.Name,
 				Arguments: call.Function.Arguments.String(),
 			},
@@ -176,8 +178,8 @@ func convertFromOllamaToolCalls(toolCalls []api.ToolCall) []ToolCall {
 // CreateChatCompletion implements the LLM interface for Ollama.
 func (o *OllamaLLM) CreateChatCompletion(
 	ctx context.Context,
-	req ChatCompletionRequest,
-) (ChatCompletionResponse, error) {
+	req valueobjects.ChatCompletionRequest,
+) (valueobjects.ChatCompletionResponse, error) {
 	stream := false
 	ollamaReq := &api.ChatRequest{
 		Model:    req.Model,
@@ -187,12 +189,12 @@ func (o *OllamaLLM) CreateChatCompletion(
 		Options:  make(map[string]interface{}),
 	}
 
-	var response ChatCompletionResponse
-	var finalMessage Message
+	var response valueobjects.ChatCompletionResponse
+	var finalMessage valueobjects.Message
 
 	err := o.client.Chat(ctx, ollamaReq, func(resp api.ChatResponse) error {
 		if resp.Done {
-			finalMessage = Message{
+			finalMessage = valueobjects.Message{
 				Role:      convertFromOllamaRole(resp.Message.Role),
 				Content:   resp.Message.Content,
 				ToolCalls: convertFromOllamaToolCalls(resp.Message.ToolCalls),
@@ -202,10 +204,13 @@ func (o *OllamaLLM) CreateChatCompletion(
 	})
 
 	if err != nil {
-		return ChatCompletionResponse{}, fmt.Errorf("ollama chat completion failed: %w", err)
+		return valueobjects.ChatCompletionResponse{}, fmt.Errorf(
+			"ollama chat completion failed: %w",
+			err,
+		)
 	}
 
-	response.Choices = []Choice{
+	response.Choices = []valueobjects.Choice{
 		{
 			Index:        0,
 			Message:      finalMessage,
@@ -222,7 +227,7 @@ type ollamaStreamWrapper struct {
 	req            *api.ChatRequest
 	done           bool
 	content        string
-	toolCallBuffer map[string]*ToolCall
+	toolCallBuffer map[string]*valueobjects.ToolCall
 }
 
 func newOllamaStreamWrapper(
@@ -234,16 +239,16 @@ func newOllamaStreamWrapper(
 		ctx:            ctx,
 		client:         client,
 		req:            req,
-		toolCallBuffer: make(map[string]*ToolCall),
+		toolCallBuffer: make(map[string]*valueobjects.ToolCall),
 	}
 }
 
-func (s *ollamaStreamWrapper) Recv() (ChatCompletionResponse, error) {
+func (s *ollamaStreamWrapper) Recv() (valueobjects.ChatCompletionResponse, error) {
 	if s.done {
-		return ChatCompletionResponse{}, io.EOF
+		return valueobjects.ChatCompletionResponse{}, io.EOF
 	}
 
-	var response ChatCompletionResponse
+	var response valueobjects.ChatCompletionResponse
 	err := s.client.Chat(s.ctx, s.req, func(resp api.ChatResponse) error {
 		if resp.Done {
 			s.done = true
@@ -251,10 +256,10 @@ func (s *ollamaStreamWrapper) Recv() (ChatCompletionResponse, error) {
 		}
 
 		s.content += resp.Message.Content
-		response.Choices = []Choice{
+		response.Choices = []valueobjects.Choice{
 			{
 				Index: 0,
-				Message: Message{
+				Message: valueobjects.Message{
 					Role:      convertFromOllamaRole(resp.Message.Role),
 					Content:   resp.Message.Content,
 					ToolCalls: convertFromOllamaToolCalls(resp.Message.ToolCalls),
@@ -271,7 +276,7 @@ func (s *ollamaStreamWrapper) Recv() (ChatCompletionResponse, error) {
 	}
 
 	if err != nil {
-		return ChatCompletionResponse{}, fmt.Errorf("ollama stream failed: %w", err)
+		return valueobjects.ChatCompletionResponse{}, fmt.Errorf("ollama stream failed: %w", err)
 	}
 
 	return response, nil
@@ -284,7 +289,7 @@ func (s *ollamaStreamWrapper) Close() error {
 // CreateChatCompletionStream implements the LLM interface for Ollama streaming.
 func (o *OllamaLLM) CreateChatCompletionStream(
 	ctx context.Context,
-	req ChatCompletionRequest,
+	req valueobjects.ChatCompletionRequest,
 ) (ChatCompletionStream, error) {
 	stream := true
 	ollamaReq := &api.ChatRequest{

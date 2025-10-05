@@ -25,17 +25,17 @@ export default defineConfig(({ mode }) => {
 
     // Use parsed config directly
     const config = parsedConfig as {
-      api?: { host?: string; port?: number; environment?: string };
+      api?: { url?: string };
+      platform?: { url?: string };
     };
 
-    // Extract values for environment variables
-    const apiHost = config.api?.host || "localhost";
-    const apiPort = config.api?.port || 3001;
-    const apiUrl = `http://${apiHost}:${apiPort}`;
+    const apiUrl = config.api?.url || "http://localhost:3001";
+    const platformUrl = config.platform?.url || "http://localhost:3000";
 
     // Define environment variables from config
     envVars = {
       "import.meta.env.VITE_ARCHES_API_HOST": JSON.stringify(apiUrl),
+      "import.meta.env.VITE_ARCHES_PLATFORM_URL": JSON.stringify(platformUrl),
     };
 
     // Set up proxy for API routes
@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => {
       },
     };
 
-    allowedHosts = [apiHost];
+    allowedHosts = [platformUrl.replace(/^https?:\/\//, "")];
   }
 
   return {

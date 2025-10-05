@@ -17,12 +17,13 @@ type ConfigAPI struct {
 	Image       *ConfigImage    `json:"image,omitempty" yaml:"image,omitempty"`
 	Port        float64         `json:"port" yaml:"port"` // The port on which the API server will listen
 	Resources   *ConfigResource `json:"resources,omitempty" yaml:"resources,omitempty"`
-	Validate    bool            `json:"validate" yaml:"validate"` // Enable or disable request validation
+	URL         *string         `json:"url,omitempty" yaml:"url,omitempty"` // The public URL for the API
+	Validate    bool            `json:"validate" yaml:"validate"`           // Enable or disable request validation
 }
 
 // NewConfigAPI creates a new immutable ConfigAPI value object.
 // Value objects are immutable and validated upon creation.
-func NewConfigAPI(cors string, docs bool, email *ConfigEmail, environment string, host string, image *ConfigImage, port float64, resources *ConfigResource, validate bool) (ConfigAPI, error) {
+func NewConfigAPI(cors string, docs bool, email *ConfigEmail, environment string, host string, image *ConfigImage, port float64, resources *ConfigResource, url *string, validate bool) (ConfigAPI, error) {
 	// Validate all fields
 	if cors == "" {
 		return ConfigAPI{}, fmt.Errorf("Cors cannot be empty")
@@ -46,14 +47,15 @@ func NewConfigAPI(cors string, docs bool, email *ConfigEmail, environment string
 		Image:       image,
 		Port:        port,
 		Resources:   resources,
+		URL:         url,
 		Validate:    validate,
 	}, nil
 }
 
 // MustConfigAPI creates a new ConfigAPI value object and panics on validation error.
 // Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
-func MustConfigAPI(cors string, docs bool, email *ConfigEmail, environment string, host string, image *ConfigImage, port float64, resources *ConfigResource, validate bool) ConfigAPI {
-	v, err := NewConfigAPI(cors, docs, email, environment, host, image, port, resources, validate)
+func MustConfigAPI(cors string, docs bool, email *ConfigEmail, environment string, host string, image *ConfigImage, port float64, resources *ConfigResource, url *string, validate bool) ConfigAPI {
+	v, err := NewConfigAPI(cors, docs, email, environment, host, image, port, resources, url, validate)
 	if err != nil {
 		panic(fmt.Sprintf("failed to create ConfigAPI: %v", err))
 	}
@@ -114,6 +116,12 @@ func (v ConfigAPI) GetResources() *ConfigResource {
 	return v.Resources
 }
 
+// GetURL returns the URL value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v ConfigAPI) GetURL() *string {
+	return v.URL
+}
+
 // GetValidate returns the Validate value.
 // Value objects are immutable, so this returns a copy of the value.
 func (v ConfigAPI) GetValidate() bool {
@@ -149,6 +157,11 @@ func (v ConfigAPI) String() string {
 		fields = append(fields, fmt.Sprintf("Resources: %v", *v.Resources))
 	} else {
 		fields = append(fields, "Resources: <nil>")
+	}
+	if v.URL != nil {
+		fields = append(fields, fmt.Sprintf("URL: %v", *v.URL))
+	} else {
+		fields = append(fields, "URL: <nil>")
 	}
 	fields = append(fields, fmt.Sprintf("Validate: %v", v.Validate))
 	return fmt.Sprintf("ConfigAPI{%s}", strings.Join(fields, ", "))
