@@ -37,7 +37,7 @@ func (p *RedisPublisher) Publish(ctx context.Context, event coreEvents.DomainEve
 		Domain:    event.AggregateType(),
 		Timestamp: event.OccurredAt(),
 		Source:    event.AggregateType(),
-		Data: map[string]interface{}{
+		Data: map[string]any{
 			"aggregate_id":   event.AggregateID(),
 			"aggregate_type": event.AggregateType(),
 			"event":          event,

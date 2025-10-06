@@ -21,8 +21,12 @@ WHERE
   pipeline_id = $1
 `
 
-func (q *Queries) CountPipelineSteps(ctx context.Context, pipelineID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countPipelineSteps, pipelineID)
+type CountPipelineStepsParams struct {
+	PipelineID uuid.UUID
+}
+
+func (q *Queries) CountPipelineSteps(ctx context.Context, arg CountPipelineStepsParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countPipelineSteps, arg.PipelineID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -62,8 +66,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeletePipelineStep(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePipelineStep, id)
+type DeletePipelineStepParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeletePipelineStep(ctx context.Context, arg DeletePipelineStepParams) error {
+	_, err := q.db.Exec(ctx, deletePipelineStep, arg.ID)
 	return err
 }
 
@@ -73,8 +81,12 @@ WHERE
   pipeline_id = $1
 `
 
-func (q *Queries) DeletePipelineStepsByPipeline(ctx context.Context, pipelineID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePipelineStepsByPipeline, pipelineID)
+type DeletePipelineStepsByPipelineParams struct {
+	PipelineID uuid.UUID
+}
+
+func (q *Queries) DeletePipelineStepsByPipeline(ctx context.Context, arg DeletePipelineStepsByPipelineParams) error {
+	_, err := q.db.Exec(ctx, deletePipelineStepsByPipeline, arg.PipelineID)
 	return err
 }
 
@@ -89,8 +101,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineStep, error) {
-	row := q.db.QueryRow(ctx, getPipelineStep, id)
+type GetPipelineStepParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetPipelineStep(ctx context.Context, arg GetPipelineStepParams) (PipelineStep, error) {
+	row := q.db.QueryRow(ctx, getPipelineStep, arg.ID)
 	var i PipelineStep
 	err := row.Scan(
 		&i.ID,
@@ -131,6 +147,10 @@ ORDER BY
   ps.created_at ASC
 `
 
+type GetPipelineStepsWithDependenciesParams struct {
+	PipelineID uuid.UUID
+}
+
 type GetPipelineStepsWithDependenciesRow struct {
 	ID           uuid.UUID
 	PipelineID   uuid.UUID
@@ -140,8 +160,8 @@ type GetPipelineStepsWithDependenciesRow struct {
 	Dependencies interface{}
 }
 
-func (q *Queries) GetPipelineStepsWithDependencies(ctx context.Context, pipelineID uuid.UUID) ([]GetPipelineStepsWithDependenciesRow, error) {
-	rows, err := q.db.Query(ctx, getPipelineStepsWithDependencies, pipelineID)
+func (q *Queries) GetPipelineStepsWithDependencies(ctx context.Context, arg GetPipelineStepsWithDependenciesParams) ([]GetPipelineStepsWithDependenciesRow, error) {
+	rows, err := q.db.Query(ctx, getPipelineStepsWithDependencies, arg.PipelineID)
 	if err != nil {
 		return nil, err
 	}

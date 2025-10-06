@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: RunPod serverless GPU configuration
 type: object
+title: RunPodConfig
 properties:
   enabled:
     description: Enable RunPod integration

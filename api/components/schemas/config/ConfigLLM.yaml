@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Large Language Model configuration
 type: object
+title: LLMConfig
 properties:
   type:
     description: LLM provider type

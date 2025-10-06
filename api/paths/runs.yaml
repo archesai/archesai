@@ -1,8 +1,8 @@
 post:
-  operationId: createRun
+  operationId: CreateRun
   summary: Create a run
   tags:
-    - Runs
+    - Run
   description: Create a run
   requestBody:
     content:
@@ -39,10 +39,10 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: listRuns
+  operationId: ListRuns
   summary: List runs
   tags:
-    - Runs
+    - Run
   description: List runs
   parameters:
     - $ref: ../components/parameters/RunsFilter.yaml

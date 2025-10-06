@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Web scraping service configuration
 type: object
+title: ScraperConfig
 properties:
   enabled:
     description: Enable scraper service

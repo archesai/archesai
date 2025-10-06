@@ -1,8 +1,8 @@
 get:
-  operationId: listAPIKeys
+  operationId: ListAPIKeys
   summary: List tokens
   tags:
-    - APIKeys
+    - APIKey
   description: List user's tokens (without showing the actual key values)
   parameters:
     - $ref: ../components/parameters/APIKeysFilter.yaml
@@ -39,10 +39,10 @@ get:
       $ref: ../components/responses/Unauthorized.yaml
 
 post:
-  operationId: createAPIKey
+  operationId: CreateAPIKey
   summary: Create a token
   tags:
-    - APIKeys
+    - APIKey
   description: Create a token
   security:
     - bearerAuth: []

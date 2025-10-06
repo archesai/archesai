@@ -1,8 +1,9 @@
 get:
-  operationId: getCurrentUser
+  x-codegen-custom-handler: true
+  operationId: GetCurrentUser
   summary: Get current user
   tags:
-    - Users
+    - User
   description: Get the currently authenticated user's profile
   security:
     - bearerAuth: []
@@ -24,10 +25,11 @@ get:
       $ref: ../components/responses/Unauthorized.yaml
 
 patch:
-  operationId: updateCurrentUser
+  x-codegen-custom-handler: true
+  operationId: UpdateCurrentUser
   summary: Update current user
   tags:
-    - Users
+    - User
   description: Update the currently authenticated user's profile
   security:
     - bearerAuth: []
@@ -71,10 +73,11 @@ patch:
       $ref: ../components/responses/Unauthorized.yaml
 
 delete:
-  operationId: deleteCurrentUser
+  x-codegen-custom-handler: true
+  operationId: DeleteCurrentUser
   summary: Delete current user
   tags:
-    - Users
+    - User
   description: Delete the currently authenticated user's account (cascades to all sessions and accounts)
   security:
     - bearerAuth: []

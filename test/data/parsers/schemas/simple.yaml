@@ -1,4 +1,5 @@
 # Simple schema for testing basic field extraction
+title: SimpleSchema
 type: object
 properties:
   id:

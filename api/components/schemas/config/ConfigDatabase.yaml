@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Database configuration for PostgreSQL
 type: object
+title: DatabaseConfig
 properties:
   enabled:
     description: Enable database

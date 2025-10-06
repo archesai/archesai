@@ -4,7 +4,10 @@ package codegen
 import (
 	"embed"
 	"fmt"
+	"strings"
 	"text/template"
+
+	"github.com/archesai/archesai/internal/parsers"
 )
 
 //go:embed tmpl/*.tmpl
@@ -31,9 +34,9 @@ func LoadTemplates() (map[string]*template.Template, error) {
 		"repository_postgres.tmpl",
 		"repository_sqlite.tmpl",
 		"repository.tmpl",
-		"single_command_handler.tmpl",
-		"single_query_handler.tmpl",
-		"app.tmpl",
+		"command_handler.tmpl",
+		"query_handler.tmpl",
+		"bootstrap.tmpl",
 		"infrastructure.tmpl",
 	}
 
@@ -69,4 +72,35 @@ func LoadTemplates() (map[string]*template.Template, error) {
 	}
 
 	return templates, nil
+}
+
+// TemplateFuncs returns common template functions used across all generators.
+func TemplateFuncs() template.FuncMap {
+	return template.FuncMap{
+		// Case conversion
+		"lower":      strings.ToLower,
+		"camelCase":  parsers.CamelCase,
+		"pascalCase": parsers.PascalCase,
+		"snakeCase":  parsers.SnakeCase,
+		"kebabCase":  parsers.KebabCase,
+
+		// String utilities
+		"pluralize":      parsers.Pluralize,
+		"hasPrefix":      strings.HasPrefix,
+		"contains":       parsers.Contains, // For slice contains checks
+		"stringContains": strings.Contains, // For string contains checks
+
+		// Type checking
+		"isPointer": parsers.IsPointer,
+		"isSlice":   parsers.IsSlice,
+
+		// Template-specific
+		"echoPath": parsers.EchoPath,
+		"deref": func(s *string) string {
+			if s == nil {
+				return ""
+			}
+			return *s
+		},
+	}
 }

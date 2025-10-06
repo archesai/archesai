@@ -45,8 +45,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteLabel(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteLabel, id)
+type DeleteLabelParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteLabel(ctx context.Context, arg DeleteLabelParams) error {
+	_, err := q.db.Exec(ctx, deleteLabel, arg.ID)
 	return err
 }
 
@@ -56,8 +60,12 @@ WHERE
   organization_id = $1
 `
 
-func (q *Queries) DeleteLabelsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteLabelsByOrganization, organizationID)
+type DeleteLabelsByOrganizationParams struct {
+	OrganizationID uuid.UUID
+}
+
+func (q *Queries) DeleteLabelsByOrganization(ctx context.Context, arg DeleteLabelsByOrganizationParams) error {
+	_, err := q.db.Exec(ctx, deleteLabelsByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -72,8 +80,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetLabel(ctx context.Context, id uuid.UUID) (Label, error) {
-	row := q.db.QueryRow(ctx, getLabel, id)
+type GetLabelParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetLabel(ctx context.Context, arg GetLabelParams) (Label, error) {
+	row := q.db.QueryRow(ctx, getLabel, arg.ID)
 	var i Label
 	err := row.Scan(
 		&i.ID,

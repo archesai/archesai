@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Email configuration for sending emails
 type: object
+title: EmailConfig
 properties:
   enabled:
     description: Enable email functionality

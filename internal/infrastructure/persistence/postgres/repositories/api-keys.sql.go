@@ -79,8 +79,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteAPIKey(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAPIKey, id)
+type DeleteAPIKeyParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteAPIKey(ctx context.Context, arg DeleteAPIKeyParams) error {
+	_, err := q.db.Exec(ctx, deleteAPIKey, arg.ID)
 	return err
 }
 
@@ -90,8 +94,12 @@ WHERE
   user_id = $1
 `
 
-func (q *Queries) DeleteAPIKeysByUser(ctx context.Context, userID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAPIKeysByUser, userID)
+type DeleteAPIKeysByUserParams struct {
+	UserID uuid.UUID
+}
+
+func (q *Queries) DeleteAPIKeysByUser(ctx context.Context, arg DeleteAPIKeysByUserParams) error {
+	_, err := q.db.Exec(ctx, deleteAPIKeysByUser, arg.UserID)
 	return err
 }
 
@@ -118,8 +126,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetAPIKey(ctx context.Context, id uuid.UUID) (APIKey, error) {
-	row := q.db.QueryRow(ctx, getAPIKey, id)
+type GetAPIKeyParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetAPIKey(ctx context.Context, arg GetAPIKeyParams) (APIKey, error) {
+	row := q.db.QueryRow(ctx, getAPIKey, arg.ID)
 	var i APIKey
 	err := row.Scan(
 		&i.ID,
@@ -149,8 +161,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetAPIKeyByKeyHash(ctx context.Context, keyHash string) (APIKey, error) {
-	row := q.db.QueryRow(ctx, getAPIKeyByKeyHash, keyHash)
+type GetAPIKeyByKeyHashParams struct {
+	KeyHash string
+}
+
+func (q *Queries) GetAPIKeyByKeyHash(ctx context.Context, arg GetAPIKeyByKeyHashParams) (APIKey, error) {
+	row := q.db.QueryRow(ctx, getAPIKeyByKeyHash, arg.KeyHash)
 	var i APIKey
 	err := row.Scan(
 		&i.ID,
@@ -384,7 +400,11 @@ WHERE
   id = $1
 `
 
-func (q *Queries) UpdateAPIKeyLastUsed(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, updateAPIKeyLastUsed, id)
+type UpdateAPIKeyLastUsedParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) UpdateAPIKeyLastUsed(ctx context.Context, arg UpdateAPIKeyLastUsedParams) error {
+	_, err := q.db.Exec(ctx, updateAPIKeyLastUsed, arg.ID)
 	return err
 }

@@ -79,27 +79,27 @@ type MagicLinkToken struct{}
 type Session struct{}
 
 // CreateAccount stub method for SQLite (to be implemented)
-func (q *Queries) CreateAccount(_ interface{}, _ interface{}) (Account, error) {
+func (q *Queries) CreateAccount(_ any, _ any) (Account, error) {
 	return Account{}, nil
 }
 
 // GetAccount stub method for SQLite (to be implemented)
-func (q *Queries) GetAccount(_ interface{}, _ interface{}) (Account, error) {
+func (q *Queries) GetAccount(_ any, _ any) (Account, error) {
 	return Account{}, nil
 }
 
 // UpdateAccount stub method for SQLite (to be implemented)
-func (q *Queries) UpdateAccount(_ interface{}, _ interface{}) (Account, error) {
+func (q *Queries) UpdateAccount(_ any, _ any) (Account, error) {
 	return Account{}, nil
 }
 
 // DeleteAccount stub method for SQLite (to be implemented)
-func (q *Queries) DeleteAccount(_ interface{}, _ interface{}) error {
+func (q *Queries) DeleteAccount(_ any, _ any) error {
 	return nil
 }
 
 // ListAccounts stub method for SQLite (to be implemented)
-func (q *Queries) ListAccounts(_ interface{}, _ interface{}) ([]Account, error) {
+func (q *Queries) ListAccounts(_ any, _ any) ([]Account, error) {
 	return nil, nil
 }
 
@@ -203,26 +203,26 @@ type UpdateUserParams struct{}
 type ListUsersParams struct{}
 
 // CreateArtifact stub method for SQLite (to be implemented)
-func (q *Queries) CreateArtifact(_ interface{}, _ interface{}) (Artifact, error) {
+func (q *Queries) CreateArtifact(_ any, _ any) (Artifact, error) {
 	return Artifact{}, nil
 }
 
 // GetArtifact stub method for SQLite (to be implemented)
-func (q *Queries) GetArtifact(_ interface{}, _ interface{}) (Artifact, error) {
+func (q *Queries) GetArtifact(_ any, _ any) (Artifact, error) {
 	return Artifact{}, nil
 }
 
 // UpdateArtifact stub method for SQLite (to be implemented)
-func (q *Queries) UpdateArtifact(_ interface{}, _ interface{}) (Artifact, error) {
+func (q *Queries) UpdateArtifact(_ any, _ any) (Artifact, error) {
 	return Artifact{}, nil
 }
 
 // DeleteArtifact stub method for SQLite (to be implemented)
-func (q *Queries) DeleteArtifact(_ interface{}, _ interface{}) error {
+func (q *Queries) DeleteArtifact(_ any, _ any) error {
 	return nil
 }
 
 // ListArtifacts stub method for SQLite (to be implemented)
-func (q *Queries) ListArtifacts(_ interface{}, _ interface{}) ([]Artifact, error) {
+func (q *Queries) ListArtifacts(_ any, _ any) ([]Artifact, error) {
 	return nil, nil
 }

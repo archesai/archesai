@@ -25,7 +25,7 @@ func NewLogoutCommandHandler(authService services.AuthService) *LogoutCommandHan
 func (h *LogoutCommandHandler) Handle(
 	ctx context.Context,
 	cmd *LogoutCommand,
-) (interface{}, error) {
+) (any, error) {
 	if cmd.SessionID == uuid.Nil {
 		return nil, fmt.Errorf("session ID is required")
 	}

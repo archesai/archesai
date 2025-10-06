@@ -1,4 +1,5 @@
 # Complex schema with nested objects and arrays
+title: ComplexSchema
 type: object
 properties:
   id:

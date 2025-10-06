@@ -9,12 +9,18 @@ x-codegen:
     excludeFromUpdate:
       - OrganizationID
       - ProducerID
-    additional_methods:
-      - name: ListByOrganization
-        params: [organizationID]
+    additionalMethods:
+      - name: ListArtifactsByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
         returns: multiple
-      - name: ListByProducer
-        params: [producerID]
+      - name: ListArtifactsByProducer
+        params:
+          - name: producerID
+            type: string
+            format: uuid
         returns: multiple
 allOf:
   - $ref: ./Base.yaml

@@ -4,7 +4,7 @@ x-codegen:
   repository:
     operations: [create, read, update, delete, list]
     excludeFromUpdate:
-      - IpAddress
+      - IPAddress
       - UserID
       - UserAgent
       - Token

@@ -73,8 +73,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteOrganization(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteOrganization, id)
+type DeleteOrganizationParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteOrganization(ctx context.Context, arg DeleteOrganizationParams) error {
+	_, err := q.db.Exec(ctx, deleteOrganization, arg.ID)
 	return err
 }
 
@@ -89,8 +93,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetOrganization(ctx context.Context, id uuid.UUID) (Organization, error) {
-	row := q.db.QueryRow(ctx, getOrganization, id)
+type GetOrganizationParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetOrganization(ctx context.Context, arg GetOrganizationParams) (Organization, error) {
+	row := q.db.QueryRow(ctx, getOrganization, arg.ID)
 	var i Organization
 	err := row.Scan(
 		&i.ID,
@@ -118,8 +126,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetOrganizationBySlug(ctx context.Context, slug string) (Organization, error) {
-	row := q.db.QueryRow(ctx, getOrganizationBySlug, slug)
+type GetOrganizationBySlugParams struct {
+	Slug string
+}
+
+func (q *Queries) GetOrganizationBySlug(ctx context.Context, arg GetOrganizationBySlugParams) (Organization, error) {
+	row := q.db.QueryRow(ctx, getOrganizationBySlug, arg.Slug)
 	var i Organization
 	err := row.Scan(
 		&i.ID,
@@ -147,8 +159,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (Organization, error) {
-	row := q.db.QueryRow(ctx, getOrganizationByStripeCustomerID, stripeCustomerIdentifier)
+type GetOrganizationByStripeCustomerIDParams struct {
+	StripeCustomerIdentifier string
+}
+
+func (q *Queries) GetOrganizationByStripeCustomerID(ctx context.Context, arg GetOrganizationByStripeCustomerIDParams) (Organization, error) {
+	row := q.db.QueryRow(ctx, getOrganizationByStripeCustomerID, arg.StripeCustomerIdentifier)
 	var i Organization
 	err := row.Scan(
 		&i.ID,

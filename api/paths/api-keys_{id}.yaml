@@ -1,8 +1,8 @@
 get:
-  operationId: getAPIKey
+  operationId: GetAPIKey
   summary: Get API key details
   tags:
-    - APIKeys
+    - APIKey
   description: Get details of a specific API key (without the actual key value)
   parameters:
     - schema:
@@ -32,10 +32,10 @@ get:
       $ref: ../components/responses/NotFound.yaml
 
 patch:
-  operationId: updateAPIKey
+  operationId: UpdateAPIKey
   summary: Update API key
   tags:
-    - APIKeys
+    - APIKey
   description: Update an API key's name, scopes, or rate limit
   parameters:
     - schema:
@@ -91,10 +91,10 @@ patch:
       $ref: ../components/responses/NotFound.yaml
 
 delete:
-  operationId: deleteAPIKey
+  operationId: DeleteAPIKey
   summary: Delete API key
   tags:
-    - APIKeys
+    - APIKey
   description: Delete an API key permanently. This action cannot be undone.
   parameters:
     - schema:

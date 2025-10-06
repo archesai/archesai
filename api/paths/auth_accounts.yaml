@@ -1,5 +1,6 @@
 get:
-  operationId: listAccounts
+  operationId: ListAccounts
+  x-codegen-repository: Account
   summary: List linked accounts
   tags:
     - Auth

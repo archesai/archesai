@@ -12,15 +12,24 @@ x-codegen:
       - StartedAt
     excludeFromUpdate:
       - OrganizationID
-    additional_methods:
-      - name: ListByPipeline
-        params: [pipelineID]
+    additionalMethods:
+      - name: ListRunsByPipeline
+        params:
+          - name: pipelineID
+            type: string
+            format: uuid
         returns: multiple
-      - name: ListByOrganization
-        params: [organizationID]
+      - name: ListRunsByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
         returns: multiple
-      - name: ListByTool
-        params: [toolID]
+      - name: ListRunsByTool
+        params:
+          - name: toolID
+            type: string
+            format: uuid
         returns: multiple
 allOf:
   - $ref: ./Base.yaml

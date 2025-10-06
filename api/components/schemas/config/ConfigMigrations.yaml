@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Database migration configuration
 type: object
+title: MigrationsConfig
 properties:
   enabled:
     description: Enable automatic DB migrations

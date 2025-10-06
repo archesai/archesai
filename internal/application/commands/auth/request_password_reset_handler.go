@@ -25,7 +25,7 @@ func NewRequestPasswordResetCommandHandler(
 func (h *RequestPasswordResetCommandHandler) Handle(
 	ctx context.Context,
 	cmd *RequestPasswordResetCommand,
-) (interface{}, error) {
+) (any, error) {
 	if cmd.Email == "" {
 		return nil, fmt.Errorf("email is required")
 	}

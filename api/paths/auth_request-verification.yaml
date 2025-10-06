@@ -1,5 +1,5 @@
 post:
-  operationId: requestEmailVerification
+  operationId: RequestEmailVerification
   summary: Request e-mail verification
   tags:
     - Auth
@@ -13,3 +13,4 @@ post:
       $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
+  x-codegen-custom-handler: true

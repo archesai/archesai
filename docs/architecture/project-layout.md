@@ -330,8 +330,8 @@
 │   │       └── tui.go
 │   ├── application
 │   │   ├── commands
-│   │   │   ├── apikeys
-│   │   │   ├── artifacts
+│   │   │   ├── apikey
+│   │   │   ├── artifact
 │   │   │   ├── auth
 │   │   │   │   ├── confirm_email_change_handler.go
 │   │   │   │   ├── confirm_email_verification_handler.go
@@ -350,61 +350,60 @@
 │   │   │   │   ├── update_account_handler.go
 │   │   │   │   ├── update_session_handler.go
 │   │   │   │   └── verify_magic_link_handler.go
-│   │   │   ├── invitations
-│   │   │   ├── labels
-│   │   │   ├── members
-│   │   │   ├── organizations
-│   │   │   ├── pipelines
+│   │   │   ├── invitation
+│   │   │   ├── label
+│   │   │   ├── member
+│   │   │   ├── organization
+│   │   │   ├── pipeline
 │   │   │   │   ├── create_pipeline_step_handler.go
 │   │   │   │   └── validate_pipeline_execution_plan_handler.go
-│   │   │   ├── runs
-│   │   │   ├── tools
-│   │   │   └── users
+│   │   │   ├── run
+│   │   │   ├── tool
+│   │   │   └── user
 │   │   │       ├── delete_current_user_handler.go
 │   │   │       └── update_current_user_handler.go
 │   │   └── queries
-│   │       ├── apikeys
-│   │       ├── artifacts
+│   │       ├── apikey
+│   │       ├── artifact
 │   │       ├── auth
 │   │       │   ├── oauth_authorize_handler.go
 │   │       │   └── oauth_callback_handler.go
 │   │       ├── config
-│   │       │   └── get_config.go
+│   │       │   └── get_config_handler.go
 │   │       ├── health
-│   │       │   └── get_health.go
-│   │       ├── invitations
-│   │       ├── labels
-│   │       ├── members
-│   │       ├── organizations
-│   │       ├── pipelines
+│   │       │   └── get_health_handler.go
+│   │       ├── invitation
+│   │       ├── label
+│   │       ├── member
+│   │       ├── organization
+│   │       ├── pipeline
 │   │       │   ├── get_pipeline_execution_plan_handler.go
 │   │       │   └── get_pipeline_steps_handler.go
-│   │       ├── runs
-│   │       ├── tools
-│   │       └── users
+│   │       ├── run
+│   │       ├── tool
+│   │       └── user
 │   │           └── get_current_user_handler.go
 │   ├── codegen
 │   │   ├── tmpl
-│   │   │   ├── app.tmpl
+│   │   │   ├── bootstrap.tmpl
+│   │   │   ├── command_handler.tmpl
 │   │   │   ├── controller.tmpl
 │   │   │   ├── events.tmpl
 │   │   │   ├── header.tmpl
 │   │   │   ├── infrastructure.tmpl
+│   │   │   ├── query_handler.tmpl
 │   │   │   ├── repository_postgres.tmpl
 │   │   │   ├── repository_sqlite.tmpl
 │   │   │   ├── repository.tmpl
-│   │   │   ├── schema.tmpl
-│   │   │   ├── single_command_handler.tmpl
-│   │   │   └── single_query_handler.tmpl
-│   │   ├── app.go
-│   │   ├── controllers.go
-│   │   ├── cqrs.go
-│   │   ├── events.go
+│   │   │   └── schema.tmpl
 │   │   ├── filewriter.go
-│   │   ├── funcs.go
+│   │   ├── generate_bootstrap.go
+│   │   ├── generate_controllers.go
+│   │   ├── generate_cqrs.go
+│   │   ├── generate_events.go
 │   │   ├── generate.go
-│   │   ├── models.go
-│   │   ├── repositories.go
+│   │   ├── generate_repositories.go
+│   │   ├── generate_schemas.go
 │   │   └── templates.go
 │   ├── core
 │   │   ├── entities
@@ -420,7 +419,6 @@
 │   │   │   └── llm.go
 │   │   └── valueobjects
 │   │       ├── auth_tokens.go
-│   │       ├── health.go
 │   │       ├── llm.go
 │   │       └── stub.go
 │   ├── infrastructure
@@ -489,6 +487,7 @@
 │   │   ├── jsonschema_test.go
 │   │   ├── openapi.go
 │   │   ├── openapi_test.go
+│   │   ├── strings.go
 │   │   ├── typeconv.go
 │   │   ├── types.go
 │   │   ├── types_test.go
@@ -534,8 +533,6 @@
 │       ├── pdf.png
 │       ├── text.png
 │       └── website.png
-├── tmp
-│   └── archesai
 ├── tools
 │   ├── pg-to-sqlite
 │   │   └── main.go
@@ -554,19 +551,19 @@
 │   ├── client
 │   │   ├── src
 │   │   │   ├── generated
-│   │   │   │   ├── apikeys
-│   │   │   │   ├── artifacts
+│   │   │   │   ├── apikey
+│   │   │   │   ├── artifact
 │   │   │   │   ├── auth
 │   │   │   │   ├── config
 │   │   │   │   ├── health
-│   │   │   │   ├── invitations
-│   │   │   │   ├── labels
-│   │   │   │   ├── members
-│   │   │   │   ├── organizations
-│   │   │   │   ├── pipelines
-│   │   │   │   ├── runs
-│   │   │   │   ├── tools
-│   │   │   │   ├── users
+│   │   │   │   ├── invitation
+│   │   │   │   ├── label
+│   │   │   │   ├── member
+│   │   │   │   ├── organization
+│   │   │   │   ├── pipeline
+│   │   │   │   ├── run
+│   │   │   │   ├── tool
+│   │   │   │   ├── user
 │   │   │   │   ├── orval.schemas.ts
 │   │   │   │   └── zod.ts
 │   │   │   ├── fetcher.ts
@@ -747,5 +744,5 @@
 ├── .redocly.yaml
 └── tsconfig.json
 
-212 directories, 531 files
+211 directories, 529 files
 ```

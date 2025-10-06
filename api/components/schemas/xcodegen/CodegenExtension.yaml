@@ -36,7 +36,7 @@ properties:
         type: array
         items:
           type: string
-      additional_methods:
+      additionalMethods:
         description: Additional repository methods to generate
         type: array
         items:
@@ -49,14 +49,25 @@ properties:
               description: Method parameters
               type: array
               items:
-                type: string
+                type: object
+                properties:
+                  name:
+                    description: Parameter name
+                    type: string
+                  type:
+                    description: Parameter type (e.g., string, int)
+                    type: string
+                  format:
+                    description: Parameter format (e.g., uuid, email) - optional
+                    type: string
+                required: [name, type]
             returns:
               description: Return type (single or multiple)
               type: string
               enum: [single, multiple]
           required: [name, returns]
           additionalProperties: false
-      table_name:
+      tableName:
         description: Override default table name
         type: string
     additionalProperties: false

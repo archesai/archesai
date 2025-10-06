@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Platform configuration (host, image, resources)
 type: object
+title: PlatformConfig
 properties:
   enabled:
     description: Enable platform service

@@ -9,12 +9,16 @@ x-codegen:
       - Slug
       - StripeCustomerIdentifier
     indices: [slug, stripeCustomerIdentifier]
-    additional_methods:
+    additionalMethods:
       - name: GetOrganizationBySlug
-        params: [slug]
+        params:
+          - name: slug
+            type: string
         returns: single
       - name: GetOrganizationByStripeCustomerID
-        params: [stripeCustomerIdentifier]
+        params:
+          - name: stripeCustomerIdentifier
+            type: string
         returns: single
 allOf:
   - $ref: ./Base.yaml
@@ -63,7 +67,7 @@ allOf:
       stripeCustomerIdentifier:
         description: Stripe customer identifier
         type: string
-        example: 'cus_1234567890'
+        example: 'cus1234567890'
         x-sensitive: true
     required:
       - name

@@ -10,12 +10,19 @@ x-codegen:
       - AccountIdentifier
       - Provider
       - UserID
-    additional_methods:
+    additionalMethods:
       - name: GetAccountByProvider
-        params: [provider, accountIdentifier]
+        params:
+          - name: provider
+            type: string
+          - name: accountIdentifier
+            type: string
         returns: single
       - name: ListAccountsByUserID
-        params: [userID]
+        params:
+          - name: userID
+            type: string
+            format: uuid
         returns: multiple
 allOf:
   - $ref: ./Base.yaml
@@ -24,7 +31,7 @@ allOf:
       accountIdentifier:
         description: The unique identifier for the account from the provider
         type: string
-        example: google_123456789
+        example: google123456789
         minLength: 1
       userID:
         description: The user ID this account belongs to

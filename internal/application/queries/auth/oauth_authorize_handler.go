@@ -25,7 +25,7 @@ func NewOAuthAuthorizeQueryHandler(authService *auth.Service) *OAuthAuthorizeQue
 // Handle executes the OAuth authorize query.
 func (h *OAuthAuthorizeQueryHandler) Handle(
 	_ context.Context,
-	query *OAuthAuthorizeQuery,
+	query *OauthAuthorizeQuery,
 ) (string, error) {
 	if query.Provider == "" {
 		return "", fmt.Errorf("provider is required")

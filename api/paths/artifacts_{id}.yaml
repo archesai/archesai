@@ -1,8 +1,8 @@
 delete:
-  operationId: deleteArtifact
+  operationId: DeleteArtifact
   summary: Delete an artifact
   tags:
-    - Artifacts
+    - Artifact
   description: Delete an artifact
   parameters:
     - schema:
@@ -33,10 +33,10 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getArtifact
+  operationId: GetArtifact
   summary: Find an artifact
   tags:
-    - Artifacts
+    - Artifact
   description: Find an artifact
   parameters:
     - schema:
@@ -67,10 +67,10 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateArtifact
+  operationId: UpdateArtifact
   summary: Update an artifact
   tags:
-    - Artifacts
+    - Artifact
   description: Update an artifact
   requestBody:
     content:

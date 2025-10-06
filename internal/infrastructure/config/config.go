@@ -17,17 +17,17 @@ type Config = valueobjects.Config
 // Type aliases for convenience - avoiding stuttering names
 type (
 	// API configuration
-	API = valueobjects.ConfigAPI
+	API = valueobjects.APIConfig
 	// Auth configuration
-	Auth = valueobjects.ConfigAuth
+	Auth = valueobjects.AuthConfig
 	// AuthLocal configuration
-	AuthLocal = valueobjects.ConfigAuthLocal
+	AuthLocal = valueobjects.LocalAuthConfig
 	// Database configuration
-	Database = valueobjects.ConfigDatabase
+	Database = valueobjects.DatabaseConfig
 	// Redis configuration
-	Redis = valueobjects.ConfigRedis
+	Redis = valueobjects.RedisConfig
 	// Logging configuration
-	Logging = valueobjects.ConfigLogging
+	Logging = valueobjects.LoggingConfig
 )
 
 // Configuration constants.
@@ -65,7 +65,7 @@ func New() *Config {
 			Cors:        "*",
 			Docs:        true,
 			Environment: "development",
-			Validate:    true,
+			Validation:  true,
 		},
 		Database: &Database{
 			Enabled:       true,

@@ -1,8 +1,8 @@
 delete:
-  operationId: deleteUser
+  operationId: DeleteUser
   summary: Delete a user
   tags:
-    - Users
+    - User
   description: Delete a user
   parameters:
     - schema:
@@ -33,10 +33,10 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getUser
+  operationId: GetUser
   summary: Get a user
   tags:
-    - Users
+    - User
   description: Get a user
   parameters:
     - schema:
@@ -67,10 +67,10 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateUser
+  operationId: UpdateUser
   summary: Update an user
   tags:
-    - Users
+    - User
   description: Update an user
   requestBody:
     content:

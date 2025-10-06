@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Monitoring configuration for Grafana and Loki
 type: object
+title: MonitoringConfig
 properties:
   grafana:
     $ref: ./ConfigGrafana.yaml

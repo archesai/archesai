@@ -22,7 +22,7 @@ type Event struct {
 	Domain    string            `json:"domain"` // e.g., "auth", "organizations"
 	Timestamp time.Time         `json:"timestamp"`
 	Source    string            `json:"source"`
-	Data      interface{}       `json:"data"`
+	Data      any               `json:"data"`
 	Metadata  map[string]string `json:"metadata,omitempty"`
 }
 
@@ -32,7 +32,7 @@ type Publisher interface {
 	Publish(ctx context.Context, event Event) error
 
 	// PublishRaw publishes an event with domain context
-	PublishRaw(ctx context.Context, domain string, eventType string, data interface{}) error
+	PublishRaw(ctx context.Context, domain string, eventType string, data any) error
 }
 
 // Subscriber handles event subscriptions.

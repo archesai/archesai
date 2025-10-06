@@ -74,13 +74,13 @@ func convertToOllamaTools(tools []valueobjects.Tool) api.Tools {
 	ollamaTools := make([]api.Tool, len(tools))
 	for i, tool := range tools {
 		// Convert required array
-		required := make([]string, len(tool.Function.Parameters["required"].([]interface{})))
-		for i, v := range tool.Function.Parameters["required"].([]interface{}) {
+		required := make([]string, len(tool.Function.Parameters["required"].([]any)))
+		for i, v := range tool.Function.Parameters["required"].([]any) {
 			required[i] = v.(string)
 		}
 
 		// Convert properties map
-		rawProps := tool.Function.Parameters["properties"].(map[string]interface{})
+		rawProps := tool.Function.Parameters["properties"].(map[string]any)
 		properties := make(map[string]struct {
 			Type        string   `json:"type"`
 			Description string   `json:"description"`
@@ -88,7 +88,7 @@ func convertToOllamaTools(tools []valueobjects.Tool) api.Tools {
 		})
 
 		for propName, propValue := range rawProps {
-			propMap := propValue.(map[string]interface{})
+			propMap := propValue.(map[string]any)
 			prop := struct {
 				Type        string   `json:"type"`
 				Description string   `json:"description"`
@@ -100,7 +100,7 @@ func convertToOllamaTools(tools []valueobjects.Tool) api.Tools {
 
 			// Handle optional enum field
 			if enumVal, ok := propMap["enum"]; ok {
-				enumInterface := enumVal.([]interface{})
+				enumInterface := enumVal.([]any)
 				enumStrings := make([]string, len(enumInterface))
 				for j, e := range enumInterface {
 					enumStrings[j] = e.(string)
@@ -135,7 +135,7 @@ func convertToOllamaToolCalls(toolCalls []valueobjects.ToolCall) []api.ToolCall 
 
 	calls := make([]api.ToolCall, len(toolCalls))
 	for i, call := range toolCalls {
-		// Convert map[string]interface{} to api.ToolCallFunctionArguments
+		// Convert map[string]any to api.ToolCallFunctionArguments
 		args := make(map[string]any)
 		err := json.Unmarshal([]byte(call.Function.Arguments), &args)
 		if err != nil {
@@ -161,7 +161,7 @@ func convertFromOllamaToolCalls(toolCalls []api.ToolCall) []valueobjects.ToolCal
 
 	calls := make([]valueobjects.ToolCall, len(toolCalls))
 	for i, call := range toolCalls {
-		// Convert api.ToolCallFunctionArguments to map[string]interface{}
+		// Convert api.ToolCallFunctionArguments to map[string]any
 
 		calls[i] = valueobjects.ToolCall{
 			ID:   call.Function.Name, // Using name as ID since Ollama doesn't have a separate ID field
@@ -186,7 +186,7 @@ func (o *OllamaLLM) CreateChatCompletion(
 		Messages: convertToOllamaMessages(req.Messages),
 		Stream:   &stream,
 		Tools:    convertToOllamaTools(req.Tools),
-		Options:  make(map[string]interface{}),
+		Options:  make(map[string]any),
 	}
 
 	var response valueobjects.ChatCompletionResponse
@@ -297,7 +297,7 @@ func (o *OllamaLLM) CreateChatCompletionStream(
 		Messages: convertToOllamaMessages(req.Messages),
 		Stream:   &stream,
 		Tools:    convertToOllamaTools(req.Tools),
-		Options:  make(map[string]interface{}),
+		Options:  make(map[string]any),
 	}
 
 	return newOllamaStreamWrapper(ctx, o.client, ollamaReq), nil

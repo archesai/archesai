@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Google OAuth configuration
 type: object
+title: GoogleAuthConfig
 properties:
   enabled:
     description: Enable Google OAuth

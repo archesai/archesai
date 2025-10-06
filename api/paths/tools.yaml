@@ -1,8 +1,8 @@
 post:
-  operationId: createTool
+  operationId: CreateTool
   summary: Create a tool
   tags:
-    - Tools
+    - Tool
   description: Create a tool
   requestBody:
     content:
@@ -44,10 +44,10 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: listTools
+  operationId: ListTools
   summary: List tools
   tags:
-    - Tools
+    - Tool
   description: List tools
   parameters:
     - $ref: ../components/parameters/ToolsFilter.yaml

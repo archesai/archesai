@@ -22,7 +22,7 @@ func NewQueue(client *redis.Client) *Queue {
 }
 
 // Push adds an item to the queue.
-func (q *Queue) Push(queueName string, item interface{}) error {
+func (q *Queue) Push(queueName string, item any) error {
 	ctx := context.Background()
 	data, err := json.Marshal(item)
 	if err != nil {
@@ -33,7 +33,7 @@ func (q *Queue) Push(queueName string, item interface{}) error {
 }
 
 // Pop removes and returns an item from the queue.
-func (q *Queue) Pop(queueName string, dest interface{}) error {
+func (q *Queue) Pop(queueName string, dest any) error {
 	ctx := context.Background()
 	data, err := q.client.LPop(ctx, queueName).Result()
 	if err != nil {
@@ -44,7 +44,7 @@ func (q *Queue) Pop(queueName string, dest interface{}) error {
 }
 
 // PopBlocking removes and returns an item from the queue, blocking if empty.
-func (q *Queue) PopBlocking(queueName string, timeout int, dest interface{}) error {
+func (q *Queue) PopBlocking(queueName string, timeout int, dest any) error {
 	ctx := context.Background()
 	result, err := q.client.BLPop(ctx, time.Duration(timeout)*time.Second, queueName).Result()
 	if err != nil {
@@ -59,7 +59,7 @@ func (q *Queue) PopBlocking(queueName string, timeout int, dest interface{}) err
 }
 
 // Peek returns the next item without removing it.
-func (q *Queue) Peek(queueName string, dest interface{}) error {
+func (q *Queue) Peek(queueName string, dest any) error {
 	ctx := context.Background()
 	data, err := q.client.LIndex(ctx, queueName, 0).Result()
 	if err != nil {
@@ -82,7 +82,7 @@ func (q *Queue) Clear(queueName string) error {
 }
 
 // Remove removes a specific item from the queue.
-func (q *Queue) Remove(queueName string, item interface{}) error {
+func (q *Queue) Remove(queueName string, item any) error {
 	ctx := context.Background()
 	data, err := json.Marshal(item)
 	if err != nil {

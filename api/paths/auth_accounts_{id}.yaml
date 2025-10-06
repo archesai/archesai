@@ -1,5 +1,6 @@
 get:
-  operationId: getAccount
+  operationId: GetAccount
+  x-codegen-repository: Account
   summary: Find an account
   tags:
     - Auth
@@ -33,7 +34,8 @@ get:
       $ref: ../components/responses/NotFound.yaml
   description: Get an account
 patch:
-  operationId: updateAccount
+  x-codegen-custom-handler: true
+  operationId: UpdateAccount
   summary: Update an account
   tags:
     - Auth
@@ -87,7 +89,8 @@ patch:
       $ref: ../components/responses/NotFound.yaml
   description: Update an account
 delete:
-  operationId: deleteAccount
+  x-codegen-custom-handler: true
+  operationId: DeleteAccount
   summary: Delete an account
   tags:
     - Auth

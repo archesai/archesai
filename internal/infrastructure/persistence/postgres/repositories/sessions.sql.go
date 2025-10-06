@@ -93,8 +93,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteSession(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteSession, id)
+type DeleteSessionParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteSession(ctx context.Context, arg DeleteSessionParams) error {
+	_, err := q.db.Exec(ctx, deleteSession, arg.ID)
 	return err
 }
 
@@ -104,8 +108,12 @@ WHERE
   user_id = $1
 `
 
-func (q *Queries) DeleteSessionsByUser(ctx context.Context, userID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteSessionsByUser, userID)
+type DeleteSessionsByUserParams struct {
+	UserID uuid.UUID
+}
+
+func (q *Queries) DeleteSessionsByUser(ctx context.Context, arg DeleteSessionsByUserParams) error {
+	_, err := q.db.Exec(ctx, deleteSessionsByUser, arg.UserID)
 	return err
 }
 
@@ -120,8 +128,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetSession(ctx context.Context, id uuid.UUID) (Session, error) {
-	row := q.db.QueryRow(ctx, getSession, id)
+type GetSessionParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetSession(ctx context.Context, arg GetSessionParams) (Session, error) {
+	row := q.db.QueryRow(ctx, getSession, arg.ID)
 	var i Session
 	err := row.Scan(
 		&i.ID,
@@ -151,8 +163,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetSessionByToken(ctx context.Context, token string) (Session, error) {
-	row := q.db.QueryRow(ctx, getSessionByToken, token)
+type GetSessionByTokenParams struct {
+	Token string
+}
+
+func (q *Queries) GetSessionByToken(ctx context.Context, arg GetSessionByTokenParams) (Session, error) {
+	row := q.db.QueryRow(ctx, getSessionByToken, arg.Token)
 	var i Session
 	err := row.Scan(
 		&i.ID,

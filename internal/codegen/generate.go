@@ -21,15 +21,19 @@ const (
 
 // Generator handles code generation from OpenAPI specifications
 type Generator struct {
-	templates  map[string]*template.Template
-	filewriter *FileWriter
+	templates        map[string]*template.Template
+	filewriter       *FileWriter
+	openAPIParser    *parsers.OpenAPIParser
+	jsonSchemaParser *parsers.JSONSchemaParser
 }
 
 // NewGenerator creates a new code generator instance
 func NewGenerator() *Generator {
 	return &Generator{
-		templates:  nil,
-		filewriter: nil,
+		templates:        nil,
+		filewriter:       nil,
+		openAPIParser:    parsers.NewOpenAPIParser(),
+		jsonSchemaParser: parsers.NewJSONSchemaParser(),
 	}
 }
 
@@ -58,18 +62,20 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	log := logger.New(logger.Config{Level: logLevel, Pretty: true})
 
 	log.Info("Parsing OpenAPI specification", slog.String("path", specPath))
-	openAPISchema, warnings, err := parsers.ParseOpenAPI(specPath)
+	openAPISchema, err := g.openAPIParser.Parse(specPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse OpenAPI spec: %w", err)
 	}
 
-	// Log any warnings
-	for _, warning := range warnings {
-		log.Warn("OpenAPI warning", slog.String("warning", warning))
+	// Set up the JSON schema parser with the OpenAPI document context
+	g.jsonSchemaParser.WithOpenAPIDoc(openAPISchema)
+
+	operations, err := parsers.ExtractOperations(openAPISchema)
+	if err != nil {
+		return "", fmt.Errorf("failed to process operations: %w", err)
 	}
 
-	operations := parsers.ExtractOperations(openAPISchema)
-	schemas, err := parsers.ProcessAllSchemas(openAPISchema)
+	schemas, err := parsers.ExtractComponentSchemas(openAPISchema)
 	if err != nil {
 		return "", fmt.Errorf("failed to process schemas: %w", err)
 	}
@@ -82,7 +88,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	var output bytes.Buffer
 
 	log.Info("Generating models (DTOs, entities, value objects)")
-	if err := g.GenerateModels(schemas); err != nil {
+	if err := g.GenerateSchemas(schemas); err != nil {
 		return "", fmt.Errorf("failed to generate models: %w", err)
 	}
 
@@ -92,12 +98,12 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	}
 
 	log.Info("Generating command and query handlers")
-	if err := g.GenerateCommandQueryHandlers(operations, schemas); err != nil {
+	if err := g.GenerateCommandQueryHandlers(operations); err != nil {
 		return "", fmt.Errorf("failed to generate handlers: %w", err)
 	}
 
 	log.Info("Generating handlers")
-	if err := g.GenerateControllers(operations, schemas); err != nil {
+	if err := g.GenerateControllers(operations); err != nil {
 		return "", fmt.Errorf("failed to generate handlers: %w", err)
 	}
 	log.Info("Generating events")
@@ -105,9 +111,9 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 		return "", fmt.Errorf("failed to generate events: %w", err)
 	}
 
-	log.Info("Generating app wiring")
-	if err := g.GenerateAppWiring(schemas, operations); err != nil {
-		return "", fmt.Errorf("failed to generate app wiring: %w", err)
+	log.Info("Generating bootstrap files")
+	if err := g.GenerateBootstrap(schemas, operations); err != nil {
+		return "", fmt.Errorf("failed to generate bootstrap files: %w", err)
 	}
 
 	// 10. Format output if needed
@@ -125,8 +131,8 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	return outputStr, nil
 }
 
-// GenerateSchema generates Go structs from a JSON Schema file
-func (g *Generator) GenerateSchema(specPath string, outputDir string) (string, error) {
+// GenerateJSONSchema generates Go structs from a JSON Schema file
+func (g *Generator) GenerateJSONSchema(specPath string, outputDir string) (string, error) {
 	logLevel := os.Getenv("ARCHESAI_LOGGING_LEVEL")
 	if logLevel == "" {
 		logLevel = "error"
@@ -134,32 +140,21 @@ func (g *Generator) GenerateSchema(specPath string, outputDir string) (string, e
 	log := logger.New(logger.Config{Level: logLevel, Pretty: true})
 
 	log.Info("Parsing OpenAPI specification", slog.String("path", specPath))
-	jsonSchema, xcodegen, err := parsers.ParseJSONSchema(specPath)
+	jsonSchema, err := g.jsonSchemaParser.Parse(specPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse OpenAPI spec: %w", err)
 	}
 
-	title := jsonSchema.GetTitle()
-	if title == "" {
-		return "", fmt.Errorf("JSON Schema must have a title")
-	}
-	schema, err := parsers.ProcessSchema(jsonSchema, title)
+	schema, err := g.jsonSchemaParser.ExtractSchema(jsonSchema, nil, "")
 	if err != nil {
 		return "", fmt.Errorf("failed to process schemas: %w", err)
 	}
-	log.Info("Initialized state",
-		slog.String("schema", title),
-	)
 
 	// Buffer to collect all output
 	var output bytes.Buffer
 
 	log.Info("Generating models (DTOs, entities, value objects)")
-	schemaType := ""
-	if xcodegen != nil {
-		schemaType = xcodegen.GetSchemaType()
-	}
-	if err := g.generateModel(schema, schema.Title, schemaType, &outputDir); err != nil {
+	if err := g.generateModel(schema, &outputDir); err != nil {
 		return "", fmt.Errorf("failed to generate models: %w", err)
 	}
 

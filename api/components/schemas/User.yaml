@@ -6,12 +6,17 @@ x-codegen:
   repository:
     operations: [read, update, delete, list] # No create endpoint in API
     indices: [email]
-    additional_methods:
+    additionalMethods:
       - name: GetUserByEmail
-        params: [email]
+        params:
+          - name: email
+            type: string
         returns: single
       - name: GetUserBySessionID
-        params: [sessionID]
+        params:
+          - name: sessionID
+            type: string
+            format: uuid
         returns: single
 allOf:
   - $ref: ./Base.yaml

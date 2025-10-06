@@ -49,6 +49,27 @@ func NewUnauthorizedResponse(detail string) UnauthorizedResponse {
 	}
 }
 
+// ForbiddenResponse represents a 403 Forbidden error
+type ForbiddenResponse struct {
+	Type      string    `json:"type"`
+	Title     string    `json:"title"`
+	Status    int       `json:"status"`
+	Detail    string    `json:"detail,omitempty"`
+	Instance  string    `json:"instance,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
+// NewForbiddenResponse creates a new 403 Forbidden response
+func NewForbiddenResponse(detail string) ForbiddenResponse {
+	return ForbiddenResponse{
+		Type:      "https://example.com/probs/forbidden",
+		Title:     "Forbidden",
+		Status:    http.StatusForbidden,
+		Detail:    detail,
+		Timestamp: time.Now(),
+	}
+}
+
 // NotFoundResponse represents a 404 Not Found error
 type NotFoundResponse struct {
 	Type      string    `json:"type"`

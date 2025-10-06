@@ -53,8 +53,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteVerificationToken(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteVerificationToken, id)
+type DeleteVerificationTokenParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteVerificationToken(ctx context.Context, arg DeleteVerificationTokenParams) error {
+	_, err := q.db.Exec(ctx, deleteVerificationToken, arg.ID)
 	return err
 }
 
@@ -64,8 +68,12 @@ WHERE
   identifier = $1
 `
 
-func (q *Queries) DeleteVerificationTokensByIdentifier(ctx context.Context, identifier string) error {
-	_, err := q.db.Exec(ctx, deleteVerificationTokensByIdentifier, identifier)
+type DeleteVerificationTokensByIdentifierParams struct {
+	Identifier string
+}
+
+func (q *Queries) DeleteVerificationTokensByIdentifier(ctx context.Context, arg DeleteVerificationTokensByIdentifierParams) error {
+	_, err := q.db.Exec(ctx, deleteVerificationTokensByIdentifier, arg.Identifier)
 	return err
 }
 
@@ -80,8 +88,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetVerificationToken(ctx context.Context, id uuid.UUID) (VerificationToken, error) {
-	row := q.db.QueryRow(ctx, getVerificationToken, id)
+type GetVerificationTokenParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetVerificationToken(ctx context.Context, arg GetVerificationTokenParams) (VerificationToken, error) {
+	row := q.db.QueryRow(ctx, getVerificationToken, arg.ID)
 	var i VerificationToken
 	err := row.Scan(
 		&i.ID,

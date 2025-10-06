@@ -35,7 +35,7 @@ allOf:
       keyHash:
         type: string
         minLength: 1
-        example: hashed_sk_live_abc123...
+        example: hashedskliveabc123...
         description: Hashed version of the API key for secure storage
       name:
         type: string
@@ -44,7 +44,7 @@ allOf:
       prefix:
         type: string
         minLength: 1
-        example: sk_live_
+        example: sklive
       scopes:
         type: array
         items:

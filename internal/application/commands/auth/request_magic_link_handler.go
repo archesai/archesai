@@ -33,8 +33,8 @@ func (h *RequestMagicLinkCommandHandler) Handle(
 
 	// Get redirect URL if provided
 	redirectURL := ""
-	if cmd.RedirectUrl != nil {
-		redirectURL = *cmd.RedirectUrl
+	if cmd.RedirectURL != nil {
+		redirectURL = *cmd.RedirectURL
 	}
 
 	// Generate and send magic link

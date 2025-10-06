@@ -1,5 +1,5 @@
 post:
-  operationId: confirmEmailVerification
+  operationId: ConfirmEmailVerification
   summary: Confirm e-mail verification
   tags:
     - Auth
@@ -38,3 +38,4 @@ post:
       $ref: ../components/responses/Unauthorized.yaml
     '404':
       $ref: ../components/responses/NotFound.yaml
+  x-codegen-custom-handler: true

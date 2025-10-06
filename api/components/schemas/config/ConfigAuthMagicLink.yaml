@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Magic link authentication configuration
 type: object
+title: MagicLinkAuthConfig
 properties:
   enabled:
     description: Enable magic link authentication

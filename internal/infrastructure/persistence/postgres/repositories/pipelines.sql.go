@@ -52,8 +52,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeletePipeline(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePipeline, id)
+type DeletePipelineParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeletePipeline(ctx context.Context, arg DeletePipelineParams) error {
+	_, err := q.db.Exec(ctx, deletePipeline, arg.ID)
 	return err
 }
 
@@ -63,8 +67,12 @@ WHERE
   organization_id = $1
 `
 
-func (q *Queries) DeletePipelinesByOrganization(ctx context.Context, organizationID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePipelinesByOrganization, organizationID)
+type DeletePipelinesByOrganizationParams struct {
+	OrganizationID uuid.UUID
+}
+
+func (q *Queries) DeletePipelinesByOrganization(ctx context.Context, arg DeletePipelinesByOrganizationParams) error {
+	_, err := q.db.Exec(ctx, deletePipelinesByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -79,8 +87,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetPipeline(ctx context.Context, id uuid.UUID) (Pipeline, error) {
-	row := q.db.QueryRow(ctx, getPipeline, id)
+type GetPipelineParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetPipeline(ctx context.Context, arg GetPipelineParams) (Pipeline, error) {
+	row := q.db.QueryRow(ctx, getPipeline, arg.ID)
 	var i Pipeline
 	err := row.Scan(
 		&i.ID,

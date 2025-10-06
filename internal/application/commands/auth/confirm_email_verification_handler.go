@@ -25,7 +25,7 @@ func NewConfirmEmailVerificationCommandHandler(
 func (h *ConfirmEmailVerificationCommandHandler) Handle(
 	ctx context.Context,
 	cmd *ConfirmEmailVerificationCommand,
-) (interface{}, error) {
+) (any, error) {
 	if cmd.Token == "" {
 		return nil, fmt.Errorf("token is required")
 	}

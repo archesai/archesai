@@ -13,7 +13,7 @@ import (
 type Querier interface {
 	// Check if adding this dependency would create a direct cycle
 	CheckDirectCircularDependency(ctx context.Context, arg CheckDirectCircularDependencyParams) (bool, error)
-	CountPipelineSteps(ctx context.Context, pipelineID uuid.UUID) (int64, error)
+	CountPipelineSteps(ctx context.Context, arg CountPipelineStepsParams) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateAPIKey(ctx context.Context, arg CreateAPIKeyParams) (APIKey, error)
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
@@ -30,71 +30,72 @@ type Querier interface {
 	CreateTool(ctx context.Context, arg CreateToolParams) (Tool, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVerificationToken(ctx context.Context, arg CreateVerificationTokenParams) (VerificationToken, error)
-	DeleteAPIKey(ctx context.Context, id uuid.UUID) error
-	DeleteAPIKeysByUser(ctx context.Context, userID uuid.UUID) error
-	DeleteAccount(ctx context.Context, id uuid.UUID) error
-	DeleteAccountsByUser(ctx context.Context, userID uuid.UUID) error
-	DeleteAllStepDependencies(ctx context.Context, pipelineStepID uuid.UUID) error
-	DeleteArtifact(ctx context.Context, id uuid.UUID) error
-	DeleteArtifactsByOrganization(ctx context.Context, organizationID uuid.UUID) error
+	DeleteAPIKey(ctx context.Context, arg DeleteAPIKeyParams) error
+	DeleteAPIKeysByUser(ctx context.Context, arg DeleteAPIKeysByUserParams) error
+	DeleteAccount(ctx context.Context, arg DeleteAccountParams) error
+	DeleteAccountsByUser(ctx context.Context, arg DeleteAccountsByUserParams) error
+	DeleteAllStepDependencies(ctx context.Context, arg DeleteAllStepDependenciesParams) error
+	DeleteArtifact(ctx context.Context, arg DeleteArtifactParams) error
+	DeleteArtifactsByOrganization(ctx context.Context, arg DeleteArtifactsByOrganizationParams) error
 	DeleteExpiredAPIKeys(ctx context.Context) error
-	DeleteInvitation(ctx context.Context, id uuid.UUID) error
-	DeleteInvitationsByOrganization(ctx context.Context, organizationID uuid.UUID) error
-	DeleteLabel(ctx context.Context, id uuid.UUID) error
-	DeleteLabelsByOrganization(ctx context.Context, organizationID uuid.UUID) error
-	DeleteMember(ctx context.Context, id uuid.UUID) error
-	DeleteMembersByOrganization(ctx context.Context, organizationID uuid.UUID) error
-	DeleteOrganization(ctx context.Context, id uuid.UUID) error
-	DeletePipeline(ctx context.Context, id uuid.UUID) error
-	DeletePipelineStep(ctx context.Context, id uuid.UUID) error
+	DeleteInvitation(ctx context.Context, arg DeleteInvitationParams) error
+	DeleteInvitationsByOrganization(ctx context.Context, arg DeleteInvitationsByOrganizationParams) error
+	DeleteLabel(ctx context.Context, arg DeleteLabelParams) error
+	DeleteLabelsByOrganization(ctx context.Context, arg DeleteLabelsByOrganizationParams) error
+	DeleteMember(ctx context.Context, arg DeleteMemberParams) error
+	DeleteMembersByOrganization(ctx context.Context, arg DeleteMembersByOrganizationParams) error
+	DeleteOrganization(ctx context.Context, arg DeleteOrganizationParams) error
+	DeletePipeline(ctx context.Context, arg DeletePipelineParams) error
+	DeletePipelineStep(ctx context.Context, arg DeletePipelineStepParams) error
 	DeletePipelineStepDependency(ctx context.Context, arg DeletePipelineStepDependencyParams) error
-	DeletePipelineStepsByPipeline(ctx context.Context, pipelineID uuid.UUID) error
-	DeletePipelinesByOrganization(ctx context.Context, organizationID uuid.UUID) error
-	DeleteRun(ctx context.Context, id uuid.UUID) error
-	DeleteRunsByPipeline(ctx context.Context, pipelineID uuid.UUID) error
-	DeleteSession(ctx context.Context, id uuid.UUID) error
-	DeleteSessionsByUser(ctx context.Context, userID uuid.UUID) error
-	DeleteTool(ctx context.Context, id uuid.UUID) error
-	DeleteToolsByOrganization(ctx context.Context, organizationID uuid.UUID) error
-	DeleteUser(ctx context.Context, id uuid.UUID) error
-	DeleteVerificationToken(ctx context.Context, id uuid.UUID) error
-	DeleteVerificationTokensByIdentifier(ctx context.Context, identifier string) error
-	GetAPIKey(ctx context.Context, id uuid.UUID) (APIKey, error)
-	GetAPIKeyByKeyHash(ctx context.Context, keyHash string) (APIKey, error)
-	GetAccount(ctx context.Context, id uuid.UUID) (Account, error)
+	DeletePipelineStepsByPipeline(ctx context.Context, arg DeletePipelineStepsByPipelineParams) error
+	DeletePipelinesByOrganization(ctx context.Context, arg DeletePipelinesByOrganizationParams) error
+	DeleteRun(ctx context.Context, arg DeleteRunParams) error
+	DeleteRunsByPipeline(ctx context.Context, arg DeleteRunsByPipelineParams) error
+	DeleteSession(ctx context.Context, arg DeleteSessionParams) error
+	DeleteSessionsByUser(ctx context.Context, arg DeleteSessionsByUserParams) error
+	DeleteTool(ctx context.Context, arg DeleteToolParams) error
+	DeleteToolsByOrganization(ctx context.Context, arg DeleteToolsByOrganizationParams) error
+	DeleteUser(ctx context.Context, arg DeleteUserParams) error
+	DeleteVerificationToken(ctx context.Context, arg DeleteVerificationTokenParams) error
+	DeleteVerificationTokensByIdentifier(ctx context.Context, arg DeleteVerificationTokensByIdentifierParams) error
+	GetAPIKey(ctx context.Context, arg GetAPIKeyParams) (APIKey, error)
+	GetAPIKeyByKeyHash(ctx context.Context, arg GetAPIKeyByKeyHashParams) (APIKey, error)
+	GetAccount(ctx context.Context, arg GetAccountParams) (Account, error)
 	GetAccountByProvider(ctx context.Context, arg GetAccountByProviderParams) (Account, error)
 	GetAccountByUser(ctx context.Context, arg GetAccountByUserParams) (Account, error)
-	GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, error)
-	GetByEmail(ctx context.Context, email string) (User, error)
-	GetInvitation(ctx context.Context, id uuid.UUID) (Invitation, error)
+	GetArtifact(ctx context.Context, arg GetArtifactParams) (Artifact, error)
+	GetByEmail(ctx context.Context, arg GetByEmailParams) (User, error)
+	GetInvitation(ctx context.Context, arg GetInvitationParams) (Invitation, error)
 	GetInvitationByEmail(ctx context.Context, arg GetInvitationByEmailParams) (Invitation, error)
-	GetLabel(ctx context.Context, id uuid.UUID) (Label, error)
+	GetLabel(ctx context.Context, arg GetLabelParams) (Label, error)
 	GetLabelByName(ctx context.Context, arg GetLabelByNameParams) (Label, error)
-	GetMember(ctx context.Context, id uuid.UUID) (Member, error)
+	GetMember(ctx context.Context, arg GetMemberParams) (Member, error)
 	GetMemberByUserAndOrganization(ctx context.Context, arg GetMemberByUserAndOrganizationParams) (Member, error)
-	GetOrganization(ctx context.Context, id uuid.UUID) (Organization, error)
-	GetOrganizationBySlug(ctx context.Context, slug string) (Organization, error)
-	GetOrganizationByStripeCustomerID(ctx context.Context, stripeCustomerIdentifier string) (Organization, error)
-	GetPipeline(ctx context.Context, id uuid.UUID) (Pipeline, error)
-	GetPipelineStep(ctx context.Context, id uuid.UUID) (PipelineStep, error)
-	GetPipelineStepDependencies(ctx context.Context, pipelineID uuid.UUID) ([]GetPipelineStepDependenciesRow, error)
-	GetPipelineStepsWithDependencies(ctx context.Context, pipelineID uuid.UUID) ([]GetPipelineStepsWithDependenciesRow, error)
-	GetRun(ctx context.Context, id uuid.UUID) (Run, error)
-	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
-	GetSessionByToken(ctx context.Context, token string) (Session, error)
-	GetStepDependencies(ctx context.Context, pipelineStepID uuid.UUID) ([]uuid.UUID, error)
-	GetStepDependents(ctx context.Context, prerequisiteID uuid.UUID) ([]uuid.UUID, error)
-	GetTool(ctx context.Context, id uuid.UUID) (Tool, error)
-	GetUser(ctx context.Context, id uuid.UUID) (User, error)
-	GetUserByEmail(ctx context.Context, email string) (User, error)
-	GetUserBySessionID(ctx context.Context, id uuid.UUID) (User, error)
-	GetVerificationToken(ctx context.Context, id uuid.UUID) (VerificationToken, error)
+	GetOrganization(ctx context.Context, arg GetOrganizationParams) (Organization, error)
+	GetOrganizationBySlug(ctx context.Context, arg GetOrganizationBySlugParams) (Organization, error)
+	GetOrganizationByStripeCustomerID(ctx context.Context, arg GetOrganizationByStripeCustomerIDParams) (Organization, error)
+	GetPipeline(ctx context.Context, arg GetPipelineParams) (Pipeline, error)
+	GetPipelineStep(ctx context.Context, arg GetPipelineStepParams) (PipelineStep, error)
+	GetPipelineStepDependencies(ctx context.Context, arg GetPipelineStepDependenciesParams) ([]GetPipelineStepDependenciesRow, error)
+	GetPipelineStepsWithDependencies(ctx context.Context, arg GetPipelineStepsWithDependenciesParams) ([]GetPipelineStepsWithDependenciesRow, error)
+	GetRun(ctx context.Context, arg GetRunParams) (Run, error)
+	GetSession(ctx context.Context, arg GetSessionParams) (Session, error)
+	GetSessionByToken(ctx context.Context, arg GetSessionByTokenParams) (Session, error)
+	GetStepDependencies(ctx context.Context, arg GetStepDependenciesParams) ([]uuid.UUID, error)
+	GetStepDependents(ctx context.Context, arg GetStepDependentsParams) ([]uuid.UUID, error)
+	GetTool(ctx context.Context, arg GetToolParams) (Tool, error)
+	GetUser(ctx context.Context, arg GetUserParams) (User, error)
+	GetUserByEmail(ctx context.Context, arg GetUserByEmailParams) (User, error)
+	GetUserBySessionID(ctx context.Context, arg GetUserBySessionIDParams) (User, error)
+	GetVerificationToken(ctx context.Context, arg GetVerificationTokenParams) (VerificationToken, error)
 	GetVerificationTokenByValue(ctx context.Context, arg GetVerificationTokenByValueParams) (VerificationToken, error)
 	ListAPIKeys(ctx context.Context, arg ListAPIKeysParams) ([]APIKey, error)
 	ListAPIKeysByOrganization(ctx context.Context, arg ListAPIKeysByOrganizationParams) ([]APIKey, error)
 	ListAPIKeysByUser(ctx context.Context, arg ListAPIKeysByUserParams) ([]APIKey, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
-	ListAccountsByUser(ctx context.Context, userID uuid.UUID) ([]Account, error)
+	ListAccountsByUser(ctx context.Context, arg ListAccountsByUserParams) ([]Account, error)
+	ListAccountsByUserID(ctx context.Context, arg ListAccountsByUserIDParams) ([]Account, error)
 	ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([]Artifact, error)
 	ListArtifactsByOrganization(ctx context.Context, arg ListArtifactsByOrganizationParams) ([]Artifact, error)
 	ListArtifactsByProducer(ctx context.Context, arg ListArtifactsByProducerParams) ([]Artifact, error)
@@ -124,7 +125,7 @@ type Querier interface {
 	ListVerificationTokens(ctx context.Context, arg ListVerificationTokensParams) ([]VerificationToken, error)
 	ListVerificationTokensByIdentifier(ctx context.Context, arg ListVerificationTokensByIdentifierParams) ([]VerificationToken, error)
 	UpdateAPIKey(ctx context.Context, arg UpdateAPIKeyParams) (APIKey, error)
-	UpdateAPIKeyLastUsed(ctx context.Context, id uuid.UUID) error
+	UpdateAPIKeyLastUsed(ctx context.Context, arg UpdateAPIKeyLastUsedParams) error
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)
 	UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) (Artifact, error)
 	UpdateInvitation(ctx context.Context, arg UpdateInvitationParams) (Invitation, error)

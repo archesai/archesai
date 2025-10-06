@@ -7,17 +7,6 @@ import (
 	"github.com/speakeasy-api/openapi/jsonschema/oas3"
 )
 
-// type XCodegenExtension struct {
-// 	SchemaType string `yaml:"schemaType,omitempty"`
-// 	Repository *struct {
-// 		AdditionalMethods []struct {
-// 			Name    string   `yaml:"name"`
-// 			Params  []string `yaml:"params"`
-// 			Returns string   `yaml:"returns"` // "single", "multiple", "error"
-// 		} `yaml:"additional_methods,omitempty"`
-// 	} `yaml:"repository,omitempty"`
-// }
-
 // XCodegenParser handles parsing of x-codegen extensions
 type XCodegenParser struct {
 }

@@ -1,8 +1,8 @@
 post:
-  operationId: createArtifact
+  operationId: CreateArtifact
   summary: Create a artifact
   tags:
-    - Artifacts
+    - Artifact
   description: Create a artifact
   requestBody:
     content:
@@ -43,10 +43,10 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: listArtifacts
+  operationId: ListArtifacts
   summary: List artifacts
   tags:
-    - Artifacts
+    - Artifact
   description: List artifacts
   parameters:
     - $ref: ../components/parameters/ArtifactsFilter.yaml

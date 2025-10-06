@@ -1,5 +1,6 @@
 get:
-  operationId: listSessions
+  operationId: ListSessions
+  x-codegen-repository: Session
   summary: List sessions
   tags:
     - Auth

@@ -1,8 +1,8 @@
 post:
-  operationId: createMember
+  operationId: CreateMember
   summary: Create a member
   tags:
-    - Members
+    - Member
   description: Create a member
   parameters:
     - in: path
@@ -49,10 +49,10 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: listMembers
+  operationId: ListMembers
   summary: List members
   tags:
-    - Members
+    - Member
   description: List members
   parameters:
     - in: path

@@ -82,8 +82,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteArtifact(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteArtifact, id)
+type DeleteArtifactParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteArtifact(ctx context.Context, arg DeleteArtifactParams) error {
+	_, err := q.db.Exec(ctx, deleteArtifact, arg.ID)
 	return err
 }
 
@@ -93,8 +97,12 @@ WHERE
   organization_id = $1
 `
 
-func (q *Queries) DeleteArtifactsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteArtifactsByOrganization, organizationID)
+type DeleteArtifactsByOrganizationParams struct {
+	OrganizationID uuid.UUID
+}
+
+func (q *Queries) DeleteArtifactsByOrganization(ctx context.Context, arg DeleteArtifactsByOrganizationParams) error {
+	_, err := q.db.Exec(ctx, deleteArtifactsByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -109,8 +117,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetArtifact(ctx context.Context, id uuid.UUID) (Artifact, error) {
-	row := q.db.QueryRow(ctx, getArtifact, id)
+type GetArtifactParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetArtifact(ctx context.Context, arg GetArtifactParams) (Artifact, error) {
+	row := q.db.QueryRow(ctx, getArtifact, arg.ID)
 	var i Artifact
 	err := row.Scan(
 		&i.ID,

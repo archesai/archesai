@@ -1,8 +1,8 @@
 post:
-  operationId: createPipeline
+  operationId: CreatePipeline
   summary: Create a pipeline
   tags:
-    - Pipelines
+    - Pipeline
   description: Create a pipeline
   requestBody:
     content:
@@ -41,10 +41,10 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: listPipelines
+  operationId: ListPipelines
   summary: List pipelines
   tags:
-    - Pipelines
+    - Pipeline
   description: List pipelines
   parameters:
     - $ref: ../components/parameters/PipelinesFilter.yaml

@@ -35,7 +35,7 @@ func (h *LinkAccountCommandHandler) Handle(
 	}
 
 	// Link the account
-	account, err := h.authService.LinkAccount(ctx, cmd.SessionID, cmd.Provider, cmd.RedirectUrl)
+	account, err := h.authService.LinkAccount(ctx, cmd.SessionID, cmd.Provider, cmd.RedirectURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to link account: %w", err)
 	}

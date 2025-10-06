@@ -278,8 +278,8 @@ export const FilterNodeType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -770,7 +770,7 @@ export interface ConfigAPI {
   /** The port on which the API server will listen */
   port: number;
   /** Enable or disable request validation */
-  validate: boolean;
+  validation: boolean;
   image?: ConfigImage;
   resources?: ConfigResource;
 }
@@ -811,13 +811,13 @@ export interface ConfigAuthLocal {
    * @minLength 2
    * @pattern ^(\d+[smhd])+$
    */
-  accessTokenTtl: string;
+  accessTokenTTL: string;
   /**
    * Refresh token time-to-live duration (e.g., "7d", "168h")
    * @minLength 2
    * @pattern ^(\d+[smhd])+$
    */
-  refreshTokenTtl: string;
+  refreshTokenTTL: string;
 }
 
 export type ConfigAuthMagicLinkDeliveryMethodsEmail = {
@@ -1536,8 +1536,8 @@ export const UsersFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -1607,8 +1607,8 @@ export const APIKeysFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -1682,8 +1682,8 @@ export const OrganizationsFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -1757,8 +1757,8 @@ export const MembersFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -1827,8 +1827,8 @@ export const InvitationsFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -1900,8 +1900,8 @@ export const PipelinesFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -1970,8 +1970,8 @@ export const RunsFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -2045,8 +2045,8 @@ export const ToolsFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -2117,8 +2117,8 @@ export const ArtifactsFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**
@@ -2193,8 +2193,8 @@ export const LabelsFilterParameterType = {
   lt: 'lt',
   lte: 'lte',
   contains: 'contains',
-  starts_with: 'starts_with',
-  ends_with: 'ends_with',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
 } as const;
 
 /**

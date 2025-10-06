@@ -65,8 +65,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteTool(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteTool, id)
+type DeleteToolParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteTool(ctx context.Context, arg DeleteToolParams) error {
+	_, err := q.db.Exec(ctx, deleteTool, arg.ID)
 	return err
 }
 
@@ -76,8 +80,12 @@ WHERE
   organization_id = $1
 `
 
-func (q *Queries) DeleteToolsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteToolsByOrganization, organizationID)
+type DeleteToolsByOrganizationParams struct {
+	OrganizationID uuid.UUID
+}
+
+func (q *Queries) DeleteToolsByOrganization(ctx context.Context, arg DeleteToolsByOrganizationParams) error {
+	_, err := q.db.Exec(ctx, deleteToolsByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -92,8 +100,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetTool(ctx context.Context, id uuid.UUID) (Tool, error) {
-	row := q.db.QueryRow(ctx, getTool, id)
+type GetToolParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetTool(ctx context.Context, arg GetToolParams) (Tool, error) {
+	row := q.db.QueryRow(ctx, getTool, arg.ID)
 	var i Tool
 	err := row.Scan(
 		&i.ID,

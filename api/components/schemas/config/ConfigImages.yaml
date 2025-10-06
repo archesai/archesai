@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Container image configuration
 type: object
+title: ImagesConfig
 properties:
   imagePullSecrets:
     description: List of Kubernetes secrets for pulling private images

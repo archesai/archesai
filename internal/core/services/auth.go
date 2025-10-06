@@ -61,6 +61,6 @@ type AuthService interface {
 	UpdateAccount(
 		ctx context.Context,
 		sessionID uuid.UUID,
-		updates map[string]interface{},
+		updates map[string]any,
 	) (*entities.User, error)
 }

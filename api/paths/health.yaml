@@ -1,5 +1,6 @@
 get:
-  operationId: getHealth
+  x-codegen-custom-handler: true
+  operationId: GetHealth
   summary: Get health status
   tags:
     - Health

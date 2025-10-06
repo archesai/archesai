@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: GitHub OAuth configuration
 type: object
+title: GitHubAuthConfig
 properties:
   enabled:
     description: Enable GitHub OAuth

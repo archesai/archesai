@@ -1,5 +1,5 @@
 post:
-  operationId: register
+  operationId: Register
   summary: Register
   tags:
     - Auth

@@ -9,18 +9,20 @@ import (
 
 func TestOperationDef_GetSuccessResponse(t *testing.T) {
 	// Load test OpenAPI doc to get real operations
-	doc, _, err := ParseOpenAPI("../../test/data/parsers/openapi/simple-api.yaml")
+	parser := NewOpenAPIParser()
+	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 	require.NotNil(t, doc)
 
-	operations := ExtractOperations(doc)
+	operations, err := ExtractOperations(doc)
+	require.NoError(t, err)
 	require.NotEmpty(t, operations)
 
 	// Find listUsers operation
-	const listUsersOpID = "listUsers"
+	const listUsersOpID = "ListUsers"
 	var listUsersOp *OperationDef
 	for i := range operations {
-		if operations[i].OperationID == listUsersOpID {
+		if operations[i].ID == listUsersOpID {
 			listUsersOp = &operations[i]
 			break
 		}
@@ -31,12 +33,12 @@ func TestOperationDef_GetSuccessResponse(t *testing.T) {
 	successResp := listUsersOp.GetSuccessResponse()
 	assert.NotNil(t, successResp)
 	assert.Equal(t, "200", successResp.StatusCode)
-	assert.True(t, successResp.IsSuccess)
+	assert.True(t, successResp.IsSuccess())
 
 	// Find deleteUser operation (has 204 success)
 	var deleteUserOp *OperationDef
 	for i := range operations {
-		if operations[i].OperationID == "deleteUser" {
+		if operations[i].ID == "DeleteUser" {
 			deleteUserOp = &operations[i]
 			break
 		}
@@ -46,22 +48,24 @@ func TestOperationDef_GetSuccessResponse(t *testing.T) {
 	successResp = deleteUserOp.GetSuccessResponse()
 	assert.NotNil(t, successResp)
 	assert.Equal(t, "204", successResp.StatusCode)
-	assert.True(t, successResp.IsSuccess)
+	assert.True(t, successResp.IsSuccess())
 }
 
 func TestOperationDef_GetErrorResponses(t *testing.T) {
 	// Load test OpenAPI doc
-	doc, _, err := ParseOpenAPI("../../test/data/parsers/openapi/simple-api.yaml")
+	parser := NewOpenAPIParser()
+	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 
-	operations := ExtractOperations(doc)
+	operations, err := ExtractOperations(doc)
+	require.NoError(t, err)
 	require.NotEmpty(t, operations)
 
 	// Find listUsers operation
-	const listUsersOpID = "listUsers"
+	const listUsersOpID = "ListUsers"
 	var listUsersOp *OperationDef
 	for i := range operations {
-		if operations[i].OperationID == listUsersOpID {
+		if operations[i].ID == listUsersOpID {
 			listUsersOp = &operations[i]
 			break
 		}
@@ -72,7 +76,7 @@ func TestOperationDef_GetErrorResponses(t *testing.T) {
 	errorResponses := listUsersOp.GetErrorResponses()
 	assert.NotEmpty(t, errorResponses)
 	for _, errResp := range errorResponses {
-		assert.False(t, errResp.IsSuccess)
+		assert.False(t, errResp.IsSuccess())
 		assert.NotEqual(t, "200", errResp.StatusCode)
 		assert.NotEqual(t, "201", errResp.StatusCode)
 		assert.NotEqual(t, "204", errResp.StatusCode)
@@ -81,53 +85,57 @@ func TestOperationDef_GetErrorResponses(t *testing.T) {
 
 func TestOperationDef_HasBearerAuth(t *testing.T) {
 	// Load test OpenAPI doc
-	doc, _, err := ParseOpenAPI("../../test/data/parsers/openapi/simple-api.yaml")
+	parser := NewOpenAPIParser()
+	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 
-	operations := ExtractOperations(doc)
+	operations, err := ExtractOperations(doc)
+	require.NoError(t, err)
 	require.NotEmpty(t, operations)
 
 	// Find operations to test
 	opsMap := make(map[string]*OperationDef)
 	for i := range operations {
-		opsMap[operations[i].OperationID] = &operations[i]
+		opsMap[operations[i].ID] = &operations[i]
 	}
 
 	// listUsers has no security
-	const listUsersOpID = "listUsers"
+	const listUsersOpID = "ListUsers"
 	listUsersOp := opsMap[listUsersOpID]
 	assert.False(t, listUsersOp.HasBearerAuth())
 
 	// getUser has bearerAuth
-	getUserOp := opsMap["getUser"]
+	getUserOp := opsMap["GetUser"]
 	assert.True(t, getUserOp.HasBearerAuth())
 
 	// updateUser has both bearerAuth and sessionCookie
-	updateUserOp := opsMap["updateUser"]
+	updateUserOp := opsMap["UpdateUser"]
 	assert.True(t, updateUserOp.HasBearerAuth())
 }
 
 func TestOperationDef_HasCookieAuth(t *testing.T) {
 	// Load test OpenAPI doc
-	doc, _, err := ParseOpenAPI("../../test/data/parsers/openapi/simple-api.yaml")
+	parser := NewOpenAPIParser()
+	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 
-	operations := ExtractOperations(doc)
+	operations, err := ExtractOperations(doc)
+	require.NoError(t, err)
 	require.NotEmpty(t, operations)
 
 	// Find operations to test
 	opsMap := make(map[string]*OperationDef)
 	for i := range operations {
-		opsMap[operations[i].OperationID] = &operations[i]
+		opsMap[operations[i].ID] = &operations[i]
 	}
 
 	// listUsers has no security
-	const listUsersOpID = "listUsers"
+	const listUsersOpID = "ListUsers"
 	listUsersOp := opsMap[listUsersOpID]
 	assert.False(t, listUsersOp.HasCookieAuth())
 
 	// getUser has only bearerAuth, no cookie
-	getUserOp := opsMap["getUser"]
+	getUserOp := opsMap["GetUser"]
 	assert.False(t, getUserOp.HasCookieAuth())
 
 	// Note: The test data might not have proper cookie auth setup
@@ -153,25 +161,4 @@ func TestConstants(t *testing.T) {
 	assert.Equal(t, "NUMERIC", SQLTypeNumeric)
 	assert.Equal(t, "REAL", SQLTypeReal)
 	assert.Equal(t, "DOUBLE PRECISION", SQLTypeDouble)
-}
-
-func TestValidSlices(t *testing.T) {
-	// Test valid repository operations
-	assert.Equal(
-		t,
-		[]string{"create", "read", "update", "delete", "list"},
-		ValidRepositoryOperations,
-	)
-
-	// Test valid HTTP methods
-	assert.Equal(t, []string{"GET", "POST", "PUT", "PATCH", "DELETE"}, ValidHTTPMethods)
-
-	// Test valid error handling
-	assert.Equal(t, []string{"error_return", "panic", "custom"}, ValidErrorHandling)
-
-	// Test valid log levels
-	assert.Equal(t, []string{"debug", "info", "warn", "error"}, ValidLogLevels)
-
-	// Test valid domain types
-	assert.Equal(t, []string{"entity", "aggregate", "valueobject", "dto"}, ValidDomainTypes)
 }

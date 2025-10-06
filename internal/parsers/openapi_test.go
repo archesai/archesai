@@ -16,13 +16,13 @@ func TestParseOpenAPI(t *testing.T) {
 		specPath    string
 		wantErr     bool
 		errContains string
-		validate    func(t *testing.T, doc *openapi.OpenAPI, warnings []string)
+		validate    func(t *testing.T, doc *openapi.OpenAPI)
 	}{
 		{
 			name:     "valid simple API",
 			specPath: "../../test/data/parsers/openapi/simple-api.yaml",
 			wantErr:  false,
-			validate: func(t *testing.T, doc *openapi.OpenAPI, _ []string) {
+			validate: func(t *testing.T, doc *openapi.OpenAPI) {
 				assert.NotNil(t, doc)
 				assert.NotNil(t, doc.Info)
 				assert.Equal(t, "Simple Test API", doc.Info.Title)
@@ -47,7 +47,8 @@ func TestParseOpenAPI(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			doc, warnings, err := ParseOpenAPI(tt.specPath)
+			parser := NewOpenAPIParser()
+			doc, err := parser.Parse(tt.specPath)
 			if tt.wantErr {
 				assert.Error(t, err)
 				if tt.errContains != "" {
@@ -56,7 +57,7 @@ func TestParseOpenAPI(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				if tt.validate != nil {
-					tt.validate(t, doc, warnings)
+					tt.validate(t, doc)
 				}
 			}
 		})
@@ -65,29 +66,32 @@ func TestParseOpenAPI(t *testing.T) {
 
 func TestExtractOperations(t *testing.T) {
 	// Load test OpenAPI doc
-	doc, _, err := ParseOpenAPI("../../test/data/parsers/openapi/simple-api.yaml")
+	parser := NewOpenAPIParser()
+	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 	require.NotNil(t, doc)
 
-	operations := ExtractOperations(doc)
+	operations, err := ExtractOperations(doc)
+	require.NoError(t, err)
 	assert.NotEmpty(t, operations)
 
 	// Map operations by operationId for easier testing
 	opsMap := make(map[string]OperationDef)
 	for _, op := range operations {
-		opsMap[op.OperationID] = op
+		opsMap[op.ID] = op
 	}
 
 	// Test listUsers operation
 	t.Run("listUsers operation", func(t *testing.T) {
-		op, exists := opsMap["listUsers"]
+		op, exists := opsMap["ListUsers"]
 		assert.True(t, exists)
 		assert.Equal(t, "GET", op.Method)
 		assert.Equal(t, "/users", op.Path)
-		assert.Equal(t, "listUsers", op.OperationID)
-		assert.Equal(t, "ListUsers", op.GoName)
-		assert.Contains(t, op.Tags, "Users")
-		assert.False(t, op.RequestBodyRequired)
+		assert.Equal(t, "ListUsers", op.ID)
+		assert.Contains(t, op.Tag, "User")
+		if op.RequestBody != nil {
+			assert.False(t, op.RequestBody.Required)
+		}
 
 		// Check parameters
 		assert.Len(t, op.Parameters, 2)
@@ -96,15 +100,15 @@ func TestExtractOperations(t *testing.T) {
 			paramMap[p.Name] = p
 		}
 
-		limitParam, exists := paramMap["limit"]
+		limitParam, exists := paramMap["Limit"]
 		assert.True(t, exists)
 		assert.Equal(t, "query", limitParam.In)
-		assert.False(t, limitParam.Required)
+		assert.False(t, limitParam.IsPropertyRequired("Limit"))
 
-		offsetParam, exists := paramMap["offset"]
+		offsetParam, exists := paramMap["Offset"]
 		assert.True(t, exists)
 		assert.Equal(t, "query", offsetParam.In)
-		assert.False(t, offsetParam.Required)
+		assert.False(t, offsetParam.IsPropertyRequired("Offset"))
 
 		// Check responses
 		assert.NotEmpty(t, op.Responses)
@@ -115,13 +119,13 @@ func TestExtractOperations(t *testing.T) {
 
 	// Test createUser operation
 	t.Run("createUser operation", func(t *testing.T) {
-		op, exists := opsMap["createUser"]
+		op, exists := opsMap["CreateUser"]
 		assert.True(t, exists)
 		assert.Equal(t, "POST", op.Method)
 		assert.Equal(t, "/users", op.Path)
-		assert.Equal(t, "createUser", op.OperationID)
-		assert.Equal(t, "CreateUser", op.GoName)
-		assert.True(t, op.RequestBodyRequired)
+		assert.Equal(t, "CreateUser", op.ID)
+		assert.NotNil(t, op.RequestBody)
+		assert.True(t, op.RequestBody.Required)
 
 		// Check responses
 		successResp := op.GetSuccessResponse()
@@ -131,7 +135,7 @@ func TestExtractOperations(t *testing.T) {
 
 	// Test getUser operation with security
 	t.Run("getUser operation", func(t *testing.T) {
-		op, exists := opsMap["getUser"]
+		op, exists := opsMap["GetUser"]
 		assert.True(t, exists)
 		assert.Equal(t, "GET", op.Method)
 		assert.Equal(t, "/users/{id}", op.Path)
@@ -140,14 +144,14 @@ func TestExtractOperations(t *testing.T) {
 		assert.NotEmpty(t, op.Parameters)
 		var idParam *ParamDef
 		for _, p := range op.Parameters {
-			if p.Name == "id" {
+			if p.Name == "ID" {
 				idParam = &p
 				break
 			}
 		}
 		assert.NotNil(t, idParam)
 		assert.Equal(t, "path", idParam.In)
-		assert.True(t, idParam.Required)
+		assert.True(t, idParam.IsPropertyRequired("ID"))
 
 		// Check security
 		assert.NotEmpty(t, op.Security)
@@ -156,10 +160,11 @@ func TestExtractOperations(t *testing.T) {
 
 	// Test updateUser with multiple security schemes
 	t.Run("updateUser operation", func(t *testing.T) {
-		op, exists := opsMap["updateUser"]
+		op, exists := opsMap["UpdateUser"]
 		assert.True(t, exists)
 		assert.Equal(t, "PUT", op.Method)
-		assert.True(t, op.RequestBodyRequired)
+		assert.NotNil(t, op.RequestBody)
+		assert.True(t, op.RequestBody.Required)
 
 		// Check multiple security schemes
 		assert.NotEmpty(t, op.Security)
@@ -170,10 +175,12 @@ func TestExtractOperations(t *testing.T) {
 
 	// Test deleteUser operation
 	t.Run("deleteUser operation", func(t *testing.T) {
-		op, exists := opsMap["deleteUser"]
+		op, exists := opsMap["DeleteUser"]
 		assert.True(t, exists)
 		assert.Equal(t, "DELETE", op.Method)
-		assert.False(t, op.RequestBodyRequired)
+		if op.RequestBody != nil {
+			assert.False(t, op.RequestBody.Required)
+		}
 
 		// Check responses
 		successResp := op.GetSuccessResponse()
@@ -186,22 +193,25 @@ func TestExtractOperations(t *testing.T) {
 }
 
 func TestExtractOperations_NilDocument(t *testing.T) {
-	operations := ExtractOperations(nil)
+	operations, err := ExtractOperations(nil)
+	require.NoError(t, err)
 	assert.Nil(t, operations)
 }
 
 func TestExtractParameters(t *testing.T) {
 	// Load test OpenAPI doc to get real operation examples
-	doc, _, err := ParseOpenAPI("../../test/data/parsers/openapi/simple-api.yaml")
+	parser := NewOpenAPIParser()
+	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 	require.NotNil(t, doc)
 
-	operations := ExtractOperations(doc)
+	operations, err := ExtractOperations(doc)
+	require.NoError(t, err)
 
 	// Find listUsers operation for testing parameters
 	var listUsersOp OperationDef
 	for _, op := range operations {
-		if op.OperationID == "listUsers" {
+		if op.ID == "ListUsers" {
 			listUsersOp = op
 			break
 		}
@@ -212,20 +222,20 @@ func TestExtractParameters(t *testing.T) {
 	// Test limit parameter
 	var limitParam *ParamDef
 	for _, p := range listUsersOp.Parameters {
-		if p.Name == "limit" {
+		if p.Name == "Limit" {
 			limitParam = &p
 			break
 		}
 	}
 	assert.NotNil(t, limitParam)
-	assert.Equal(t, "limit", limitParam.Name)
+	assert.Equal(t, "Limit", limitParam.Name)
 	assert.Equal(t, "query", limitParam.In)
-	assert.False(t, limitParam.Required)
+	assert.False(t, limitParam.IsPropertyRequired("Limit"))
 
-	// Find getUser operation for testing path parameters
+	// Find GetUser operation for testing path parameters
 	var getUserOp OperationDef
 	for _, op := range operations {
-		if op.OperationID == "getUser" {
+		if op.ID == "GetUser" {
 			getUserOp = op
 			break
 		}
@@ -234,31 +244,33 @@ func TestExtractParameters(t *testing.T) {
 	// Test id path parameter
 	var idParam *ParamDef
 	for _, p := range getUserOp.Parameters {
-		if p.Name == "id" {
+		if p.Name == "ID" {
 			idParam = &p
 			break
 		}
 	}
 	assert.NotNil(t, idParam)
-	assert.Equal(t, "id", idParam.Name)
+	assert.Equal(t, "ID", idParam.Name)
 	assert.Equal(t, "path", idParam.In)
-	assert.True(t, idParam.Required)
+	assert.True(t, idParam.IsPropertyRequired("ID"))
 }
 
 func TestExtractResponses(t *testing.T) {
 	// Load test OpenAPI doc
-	doc, _, err := ParseOpenAPI("../../test/data/parsers/openapi/simple-api.yaml")
+	parser := NewOpenAPIParser()
+	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 
-	operations := ExtractOperations(doc)
+	operations, err := ExtractOperations(doc)
+	require.NoError(t, err)
 
 	// Find operations for testing responses
 	var listUsersOp, deleteUserOp OperationDef
 	for _, op := range operations {
-		switch op.OperationID {
-		case "listUsers":
+		switch op.ID {
+		case "ListUsers":
 			listUsersOp = op
-		case "deleteUser":
+		case "DeleteUser":
 			deleteUserOp = op
 		}
 	}
@@ -268,20 +280,20 @@ func TestExtractResponses(t *testing.T) {
 	successResp := listUsersOp.GetSuccessResponse()
 	assert.NotNil(t, successResp)
 	assert.Equal(t, "200", successResp.StatusCode)
-	assert.True(t, successResp.IsSuccess)
+	assert.True(t, successResp.IsSuccess())
 
 	// Test error responses
 	errorResponses := listUsersOp.GetErrorResponses()
 	assert.NotEmpty(t, errorResponses)
 	for _, errResp := range errorResponses {
-		assert.False(t, errResp.IsSuccess)
+		assert.False(t, errResp.IsSuccess())
 	}
 
 	// Test deleteUser 204 response (no content)
 	successResp = deleteUserOp.GetSuccessResponse()
 	assert.NotNil(t, successResp)
 	assert.Equal(t, "204", successResp.StatusCode)
-	assert.True(t, successResp.IsSuccess)
+	assert.True(t, successResp.IsSuccess())
 }
 
 // Helper function to create temporary files for testing

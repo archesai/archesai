@@ -1,5 +1,5 @@
 post:
-  operationId: logout
+  operationId: Logout
   summary: Logout
   tags:
     - Auth

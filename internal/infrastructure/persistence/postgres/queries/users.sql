@@ -71,7 +71,7 @@ WHERE
 SELECT u.*
 FROM "user" u
 JOIN "session" s ON u.id = s.user_id
-WHERE s.id = $1
+WHERE s.id = sqlc.arg(session_id)
 LIMIT 1;
 
 -- name: GetByEmail :one

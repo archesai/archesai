@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Kubernetes resource configuration
 type: object
+title: ResourceConfig
 properties:
   limits:
     description: Resource limits

@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Logging configuration
 type: object
+title: LoggingConfig
 properties:
   level:
     description: Minimum log level to output

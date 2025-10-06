@@ -9,15 +9,27 @@ x-codegen:
     excludeFromUpdate:
       - OrganizationID
       - UserID
-    additional_methods:
+    additionalMethods:
       - name: ListMembersByOrganization
-        params: [organizationID]
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
         returns: multiple
       - name: ListMembersByUser
-        params: [userID]
+        params:
+          - name: userID
+            type: string
+            format: uuid
         returns: multiple
       - name: GetMemberByUserAndOrganization
-        params: [userID, organizationID]
+        params:
+          - name: userID
+            type: string
+            format: uuid
+          - name: organizationID
+            type: string
+            format: uuid
         returns: single
 allOf:
   - $ref: ./Base.yaml

@@ -489,11 +489,11 @@ export const listUsersQueryPageOffsetMax = 9007199254740991;
 
 export const listUsersQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -747,11 +747,11 @@ export const listAPIKeysQueryPageOffsetMax = 9007199254740991;
 
 export const listAPIKeysQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -906,11 +906,11 @@ export const listOrganizationsQueryPageOffsetMax = 9007199254740991;
 
 export const listOrganizationsQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -1086,11 +1086,11 @@ export const listMembersQueryPageOffsetMax = 9007199254740991;
 
 export const listMembersQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -1239,11 +1239,11 @@ export const listInvitationsQueryPageOffsetMax = 9007199254740991;
 
 export const listInvitationsQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -1393,11 +1393,11 @@ export const listPipelinesQueryPageOffsetMax = 9007199254740991;
 
 export const listPipelinesQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -1623,11 +1623,11 @@ export const listRunsQueryPageOffsetMax = 9007199254740991;
 
 export const listRunsQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -1783,11 +1783,11 @@ export const listToolsQueryPageOffsetMax = 9007199254740991;
 
 export const listToolsQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -1930,11 +1930,11 @@ export const listArtifactsQueryPageOffsetMax = 9007199254740991;
 
 export const listArtifactsQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -2089,11 +2089,11 @@ export const listLabelsQueryPageOffsetMax = 9007199254740991;
 
 export const listLabelsQueryParams = zod.object({
   "filter": zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.object({
-  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'starts_with', 'ends_with']).describe('The type of filter operation'),
+  "type": zod.enum(['and', 'or', 'eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'contains', 'startsWith', 'endsWith']).describe('The type of filter operation'),
   "field": zod.string().min(1).optional().describe('The field to filter on (for leaf conditions)'),
   "value": zod.any().optional().describe('The value to compare against (for leaf conditions)'),
   "children": zod.array(zod.any()).optional().describe('Child filter nodes (for logical operators)')
@@ -2206,13 +2206,13 @@ export const updateLabelResponse = zod.object({
  * Get the configuration of the application
  * @summary Get the configuration
  */
-export const getConfigResponseApiCorsDefault = "localhost";export const getConfigResponseApiUrlDefault = "http://localhost:3001";export const getConfigResponseApiDocsDefault = true;export const getConfigResponseApiEmailEnabledDefault = false;export const getConfigResponseApiEnvironmentDefault = "development";export const getConfigResponseApiHostDefault = "0.0.0.0";export const getConfigResponseApiPortDefault = 3001;export const getConfigResponseApiValidateDefault = true;export const getConfigResponseApiImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseApiImageTagDefault = "latest";export const getConfigResponseApiResourcesLimitsCpuDefault = "1000m";export const getConfigResponseApiResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseApiResourcesRequestsCpuDefault = "100m";export const getConfigResponseApiResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseAuthEnabledDefault = true;export const getConfigResponseAuthFirebaseEnabledDefault = false;export const getConfigResponseAuthLocalEnabledDefault = true;export const getConfigResponseAuthLocalJwtSecretDefault = "change-me-in-production";
-export const getConfigResponseAuthLocalJwtSecretMin = 32;export const getConfigResponseAuthLocalAccessTokenTtlDefault = "15m";
-export const getConfigResponseAuthLocalAccessTokenTtlMin = 2;
-export const getConfigResponseAuthLocalAccessTokenTtlRegExp = new RegExp('^(\\d+[smhd])+$');
-export const getConfigResponseAuthLocalRefreshTokenTtlDefault = "168h";
-export const getConfigResponseAuthLocalRefreshTokenTtlMin = 2;
-export const getConfigResponseAuthLocalRefreshTokenTtlRegExp = new RegExp('^(\\d+[smhd])+$');
+export const getConfigResponseApiCorsDefault = "localhost";export const getConfigResponseApiUrlDefault = "http://localhost:3001";export const getConfigResponseApiDocsDefault = true;export const getConfigResponseApiEmailEnabledDefault = false;export const getConfigResponseApiEnvironmentDefault = "development";export const getConfigResponseApiHostDefault = "0.0.0.0";export const getConfigResponseApiPortDefault = 3001;export const getConfigResponseApiValidationDefault = true;export const getConfigResponseApiImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseApiImageTagDefault = "latest";export const getConfigResponseApiResourcesLimitsCpuDefault = "1000m";export const getConfigResponseApiResourcesLimitsMemoryDefault = "1Gi";export const getConfigResponseApiResourcesRequestsCpuDefault = "100m";export const getConfigResponseApiResourcesRequestsMemoryDefault = "128Mi";export const getConfigResponseAuthEnabledDefault = true;export const getConfigResponseAuthFirebaseEnabledDefault = false;export const getConfigResponseAuthLocalEnabledDefault = true;export const getConfigResponseAuthLocalJwtSecretDefault = "change-me-in-production";
+export const getConfigResponseAuthLocalJwtSecretMin = 32;export const getConfigResponseAuthLocalAccessTokenTTLDefault = "15m";
+export const getConfigResponseAuthLocalAccessTokenTTLMin = 2;
+export const getConfigResponseAuthLocalAccessTokenTTLRegExp = new RegExp('^(\\d+[smhd])+$');
+export const getConfigResponseAuthLocalRefreshTokenTTLDefault = "168h";
+export const getConfigResponseAuthLocalRefreshTokenTTLMin = 2;
+export const getConfigResponseAuthLocalRefreshTokenTTLRegExp = new RegExp('^(\\d+[smhd])+$');
 export const getConfigResponseAuthMagicLinkEnabledDefault = false;export const getConfigResponseAuthMagicLinkTokenExpiryDefault = 15;
 export const getConfigResponseAuthMagicLinkTokenExpiryMax = 60;export const getConfigResponseAuthMagicLinkOtpLengthDefault = 6;
 export const getConfigResponseAuthMagicLinkOtpLengthMin = 4;
@@ -2236,7 +2236,7 @@ export const getConfigResponse = zod.object({
   "environment": zod.string().describe('Deployment environment (development, staging, production)'),
   "host": zod.string().min(1).describe('The host address on which the API server will listen'),
   "port": zod.number().describe('The port on which the API server will listen'),
-  "validate": zod.boolean().describe('Enable or disable request validation'),
+  "validation": zod.boolean().describe('Enable or disable request validation'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
   "repository": zod.string().min(1).optional().describe('Container image repository'),
@@ -2264,8 +2264,8 @@ export const getConfigResponse = zod.object({
   "local": zod.object({
   "enabled": zod.boolean().describe('Enable local authentication'),
   "jwtSecret": zod.string().min(getConfigResponseAuthLocalJwtSecretMin).describe('Secret key for JWT token signing'),
-  "accessTokenTtl": zod.string().min(getConfigResponseAuthLocalAccessTokenTtlMin).regex(getConfigResponseAuthLocalAccessTokenTtlRegExp).describe('Access token time-to-live duration (e.g., \"15m\", \"1h\")'),
-  "refreshTokenTtl": zod.string().min(getConfigResponseAuthLocalRefreshTokenTtlMin).regex(getConfigResponseAuthLocalRefreshTokenTtlRegExp).describe('Refresh token time-to-live duration (e.g., \"7d\", \"168h\")')
+  "accessTokenTTL": zod.string().min(getConfigResponseAuthLocalAccessTokenTTLMin).regex(getConfigResponseAuthLocalAccessTokenTTLRegExp).describe('Access token time-to-live duration (e.g., \"15m\", \"1h\")'),
+  "refreshTokenTTL": zod.string().min(getConfigResponseAuthLocalRefreshTokenTTLMin).regex(getConfigResponseAuthLocalRefreshTokenTTLRegExp).describe('Refresh token time-to-live duration (e.g., \"7d\", \"168h\")')
 }).optional().describe('Local username/password authentication'),
   "magicLink": zod.object({
   "enabled": zod.boolean().describe('Enable magic link authentication'),

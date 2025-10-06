@@ -25,7 +25,7 @@ func NewConfirmPasswordResetCommandHandler(
 func (h *ConfirmPasswordResetCommandHandler) Handle(
 	ctx context.Context,
 	cmd *ConfirmPasswordResetCommand,
-) (interface{}, error) {
+) (any, error) {
 	if cmd.Token == "" {
 		return nil, fmt.Errorf("token is required")
 	}

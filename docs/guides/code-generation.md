@@ -127,7 +127,7 @@ x-codegen:
 
     # Database configuration
     database:
-      table: table_name     # Database table name
+      table: tableName     # Database table name
       postgres: true        # Generate PostgreSQL implementation
       sqlite: true          # Generate SQLite implementation
 ```

@@ -20,7 +20,7 @@ type ChatPersona struct {
 type ChatSession struct {
 	Messages []valueobjects.Message
 	Persona  *ChatPersona
-	Context  map[string]interface{}
+	Context  map[string]any
 }
 
 // ChatClient provides a high-level interface for chat conversations.
@@ -58,7 +58,7 @@ func (c *DefaultChatClient) NewSession(persona *ChatPersona) *ChatSession {
 	session := &ChatSession{
 		Messages: []valueobjects.Message{},
 		Persona:  persona,
-		Context:  make(map[string]interface{}),
+		Context:  make(map[string]any),
 	}
 
 	// Add system message if persona has a system prompt

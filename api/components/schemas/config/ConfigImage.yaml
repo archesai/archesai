@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Container image configuration
 type: object
+title: ImageConfig
 properties:
   pullPolicy:
     description: Kubernetes image pull policy

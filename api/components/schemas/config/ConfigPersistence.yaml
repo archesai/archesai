@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Persistent storage configuration
 type: object
+title: PersistenceConfig
 properties:
   enabled:
     description: Enable persistent storage

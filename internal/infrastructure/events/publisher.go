@@ -15,7 +15,7 @@ type DomainEvent interface {
 	// EventDomain returns the domain this event belongs to (e.g., "users")
 	EventDomain() string
 	// EventData returns the actual event data
-	EventData() interface{}
+	EventData() any
 }
 
 // BaseEvent provides common fields for all events.

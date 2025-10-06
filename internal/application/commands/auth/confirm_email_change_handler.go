@@ -28,7 +28,7 @@ func NewConfirmEmailChangeCommandHandler(
 func (h *ConfirmEmailChangeCommandHandler) Handle(
 	ctx context.Context,
 	cmd *ConfirmEmailChangeCommand,
-) (interface{}, error) {
+) (any, error) {
 	if cmd.Token == "" {
 		return nil, fmt.Errorf("token is required")
 	}

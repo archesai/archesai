@@ -1,8 +1,8 @@
 delete:
-  operationId: deleteMember
+  operationId: DeleteMember
   summary: Delete a member
   tags:
-    - Members
+    - Member
   description: Delete a member
   parameters:
     - schema:
@@ -43,10 +43,10 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getMember
+  operationId: GetMember
   summary: Get a member
   tags:
-    - Members
+    - Member
   description: Get a member
   parameters:
     - schema:
@@ -87,10 +87,10 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateMember
+  operationId: UpdateMember
   summary: Update a member
   tags:
-    - Members
+    - Member
   description: Update a member
   requestBody:
     content:

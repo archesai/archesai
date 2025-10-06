@@ -52,8 +52,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteMember(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteMember, id)
+type DeleteMemberParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteMember(ctx context.Context, arg DeleteMemberParams) error {
+	_, err := q.db.Exec(ctx, deleteMember, arg.ID)
 	return err
 }
 
@@ -63,8 +67,12 @@ WHERE
   organization_id = $1
 `
 
-func (q *Queries) DeleteMembersByOrganization(ctx context.Context, organizationID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteMembersByOrganization, organizationID)
+type DeleteMembersByOrganizationParams struct {
+	OrganizationID uuid.UUID
+}
+
+func (q *Queries) DeleteMembersByOrganization(ctx context.Context, arg DeleteMembersByOrganizationParams) error {
+	_, err := q.db.Exec(ctx, deleteMembersByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -79,8 +87,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetMember(ctx context.Context, id uuid.UUID) (Member, error) {
-	row := q.db.QueryRow(ctx, getMember, id)
+type GetMemberParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetMember(ctx context.Context, arg GetMemberParams) (Member, error) {
+	row := q.db.QueryRow(ctx, getMember, arg.ID)
 	var i Member
 	err := row.Scan(
 		&i.ID,

@@ -86,7 +86,7 @@ func setDefaultsFromStruct(v *viper.Viper) {
 }
 
 // setStructDefaults recursively sets defaults from a struct using reflection.
-func setStructDefaults(v *viper.Viper, data interface{}, prefix string) {
+func setStructDefaults(v *viper.Viper, data any, prefix string) {
 	val := reflect.ValueOf(data)
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()

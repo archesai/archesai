@@ -1,8 +1,8 @@
 delete:
-  operationId: deleteRun
+  operationId: DeleteRun
   summary: Delete a run
   tags:
-    - Runs
+    - Run
   description: Delete a run
   parameters:
     - schema:
@@ -33,10 +33,10 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getRun
+  operationId: GetRun
   summary: Find a run
   tags:
-    - Runs
+    - Run
   description: Find a run
   parameters:
     - schema:
@@ -67,10 +67,10 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateRun
+  operationId: UpdateRun
   summary: Update a run
   tags:
-    - Runs
+    - Run
   description: Update a run
   requestBody:
     content:

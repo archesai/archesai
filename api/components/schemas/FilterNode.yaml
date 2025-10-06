@@ -7,7 +7,7 @@ type: object
 properties:
   type:
     type: string
-    enum: [and, or, eq, ne, gt, gte, lt, lte, contains, starts_with, ends_with]
+    enum: [and, or, eq, ne, gt, gte, lt, lte, contains, startsWith, endsWith]
     description: The type of filter operation
     example: eq
   field:

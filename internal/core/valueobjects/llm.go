@@ -95,9 +95,9 @@ type Tool struct {
 
 // Function represents a function definition.
 type Function struct {
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Parameters  map[string]interface{} `json:"parameters"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Parameters  map[string]any `json:"parameters"`
 }
 
 // ToolCall represents a tool/function call from the LLM.

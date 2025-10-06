@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Microsoft/Azure AD OAuth configuration
 type: object
+title: MicrosoftAuthConfig
 properties:
   enabled:
     description: Enable Microsoft OAuth

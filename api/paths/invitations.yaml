@@ -1,8 +1,8 @@
 post:
-  operationId: createInvitation
+  operationId: CreateInvitation
   summary: Create an invitation
   tags:
-    - Invitations
+    - Invitation
   description: Create an invitation
   parameters:
     - schema:
@@ -58,10 +58,10 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: listInvitations
+  operationId: ListInvitations
   summary: List invitations
   tags:
-    - Invitations
+    - Invitation
   description: List invitations
   parameters:
     - schema:

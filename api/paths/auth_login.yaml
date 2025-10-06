@@ -1,5 +1,5 @@
 post:
-  operationId: login
+  operationId: Login
   summary: Login
   tags:
     - Auth

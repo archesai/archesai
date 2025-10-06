@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
 type: object
+title: IntelligenceConfig
 properties:
   embedding:
     $ref: ./ConfigLLM.yaml

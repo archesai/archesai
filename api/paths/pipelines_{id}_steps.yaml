@@ -1,8 +1,9 @@
 get:
-  operationId: getPipelineSteps
+  operationId: GetPipelineSteps
+  x-codegen-custom-handler: true
   summary: Get all steps for a pipeline
   tags:
-    - Pipelines
+    - Pipeline
   description: Retrieve all steps and their dependencies for a pipeline
   parameters:
     - name: id
@@ -38,10 +39,11 @@ get:
       $ref: ../components/responses/Unauthorized.yaml
 
 post:
-  operationId: createPipelineStep
+  x-codegen-custom-handler: true
+  operationId: CreatePipelineStep
   summary: Add a step to a pipeline
   tags:
-    - Pipelines
+    - Pipeline
   description: Create a step in the pipeline
   parameters:
     - name: id

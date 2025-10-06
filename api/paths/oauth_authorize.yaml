@@ -1,5 +1,5 @@
 get:
-  operationId: oauthAuthorize
+  operationId: OauthAuthorize
   summary: Start OAuth authorization flow
   tags:
     - Auth

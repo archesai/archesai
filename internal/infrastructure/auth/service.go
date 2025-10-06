@@ -98,28 +98,28 @@ func NewService(
 	}
 
 	// Initialize OAuth providers based on config
-	if cfg.Auth.Google != nil && cfg.Auth.Google.Enabled && cfg.Auth.Google.ClientId != nil {
+	if cfg.Auth.Google != nil && cfg.Auth.Google.Enabled && cfg.Auth.Google.ClientID != nil {
 		s.oauthProviders["google"] = oauth.NewGoogleProvider(
-			*cfg.Auth.Google.ClientId,
+			*cfg.Auth.Google.ClientID,
 			*cfg.Auth.Google.ClientSecret,
-			*cfg.Auth.Google.RedirectUrl,
+			*cfg.Auth.Google.RedirectURL,
 		)
 	}
 
-	if cfg.Auth.Github != nil && cfg.Auth.Github.Enabled && cfg.Auth.Github.ClientId != nil {
+	if cfg.Auth.Github != nil && cfg.Auth.Github.Enabled && cfg.Auth.Github.ClientID != nil {
 		s.oauthProviders["github"] = oauth.NewGitHubProvider(
-			*cfg.Auth.Github.ClientId,
+			*cfg.Auth.Github.ClientID,
 			*cfg.Auth.Github.ClientSecret,
-			*cfg.Auth.Github.RedirectUrl,
+			*cfg.Auth.Github.RedirectURL,
 		)
 	}
 
 	if cfg.Auth.Microsoft != nil && cfg.Auth.Microsoft.Enabled &&
-		cfg.Auth.Microsoft.ClientId != nil {
+		cfg.Auth.Microsoft.ClientID != nil {
 		s.oauthProviders["microsoft"] = oauth.NewMicrosoftProvider(
-			*cfg.Auth.Microsoft.ClientId,
+			*cfg.Auth.Microsoft.ClientID,
 			*cfg.Auth.Microsoft.ClientSecret,
-			*cfg.Auth.Microsoft.RedirectUrl,
+			*cfg.Auth.Microsoft.RedirectURL,
 		)
 	}
 
@@ -166,7 +166,7 @@ func (s *Service) HandleOAuthCallback(
 	}
 
 	// Create session
-	session, err := s.createSession(ctx, user.ID, map[string]interface{}{
+	session, err := s.createSession(ctx, user.ID, map[string]any{
 		"provider":           provider,
 		"account_identifier": userInfo.ID,
 	})
@@ -224,13 +224,6 @@ func (s *Service) VerifyMagicLink(
 	// Find or create user by identifier (email)
 	user, err := s.userRepo.GetUserByEmail(ctx, claims.Identifier)
 	if err != nil {
-		// Debug: log the error
-		s.logger.Info("GetUserByEmail returned error",
-			"error", err,
-			"is_user_not_found", errors.Is(err, corerrors.ErrUserNotFound),
-			"email", claims.Identifier,
-		)
-
 		// Only create new user if not found, otherwise propagate the error
 		if !errors.Is(err, corerrors.ErrUserNotFound) {
 			return nil, fmt.Errorf("failed to get user: %w", err)
@@ -259,7 +252,7 @@ func (s *Service) VerifyMagicLink(
 
 	}
 
-	session, err := s.createSession(ctx, user.ID, map[string]interface{}{
+	session, err := s.createSession(ctx, user.ID, map[string]any{
 		"auth_method": "magic_link",
 	})
 	if err != nil {
@@ -298,7 +291,7 @@ func (s *Service) AuthenticateWithPassword(
 	}
 
 	// Create session
-	session, err := s.createSession(ctx, user.ID, map[string]interface{}{
+	session, err := s.createSession(ctx, user.ID, map[string]any{
 		"auth_method": "password",
 	})
 	if err != nil {
@@ -390,7 +383,7 @@ func (s *Service) findOrCreateUser(
 func (s *Service) createSession(
 	ctx context.Context,
 	userID uuid.UUID,
-	metadata map[string]interface{},
+	metadata map[string]any,
 ) (*entities.Session, error) {
 	// Extract auth method and provider from metadata
 	authMethod := "local"
@@ -416,7 +409,7 @@ func (s *Service) createSession(
 		ExpiresAt:    time.Now().Add(7 * 24 * time.Hour), // 7 days
 		AuthMethod:   &authMethod,
 		AuthProvider: &authProvider,
-		IpAddress:    &ipAddr,
+		IPAddress:    &ipAddr,
 		UserAgent:    &userAgent,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
@@ -502,7 +495,7 @@ func (s *Service) Register(
 	}
 
 	// Create a session and generate tokens
-	session, err := s.createSession(ctx, createdUser.ID, map[string]interface{}{})
+	session, err := s.createSession(ctx, createdUser.ID, map[string]any{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create session: %w", err)
 	}
@@ -828,7 +821,7 @@ func (s *Service) DeleteAccount(
 func (s *Service) UpdateAccount(
 	ctx context.Context,
 	sessionID uuid.UUID,
-	updates map[string]interface{},
+	updates map[string]any,
 ) (*entities.User, error) {
 	// Get session to find user
 	session, err := s.sessionRepo.Get(ctx, sessionID)

@@ -35,9 +35,9 @@ auth:
   firebase:
     enabled: false
   local:
-    accessTokenTtl: '15m'
+    accessTokenTTL: '15m'
     jwtSecret: supersecretkey-supersecretkey-supersecretkey
-    refreshTokenTtl: '168h'
+    refreshTokenTTL: '168h'
     enabled: true
   twitter:
     enabled: false

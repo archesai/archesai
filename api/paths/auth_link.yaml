@@ -1,5 +1,6 @@
 post:
-  operationId: linkAccount
+  x-codegen-custom-handler: true
+  operationId: LinkAccount
   summary: Link authentication provider
   tags:
     - Auth

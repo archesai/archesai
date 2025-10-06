@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Loki log aggregation service configuration
 type: object
+title: LokiConfig
 properties:
   enabled:
     description: Enable Loki

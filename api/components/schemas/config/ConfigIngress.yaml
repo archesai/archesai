@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Ingress configuration
 type: object
+title: IngressConfig
 properties:
   enabled:
     description: Enable ingress

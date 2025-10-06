@@ -70,8 +70,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteInvitation(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteInvitation, id)
+type DeleteInvitationParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteInvitation(ctx context.Context, arg DeleteInvitationParams) error {
+	_, err := q.db.Exec(ctx, deleteInvitation, arg.ID)
 	return err
 }
 
@@ -81,8 +85,12 @@ WHERE
   organization_id = $1
 `
 
-func (q *Queries) DeleteInvitationsByOrganization(ctx context.Context, organizationID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteInvitationsByOrganization, organizationID)
+type DeleteInvitationsByOrganizationParams struct {
+	OrganizationID uuid.UUID
+}
+
+func (q *Queries) DeleteInvitationsByOrganization(ctx context.Context, arg DeleteInvitationsByOrganizationParams) error {
+	_, err := q.db.Exec(ctx, deleteInvitationsByOrganization, arg.OrganizationID)
 	return err
 }
 
@@ -97,8 +105,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetInvitation(ctx context.Context, id uuid.UUID) (Invitation, error) {
-	row := q.db.QueryRow(ctx, getInvitation, id)
+type GetInvitationParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetInvitation(ctx context.Context, arg GetInvitationParams) (Invitation, error) {
+	row := q.db.QueryRow(ctx, getInvitation, arg.ID)
 	var i Invitation
 	err := row.Scan(
 		&i.ID,

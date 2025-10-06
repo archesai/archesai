@@ -19,7 +19,7 @@ func TestLoad(t *testing.T) {
 		{
 			name: "load with defaults",
 			setup: func() {
-				// Clear any existing env vars
+				// Clear existing env vars
 				_ = os.Unsetenv("ARCHES_API_HOST")
 				_ = os.Unsetenv("ARCHES_API_PORT")
 			},
@@ -191,7 +191,7 @@ func TestConfigPaths(t *testing.T) {
 }
 
 // Helper function to create formatted errors.
-func errorf(format string, args ...interface{}) error {
+func errorf(format string, args ...any) error {
 	if len(args) == 0 {
 		return &testError{msg: format}
 	}
@@ -200,7 +200,7 @@ func errorf(format string, args ...interface{}) error {
 
 type testError struct {
 	msg  string
-	args []interface{}
+	args []any
 }
 
 func (e *testError) Error() string {

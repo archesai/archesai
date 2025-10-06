@@ -1,8 +1,8 @@
 get:
-  operationId: listUsers
+  operationId: ListUsers
   summary: List users
   tags:
-    - Users
+    - User
   description: List users
   parameters:
     - $ref: ../components/parameters/UsersFilter.yaml

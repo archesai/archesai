@@ -1,8 +1,8 @@
 post:
-  operationId: createLabel
+  operationId: CreateLabel
   summary: Create a label
   tags:
-    - Labels
+    - Label
   description: Create a label
   requestBody:
     content:
@@ -38,10 +38,10 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: listLabels
+  operationId: ListLabels
   summary: List labels
   tags:
-    - Labels
+    - Label
   description: List labels
   parameters:
     - $ref: ../components/parameters/LabelsFilter.yaml

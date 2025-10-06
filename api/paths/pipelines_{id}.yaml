@@ -1,8 +1,8 @@
 delete:
-  operationId: deletePipeline
+  operationId: DeletePipeline
   summary: Delete a pipeline
   tags:
-    - Pipelines
+    - Pipeline
   description: Delete a pipeline
   parameters:
     - schema:
@@ -33,10 +33,10 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getPipeline
+  operationId: GetPipeline
   summary: Find a pipeline
   tags:
-    - Pipelines
+    - Pipeline
   description: Find a pipeline
   parameters:
     - schema:
@@ -67,10 +67,10 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updatePipeline
+  operationId: UpdatePipeline
   summary: Update a pipeline
   tags:
-    - Pipelines
+    - Pipeline
   description: Update a pipeline
   requestBody:
     content:

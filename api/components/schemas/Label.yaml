@@ -8,12 +8,20 @@ x-codegen:
     excludeFromUpdate:
       - OrganizationID
     indices: [organizationID, name]
-    additional_methods:
-      - name: ListByOrganization
-        params: [organizationID]
+    additionalMethods:
+      - name: ListLabelsByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
         returns: multiple
       - name: GetLabelByName
-        params: [name, organizationID]
+        params:
+          - name: name
+            type: string
+          - name: organizationID
+            type: string
+            format: uuid
         returns: single
 allOf:
   - $ref: ./Base.yaml

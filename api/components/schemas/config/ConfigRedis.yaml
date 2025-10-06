@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Redis configuration
 type: object
+title: RedisConfig
 properties:
   enabled:
     description: Enable Redis

@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Configuration schema for the API server
 type: object
-title: ConfigAPI
+title: APIConfig
 x-codegen:
   schemaType: valueobject
 properties:
@@ -41,7 +41,7 @@ properties:
     type: number
     default: 3001
     example: 3001
-  validate:
+  validation:
     description: Enable or disable request validation
     type: boolean
     default: true
@@ -56,5 +56,5 @@ required:
   - environment
   - host
   - port
-  - validate
+  - validation
 additionalProperties: false

@@ -11,7 +11,7 @@ import (
 func (s *Server) SetupInfrastructureRoutes() {
 	// Health check - simple liveness probe
 	s.echo.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]interface{}{
+		return c.JSON(http.StatusOK, map[string]any{
 			"status":    "healthy",
 			"timestamp": time.Now().Unix(),
 		})

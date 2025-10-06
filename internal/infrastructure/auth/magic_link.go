@@ -69,7 +69,7 @@ func (mlp *MagicLinkProvider) ValidateLink(tokenString string) (*MagicLinkClaims
 	token, err := jwt.ParseWithClaims(
 		tokenString,
 		&MagicLinkClaims{},
-		func(token *jwt.Token) (interface{}, error) {
+		func(token *jwt.Token) (any, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}

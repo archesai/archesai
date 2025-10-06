@@ -1,5 +1,5 @@
 post:
-  operationId: verifyMagicLink
+  operationId: VerifyMagicLink
   summary: Verify a magic link token
   description: Verify a magic link token or OTP code and create a session
   tags:
@@ -48,3 +48,4 @@ post:
       $ref: '../components/responses/NotFound.yaml'
     '500':
       $ref: '../components/responses/InternalServerError.yaml'
+  x-codegen-custom-handler: true

@@ -1,8 +1,8 @@
 delete:
-  operationId: deleteOrganization
+  operationId: DeleteOrganization
   summary: Delete an organization
   tags:
-    - Organizations
+    - Organization
   description: Delete an organization
   parameters:
     - schema:
@@ -33,10 +33,10 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getOrganization
+  operationId: GetOrganization
   summary: Get an organization
   tags:
-    - Organizations
+    - Organization
   description: Get an organization
   parameters:
     - schema:
@@ -67,10 +67,10 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateOrganization
+  operationId: UpdateOrganization
   summary: Update an organization
   tags:
-    - Organizations
+    - Organization
   description: Update an organization
   requestBody:
     content:

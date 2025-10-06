@@ -1,8 +1,8 @@
 delete:
-  operationId: deleteTool
+  operationId: DeleteTool
   summary: Delete a tool
   tags:
-    - Tools
+    - Tool
   description: Delete a tool
   parameters:
     - schema:
@@ -33,10 +33,10 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getTool
+  operationId: GetTool
   summary: Find a tool
   tags:
-    - Tools
+    - Tool
   description: Find a tool
   parameters:
     - schema:
@@ -67,10 +67,10 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateTool
+  operationId: UpdateTool
   summary: Update a tool
   tags:
-    - Tools
+    - Tool
   description: Update a tool
   requestBody:
     content:

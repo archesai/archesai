@@ -1,5 +1,6 @@
 post:
-  operationId: requestEmailChange
+  x-codegen-custom-handler: true
+  operationId: RequestEmailChange
   summary: Request e-mail change
   tags:
     - Auth

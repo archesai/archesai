@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-10-05T14:46:26-04:00
+  Generated: 2025-10-06T13:27:37-04:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -113,35 +113,35 @@
     </dir>
     <dir name="application" dirs="2">
       <dir name="commands" dirs="11">
-        <dir name="apikeys" purpose="API definitions" files="3" patterns="*.gen.go"/>
-        <dir name="artifacts" files="3" patterns="*.gen.go"/>
+        <dir name="apikey" purpose="API definitions" files="3" patterns="*.gen.go"/>
+        <dir name="artifact" files="3" patterns="*.gen.go"/>
         <dir name="auth" purpose="Authentication and authorization" files="34" patterns="*.gen.go"/>
-        <dir name="invitations" files="3" patterns="*.gen.go"/>
-        <dir name="labels" files="3" patterns="*.gen.go"/>
-        <dir name="members" files="3" patterns="*.gen.go"/>
-        <dir name="organizations" files="3" patterns="*.gen.go"/>
-        <dir name="pipelines" files="7" patterns="*.gen.go"/>
-        <dir name="runs" files="3" patterns="*.gen.go"/>
-        <dir name="tools" purpose="Development tools" files="3" patterns="*.gen.go"/>
-        <dir name="users" files="6" patterns="*.gen.go"/>
+        <dir name="invitation" files="3" patterns="*.gen.go"/>
+        <dir name="label" files="3" patterns="*.gen.go"/>
+        <dir name="member" files="3" patterns="*.gen.go"/>
+        <dir name="organization" files="3" patterns="*.gen.go"/>
+        <dir name="pipeline" files="7" patterns="*.gen.go"/>
+        <dir name="run" files="3" patterns="*.gen.go"/>
+        <dir name="tool" files="3" patterns="*.gen.go"/>
+        <dir name="user" files="6" patterns="*.gen.go"/>
       </dir>
       <dir name="queries" dirs="13">
-        <dir name="apikeys" purpose="API definitions" files="2" patterns="*.gen.go"/>
-        <dir name="artifacts" files="2" patterns="*.gen.go"/>
+        <dir name="apikey" purpose="API definitions" files="2" patterns="*.gen.go"/>
+        <dir name="artifact" files="2" patterns="*.gen.go"/>
         <dir name="auth" purpose="Authentication and authorization" files="8" patterns="*.gen.go"/>
-        <dir name="config" purpose="Configuration management" files="1"/>
-        <dir name="health" files="1"/>
-        <dir name="invitations" files="2" patterns="*.gen.go"/>
-        <dir name="labels" files="2" patterns="*.gen.go"/>
-        <dir name="members" files="2" patterns="*.gen.go"/>
-        <dir name="organizations" files="2" patterns="*.gen.go"/>
-        <dir name="pipelines" files="6" patterns="*.gen.go"/>
-        <dir name="runs" files="2" patterns="*.gen.go"/>
-        <dir name="tools" purpose="Development tools" files="2" patterns="*.gen.go"/>
-        <dir name="users" files="4" patterns="*.gen.go"/>
+        <dir name="config" purpose="Configuration management" files="2" patterns="*.gen.go"/>
+        <dir name="health" files="2" patterns="*.gen.go"/>
+        <dir name="invitation" files="2" patterns="*.gen.go"/>
+        <dir name="label" files="2" patterns="*.gen.go"/>
+        <dir name="member" files="2" patterns="*.gen.go"/>
+        <dir name="organization" files="2" patterns="*.gen.go"/>
+        <dir name="pipeline" files="6" patterns="*.gen.go"/>
+        <dir name="run" files="2" patterns="*.gen.go"/>
+        <dir name="tool" files="2" patterns="*.gen.go"/>
+        <dir name="user" files="4" patterns="*.gen.go"/>
       </dir>
     </dir>
-    <dir name="codegen" files="10" dirs="1">
+    <dir name="codegen" files="9" dirs="1">
       <dir name="tmpl" files="11"/>
     </dir>
     <dir name="core" dirs="6">
@@ -150,7 +150,7 @@
       <dir name="events" files="15" patterns="*.gen.go"/>
       <dir name="repositories" files="14" patterns="*.gen.go"/>
       <dir name="services" files="2"/>
-      <dir name="valueobjects" files="44" patterns="*.gen.go"/>
+      <dir name="valueobjects" files="43" patterns="*.gen.go"/>
     </dir>
     <dir name="infrastructure" dirs="11">
       <dir name="auth" purpose="Authentication and authorization" files="4" dirs="1" key-files="service.go">
@@ -173,7 +173,7 @@
         <dir name="s3"/>
       </dir>
     </dir>
-    <dir name="parsers" files="9" patterns="*.gen.go"/>
+    <dir name="parsers" files="10" patterns="*.gen.go"/>
     <dir name="shared" dirs="2">
       <dir name="logger" purpose="Logging utilities" files="2"/>
       <dir name="testutil" type="testing" purpose="Testing utilities" files="1"/>

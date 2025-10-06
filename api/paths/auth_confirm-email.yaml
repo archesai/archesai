@@ -1,5 +1,6 @@
 post:
-  operationId: confirmEmailChange
+  x-codegen-custom-handler: true
+  operationId: ConfirmEmailChange
   summary: Verify e-mail change
   tags:
     - Auth

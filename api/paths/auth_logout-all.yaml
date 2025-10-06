@@ -1,5 +1,5 @@
 post:
-  operationId: logoutAll
+  operationId: LogoutAll
   summary: Logout all sessions
   tags:
     - Auth
@@ -35,3 +35,4 @@ post:
                 example: 3
     '401':
       $ref: ../components/responses/Unauthorized.yaml
+  x-codegen-custom-handler: true

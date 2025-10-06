@@ -61,8 +61,12 @@ WHERE
   OR prerequisite_id = $1
 `
 
-func (q *Queries) DeleteAllStepDependencies(ctx context.Context, pipelineStepID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAllStepDependencies, pipelineStepID)
+type DeleteAllStepDependenciesParams struct {
+	PipelineStepID uuid.UUID
+}
+
+func (q *Queries) DeleteAllStepDependencies(ctx context.Context, arg DeleteAllStepDependenciesParams) error {
+	_, err := q.db.Exec(ctx, deleteAllStepDependencies, arg.PipelineStepID)
 	return err
 }
 
@@ -95,14 +99,18 @@ WHERE
   ps.pipeline_id = $1
 `
 
+type GetPipelineStepDependenciesParams struct {
+	PipelineID uuid.UUID
+}
+
 type GetPipelineStepDependenciesRow struct {
 	PipelineStepID uuid.UUID
 	PrerequisiteID uuid.UUID
 	PipelineID     uuid.UUID
 }
 
-func (q *Queries) GetPipelineStepDependencies(ctx context.Context, pipelineID uuid.UUID) ([]GetPipelineStepDependenciesRow, error) {
-	rows, err := q.db.Query(ctx, getPipelineStepDependencies, pipelineID)
+func (q *Queries) GetPipelineStepDependencies(ctx context.Context, arg GetPipelineStepDependenciesParams) ([]GetPipelineStepDependenciesRow, error) {
+	rows, err := q.db.Query(ctx, getPipelineStepDependencies, arg.PipelineID)
 	if err != nil {
 		return nil, err
 	}
@@ -130,8 +138,12 @@ WHERE
   pipeline_step_id = $1
 `
 
-func (q *Queries) GetStepDependencies(ctx context.Context, pipelineStepID uuid.UUID) ([]uuid.UUID, error) {
-	rows, err := q.db.Query(ctx, getStepDependencies, pipelineStepID)
+type GetStepDependenciesParams struct {
+	PipelineStepID uuid.UUID
+}
+
+func (q *Queries) GetStepDependencies(ctx context.Context, arg GetStepDependenciesParams) ([]uuid.UUID, error) {
+	rows, err := q.db.Query(ctx, getStepDependencies, arg.PipelineStepID)
 	if err != nil {
 		return nil, err
 	}
@@ -159,8 +171,12 @@ WHERE
   prerequisite_id = $1
 `
 
-func (q *Queries) GetStepDependents(ctx context.Context, prerequisiteID uuid.UUID) ([]uuid.UUID, error) {
-	rows, err := q.db.Query(ctx, getStepDependents, prerequisiteID)
+type GetStepDependentsParams struct {
+	PrerequisiteID uuid.UUID
+}
+
+func (q *Queries) GetStepDependents(ctx context.Context, arg GetStepDependentsParams) ([]uuid.UUID, error) {
+	rows, err := q.db.Query(ctx, getStepDependents, arg.PrerequisiteID)
 	if err != nil {
 		return nil, err
 	}

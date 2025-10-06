@@ -1,5 +1,5 @@
 post:
-  operationId: requestMagicLink
+  operationId: RequestMagicLink
   summary: Request a magic link
   description: Request a magic link to be sent via email or generate an OTP code
   tags:
@@ -64,3 +64,4 @@ post:
       $ref: '../components/responses/TooManyRequests.yaml'
     '500':
       $ref: '../components/responses/InternalServerError.yaml'
+  x-codegen-custom-handler: true

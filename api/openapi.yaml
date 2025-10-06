@@ -21,9 +21,9 @@ security:
   - bearerAuth: []
   - sessionCookie: []
 tags:
-  - name: APIKeys
+  - name: APIKey
     description: API key management
-  - name: Artifacts
+  - name: Artifact
     description: Content artifact management
   - name: Auth
     description: Authentication and authorization operations
@@ -31,27 +31,27 @@ tags:
     description: Configuration management
   - name: Health
     description: Health check operations
-  - name: Invitations
+  - name: Invitation
     description: Organization invitation management
-  - name: Labels
+  - name: Label
     description: Content label management
-  - name: Members
+  - name: Member
     description: Organization member management
   - name: OAuth
     description: OAuth provider integration
-  - name: Organizations
+  - name: Organization
     description: Organization management
-  - name: Pipelines
+  - name: Pipeline
     description: Pipeline management
-  - name: Runs
+  - name: Run
     description: Pipeline run management
-  - name: Sessions
+  - name: Session
     description: User session management
-  - name: Tokens
+  - name: Token
     description: API token management
-  - name: Tools
+  - name: Tool
     description: Tool management
-  - name: Users
+  - name: User
     description: User profile management
 paths:
   # Authentication - Simplified flat structure

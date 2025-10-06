@@ -1,48 +1,46 @@
 {{- /*
-Unified Schema Template
-Handles: Entities, Value Objects, DTOs, Enums, and Constants
+Template: schema.tmpl
+Generates: A single schema definition (entity or value object)
+Expected data: SchemasTemplateData
 */ -}}
-{{template "header.tmpl" .}}
-{{- /* Import block */ -}}
-{{- if or .Imports .IsEntity .IsAggregate .IsEnum .IsValueObject }}
+package {{ .Package }}
+
 import (
 	"fmt"
 	"strings"
 	"time"
 	"github.com/google/uuid"
-{{- if and (or .IsEntity .IsAggregate) (ne .Package "core") }}
 	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
-{{- end }}
-{{- if and (or .IsEntity .IsAggregate) (ne .Package "valueobjects") }}
 	"github.com/archesai/archesai/internal/core/valueobjects"
-{{- end }}
-{{- range .Imports }}
-	"{{ . }}"
-{{- end }}
 )
-{{- end }}
-{{- /* Handle Enums */ -}}
-{{- if .IsEnum }}
-// {{ .Name }} represents the {{ .Description }} enumeration
-type {{ .Name }} string
 
-// {{ .Name }} values
+{{- $schema := .Schema }}
+{{- $isEntity := eq $schema.GetSchemaType "entity" }}
+{{- $isValueObject := eq $schema.GetSchemaType "valueobject" }}
+
+
+{{- if $schema.IsEnum }}
+
+// {{ $schema.Name }} represents the {{ $schema.Description }} enumeration
+type {{ $schema.Name }} string
+
+// {{ $schema.Name }} values
 const (
-{{- range .Values }}
-	{{ .Name }}{{ .Value }} {{ $.Name }} = "{{ .RawValue }}"
+{{- range $schema.Values }}
+	{{ .Name }}{{ .Value }} {{ $schema.Name }} = "{{ .RawValue }}"
 {{- end }}
 )
 
-// String returns the string representation of {{ .Name }}
-func (e {{ .Name }}) String() string {
+// String returns the string representation of {{ $schema.Name }}
+func (e {{ $schema.Name }}) String() string {
 	return string(e)
 }
 
-// IsValid checks if the {{ .Name }} value is valid
-func (e {{ .Name }}) IsValid() bool {
+// IsValid checks if the {{ $schema.Name }} value is valid
+func (e {{ $schema.Name }}) IsValid() bool {
 	switch e {
-{{- range .Values }}
+{{- range $schema.Values }}
 	case {{ .Name }}{{ .Value }}:
 {{- end }}
 		return true
@@ -51,55 +49,39 @@ func (e {{ .Name }}) IsValid() bool {
 	}
 }
 
-// Parse{{ .Name }} parses a string into a {{ .Name }}
-func Parse{{ .Name }}(s string) ({{ .Name }}, error) {
-	v := {{ .Name }}(s)
+// Parse{{ $schema.Name }} parses a string into a {{ $schema.Name }}
+func Parse{{ $schema.Name }}(s string) ({{ $schema.Name }}, error) {
+	v := {{ $schema.Name }}(s)
 	if !v.IsValid() {
-		return "", fmt.Errorf("invalid {{ .Name }}: %s", s)
+		return "", fmt.Errorf("invalid {{ $schema.Name }}: %s", s)
 	}
 	return v, nil
 }
 
-{{- /* Handle Constants */ -}}
-{{- else if .IsConstant }}
-// {{ .Name }} constants
-const (
-{{- range .Constants }}
-	{{ .Name }} = {{ .Value }}{{ if .Comment }} // {{ .Comment }}{{ end }}
-{{- end }}
-)
-{{- /* Handle Structs (Entity, Aggregate, ValueObject, DTO) */ -}}
 {{- else }}
-{{- /* Handle multiple types if provided */ -}}
-{{- if .Types }}
-{{- range .Types }}
-// {{ .Name }} represents {{ if .Description }}{{ .Description }}{{ else }}a {{ .Name }}{{ end }}
-{{- if $.MakeUnexported }}
-// The struct is unexported to enforce creation through constructor functions.
-type {{ lower .Name }} struct {
-{{- else }}
-type {{ .Name }} struct {
-{{- end }}
-{{- range .Fields }}
-	{{ camelCase .FieldName }} {{ .GoType }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
+
+{{- /* Generate nested types first */ -}}
+{{- range $schema.CollectNestedTypes }}
+// {{ .GoType }} represents {{ if .Description }}{{ .Description }}{{ else }}a nested type for {{ $schema.Name }}{{ end }}
+type {{ .GoType }} struct {
+{{- range .GetSortedProperties }}{{- $prop := . }}
+{{- $isOptional := stringContains .JSONTag ",omitempty" }}
+	{{ .Name }} {{ if and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}*{{ end }}{{ .GoType }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
 {{- end }}
 }
-
 {{- end }}
-{{- else }}
-{{- /* Generate enum types for fields with enum values */ -}}
-{{- range .Fields }}
-{{- if .Enum }}
-{{- $fieldName := .FieldName }}
-{{- $fieldType := print $.Name .FieldName }}
 
-// {{ $fieldType }} represents the enumeration of valid values for {{ .FieldName }}
+{{- range .Schema.GetSortedProperties }}{{- $field := . }}
+{{- if $field.Enum }}
+{{- $fieldType := print $schema.Name $field.Name }}
+
+// {{ $fieldType }} represents the enumeration of valid values for {{ $field.Name }}
 type {{ $fieldType }} string
 
-// Valid {{ .FieldName }} values
+// Valid {{ $field.Name }} values
 const (
-{{- range .Enum }}
-	{{ $.Name }}{{ $fieldName }}{{ . | ToConstantCase }} {{ $fieldType }} = "{{ . }}"
+{{- range .Enum }}{{- $enum := . }}
+	{{ $schema.Name }}{{ $field.Name }}{{ pascalCase $enum }} {{ $fieldType }} = "{{ $enum }}"
 {{- end }}
 )
 
@@ -111,8 +93,8 @@ func (e {{ $fieldType }}) String() string {
 // IsValid checks if the value is valid
 func (e {{ $fieldType }}) IsValid() bool {
 	switch e {
-{{- range .Enum }}
-	case {{ $.Name }}{{ $fieldName }}{{ . | ToConstantCase }}:
+{{- range $field.Enum }}{{- $enum := . }}
+	case {{ $schema.Name }}{{ $field.Name }}{{ pascalCase $enum }}:
 		return true
 {{- end }}
 	default:
@@ -120,284 +102,279 @@ func (e {{ $fieldType }}) IsValid() bool {
 	}
 }
 
-// Parse{{ $.Name }}{{ $fieldName }} parses a string into the enum type
-func Parse{{ $.Name }}{{ $fieldName }}(s string) ({{ $fieldType }}, error) {
+// Parse{{ $schema.Name }}{{ $field.Name }} parses a string into the enum type
+func Parse{{ $schema.Name }}{{ $field.Name }}(s string) ({{ $fieldType }}, error) {
 	v := {{ $fieldType }}(s)
 	if !v.IsValid() {
-		return "", fmt.Errorf("invalid {{ $fieldName }}: %s", s)
+		return "", fmt.Errorf("invalid {{ $field.Name }}: %s", s)
 	}
 	return v, nil
 }
 {{- end }}
 {{- end }}
 
-// {{ .Name }} represents {{ if .Description }}{{ .Description }}{{ else }}a {{ .Name }}{{ end }}
-{{- if and .IsEntity .MakeUnexported }}
-// The struct is unexported to enforce creation through constructor functions.
-type {{ lower .Name }} struct {
-{{- else }}
-type {{ .Name }} struct {
+// {{ $schema.Name }} represents {{ if $schema.Description }}{{ $schema.Description }}{{ else }}a {{ $schema.Name }}{{ end }}
+type {{ $schema.Name }} struct {
+{{- range $schema.GetSortedProperties }}{{- $prop := . }}
+{{- $isOptional := stringContains .JSONTag ",omitempty" }}
+	{{ .Name }} {{ if and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}*{{ end }}{{ if .Enum }}{{ $schema.Name }}{{ .Name }}{{ else }}{{ .GoType }}{{ end }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
 {{- end }}
-{{- range .Fields }}
-{{- if and $.IsEntity $.MakeUnexported }}
-	{{ camelCase .FieldName }} {{ if .Enum }}{{ $.Name }}{{ .FieldName }}{{ else }}{{ .GoType }}{{ end }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
-{{- else }}
-	{{ .FieldName }} {{ if .Enum }}{{ $.Name }}{{ .FieldName }}{{ else }}{{ .GoType }}{{ end }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
-{{- end }}
-{{- end }}
-{{- if and .IsEntity .HasDomainEvents }}
+{{- if and $isEntity $schema.HasDomainEvents }}
 	events []events.DomainEvent `json:"-" yaml:"-"`
 {{- end }}
 }
 
-{{- /* Constructor for Entities */ -}}
-{{- if .IsEntity }}
+{{- /* Constructor - Unified for both entities and value objects */ -}}
+{{- if or $isEntity $isValueObject }}
 
-// New{{ .Name }} creates a new {{ .Name }} entity with validation.
+// New{{ $schema.Name }} creates a new {{ if $isEntity }}{{ $schema.Name }} entity{{ else }}immutable {{ $schema.Name }} value object{{ end }}.
+{{- if $isEntity }}
 // All required fields must be provided and valid.
-func New{{ .Name }}(
-{{- range .RequiredFields }}
-{{- if not (or (strContains .FieldName "CreatedAt") (strContains .FieldName "UpdatedAt") (eq .FieldName "ID")) }}
-	{{ camelCase .FieldName }} {{ if .Enum }}{{ $.Name }}{{ .FieldName }}{{ else }}{{ .GoType }}{{ end }},
+{{- else }}
+// Value objects are immutable and validated upon creation.
+{{- end }}
+func New{{ $schema.Name }}(
+{{- if $isEntity }}
+{{- range $schema.GetSortedProperties }}
+{{- if and ($schema.IsPropertyRequired .JSONTag) (not (or (eq .Name "ID") (eq .Name "CreatedAt") (eq .Name "UpdatedAt"))) }}
+	{{ camelCase .Name }} {{ if .Enum }}{{ $schema.Name }}{{ .Name }}{{ else }}{{ .GoType }}{{ end }},
 {{- end }}
 {{- end }}
-) (*{{ .Name }}, error) {
+) (*{{ $schema.Name }}, error) {
+{{- else }}
+{{- range $i, $f := $schema.GetSortedProperties }}{{- $isOptional := stringContains $f.JSONTag ",omitempty" }}{{- $needsPointer := and $isOptional (not (hasPrefix $f.GoType "*")) (not (hasPrefix $f.GoType "[]")) (not (hasPrefix $f.GoType "map")) }}{{ if $i }}, {{ end }}{{ camelCase $f.Name }} {{ if $needsPointer }}*{{ end }}{{ if $f.Enum }}{{ $schema.Name }}{{ $f.Name }}{{ else }}{{ $f.GoType }}{{ end }}{{ end }}) ({{ $schema.Name }}, error) {
+{{- end }}
 	// Validate required fields
-{{- range .RequiredFields }}
+{{- range $schema.GetSortedProperties }}{{- $field := . }}
+{{- if and $isEntity ($schema.IsPropertyRequired $field.JSONTag) }}
 {{- if .Enum }}
-	if !{{ camelCase .FieldName }}.IsValid() {
-		return nil, fmt.Errorf("invalid {{ .FieldName }}: %s", {{ camelCase .FieldName }})
+	if !{{ camelCase .Name }}.IsValid() {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Name }}{}{{ end }}, fmt.Errorf("invalid {{ .Name }}: %s", {{ camelCase .Name }})
 	}
-{{- else if and (eq .GoType "string") (not (or (strContains .FieldName "CreatedAt") (strContains .FieldName "UpdatedAt") (eq .FieldName "ID"))) }}
-	if {{ camelCase .FieldName }} == "" {
-		return nil, fmt.Errorf("{{ .FieldName }} cannot be empty")
+{{- else if and (eq .GoType "string") (not (or (eq .Name "CreatedAt") (eq .Name "UpdatedAt") (eq .Name "ID"))) }}
+	if {{ camelCase .Name }} == "" {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Name }}{}{{ end }}, fmt.Errorf("{{ .Name }} cannot be empty")
 	}
 {{- else if eq .GoType "int" }}
-	if {{ camelCase .FieldName }} < 0 {
-		return nil, fmt.Errorf("{{ .FieldName }} cannot be negative")
+	if {{ camelCase .Name }} < 0 {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Name }}{}{{ end }}, fmt.Errorf("{{ .Name }} cannot be negative")
 	}
 {{- else if eq .GoType "float64" }}
-	if {{ camelCase .FieldName }} < 0 {
-		return nil, fmt.Errorf("{{ .FieldName }} cannot be negative")
+	if {{ camelCase .Name }} < 0 {
+		return {{ if $isEntity }}nil{{ else }}{{ $schema.Name }}{}{{ end }}, fmt.Errorf("{{ .Name }} cannot be negative")
 	}
 {{- end }}
-{{- end }}
-
-	now := time.Now().UTC()
-	{{ .NameLower }} := &{{ .Name }}{
-{{- range .Fields }}
-{{- if eq .FieldName "ID" }}
-		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: uuid.New(),
-{{- else if strContains .FieldName "CreatedAt" }}
-		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: now,
-{{- else if strContains .FieldName "UpdatedAt" }}
-		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: now,
-{{- else if .Required }}
-		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: {{ camelCase .FieldName }},
-{{- end }}
-{{- end }}
-{{- if .HasDomainEvents }}
-		events: []events.DomainEvent{},
-{{- end }}
-	}
-
-{{- if .HasDomainEvents }}
-	{{ .NameLower }}.addEvent(events.New{{ .Name }}CreatedEvent({{ .NameLower }}.{{ if $.MakeUnexported }}id{{ else }}ID{{ end }}))
-{{- end }}
-
-	return {{ .NameLower }}, nil
-}
-
-{{- /* Getters for Entities */ -}}
-{{- range .Fields }}
-
-// Get{{ .FieldName }} returns the {{ .FieldName }}
-func (e *{{ $.Name }}) Get{{ .FieldName }}() {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }} {
+{{- else if $isValueObject }}
+{{- $isOptional := stringContains .JSONTag ",omitempty" }}
+{{- $needsPointer := and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}
 {{- if .Enum }}
-	return string(e.{{ .FieldName }})
+{{- if $needsPointer }}
+	if {{ camelCase .Name }} != nil && !{{ camelCase .Name }}.IsValid() {
+		return {{ $schema.Name }}{}, fmt.Errorf("invalid {{ .Name }}: %s", {{ camelCase .Name }})
+	}
 {{- else }}
-	return e.{{ .FieldName }}
-{{- end }}
-}
-{{- end }}
-
-{{- /* Domain Events methods */ -}}
-{{- if .HasDomainEvents }}
-
-// Events returns the domain events
-func (e *{{ .Name }}) Events() []events.DomainEvent {
-	return e.events
-}
-
-// ClearEvents clears the domain events
-func (e *{{ .Name }}) ClearEvents() {
-	e.events = []events.DomainEvent{}
-}
-
-// addEvent adds a domain event
-func (e *{{ .Name }}) addEvent(event events.DomainEvent) {
-	e.events = append(e.events, event)
-}
-{{- end }}
-
-// Reconstruct{{ .Name }} reconstructs a {{ .Name }} from persistence
-func Reconstruct{{ .Name }}(
-{{- range .Fields }}
-	{{ camelCase .FieldName }} {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }},
-{{- end }}
-) *{{ .Name }} {
-	return &{{ .Name }}{
-{{- range .Fields }}
-{{- if .Enum }}
-		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: {{ $.Name }}{{ .FieldName }}({{ camelCase .FieldName }}),
-{{- else }}
-		{{ if $.MakeUnexported }}{{ camelCase .FieldName }}{{ else }}{{ .FieldName }}{{ end }}: {{ camelCase .FieldName }},
-{{- end }}
-{{- end }}
-{{- if .HasDomainEvents }}
-		events: []events.DomainEvent{},
-{{- end }}
+	if !{{ camelCase .Name }}.IsValid() {
+		return {{ $schema.Name }}{}, fmt.Errorf("invalid {{ .Name }}: %s", {{ camelCase .Name }})
 	}
-}
-
-{{- /* Constructor for Value Objects */ -}}
-{{- else if .IsValueObject }}
-
-// New{{ .Name }} creates a new immutable {{ .Name }} value object.
-// Value objects are immutable and validated upon creation.
-func New{{ .Name }}({{ range $i, $f := .Fields }}{{ if $i }}, {{ end }}{{ camelCase .FieldName }} {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }}{{ end }}) ({{ .Name }}, error) {
-	// Validate all fields
-{{- range .Fields }}
-{{- if .Enum }}
-	{{ camelCase .FieldName }}Enum := {{ $.Name }}{{ .FieldName }}({{ camelCase .FieldName }})
-	if !{{ camelCase .FieldName }}Enum.IsValid() {
-		return {{ $.Name }}{}, fmt.Errorf("invalid {{ .FieldName }}: %s", {{ camelCase .FieldName }})
-	}
+{{- end }}
 {{- else if and .Required (eq .GoType "string") }}
-	if {{ camelCase .FieldName }} == "" {
-		return {{ $.Name }}{}, fmt.Errorf("{{ .FieldName }} cannot be empty")
+	if {{ camelCase .Name }} == "" {
+		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be empty")
 	}
 {{- else if and .Required (eq .GoType "int") }}
-	if {{ camelCase .FieldName }} < 0 {
-		return {{ $.Name }}{}, fmt.Errorf("{{ .FieldName }} cannot be negative")
+	if {{ camelCase .Name }} < 0 {
+		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be negative")
 	}
 {{- else if and .Required (eq .GoType "float64") }}
-	if {{ camelCase .FieldName }} < 0 {
-		return {{ $.Name }}{}, fmt.Errorf("{{ .FieldName }} cannot be negative")
+	if {{ camelCase .Name }} < 0 {
+		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be negative")
 	}
 {{- else if eq .GoType "uuid.UUID" }}
-	if {{ camelCase .FieldName }} == uuid.Nil {
-		return {{ $.Name }}{}, fmt.Errorf("{{ .FieldName }} cannot be nil UUID")
+{{- $isOptional := stringContains .JSONTag ",omitempty" }}
+{{- if $isOptional }}
+	if {{ camelCase .Name }} != nil && *{{ camelCase .Name }} == uuid.Nil {
+		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be nil UUID")
+	}
+{{- else }}
+	if {{ camelCase .Name }} == uuid.Nil {
+		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be nil UUID")
 	}
 {{- end }}
 {{- end }}
-
-	return {{ .Name }}{
-{{- range .Fields }}
-{{- if .Enum }}
-		{{ .FieldName }}: {{ camelCase .FieldName }}Enum,
-{{- else }}
-		{{ .FieldName }}: {{ camelCase .FieldName }},
 {{- end }}
+{{- end }}
+
+{{- if $isEntity }}
+	now := time.Now().UTC()
+	id := uuid.New()
+	{{ lower $schema.Name }} := &{{ $schema.Name }}{
+{{- range $schema.GetSortedProperties }}
+{{- $isOptional := stringContains .JSONTag ",omitempty" }}
+{{- if eq .Name "ID" }}
+		{{ .Name }}: {{ if $isOptional }}&id{{ else }}id{{ end }},
+{{- else if eq .Name "CreatedAt" }}
+		{{ .Name }}: {{ if $isOptional }}&now{{ else }}now{{ end }},
+{{- else if eq .Name "UpdatedAt" }}
+		{{ .Name }}: {{ if $isOptional }}&now{{ else }}now{{ end }},
+{{- else if ($schema.IsPropertyRequired .JSONTag) }}
+		{{ .Name }}: {{ if and $isOptional (not (hasPrefix .GoType "*")) }}&{{ end }}{{ camelCase .Name }},
+{{- end }}
+{{- end }}
+{{- if $schema.HasDomainEvents }}
+		events: []events.DomainEvent{},
+{{- end }}
+	}
+
+{{- if $schema.HasDomainEvents }}
+	{{ lower $schema.Name }}.addEvent(events.New{{ $schema.Name }}CreatedEvent(id))
+{{- end }}
+
+	return {{ lower $schema.Name }}, nil
+{{- else }}
+	return {{ $schema.Name }}{
+{{- range $schema.GetSortedProperties }}
+		{{ .Name }}: {{ camelCase .Name }},
 {{- end }}
 	}, nil
+{{- end }}
 }
 
-// Must{{ .Name }} creates a new {{ .Name }} value object and panics on validation error.
-// Use this only when you are certain the values are valid (e.g., in tests or with hardcoded values).
-func Must{{ .Name }}({{ range $i, $f := .Fields }}{{ if $i }}, {{ end }}{{ camelCase .FieldName }} {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }}{{ end }}) {{ .Name }} {
-	v, err := New{{ .Name }}({{ range $i, $f := .Fields }}{{ if $i }}, {{ end }}{{ camelCase .FieldName }}{{ end }})
-	if err != nil {
-		panic(fmt.Sprintf("failed to create {{ .Name }}: %v", err))
-	}
-	return v
-}
-
-// Zero{{ .Name }} returns the zero value for {{ .Name }}.
+{{- if $isValueObject }}
+// Zero{{ $schema.Name }} returns the zero value for {{ $schema.Name }}.
 // This is useful for comparisons and as a default value.
-func Zero{{ .Name }}() {{ .Name }} {
-	return {{ .Name }}{}
+func Zero{{ $schema.Name }}() {{ $schema.Name }} {
+	return {{ $schema.Name }}{}
 }
+{{- end }}
 
-{{- /* Getters for Value Objects - return by value for immutability */ -}}
-{{- range .Fields }}
+{{- end }}
 
-// Get{{ .FieldName }} returns the {{ .FieldName }} value.
-// Value objects are immutable, so this returns a copy of the value.
-func (v {{ $.Name }}) Get{{ .FieldName }}() {{ if .Enum }}string{{ else }}{{ .GoType }}{{ end }} {
+{{- /* Getters */ -}}
+{{- range $schema.GetSortedProperties }}
+
+{{- if $isEntity }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}{{- $isPointer := and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}
+// Get{{ .Name }} returns the {{ .Name }}
+func (e *{{ $schema.Name }}) Get{{ .Name }}() {{ if .Enum }}string{{ else if $isPointer }}*{{ .GoType }}{{ else }}{{ .GoType }}{{ end }} {
 {{- if .Enum }}
-	return string(v.{{ .FieldName }})
+	return string(e.{{ .Name }})
+{{- else }}
+	return e.{{ .Name }}
+{{- end }}
+}
+{{- else if $isValueObject }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}{{- $needsPointer := and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}
+// Get{{ .Name }} returns the {{ .Name }} value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v {{ $schema.Name }}) Get{{ .Name }}() {{ if $needsPointer }}*{{ end }}{{ if .Enum }}{{ $schema.Name }}{{ .Name }}{{ else }}{{ .GoType }}{{ end }} {
+{{- if .Enum }}
+	return v.{{ .Name }}
 {{- else if or (hasPrefix .GoType "[]") (hasPrefix .GoType "map") }}
 	// Return a copy for slices and maps to maintain immutability
 	{{- if hasPrefix .GoType "[]" }}
-	result := make({{ .GoType }}, len(v.{{ .FieldName }}))
-	copy(result, v.{{ .FieldName }})
+	result := make({{ .GoType }}, len(v.{{ .Name }}))
+	copy(result, v.{{ .Name }})
 	return result
 	{{- else }}
 	result := make({{ .GoType }})
-	for k, val := range v.{{ .FieldName }} {
+	for k, val := range v.{{ .Name }} {
 		result[k] = val
 	}
 	return result
 	{{- end }}
 {{- else }}
-	return v.{{ .FieldName }}
+	return v.{{ .Name }}
 {{- end }}
 }
 {{- end }}
-
-// IsZero returns true if this is the zero value.
-func (v {{ .Name }}) IsZero() bool {
-	zero := Zero{{ .Name }}()
-	// Compare using string representation as a simple equality check
-	return v.String() == zero.String()
-}
-
-{{- /* Skip Validate method if there's a field named Validate */ -}}
-{{- $hasValidateField := false }}
-{{- range .Fields }}
-{{- if eq .FieldName "Validate" }}
-{{- $hasValidateField = true }}
-{{- end }}
 {{- end }}
 
-{{- if not $hasValidateField }}
-// Validate checks if the value object is valid.
-// This is automatically called during construction but can be used for explicit validation.
-func (v {{ .Name }}) Validate() error {
-{{- range .Fields }}
-{{- if and .Required (eq .GoType "string") }}
-	if v.{{ .FieldName }} == "" {
-		return fmt.Errorf("{{ .FieldName }} cannot be empty")
+{{- /* Value object specific methods */ -}}
+{{- if $isValueObject }}
+
+// Validate validates the {{ $schema.Name }} value object.
+// Returns an error if any field fails validation.
+func (v {{ $schema.Name }}) Validate() error {
+{{- range $schema.GetSortedProperties }}{{- $field := . }}
+{{- $isOptional := stringContains .JSONTag ",omitempty" }}
+{{- $needsPointer := and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}
+{{- if .Enum }}
+{{- if $needsPointer }}
+	if v.{{ .Name }} != nil && !v.{{ .Name }}.IsValid() {
+		return fmt.Errorf("invalid {{ .Name }}: %s", v.{{ .Name }})
+	}
+{{- else }}
+	if !v.{{ .Name }}.IsValid() {
+		return fmt.Errorf("invalid {{ .Name }}: %s", v.{{ .Name }})
+	}
+{{- end }}
+{{- else if and .Required (eq .GoType "string") }}
+	if v.{{ .Name }} == "" {
+		return fmt.Errorf("{{ .Name }} cannot be empty")
+	}
+{{- else if and .Required (eq .GoType "int") }}
+	if v.{{ .Name }} < 0 {
+		return fmt.Errorf("{{ .Name }} cannot be negative")
+	}
+{{- else if and .Required (eq .GoType "float64") }}
+	if v.{{ .Name }} < 0 {
+		return fmt.Errorf("{{ .Name }} cannot be negative")
 	}
 {{- else if eq .GoType "uuid.UUID" }}
-	if v.{{ .FieldName }} == uuid.Nil {
-		return fmt.Errorf("{{ .FieldName }} cannot be nil UUID")
+{{- if $isOptional }}
+	if v.{{ .Name }} != nil && *v.{{ .Name }} == uuid.Nil {
+		return fmt.Errorf("{{ .Name }} cannot be nil UUID")
 	}
+{{- else }}
+	if v.{{ .Name }} == uuid.Nil {
+		return fmt.Errorf("{{ .Name }} cannot be nil UUID")
+	}
+{{- end }}
 {{- end }}
 {{- end }}
 	return nil
 }
-{{- end }}
 
-// String returns a string representation of {{ .Name }}
-func (v {{ .Name }}) String() string {
-	var fields []string
-{{- range .Fields }}
-{{- if and (not .Enum) (isPointer .GoType) }}
-	if v.{{ .FieldName }} != nil {
-		fields = append(fields, fmt.Sprintf("{{ .FieldName }}: %v", *v.{{ .FieldName }}))
-	} else {
-		fields = append(fields, "{{ .FieldName }}: <nil>")
-	}
-{{- else }}
-	fields = append(fields, fmt.Sprintf("{{ .FieldName }}: %v", v.{{ .FieldName }}))
-{{- end }}
-{{- end }}
-	return fmt.Sprintf("{{ .Name }}{%s}", strings.Join(fields, ", "))
+// IsZero returns true if this is the zero value.
+func (v {{ $schema.Name }}) IsZero() bool {
+	zero := Zero{{ $schema.Name }}()
+	// Compare using string representation as a simple equality check
+	return v.String() == zero.String()
 }
 
+// String returns a string representation of {{ $schema.Name }}
+func (v {{ $schema.Name }}) String() string {
+	var fields []string
+{{- range $schema.GetSortedProperties }}
+{{- if and (not .Enum) (isPointer .GoType) }}
+	if v.{{ .Name }} != nil {
+		fields = append(fields, fmt.Sprintf("{{ .Name }}: %v", *v.{{ .Name }}))
+	} else {
+		fields = append(fields, "{{ .Name }}: <nil>")
+	}
+{{- else }}
+	fields = append(fields, fmt.Sprintf("{{ .Name }}: %v", v.{{ .Name }}))
 {{- end }}
 {{- end }}
-{{- /* End of struct types */ -}}
+	return fmt.Sprintf("{{ $schema.Name }}{%s}", strings.Join(fields, ", "))
+}
+{{- end }}
+
+{{- /* Domain Events methods for entities */ -}}
+{{- if and $isEntity $schema.HasDomainEvents }}
+
+// Events returns the domain events
+func (e *{{ $schema.Name }}) Events() []events.DomainEvent {
+	return e.events
+}
+
+// ClearEvents clears the domain events
+func (e *{{ $schema.Name }}) ClearEvents() {
+	e.events = []events.DomainEvent{}
+}
+
+// addEvent adds a domain event
+func (e *{{ $schema.Name }}) addEvent(event events.DomainEvent) {
+	e.events = append(e.events, event)
+}
+{{- end }}
+
 {{- end }}

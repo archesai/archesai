@@ -21,7 +21,7 @@ func NewPubSub(client *redis.Client) *PubSub {
 }
 
 // Publish publishes a message to a channel.
-func (p *PubSub) Publish(channel string, message interface{}) error {
+func (p *PubSub) Publish(channel string, message any) error {
 	ctx := context.Background()
 
 	data, err := json.Marshal(message)
@@ -61,7 +61,7 @@ func (s *Subscription) Close() error {
 }
 
 // PublishJSON publishes a JSON message to a channel.
-func (p *PubSub) PublishJSON(channel string, v interface{}) error {
+func (p *PubSub) PublishJSON(channel string, v any) error {
 	return p.Publish(channel, v)
 }
 

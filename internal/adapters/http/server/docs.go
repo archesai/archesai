@@ -49,7 +49,7 @@ func (s *Server) SetupDocs() error {
 
 	// Serve OpenAPI spec as JSON (convert YAML to JSON)
 	s.echo.GET("/openapi.json", func(c echo.Context) error {
-		var spec map[string]interface{}
+		var spec map[string]any
 		if err := yaml.Unmarshal(openapiYAML, &spec); err != nil {
 			s.logger.Error("Failed to parse OpenAPI YAML", "error", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{

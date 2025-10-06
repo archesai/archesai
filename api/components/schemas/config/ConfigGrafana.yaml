@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Grafana monitoring dashboard configuration
 type: object
+title: GrafanaConfig
 properties:
   enabled:
     description: Enable Grafana

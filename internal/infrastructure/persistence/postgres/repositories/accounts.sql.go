@@ -98,8 +98,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteAccount(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAccount, id)
+type DeleteAccountParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteAccount(ctx context.Context, arg DeleteAccountParams) error {
+	_, err := q.db.Exec(ctx, deleteAccount, arg.ID)
 	return err
 }
 
@@ -109,8 +113,12 @@ WHERE
   user_id = $1
 `
 
-func (q *Queries) DeleteAccountsByUser(ctx context.Context, userID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAccountsByUser, userID)
+type DeleteAccountsByUserParams struct {
+	UserID uuid.UUID
+}
+
+func (q *Queries) DeleteAccountsByUser(ctx context.Context, arg DeleteAccountsByUserParams) error {
+	_, err := q.db.Exec(ctx, deleteAccountsByUser, arg.UserID)
 	return err
 }
 
@@ -125,8 +133,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetAccount(ctx context.Context, id uuid.UUID) (Account, error) {
-	row := q.db.QueryRow(ctx, getAccount, id)
+type GetAccountParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetAccount(ctx context.Context, arg GetAccountParams) (Account, error) {
+	row := q.db.QueryRow(ctx, getAccount, arg.ID)
 	var i Account
 	err := row.Scan(
 		&i.ID,
@@ -285,8 +297,61 @@ ORDER BY
   created_at DESC
 `
 
-func (q *Queries) ListAccountsByUser(ctx context.Context, userID uuid.UUID) ([]Account, error) {
-	rows, err := q.db.Query(ctx, listAccountsByUser, userID)
+type ListAccountsByUserParams struct {
+	UserID uuid.UUID
+}
+
+func (q *Queries) ListAccountsByUser(ctx context.Context, arg ListAccountsByUserParams) ([]Account, error) {
+	rows, err := q.db.Query(ctx, listAccountsByUser, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Account
+	for rows.Next() {
+		var i Account
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.AccessToken,
+			&i.AccessTokenExpiresAt,
+			&i.AccountIdentifier,
+			&i.IDToken,
+			&i.Password,
+			&i.Provider,
+			&i.RefreshToken,
+			&i.RefreshTokenExpiresAt,
+			&i.Scope,
+			&i.UserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAccountsByUserID = `-- name: ListAccountsByUserID :many
+SELECT
+  id, created_at, updated_at, access_token, access_token_expires_at, account_identifier, id_token, password, provider, refresh_token, refresh_token_expires_at, scope, user_id
+FROM
+  account
+WHERE
+  user_id = $1
+ORDER BY
+  created_at DESC
+`
+
+type ListAccountsByUserIDParams struct {
+	UserID uuid.UUID
+}
+
+func (q *Queries) ListAccountsByUserID(ctx context.Context, arg ListAccountsByUserIDParams) ([]Account, error) {
+	rows, err := q.db.Query(ctx, listAccountsByUserID, arg.UserID)
 	if err != nil {
 		return nil, err
 	}

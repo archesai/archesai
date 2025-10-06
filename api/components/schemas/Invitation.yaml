@@ -9,15 +9,26 @@ x-codegen:
     excludeFromUpdate:
       - InviterID
       - OrganizationID
-    additional_methods:
-      - name: ListByOrganization
-        params: [organizationID]
+    additionalMethods:
+      - name: ListInvitationsByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
         returns: multiple
       - name: GetInvitationByEmail
-        params: [email, organizationID]
+        params:
+          - name: email
+            type: string
+          - name: organizationID
+            type: string
+            format: uuid
         returns: single
-      - name: ListByInviter
-        params: [inviterID]
+      - name: ListInvitationsByInviter
+        params:
+          - name: inviterID
+            type: string
+            format: uuid
         returns: multiple
 allOf:
   - $ref: ./Base.yaml

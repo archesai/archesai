@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Twitter OAuth configuration
 type: object
+title: TwitterAuthConfig
 properties:
   enabled:
     description: Enable Twitter OAuth

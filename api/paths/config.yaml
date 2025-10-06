@@ -1,5 +1,6 @@
 get:
-  operationId: getConfig
+  x-codegen-custom-handler: true
+  operationId: GetConfig
   summary: Get the configuration
   tags:
     - Config

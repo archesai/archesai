@@ -95,7 +95,7 @@ The package name is automatically inferred from the output directory.`,
 			return fmt.Errorf("failed to initialize code generator: %w", err)
 		}
 
-		if _, err := generator.GenerateSchema(schemaPath, outputPath); err != nil {
+		if _, err := generator.GenerateJSONSchema(schemaPath, outputPath); err != nil {
 			return fmt.Errorf("code generation failed: %w", err)
 		}
 

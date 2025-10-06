@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Firebase authentication configuration
 type: object
+title: FirebaseAuthConfig
 properties:
   enabled:
     description: Enable Firebase authentication

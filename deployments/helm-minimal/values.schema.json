@@ -47,6 +47,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "EmailConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -92,6 +93,7 @@
             }
           },
           "required": ["pullPolicy", "tag"],
+          "title": "ImageConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -153,6 +155,7 @@
             }
           },
           "required": ["limits", "requests"],
+          "title": "ResourceConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -165,15 +168,15 @@
           "format": "uri",
           "type": "string"
         },
-        "validate": {
+        "validation": {
           "default": true,
           "description": "Enable or disable request validation",
           "example": true,
           "type": "boolean"
         }
       },
-      "required": ["cors", "docs", "environment", "host", "port", "validate"],
-      "title": "ConfigAPI",
+      "required": ["cors", "docs", "environment", "host", "port", "validation"],
+      "title": "APIConfig",
       "type": "object",
       "x-codegen": {
         "schemaType": "valueobject"
@@ -218,6 +221,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "FirebaseAuthConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -259,6 +263,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "GitHubAuthConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -300,6 +305,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "GoogleAuthConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -309,7 +315,7 @@
           "additionalProperties": false,
           "description": "Local username/password authentication",
           "properties": {
-            "accessTokenTtl": {
+            "accessTokenTTL": {
               "default": "15m",
               "description": "Access token time-to-live duration (e.g., \"15m\", \"1h\")",
               "example": "15m",
@@ -330,7 +336,7 @@
               "minLength": 32,
               "type": "string"
             },
-            "refreshTokenTtl": {
+            "refreshTokenTTL": {
               "default": "168h",
               "description": "Refresh token time-to-live duration (e.g., \"7d\", \"168h\")",
               "example": "168h",
@@ -342,9 +348,10 @@
           "required": [
             "enabled",
             "jwtSecret",
-            "accessTokenTtl",
-            "refreshTokenTtl"
+            "accessTokenTTL",
+            "refreshTokenTTL"
           ],
+          "title": "LocalAuthConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -461,6 +468,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "MagicLinkAuthConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -508,6 +516,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "MicrosoftAuthConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -543,6 +552,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "TwitterAuthConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -550,6 +560,7 @@
         }
       },
       "required": ["enabled"],
+      "title": "AuthConfig",
       "type": "object",
       "x-codegen": {
         "schemaType": "valueobject"
@@ -591,6 +602,7 @@
         }
       },
       "required": ["enabled"],
+      "title": "BillingConfig",
       "type": "object",
       "x-codegen": {
         "schemaType": "valueobject"
@@ -650,6 +662,7 @@
             }
           },
           "required": ["pullPolicy", "tag"],
+          "title": "ImageConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -696,6 +709,7 @@
             }
           },
           "required": ["enabled", "size"],
+          "title": "PersistenceConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -751,6 +765,7 @@
             }
           },
           "required": ["limits", "requests"],
+          "title": "ResourceConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -786,6 +801,7 @@
         "runMigrations",
         "managed"
       ],
+      "title": "DatabaseConfig",
       "type": "object",
       "x-codegen": {
         "schemaType": "valueobject"
@@ -820,6 +836,7 @@
             }
           },
           "required": ["type"],
+          "title": "LLMConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -850,6 +867,7 @@
             }
           },
           "required": ["type"],
+          "title": "LLMConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -873,6 +891,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "RunPodConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -920,6 +939,7 @@
                 }
               },
               "required": ["pullPolicy", "tag"],
+              "title": "ImageConfig",
               "type": "object",
               "x-codegen": {
                 "schemaType": "valueobject"
@@ -981,6 +1001,7 @@
                 }
               },
               "required": ["limits", "requests"],
+              "title": "ResourceConfig",
               "type": "object",
               "x-codegen": {
                 "schemaType": "valueobject"
@@ -988,6 +1009,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "ScraperConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1053,6 +1075,7 @@
                 }
               },
               "required": ["pullPolicy", "tag"],
+              "title": "ImageConfig",
               "type": "object",
               "x-codegen": {
                 "schemaType": "valueobject"
@@ -1114,6 +1137,7 @@
                 }
               },
               "required": ["limits", "requests"],
+              "title": "ResourceConfig",
               "type": "object",
               "x-codegen": {
                 "schemaType": "valueobject"
@@ -1128,6 +1152,7 @@
           }
         }
       },
+      "title": "IntelligenceConfig",
       "type": "object",
       "x-codegen": {
         "schemaType": "valueobject"
@@ -1164,6 +1189,7 @@
                 }
               },
               "required": ["imagePullSecrets", "imageRegistry"],
+              "title": "ImagesConfig",
               "type": "object",
               "x-codegen": {
                 "schemaType": "valueobject"
@@ -1181,6 +1207,7 @@
                 }
               },
               "required": ["enabled"],
+              "title": "MigrationsConfig",
               "type": "object",
               "x-codegen": {
                 "schemaType": "valueobject"
@@ -1212,6 +1239,7 @@
                 }
               },
               "required": ["create", "name"],
+              "title": "ServiceAccountConfig",
               "type": "object",
               "x-codegen": {
                 "schemaType": "valueobject"
@@ -1219,6 +1247,7 @@
             }
           },
           "required": ["images", "migrations", "namespace", "serviceAccount"],
+          "title": "InfrastructureConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1275,6 +1304,7 @@
             }
           },
           "required": ["enabled"],
+          "title": "IngressConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1320,6 +1350,7 @@
                     }
                   },
                   "required": ["pullPolicy", "tag"],
+                  "title": "ImageConfig",
                   "type": "object",
                   "x-codegen": {
                     "schemaType": "valueobject"
@@ -1381,6 +1412,7 @@
                     }
                   },
                   "required": ["limits", "requests"],
+                  "title": "ResourceConfig",
                   "type": "object",
                   "x-codegen": {
                     "schemaType": "valueobject"
@@ -1388,6 +1420,7 @@
                 }
               },
               "required": ["enabled"],
+              "title": "GrafanaConfig",
               "type": "object",
               "x-codegen": {
                 "schemaType": "valueobject"
@@ -1436,6 +1469,7 @@
                     }
                   },
                   "required": ["pullPolicy", "tag"],
+                  "title": "ImageConfig",
                   "type": "object",
                   "x-codegen": {
                     "schemaType": "valueobject"
@@ -1497,6 +1531,7 @@
                     }
                   },
                   "required": ["limits", "requests"],
+                  "title": "ResourceConfig",
                   "type": "object",
                   "x-codegen": {
                     "schemaType": "valueobject"
@@ -1504,6 +1539,7 @@
                 }
               },
               "required": ["enabled"],
+              "title": "LokiConfig",
               "type": "object",
               "x-codegen": {
                 "schemaType": "valueobject"
@@ -1511,12 +1547,14 @@
             }
           },
           "required": ["grafana", "loki"],
+          "title": "MonitoringConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
           }
         }
       },
+      "title": "KubernetesConfig",
       "type": "object",
       "x-codegen": {
         "schemaType": "valueobject"
@@ -1549,6 +1587,7 @@
         }
       },
       "required": ["level", "pretty"],
+      "title": "LoggingConfig",
       "type": "object",
       "x-codegen": {
         "schemaType": "valueobject"
@@ -1590,6 +1629,7 @@
             }
           },
           "required": ["pullPolicy", "tag"],
+          "title": "ImageConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1651,6 +1691,7 @@
             }
           },
           "required": ["limits", "requests"],
+          "title": "ResourceConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1665,6 +1706,7 @@
         }
       },
       "required": ["enabled"],
+      "title": "PlatformConfig",
       "type": "object",
       "x-codegen": {
         "schemaType": "valueobject"
@@ -1726,6 +1768,7 @@
             }
           },
           "required": ["pullPolicy", "tag"],
+          "title": "ImageConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1756,6 +1799,7 @@
             }
           },
           "required": ["enabled", "size"],
+          "title": "PersistenceConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1817,6 +1861,7 @@
             }
           },
           "required": ["limits", "requests"],
+          "title": "ResourceConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1824,6 +1869,7 @@
         }
       },
       "required": ["enabled", "auth", "host", "port"],
+      "title": "RedisConfig",
       "type": "object",
       "x-codegen": {
         "schemaType": "valueobject"
@@ -1886,6 +1932,7 @@
             }
           },
           "required": ["pullPolicy", "tag"],
+          "title": "ImageConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1916,6 +1963,7 @@
             }
           },
           "required": ["enabled", "size"],
+          "title": "PersistenceConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"
@@ -1971,6 +2019,7 @@
             }
           },
           "required": ["limits", "requests"],
+          "title": "ResourceConfig",
           "type": "object",
           "x-codegen": {
             "schemaType": "valueobject"

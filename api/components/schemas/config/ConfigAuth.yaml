@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Authentication configuration for the API server
 type: object
+title: AuthConfig
 properties:
   enabled:
     description: Enable authentication

@@ -1,5 +1,6 @@
 delete:
-  operationId: deleteSession
+  x-codegen-custom-handler: true
+  operationId: DeleteSession
   summary: Delete session (Logout)
   tags:
     - Auth
@@ -35,7 +36,8 @@ delete:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: getSession
+  operationId: GetSession
+  x-codegen-repository: Session
   summary: Find a session
   tags:
     - Auth
@@ -69,7 +71,8 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateSession
+  x-codegen-custom-handler: true
+  operationId: UpdateSession
   summary: Update Session
   tags:
     - Auth

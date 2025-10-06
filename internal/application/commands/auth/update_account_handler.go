@@ -32,7 +32,7 @@ func (h *UpdateAccountCommandHandler) Handle(
 	}
 
 	// Prepare update data
-	updateData := make(map[string]interface{})
+	updateData := make(map[string]any)
 
 	if cmd.Provider != nil {
 		updateData["provider"] = *cmd.Provider

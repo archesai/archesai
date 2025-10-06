@@ -1,8 +1,8 @@
 delete:
-  operationId: deleteInvitation
+  operationId: DeleteInvitation
   summary: Delete an invitation
   tags:
-    - Invitations
+    - Invitation
   description: Delete an invitation
   parameters:
     - schema:
@@ -43,10 +43,10 @@ delete:
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getInvitation
+  operationId: GetInvitation
   summary: Get an invitation
   tags:
-    - Invitations
+    - Invitation
   description: Get an invitation
   parameters:
     - schema:
@@ -87,10 +87,10 @@ get:
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateInvitation
+  operationId: UpdateInvitation
   summary: Update an invitation
   tags:
-    - Invitations
+    - Invitation
   description: Update an invitation
   requestBody:
     content:

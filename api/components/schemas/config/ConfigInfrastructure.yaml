@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Infrastructure configuration for Kubernetes deployments
 type: object
+title: InfrastructureConfig
 properties:
   images:
     $ref: ./ConfigImages.yaml

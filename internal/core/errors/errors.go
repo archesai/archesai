@@ -123,7 +123,7 @@ func (e ValidationError) Error() string {
 }
 
 // NewValidationError creates a new validation error
-func NewValidationError(field, message string, args ...interface{}) error {
+func NewValidationError(field, message string, args ...any) error {
 	return ValidationError{
 		Field:   field,
 		Message: fmt.Sprintf(message, args...),
@@ -142,7 +142,7 @@ func (e BusinessRuleError) Error() string {
 }
 
 // NewBusinessRuleError creates a new business rule error
-func NewBusinessRuleError(rule, message string, args ...interface{}) error {
+func NewBusinessRuleError(rule, message string, args ...any) error {
 	return BusinessRuleError{
 		Rule:    rule,
 		Message: fmt.Sprintf(message, args...),

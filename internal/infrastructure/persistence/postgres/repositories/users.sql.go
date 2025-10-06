@@ -75,8 +75,12 @@ WHERE
   id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteUser, id)
+type DeleteUserParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DeleteUser(ctx context.Context, arg DeleteUserParams) error {
+	_, err := q.db.Exec(ctx, deleteUser, arg.ID)
 	return err
 }
 
@@ -91,8 +95,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRow(ctx, getByEmail, email)
+type GetByEmailParams struct {
+	Email string
+}
+
+func (q *Queries) GetByEmail(ctx context.Context, arg GetByEmailParams) (User, error) {
+	row := q.db.QueryRow(ctx, getByEmail, arg.Email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -117,8 +125,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
-	row := q.db.QueryRow(ctx, getUser, id)
+type GetUserParams struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) GetUser(ctx context.Context, arg GetUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, getUser, arg.ID)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -143,8 +155,12 @@ LIMIT
   1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRow(ctx, getUserByEmail, email)
+type GetUserByEmailParams struct {
+	Email string
+}
+
+func (q *Queries) GetUserByEmail(ctx context.Context, arg GetUserByEmailParams) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, arg.Email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -166,8 +182,12 @@ WHERE s.id = $1
 LIMIT 1
 `
 
-func (q *Queries) GetUserBySessionID(ctx context.Context, id uuid.UUID) (User, error) {
-	row := q.db.QueryRow(ctx, getUserBySessionID, id)
+type GetUserBySessionIDParams struct {
+	SessionID uuid.UUID
+}
+
+func (q *Queries) GetUserBySessionID(ctx context.Context, arg GetUserBySessionIDParams) (User, error) {
+	row := q.db.QueryRow(ctx, getUserBySessionID, arg.SessionID)
 	var i User
 	err := row.Scan(
 		&i.ID,

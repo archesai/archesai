@@ -9,7 +9,7 @@ servers:
 paths:
   /users:
     get:
-      operationId: listUsers
+      operationId: ListUsers
       summary: List all users
       tags:
         - Users
@@ -46,7 +46,7 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
     post:
-      operationId: createUser
+      operationId: CreateUser
       summary: Create a new user
       tags:
         - Users
@@ -67,7 +67,7 @@ paths:
           $ref: '#/components/responses/BadRequest'
   /users/{id}:
     get:
-      operationId: getUser
+      operationId: GetUser
       summary: Get a user by ID
       tags:
         - Users
@@ -90,7 +90,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      operationId: updateUser
+      operationId: UpdateUser
       summary: Update a user
       tags:
         - Users
@@ -120,7 +120,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      operationId: deleteUser
+      operationId: DeleteUser
       summary: Delete a user
       tags:
         - Users

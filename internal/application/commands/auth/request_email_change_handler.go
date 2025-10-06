@@ -27,7 +27,7 @@ func NewRequestEmailChangeCommandHandler(
 func (h *RequestEmailChangeCommandHandler) Handle(
 	ctx context.Context,
 	cmd *RequestEmailChangeCommand,
-) (interface{}, error) {
+) (any, error) {
 	if cmd.SessionID == uuid.Nil {
 		return nil, fmt.Errorf("session ID is required")
 	}

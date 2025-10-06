@@ -46,7 +46,7 @@ func NewClient(config *Config, logger *slog.Logger) (*Client, error) {
 			return nil, fmt.Errorf("failed to parse Redis URL: %w", err)
 		}
 		opts = parsedOpts
-		// Override with any explicitly set options
+		// Override with explicitly set options
 		if config.PoolSize > 0 {
 			opts.PoolSize = config.PoolSize
 		}

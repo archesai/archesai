@@ -1,8 +1,8 @@
 post:
-  operationId: createOrganization
+  operationId: CreateOrganization
   summary: Create an organization
   tags:
-    - Organizations
+    - Organization
   description: Create an organization
   requestBody:
     content:
@@ -46,10 +46,10 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: listOrganizations
+  operationId: ListOrganizations
   summary: List organizations
   tags:
-    - Organizations
+    - Organization
   description: List organizations
   parameters:
     - $ref: ../components/parameters/OrganizationsFilter.yaml

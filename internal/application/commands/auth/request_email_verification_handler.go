@@ -27,7 +27,7 @@ func NewRequestEmailVerificationCommandHandler(
 func (h *RequestEmailVerificationCommandHandler) Handle(
 	ctx context.Context,
 	cmd *RequestEmailVerificationCommand,
-) (interface{}, error) {
+) (any, error) {
 	if cmd.SessionID == uuid.Nil {
 		return nil, fmt.Errorf("session ID is required")
 	}
