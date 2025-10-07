@@ -86,8 +86,6 @@ Available targets:
   skaffold-delete            Delete Skaffold deployment
   skaffold-dev               Run with Skaffold in dev mode
   skaffold-run               Deploy with Skaffold
-  split-openapi              Split OpenAPI into multiple files
-  stats-openapi              Show OpenAPI specification statistics
   t                          Shortcut for test
   test                       Run all tests
   test-bench                 Run benchmark tests

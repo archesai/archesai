@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Microsoft/Azure AD OAuth configuration
 type: object
 title: MicrosoftAuthConfig
@@ -11,27 +10,47 @@ properties:
   clientId:
     description: Azure AD Application (client) ID
     type: string
-    example: '12345678-1234-1234-1234-123456789012'
+    format: uuid
+    minLength: 1
+    maxLength: 255
+    example: 12345678-1234-1234-1234-123456789012
   clientSecret:
     description: Azure AD client secret
     type: string
-    example: 'abc~def123GHI456jkl789MNO012pqr345'
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\-~]+$
+    example: abc~def123GHI456jkl789MNO012pqr345
   redirectUrl:
     description: OAuth callback URL
     type: string
-    example: 'http://localhost:8080/auth/oauth/microsoft/callback'
+    format: uri
+    example: http://localhost:8080/auth/oauth/microsoft/callback
+    maxLength: 2048
   tenant:
     description: Azure AD tenant ID (use 'common' for multi-tenant)
     type: string
-    default: 'common'
-    example: 'common'
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\-]+$
+    default: common
+    example: common
   scopes:
     description: OAuth scopes to request
     type: array
     items:
       type: string
-    default: ['openid', 'profile', 'email', 'User.Read']
-    example: ['openid', 'profile', 'email', 'User.Read']
+      maxLength: 255
+      pattern: ^[\w\s\-:\.]+$
+    default:
+      - openid
+      - profile
+      - email
+      - User.Read
+    example:
+      - openid
+      - profile
+    maxItems: 1000
 required:
   - enabled
 additionalProperties: false

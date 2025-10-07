@@ -1,11 +1,18 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 title: Invitation
 description: Schema for Invitation entity
 x-codegen:
   schemaType: entity
   repository:
-    operations: [create, read, update, delete, list]
-    indices: [organizationID, email, inviterID]
+    operations:
+      - create
+      - read
+      - update
+      - delete
+      - list
+    indices:
+      - organizationID
+      - email
+      - inviterID
     excludeFromUpdate:
       - InviterID
       - OrganizationID
@@ -15,6 +22,7 @@ x-codegen:
           - name: organizationID
             type: string
             format: uuid
+            maxLength: 36
         returns: multiple
       - name: GetInvitationByEmail
         params:
@@ -23,12 +31,14 @@ x-codegen:
           - name: organizationID
             type: string
             format: uuid
+            maxLength: 36
         returns: single
       - name: ListInvitationsByInviter
         params:
           - name: inviterID
             type: string
             format: uuid
+            maxLength: 36
         returns: multiple
 allOf:
   - $ref: ./Base.yaml
@@ -37,26 +47,31 @@ allOf:
       email:
         description: The email of the invitated user
         type: string
-        example: example-string
+        format: email
+        example: user@example.com
         minLength: 1
+        maxLength: 255
       expiresAt:
         description: The date and time when the invitation expires
         type: string
         format: date-time
         minLength: 1
         example: '2023-12-31T23:59:59Z'
+        maxLength: 255
       inviterID:
         description: The ID of the user who sent this invitation
         type: string
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
       organizationID:
         description: The organization the user is being invited to join
         type: string
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
       role:
         description: The role of the invitation
         type: string
@@ -68,8 +83,12 @@ allOf:
       status:
         description: The status of the invitation, e.g., pending, accepted, declined
         type: string
-        minLength: 1
-        example: example-string
+        enum:
+          - pending
+          - accepted
+          - declined
+          - expired
+        example: pending
     required:
       - email
       - expiresAt

@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 type: object
 title: KubernetesConfig
 description: Kubernetes-specific deployment configuration

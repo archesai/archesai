@@ -24,6 +24,7 @@ get:
             properties:
               data:
                 type: array
+                maxItems: 10000
                 items:
                   $ref: ../components/schemas/APIKey.yaml
               meta:
@@ -33,11 +34,64 @@ get:
                   - total
                 properties:
                   total:
-                    type: number
+                    type: integer
+                    format: int32
+                    minimum: 0
+                    maximum: 2147483647
                     example: 42
+          example:
+            data:
+              - id: 550e8400-e29b-41d4-a716-446655440000
+                userID: 550e8400-e29b-41d4-a716-446655440001
+                organizationID: 550e8400-e29b-41d4-a716-446655440002
+                name: Production API Key
+                keyHash: hashedskliveabc123
+                prefix: sklive
+                scopes:
+                  - read:users
+                  - write:workflows
+                rateLimit: 1000
+                lastUsedAt: '2024-01-15T09:30:00Z'
+                expiresAt: '2025-01-15T09:30:00Z'
+                createdAt: '2024-01-15T09:30:00Z'
+                updatedAt: '2024-01-15T09:30:00Z'
+            meta:
+              total: 1
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
-
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
 post:
   operationId: CreateAPIKey
   summary: Create a token
@@ -47,6 +101,7 @@ post:
   security:
     - bearerAuth: []
   requestBody:
+    description: API key creation request
     content:
       application/json:
         schema:
@@ -58,15 +113,23 @@ post:
               minLength: 1
               maxLength: 255
               example: Production API Key
+              pattern: ^[\w\s\-.,!?()@#+/]*$
             scopes:
               description: List of scopes/permissions for this API key
               type: array
+              maxItems: 100
               items:
                 type: string
-              example: ['read:users', 'write:workflows']
+                minLength: 1
+                maxLength: 255
+                pattern: ^[\w\s\-.,!?()@#+/:]*$
+              example:
+                - read:users
+                - write:workflows
             rateLimit:
               description: Requests per minute limit (default 60)
               type: integer
+              format: int32
               minimum: 1
               maximum: 10000
               default: 60
@@ -75,6 +138,8 @@ post:
               description: When the API key expires (optional, no expiry if omitted)
               type: string
               format: date-time
+              minLength: 1
+              maxLength: 255
               example: '2025-01-15T09:30:00Z'
           required:
             - name
@@ -86,8 +151,60 @@ post:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/APIKey.yaml
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/APIKey.yaml
+            required:
+              - data
+            additionalProperties: false
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440000
+              userID: 550e8400-e29b-41d4-a716-446655440001
+              organizationID: 550e8400-e29b-41d4-a716-446655440002
+              name: Production API Key
+              keyHash: hashedskliveabc123
+              prefix: sklive
+              scopes:
+                - read:users
+                - write:workflows
+              rateLimit: 1000
+              expiresAt: '2025-01-15T09:30:00Z'
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

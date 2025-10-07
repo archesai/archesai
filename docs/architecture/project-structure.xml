@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-10-06T13:27:37-04:00
+  Generated: 2025-10-06T23:47:28-04:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -30,7 +30,6 @@
     <file>.air.toml</file>
     <file>.goreleaser.yaml</file>
     <file>.lefthook.yaml</file>
-    <file>.redocly.yaml</file>
     <file>.mockery.yaml</file>
     <file>.editorconfig</file>
     <file>.cspell.json</file>
@@ -40,7 +39,7 @@
   <dir name="api" type="api-spec" purpose="API definitions" files="2" dirs="2" patterns="*.yaml">
     <dir name="components" purpose="Reusable components" dirs="3">
       <dir name="parameters" files="25" patterns="*.yaml"/>
-      <dir name="responses" files="6" patterns="*.yaml"/>
+      <dir name="responses" files="7" patterns="*.yaml"/>
       <dir name="schemas" files="19" dirs="2" patterns="*.yaml">
         <dir name="config" purpose="Configuration management" files="37" patterns="*.yaml"/>
         <dir name="xcodegen" files="2" patterns="*.yaml"/>

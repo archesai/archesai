@@ -3,8 +3,7 @@ package parsers
 import (
 	"fmt"
 
-	"github.com/speakeasy-api/openapi/extensions"
-	"github.com/speakeasy-api/openapi/jsonschema/oas3"
+	"go.yaml.in/yaml/v4"
 )
 
 // XCodegenParser handles parsing of x-codegen extensions
@@ -16,9 +15,9 @@ func NewXCodegenParser() *XCodegenParser {
 	return &XCodegenParser{}
 }
 
-// ParseExtension parses an x-codegen extension from a schema
+// ParseExtension parses an x-codegen extension from any type (typically from Extensions map)
 func (p *XCodegenParser) ParseExtension(
-	ext extensions.Extension,
+	ext *yaml.Node,
 	schemaName string,
 ) (*XCodegenExtension, error) {
 	if ext == nil {
@@ -26,7 +25,6 @@ func (p *XCodegenParser) ParseExtension(
 	}
 
 	var xcodegen XCodegenExtension
-	// ext is already *yaml.Node, so we can decode directly
 	if err := ext.Decode(&xcodegen); err != nil {
 		return nil, fmt.Errorf(
 			"failed to decode x-codegen extension for schema '%s': %w",
@@ -34,39 +32,5 @@ func (p *XCodegenParser) ParseExtension(
 			err,
 		)
 	}
-
 	return &xcodegen, nil
-}
-
-// ParseSchemaExtensions parses x-codegen extensions from a schema
-func (p *XCodegenParser) ParseSchemaExtensions(
-	schema *oas3.Schema,
-	schemaName string,
-) (*XCodegenExtension, error) {
-	if schema == nil || schema.Extensions == nil {
-		return nil, nil
-	}
-
-	ext := schema.Extensions.GetOrZero("x-codegen")
-	if ext == nil {
-		return nil, nil
-	}
-
-	return p.ParseExtension(ext, schemaName)
-}
-
-// Parse is a simpler helper that just parses extensions
-func (p *XCodegenParser) Parse(extensions extensions.Extensions) *XCodegenExtension {
-	ext := extensions.GetOrZero("x-codegen")
-	if ext == nil {
-		return nil
-	}
-
-	var xcodegen XCodegenExtension
-	if err := ext.Decode(&xcodegen); err != nil {
-		// Just return nil if we can't decode
-		return nil
-	}
-
-	return &xcodegen
 }

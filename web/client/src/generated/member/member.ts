@@ -28,16 +28,20 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  BadRequestResponse,
   CreateMember201,
+  CreateMember400,
+  CreateMember401,
   CreateMemberBody,
   DeleteMember200,
+  DeleteMember404,
   GetMember200,
+  GetMember404,
   ListMembers200,
+  ListMembers400,
+  ListMembers401,
   ListMembersParams,
-  NotFoundResponse,
-  UnauthorizedResponse,
   UpdateMember200,
+  UpdateMember404,
   UpdateMemberBody
 } from '../orval.schemas';
 
@@ -80,7 +84,7 @@ export const createMember = async (organizationID: string | undefined | null,
 
 
 
-export const getCreateMemberMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse,
+export const getCreateMemberMutationOptions = <TError = CreateMember400 | CreateMember401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMember>>, TError,{organizationID: string | undefined | null;data: CreateMemberBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createMember>>, TError,{organizationID: string | undefined | null;data: CreateMemberBody}, TContext> => {
 
@@ -107,12 +111,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreateMemberMutationResult = NonNullable<Awaited<ReturnType<typeof createMember>>>
     export type CreateMemberMutationBody = CreateMemberBody
-    export type CreateMemberMutationError = BadRequestResponse | UnauthorizedResponse
+    export type CreateMemberMutationError = CreateMember400 | CreateMember401
 
     /**
  * @summary Create a member
  */
-export const useCreateMember = <TError = BadRequestResponse | UnauthorizedResponse,
+export const useCreateMember = <TError = CreateMember400 | CreateMember401,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMember>>, TError,{organizationID: string | undefined | null;data: CreateMemberBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createMember>>,
@@ -175,7 +179,7 @@ export const getListMembersQueryKey = (organizationID?: string | undefined | nul
     }
 
     
-export const getListMembersQueryOptions = <TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(organizationID: string | undefined | null,
+export const getListMembersQueryOptions = <TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(organizationID: string | undefined | null,
     params?: ListMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -195,10 +199,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListMembersQueryResult = NonNullable<Awaited<ReturnType<typeof listMembers>>>
-export type ListMembersQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListMembersQueryError = ListMembers400 | ListMembers401
 
 
-export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(
  organizationID: string | undefined | null,
     params: undefined |  ListMembersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -209,7 +213,7 @@ export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, 
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(
  organizationID: string | undefined | null,
     params?: ListMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -220,7 +224,7 @@ export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, 
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(
  organizationID: string | undefined | null,
     params?: ListMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -229,7 +233,7 @@ export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, 
  * @summary List members
  */
 
-export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(
  organizationID: string | undefined | null,
     params?: ListMembersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -246,7 +250,7 @@ export function useListMembers<TData = Awaited<ReturnType<typeof listMembers>>, 
 
 
 
-export const getListMembersSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(organizationID: string | undefined | null,
+export const getListMembersSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(organizationID: string | undefined | null,
     params?: ListMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -266,20 +270,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListMembersSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listMembers>>>
-export type ListMembersSuspenseQueryError = BadRequestResponse | UnauthorizedResponse
+export type ListMembersSuspenseQueryError = ListMembers400 | ListMembers401
 
 
-export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(
  organizationID: string | undefined | null,
     params: undefined |  ListMembersParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(
  organizationID: string | undefined | null,
     params?: ListMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(
  organizationID: string | undefined | null,
     params?: ListMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -288,7 +292,7 @@ export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMem
  * @summary List members
  */
 
-export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = BadRequestResponse | UnauthorizedResponse>(
+export function useListMembersSuspense<TData = Awaited<ReturnType<typeof listMembers>>, TError = ListMembers400 | ListMembers401>(
  organizationID: string | undefined | null,
     params?: ListMembersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listMembers>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -333,7 +337,7 @@ export const deleteMember = async (organizationID: string | undefined | null,
 
 
 
-export const getDeleteMemberMutationOptions = <TError = NotFoundResponse,
+export const getDeleteMemberMutationOptions = <TError = DeleteMember404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMember>>, TError,{organizationID: string | undefined | null;id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteMember>>, TError,{organizationID: string | undefined | null;id: string | undefined | null}, TContext> => {
 
@@ -360,12 +364,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DeleteMemberMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMember>>>
     
-    export type DeleteMemberMutationError = NotFoundResponse
+    export type DeleteMemberMutationError = DeleteMember404
 
     /**
  * @summary Delete a member
  */
-export const useDeleteMember = <TError = NotFoundResponse,
+export const useDeleteMember = <TError = DeleteMember404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMember>>, TError,{organizationID: string | undefined | null;id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteMember>>,
@@ -415,7 +419,7 @@ export const getGetMemberQueryKey = (organizationID?: string | undefined | null,
     }
 
     
-export const getGetMemberQueryOptions = <TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(organizationID: string | undefined | null,
+export const getGetMemberQueryOptions = <TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -435,10 +439,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetMemberQueryResult = NonNullable<Awaited<ReturnType<typeof getMember>>>
-export type GetMemberQueryError = NotFoundResponse
+export type GetMemberQueryError = GetMember404
 
 
-export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(
+export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -449,7 +453,7 @@ export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TErr
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(
+export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -460,7 +464,7 @@ export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TErr
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(
+export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -469,7 +473,7 @@ export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TErr
  * @summary Get a member
  */
 
-export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(
+export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -486,7 +490,7 @@ export function useGetMember<TData = Awaited<ReturnType<typeof getMember>>, TErr
 
 
 
-export const getGetMemberSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(organizationID: string | undefined | null,
+export const getGetMemberSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -506,20 +510,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetMemberSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getMember>>>
-export type GetMemberSuspenseQueryError = NotFoundResponse
+export type GetMemberSuspenseQueryError = GetMember404
 
 
-export function useGetMemberSuspense<TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(
+export function useGetMemberSuspense<TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMemberSuspense<TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(
+export function useGetMemberSuspense<TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetMemberSuspense<TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(
+export function useGetMemberSuspense<TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -528,7 +532,7 @@ export function useGetMemberSuspense<TData = Awaited<ReturnType<typeof getMember
  * @summary Get a member
  */
 
-export function useGetMemberSuspense<TData = Awaited<ReturnType<typeof getMember>>, TError = NotFoundResponse>(
+export function useGetMemberSuspense<TData = Awaited<ReturnType<typeof getMember>>, TError = GetMember404>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMember>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -575,7 +579,7 @@ export const updateMember = async (organizationID: string | undefined | null,
 
 
 
-export const getUpdateMemberMutationOptions = <TError = NotFoundResponse,
+export const getUpdateMemberMutationOptions = <TError = UpdateMember404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMember>>, TError,{organizationID: string | undefined | null;id: string | undefined | null;data: UpdateMemberBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateMember>>, TError,{organizationID: string | undefined | null;id: string | undefined | null;data: UpdateMemberBody}, TContext> => {
 
@@ -602,12 +606,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateMemberMutationResult = NonNullable<Awaited<ReturnType<typeof updateMember>>>
     export type UpdateMemberMutationBody = UpdateMemberBody
-    export type UpdateMemberMutationError = NotFoundResponse
+    export type UpdateMemberMutationError = UpdateMember404
 
     /**
  * @summary Update a member
  */
-export const useUpdateMember = <TError = NotFoundResponse,
+export const useUpdateMember = <TError = UpdateMember404,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMember>>, TError,{organizationID: string | undefined | null;id: string | undefined | null;data: UpdateMemberBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateMember>>,

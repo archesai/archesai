@@ -4,8 +4,11 @@ post:
   description: Verify a magic link token or OTP code and create a session
   tags:
     - Auth
-  security: []
+  security:
+    - {}
+  x-public-endpoint: true
   requestBody:
+    description: Magic link verification request
     required: true
     content:
       application/json:
@@ -16,36 +19,79 @@ post:
               description: Magic link token from URL
               type: string
               minLength: 32
-              example: 'abc123def456789ghi012jkl345mno678pqr901stu234'
+              maxLength: 512
+              example: abc123def456789ghi012jkl345mno678pqr901stu234
+              pattern: ^[A-Za-z0-9_-]+$
             code:
               description: OTP code (alternative to token)
               type: string
               minLength: 6
               maxLength: 6
-              pattern: '^[0-9]{6}$'
+              pattern: ^[0-9]{6}$
               example: '123456'
             identifier:
               description: Required when using OTP code
               type: string
-              example: 'user@example.com'
+              minLength: 1
+              maxLength: 255
+              example: user@example.com
+              pattern: ^[\w\s\-.,!?()@#+/]*$
   responses:
     '201':
       description: Successfully authenticated
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Session.yaml
+          example:
+            id: 550e8400-e29b-41d4-a716-446655440000
+            userID: 550e8400-e29b-41d4-a716-446655440001
+            token: sess_1234567890abcdef
+            expiresAt: '2024-02-15T09:30:00Z'
+            createdAt: '2024-01-15T09:30:00Z'
+            updatedAt: '2024-01-15T09:30:00Z'
       headers:
         Set-Cookie:
           description: Session cookies for authentication
           schema:
             type: string
-      content:
-        application/json:
+            minLength: 1
+            maxLength: 4096
+            pattern: ^[\w\-=;,. ]+$
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
           schema:
-            $ref: '../components/schemas/Session.yaml'
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
     '400':
-      $ref: '../components/responses/BadRequest.yaml'
+      $ref: ../components/responses/BadRequest.yaml
     '401':
-      $ref: '../components/responses/Unauthorized.yaml'
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
     '404':
-      $ref: '../components/responses/NotFound.yaml'
+      $ref: ../components/responses/NotFound.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
     '500':
-      $ref: '../components/responses/InternalServerError.yaml'
+      $ref: ../components/responses/InternalServerError.yaml
   x-codegen-custom-handler: true

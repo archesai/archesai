@@ -2,15 +2,14 @@
 package parsers
 
 import (
-	"bytes"
-	"context"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/speakeasy-api/openapi/jsonschema/oas3"
-	"github.com/speakeasy-api/openapi/marshaller"
-	"github.com/speakeasy-api/openapi/openapi"
+	"github.com/pb33f/libopenapi"
+	"github.com/pb33f/libopenapi/datamodel"
+	"github.com/pb33f/libopenapi/datamodel/high/base"
+	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 )
 
 const (
@@ -19,7 +18,7 @@ const (
 
 // JSONSchemaParser handles parsing JSON Schema files
 type JSONSchemaParser struct {
-	openAPIDoc *openapi.OpenAPI
+	openAPIDoc *v3.Document
 }
 
 // NewJSONSchemaParser creates a new JSONSchemaParser instance
@@ -28,48 +27,55 @@ func NewJSONSchemaParser() *JSONSchemaParser {
 }
 
 // WithOpenAPIDoc sets the OpenAPI document for reference resolution
-func (p *JSONSchemaParser) WithOpenAPIDoc(doc *openapi.OpenAPI) *JSONSchemaParser {
+func (p *JSONSchemaParser) WithOpenAPIDoc(doc *v3.Document) *JSONSchemaParser {
 	p.openAPIDoc = doc
 	return p
 }
 
 // Parse loads a schema from a YAML file
-func (p *JSONSchemaParser) Parse(filePath string) (*oas3.Schema, error) {
-	// Create a new context
-	ctx := context.Background()
-
+func (p *JSONSchemaParser) Parse(path string) (*base.Schema, error) {
 	// Read the file
-	data, err := os.ReadFile(filePath)
+	specBytes, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read schema file %s: %w", filePath, err)
+		return nil, fmt.Errorf("failed to read schema file %s: %w", path, err)
 	}
 
-	// Unmarshal directly to a JSONSchema
-	var schema oas3.JSONSchema[oas3.Concrete]
-	validationErrs, err := marshaller.Unmarshal(ctx, bytes.NewReader(data), &schema)
+	config := &datamodel.DocumentConfiguration{
+		AllowFileReferences:   true,
+		AllowRemoteReferences: true,
+	}
+
+	doc, err := libopenapi.NewDocumentWithConfiguration(specBytes, config)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal schema: %w", err)
+		return nil, fmt.Errorf("failed to parse schema: %w", err)
 	}
 
-	// Validate the schema
-	additionalErrs := schema.Validate(ctx)
-	validationErrs = append(validationErrs, additionalErrs...)
-
-	// If there are validation errors, return them
-	if len(validationErrs) > 0 {
-		var msgs []string
-		for _, ve := range validationErrs {
-			msgs = append(msgs, ve.Error())
-		}
-		return nil, fmt.Errorf("OpenAPI validation errors:\n%s", strings.Join(msgs, "\n"))
+	v3Model, err := doc.BuildV3Model()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build v3 model: %w", err)
 	}
 
-	return schema.Left, nil
+	// For standalone schema files, we'd need to extract the schema differently
+	// This is a placeholder - may need adjustment based on actual use case
+	if v3Model == nil || v3Model.Model.Components == nil ||
+		v3Model.Model.Components.Schemas == nil {
+		return nil, fmt.Errorf("no schemas found in file")
+	}
+
+	// Store the parsed document
+	p.openAPIDoc = &v3Model.Model
+
+	// Return the first schema found
+	for pair := v3Model.Model.Components.Schemas.First(); pair != nil; pair = pair.Next() {
+		return pair.Value().Schema(), nil
+	}
+
+	return nil, fmt.Errorf("no schema found")
 }
 
 // ExtractSchema processes a single schema with full context
 func (p *JSONSchemaParser) ExtractSchema(
-	schema *oas3.Schema,
+	schema *base.Schema,
 	overrideName *string,
 	currentSchemaType string,
 ) (*SchemaDef, error) {
@@ -79,19 +85,23 @@ func (p *JSONSchemaParser) ExtractSchema(
 // extractSchemaRecursive builds a recursive SchemaDef structure
 // processAllOfSchemas handles allOf schema composition
 func (p *JSONSchemaParser) processAllOfSchemas(
-	allOfItem *oas3.JSONSchemaReferenceable,
+	allOfItem *base.SchemaProxy,
 	result *SchemaDef,
 	parentName, currentSchemaType string,
 ) {
-	if allOfItem.GetResolvedObject() == nil || !allOfItem.GetResolvedObject().IsLeft() {
+	allOfSchema := allOfItem.Schema()
+	if allOfSchema == nil {
 		return
 	}
 
-	allOfSchema := allOfItem.GetResolvedObject().GetLeft()
-
 	// Handle references in allOf
-	if allOfSchema.Ref != nil && allOfSchema.Ref.String() != "" {
-		p.processAllOfReference(allOfSchema, result, parentName, currentSchemaType)
+	if allOfItem.GetReference() != "" {
+		p.processAllOfReference(
+			result,
+			parentName,
+			currentSchemaType,
+			allOfItem.GetReference(),
+		)
 		return
 	}
 
@@ -104,11 +114,10 @@ func (p *JSONSchemaParser) processAllOfSchemas(
 
 // processAllOfReference resolves and processes a reference in an allOf schema
 func (p *JSONSchemaParser) processAllOfReference(
-	allOfSchema *oas3.Schema,
 	result *SchemaDef,
 	parentName, currentSchemaType string,
+	refString string,
 ) {
-	refString := allOfSchema.Ref.String()
 	if !strings.HasPrefix(refString, "#/components/schemas/") {
 		return
 	}
@@ -122,17 +131,16 @@ func (p *JSONSchemaParser) processAllOfReference(
 		return
 	}
 
-	referencedSchema := p.openAPIDoc.Components.Schemas.GetOrZero(schemaName)
-	if referencedSchema == nil {
+	referencedSchemaProxy, ok := p.openAPIDoc.Components.Schemas.Get(schemaName)
+	if !ok {
 		return
 	}
 
-	resolved := referencedSchema.GetResolvedObject()
-	if resolved == nil || !resolved.IsLeft() {
+	resolvedSchema := referencedSchemaProxy.Schema()
+	if resolvedSchema == nil {
 		return
 	}
 
-	resolvedSchema := resolved.GetLeft()
 	// Merge required fields FIRST, before extracting properties
 	result.Required = append(result.Required, resolvedSchema.Required...)
 	// Then extract properties from the resolved schema
@@ -141,40 +149,44 @@ func (p *JSONSchemaParser) processAllOfReference(
 
 // extractSchemaBasicInfo extracts basic schema information (name, type, format, etc.)
 func (p *JSONSchemaParser) extractSchemaBasicInfo(
-	schema *oas3.Schema,
+	schema *base.Schema,
 	overrideName *string,
 ) *SchemaDef {
 	// Determine name
 	name := ""
 	if overrideName != nil && *overrideName != "" {
 		name = *overrideName
-	} else if schema.GetTitle() != "" {
-		name = schema.GetTitle()
+	} else if schema.Title != "" {
+		name = schema.Title
 	}
 
 	result := &SchemaDef{
 		Name:        name,
-		Description: schema.GetDescription(),
+		Description: schema.Description,
 		Schema:      schema,
 	}
 
 	// Extract x-codegen extension if at top level
 	if name != "" && schema.Extensions != nil {
-		result.XCodegen = NewXCodegenParser().Parse(*schema.Extensions)
+		if ext, ok := schema.Extensions.Get("x-codegen"); ok {
+			parser := &XCodegenParser{}
+			if xcodegen, err := parser.ParseExtension(ext, name); err == nil {
+				result.XCodegen = xcodegen
+			}
+		}
 	}
 
 	// Determine type from schema
-	types := schema.GetType()
-	if len(types) > 0 {
-		result.Type = string(types[0])
+	if len(schema.Type) > 0 {
+		result.Type = schema.Type[0]
 	} else if len(schema.AllOf) > 0 {
 		// If there's an allOf with no explicit type, assume object
 		result.Type = schemaTypeObject
 	}
 
 	// Extract format
-	if schema.Format != nil {
-		result.Format = *schema.Format
+	if schema.Format != "" {
+		result.Format = schema.Format
 	}
 
 	// Extract common properties
@@ -182,10 +194,7 @@ func (p *JSONSchemaParser) extractSchemaBasicInfo(
 		result.Nullable = *schema.Nullable
 	}
 	if schema.Default != nil {
-		var defaultVal any
-		if err := schema.Default.Decode(&defaultVal); err == nil {
-			result.DefaultValue = defaultVal
-		}
+		result.DefaultValue = schema.Default
 	}
 
 	return result
@@ -193,7 +202,7 @@ func (p *JSONSchemaParser) extractSchemaBasicInfo(
 
 // processObjectType handles object type schemas
 func (p *JSONSchemaParser) processObjectType(
-	schema *oas3.Schema,
+	schema *base.Schema,
 	result *SchemaDef,
 	parentName, currentSchemaType string,
 ) {
@@ -214,15 +223,19 @@ func (p *JSONSchemaParser) processObjectType(
 
 // processArrayType handles array type schemas
 func (p *JSONSchemaParser) processArrayType(
-	schema *oas3.Schema,
+	schema *base.Schema,
 	result *SchemaDef,
 	name, currentSchemaType string,
 ) {
-	if schema.Items == nil || !schema.Items.IsLeft() {
+	if schema.Items == nil || schema.Items.A == nil {
 		return
 	}
 
-	itemSchema := schema.Items.GetLeft()
+	itemSchema := schema.Items.A.Schema()
+	if itemSchema == nil {
+		return
+	}
+
 	itemName := ""
 	if name != "" {
 		itemName = name + "Item"
@@ -232,7 +245,7 @@ func (p *JSONSchemaParser) processArrayType(
 }
 
 // processEnumType handles enum value extraction for simple types
-func processEnumType(schema *oas3.Schema, result *SchemaDef) {
+func processEnumType(schema *base.Schema, result *SchemaDef) {
 	if schema.Enum == nil {
 		return
 	}
@@ -241,15 +254,16 @@ func processEnumType(schema *oas3.Schema, result *SchemaDef) {
 		if enumVal == nil {
 			continue
 		}
-		var val string
-		if err := enumVal.Decode(&val); err == nil {
-			result.Enum = append(result.Enum, val)
+		// Decode yaml.Node to string
+		var strVal string
+		if err := enumVal.Decode(&strVal); err == nil {
+			result.Enum = append(result.Enum, strVal)
 		}
 	}
 }
 
 func (p *JSONSchemaParser) extractSchemaRecursive(
-	schema *oas3.Schema,
+	schema *base.Schema,
 	overrideName *string,
 	currentSchemaType string,
 	parentName string,
@@ -287,20 +301,18 @@ func (p *JSONSchemaParser) resolvePropertyReference(
 		return schemaName, "", ""
 	}
 
-	referencedSchema := p.openAPIDoc.Components.Schemas.GetOrZero(schemaName)
-	if referencedSchema == nil {
+	referencedSchemaProxy, ok := p.openAPIDoc.Components.Schemas.Get(schemaName)
+	if !ok {
 		return schemaName, "", ""
 	}
 
-	resolved := referencedSchema.GetResolvedObject()
-	if resolved == nil || !resolved.IsLeft() {
+	resolvedSchema := referencedSchemaProxy.Schema()
+	if resolvedSchema == nil {
 		return schemaName, "", ""
 	}
-
-	resolvedSchema := resolved.GetLeft()
 
 	// Get the actual type name from the schema's title
-	actualTypeName := resolvedSchema.GetTitle()
+	actualTypeName := resolvedSchema.Title
 	if actualTypeName == "" {
 		actualTypeName = schemaName
 	}
@@ -312,25 +324,24 @@ func (p *JSONSchemaParser) resolvePropertyReference(
 	qualifiedType := p.qualifyPropertyType(actualTypeName, targetPackage, currentSchemaType)
 
 	// Copy type info from resolved schema
-	types := resolvedSchema.GetType()
-	if len(types) > 0 {
-		schemaType = string(types[0])
+	if len(resolvedSchema.Type) > 0 {
+		schemaType = resolvedSchema.Type[0]
 	}
-	if resolvedSchema.Format != nil {
-		format = *resolvedSchema.Format
+	if resolvedSchema.Format != "" {
+		format = resolvedSchema.Format
 	}
 
 	return qualifiedType, schemaType, format
 }
 
 // extractPropertyPackage extracts the package type for a property schema
-func (p *JSONSchemaParser) extractPropertyPackage(schema *oas3.Schema, typeName string) string {
+func (p *JSONSchemaParser) extractPropertyPackage(schema *base.Schema, typeName string) string {
 	if schema.Extensions == nil {
 		return string(XCodegenExtensionSchemaTypeEntity)
 	}
 
-	xExt := schema.Extensions.GetOrZero("x-codegen")
-	if xExt == nil {
+	xExt, ok := schema.Extensions.Get("x-codegen")
+	if !ok {
 		return string(XCodegenExtensionSchemaTypeEntity)
 	}
 
@@ -384,12 +395,12 @@ func addOmitEmptyTags(def *SchemaDef, isRequired bool) {
 
 // processPropertyReference handles reference properties
 func (p *JSONSchemaParser) processPropertyReference(
-	propSchema *oas3.Schema,
+	propSchema *base.Schema,
 	propName, fieldName string,
 	parent *SchemaDef,
 	currentSchemaType string,
+	refString string,
 ) {
-	refString := propSchema.Ref.String()
 	if !strings.HasPrefix(refString, "#/components/schemas/") {
 		return
 	}
@@ -413,8 +424,8 @@ func (p *JSONSchemaParser) processPropertyReference(
 
 	// If we couldn't resolve, try to use the title from any available info
 	if refDef.GoType == "" {
-		if propSchema != nil && propSchema.GetTitle() != "" {
-			refDef.GoType = propSchema.GetTitle()
+		if propSchema != nil && propSchema.Title != "" {
+			refDef.GoType = propSchema.Title
 		} else {
 			refDef.GoType = schemaName
 		}
@@ -428,7 +439,7 @@ func (p *JSONSchemaParser) processPropertyReference(
 
 // processDirectProperty handles non-reference properties
 func (p *JSONSchemaParser) processDirectProperty(
-	propSchema *oas3.Schema,
+	propSchema *base.Schema,
 	propName, fieldName string,
 	parent *SchemaDef,
 	parentName, currentSchemaType string,
@@ -465,7 +476,7 @@ func (p *JSONSchemaParser) processDirectProperty(
 
 // extractPropertiesInto extracts properties into a parent SchemaDef
 func (p *JSONSchemaParser) extractPropertiesInto(
-	schema *oas3.Schema,
+	schema *base.Schema,
 	parent *SchemaDef,
 	parentName string,
 	currentSchemaType string,
@@ -474,18 +485,31 @@ func (p *JSONSchemaParser) extractPropertiesInto(
 		return
 	}
 
-	for propName := range schema.Properties.Keys() {
-		propRef := schema.Properties.GetOrZero(propName)
-		if propRef == nil || !propRef.IsLeft() {
+	for propPair := schema.Properties.First(); propPair != nil; propPair = propPair.Next() {
+		propName := propPair.Key()
+		propProxy := propPair.Value()
+
+		if propProxy == nil {
 			continue
 		}
 
-		propSchema := propRef.GetLeft()
+		propSchema := propProxy.Schema()
+		if propSchema == nil {
+			continue
+		}
+
 		fieldName := PascalCase(propName)
 
 		// Check if it's a reference
-		if propSchema.Ref != nil && propSchema.Ref.String() != "" {
-			p.processPropertyReference(propSchema, propName, fieldName, parent, currentSchemaType)
+		if propProxy.GetReference() != "" {
+			p.processPropertyReference(
+				propSchema,
+				propName,
+				fieldName,
+				parent,
+				currentSchemaType,
+				propProxy.GetReference(),
+			)
 		} else {
 			p.processDirectProperty(propSchema, propName, fieldName, parent, parentName, currentSchemaType)
 		}

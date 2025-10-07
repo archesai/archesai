@@ -1,11 +1,17 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 title: Member
 description: Schema for Member entity
 x-codegen:
   schemaType: entity
   repository:
-    operations: [create, read, update, delete, list]
-    indices: [organizationID, userID]
+    operations:
+      - create
+      - read
+      - update
+      - delete
+      - list
+    indices:
+      - organizationID
+      - userID
     excludeFromUpdate:
       - OrganizationID
       - UserID
@@ -15,21 +21,25 @@ x-codegen:
           - name: organizationID
             type: string
             format: uuid
+            maxLength: 36
         returns: multiple
       - name: ListMembersByUser
         params:
           - name: userID
             type: string
             format: uuid
+            maxLength: 36
         returns: multiple
       - name: GetMemberByUserAndOrganization
         params:
           - name: userID
             type: string
             format: uuid
+            maxLength: 36
           - name: organizationID
             type: string
             format: uuid
+            maxLength: 36
         returns: single
 allOf:
   - $ref: ./Base.yaml
@@ -41,6 +51,7 @@ allOf:
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
       role:
         description: The role of the member
         type: string
@@ -55,6 +66,7 @@ allOf:
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
     required:
       - organizationID
       - role

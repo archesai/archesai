@@ -1,14 +1,20 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 title: Organization
 description: Schema for Organization entity
 x-codegen:
   schemaType: entity
   repository:
-    operations: [create, read, update, delete, list]
+    operations:
+      - create
+      - read
+      - update
+      - delete
+      - list
     excludeFromUpdate:
       - Slug
       - StripeCustomerIdentifier
-    indices: [slug, stripeCustomerIdentifier]
+    indices:
+      - slug
+      - stripeCustomerIdentifier
     additionalMethods:
       - name: GetOrganizationBySlug
         params:
@@ -30,6 +36,7 @@ allOf:
         minLength: 1
         maxLength: 255
         example: Acme Corporation
+        pattern: ^[\w\s\-.,!?()@#+/'&]+$
       slug:
         description: URL-friendly unique identifier for the organization
         type: string
@@ -40,12 +47,17 @@ allOf:
       logo:
         description: The organization's logo URL
         type: string
-        example: 'https://example.com/org-logo.png'
+        format: uri
+        minLength: 1
+        example: https://example.com/org-logo.png
+        maxLength: 2048
       billingEmail:
         description: Email address for billing communications
         type: string
         format: email
+        minLength: 5
         example: billing@acme.com
+        maxLength: 255
       plan:
         description: The current subscription plan
         type: string
@@ -62,13 +74,17 @@ allOf:
         type: integer
         format: int32
         minimum: 0
+        maximum: 2147483647
         default: 0
         example: 1000
       stripeCustomerIdentifier:
         description: Stripe customer identifier
         type: string
-        example: 'cus1234567890'
+        minLength: 1
+        example: cus_1234567890
         x-sensitive: true
+        maxLength: 255
+        pattern: ^cus_[a-zA-Z0-9]+$
     required:
       - name
       - slug

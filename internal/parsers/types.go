@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/speakeasy-api/openapi/jsonschema/oas3"
+	"github.com/pb33f/libopenapi/datamodel/high/base"
 )
 
 // Constants for various type mappings and validations
@@ -186,7 +186,7 @@ type SchemaDef struct {
 	XCodegen *XCodegenExtension
 
 	// Original OpenAPI schema reference
-	Schema *oas3.Schema
+	Schema *base.Schema
 }
 
 // IsEnum returns true if the schema is an enum

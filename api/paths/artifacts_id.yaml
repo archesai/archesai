@@ -1,0 +1,259 @@
+delete:
+  operationId: DeleteArtifact
+  summary: Delete an artifact
+  tags:
+    - Artifact
+  description: Delete an artifact
+  parameters:
+    - schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Artifact.yaml
+            required:
+              - data
+            additionalProperties: false
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440000
+              name: output.pdf
+              mimeType: application/pdf
+              credits: 10
+              organizationID: 550e8400-e29b-41d4-a716-446655440001
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+get:
+  operationId: GetArtifact
+  summary: Find an artifact
+  tags:
+    - Artifact
+  description: Find an artifact
+  parameters:
+    - schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Artifact.yaml
+            required:
+              - data
+            additionalProperties: false
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440000
+              name: output.pdf
+              mimeType: application/pdf
+              credits: 10
+              organizationID: 550e8400-e29b-41d4-a716-446655440001
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+patch:
+  operationId: UpdateArtifact
+  summary: Update an artifact
+  tags:
+    - Artifact
+  description: Update an artifact
+  requestBody:
+    description: Artifact update data
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              description: The name of the artifact
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: Example Name
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            text:
+              description: The artifact text
+              type: string
+              maxLength: 1000
+              example: example-string
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            url:
+              description: The artifact URL
+              type: string
+              format: uri
+              maxLength: 2048
+              example: example-string
+  parameters:
+    - schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Artifact.yaml
+            required:
+              - data
+            additionalProperties: false
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440000
+              name: output.pdf
+              mimeType: application/pdf
+              credits: 10
+              organizationID: 550e8400-e29b-41d4-a716-446655440001
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml

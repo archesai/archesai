@@ -139,15 +139,15 @@ func (g *Generator) GenerateJSONSchema(specPath string, outputDir string) (strin
 	}
 	log := logger.New(logger.Config{Level: logLevel, Pretty: true})
 
-	log.Info("Parsing OpenAPI specification", slog.String("path", specPath))
+	log.Info("Parsing JSONSchema specification", slog.String("path", specPath))
 	jsonSchema, err := g.jsonSchemaParser.Parse(specPath)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse OpenAPI spec: %w", err)
+		return "", fmt.Errorf("failed to parse JSONSchema spec: %w", err)
 	}
 
 	schema, err := g.jsonSchemaParser.ExtractSchema(jsonSchema, nil, "")
 	if err != nil {
-		return "", fmt.Errorf("failed to process schemas: %w", err)
+		return "", fmt.Errorf("failed to extract schema definition: %w", err)
 	}
 
 	// Buffer to collect all output

@@ -6,3 +6,6 @@ explode: true
 schema:
   $ref: ../schemas/Page.yaml
 description: The page parameter
+example:
+  limit: 10
+  offset: 0

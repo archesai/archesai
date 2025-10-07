@@ -9,3 +9,7 @@ description: |
   Filter artifacts by field values. Supported fields:
   - createdAt, id, updatedAt, credits, description, mimeType
   - name, organizationID, previewImage, producerID, text, url
+example:
+  type: eq
+  field: mimeType
+  value: application/pdf

@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: TLS configuration
 type: object
 title: TLSConfig
@@ -13,13 +12,17 @@ properties:
     type: string
     default: letsencrypt-staging
     minLength: 1
-    example: example-string
+    example: letsencrypt-prod
+    maxLength: 255
+    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
   secretName:
     description: Kubernetes secret name for TLS certificates
     type: string
     default: archesai-tls
     minLength: 1
-    example: Example Name
+    example: archesai-tls
+    maxLength: 255
+    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
 required:
   - enabled
 additionalProperties: false

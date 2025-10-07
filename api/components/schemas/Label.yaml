@@ -1,19 +1,26 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 title: Label
 description: Schema for Label entity
 x-codegen:
   schemaType: entity
   repository:
-    operations: [create, read, update, delete, list]
+    operations:
+      - create
+      - read
+      - update
+      - delete
+      - list
     excludeFromUpdate:
       - OrganizationID
-    indices: [organizationID, name]
+    indices:
+      - organizationID
+      - name
     additionalMethods:
       - name: ListLabelsByOrganization
         params:
           - name: organizationID
             type: string
             format: uuid
+            maxLength: 36
         returns: multiple
       - name: GetLabelByName
         params:
@@ -22,6 +29,7 @@ x-codegen:
           - name: organizationID
             type: string
             format: uuid
+            maxLength: 36
         returns: single
 allOf:
   - $ref: ./Base.yaml
@@ -31,13 +39,16 @@ allOf:
         description: The name of the label
         type: string
         minLength: 1
-        example: Example Name
+        example: Production
+        maxLength: 255
+        pattern: ^[\w\s\-.,!?()@#+/']+$
       organizationID:
         description: The organization this label belongs to
         type: string
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
     required:
       - name
       - organizationID

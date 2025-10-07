@@ -5,6 +5,7 @@ post:
     - Run
   description: Create a run
   requestBody:
+    description: Run creation request
     content:
       application/json:
         schema:
@@ -16,6 +17,7 @@ post:
               format: uuid
               example: 550e8400-e29b-41d4-a716-446655440000
               minLength: 36
+              maxLength: 36
           required:
             - pipelineID
     required: true
@@ -31,13 +33,63 @@ post:
             properties:
               data:
                 $ref: ../components/schemas/Run.yaml
+                example:
+                  id: 550e8400-e29b-41d4-a716-446655440000
+                  organizationID: 550e8400-e29b-41d4-a716-446655440001
+                  pipelineID: 550e8400-e29b-41d4-a716-446655440002
+                  toolID: 550e8400-e29b-41d4-a716-446655440003
+                  status: QUEUED
+                  progress: 0
+                  createdAt: '2024-01-15T09:30:00Z'
+                  updatedAt: '2024-01-15T09:30:00Z'
             required:
               - data
             additionalProperties: false
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440000
+              organizationID: 550e8400-e29b-41d4-a716-446655440001
+              pipelineID: 550e8400-e29b-41d4-a716-446655440002
+              toolID: 550e8400-e29b-41d4-a716-446655440003
+              status: QUEUED
+              progress: 0
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
 get:
   operationId: ListRuns
   summary: List runs
@@ -60,6 +112,7 @@ get:
             properties:
               data:
                 type: array
+                maxItems: 10000
                 items:
                   $ref: ../components/schemas/Run.yaml
               meta:
@@ -67,7 +120,10 @@ get:
                 properties:
                   total:
                     description: Total number of items in the collection
-                    type: number
+                    type: integer
+                    format: int32
+                    minimum: 0
+                    maximum: 2147483647
                     example: 42
                 required:
                   - total
@@ -76,7 +132,52 @@ get:
               - data
               - meta
             additionalProperties: false
+          example:
+            data:
+              - id: 550e8400-e29b-41d4-a716-446655440000
+                organizationID: 550e8400-e29b-41d4-a716-446655440001
+                pipelineID: 550e8400-e29b-41d4-a716-446655440002
+                toolID: 550e8400-e29b-41d4-a716-446655440003
+                status: COMPLETED
+                progress: 100
+                startedAt: '2024-01-15T09:30:00Z'
+                completedAt: '2024-01-15T09:45:00Z'
+                createdAt: '2024-01-15T09:30:00Z'
+                updatedAt: '2024-01-15T09:45:00Z'
+            meta:
+              total: 1
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

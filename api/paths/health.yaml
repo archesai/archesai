@@ -12,6 +12,49 @@ get:
         application/json:
           schema:
             $ref: ../components/schemas/Health.yaml
+          examples:
+            default:
+              value:
+                services:
+                  database: healthy
+                  email: healthy
+                  redis: healthy
+                timestamp: '2024-01-15T09:30:00Z'
+                uptime: 86400
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
     '400':
       $ref: ../components/responses/BadRequest.yaml
-  security: []
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  security:
+    - {}

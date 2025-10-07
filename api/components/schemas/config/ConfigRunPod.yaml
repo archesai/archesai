@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: RunPod serverless GPU configuration
 type: object
 title: RunPodConfig
@@ -12,7 +11,9 @@ properties:
     description: RunPod API token
     type: string
     minLength: 1
-    example: example-string
+    example: rp-...
+    maxLength: 512
+    pattern: ^[a-zA-Z0-9_\-\.]+$
 required:
   - enabled
 additionalProperties: false

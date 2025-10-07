@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Large Language Model configuration
 type: object
 title: LLMConfig
@@ -14,13 +13,17 @@ properties:
   endpoint:
     description: LLM service endpoint URL
     type: string
+    format: uri
     minLength: 1
-    example: example-string
+    example: http://localhost:11434
+    maxLength: 2048
   token:
     description: Authentication token for LLM service
     type: string
     minLength: 1
-    example: example-string
+    example: sk-...
+    maxLength: 512
+    pattern: ^[a-zA-Z0-9_\-\.]+$
 required:
   - type
 additionalProperties: false

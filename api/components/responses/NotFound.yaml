@@ -1,6 +1,31 @@
-# yaml-language-server: $schema=../schemas/xcodegen/JSONSchemaDraft7Extended.yaml
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.2/schema/2025-09-17#/$defs/response
 description: 404 Not Found
 content:
   application/problem+json:
     schema:
       $ref: ../schemas/Problem.yaml
+headers:
+  X-RateLimit-Limit:
+    description: The maximum number of requests allowed per time window
+    schema:
+      type: integer
+      example: 1000
+      format: int32
+      minimum: 1
+      maximum: 1000000
+  X-RateLimit-Remaining:
+    description: The number of requests remaining in the current time window
+    schema:
+      type: integer
+      example: 999
+      format: int32
+      minimum: 0
+      maximum: 1000000
+  X-RateLimit-Reset:
+    description: The time at which the current rate limit window resets (Unix timestamp)
+    schema:
+      type: integer
+      example: 1640995200
+      format: int64
+      minimum: 0
+      maximum: 9223372036854775807

@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: GitHub OAuth configuration
 type: object
 title: GitHubAuthConfig
@@ -11,22 +10,35 @@ properties:
   clientId:
     description: GitHub OAuth App client ID
     type: string
-    example: 'Iv1.abc123def456ghi7'
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\.\-]+$
+    example: Iv1.abc123def456ghi7
   clientSecret:
     description: GitHub OAuth App client secret
     type: string
-    example: 'abc123def456ghi789jkl012mno345pqr678stu901'
+    minLength: 1
+    maxLength: 255
+    pattern: ^[\w\-]+$
+    example: abc123def456ghi789jkl012mno345pqr678stu901
   redirectUrl:
     description: OAuth callback URL
     type: string
-    example: 'http://localhost:8080/auth/oauth/github/callback'
+    format: uri
+    example: http://localhost:8080/auth/oauth/github/callback
+    maxLength: 2048
   scopes:
     description: OAuth scopes to request
     type: array
     items:
       type: string
-    default: ['user:email']
-    example: ['user:email', 'read:user']
+      maxLength: 255
+      pattern: ^[\w\s\-:]+$
+    default:
+      - user:email
+    example:
+      - read:user
+    maxItems: 1000
 required:
   - enabled
 additionalProperties: false

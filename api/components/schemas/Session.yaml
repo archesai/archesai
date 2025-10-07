@@ -1,8 +1,12 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 x-codegen:
   schemaType: entity
   repository:
-    operations: [create, read, update, delete, list]
+    operations:
+      - create
+      - read
+      - update
+      - delete
+      - list
     excludeFromUpdate:
       - IPAddress
       - UserID
@@ -15,18 +19,32 @@ allOf:
   - type: object
     properties:
       organizationID:
-        description: The organization ID for this session (nullable for users without org)
+        description:
+          The organization ID for this session (nullable for users without
+          org)
         type: string
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
       authMethod:
-        description: The authentication method used (magic_link, oauth_google, oauth_github, etc.)
+        description:
+          The authentication method used (magic_link, oauth_google, oauth_github,
+          etc.)
         type: string
+        minLength: 1
+        maxLength: 100
         example: magic_link
+        pattern: ^[a-z_]+$
       authProvider:
         description: The authentication provider (google, github, microsoft, local)
         type: string
+        enum:
+          - local
+          - google
+          - github
+          - microsoft
+          - apple
         example: local
       expiresAt:
         description: The expiration date of the session
@@ -34,27 +52,35 @@ allOf:
         minLength: 1
         format: date-time
         example: '2023-10-05T14:48:00Z'
+        maxLength: 255
       ipAddress:
         description: The IP address of the session
         type: string
-        example: example-string
-        minLength: 1
+        format: ipv4
+        example: 192.168.1.1
+        minLength: 7
+        maxLength: 45
       token:
         description: The session token
         type: string
         minLength: 1
-        example: example-string
+        example: eyJhbGciOiJIUzI1NiIs...
+        maxLength: 512
+        pattern: ^[A-Za-z0-9_\-\.]+$
       userAgent:
         description: The user agent of the session
         type: string
-        example: example-string
+        example: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
         minLength: 1
+        maxLength: 255
+        pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
       userID:
         description: The user who owns this session
         type: string
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
     required:
       - expiresAt
       - token

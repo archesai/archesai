@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 title: MagicLinkToken
 x-codegen:
   schemaType: valueobject
@@ -11,35 +10,42 @@ properties:
     format: uuid
     example: 550e8400-e29b-41d4-a716-446655440000
     minLength: 36
+    maxLength: 36
   userID:
     description: User ID if token is for existing user
     type: string
     format: uuid
     example: 550e8400-e29b-41d4-a716-446655440000
     minLength: 36
+    maxLength: 36
   token:
     description: The raw magic link token
     type: string
     minLength: 32
-    example: 'abc123def456789ghi012jkl345mno678pqr901stu234'
+    example: abc123def456789ghi012jkl345mno678pqr901stu234
+    maxLength: 512
+    pattern: ^[a-zA-Z0-9]+$
   tokenHash:
     description: SHA256 hash of the magic link token
     type: string
     minLength: 64
     maxLength: 64
-    example: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3'
+    example: a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3
+    pattern: ^[a-f0-9]{64}$
   code:
     description: Optional 6-digit OTP code
     type: string
     minLength: 6
     maxLength: 6
-    pattern: '^[0-9]{6}$'
+    pattern: ^[0-9]{6}$
     example: '123456'
   identifier:
     description: Email or username for authentication
     type: string
+    format: email
     minLength: 1
-    example: 'user@example.com'
+    example: user@example.com
+    maxLength: 255
   deliveryMethod:
     description: How the magic link was delivered
     type: string
@@ -54,27 +60,39 @@ properties:
     description: When the token expires
     type: string
     format: date-time
+    minLength: 1
     example: '2023-10-05T14:48:00Z'
+    maxLength: 512
   usedAt:
     description: When the token was used (null if unused)
     oneOf:
       - type: string
         format: date-time
+        minLength: 1
+        maxLength: 512
       - type: 'null'
     example: '2023-10-05T14:48:00Z'
   ipAddress:
     description: IP address of the request
     type: string
-    example: '192.168.1.1'
+    format: ipv4
+    minLength: 7
+    maxLength: 45
+    example: 192.168.1.1
   userAgent:
     description: User agent of the request
     type: string
-    example: 'Mozilla/5.0'
+    minLength: 1
+    maxLength: 512
+    pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
+    example: Mozilla/5.0
   createdAt:
     description: When the token was created
     type: string
     format: date-time
+    minLength: 1
     example: '2023-10-05T14:48:00Z'
+    maxLength: 512
 required:
   - id
   - tokenHash

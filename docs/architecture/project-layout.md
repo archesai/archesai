@@ -38,7 +38,8 @@
 │   │   │   ├── NoContent.yaml
 │   │   │   ├── NotFound.yaml
 │   │   │   ├── TooManyRequests.yaml
-│   │   │   └── Unauthorized.yaml
+│   │   │   ├── Unauthorized.yaml
+│   │   │   └── UnprocessableEntity.yaml
 │   │   └── schemas
 │   │       ├── config
 │   │       │   ├── ConfigAPI.yaml
@@ -80,7 +81,7 @@
 │   │       │   └── Config.yaml
 │   │       ├── xcodegen
 │   │       │   ├── CodegenExtension.yaml
-│   │       │   └── JSONSchemaDraft7Extended.yaml
+│   │       │   └── JSONSchema2020Extended.yaml
 │   │       ├── Account.yaml
 │   │       ├── APIKey.yaml
 │   │       ├── Artifact.yaml
@@ -101,11 +102,11 @@
 │   │       ├── Tool.yaml
 │   │       └── User.yaml
 │   ├── paths
-│   │   ├── api-keys_{id}.yaml
+│   │   ├── api-keys_id.yaml
 │   │   ├── api-keys.yaml
-│   │   ├── artifacts_{id}.yaml
+│   │   ├── artifacts_id.yaml
 │   │   ├── artifacts.yaml
-│   │   ├── auth_accounts_{id}.yaml
+│   │   ├── auth_accounts_id.yaml
 │   │   ├── auth_accounts.yaml
 │   │   ├── auth_change-email.yaml
 │   │   ├── auth_confirm-email.yaml
@@ -119,30 +120,30 @@
 │   │   ├── auth_register.yaml
 │   │   ├── auth_request-verification.yaml
 │   │   ├── auth_reset-password.yaml
-│   │   ├── auth_sessions_{id}.yaml
+│   │   ├── auth_sessions_id.yaml
 │   │   ├── auth_sessions.yaml
 │   │   ├── auth_verify-email.yaml
 │   │   ├── config.yaml
 │   │   ├── health.yaml
-│   │   ├── invitations_{id}.yaml
+│   │   ├── invitations_id.yaml
 │   │   ├── invitations.yaml
-│   │   ├── labels_{id}.yaml
+│   │   ├── labels_id.yaml
 │   │   ├── labels.yaml
-│   │   ├── members_{id}.yaml
+│   │   ├── members_id.yaml
 │   │   ├── members.yaml
 │   │   ├── oauth_authorize.yaml
 │   │   ├── oauth_callback.yaml
-│   │   ├── organizations_{id}.yaml
+│   │   ├── organizations_id.yaml
 │   │   ├── organizations.yaml
-│   │   ├── pipelines_{id}_execution-plans.yaml
-│   │   ├── pipelines_{id}_steps.yaml
-│   │   ├── pipelines_{id}.yaml
+│   │   ├── pipelines_id_execution-plans.yaml
+│   │   ├── pipelines_id_steps.yaml
+│   │   ├── pipelines_id.yaml
 │   │   ├── pipelines.yaml
-│   │   ├── runs_{id}.yaml
+│   │   ├── runs_id.yaml
 │   │   ├── runs.yaml
-│   │   ├── tools_{id}.yaml
+│   │   ├── tools_id.yaml
 │   │   ├── tools.yaml
-│   │   ├── users_{id}.yaml
+│   │   ├── users_id.yaml
 │   │   ├── users_me.yaml
 │   │   └── users.yaml
 │   ├── openapi.bundled.yaml
@@ -741,7 +742,6 @@
 ├── pnpm-workspace.yaml
 ├── .prettierignore
 ├── README.md
-├── .redocly.yaml
 └── tsconfig.json
 
 211 directories, 529 files

@@ -188,7 +188,7 @@ generate-codegen-types: ## Generate types for codegen configuration
 	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
 
 .PHONY: generate-codegen
-generate-codegen: generate-codegen-types bundle-openapi ## Generate codegen
+generate-codegen: generate-codegen-types ## Generate codegen
 	@echo -e "$(YELLOW)▶ Generating code from OpenAPI schemas...$(NC)"
 	@go run cmd/codegen/main.go openapi ./api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
@@ -322,11 +322,7 @@ lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
 	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@if ! pnpm redocly --config .redocly.yaml lint api/openapi.yaml 2>&1 | grep -q "Your API description is valid"; then \
-		echo -e "$(RED)✗ OpenAPI linting failed$(NC)"; \
-		pnpm redocly --config .redocly.yaml lint api/openapi.yaml; \
-		exit 1; \
-	fi
+	@go tool vacuum lint ./api/openapi.yaml -d --no-banner --hard-mode
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
 .PHONY: lint-typecheck
@@ -473,26 +469,11 @@ db-migrate-reset: ## Reset database to initial state
 # ------------------------------------------
 
 .PHONY: bundle-openapi
-bundle-openapi: lint-openapi ## Bundle OpenAPI into single file
+bundle-openapi: ## Bundle OpenAPI into single file
 	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
-	@if ! pnpm redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml 2>&1 | grep -q "Created a bundle"; then \
-		echo -e "$(RED)✗ OpenAPI bundling failed$(NC)"; \
-		pnpm redocly --config .redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml; \
-		exit 1; \
-	fi
+	@go tool vacuum bundle ./api/openapi.yaml ./api/openapi.bundled.yaml --base ./api --composed
+	@pnpm prettier --write ./api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
-
-.PHONY: split-openapi
-split-openapi: lint-openapi ## Split OpenAPI into multiple files
-	@echo -e "$(YELLOW)▶ Splitting OpenAPI spec...$(NC)"
-	@pnpm redocly --config .redocly.yaml split api/openapi.bundled.yaml --outDir api/split
-	@echo -e "$(GREEN)✓ OpenAPI split: api/split/$(NC)"
-
-.PHONY: stats-openapi
-stats-openapi: ## Show OpenAPI specification statistics
-	@echo -e "$(YELLOW)▶ Analyzing OpenAPI spec...$(NC)"
-	@pnpm redocly --config .redocly.yaml stats api/openapi.yaml
-	@echo -e "$(GREEN)✓ OpenAPI analysis complete!$(NC)"
 
 # ------------------------------------------
 # Dependency Commands

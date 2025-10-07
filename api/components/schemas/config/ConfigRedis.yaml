@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Redis configuration
 type: object
 title: RedisConfig
@@ -18,23 +17,32 @@ properties:
     type: string
     default: password
     minLength: 1
-    example: example-string
+    example: secure-redis-password
+    maxLength: 72
+    pattern: ^[\w\-@./#&+!*()]+$
   ca:
     description: Certificate Authority for TLS (optional)
     type: string
     minLength: 1
-    example: example-string
+    example: /etc/ssl/certs/ca.pem
+    maxLength: 255
+    pattern: ^[\w\s\-./]+$
   host:
     description: Redis hostname or IP
     type: string
     default: localhost
     minLength: 1
-    example: example-string
+    example: redis.example.com
+    maxLength: 255
+    pattern: ^[a-zA-Z0-9.\-]+$
   port:
     description: Redis port number
-    type: number
+    type: integer
+    format: int32
+    minimum: 1
+    maximum: 65535
     default: 6379
-    example: 42
+    example: 6379
   image:
     $ref: ./ConfigImage.yaml
   persistence:

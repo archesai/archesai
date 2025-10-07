@@ -10,3 +10,7 @@ description: |
   - createdAt, id, updatedAt, accessToken, accessTokenExpiresAt
   - accountID, idToken, password, providerID, refreshToken
   - refreshTokenExpiresAt, scope, userID
+example:
+  type: eq
+  field: providerID
+  value: google

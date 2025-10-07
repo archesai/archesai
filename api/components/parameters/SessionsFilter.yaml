@@ -9,3 +9,7 @@ description: |
   Filter sessions by field values. Supported fields:
   - createdAt, id, updatedAt, organizationID, expiresAt
   - ipAddress, token, userAgent, userID
+example:
+  type: eq
+  field: userID
+  value: 550e8400-e29b-41d4-a716-446655440000

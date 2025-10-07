@@ -1,5 +1,4 @@
-# yaml-language-server: $schema=./JSONSchemaDraft7Extended.yaml
-$schema: https://json-schema.org/draft-07/schema
+# yaml-language-server: $schema=./JSONSchema2020Extended.yaml
 title: XCodegenExtension
 description: Configuration for code generation from OpenAPI schemas
 type: object

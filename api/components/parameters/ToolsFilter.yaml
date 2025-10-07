@@ -9,3 +9,7 @@ description: |
   Filter tools by field values. Supported fields:
   - createdAt, id, updatedAt, description, inputMimeType
   - name, organizationID, outputMimeType
+example:
+  type: eq
+  field: inputMimeType
+  value: application/json

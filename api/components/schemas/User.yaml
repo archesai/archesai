@@ -1,11 +1,15 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 description: Schema for User entity
 title: User
 x-codegen:
   schemaType: entity
   repository:
-    operations: [read, update, delete, list] # No create endpoint in API
-    indices: [email]
+    operations:
+      - read
+      - update
+      - delete
+      - list
+    indices:
+      - email
     additionalMethods:
       - name: GetUserByEmail
         params:
@@ -17,6 +21,7 @@ x-codegen:
           - name: sessionID
             type: string
             format: uuid
+            maxLength: 36
         returns: single
 allOf:
   - $ref: ./Base.yaml
@@ -40,13 +45,14 @@ allOf:
         minLength: 5
         maxLength: 2048
         format: uri
-        example: 'https://example.com/avatar.jpg'
+        example: https://example.com/avatar.jpg
       name:
         description: The user's display name
         type: string
         minLength: 1
         maxLength: 255
         example: John Doe
+        pattern: ^[\w\s\-.,!?()@#+/']+$
     required:
       - email
       - emailVerified

@@ -229,7 +229,7 @@ echo "<project name=\"$PROJECT_NAME\" root=\"$PROJECT_ROOT\">" >> "$OUTPUT_FILE"
 
 # Process root-level files
 echo "  <root-files>" >> "$OUTPUT_FILE"
-for file in Makefile go.mod go.sum package.json pnpm-lock.yaml tsconfig.json arches.yaml README.md LICENSE .golangci.yaml .air.toml .goreleaser.yaml .lefthook.yaml .redocly.yaml .mockery.yaml .editorconfig .cspell.json .markdownlint.json biome.json; do
+for file in Makefile go.mod go.sum package.json pnpm-lock.yaml tsconfig.json arches.yaml README.md LICENSE .golangci.yaml .air.toml .goreleaser.yaml .lefthook.yaml .mockery.yaml .editorconfig .cspell.json .markdownlint.json biome.json; do
     if [[ -f "$file" ]]; then
         echo "    <file>$file</file>" >> "$OUTPUT_FILE"
     fi

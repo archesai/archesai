@@ -4,8 +4,11 @@ post:
   description: Request a magic link to be sent via email or generate an OTP code
   tags:
     - Auth
-  security: []
+  security:
+    - {}
+  x-public-endpoint: true
   requestBody:
+    description: Magic link authentication request
     required: true
     content:
       application/json:
@@ -16,7 +19,9 @@ post:
               description: Email address or username
               type: string
               minLength: 1
-              example: 'user@example.com'
+              maxLength: 255
+              example: user@example.com
+              pattern: ^[\w\s\-.,!?()@#+/]*$
             deliveryMethod:
               description: How to deliver the magic link
               type: string
@@ -31,7 +36,9 @@ post:
               description: URL to redirect to after successful authentication
               type: string
               format: uri
-              example: 'https://app.archesai.com/dashboard'
+              minLength: 1
+              maxLength: 2048
+              example: https://app.archesai.com/dashboard
           required:
             - identifier
   responses:
@@ -44,24 +51,62 @@ post:
             properties:
               message:
                 type: string
-                example: 'Magic link sent to user@example.com'
+                minLength: 1
+                maxLength: 500
+                example: Magic link sent to user@example.com
+                pattern: ^[\w\s\-.,!?()@]+$
               otpCode:
                 description: OTP code (only returned if deliveryMethod is 'otp')
                 type: string
                 minLength: 6
                 maxLength: 6
                 example: '123456'
+                pattern: ^[A-Za-z0-9_-]+$
               expiresIn:
                 description: Token expiry in seconds
                 type: integer
+                format: int32
+                minimum: 1
+                maximum: 2147483647
                 example: 900
               token:
-                description: Magic link token details (for internal use)
-                $ref: '../components/schemas/MagicLinkToken.yaml'
+                $ref: ../components/schemas/MagicLinkToken.yaml
+          example:
+            message: Magic link sent to user@example.com
+            expiresIn: 900
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
     '400':
-      $ref: '../components/responses/BadRequest.yaml'
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
     '429':
-      $ref: '../components/responses/TooManyRequests.yaml'
+      $ref: ../components/responses/TooManyRequests.yaml
     '500':
-      $ref: '../components/responses/InternalServerError.yaml'
+      $ref: ../components/responses/InternalServerError.yaml
   x-codegen-custom-handler: true

@@ -1,18 +1,19 @@
 package parsers
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"sort"
 	"strings"
 
-	"github.com/speakeasy-api/openapi/openapi"
+	"github.com/pb33f/libopenapi"
+	"github.com/pb33f/libopenapi/datamodel"
+	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 )
 
 // OpenAPIParser wraps an OpenAPI document and provides parsing utilities
 type OpenAPIParser struct {
-	openAPIDoc *openapi.OpenAPI
+	openAPIDoc *v3.Document
 }
 
 // NewOpenAPIParser creates a new OpenAPIParser instance
@@ -21,123 +22,109 @@ func NewOpenAPIParser() *OpenAPIParser {
 }
 
 // Parse parses an OpenAPI specification file and returns the document
-func (p *OpenAPIParser) Parse(specPath string) (*openapi.OpenAPI, error) {
-	// Create a new context
-	ctx := context.Background()
-
-	// Open the spec file
-	f, err := os.Open(specPath)
+func (p *OpenAPIParser) Parse(path string) (*v3.Document, error) {
+	// Read the spec file
+	specBytes, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open file: %w", err)
-	}
-	defer func() {
-		if cerr := f.Close(); cerr != nil {
-			err = fmt.Errorf("failed to close file: %w", cerr)
-		}
-	}()
-
-	// Parse the OpenAPI document
-	doc, validationErrs, err := openapi.Unmarshal(ctx, f)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal OpenAPI document: %w", err)
+		return nil, fmt.Errorf("failed to read file: %w", err)
 	}
 
-	// Resolve all references in the document
-	additionalErrors, err := doc.ResolveAllReferences(ctx, openapi.ResolveAllOptions{
-		OpenAPILocation: specPath,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve references: %w", err)
+	config := &datamodel.DocumentConfiguration{
+		AllowFileReferences:   true,
+		AllowRemoteReferences: true,
 	}
-	validationErrs = append(validationErrs, additionalErrors...)
 
-	// If there are validation errors, return them
-	if len(validationErrs) > 0 {
-		var msgs []string
-		for _, ve := range validationErrs {
-			msgs = append(msgs, ve.Error())
-		}
-		return nil, fmt.Errorf("OpenAPI validation errors:\n%s", strings.Join(msgs, "\n"))
+	doc, err := libopenapi.NewDocumentWithConfiguration(specBytes, config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse schema: %w", err)
+	}
+
+	v3Model, err := doc.BuildV3Model()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build v3 model: %w", err)
 	}
 
 	// Store the parsed document
-	p.openAPIDoc = doc
-	return doc, nil
+	p.openAPIDoc = &v3Model.Model
+	return &v3Model.Model, nil
 }
 
 // ExtractOperations extracts all operations from the OpenAPI spec
-func ExtractOperations(doc *openapi.OpenAPI) ([]OperationDef, error) {
+func ExtractOperations(doc *v3.Document) ([]OperationDef, error) {
 	if doc == nil {
 		return nil, nil
 	}
 
 	var operations []OperationDef
-	ctx := context.Background()
 
-	// Walk through the OpenAPI document
-	for item := range openapi.Walk(ctx, doc) {
-		err := item.Match(openapi.Matcher{
-			Operation: func(op *openapi.Operation) error {
-				if op == nil {
-					return nil
-				}
+	// Iterate through all paths
+	for pathPair := doc.Paths.PathItems.First(); pathPair != nil; pathPair = pathPair.Next() {
+		path := pathPair.Key()
+		pathItem := pathPair.Value()
 
-				if len(op.Tags) != 1 {
-					return fmt.Errorf("operation must have exactly one tag")
-				}
+		// Check each HTTP method
+		methodOps := map[string]*v3.Operation{
+			"GET":     pathItem.Get,
+			"POST":    pathItem.Post,
+			"PUT":     pathItem.Put,
+			"PATCH":   pathItem.Patch,
+			"DELETE":  pathItem.Delete,
+			"HEAD":    pathItem.Head,
+			"OPTIONS": pathItem.Options,
+		}
 
-				if op.GetOperationID() == "" {
-					return fmt.Errorf("operation must have an operationId")
-				}
+		for method, op := range methodOps {
+			if op == nil {
+				continue
+			}
 
-				if op.GetSummary() == "" {
-					return fmt.Errorf("operation must have a summary")
-				}
+			if len(op.Tags) != 1 {
+				return nil, fmt.Errorf("operation %s %s must have exactly one tag", method, path)
+			}
 
-				// Extract HTTP method and path from the walker location
-				method, path := openapi.ExtractMethodAndPath(item.Location)
+			if op.OperationId == "" {
+				return nil, fmt.Errorf("operation %s %s must have an operationId", method, path)
+			}
 
-				requestBody, err := ExtractRequestBody(op, doc)
-				if err != nil {
-					return fmt.Errorf(
-						"failed to extract request body for %s %s: %w",
-						method,
-						path,
-						err,
-					)
-				}
+			if op.Summary == "" {
+				return nil, fmt.Errorf("operation %s %s must have a summary", method, path)
+			}
 
-				responses, err := ExtractResponses(op, doc)
-				if err != nil {
-					return fmt.Errorf(
-						"failed to extract responses for %s %s: %w",
-						method,
-						path,
-						err,
-					)
-				}
+			requestBody, err := ExtractRequestBody(op, doc)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"failed to extract request body for %s %s: %w",
+					method,
+					path,
+					err,
+				)
+			}
 
-				operationDef := OperationDef{
-					Method:                strings.ToUpper(method),
-					Path:                  path,
-					ID:                    op.GetOperationID(),
-					Description:           op.GetSummary(),
-					Tag:                   op.Tags[0],
-					Parameters:            ExtractParameters(op),
-					Security:              ExtractSecurityRequirements(op, doc),
-					Responses:             responses,
-					XCodegenCustomHandler: ExtractXCodegenCustomHandler(op), // default to false
-					XCodegenRepository:    ExtractXCodegenRepository(op),    // default to ""
-					RequestBody:           requestBody,
-				}
+			responses, err := ExtractResponses(op, doc)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"failed to extract responses for %s %s: %w",
+					method,
+					path,
+					err,
+				)
+			}
 
-				operations = append(operations, operationDef)
+			operationDef := OperationDef{
+				Method:                strings.ToUpper(method),
+				Path:                  path,
+				ID:                    op.OperationId,
+				Description:           op.Summary,
+				Tag:                   op.Tags[0],
+				Parameters:            ExtractParameters(op, pathItem),
+				Security:              ExtractSecurityRequirements(op, doc),
+				Responses:             responses,
+				XCodegenCustomHandler: ExtractXCodegenCustomHandler(op),
+				XCodegenRepository:    ExtractXCodegenRepository(op),
+				RequestBody:           requestBody,
+			}
 
-				return nil
-			},
-		})
-		if err != nil {
-			return nil, err
+			operations = append(operations, operationDef)
 		}
 	}
 
@@ -150,37 +137,51 @@ func ExtractOperations(doc *openapi.OpenAPI) ([]OperationDef, error) {
 }
 
 // ExtractXCodegenCustomHandler checks if the operation has the x-codegen-custom-handler extension set to true
-func ExtractXCodegenCustomHandler(op *openapi.Operation) bool {
-	if op.Extensions != nil {
-		if customHandlerExt := op.Extensions.GetOrZero("x-codegen-custom-handler"); customHandlerExt != nil {
-			return (customHandlerExt.Value == "true")
+func ExtractXCodegenCustomHandler(op *v3.Operation) bool {
+	if op.Extensions == nil {
+		return false
+	}
+	if val, ok := op.Extensions.Get("x-codegen-custom-handler"); ok {
+		var boolVal bool
+		if err := val.Decode(&boolVal); err == nil {
+			return boolVal
+		}
+		var strVal string
+		if err := val.Decode(&strVal); err == nil {
+			return strVal == "true"
 		}
 	}
 	return false
 }
 
 // ExtractXCodegenRepository extracts the repository name from x-codegen-repository extension
-func ExtractXCodegenRepository(op *openapi.Operation) string {
-	if op.Extensions != nil {
-		if repoExt := op.Extensions.GetOrZero("x-codegen-repository"); repoExt != nil {
-			if repoExt.Value != "" {
-				return repoExt.Value
-			}
+func ExtractXCodegenRepository(op *v3.Operation) string {
+	if op.Extensions == nil {
+		return ""
+	}
+	if val, ok := op.Extensions.Get("x-codegen-repository"); ok {
+		var strVal string
+		if err := val.Decode(&strVal); err == nil {
+			return strVal
 		}
 	}
 	return ""
 }
 
-// ExtractParameters extracts all parameters from an operation
-func ExtractParameters(op *openapi.Operation) []ParamDef {
+// ExtractParameters extracts all parameters from an operation and path item
+func ExtractParameters(op *v3.Operation, pathItem *v3.PathItem) []ParamDef {
 	var params []ParamDef
 
-	if op.GetParameters() == nil {
-		return params
+	// Collect parameters from both operation and path item
+	allParams := make([]*v3.Parameter, 0)
+	if pathItem.Parameters != nil {
+		allParams = append(allParams, pathItem.Parameters...)
+	}
+	if op.Parameters != nil {
+		allParams = append(allParams, op.Parameters...)
 	}
 
-	for _, paramRef := range op.GetParameters() {
-		param := paramRef.GetResolvedObject()
+	for _, param := range allParams {
 		if param == nil {
 			continue
 		}
@@ -188,31 +189,33 @@ func ExtractParameters(op *openapi.Operation) []ParamDef {
 		// Create embedded SchemaDef for the parameter
 		schemaDef := &SchemaDef{
 			Name:        PascalCase(param.Name),
-			Description: param.GetDescription(),
+			Description: param.Description,
 			Required:    []string{}, // Parameters handle required differently
 		}
 
 		// Extract type information from schema
 		if param.Schema != nil {
-			schema := param.Schema.GetResolvedObject()
-			if schema != nil && schema.Left != nil {
+			schema := param.Schema.Schema()
+			if schema != nil {
 				// Get type info
-				types := schema.Left.GetType()
-				if len(types) > 0 {
-					schemaDef.Type = string(types[0])
+				if len(schema.Type) > 0 {
+					schemaDef.Type = schema.Type[0]
 				}
-				schemaDef.Format = schema.Left.GetFormat()
-				schemaDef.Schema = schema.Left
+				if schema.Format != "" {
+					schemaDef.Format = schema.Format
+				}
+				schemaDef.Schema = schema
 
 				// Parameters are used in controllers, so pass empty currentPackage
-				schemaDef.GoType = SchemaToGoType(schema.Left, nil, "")
+				schemaDef.GoType = SchemaToGoType(schema, nil, "")
 
 				// Make optional parameters pointers (unless they're already slices/maps)
-				if !param.GetRequired() &&
-					!strings.HasPrefix(schemaDef.GoType, "[]") &&
-					!strings.HasPrefix(schemaDef.GoType, "map") &&
-					!strings.HasPrefix(schemaDef.GoType, "*") {
-					schemaDef.GoType = "*" + schemaDef.GoType
+				if param.Required == nil || !*param.Required {
+					if !strings.HasPrefix(schemaDef.GoType, "[]") &&
+						!strings.HasPrefix(schemaDef.GoType, "map") &&
+						!strings.HasPrefix(schemaDef.GoType, "*") {
+						schemaDef.GoType = "*" + schemaDef.GoType
+					}
 				}
 			}
 		}
@@ -220,13 +223,17 @@ func ExtractParameters(op *openapi.Operation) []ParamDef {
 		// Create ParamDef with embedded SchemaDef
 		paramDef := ParamDef{
 			SchemaDef: schemaDef,
-			In:        string(param.In),
-			Style:     string(param.GetStyle()),
-			Explode:   param.GetExplode(),
+			In:        param.In,
+		}
+		if param.Style != "" {
+			paramDef.Style = param.Style
+		}
+		if param.Explode != nil {
+			paramDef.Explode = *param.Explode
 		}
 
 		// Override Required at the ParamDef level since it's different for parameters
-		if param.GetRequired() {
+		if param.Required != nil && *param.Required {
 			paramDef.Required = []string{schemaDef.Name}
 		}
 
@@ -237,7 +244,7 @@ func ExtractParameters(op *openapi.Operation) []ParamDef {
 }
 
 // ExtractSecurityRequirements extracts security requirements from an operation
-func ExtractSecurityRequirements(op *openapi.Operation, doc *openapi.OpenAPI) []SecurityDef {
+func ExtractSecurityRequirements(op *v3.Operation, doc *v3.Document) []SecurityDef {
 	var securityDefs []SecurityDef
 
 	securityRequirements := op.Security
@@ -254,35 +261,34 @@ func ExtractSecurityRequirements(op *openapi.Operation, doc *openapi.OpenAPI) []
 	}
 
 	for _, secReq := range securityRequirements {
-		if secReq != nil {
-			for secSchemeName, scopes := range secReq.All() {
-				// Look up the security scheme in the global security definitions
-				if doc != nil && doc.Components != nil && doc.Components.SecuritySchemes != nil {
-					secSchemeRef := doc.Components.SecuritySchemes.GetOrZero(secSchemeName)
-					if secSchemeRef != nil {
-						secScheme := secSchemeRef.GetResolvedObject()
-						if secScheme != nil {
-							secReqData := SecurityDef{
-								Name:   secSchemeName,
-								Type:   string(secScheme.Type),
-								Scopes: scopes,
-							}
+		if secReq == nil || secReq.Requirements == nil {
+			continue
+		}
 
-							if secScheme.Type == "http" &&
-								secScheme.Scheme != nil &&
-								*secScheme.Scheme == "bearer" {
-								secReqData.Scheme = *secScheme.Scheme
-							}
+		for schemePair := secReq.Requirements.First(); schemePair != nil; schemePair = schemePair.Next() {
+			secSchemeName := schemePair.Key()
+			scopes := schemePair.Value()
 
-							if secScheme.Type == "apiKey" &&
-								secScheme.In != nil &&
-								*secScheme.In == "cookie" {
-								// Store in Scheme for consistency
-								secReqData.Scheme = "cookie"
-							}
-
-							securityDefs = append(securityDefs, secReqData)
+			// Look up the security scheme in the global security definitions
+			if doc != nil && doc.Components != nil && doc.Components.SecuritySchemes != nil {
+				if secScheme, ok := doc.Components.SecuritySchemes.Get(secSchemeName); ok {
+					if secScheme != nil {
+						secReqData := SecurityDef{
+							Name:   secSchemeName,
+							Type:   secScheme.Type,
+							Scopes: scopes,
 						}
+
+						if secScheme.Type == "http" && secScheme.Scheme == "bearer" {
+							secReqData.Scheme = secScheme.Scheme
+						}
+
+						if secScheme.Type == "apiKey" && secScheme.In == "cookie" {
+							// Store in Scheme for consistency
+							secReqData.Scheme = "cookie"
+						}
+
+						securityDefs = append(securityDefs, secReqData)
 					}
 				}
 			}
@@ -293,14 +299,16 @@ func ExtractSecurityRequirements(op *openapi.Operation, doc *openapi.OpenAPI) []
 }
 
 // ExtractResponses extracts all responses from an operation
-func ExtractResponses(op *openapi.Operation, doc *openapi.OpenAPI) ([]ResponseDef, error) {
+func ExtractResponses(op *v3.Operation, doc *v3.Document) ([]ResponseDef, error) {
 	var responses []ResponseDef
-	if op.GetResponses() == nil {
+	if op.Responses == nil || op.Responses.Codes == nil {
 		return responses, nil
 	}
 
-	for statusCode, responseRef := range op.GetResponses().All() {
-		response := responseRef.GetResolvedObject()
+	for responsePair := op.Responses.Codes.First(); responsePair != nil; responsePair = responsePair.Next() {
+		statusCode := responsePair.Key()
+		response := responsePair.Value()
+
 		if response != nil {
 			// Initialize response definition with basic info
 			responseDef := ResponseDef{
@@ -308,30 +316,35 @@ func ExtractResponses(op *openapi.Operation, doc *openapi.OpenAPI) ([]ResponseDe
 			}
 
 			// Try to extract schema if present
-			mediaType := response.Content.GetOrZero("application/json")
-			if mediaType != nil && mediaType.Schema != nil {
-				schemaObj := mediaType.Schema.GetResolvedObject()
-				if schemaObj != nil && schemaObj.Left != nil {
-					responseName := fmt.Sprintf("%s%sResponse", op.GetOperationID(), statusCode)
-					jsonParser := NewJSONSchemaParser().WithOpenAPIDoc(doc)
-					processed, err := jsonParser.ExtractSchema(schemaObj.Left, &responseName, "")
-					if err != nil {
-						return nil, fmt.Errorf(
-							"failed to process response schema for status code %s: %w",
-							statusCode,
-							err,
-						)
+			if response.Content != nil {
+				if mediaType, ok := response.Content.Get("application/json"); ok {
+					if mediaType.Schema != nil {
+						schema := mediaType.Schema.Schema()
+						if schema != nil {
+							responseName := fmt.Sprintf("%s%sResponse", op.OperationId, statusCode)
+							jsonParser := NewJSONSchemaParser().WithOpenAPIDoc(doc)
+							processed, err := jsonParser.ExtractSchema(schema, &responseName, "")
+							if err != nil {
+								return nil, fmt.Errorf(
+									"failed to process response schema for status code %s: %w",
+									statusCode,
+									err,
+								)
+							}
+							// Add the response description to the schema
+							if processed.Description == "" {
+								processed.Description = response.Description
+							}
+							responseDef.SchemaDef = processed
+						}
 					}
-					// Add the response description to the schema
-					if processed.Description == "" {
-						processed.Description = response.GetDescription()
-					}
-					responseDef.SchemaDef = processed
 				}
-			} else {
-				// For responses without a schema, create a minimal SchemaDef
+			}
+
+			// For responses without a schema, create a minimal SchemaDef
+			if responseDef.SchemaDef == nil {
 				responseDef.SchemaDef = &SchemaDef{
-					Description: response.GetDescription(),
+					Description: response.Description,
 				}
 			}
 
@@ -344,32 +357,37 @@ func ExtractResponses(op *openapi.Operation, doc *openapi.OpenAPI) ([]ResponseDe
 }
 
 // ExtractRequestBody checks if an operation has a required request body and extracts its schema
-func ExtractRequestBody(op *openapi.Operation, doc *openapi.OpenAPI) (*RequestBodyDef, error) {
+func ExtractRequestBody(op *v3.Operation, doc *v3.Document) (*RequestBodyDef, error) {
 	if op.RequestBody == nil {
 		return nil, nil
 	}
 
-	rb := op.RequestBody.GetResolvedObject()
+	rb := op.RequestBody
 	if rb == nil {
-		return nil, fmt.Errorf("failed to resolve request body")
+		return nil, nil
 	}
 
 	// Extract schema from request body content
 	if rb.Content != nil {
-		if jsonContent := rb.Content.GetOrZero("application/json"); jsonContent != nil {
+		if jsonContent, ok := rb.Content.Get("application/json"); ok {
 			if jsonContent.Schema != nil {
-				schema := jsonContent.Schema.GetResolvedObject()
-				if schema != nil && schema.Left != nil {
-					requestName := fmt.Sprintf("%sRequestBody", op.GetOperationID())
+				schema := jsonContent.Schema.Schema()
+				if schema != nil {
+					requestName := fmt.Sprintf("%sRequestBody", op.OperationId)
 					jsonParser := NewJSONSchemaParser().WithOpenAPIDoc(doc)
-					processed, err := jsonParser.ExtractSchema(schema.Left, &requestName, "")
+					processed, err := jsonParser.ExtractSchema(schema, &requestName, "")
 					if err != nil {
 						return nil, fmt.Errorf("failed to process request body schema: %w", err)
 					}
 
+					required := false
+					if rb.Required != nil {
+						required = *rb.Required
+					}
+
 					return &RequestBodyDef{
 						SchemaDef: processed,
-						Required:  rb.GetRequired(),
+						Required:  required,
 					}, nil
 				}
 			}
@@ -380,7 +398,7 @@ func ExtractRequestBody(op *openapi.Operation, doc *openapi.OpenAPI) (*RequestBo
 }
 
 // ExtractComponentSchemas processes all schemas from the OpenAPI document
-func ExtractComponentSchemas(doc *openapi.OpenAPI) ([]*SchemaDef, error) {
+func ExtractComponentSchemas(doc *v3.Document) ([]*SchemaDef, error) {
 	results := []*SchemaDef{}
 
 	if doc == nil {
@@ -392,21 +410,24 @@ func ExtractComponentSchemas(doc *openapi.OpenAPI) ([]*SchemaDef, error) {
 	}
 
 	// Process each schema
-	for schemaName, schemaRef := range doc.Components.Schemas.All() {
+	for schemaPair := doc.Components.Schemas.First(); schemaPair != nil; schemaPair = schemaPair.Next() {
+		schemaName := schemaPair.Key()
+		schemaRef := schemaPair.Value()
+
 		if schemaRef == nil {
 			continue
 		}
 
 		// Get the resolved schema object
-		schemaObj := schemaRef.GetResolvedObject()
-		if schemaObj == nil || schemaObj.Left == nil {
+		schema := schemaRef.Schema()
+		if schema == nil {
 			continue
 		}
 
 		// Determine schema type from x-codegen extension
 		schemaType := ""
-		if schemaObj.Left.Extensions != nil {
-			if xExt := schemaObj.Left.Extensions.GetOrZero("x-codegen"); xExt != nil {
+		if schema.Extensions != nil {
+			if xExt, ok := schema.Extensions.Get("x-codegen"); ok {
 				parser := &XCodegenParser{}
 				if xcodegen, err := parser.ParseExtension(xExt, schemaName); err == nil &&
 					xcodegen != nil {
@@ -416,7 +437,7 @@ func ExtractComponentSchemas(doc *openapi.OpenAPI) ([]*SchemaDef, error) {
 		}
 
 		jsonParser := NewJSONSchemaParser().WithOpenAPIDoc(doc)
-		processed, err := jsonParser.ExtractSchema(schemaObj.Left, &schemaName, schemaType)
+		processed, err := jsonParser.ExtractSchema(schema, &schemaName, schemaType)
 		if err != nil {
 			return nil, fmt.Errorf("failed to process schema %s: %w", schemaName, err)
 		}

@@ -8,3 +8,7 @@ schema:
 description: |
   Filter labels by field values. Supported fields:
   - createdAt, id, updatedAt, name, organizationID
+example:
+  type: eq
+  field: name
+  value: production

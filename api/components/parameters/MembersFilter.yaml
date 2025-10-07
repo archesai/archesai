@@ -8,3 +8,7 @@ schema:
 description: |
   Filter members by field values. Supported fields:
   - createdAt, id, updatedAt, organizationID, role, userID
+example:
+  type: eq
+  field: role
+  value: ADMIN

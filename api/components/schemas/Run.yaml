@@ -1,11 +1,18 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 description: Schema for Run entity
 title: Run
 x-codegen:
   schemaType: entity
   repository:
-    operations: [create, read, update, delete, list]
-    indices: [pipelineID, organizationID, toolID]
+    operations:
+      - create
+      - read
+      - update
+      - delete
+      - list
+    indices:
+      - pipelineID
+      - organizationID
+      - toolID
     excludeFromCreate:
       - CompletedAt
       - Error
@@ -18,18 +25,21 @@ x-codegen:
           - name: pipelineID
             type: string
             format: uuid
+            maxLength: 36
         returns: multiple
       - name: ListRunsByOrganization
         params:
           - name: organizationID
             type: string
             format: uuid
+            maxLength: 36
         returns: multiple
       - name: ListRunsByTool
         params:
           - name: toolID
             type: string
             format: uuid
+            maxLength: 36
         returns: multiple
 allOf:
   - $ref: ./Base.yaml
@@ -41,33 +51,42 @@ allOf:
         format: date-time
         example: '2024-01-15T09:30:00Z'
         minLength: 1
+        maxLength: 255
       error:
         description: The error message
         type: string
-        example: example-string
+        example: Pipeline execution failed at step 3
         minLength: 1
+        maxLength: 255
+        pattern: ^[\w\s\-.,!?()@#+/':;]+$
       organizationID:
         description: The organization this run belongs to
         type: string
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
       pipelineID:
         description: The pipeline this run is executing
         type: string
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
       progress:
-        description: The percent progress of the run
-        type: number
-        example: 42
+        description: The percent progress of the run (0-100)
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 100
+        example: 75
       startedAt:
         description: The timestamp when the run started
         type: string
         format: date-time
         example: '2024-01-15T09:30:00Z'
         minLength: 1
+        maxLength: 255
       status:
         type: string
         enum:
@@ -82,6 +101,7 @@ allOf:
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
     required:
       - organizationID
       - pipelineID

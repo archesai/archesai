@@ -9,3 +9,7 @@ description: |
   Filter invitations by field values. Supported fields:
   - createdAt, id, updatedAt, email, expiresAt
   - inviterID, organizationID, role, status
+example:
+  type: eq
+  field: status
+  value: PENDING

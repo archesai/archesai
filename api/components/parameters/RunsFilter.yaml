@@ -9,3 +9,7 @@ description: |
   Filter runs by field values. Supported fields:
   - createdAt, id, updatedAt, completedAt, error, organizationID
   - pipelineID, progress, startedAt, status, toolID
+example:
+  type: eq
+  field: status
+  value: COMPLETED

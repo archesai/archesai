@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Magic link authentication configuration
 type: object
 title: MagicLinkAuthConfig
@@ -11,6 +10,7 @@ properties:
   tokenExpiry:
     description: Token expiry duration in minutes
     type: integer
+    format: int32
     minimum: 1
     maximum: 60
     default: 15
@@ -18,6 +18,7 @@ properties:
   otpLength:
     description: Length of OTP code
     type: integer
+    format: int32
     minimum: 4
     maximum: 8
     default: 6
@@ -36,7 +37,9 @@ properties:
           from:
             type: string
             format: email
-            example: 'noreply@archesai.com'
+            example: noreply@archesai.com
+            maxLength: 255
+            pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
         additionalProperties: false
       console:
         type: object
@@ -65,7 +68,8 @@ properties:
           url:
             type: string
             format: uri
-            example: 'https://hooks.example.com/magic-link'
+            example: https://hooks.example.com/magic-link
+            maxLength: 2048
         additionalProperties: false
     additionalProperties: false
   rateLimit:
@@ -75,13 +79,17 @@ properties:
       maxAttempts:
         description: Maximum number of attempts within window
         type: integer
+        format: int32
         minimum: 1
+        maximum: 2147483647
         default: 5
         example: 5
       windowMinutes:
         description: Time window in minutes
         type: integer
+        format: int32
         minimum: 1
+        maximum: 2147483647
         default: 15
         example: 15
     additionalProperties: false

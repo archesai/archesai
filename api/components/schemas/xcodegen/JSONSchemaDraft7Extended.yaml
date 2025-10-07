@@ -1,7 +1,0 @@
-# yaml-language-server: $schema=./JSONSchemaDraft7Extended.yaml
-title: Extended JSONSchema with x-codegen support
-allOf:
-  - $ref: https://json-schema.org/draft-07/schema
-  - properties:
-      x-codegen:
-        $ref: ./CodegenExtension.yaml

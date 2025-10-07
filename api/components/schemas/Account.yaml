@@ -1,11 +1,17 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 description: Schema for Account entity (authentication provider account)
 title: Account
 x-codegen:
   schemaType: entity
   repository:
-    operations: [create, read, update, delete, list]
-    indices: [userID, accountIdentifier]
+    operations:
+      - create
+      - read
+      - update
+      - delete
+      - list
+    indices:
+      - userID
+      - accountIdentifier
     excludeFromUpdate:
       - AccountIdentifier
       - Provider
@@ -23,6 +29,7 @@ x-codegen:
           - name: userID
             type: string
             format: uuid
+            maxLength: 36
         returns: multiple
 allOf:
   - $ref: ./Base.yaml
@@ -33,12 +40,15 @@ allOf:
         type: string
         example: google123456789
         minLength: 1
+        maxLength: 255
+        pattern: ^[a-zA-Z0-9_\-\.@]+$
       userID:
         description: The user ID this account belongs to
         type: string
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
+        maxLength: 36
       provider:
         description: The authentication provider identifier
         type: string
@@ -52,32 +62,48 @@ allOf:
       accessToken:
         description: The OAuth access token
         type: string
-        example: 'ya29.a0AfH6SMBa...'
+        minLength: 1
+        example: ya29.a0AfH6SMBa...
         x-sensitive: true
+        maxLength: 512
+        pattern: ^[A-Za-z0-9_\-\.]+$
       accessTokenExpiresAt:
         description: The access token expiration timestamp
         type: string
         format: date-time
+        minLength: 1
         example: '2024-12-31T23:59:59Z'
+        maxLength: 255
       refreshToken:
         description: The OAuth refresh token
         type: string
-        example: '1//0fM8N5...'
+        minLength: 1
+        example: 1//0fM8N5...
         x-sensitive: true
+        maxLength: 512
+        pattern: ^[A-Za-z0-9_\-\./]+$
       refreshTokenExpiresAt:
         description: The refresh token expiration timestamp
         type: string
         format: date-time
+        minLength: 1
         example: '2025-12-31T23:59:59Z'
+        maxLength: 255
       idToken:
         description: The OpenID Connect ID token
         type: string
-        example: 'eyJhbGciOiJSUzI1NiIs...'
+        minLength: 1
+        example: eyJhbGciOiJSUzI1NiIs...
         x-sensitive: true
+        maxLength: 2048
+        pattern: ^[A-Za-z0-9_\-\.]+$
       scope:
         description: The OAuth scope granted
         type: string
-        example: 'openid profile email'
+        minLength: 1
+        example: openid profile email
+        maxLength: 255
+        pattern: ^[\w\s\-:]+$
     required:
       - accountIdentifier
       - userID

@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=./xcodegen/JSONSchemaDraft7Extended.yaml
 description: Pagination parameters (limit & offset)
 type: object
 title: Page

@@ -5,6 +5,7 @@ style: form
 explode: true
 schema:
   type: array
+  maxItems: 10
   items:
     type: object
     required:
@@ -33,3 +34,6 @@ schema:
           - desc
         example: desc
 description: The sort parameter
+example:
+  - field: createdAt
+    order: desc

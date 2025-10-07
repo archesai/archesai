@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Local username/password authentication
 type: object
 title: LocalAuthConfig
@@ -14,18 +13,22 @@ properties:
     default: change-me-in-production
     minLength: 32
     example: your-256-bit-secret-key-here-change-in-production
+    maxLength: 512
+    pattern: ^[\w\-+=/.]+$
   accessTokenTTL:
     description: Access token time-to-live duration (e.g., "15m", "1h")
     type: string
-    pattern: '^(\d+[smhd])+$'
+    pattern: ^(\d+[smhd])+$
     minLength: 2
+    maxLength: 20
     default: 15m
     example: 15m
   refreshTokenTTL:
     description: Refresh token time-to-live duration (e.g., "7d", "168h")
     type: string
-    pattern: '^(\d+[smhd])+$'
+    pattern: ^(\d+[smhd])+$
     minLength: 2
+    maxLength: 20
     default: 168h
     example: 168h
 required:

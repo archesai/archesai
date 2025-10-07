@@ -4,9 +4,12 @@ post:
   tags:
     - Auth
   description: Register a new user account with email and password
-  security: []
+  security:
+    - {}
+  x-public-endpoint: true
   x-codegen-custom-handler: true
   requestBody:
+    description: User registration details
     content:
       application/json:
         schema:
@@ -16,20 +19,24 @@ post:
               description: The email address for the new account
               type: string
               format: email
-              pattern: >-
-                ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+              pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
               example: user@example.com
               minLength: 1
+              maxLength: 255
             name:
               description: The name of the user
               type: string
               minLength: 1
+              maxLength: 255
               example: John Doe
+              pattern: ^[\w\s\-.,!?()@#+/]*$
             password:
               description: The password for the account
               type: string
               minLength: 8
+              maxLength: 72
               example: secure-password-123
+              pattern: ^[\w\s\-.,!?()@#+/]*$
           required:
             - email
             - name
@@ -43,15 +50,80 @@ post:
           description: Session cookies for authentication
           schema:
             type: string
+            minLength: 1
+            maxLength: 4096
+            pattern: ^[\w\-=;,. ]+$
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
       content:
         application/json:
           schema:
             $ref: ../components/schemas/User.yaml
+          example:
+            id: 550e8400-e29b-41d4-a716-446655440000
+            name: John Doe
+            email: user@example.com
+            emailVerified: false
+            createdAt: '2024-01-15T09:30:00Z'
+            updatedAt: '2024-01-15T09:30:00Z'
     '400':
       $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
     '409':
       description: Account already exists
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
       content:
         application/problem+json:
           schema:
             $ref: ../components/schemas/Problem.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

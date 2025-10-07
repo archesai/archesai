@@ -1,0 +1,262 @@
+get:
+  operationId: GetAccount
+  x-codegen-repository: Account
+  summary: Find an account
+  tags:
+    - Auth
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      description: The unique identifier of the resource
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: The account
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - data
+            properties:
+              data:
+                $ref: ../components/schemas/Account.yaml
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440001
+              userID: 550e8400-e29b-41d4-a716-446655440000
+              provider: google
+              accountIdentifier: google123456789
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  description: Get an account
+patch:
+  x-codegen-custom-handler: true
+  operationId: UpdateAccount
+  summary: Update an account
+  tags:
+    - Auth
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      description: The unique identifier of the resource
+  security:
+    - bearerAuth: []
+  requestBody:
+    description: Account update request
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          additionalProperties: false
+          maxProperties: 3
+          properties:
+            provider:
+              type: string
+              maxLength: 255
+              description: The account provider
+              example: google
+              pattern: ^[a-z][a-z0-9-]*$
+            providerAccountIdentifier:
+              type: string
+              maxLength: 255
+              description: The provider account ID
+              example: 'user1234567890'
+              pattern: ^[a-z][a-z0-9-]*$
+            type:
+              type: string
+              maxLength: 255
+              description: The account type
+              example: oauth
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+  responses:
+    '200':
+      description: Updated account
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            maxProperties: 1
+            required:
+              - data
+            properties:
+              data:
+                $ref: ../components/schemas/Account.yaml
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440001
+              userID: 550e8400-e29b-41d4-a716-446655440000
+              provider: google
+              accountIdentifier: google123456789
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-16T10:00:00Z'
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  description: Update an account
+delete:
+  x-codegen-custom-handler: true
+  operationId: DeleteAccount
+  summary: Delete an account
+  tags:
+    - Auth
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        description: UUID identifier
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      description: The unique identifier of the resource
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Deleted account
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - data
+            properties:
+              data:
+                $ref: ../components/schemas/Account.yaml
+          example:
+            data:
+              id: 550e8400-e29b-41d4-a716-446655440001
+              userID: 550e8400-e29b-41d4-a716-446655440000
+              provider: google
+              accountIdentifier: google123456789
+              createdAt: '2024-01-15T09:30:00Z'
+              updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  description: Delete an account

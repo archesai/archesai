@@ -4,7 +4,6 @@
     "@fontsource/geist": "catalog:ui",
     "@fontsource/geist-mono": "catalog:ui",
     "@playwright/test": "catalog:test",
-    "@redocly/cli": "catalog:",
     "@tailwindcss/vite": "catalog:vite",
     "@tanstack/table-core": "catalog:tanstack",
     "@testing-library/dom": "catalog:test",

@@ -9,6 +9,7 @@ post:
     - bearerAuth: []
     - sessionCookie: []
   requestBody:
+    description: Account linking request
     required: true
     content:
       application/json:
@@ -20,6 +21,7 @@ post:
             provider:
               description: The authentication provider to link
               type: string
+              maxLength: 255
               enum:
                 - google
                 - github
@@ -30,7 +32,8 @@ post:
               description: URL to redirect to after successful linking
               type: string
               format: uri
-              example: 'https://app.archesai.com/settings/security'
+              maxLength: 2048
+              example: https://app.archesai.com/settings/security
   responses:
     '200':
       description: Provider linking initiated
@@ -46,14 +49,74 @@ post:
                 description: URL to redirect the user to for provider authorization
                 type: string
                 format: uri
-                example: 'https://github.com/login/oauth/authorize?client_id=...'
+                minLength: 1
+                maxLength: 2048
+                example: https://github.com/login/oauth/authorize?client_id=...
+          example:
+            authorizationUrl: https://github.com/login/oauth/authorize?client_id=abc123
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
     '409':
       description: Provider already linked
+      headers:
+        X-RateLimit-Limit:
+          description: The maximum number of requests allowed per time window
+          schema:
+            type: integer
+            example: 1000
+            format: int32
+            minimum: 1
+            maximum: 1000000
+        X-RateLimit-Remaining:
+          description: The number of requests remaining in the current time window
+          schema:
+            type: integer
+            example: 999
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        X-RateLimit-Reset:
+          description: The time at which the current rate limit window resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1640995200
+            format: int64
+            minimum: 0
+            maximum: 9223372036854775807
       content:
         application/problem+json:
           schema:
             $ref: ../components/schemas/Problem.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml

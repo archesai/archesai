@@ -8,3 +8,7 @@ schema:
 description: |
   Filter users by field values. Supported fields:
   - createdAt, id, updatedAt, email, emailVerified, image, name
+example:
+  type: eq
+  field: email
+  value: user@example.com

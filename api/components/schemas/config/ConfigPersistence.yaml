@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../xcodegen/JSONSchemaDraft7Extended.yaml
 description: Persistent storage configuration
 type: object
 title: PersistenceConfig
@@ -13,7 +12,9 @@ properties:
     type: string
     default: 10Gi
     minLength: 1
-    example: example-string
+    example: 10Gi
+    maxLength: 255
+    pattern: ^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$
 required:
   - enabled
   - size
