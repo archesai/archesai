@@ -15,6 +15,7 @@ import (
 	commands "github.com/archesai/archesai/internal/application/commands/pipeline"
 	queries "github.com/archesai/archesai/internal/application/queries/pipeline"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // PipelineController handles HTTP requests for pipeline endpoints.
@@ -122,6 +123,39 @@ func (response CreatePipeline401Response) VisitCreatePipelineResponse(w http.Res
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type CreatePipeline422Response struct {
+	server.ProblemDetails
+}
+
+func (response CreatePipeline422Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreatePipeline429Response struct {
+	server.ProblemDetails
+}
+
+func (response CreatePipeline429Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreatePipeline500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response CreatePipeline500Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // CreatePipeline handles the POST /pipelines endpoint.
@@ -171,12 +205,11 @@ func (c *PipelineController) CreatePipeline(ctx echo.Context) error {
 // Request types
 // CreatePipelineStepRequestBody defines the request body for CreatePipelineStep
 type CreatePipelineStepRequestBody struct {
-	Config       map[string]any `json:"config,omitempty"`
-	Dependencies []uuid.UUID    `json:"dependencies,omitempty"`
-	Description  *string        `json:"description,omitempty"`
-	Name         string         `json:"name"`
-	Position     *int           `json:"position,omitempty"`
-	ToolID       uuid.UUID      `json:"toolID"`
+	Dependencies []uuid.UUID `json:"dependencies,omitempty"`
+	Description  *string     `json:"description,omitempty"`
+	Name         string      `json:"name"`
+	Position     *int32      `json:"position,omitempty"`
+	ToolID       uuid.UUID   `json:"toolID"`
 }
 
 type CreatePipelineStepRequest struct {
@@ -212,6 +245,17 @@ func (response CreatePipelineStep400Response) VisitCreatePipelineStepResponse(w 
 	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
+type CreatePipelineStep404Response struct {
+	server.NotFoundResponse
+}
+
+func (response CreatePipelineStep404Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
 type CreatePipelineStep401Response struct {
 	server.UnauthorizedResponse
 }
@@ -223,15 +267,37 @@ func (response CreatePipelineStep401Response) VisitCreatePipelineStepResponse(w 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
-type CreatePipelineStep404Response struct {
-	server.NotFoundResponse
+type CreatePipelineStep422Response struct {
+	server.ProblemDetails
 }
 
-func (response CreatePipelineStep404Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
+func (response CreatePipelineStep422Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
+	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreatePipelineStep429Response struct {
+	server.ProblemDetails
+}
+
+func (response CreatePipelineStep429Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreatePipelineStep500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response CreatePipelineStep500Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -272,7 +338,6 @@ func (c *PipelineController) CreatePipelineStep(ctx echo.Context) error {
 	cmd := commands.NewCreatePipelineStepCommand(
 		sessionID,                 // SessionID for authenticated operations
 		request.ID,                // ID
-		request.Body.Config,       // Config
 		request.Body.Dependencies, // Dependencies
 		request.Body.Description,  // Description
 		request.Body.Name,         // Name
@@ -304,14 +369,8 @@ type ValidatePipelineExecutionPlanResponse interface {
 	VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error
 }
 
-// ValidatePipelineExecutionPlan200ResponseData defines the data structure
-type ValidatePipelineExecutionPlan200ResponseData struct {
-	Issues []string `json:"issues,omitempty"`
-	Valid  bool     `json:"valid"`
-}
-
 type ValidatePipelineExecutionPlan200Response struct {
-	Data ValidatePipelineExecutionPlan200ResponseData `json:"data"`
+	Data entities.Pipeline `json:"data"`
 }
 
 func (response ValidatePipelineExecutionPlan200Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
@@ -332,6 +391,17 @@ func (response ValidatePipelineExecutionPlan400Response) VisitValidatePipelineEx
 	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
+type ValidatePipelineExecutionPlan404Response struct {
+	server.NotFoundResponse
+}
+
+func (response ValidatePipelineExecutionPlan404Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
 type ValidatePipelineExecutionPlan401Response struct {
 	server.UnauthorizedResponse
 }
@@ -343,15 +413,37 @@ func (response ValidatePipelineExecutionPlan401Response) VisitValidatePipelineEx
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
-type ValidatePipelineExecutionPlan404Response struct {
-	server.NotFoundResponse
+type ValidatePipelineExecutionPlan422Response struct {
+	server.ProblemDetails
 }
 
-func (response ValidatePipelineExecutionPlan404Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
+func (response ValidatePipelineExecutionPlan422Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
+	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ValidatePipelineExecutionPlan429Response struct {
+	server.ProblemDetails
+}
+
+func (response ValidatePipelineExecutionPlan429Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ValidatePipelineExecutionPlan500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ValidatePipelineExecutionPlan500Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -434,6 +526,50 @@ func (response GetPipeline404Response) VisitGetPipelineResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type GetPipeline429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetPipeline429Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipeline500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetPipeline500Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type GetPipeline401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetPipeline401Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetPipeline422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetPipeline422Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // GetPipeline handles the GET /pipelines/{id} endpoint.
@@ -494,16 +630,16 @@ type GetPipelineExecutionPlanResponse interface {
 
 // GetPipelineExecutionPlan200ResponseData defines the data structure
 type GetPipelineExecutionPlan200ResponseData struct {
-	EstimatedDuration int          `json:"estimatedDuration,omitempty"`
+	EstimatedDuration int32        `json:"estimatedDuration,omitempty"`
 	IsValid           bool         `json:"isValid"`
 	Levels            []LevelsItem `json:"levels"`
 	PipelineID        uuid.UUID    `json:"pipelineID"`
-	TotalSteps        int          `json:"totalSteps"`
+	TotalSteps        int32        `json:"totalSteps"`
 }
 
 // LevelsItem defines an item in the levels array
 type LevelsItem struct {
-	Level int         `json:"level"`
+	Level int32       `json:"level"`
 	Steps []uuid.UUID `json:"steps"`
 }
 
@@ -529,6 +665,17 @@ func (response GetPipelineExecutionPlan400Response) VisitGetPipelineExecutionPla
 	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
+type GetPipelineExecutionPlan404Response struct {
+	server.NotFoundResponse
+}
+
+func (response GetPipelineExecutionPlan404Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
 type GetPipelineExecutionPlan401Response struct {
 	server.UnauthorizedResponse
 }
@@ -540,15 +687,37 @@ func (response GetPipelineExecutionPlan401Response) VisitGetPipelineExecutionPla
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
-type GetPipelineExecutionPlan404Response struct {
-	server.NotFoundResponse
+type GetPipelineExecutionPlan422Response struct {
+	server.ProblemDetails
 }
 
-func (response GetPipelineExecutionPlan404Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
+func (response GetPipelineExecutionPlan422Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
+	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineExecutionPlan429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetPipelineExecutionPlan429Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineExecutionPlan500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetPipelineExecutionPlan500Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -620,6 +789,17 @@ func (response GetPipelineSteps200Response) VisitGetPipelineStepsResponse(w http
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetPipelineSteps404Response struct {
+	server.NotFoundResponse
+}
+
+func (response GetPipelineSteps404Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
 type GetPipelineSteps401Response struct {
 	server.UnauthorizedResponse
 }
@@ -631,15 +811,37 @@ func (response GetPipelineSteps401Response) VisitGetPipelineStepsResponse(w http
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
-type GetPipelineSteps404Response struct {
-	server.NotFoundResponse
+type GetPipelineSteps422Response struct {
+	server.ProblemDetails
 }
 
-func (response GetPipelineSteps404Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
+func (response GetPipelineSteps422Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
+	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineSteps429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetPipelineSteps429Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetPipelineSteps500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetPipelineSteps500Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -706,14 +908,9 @@ type ListPipelinesResponse interface {
 	VisitListPipelinesResponse(w http.ResponseWriter) error
 }
 
-// ListPipelines200ResponseMeta defines the meta structure
-type ListPipelines200ResponseMeta struct {
-	Total float64 `json:"total"`
-}
-
 type ListPipelines200Response struct {
-	Data []entities.Pipeline          `json:"data"`
-	Meta ListPipelines200ResponseMeta `json:"meta"`
+	Data []entities.Pipeline         `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListPipelines200Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
@@ -743,6 +940,39 @@ func (response ListPipelines401Response) VisitListPipelinesResponse(w http.Respo
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListPipelines422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListPipelines422Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListPipelines429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListPipelines429Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListPipelines500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListPipelines500Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -843,6 +1073,61 @@ func (response UpdatePipeline404Response) VisitUpdatePipelineResponse(w http.Res
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type UpdatePipeline429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdatePipeline429Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdatePipeline500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdatePipeline500Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type UpdatePipeline400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdatePipeline400Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdatePipeline401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdatePipeline401Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdatePipeline422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdatePipeline422Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // UpdatePipeline handles the PATCH /pipelines/{id} endpoint.
@@ -929,6 +1214,50 @@ func (response DeletePipeline404Response) VisitDeletePipelineResponse(w http.Res
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeletePipeline429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeletePipeline429Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeletePipeline500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeletePipeline500Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type DeletePipeline401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeletePipeline401Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeletePipeline422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeletePipeline422Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Handler method

@@ -6,6 +6,12 @@
 .
 ├── api
 │   ├── components
+│   │   ├── headers
+│   │   │   ├── RateLimitLimit.yaml
+│   │   │   ├── RateLimitRemaining.yaml
+│   │   │   ├── RateLimitReset.yaml
+│   │   │   ├── RetryAfter.yaml
+│   │   │   └── SetCookie.yaml
 │   │   ├── parameters
 │   │   │   ├── AccountsFilter.yaml
 │   │   │   ├── AccountsSort.yaml
@@ -19,11 +25,13 @@
 │   │   │   ├── LabelsSort.yaml
 │   │   │   ├── MembersFilter.yaml
 │   │   │   ├── MembersSort.yaml
+│   │   │   ├── OrganizationID.yaml
 │   │   │   ├── OrganizationsFilter.yaml
 │   │   │   ├── OrganizationsSort.yaml
 │   │   │   ├── PageQuery.yaml
 │   │   │   ├── PipelinesFilter.yaml
 │   │   │   ├── PipelinesSort.yaml
+│   │   │   ├── ResourceID.yaml
 │   │   │   ├── RunsFilter.yaml
 │   │   │   ├── RunsSort.yaml
 │   │   │   ├── SessionsFilter.yaml
@@ -33,13 +41,45 @@
 │   │   │   ├── UsersFilter.yaml
 │   │   │   └── UsersSort.yaml
 │   │   ├── responses
+│   │   │   ├── AccountListResponse.yaml
+│   │   │   ├── AccountResponse.yaml
+│   │   │   ├── APIKeyListResponse.yaml
+│   │   │   ├── APIKeyResponse.yaml
+│   │   │   ├── ArtifactListResponse.yaml
+│   │   │   ├── ArtifactResponse.yaml
 │   │   │   ├── BadRequest.yaml
+│   │   │   ├── ConfigResponse.yaml
+│   │   │   ├── Conflict.yaml
+│   │   │   ├── EmailVerificationResponse.yaml
+│   │   │   ├── HealthResponse.yaml
 │   │   │   ├── InternalServerError.yaml
+│   │   │   ├── InvitationListResponse.yaml
+│   │   │   ├── InvitationResponse.yaml
+│   │   │   ├── LabelListResponse.yaml
+│   │   │   ├── LabelResponse.yaml
+│   │   │   ├── LogoutResponse.yaml
+│   │   │   ├── MemberListResponse.yaml
+│   │   │   ├── MemberResponse.yaml
 │   │   │   ├── NoContent.yaml
 │   │   │   ├── NotFound.yaml
+│   │   │   ├── OrganizationListResponse.yaml
+│   │   │   ├── OrganizationResponse.yaml
+│   │   │   ├── PipelineExecutionPlanResponse.yaml
+│   │   │   ├── PipelineListResponse.yaml
+│   │   │   ├── PipelineResponse.yaml
+│   │   │   ├── PipelineStepListResponse.yaml
+│   │   │   ├── RunListResponse.yaml
+│   │   │   ├── RunResponse.yaml
+│   │   │   ├── SessionCreated.yaml
+│   │   │   ├── SessionListResponse.yaml
+│   │   │   ├── SessionResponse.yaml
+│   │   │   ├── ToolListResponse.yaml
+│   │   │   ├── ToolResponse.yaml
 │   │   │   ├── TooManyRequests.yaml
 │   │   │   ├── Unauthorized.yaml
-│   │   │   └── UnprocessableEntity.yaml
+│   │   │   ├── UnprocessableEntity.yaml
+│   │   │   ├── UserListResponse.yaml
+│   │   │   └── UserResponse.yaml
 │   │   └── schemas
 │   │       ├── config
 │   │       │   ├── ConfigAPI.yaml
@@ -94,13 +134,15 @@
 │   │       ├── Member.yaml
 │   │       ├── Organization.yaml
 │   │       ├── Page.yaml
+│   │       ├── PaginationMeta.yaml
 │   │       ├── PipelineStep.yaml
 │   │       ├── Pipeline.yaml
 │   │       ├── Problem.yaml
 │   │       ├── Run.yaml
 │   │       ├── Session.yaml
 │   │       ├── Tool.yaml
-│   │       └── User.yaml
+│   │       ├── User.yaml
+│   │       └── UUID.yaml
 │   ├── paths
 │   │   ├── api-keys_id.yaml
 │   │   ├── api-keys.yaml
@@ -115,8 +157,10 @@
 │   │   ├── auth_login.yaml
 │   │   ├── auth_logout-all.yaml
 │   │   ├── auth_logout.yaml
-│   │   ├── auth_magic-link-request.yaml
-│   │   ├── auth_magic-link-verify.yaml
+│   │   ├── auth_magic-links_request.yaml
+│   │   ├── auth_magic-links_verify.yaml
+│   │   ├── auth_oauth_provider_authorize.yaml
+│   │   ├── auth_oauth_provider_callback.yaml
 │   │   ├── auth_register.yaml
 │   │   ├── auth_request-verification.yaml
 │   │   ├── auth_reset-password.yaml
@@ -125,15 +169,14 @@
 │   │   ├── auth_verify-email.yaml
 │   │   ├── config.yaml
 │   │   ├── health.yaml
-│   │   ├── invitations_id.yaml
-│   │   ├── invitations.yaml
 │   │   ├── labels_id.yaml
 │   │   ├── labels.yaml
-│   │   ├── members_id.yaml
-│   │   ├── members.yaml
-│   │   ├── oauth_authorize.yaml
-│   │   ├── oauth_callback.yaml
+│   │   ├── me.yaml
 │   │   ├── organizations_id.yaml
+│   │   ├── organizations_organizationID_invitations_id.yaml
+│   │   ├── organizations_organizationID_invitations.yaml
+│   │   ├── organizations_organizationID_members_id.yaml
+│   │   ├── organizations_organizationID_members.yaml
 │   │   ├── organizations.yaml
 │   │   ├── pipelines_id_execution-plans.yaml
 │   │   ├── pipelines_id_steps.yaml
@@ -144,7 +187,6 @@
 │   │   ├── tools_id.yaml
 │   │   ├── tools.yaml
 │   │   ├── users_id.yaml
-│   │   ├── users_me.yaml
 │   │   └── users.yaml
 │   ├── openapi.bundled.yaml
 │   └── openapi.yaml
@@ -503,7 +545,10 @@
 │   ├── generate-coverage-report.sh
 │   ├── generate-helm-schema.py
 │   ├── generate-project-structure-xml.sh
+│   ├── resolve-pathitems.py
+│   ├── restructure-openapi.py
 │   ├── update-makefile-docs.sh
+│   ├── update-operation-responses.py
 │   └── update-project-layout-docs.sh
 ├── .taskmaster
 │   ├── docs
@@ -744,5 +789,5 @@
 ├── README.md
 └── tsconfig.json
 
-211 directories, 529 files
+212 directories, 573 files
 ```

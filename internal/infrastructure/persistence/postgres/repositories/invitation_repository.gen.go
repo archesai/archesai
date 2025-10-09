@@ -38,7 +38,7 @@ func (r *PostgresInvitationRepository) Create(ctx context.Context, entity *entit
 		InviterID:      entity.InviterID,
 		OrganizationID: entity.OrganizationID,
 		Role:           string(entity.Role),
-		Status:         entity.Status,
+		Status:         string(entity.Status),
 	}
 
 	result, err := r.queries.CreateInvitation(ctx, params)
@@ -71,12 +71,14 @@ func (r *PostgresInvitationRepository) Update(ctx context.Context, id uuid.UUID,
 
 	roleStr := string(entity.Role)
 
+	statusStr := string(entity.Status)
+
 	params := UpdateInvitationParams{
 		ID:        id,
 		Email:     &entity.Email,
 		ExpiresAt: &entity.ExpiresAt,
 		Role:      &roleStr,
-		Status:    &entity.Status,
+		Status:    &statusStr,
 	}
 
 	result, err := r.queries.UpdateInvitation(ctx, params)
@@ -205,7 +207,7 @@ func mapInvitationFromDB(db *Invitation) *entities.Invitation {
 		InviterID:      db.InviterID,
 		OrganizationID: db.OrganizationID,
 		Role:           entities.InvitationRole(db.Role),
-		Status:         db.Status,
+		Status:         entities.InvitationStatus(db.Status),
 	}
 
 	return result

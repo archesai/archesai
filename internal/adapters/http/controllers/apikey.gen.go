@@ -16,6 +16,7 @@ import (
 	commands "github.com/archesai/archesai/internal/application/commands/apikey"
 	queries "github.com/archesai/archesai/internal/application/queries/apikey"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // APIKeyController handles HTTP requests for apikey endpoints.
@@ -62,7 +63,7 @@ func RegisterAPIKeyRoutes(router server.EchoRouter, controller *APIKeyController
 type CreateAPIKeyRequestBody struct {
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 	Name      string     `json:"name"`
-	RateLimit *int       `json:"rateLimit,omitempty"`
+	RateLimit *int32     `json:"rateLimit,omitempty"`
 	Scopes    []string   `json:"scopes"`
 }
 
@@ -77,18 +78,7 @@ type CreateAPIKeyResponse interface {
 }
 
 type CreateAPIKey201Response struct {
-	ID             uuid.UUID `json:"id"`
-	CreatedAt      time.Time `json:"createdAt"`
-	ExpiresAt      time.Time `json:"expiresAt,omitempty"`
-	KeyHash        string    `json:"keyHash"`
-	LastUsedAt     time.Time `json:"lastUsedAt,omitempty"`
-	Name           string    `json:"name,omitempty"`
-	OrganizationID uuid.UUID `json:"organizationID"`
-	Prefix         string    `json:"prefix,omitempty"`
-	RateLimit      int32     `json:"rateLimit"`
-	Scopes         []string  `json:"scopes"`
-	UpdatedAt      time.Time `json:"updatedAt"`
-	UserID         uuid.UUID `json:"userID"`
+	Data entities.APIKey `json:"data"`
 }
 
 func (response CreateAPIKey201Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
@@ -118,6 +108,39 @@ func (response CreateAPIKey401Response) VisitCreateAPIKeyResponse(w http.Respons
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type CreateAPIKey422Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateAPIKey422Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateAPIKey429Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateAPIKey429Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateAPIKey500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response CreateAPIKey500Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -181,18 +204,8 @@ type GetAPIKeyResponse interface {
 }
 
 type GetAPIKey200Response struct {
-	ID             uuid.UUID `json:"id"`
-	CreatedAt      time.Time `json:"createdAt"`
-	ExpiresAt      time.Time `json:"expiresAt,omitempty"`
-	KeyHash        string    `json:"keyHash"`
-	LastUsedAt     time.Time `json:"lastUsedAt,omitempty"`
-	Name           string    `json:"name,omitempty"`
-	OrganizationID uuid.UUID `json:"organizationID"`
-	Prefix         string    `json:"prefix,omitempty"`
-	RateLimit      int32     `json:"rateLimit"`
-	Scopes         []string  `json:"scopes"`
-	UpdatedAt      time.Time `json:"updatedAt"`
-	UserID         uuid.UUID `json:"userID"`
+	Data []entities.APIKey           `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response GetAPIKey200Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
@@ -224,6 +237,17 @@ func (response GetAPIKey401Response) VisitGetAPIKeyResponse(w http.ResponseWrite
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type GetAPIKey422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetAPIKey422Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type GetAPIKey404Response struct {
 	server.NotFoundResponse
 }
@@ -233,6 +257,28 @@ func (response GetAPIKey404Response) VisitGetAPIKeyResponse(w http.ResponseWrite
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type GetAPIKey429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetAPIKey429Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAPIKey500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetAPIKey500Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -299,14 +345,9 @@ type ListAPIKeysResponse interface {
 	VisitListAPIKeysResponse(w http.ResponseWriter) error
 }
 
-// ListAPIKeys200ResponseMeta defines the meta structure
-type ListAPIKeys200ResponseMeta struct {
-	Total float64 `json:"total"`
-}
-
 type ListAPIKeys200Response struct {
-	Data []entities.APIKey          `json:"data"`
-	Meta ListAPIKeys200ResponseMeta `json:"meta"`
+	Data []entities.APIKey           `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListAPIKeys200Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
@@ -314,6 +355,17 @@ func (response ListAPIKeys200Response) VisitListAPIKeysResponse(w http.ResponseW
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAPIKeys400Response struct {
+	server.BadRequestResponse
+}
+
+func (response ListAPIKeys400Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
 type ListAPIKeys401Response struct {
@@ -325,6 +377,39 @@ func (response ListAPIKeys401Response) VisitListAPIKeysResponse(w http.ResponseW
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListAPIKeys422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListAPIKeys422Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAPIKeys429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListAPIKeys429Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAPIKeys500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListAPIKeys500Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -389,7 +474,7 @@ func (c *APIKeyController) ListAPIKeys(ctx echo.Context) error {
 // UpdateAPIKeyRequestBody defines the request body for UpdateAPIKey
 type UpdateAPIKeyRequestBody struct {
 	Name      *string  `json:"name,omitempty"`
-	RateLimit *int     `json:"rateLimit,omitempty"`
+	RateLimit *int32   `json:"rateLimit,omitempty"`
 	Scopes    []string `json:"scopes,omitempty"`
 }
 
@@ -405,18 +490,7 @@ type UpdateAPIKeyResponse interface {
 }
 
 type UpdateAPIKey200Response struct {
-	ID             uuid.UUID `json:"id"`
-	CreatedAt      time.Time `json:"createdAt"`
-	ExpiresAt      time.Time `json:"expiresAt,omitempty"`
-	KeyHash        string    `json:"keyHash"`
-	LastUsedAt     time.Time `json:"lastUsedAt,omitempty"`
-	Name           string    `json:"name,omitempty"`
-	OrganizationID uuid.UUID `json:"organizationID"`
-	Prefix         string    `json:"prefix,omitempty"`
-	RateLimit      int32     `json:"rateLimit"`
-	Scopes         []string  `json:"scopes"`
-	UpdatedAt      time.Time `json:"updatedAt"`
-	UserID         uuid.UUID `json:"userID"`
+	Data entities.APIKey `json:"data"`
 }
 
 func (response UpdateAPIKey200Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
@@ -448,6 +522,17 @@ func (response UpdateAPIKey401Response) VisitUpdateAPIKeyResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type UpdateAPIKey422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateAPIKey422Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type UpdateAPIKey404Response struct {
 	server.NotFoundResponse
 }
@@ -457,6 +542,28 @@ func (response UpdateAPIKey404Response) VisitUpdateAPIKeyResponse(w http.Respons
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type UpdateAPIKey429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateAPIKey429Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAPIKey500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateAPIKey500Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -557,6 +664,17 @@ func (response DeleteAPIKey401Response) VisitDeleteAPIKeyResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type DeleteAPIKey422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteAPIKey422Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type DeleteAPIKey404Response struct {
 	server.NotFoundResponse
 }
@@ -566,6 +684,28 @@ func (response DeleteAPIKey404Response) VisitDeleteAPIKeyResponse(w http.Respons
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeleteAPIKey429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteAPIKey429Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteAPIKey500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteAPIKey500Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method

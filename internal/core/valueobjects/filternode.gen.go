@@ -71,24 +71,22 @@ func ParseFilterNodeType(s string) (FilterNodeType, error) {
 
 // FilterNode represents A recursive filter node that can be a condition or group
 type FilterNode struct {
-	Children []FilterNode   `json:"children,omitempty" yaml:"children,omitempty"` // Child filter nodes (for logical operators)
-	Field    *string        `json:"field,omitempty" yaml:"field,omitempty"`       // The field to filter on (for leaf conditions)
-	Type     FilterNodeType `json:"type" yaml:"type"`                             // The type of filter operation
-	Value    *any           `json:"value,omitempty" yaml:"value,omitempty"`       // The value to compare against (for leaf conditions)
+	Field *string        `json:"field,omitempty" yaml:"field,omitempty"` // The field to filter on (for leaf conditions)
+	Type  FilterNodeType `json:"type" yaml:"type"`                       // The type of filter operation
+	Value *any           `json:"value,omitempty" yaml:"value,omitempty"` // The value to compare against (for leaf conditions)
 }
 
 // NewFilterNode creates a new immutable FilterNode value object.
 // Value objects are immutable and validated upon creation.
-func NewFilterNode(children []FilterNode, field *string, type_ FilterNodeType, value *any) (FilterNode, error) {
+func NewFilterNode(field *string, type_ FilterNodeType, value *any) (FilterNode, error) {
 	// Validate required fields
 	if !type_.IsValid() {
 		return FilterNode{}, fmt.Errorf("invalid Type: %s", type_)
 	}
 	return FilterNode{
-		Children: children,
-		Field:    field,
-		Type:     type_,
-		Value:    value,
+		Field: field,
+		Type:  type_,
+		Value: value,
 	}, nil
 }
 
@@ -96,15 +94,6 @@ func NewFilterNode(children []FilterNode, field *string, type_ FilterNodeType, v
 // This is useful for comparisons and as a default value.
 func ZeroFilterNode() FilterNode {
 	return FilterNode{}
-}
-
-// GetChildren returns the Children value.
-// Value objects are immutable, so this returns a copy of the value.
-func (v FilterNode) GetChildren() []FilterNode {
-	// Return a copy for slices and maps to maintain immutability
-	result := make([]FilterNode, len(v.Children))
-	copy(result, v.Children)
-	return result
 }
 
 // GetField returns the Field value.
@@ -144,7 +133,6 @@ func (v FilterNode) IsZero() bool {
 // String returns a string representation of FilterNode
 func (v FilterNode) String() string {
 	var fields []string
-	fields = append(fields, fmt.Sprintf("Children: %v", v.Children))
 	fields = append(fields, fmt.Sprintf("Field: %v", v.Field))
 	fields = append(fields, fmt.Sprintf("Type: %v", v.Type))
 	fields = append(fields, fmt.Sprintf("Value: %v", v.Value))

@@ -157,6 +157,17 @@ func (response ConfirmEmailChange204Response) VisitConfirmEmailChangeResponse(w 
 	return nil
 }
 
+type ConfirmEmailChange400Response struct {
+	server.BadRequestResponse
+}
+
+func (response ConfirmEmailChange400Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
 type ConfirmEmailChange401Response struct {
 	server.UnauthorizedResponse
 }
@@ -168,6 +179,17 @@ func (response ConfirmEmailChange401Response) VisitConfirmEmailChangeResponse(w 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type ConfirmEmailChange422Response struct {
+	server.ProblemDetails
+}
+
+func (response ConfirmEmailChange422Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type ConfirmEmailChange404Response struct {
 	server.NotFoundResponse
 }
@@ -177,6 +199,28 @@ func (response ConfirmEmailChange404Response) VisitConfirmEmailChangeResponse(w 
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type ConfirmEmailChange429Response struct {
+	server.ProblemDetails
+}
+
+func (response ConfirmEmailChange429Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmEmailChange500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ConfirmEmailChange500Response) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -255,6 +299,17 @@ func (response ConfirmEmailVerification200Response) VisitConfirmEmailVerificatio
 	return json.NewEncoder(w).Encode(response)
 }
 
+type ConfirmEmailVerification400Response struct {
+	server.BadRequestResponse
+}
+
+func (response ConfirmEmailVerification400Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
 type ConfirmEmailVerification401Response struct {
 	server.UnauthorizedResponse
 }
@@ -266,6 +321,17 @@ func (response ConfirmEmailVerification401Response) VisitConfirmEmailVerificatio
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type ConfirmEmailVerification422Response struct {
+	server.ProblemDetails
+}
+
+func (response ConfirmEmailVerification422Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type ConfirmEmailVerification404Response struct {
 	server.NotFoundResponse
 }
@@ -275,6 +341,28 @@ func (response ConfirmEmailVerification404Response) VisitConfirmEmailVerificatio
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type ConfirmEmailVerification429Response struct {
+	server.ProblemDetails
+}
+
+func (response ConfirmEmailVerification429Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmEmailVerification500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ConfirmEmailVerification500Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -349,6 +437,17 @@ func (response ConfirmPasswordReset204Response) VisitConfirmPasswordResetRespons
 	return nil
 }
 
+type ConfirmPasswordReset400Response struct {
+	server.BadRequestResponse
+}
+
+func (response ConfirmPasswordReset400Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
 type ConfirmPasswordReset401Response struct {
 	server.UnauthorizedResponse
 }
@@ -360,6 +459,17 @@ func (response ConfirmPasswordReset401Response) VisitConfirmPasswordResetRespons
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type ConfirmPasswordReset422Response struct {
+	server.ProblemDetails
+}
+
+func (response ConfirmPasswordReset422Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type ConfirmPasswordReset404Response struct {
 	server.NotFoundResponse
 }
@@ -369,6 +479,28 @@ func (response ConfirmPasswordReset404Response) VisitConfirmPasswordResetRespons
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type ConfirmPasswordReset429Response struct {
+	server.ProblemDetails
+}
+
+func (response ConfirmPasswordReset429Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ConfirmPasswordReset500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ConfirmPasswordReset500Response) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -455,6 +587,17 @@ func (response LinkAccount401Response) VisitLinkAccountResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type LinkAccount422Response struct {
+	server.ProblemDetails
+}
+
+func (response LinkAccount422Response) VisitLinkAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type LinkAccount409Response struct {
 	server.ConflictResponse
 }
@@ -464,6 +607,28 @@ func (response LinkAccount409Response) VisitLinkAccountResponse(w http.ResponseW
 	w.WriteHeader(409)
 
 	return json.NewEncoder(w).Encode(response.ConflictResponse)
+}
+
+type LinkAccount429Response struct {
+	server.ProblemDetails
+}
+
+func (response LinkAccount429Response) VisitLinkAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type LinkAccount500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response LinkAccount500Response) VisitLinkAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -574,6 +739,39 @@ func (response Login401Response) VisitLoginResponse(w http.ResponseWriter) error
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type Login422Response struct {
+	server.ProblemDetails
+}
+
+func (response Login422Response) VisitLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type Login429Response struct {
+	server.ProblemDetails
+}
+
+func (response Login429Response) VisitLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type Login500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response Login500Response) VisitLoginResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // Login handles the POST /auth/login endpoint.
@@ -631,6 +829,17 @@ func (response Logout200Response) VisitLogoutResponse(w http.ResponseWriter) err
 	return json.NewEncoder(w).Encode(response)
 }
 
+type Logout400Response struct {
+	server.BadRequestResponse
+}
+
+func (response Logout400Response) VisitLogoutResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
 type Logout401Response struct {
 	server.UnauthorizedResponse
 }
@@ -640,6 +849,28 @@ func (response Logout401Response) VisitLogoutResponse(w http.ResponseWriter) err
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type Logout429Response struct {
+	server.ProblemDetails
+}
+
+func (response Logout429Response) VisitLogoutResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type Logout500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response Logout500Response) VisitLogoutResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -692,7 +923,6 @@ type LogoutAllResponse interface {
 }
 
 type LogoutAll200Response struct {
-	Count   int    `json:"count"`
 	Message string `json:"message"`
 }
 
@@ -701,6 +931,17 @@ func (response LogoutAll200Response) VisitLogoutAllResponse(w http.ResponseWrite
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type LogoutAll400Response struct {
+	server.BadRequestResponse
+}
+
+func (response LogoutAll400Response) VisitLogoutAllResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
 type LogoutAll401Response struct {
@@ -712,6 +953,28 @@ func (response LogoutAll401Response) VisitLogoutAllResponse(w http.ResponseWrite
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type LogoutAll429Response struct {
+	server.ProblemDetails
+}
+
+func (response LogoutAll429Response) VisitLogoutAllResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type LogoutAll500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response LogoutAll500Response) VisitLogoutAllResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -771,13 +1034,17 @@ type RegisterResponse interface {
 }
 
 type Register201Response struct {
-	ID            uuid.UUID `json:"id"`
-	CreatedAt     time.Time `json:"createdAt"`
-	Email         string    `json:"email"`
-	EmailVerified bool      `json:"emailVerified"`
-	Image         string    `json:"image,omitempty"`
-	Name          string    `json:"name"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID             uuid.UUID `json:"id"`
+	AuthMethod     string    `json:"authMethod,omitempty"`
+	AuthProvider   string    `json:"authProvider,omitempty"`
+	CreatedAt      time.Time `json:"createdAt"`
+	ExpiresAt      time.Time `json:"expiresAt"`
+	IPAddress      string    `json:"ipAddress,omitempty"`
+	OrganizationID uuid.UUID `json:"organizationID,omitempty"`
+	Token          string    `json:"token"`
+	UpdatedAt      time.Time `json:"updatedAt"`
+	UserAgent      string    `json:"userAgent,omitempty"`
+	UserID         uuid.UUID `json:"userID"`
 }
 
 func (response Register201Response) VisitRegisterResponse(w http.ResponseWriter) error {
@@ -798,6 +1065,17 @@ func (response Register400Response) VisitRegisterResponse(w http.ResponseWriter)
 	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
+type Register401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response Register401Response) VisitRegisterResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
 type Register409Response struct {
 	server.ConflictResponse
 }
@@ -807,6 +1085,28 @@ func (response Register409Response) VisitRegisterResponse(w http.ResponseWriter)
 	w.WriteHeader(409)
 
 	return json.NewEncoder(w).Encode(response.ConflictResponse)
+}
+
+type Register429Response struct {
+	server.ProblemDetails
+}
+
+func (response Register429Response) VisitRegisterResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type Register500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response Register500Response) VisitRegisterResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -890,6 +1190,39 @@ func (response RequestEmailChange401Response) VisitRequestEmailChangeResponse(w 
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type RequestEmailChange422Response struct {
+	server.ProblemDetails
+}
+
+func (response RequestEmailChange422Response) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestEmailChange429Response struct {
+	server.ProblemDetails
+}
+
+func (response RequestEmailChange429Response) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestEmailChange500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response RequestEmailChange500Response) VisitRequestEmailChangeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -981,6 +1314,28 @@ func (response RequestEmailVerification401Response) VisitRequestEmailVerificatio
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type RequestEmailVerification429Response struct {
+	server.ProblemDetails
+}
+
+func (response RequestEmailVerification429Response) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestEmailVerification500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response RequestEmailVerification500Response) VisitRequestEmailVerificationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // RequestEmailVerification handles the POST /auth/request-verification endpoint.
@@ -1037,7 +1392,7 @@ type RequestMagicLinkResponse interface {
 }
 
 type RequestMagicLink200Response struct {
-	ExpiresIn int                         `json:"expiresIn,omitempty"`
+	ExpiresIn int32                       `json:"expiresIn,omitempty"`
 	Message   string                      `json:"message,omitempty"`
 	OtpCode   string                      `json:"otpCode,omitempty"`
 	Token     valueobjects.MagicLinkToken `json:"token,omitempty"`
@@ -1059,6 +1414,28 @@ func (response RequestMagicLink400Response) VisitRequestMagicLinkResponse(w http
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type RequestMagicLink401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response RequestMagicLink401Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type RequestMagicLink422Response struct {
+	server.ProblemDetails
+}
+
+func (response RequestMagicLink422Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type RequestMagicLink429Response struct {
@@ -1152,6 +1529,50 @@ func (response RequestPasswordReset400Response) VisitRequestPasswordResetRespons
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type RequestPasswordReset401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response RequestPasswordReset401Response) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type RequestPasswordReset422Response struct {
+	server.ProblemDetails
+}
+
+func (response RequestPasswordReset422Response) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestPasswordReset429Response struct {
+	server.ProblemDetails
+}
+
+func (response RequestPasswordReset429Response) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type RequestPasswordReset500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response RequestPasswordReset500Response) VisitRequestPasswordResetResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -1248,6 +1669,17 @@ func (response VerifyMagicLink401Response) VisitVerifyMagicLinkResponse(w http.R
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type VerifyMagicLink422Response struct {
+	server.ProblemDetails
+}
+
+func (response VerifyMagicLink422Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type VerifyMagicLink404Response struct {
 	server.NotFoundResponse
 }
@@ -1257,6 +1689,17 @@ func (response VerifyMagicLink404Response) VisitVerifyMagicLinkResponse(w http.R
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type VerifyMagicLink429Response struct {
+	server.ProblemDetails
+}
+
+func (response VerifyMagicLink429Response) VisitVerifyMagicLinkResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type VerifyMagicLink500Response struct {
@@ -1339,6 +1782,50 @@ func (response GetAccount404Response) VisitGetAccountResponse(w http.ResponseWri
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type GetAccount401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetAccount401Response) VisitGetAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetAccount422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetAccount422Response) VisitGetAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAccount429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetAccount429Response) VisitGetAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAccount500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetAccount500Response) VisitGetAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // GetAccount handles the GET /auth/accounts/{id} endpoint.
@@ -1408,6 +1895,28 @@ func (response GetSession200Response) VisitGetSessionResponse(w http.ResponseWri
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetSession401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetSession401Response) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetSession422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetSession422Response) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type GetSession404Response struct {
 	server.NotFoundResponse
 }
@@ -1417,6 +1926,28 @@ func (response GetSession404Response) VisitGetSessionResponse(w http.ResponseWri
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type GetSession429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetSession429Response) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSession500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetSession500Response) VisitGetSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -1517,6 +2048,28 @@ func (response OauthAuthorize400Response) VisitOauthAuthorizeResponse(w http.Res
 	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
+type OauthAuthorize401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response OauthAuthorize401Response) VisitOauthAuthorizeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type OauthAuthorize422Response struct {
+	server.ProblemDetails
+}
+
+func (response OauthAuthorize422Response) VisitOauthAuthorizeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type OauthAuthorize404Response struct {
 	server.NotFoundResponse
 }
@@ -1526,6 +2079,28 @@ func (response OauthAuthorize404Response) VisitOauthAuthorizeResponse(w http.Res
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type OauthAuthorize429Response struct {
+	server.ProblemDetails
+}
+
+func (response OauthAuthorize429Response) VisitOauthAuthorizeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type OauthAuthorize500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response OauthAuthorize500Response) VisitOauthAuthorizeResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -1665,6 +2240,17 @@ func (response OauthCallback401Response) VisitOauthCallbackResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type OauthCallback422Response struct {
+	server.ProblemDetails
+}
+
+func (response OauthCallback422Response) VisitOauthCallbackResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type OauthCallback404Response struct {
 	server.NotFoundResponse
 }
@@ -1674,6 +2260,28 @@ func (response OauthCallback404Response) VisitOauthCallbackResponse(w http.Respo
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type OauthCallback429Response struct {
+	server.ProblemDetails
+}
+
+func (response OauthCallback429Response) VisitOauthCallbackResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type OauthCallback500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response OauthCallback500Response) VisitOauthCallbackResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -1754,14 +2362,9 @@ type ListAccountsResponse interface {
 	VisitListAccountsResponse(w http.ResponseWriter) error
 }
 
-// ListAccounts200ResponseMeta defines the meta structure
-type ListAccounts200ResponseMeta struct {
-	Total int `json:"total"`
-}
-
 type ListAccounts200Response struct {
 	Data []entities.Account          `json:"data"`
-	Meta ListAccounts200ResponseMeta `json:"meta"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListAccounts200Response) VisitListAccountsResponse(w http.ResponseWriter) error {
@@ -1769,6 +2372,17 @@ func (response ListAccounts200Response) VisitListAccountsResponse(w http.Respons
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAccounts400Response struct {
+	server.BadRequestResponse
+}
+
+func (response ListAccounts400Response) VisitListAccountsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
 type ListAccounts401Response struct {
@@ -1780,6 +2394,39 @@ func (response ListAccounts401Response) VisitListAccountsResponse(w http.Respons
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListAccounts422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListAccounts422Response) VisitListAccountsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAccounts429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListAccounts429Response) VisitListAccountsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListAccounts500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListAccounts500Response) VisitListAccountsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -1841,14 +2488,9 @@ type ListSessionsResponse interface {
 	VisitListSessionsResponse(w http.ResponseWriter) error
 }
 
-// ListSessions200ResponseMeta defines the meta structure
-type ListSessions200ResponseMeta struct {
-	Total int `json:"total"`
-}
-
 type ListSessions200Response struct {
 	Data []entities.Session          `json:"data"`
-	Meta ListSessions200ResponseMeta `json:"meta"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListSessions200Response) VisitListSessionsResponse(w http.ResponseWriter) error {
@@ -1856,6 +2498,17 @@ func (response ListSessions200Response) VisitListSessionsResponse(w http.Respons
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type ListSessions400Response struct {
+	server.BadRequestResponse
+}
+
+func (response ListSessions400Response) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
 type ListSessions401Response struct {
@@ -1867,6 +2520,39 @@ func (response ListSessions401Response) VisitListSessionsResponse(w http.Respons
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListSessions422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListSessions422Response) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListSessions429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListSessions429Response) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListSessions500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListSessions500Response) VisitListSessionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -1965,6 +2651,61 @@ func (response UpdateAccount404Response) VisitUpdateAccountResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type UpdateAccount400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateAccount400Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdateAccount401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateAccount401Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdateAccount422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateAccount422Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAccount429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateAccount429Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateAccount500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateAccount500Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // UpdateAccount handles the PATCH /auth/accounts/{id} endpoint.
@@ -2048,6 +2789,17 @@ func (response UpdateSession200Response) VisitUpdateSessionResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response)
 }
 
+type UpdateSession400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateSession400Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
 type UpdateSession401Response struct {
 	server.UnauthorizedResponse
 }
@@ -2059,6 +2811,17 @@ func (response UpdateSession401Response) VisitUpdateSessionResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type UpdateSession422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateSession422Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type UpdateSession404Response struct {
 	server.NotFoundResponse
 }
@@ -2068,6 +2831,28 @@ func (response UpdateSession404Response) VisitUpdateSessionResponse(w http.Respo
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type UpdateSession429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateSession429Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateSession500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateSession500Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -2158,6 +2943,50 @@ func (response DeleteAccount404Response) VisitDeleteAccountResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type DeleteAccount401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteAccount401Response) VisitDeleteAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeleteAccount422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteAccount422Response) VisitDeleteAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteAccount429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteAccount429Response) VisitDeleteAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteAccount500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteAccount500Response) VisitDeleteAccountResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // DeleteAccount handles the DELETE /auth/accounts/{id} endpoint.
@@ -2235,6 +3064,17 @@ func (response DeleteSession401Response) VisitDeleteSessionResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type DeleteSession422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteSession422Response) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type DeleteSession404Response struct {
 	server.NotFoundResponse
 }
@@ -2244,6 +3084,28 @@ func (response DeleteSession404Response) VisitDeleteSessionResponse(w http.Respo
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeleteSession429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteSession429Response) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteSession500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteSession500Response) VisitDeleteSessionResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method

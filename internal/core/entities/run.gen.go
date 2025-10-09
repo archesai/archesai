@@ -59,7 +59,7 @@ type Run struct {
 	Error          *string              `json:"error,omitempty" yaml:"error,omitempty"`             // The error message
 	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"`               // The organization this run belongs to
 	PipelineID     uuid.UUID            `json:"pipelineID" yaml:"pipelineID"`                       // The pipeline this run is executing
-	Progress       float64              `json:"progress" yaml:"progress"`                           // The percent progress of the run
+	Progress       int32                `json:"progress" yaml:"progress"`                           // The percent progress of the run (0-100)
 	StartedAt      *time.Time           `json:"startedAt,omitempty" yaml:"startedAt,omitempty"`     // The timestamp when the run started
 	Status         RunStatus            `json:"status" yaml:"status"`
 	ToolID         uuid.UUID            `json:"toolID" yaml:"toolID"`       // The tool being used in this run
@@ -72,14 +72,11 @@ type Run struct {
 func NewRun(
 	organizationID uuid.UUID,
 	pipelineID uuid.UUID,
-	progress float64,
+	progress int32,
 	status RunStatus,
 	toolID uuid.UUID,
 ) (*Run, error) {
 	// Validate required fields
-	if progress < 0 {
-		return nil, fmt.Errorf("Progress cannot be negative")
-	}
 	if !status.IsValid() {
 		return nil, fmt.Errorf("invalid Status: %s", status)
 	}
@@ -132,7 +129,7 @@ func (e *Run) GetPipelineID() uuid.UUID {
 }
 
 // GetProgress returns the Progress
-func (e *Run) GetProgress() float64 {
+func (e *Run) GetProgress() int32 {
 	return e.Progress
 }
 

@@ -39,7 +39,7 @@ func NewPostgres{{ $entity.Name }}Repository(db *pgxpool.Pool) *Postgres{{ $enti
 func (r *Postgres{{ $entity.Name }}Repository) Create(ctx context.Context, entity *entities.{{ $entity.Name }}) (*entities.{{ $entity.Name }}, error) {
 	params := Create{{ $entity.Name }}Params{
 		ID: entity.ID,{{ range $entity.GetSortedProperties }}{{ $field := . }}{{ if and (ne $field.Name "ID") (ne $field.Name "CreatedAt") (ne $field.Name "UpdatedAt")}}{{ if not (contains $entity.XCodegen.Repository.ExcludeFromCreate $field.Name) }}
-		{{ $field.Name }}: {{ if $field.Enum}}string(entity.{{ $field.Name }}){{ else if or (isPointer $field.GoType) (isSlice $field.GoType) }}entity.{{ $field.Name }}{{ else }}entity.{{ $field.Name }}{{ end }},{{ end }}{{ end }}{{ end }}
+		{{ $field.Name }}: {{ if $field.Enum}}{{- $isOptional := stringContains $field.JSONTag ",omitempty" }}{{ if $isOptional }}func() *string { if entity.{{ $field.Name }} == nil { return nil }; s := string(*entity.{{ $field.Name }}); return &s }(){{ else }}string(entity.{{ $field.Name }}){{ end }}{{ else if or (isPointer $field.GoType) (isSlice $field.GoType) }}entity.{{ $field.Name }}{{ else }}entity.{{ $field.Name }}{{ end }},{{ end }}{{ end }}{{ end }}
 	}
 
 	result, err := r.queries.Create{{ $entity.Name }}(ctx, params)
@@ -70,11 +70,11 @@ func (r *Postgres{{ $entity.Name }}Repository) Get(ctx context.Context, id uuid.
 // Update updates an existing {{ lower $entity.Name }}
 func (r *Postgres{{ $entity.Name }}Repository) Update(ctx context.Context, id uuid.UUID, entity *entities.{{ $entity.Name }}) (*entities.{{ $entity.Name }}, error) {
 {{ range $entity.GetSortedProperties }}{{- $field := . }}
-{{ if and (ne $field.Name "ID") (ne $field.Name "CreatedAt") (ne $field.Name "UpdatedAt") }}{{ if not (contains $entity.XCodegen.Repository.ExcludeFromUpdate $field.Name) }}{{ if and $field.Enum (not (isPointer $field.GoType)) }}
+{{ if and (ne $field.Name "ID") (ne $field.Name "CreatedAt") (ne $field.Name "UpdatedAt") }}{{ if not (contains $entity.XCodegen.Repository.ExcludeFromUpdate $field.Name) }}{{- $isOptional := stringContains $field.JSONTag ",omitempty" }}{{ if and $field.Enum (not $isOptional) }}
 	{{camelCase $field.Name}}Str := string(entity.{{ $field.Name }}){{ end }}{{ end }}{{ end }}{{ end }}
 	params := Update{{ $entity.Name }}Params{
 		ID: id,{{ range $entity.GetSortedProperties }}{{- $field := . }}{{ if and (ne $field.Name "ID") (ne $field.Name "CreatedAt") (ne $field.Name "UpdatedAt")}}{{ if not (contains $entity.XCodegen.Repository.ExcludeFromUpdate $field.Name) }}{{- $isOptional := stringContains $field.JSONTag ",omitempty" }}
-		{{ pascalCase $field.Name }}: {{ if $field.Enum}}{{if not (isPointer $field.GoType)}}&{{ camelCase $field.Name }}Str{{ else }}string(entity.{{ $field.Name }}){{ end }}{{ else if or $isOptional (isPointer $field.GoType) (isSlice $field.GoType) }}entity.{{ $field.Name }}{{ else }}&entity.{{ $field.Name }}{{ end }},{{ end }}{{ end }}{{ end }}
+		{{ pascalCase $field.Name }}: {{ if $field.Enum}}{{ if $isOptional }}func() *string { if entity.{{ $field.Name }} == nil { return nil }; s := string(*entity.{{ $field.Name }}); return &s }(){{ else }}&{{ camelCase $field.Name }}Str{{ end }}{{ else if or $isOptional (isPointer $field.GoType) (isSlice $field.GoType) }}entity.{{ $field.Name }}{{ else }}&entity.{{ $field.Name }}{{ end }},{{ end }}{{ end }}{{ end }}
 	}
 
 	result, err := r.queries.Update{{ $entity.Name }}(ctx, params)
@@ -193,7 +193,7 @@ func map{{ $entity.Name }}FromDB(db *{{ $entity.Name }}) *entities.{{ $entity.Na
 		ID:        db.ID,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,{{ range $entity.GetSortedProperties }}{{- $field := . }}{{if ne $field.Name "ID"}}{{if ne $field.Name "CreatedAt"}}{{if ne $field.Name "UpdatedAt"}}
-		{{ $field.Name }}: {{ if $field.Enum }}entities.{{ $entity.Name }}{{ $field.Name }}(db.{{pascalCase $field.Name }}){{ else }}db.{{pascalCase $field.Name}}{{ end }},{{ end }}{{ end }}{{ end }}{{ end }}
+		{{ $field.Name }}: {{ if $field.Enum }}{{- $isOptional := stringContains $field.JSONTag ",omitempty" }}{{ if $isOptional }}func() *entities.{{ $entity.Name }}{{ $field.Name }} { if db.{{pascalCase $field.Name }} == nil { return nil }; v := entities.{{ $entity.Name }}{{ $field.Name }}(*db.{{pascalCase $field.Name }}); return &v }(){{ else }}entities.{{ $entity.Name }}{{ $field.Name }}(db.{{pascalCase $field.Name }}){{ end }}{{ else }}db.{{pascalCase $field.Name}}{{ end }},{{ end }}{{ end }}{{ end }}{{ end }}
 	}
 
 	return result

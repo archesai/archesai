@@ -322,7 +322,7 @@ lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
 	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@go tool vacuum lint ./api/openapi.yaml -d --no-banner --hard-mode
+	@go tool vacuum lint ./api/openapi.yaml --details --no-banner --hard-mode --no-clip --all-results --pipeline-output --no-style
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
 .PHONY: lint-typecheck
@@ -471,7 +471,8 @@ db-migrate-reset: ## Reset database to initial state
 .PHONY: bundle-openapi
 bundle-openapi: ## Bundle OpenAPI into single file
 	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
-	@go tool vacuum bundle ./api/openapi.yaml ./api/openapi.bundled.yaml --base ./api --composed
+	@go tool vacuum bundle ./api/openapi.yaml ./api/openapi.bundled.yaml --base ./api --composed --hard-mode
+	@python3 scripts/resolve-pathitems.py
 	@pnpm prettier --write ./api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
 

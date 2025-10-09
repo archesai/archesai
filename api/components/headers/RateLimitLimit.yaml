@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.2/schema/2025-09-17#/$defs/header
+description: The maximum number of requests allowed per time window
+schema:
+  type: integer
+  example: 1000
+  format: int32
+  minimum: 1
+  maximum: 1000000

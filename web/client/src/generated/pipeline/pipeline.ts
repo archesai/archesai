@@ -28,37 +28,21 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  CreatePipeline201,
-  CreatePipeline400,
-  CreatePipeline401,
+  BadRequestResponse,
   CreatePipelineBody,
   CreatePipelineStep201,
-  CreatePipelineStep400,
-  CreatePipelineStep401,
-  CreatePipelineStep404,
   CreatePipelineStepBody,
-  DeletePipeline200,
-  DeletePipeline404,
-  GetPipeline200,
-  GetPipeline404,
-  GetPipelineExecutionPlan200,
-  GetPipelineExecutionPlan400,
-  GetPipelineExecutionPlan401,
-  GetPipelineExecutionPlan404,
-  GetPipelineSteps200,
-  GetPipelineSteps401,
-  GetPipelineSteps404,
-  ListPipelines200,
-  ListPipelines400,
-  ListPipelines401,
+  InternalServerErrorResponse,
   ListPipelinesParams,
-  UpdatePipeline200,
-  UpdatePipeline404,
-  UpdatePipelineBody,
-  ValidatePipelineExecutionPlan200,
-  ValidatePipelineExecutionPlan400,
-  ValidatePipelineExecutionPlan401,
-  ValidatePipelineExecutionPlan404
+  NotFoundResponse,
+  PipelineExecutionPlanResponseResponse,
+  PipelineListResponseResponse,
+  PipelineResponseResponse,
+  PipelineStepListResponseResponse,
+  TooManyRequestsResponse,
+  UnauthorizedResponse,
+  UnprocessableEntityResponse,
+  UpdatePipelineBody
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -69,6 +53,173 @@ type AwaitedInput<T> = PromiseLike<T> | T;
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+
+/**
+ * List pipelines
+ * @summary List pipelines
+ */
+export const getListPipelinesUrl = (params?: ListPipelinesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
+      return;
+    }
+      
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/pipelines?${stringifiedParams}` : `/pipelines`
+}
+
+export const listPipelines = async (params?: ListPipelinesParams, options?: RequestInit): Promise<PipelineListResponseResponse> => {
+  
+  return customFetch<PipelineListResponseResponse>(getListPipelinesUrl(params),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+
+
+export const getListPipelinesQueryKey = (params?: ListPipelinesParams,) => {
+    return [
+    `/pipelines`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getListPipelinesQueryOptions = <TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPipelinesQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPipelines>>> = ({ signal }) => listPipelines(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListPipelinesQueryResult = NonNullable<Awaited<ReturnType<typeof listPipelines>>>
+export type ListPipelinesQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+
+export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params: undefined |  ListPipelinesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPipelines>>,
+          TError,
+          Awaited<ReturnType<typeof listPipelines>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPipelines>>,
+          TError,
+          Awaited<ReturnType<typeof listPipelines>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List pipelines
+ */
+
+export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListPipelinesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getListPipelinesSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPipelinesQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPipelines>>> = ({ signal }) => listPipelines(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListPipelinesSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listPipelines>>>
+export type ListPipelinesSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+
+export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params: undefined |  ListPipelinesParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List pipelines
+ */
+
+export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListPipelinesSuspenseQueryOptions(params,options)
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
 
 
 
@@ -84,9 +235,9 @@ export const getCreatePipelineUrl = () => {
   return `/pipelines`
 }
 
-export const createPipeline = async (createPipelineBody: CreatePipelineBody, options?: RequestInit): Promise<CreatePipeline201> => {
+export const createPipeline = async (createPipelineBody: CreatePipelineBody, options?: RequestInit): Promise<PipelineResponseResponse> => {
   
-  return customFetch<CreatePipeline201>(getCreatePipelineUrl(),
+  return customFetch<PipelineResponseResponse>(getCreatePipelineUrl(),
   {      
     ...options,
     method: 'POST',
@@ -99,7 +250,7 @@ export const createPipeline = async (createPipelineBody: CreatePipelineBody, opt
 
 
 
-export const getCreatePipelineMutationOptions = <TError = CreatePipeline400 | CreatePipeline401,
+export const getCreatePipelineMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPipeline>>, TError,{data: CreatePipelineBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createPipeline>>, TError,{data: CreatePipelineBody}, TContext> => {
 
@@ -126,12 +277,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreatePipelineMutationResult = NonNullable<Awaited<ReturnType<typeof createPipeline>>>
     export type CreatePipelineMutationBody = CreatePipelineBody
-    export type CreatePipelineMutationError = CreatePipeline400 | CreatePipeline401
+    export type CreatePipelineMutationError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Create a pipeline
  */
-export const useCreatePipeline = <TError = CreatePipeline400 | CreatePipeline401,
+export const useCreatePipeline = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPipeline>>, TError,{data: CreatePipelineBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createPipeline>>,
@@ -141,244 +292,6 @@ export const useCreatePipeline = <TError = CreatePipeline400 | CreatePipeline401
       > => {
 
       const mutationOptions = getCreatePipelineMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
- * List pipelines
- * @summary List pipelines
- */
-export const getListPipelinesUrl = (params?: ListPipelinesParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["sort"];
-
-    if (Array.isArray(value) && explodeParameters.includes(key)) {
-      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
-      return;
-    }
-      
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/pipelines?${stringifiedParams}` : `/pipelines`
-}
-
-export const listPipelines = async (params?: ListPipelinesParams, options?: RequestInit): Promise<ListPipelines200> => {
-  
-  return customFetch<ListPipelines200>(getListPipelinesUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getListPipelinesQueryKey = (params?: ListPipelinesParams,) => {
-    return [
-    `/pipelines`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getListPipelinesQueryOptions = <TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListPipelinesQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPipelines>>> = ({ signal }) => listPipelines(params, { signal, ...requestOptions });
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListPipelinesQueryResult = NonNullable<Awaited<ReturnType<typeof listPipelines>>>
-export type ListPipelinesQueryError = ListPipelines400 | ListPipelines401
-
-
-export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(
- params: undefined |  ListPipelinesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listPipelines>>,
-          TError,
-          Awaited<ReturnType<typeof listPipelines>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(
- params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listPipelines>>,
-          TError,
-          Awaited<ReturnType<typeof listPipelines>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(
- params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary List pipelines
- */
-
-export function useListPipelines<TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(
- params?: ListPipelinesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListPipelinesQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-export const getListPipelinesSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListPipelinesQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPipelines>>> = ({ signal }) => listPipelines(params, { signal, ...requestOptions });
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListPipelinesSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listPipelines>>>
-export type ListPipelinesSuspenseQueryError = ListPipelines400 | ListPipelines401
-
-
-export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(
- params: undefined |  ListPipelinesParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(
- params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(
- params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary List pipelines
- */
-
-export function useListPipelinesSuspense<TData = Awaited<ReturnType<typeof listPipelines>>, TError = ListPipelines400 | ListPipelines401>(
- params?: ListPipelinesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listPipelines>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListPipelinesSuspenseQueryOptions(params,options)
-
-  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-/**
- * Delete a pipeline
- * @summary Delete a pipeline
- */
-export const getDeletePipelineUrl = (id: string | undefined | null,) => {
-
-
-  
-
-  return `/pipelines/${id}`
-}
-
-export const deletePipeline = async (id: string | undefined | null, options?: RequestInit): Promise<DeletePipeline200> => {
-  
-  return customFetch<DeletePipeline200>(getDeletePipelineUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
-
-
-export const getDeletePipelineMutationOptions = <TError = DeletePipeline404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePipeline>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deletePipeline>>, TError,{id: string | undefined | null}, TContext> => {
-
-const mutationKey = ['deletePipeline'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePipeline>>, {id: string | undefined | null}> = (props) => {
-          const {id} = props ?? {};
-
-          return  deletePipeline(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeletePipelineMutationResult = NonNullable<Awaited<ReturnType<typeof deletePipeline>>>
-    
-    export type DeletePipelineMutationError = DeletePipeline404
-
-    /**
- * @summary Delete a pipeline
- */
-export const useDeletePipeline = <TError = DeletePipeline404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePipeline>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deletePipeline>>,
-        TError,
-        {id: string | undefined | null},
-        TContext
-      > => {
-
-      const mutationOptions = getDeletePipelineMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -394,9 +307,9 @@ export const getGetPipelineUrl = (id: string | undefined | null,) => {
   return `/pipelines/${id}`
 }
 
-export const getPipeline = async (id: string | undefined | null, options?: RequestInit): Promise<GetPipeline200> => {
+export const getPipeline = async (id: string | undefined | null, options?: RequestInit): Promise<PipelineResponseResponse> => {
   
-  return customFetch<GetPipeline200>(getGetPipelineUrl(id),
+  return customFetch<PipelineResponseResponse>(getGetPipelineUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -416,7 +329,7 @@ export const getGetPipelineQueryKey = (id?: string | undefined | null,) => {
     }
 
     
-export const getGetPipelineQueryOptions = <TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetPipelineQueryOptions = <TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -435,10 +348,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetPipelineQueryResult = NonNullable<Awaited<ReturnType<typeof getPipeline>>>
-export type GetPipelineQueryError = GetPipeline404
+export type GetPipelineQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(
+export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPipeline>>,
@@ -448,7 +361,7 @@ export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, 
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(
+export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPipeline>>,
@@ -458,7 +371,7 @@ export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, 
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(
+export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -466,7 +379,7 @@ export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, 
  * @summary Find a pipeline
  */
 
-export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(
+export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -482,7 +395,7 @@ export function useGetPipeline<TData = Awaited<ReturnType<typeof getPipeline>>, 
 
 
 
-export const getGetPipelineSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetPipelineSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -501,18 +414,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetPipelineSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getPipeline>>>
-export type GetPipelineSuspenseQueryError = GetPipeline404
+export type GetPipelineSuspenseQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(
+export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(
+export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(
+export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -520,7 +433,7 @@ export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipe
  * @summary Find a pipeline
  */
 
-export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = GetPipeline404>(
+export function useGetPipelineSuspense<TData = Awaited<ReturnType<typeof getPipeline>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipeline>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -549,9 +462,9 @@ export const getUpdatePipelineUrl = (id: string | undefined | null,) => {
 }
 
 export const updatePipeline = async (id: string | undefined | null,
-    updatePipelineBody: UpdatePipelineBody, options?: RequestInit): Promise<UpdatePipeline200> => {
+    updatePipelineBody: UpdatePipelineBody, options?: RequestInit): Promise<PipelineResponseResponse> => {
   
-  return customFetch<UpdatePipeline200>(getUpdatePipelineUrl(id),
+  return customFetch<PipelineResponseResponse>(getUpdatePipelineUrl(id),
   {      
     ...options,
     method: 'PATCH',
@@ -564,7 +477,7 @@ export const updatePipeline = async (id: string | undefined | null,
 
 
 
-export const getUpdatePipelineMutationOptions = <TError = UpdatePipeline404,
+export const getUpdatePipelineMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePipeline>>, TError,{id: string | undefined | null;data: UpdatePipelineBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updatePipeline>>, TError,{id: string | undefined | null;data: UpdatePipelineBody}, TContext> => {
 
@@ -591,12 +504,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdatePipelineMutationResult = NonNullable<Awaited<ReturnType<typeof updatePipeline>>>
     export type UpdatePipelineMutationBody = UpdatePipelineBody
-    export type UpdatePipelineMutationError = UpdatePipeline404
+    export type UpdatePipelineMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Update a pipeline
  */
-export const useUpdatePipeline = <TError = UpdatePipeline404,
+export const useUpdatePipeline = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePipeline>>, TError,{id: string | undefined | null;data: UpdatePipelineBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updatePipeline>>,
@@ -606,6 +519,77 @@ export const useUpdatePipeline = <TError = UpdatePipeline404,
       > => {
 
       const mutationOptions = getUpdatePipelineMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Delete a pipeline
+ * @summary Delete a pipeline
+ */
+export const getDeletePipelineUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/pipelines/${id}`
+}
+
+export const deletePipeline = async (id: string | undefined | null, options?: RequestInit): Promise<PipelineResponseResponse> => {
+  
+  return customFetch<PipelineResponseResponse>(getDeletePipelineUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
+    
+    
+  }
+);}
+
+
+
+
+export const getDeletePipelineMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePipeline>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deletePipeline>>, TError,{id: string | undefined | null}, TContext> => {
+
+const mutationKey = ['deletePipeline'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePipeline>>, {id: string | undefined | null}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deletePipeline(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeletePipelineMutationResult = NonNullable<Awaited<ReturnType<typeof deletePipeline>>>
+    
+    export type DeletePipelineMutationError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Delete a pipeline
+ */
+export const useDeletePipeline = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePipeline>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deletePipeline>>,
+        TError,
+        {id: string | undefined | null},
+        TContext
+      > => {
+
+      const mutationOptions = getDeletePipelineMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -621,9 +605,9 @@ export const getGetPipelineStepsUrl = (id: string | undefined | null,) => {
   return `/pipelines/${id}/steps`
 }
 
-export const getPipelineSteps = async (id: string | undefined | null, options?: RequestInit): Promise<GetPipelineSteps200> => {
+export const getPipelineSteps = async (id: string | undefined | null, options?: RequestInit): Promise<PipelineStepListResponseResponse> => {
   
-  return customFetch<GetPipelineSteps200>(getGetPipelineStepsUrl(id),
+  return customFetch<PipelineStepListResponseResponse>(getGetPipelineStepsUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -643,7 +627,7 @@ export const getGetPipelineStepsQueryKey = (id?: string | undefined | null,) => 
     }
 
     
-export const getGetPipelineStepsQueryOptions = <TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetPipelineStepsQueryOptions = <TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -662,10 +646,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetPipelineStepsQueryResult = NonNullable<Awaited<ReturnType<typeof getPipelineSteps>>>
-export type GetPipelineStepsQueryError = GetPipelineSteps401 | GetPipelineSteps404
+export type GetPipelineStepsQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(
+export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPipelineSteps>>,
@@ -675,7 +659,7 @@ export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelin
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(
+export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPipelineSteps>>,
@@ -685,7 +669,7 @@ export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelin
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(
+export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -693,7 +677,7 @@ export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelin
  * @summary Get all steps for a pipeline
  */
 
-export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(
+export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -709,7 +693,7 @@ export function useGetPipelineSteps<TData = Awaited<ReturnType<typeof getPipelin
 
 
 
-export const getGetPipelineStepsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetPipelineStepsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -728,18 +712,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetPipelineStepsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getPipelineSteps>>>
-export type GetPipelineStepsSuspenseQueryError = GetPipelineSteps401 | GetPipelineSteps404
+export type GetPipelineStepsSuspenseQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetPipelineStepsSuspense<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(
+export function useGetPipelineStepsSuspense<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineStepsSuspense<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(
+export function useGetPipelineStepsSuspense<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineStepsSuspense<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(
+export function useGetPipelineStepsSuspense<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -747,7 +731,7 @@ export function useGetPipelineStepsSuspense<TData = Awaited<ReturnType<typeof ge
  * @summary Get all steps for a pipeline
  */
 
-export function useGetPipelineStepsSuspense<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = GetPipelineSteps401 | GetPipelineSteps404>(
+export function useGetPipelineStepsSuspense<TData = Awaited<ReturnType<typeof getPipelineSteps>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineSteps>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -791,7 +775,7 @@ export const createPipelineStep = async (id: string | undefined | null,
 
 
 
-export const getCreatePipelineStepMutationOptions = <TError = CreatePipelineStep400 | CreatePipelineStep401 | CreatePipelineStep404,
+export const getCreatePipelineStepMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPipelineStep>>, TError,{id: string | undefined | null;data: CreatePipelineStepBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createPipelineStep>>, TError,{id: string | undefined | null;data: CreatePipelineStepBody}, TContext> => {
 
@@ -818,12 +802,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreatePipelineStepMutationResult = NonNullable<Awaited<ReturnType<typeof createPipelineStep>>>
     export type CreatePipelineStepMutationBody = CreatePipelineStepBody
-    export type CreatePipelineStepMutationError = CreatePipelineStep400 | CreatePipelineStep401 | CreatePipelineStep404
+    export type CreatePipelineStepMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Add a step to a pipeline
  */
-export const useCreatePipelineStep = <TError = CreatePipelineStep400 | CreatePipelineStep401 | CreatePipelineStep404,
+export const useCreatePipelineStep = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPipelineStep>>, TError,{id: string | undefined | null;data: CreatePipelineStepBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createPipelineStep>>,
@@ -848,9 +832,9 @@ export const getGetPipelineExecutionPlanUrl = (id: string | undefined | null,) =
   return `/pipelines/${id}/execution-plans`
 }
 
-export const getPipelineExecutionPlan = async (id: string | undefined | null, options?: RequestInit): Promise<GetPipelineExecutionPlan200> => {
+export const getPipelineExecutionPlan = async (id: string | undefined | null, options?: RequestInit): Promise<PipelineExecutionPlanResponseResponse> => {
   
-  return customFetch<GetPipelineExecutionPlan200>(getGetPipelineExecutionPlanUrl(id),
+  return customFetch<PipelineExecutionPlanResponseResponse>(getGetPipelineExecutionPlanUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -870,7 +854,7 @@ export const getGetPipelineExecutionPlanQueryKey = (id?: string | undefined | nu
     }
 
     
-export const getGetPipelineExecutionPlanQueryOptions = <TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetPipelineExecutionPlanQueryOptions = <TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -889,10 +873,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetPipelineExecutionPlanQueryResult = NonNullable<Awaited<ReturnType<typeof getPipelineExecutionPlan>>>
-export type GetPipelineExecutionPlanQueryError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404
+export type GetPipelineExecutionPlanQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(
+export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPipelineExecutionPlan>>,
@@ -902,7 +886,7 @@ export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof ge
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(
+export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPipelineExecutionPlan>>,
@@ -912,7 +896,7 @@ export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof ge
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(
+export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -920,7 +904,7 @@ export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof ge
  * @summary Get execution plan for a pipeline
  */
 
-export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(
+export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -936,7 +920,7 @@ export function useGetPipelineExecutionPlan<TData = Awaited<ReturnType<typeof ge
 
 
 
-export const getGetPipelineExecutionPlanSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetPipelineExecutionPlanSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -955,18 +939,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetPipelineExecutionPlanSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getPipelineExecutionPlan>>>
-export type GetPipelineExecutionPlanSuspenseQueryError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404
+export type GetPipelineExecutionPlanSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetPipelineExecutionPlanSuspense<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(
+export function useGetPipelineExecutionPlanSuspense<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineExecutionPlanSuspense<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(
+export function useGetPipelineExecutionPlanSuspense<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPipelineExecutionPlanSuspense<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(
+export function useGetPipelineExecutionPlanSuspense<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -974,7 +958,7 @@ export function useGetPipelineExecutionPlanSuspense<TData = Awaited<ReturnType<t
  * @summary Get execution plan for a pipeline
  */
 
-export function useGetPipelineExecutionPlanSuspense<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = GetPipelineExecutionPlan400 | GetPipelineExecutionPlan401 | GetPipelineExecutionPlan404>(
+export function useGetPipelineExecutionPlanSuspense<TData = Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPipelineExecutionPlan>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1002,9 +986,9 @@ export const getValidatePipelineExecutionPlanUrl = (id: string | undefined | nul
   return `/pipelines/${id}/execution-plans`
 }
 
-export const validatePipelineExecutionPlan = async (id: string | undefined | null, options?: RequestInit): Promise<ValidatePipelineExecutionPlan200> => {
+export const validatePipelineExecutionPlan = async (id: string | undefined | null, options?: RequestInit): Promise<PipelineResponseResponse> => {
   
-  return customFetch<ValidatePipelineExecutionPlan200>(getValidatePipelineExecutionPlanUrl(id),
+  return customFetch<PipelineResponseResponse>(getValidatePipelineExecutionPlanUrl(id),
   {      
     ...options,
     method: 'POST'
@@ -1016,7 +1000,7 @@ export const validatePipelineExecutionPlan = async (id: string | undefined | nul
 
 
 
-export const getValidatePipelineExecutionPlanMutationOptions = <TError = ValidatePipelineExecutionPlan400 | ValidatePipelineExecutionPlan401 | ValidatePipelineExecutionPlan404,
+export const getValidatePipelineExecutionPlanMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validatePipelineExecutionPlan>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof validatePipelineExecutionPlan>>, TError,{id: string | undefined | null}, TContext> => {
 
@@ -1043,12 +1027,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type ValidatePipelineExecutionPlanMutationResult = NonNullable<Awaited<ReturnType<typeof validatePipelineExecutionPlan>>>
     
-    export type ValidatePipelineExecutionPlanMutationError = ValidatePipelineExecutionPlan400 | ValidatePipelineExecutionPlan401 | ValidatePipelineExecutionPlan404
+    export type ValidatePipelineExecutionPlanMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Validate a pipeline configuration
  */
-export const useValidatePipelineExecutionPlan = <TError = ValidatePipelineExecutionPlan400 | ValidatePipelineExecutionPlan401 | ValidatePipelineExecutionPlan404,
+export const useValidatePipelineExecutionPlan = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validatePipelineExecutionPlan>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof validatePipelineExecutionPlan>>,

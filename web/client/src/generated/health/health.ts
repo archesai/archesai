@@ -24,8 +24,11 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  GetHealth200,
-  GetHealth400
+  BadRequestResponse,
+  HealthResponseResponse,
+  InternalServerErrorResponse,
+  TooManyRequestsResponse,
+  UnauthorizedResponse
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -51,9 +54,9 @@ export const getGetHealthUrl = () => {
   return `/health`
 }
 
-export const getHealth = async ( options?: RequestInit): Promise<GetHealth200> => {
+export const getHealth = async ( options?: RequestInit): Promise<HealthResponseResponse> => {
   
-  return customFetch<GetHealth200>(getGetHealthUrl(),
+  return customFetch<HealthResponseResponse>(getGetHealthUrl(),
   {      
     ...options,
     method: 'GET'
@@ -73,7 +76,7 @@ export const getGetHealthQueryKey = () => {
     }
 
     
-export const getGetHealthQueryOptions = <TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetHealthQueryOptions = <TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -92,10 +95,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetHealthQueryResult = NonNullable<Awaited<ReturnType<typeof getHealth>>>
-export type GetHealthQueryError = GetHealth400
+export type GetHealthQueryError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>(
+export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getHealth>>,
@@ -105,7 +108,7 @@ export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TErr
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>(
+export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getHealth>>,
@@ -115,7 +118,7 @@ export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TErr
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>(
+export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -123,7 +126,7 @@ export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TErr
  * @summary Get health status
  */
 
-export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>(
+export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -139,7 +142,7 @@ export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TErr
 
 
 
-export const getGetHealthSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>( options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetHealthSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>( options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -158,18 +161,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetHealthSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getHealth>>>
-export type GetHealthSuspenseQueryError = GetHealth400
+export type GetHealthSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>(
+export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>(
+export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>(
+export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -177,7 +180,7 @@ export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth
  * @summary Get health status
  */
 
-export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth>>, TError = GetHealth400>(
+export function useGetHealthSuspense<TData = Awaited<ReturnType<typeof getHealth>>, TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {

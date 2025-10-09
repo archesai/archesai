@@ -10,11 +10,55 @@ import (
 	"github.com/google/uuid"
 )
 
+// SessionAuthProvider represents the enumeration of valid values for AuthProvider
+type SessionAuthProvider string
+
+// Valid AuthProvider values
+const (
+	SessionAuthProviderLocal     SessionAuthProvider = "local"
+	SessionAuthProviderGoogle    SessionAuthProvider = "google"
+	SessionAuthProviderGithub    SessionAuthProvider = "github"
+	SessionAuthProviderMicrosoft SessionAuthProvider = "microsoft"
+	SessionAuthProviderApple     SessionAuthProvider = "apple"
+)
+
+// String returns the string representation
+func (e SessionAuthProvider) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e SessionAuthProvider) IsValid() bool {
+	switch e {
+	case SessionAuthProviderLocal:
+		return true
+	case SessionAuthProviderGoogle:
+		return true
+	case SessionAuthProviderGithub:
+		return true
+	case SessionAuthProviderMicrosoft:
+		return true
+	case SessionAuthProviderApple:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseSessionAuthProvider parses a string into the enum type
+func ParseSessionAuthProvider(s string) (SessionAuthProvider, error) {
+	v := SessionAuthProvider(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid AuthProvider: %s", s)
+	}
+	return v, nil
+}
+
 // Session represents Schema for Session entity
 type Session struct {
 	ID             uuid.UUID            `json:"id" yaml:"id"`                                             // Unique identifier for the resource
 	AuthMethod     *string              `json:"authMethod,omitempty" yaml:"authMethod,omitempty"`         // The authentication method used (magic_link, oauth_google, oauth_github, etc.)
-	AuthProvider   *string              `json:"authProvider,omitempty" yaml:"authProvider,omitempty"`     // The authentication provider (google, github, microsoft, local)
+	AuthProvider   *SessionAuthProvider `json:"authProvider,omitempty" yaml:"authProvider,omitempty"`     // The authentication provider (google, github, microsoft, local)
 	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`                               // The date and time when the resource was created
 	ExpiresAt      time.Time            `json:"expiresAt" yaml:"expiresAt"`                               // The expiration date of the session
 	IPAddress      *string              `json:"ipAddress,omitempty" yaml:"ipAddress,omitempty"`           // The IP address of the session
@@ -64,8 +108,11 @@ func (e *Session) GetAuthMethod() *string {
 }
 
 // GetAuthProvider returns the AuthProvider
-func (e *Session) GetAuthProvider() *string {
-	return e.AuthProvider
+func (e *Session) GetAuthProvider() string {
+	if e.AuthProvider == nil {
+		return ""
+	}
+	return string(*e.AuthProvider)
 }
 
 // GetCreatedAt returns the CreatedAt

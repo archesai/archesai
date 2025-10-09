@@ -39,22 +39,22 @@ type MagicLinkAuthConfigDeliveryMethodsWebhook struct {
 
 // MagicLinkAuthConfigRateLimit represents Rate limiting configuration
 type MagicLinkAuthConfigRateLimit struct {
-	MaxAttempts   *int `json:"maxAttempts,omitempty" yaml:"maxAttempts,omitempty"`     // Maximum number of attempts within window
-	WindowMinutes *int `json:"windowMinutes,omitempty" yaml:"windowMinutes,omitempty"` // Time window in minutes
+	MaxAttempts   *int32 `json:"maxAttempts,omitempty" yaml:"maxAttempts,omitempty"`     // Maximum number of attempts within window
+	WindowMinutes *int32 `json:"windowMinutes,omitempty" yaml:"windowMinutes,omitempty"` // Time window in minutes
 }
 
 // MagicLinkAuthConfig represents Magic link authentication configuration
 type MagicLinkAuthConfig struct {
 	DeliveryMethods *MagicLinkAuthConfigDeliveryMethods `json:"deliveryMethods,omitempty" yaml:"deliveryMethods,omitempty"` // Available delivery methods
 	Enabled         bool                                `json:"enabled" yaml:"enabled"`                                     // Enable magic link authentication
-	OtpLength       *int                                `json:"otpLength,omitempty" yaml:"otpLength,omitempty"`             // Length of OTP code
+	OtpLength       *int32                              `json:"otpLength,omitempty" yaml:"otpLength,omitempty"`             // Length of OTP code
 	RateLimit       *MagicLinkAuthConfigRateLimit       `json:"rateLimit,omitempty" yaml:"rateLimit,omitempty"`             // Rate limiting configuration
-	TokenExpiry     *int                                `json:"tokenExpiry,omitempty" yaml:"tokenExpiry,omitempty"`         // Token expiry duration in minutes
+	TokenExpiry     *int32                              `json:"tokenExpiry,omitempty" yaml:"tokenExpiry,omitempty"`         // Token expiry duration in minutes
 }
 
 // NewMagicLinkAuthConfig creates a new immutable MagicLinkAuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewMagicLinkAuthConfig(deliveryMethods *MagicLinkAuthConfigDeliveryMethods, enabled bool, otpLength *int, rateLimit *MagicLinkAuthConfigRateLimit, tokenExpiry *int) (MagicLinkAuthConfig, error) {
+func NewMagicLinkAuthConfig(deliveryMethods *MagicLinkAuthConfigDeliveryMethods, enabled bool, otpLength *int32, rateLimit *MagicLinkAuthConfigRateLimit, tokenExpiry *int32) (MagicLinkAuthConfig, error) {
 	// Validate required fields
 	return MagicLinkAuthConfig{
 		DeliveryMethods: deliveryMethods,
@@ -85,7 +85,7 @@ func (v MagicLinkAuthConfig) GetEnabled() bool {
 
 // GetOtpLength returns the OtpLength value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v MagicLinkAuthConfig) GetOtpLength() *int {
+func (v MagicLinkAuthConfig) GetOtpLength() *int32 {
 	return v.OtpLength
 }
 
@@ -97,7 +97,7 @@ func (v MagicLinkAuthConfig) GetRateLimit() *MagicLinkAuthConfigRateLimit {
 
 // GetTokenExpiry returns the TokenExpiry value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v MagicLinkAuthConfig) GetTokenExpiry() *int {
+func (v MagicLinkAuthConfig) GetTokenExpiry() *int32 {
 	return v.TokenExpiry
 }
 

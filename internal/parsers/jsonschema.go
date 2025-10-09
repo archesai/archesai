@@ -2,14 +2,17 @@
 package parsers
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/pb33f/libopenapi"
-	"github.com/pb33f/libopenapi/datamodel"
 	"github.com/pb33f/libopenapi/datamodel/high/base"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
+	"github.com/pb33f/libopenapi/datamodel/low"
+	lowbase "github.com/pb33f/libopenapi/datamodel/low/base"
+	"github.com/pb33f/libopenapi/index"
+	"go.yaml.in/yaml/v4"
 )
 
 const (
@@ -40,37 +43,46 @@ func (p *JSONSchemaParser) Parse(path string) (*base.Schema, error) {
 		return nil, fmt.Errorf("failed to read schema file %s: %w", path, err)
 	}
 
-	config := &datamodel.DocumentConfiguration{
-		AllowFileReferences:   true,
-		AllowRemoteReferences: true,
+	// Parse as YAML node first
+	var rootNode yaml.Node
+	if err := yaml.Unmarshal(specBytes, &rootNode); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal schema: %w", err)
 	}
 
-	doc, err := libopenapi.NewDocumentWithConfiguration(specBytes, config)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse schema: %w", err)
+	// Create an index for the schema
+	idx := index.NewSpecIndex(&rootNode)
+
+	// Build low-level schema proxy
+	lowProxy := &lowbase.SchemaProxy{}
+	ctx := context.Background()
+
+	// The rootNode is a Document node, we need to get to the actual schema content
+	var schemaNode *yaml.Node
+	if rootNode.Kind == yaml.DocumentNode && len(rootNode.Content) > 0 {
+		schemaNode = rootNode.Content[0]
+	} else {
+		schemaNode = &rootNode
 	}
 
-	v3Model, err := doc.BuildV3Model()
-	if err != nil {
-		return nil, fmt.Errorf("failed to build v3 model: %w", err)
+	if err := lowProxy.Build(ctx, nil, schemaNode, idx); err != nil {
+		return nil, fmt.Errorf("failed to build schema proxy: %w", err)
 	}
 
-	// For standalone schema files, we'd need to extract the schema differently
-	// This is a placeholder - may need adjustment based on actual use case
-	if v3Model == nil || v3Model.Model.Components == nil ||
-		v3Model.Model.Components.Schemas == nil {
-		return nil, fmt.Errorf("no schemas found in file")
+	// Create a NodeReference wrapper for the low-level schema proxy
+	nodeRef := &low.NodeReference[*lowbase.SchemaProxy]{
+		Value:     lowProxy,
+		ValueNode: schemaNode,
+		Context:   ctx,
 	}
 
-	// Store the parsed document
-	p.openAPIDoc = &v3Model.Model
-
-	// Return the first schema found
-	for pair := v3Model.Model.Components.Schemas.First(); pair != nil; pair = pair.Next() {
-		return pair.Value().Schema(), nil
+	// Convert to high-level schema
+	highProxy := base.NewSchemaProxy(nodeRef)
+	schema := highProxy.Schema()
+	if schema == nil {
+		return nil, fmt.Errorf("failed to build high-level schema")
 	}
 
-	return nil, fmt.Errorf("no schema found")
+	return schema, nil
 }
 
 // ExtractSchema processes a single schema with full context
@@ -221,6 +233,28 @@ func (p *JSONSchemaParser) processObjectType(
 	}
 }
 
+// processArrayItemReference resolves array item references and returns a SchemaDef
+func (p *JSONSchemaParser) processArrayItemReference(
+	refString, currentSchemaType string,
+) *SchemaDef {
+	if !strings.HasPrefix(refString, "#/components/schemas/") {
+		return nil
+	}
+
+	schemaName := strings.TrimPrefix(refString, "#/components/schemas/")
+	schemaName = strings.TrimSuffix(schemaName, ".yaml")
+
+	// Resolve the reference to get type info
+	goType, schemaType, format := p.resolvePropertyReference(schemaName, currentSchemaType)
+
+	return &SchemaDef{
+		Name:   schemaName,
+		GoType: goType,
+		Type:   schemaType,
+		Format: format,
+	}
+}
+
 // processArrayType handles array type schemas
 func (p *JSONSchemaParser) processArrayType(
 	schema *base.Schema,
@@ -231,11 +265,20 @@ func (p *JSONSchemaParser) processArrayType(
 		return
 	}
 
-	itemSchema := schema.Items.A.Schema()
+	itemProxy := schema.Items.A
+	itemSchema := itemProxy.Schema()
 	if itemSchema == nil {
 		return
 	}
 
+	// Check if the item is a reference to another schema
+	if refString := itemProxy.GetReference(); refString != "" {
+		// Handle reference - extract the referenced type name
+		result.Items = p.processArrayItemReference(refString, currentSchemaType)
+		return
+	}
+
+	// For non-reference items (inline schemas), create a nested type name
 	itemName := ""
 	if name != "" {
 		itemName = name + "Item"

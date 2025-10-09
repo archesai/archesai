@@ -7,24 +7,65 @@ import (
 	"strings"
 )
 
+// APIConfigEnvironment represents the enumeration of valid values for Environment
+type APIConfigEnvironment string
+
+// Valid Environment values
+const (
+	APIConfigEnvironmentDevelopment APIConfigEnvironment = "development"
+	APIConfigEnvironmentStaging     APIConfigEnvironment = "staging"
+	APIConfigEnvironmentProduction  APIConfigEnvironment = "production"
+)
+
+// String returns the string representation
+func (e APIConfigEnvironment) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e APIConfigEnvironment) IsValid() bool {
+	switch e {
+	case APIConfigEnvironmentDevelopment:
+		return true
+	case APIConfigEnvironmentStaging:
+		return true
+	case APIConfigEnvironmentProduction:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseAPIConfigEnvironment parses a string into the enum type
+func ParseAPIConfigEnvironment(s string) (APIConfigEnvironment, error) {
+	v := APIConfigEnvironment(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Environment: %s", s)
+	}
+	return v, nil
+}
+
 // APIConfig represents Configuration schema for the API server
 type APIConfig struct {
-	Cors        string          `json:"cors" yaml:"cors"` // A comma-separated list of allowed origins for CORS requests
-	Docs        bool            `json:"docs" yaml:"docs"` // Enable or disable API documentation
-	Email       *EmailConfig    `json:"email,omitempty" yaml:"email,omitempty"`
-	Environment string          `json:"environment" yaml:"environment"` // Deployment environment (development, staging, production)
-	Host        string          `json:"host" yaml:"host"`               // The host address on which the API server will listen
-	Image       *ImageConfig    `json:"image,omitempty" yaml:"image,omitempty"`
-	Port        float64         `json:"port" yaml:"port"` // The port on which the API server will listen
-	Resources   *ResourceConfig `json:"resources,omitempty" yaml:"resources,omitempty"`
-	URL         *string         `json:"url,omitempty" yaml:"url,omitempty"` // The public URL for the API
-	Validation  bool            `json:"validation" yaml:"validation"`       // Enable or disable request validation
+	Cors        string               `json:"cors" yaml:"cors"` // A comma-separated list of allowed origins for CORS requests
+	Docs        bool                 `json:"docs" yaml:"docs"` // Enable or disable API documentation
+	Email       *EmailConfig         `json:"email,omitempty" yaml:"email,omitempty"`
+	Environment APIConfigEnvironment `json:"environment" yaml:"environment"` // Deployment environment (development, staging, production)
+	Host        string               `json:"host" yaml:"host"`               // The host address on which the API server will listen
+	Image       *ImageConfig         `json:"image,omitempty" yaml:"image,omitempty"`
+	Port        int32                `json:"port" yaml:"port"` // The port on which the API server will listen
+	Resources   *ResourceConfig      `json:"resources,omitempty" yaml:"resources,omitempty"`
+	URL         *string              `json:"url,omitempty" yaml:"url,omitempty"` // The public URL for the API
+	Validation  bool                 `json:"validation" yaml:"validation"`       // Enable or disable request validation
 }
 
 // NewAPIConfig creates a new immutable APIConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewAPIConfig(cors string, docs bool, email *EmailConfig, environment string, host string, image *ImageConfig, port float64, resources *ResourceConfig, url *string, validation bool) (APIConfig, error) {
+func NewAPIConfig(cors string, docs bool, email *EmailConfig, environment APIConfigEnvironment, host string, image *ImageConfig, port int32, resources *ResourceConfig, url *string, validation bool) (APIConfig, error) {
 	// Validate required fields
+	if !environment.IsValid() {
+		return APIConfig{}, fmt.Errorf("invalid Environment: %s", environment)
+	}
 	return APIConfig{
 		Cors:        cors,
 		Docs:        docs,
@@ -65,7 +106,7 @@ func (v APIConfig) GetEmail() *EmailConfig {
 
 // GetEnvironment returns the Environment value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v APIConfig) GetEnvironment() string {
+func (v APIConfig) GetEnvironment() APIConfigEnvironment {
 	return v.Environment
 }
 
@@ -83,7 +124,7 @@ func (v APIConfig) GetImage() *ImageConfig {
 
 // GetPort returns the Port value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v APIConfig) GetPort() float64 {
+func (v APIConfig) GetPort() int32 {
 	return v.Port
 }
 
@@ -108,6 +149,9 @@ func (v APIConfig) GetValidation() bool {
 // Validate validates the APIConfig value object.
 // Returns an error if any field fails validation.
 func (v APIConfig) Validate() error {
+	if !v.Environment.IsValid() {
+		return fmt.Errorf("invalid Environment: %s", v.Environment)
+	}
 	return nil
 }
 

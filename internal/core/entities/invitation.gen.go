@@ -48,6 +48,47 @@ func ParseInvitationRole(s string) (InvitationRole, error) {
 	return v, nil
 }
 
+// InvitationStatus represents the enumeration of valid values for Status
+type InvitationStatus string
+
+// Valid Status values
+const (
+	InvitationStatusPending  InvitationStatus = "pending"
+	InvitationStatusAccepted InvitationStatus = "accepted"
+	InvitationStatusDeclined InvitationStatus = "declined"
+	InvitationStatusExpired  InvitationStatus = "expired"
+)
+
+// String returns the string representation
+func (e InvitationStatus) String() string {
+	return string(e)
+}
+
+// IsValid checks if the value is valid
+func (e InvitationStatus) IsValid() bool {
+	switch e {
+	case InvitationStatusPending:
+		return true
+	case InvitationStatusAccepted:
+		return true
+	case InvitationStatusDeclined:
+		return true
+	case InvitationStatusExpired:
+		return true
+	default:
+		return false
+	}
+}
+
+// ParseInvitationStatus parses a string into the enum type
+func ParseInvitationStatus(s string) (InvitationStatus, error) {
+	v := InvitationStatus(s)
+	if !v.IsValid() {
+		return "", fmt.Errorf("invalid Status: %s", s)
+	}
+	return v, nil
+}
+
 // Invitation represents Schema for Invitation entity
 type Invitation struct {
 	ID             uuid.UUID            `json:"id" yaml:"id"`                         // Unique identifier for the resource
@@ -57,7 +98,7 @@ type Invitation struct {
 	InviterID      uuid.UUID            `json:"inviterID" yaml:"inviterID"`           // The ID of the user who sent this invitation
 	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"` // The organization the user is being invited to join
 	Role           InvitationRole       `json:"role" yaml:"role"`                     // The role of the invitation
-	Status         string               `json:"status" yaml:"status"`                 // The status of the invitation, e.g., pending, accepted, declined
+	Status         InvitationStatus     `json:"status" yaml:"status"`                 // The status of the invitation, e.g., pending, accepted, declined
 	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`           // The date and time when the resource was last updated
 	events         []events.DomainEvent `json:"-" yaml:"-"`
 }
@@ -70,7 +111,7 @@ func NewInvitation(
 	inviterID uuid.UUID,
 	organizationID uuid.UUID,
 	role InvitationRole,
-	status string,
+	status InvitationStatus,
 ) (*Invitation, error) {
 	// Validate required fields
 	if email == "" {
@@ -79,8 +120,8 @@ func NewInvitation(
 	if !role.IsValid() {
 		return nil, fmt.Errorf("invalid Role: %s", role)
 	}
-	if status == "" {
-		return nil, fmt.Errorf("Status cannot be empty")
+	if !status.IsValid() {
+		return nil, fmt.Errorf("invalid Status: %s", status)
 	}
 	now := time.Now().UTC()
 	id := uuid.New()
@@ -138,7 +179,7 @@ func (e *Invitation) GetRole() string {
 
 // GetStatus returns the Status
 func (e *Invitation) GetStatus() string {
-	return e.Status
+	return string(e.Status)
 }
 
 // GetUpdatedAt returns the UpdatedAt

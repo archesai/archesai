@@ -5,76 +5,67 @@
  * The Arches AI API
  * OpenAPI spec version: v0.0.0
  */
-export type LoginBody = {
-  /**
-   * The email address associated with the account
-   * @minLength 1
-   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-   */
-  email: string;
-  /**
-   * The password for the account
-   * @minLength 1
-   */
-  password: string;
-  /** Whether to create a long-lived session */
-  rememberMe?: boolean;
-};
-
 /**
- * Base schema for all entities with common fields
+ * The authentication provider (google, github, microsoft, local)
  */
-export type Login201AllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
+export type SessionAllOfAuthProvider = typeof SessionAllOfAuthProvider[keyof typeof SessionAllOfAuthProvider];
 
-export type Login201AllOfTwo = {
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionAllOfAuthProvider = {
+  local: 'local',
+  google: 'google',
+  github: 'github',
+  microsoft: 'microsoft',
+  apple: 'apple',
+} as const;
+
+export type SessionAllOf = {
   /**
    * The organization ID for this session (nullable for users without org)
    * @minLength 36
+   * @maxLength 36
    */
   organizationID?: string;
-  /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
+  /**
+   * The authentication method used (magic_link, oauth_google, oauth_github, etc.)
+   * @minLength 1
+   * @maxLength 100
+   * @pattern ^[a-z_]+$
+   */
   authMethod?: string;
   /** The authentication provider (google, github, microsoft, local) */
-  authProvider?: string;
+  authProvider?: SessionAllOfAuthProvider;
   /**
    * The expiration date of the session
    * @minLength 1
+   * @maxLength 255
    */
   expiresAt: string;
   /**
    * The IP address of the session
-   * @minLength 1
+   * @minLength 7
+   * @maxLength 45
    */
   ipAddress?: string;
   /**
    * The session token
    * @minLength 1
+   * @maxLength 512
+   * @pattern ^[A-Za-z0-9_\-\.]+$
    */
   token: string;
   /**
    * The user agent of the session
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/\(\):;]+$
    */
   userAgent?: string;
   /**
    * The user who owns this session
    * @minLength 36
+   * @maxLength 36
    */
   userID: string;
 };
@@ -82,180 +73,279 @@ export type Login201AllOfTwo = {
 /**
  * Schema for Session entity
  */
-export type Login201 = Login201AllOf & Login201AllOfTwo;
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type Login400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type Login401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type Logout200 = {
-  /** @minLength 1 */
-  message: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type Logout401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type LogoutAll200 = {
-  /** @minLength 1 */
-  message: string;
-  /**
-   * Number of sessions that were terminated
-   * @minimum 0
-   */
-  count: number;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type LogoutAll401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type RegisterBody = {
-  /**
-   * The email address for the new account
-   * @minLength 1
-   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-   */
-  email: string;
-  /**
-   * The name of the user
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The password for the account
-   * @minLength 8
-   */
-  password: string;
-};
+export type Session = Base & SessionAllOf;
 
 /**
  * Base schema for all entities with common fields
  */
-export type Register201AllOf = {
+export interface Base {
   /**
    * Unique identifier for the resource
    * @minLength 36
+   * @maxLength 36
    */
   id: string;
   /**
    * The date and time when the resource was created
    * @minLength 1
+   * @maxLength 255
    */
   createdAt: string;
   /**
    * The date and time when the resource was last updated
    * @minLength 1
+   * @maxLength 255
    */
   updatedAt: string;
+}
+
+/**
+ * RFC 7807 (Problem Details) compliant error response
+ */
+export interface Problem {
+  /**
+   * HTTP status code
+   * @minimum 100
+   * @maximum 599
+   */
+  status: number;
+  /**
+   * URI identifying the problem type
+   * @minLength 1
+   * @maxLength 2048
+   */
+  type?: string;
+  /**
+   * Short, human-readable summary
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()]+$
+   */
+  title: string;
+  /**
+   * Human-readable explanation specific to this occurrence
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()]+$
+   */
+  detail?: string;
+  /**
+   * URI identifying the specific occurrence
+   * @maxLength 2048
+   */
+  instance?: string;
+}
+
+/**
+ * How the magic link was delivered
+ */
+export type MagicLinkTokenDeliveryMethod = typeof MagicLinkTokenDeliveryMethod[keyof typeof MagicLinkTokenDeliveryMethod];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MagicLinkTokenDeliveryMethod = {
+  email: 'email',
+  console: 'console',
+  webhook: 'webhook',
+  otp: 'otp',
+  file: 'file',
+} as const;
+
+/**
+ * When the token was used (null if unused)
+ */
+export type MagicLinkTokenUsedAt = string | null;
+
+/**
+ * Schema for MagicLinkToken entity
+ */
+export interface MagicLinkToken {
+  /**
+   * Unique identifier for the magic link token
+   * @minLength 36
+   * @maxLength 36
+   */
+  id: string;
+  /**
+   * User ID if token is for existing user
+   * @minLength 36
+   * @maxLength 36
+   */
+  userID?: string;
+  /**
+   * The raw magic link token
+   * @minLength 32
+   * @maxLength 512
+   * @pattern ^[a-zA-Z0-9]+$
+   */
+  token?: string;
+  /**
+   * SHA256 hash of the magic link token
+   * @minLength 64
+   * @maxLength 64
+   * @pattern ^[a-f0-9]{64}$
+   */
+  tokenHash: string;
+  /**
+   * Optional 6-digit OTP code
+   * @minLength 6
+   * @maxLength 6
+   * @pattern ^[0-9]{6}$
+   */
+  code?: string;
+  /**
+   * Email or username for authentication
+   * @minLength 1
+   * @maxLength 255
+   */
+  identifier: string;
+  /** How the magic link was delivered */
+  deliveryMethod?: MagicLinkTokenDeliveryMethod;
+  /**
+   * When the token expires
+   * @minLength 1
+   * @maxLength 512
+   */
+  expiresAt: string;
+  /** When the token was used (null if unused) */
+  usedAt?: MagicLinkTokenUsedAt;
+  /**
+   * IP address of the request
+   * @minLength 7
+   * @maxLength 45
+   */
+  ipAddress?: string;
+  /**
+   * User agent of the request
+   * @minLength 1
+   * @maxLength 512
+   * @pattern ^[\w\s\-.,!?()@#+/\(\):;]+$
+   */
+  userAgent?: string;
+  /**
+   * When the token was created
+   * @minLength 1
+   * @maxLength 512
+   */
+  createdAt: string;
+}
+
+/**
+ * Pagination parameters (limit & offset)
+ */
+export interface Page {
+  /**
+   * Maximum number of items to return
+   * @minimum 1
+   * @maximum 100
+   */
+  limit?: number;
+  /**
+   * Number of items to skip before starting to collect the result set
+   * @minimum 0
+   * @maximum 9007199254740991
+   */
+  offset?: number;
+}
+
+/**
+ * Pagination metadata
+ */
+export interface PaginationMeta {
+  /**
+   * Total number of items in the collection
+   * @minimum 0
+   * @maximum 2147483647
+   */
+  total: number;
+}
+
+/**
+ * UUID identifier
+ * @minLength 36
+ * @maxLength 36
+ */
+export type Uuid = string;
+
+/**
+ * The authentication provider identifier
+ */
+export type AccountAllOfProvider = typeof AccountAllOfProvider[keyof typeof AccountAllOfProvider];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AccountAllOfProvider = {
+  local: 'local',
+  google: 'google',
+  github: 'github',
+  microsoft: 'microsoft',
+  apple: 'apple',
+} as const;
+
+export type AccountAllOf = {
+  /**
+   * The unique identifier for the account from the provider
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z0-9_\-\.@]+$
+   */
+  accountIdentifier: string;
+  /**
+   * The user ID this account belongs to
+   * @minLength 36
+   * @maxLength 36
+   */
+  userID: string;
+  /** The authentication provider identifier */
+  provider: AccountAllOfProvider;
+  /**
+   * The OAuth access token
+   * @minLength 1
+   * @maxLength 512
+   * @pattern ^[A-Za-z0-9_\-\.]+$
+   */
+  accessToken?: string;
+  /**
+   * The access token expiration timestamp
+   * @minLength 1
+   * @maxLength 255
+   */
+  accessTokenExpiresAt?: string;
+  /**
+   * The OAuth refresh token
+   * @minLength 1
+   * @maxLength 512
+   * @pattern ^[A-Za-z0-9_\-\./]+$
+   */
+  refreshToken?: string;
+  /**
+   * The refresh token expiration timestamp
+   * @minLength 1
+   * @maxLength 255
+   */
+  refreshTokenExpiresAt?: string;
+  /**
+   * The OpenID Connect ID token
+   * @minLength 1
+   * @maxLength 2048
+   * @pattern ^[A-Za-z0-9_\-\.]+$
+   */
+  idToken?: string;
+  /**
+   * The OAuth scope granted
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-:]+$
+   */
+  scope?: string;
 };
 
-export type Register201AllOfTwo = {
+/**
+ * Schema for Account entity (authentication provider account)
+ */
+export type Account = Base & AccountAllOf;
+
+export type UserAllOf = {
   /**
    * The user's email address
    * @minLength 5
@@ -274,6 +364,7 @@ export type Register201AllOfTwo = {
    * The user's display name
    * @minLength 1
    * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/']+$
    */
   name: string;
 };
@@ -281,64 +372,2587 @@ export type Register201AllOfTwo = {
 /**
  * Schema for User entity
  */
-export type Register201 = Register201AllOf & Register201AllOfTwo;
+export type User = Base & UserAllOf;
 
 /**
- * RFC 7807 (Problem Details) compliant error response
+ * The type of filter operation
  */
-export type Register400 = {
+export type FilterNodeType = typeof FilterNodeType[keyof typeof FilterNodeType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FilterNodeType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type FilterNodeValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export interface FilterNode {
+  /** The type of filter operation */
+  type: FilterNodeType;
   /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
+   * The field to filter on (for leaf conditions)
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
    */
-  type?: string;
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: FilterNodeValue;
+}
+
+export type APIKeyAllOf = {
   /**
-   * Short, human-readable summary
-   * @minLength 1
+   * The user who owns this API key
+   * @minLength 36
+   * @maxLength 36
    */
-  title: string;
+  userID: string;
   /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
+   * The organization this API key belongs to
+   * @minLength 36
+   * @maxLength 36
    */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+  organizationID: string;
+  /**
+   * Hashed version of the API key for secure storage
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z0-9]+$
+   */
+  keyHash: string;
+  /**
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/']+$
+   */
+  name?: string;
+  /**
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-z]+$
+   */
+  prefix?: string;
+  /** @maxItems 1000 */
+  scopes: string[];
+  /**
+   * Requests per minute allowed for this API key
+   * @minimum 1
+   * @maximum 2147483647
+   */
+  rateLimit: number;
+  /**
+   * When this API key was last used
+   * @minLength 1
+   * @maxLength 255
+   */
+  lastUsedAt?: string;
+  /**
+   * When this API key expires
+   * @minLength 1
+   * @maxLength 255
+   */
+  expiresAt?: string;
 };
 
 /**
- * RFC 7807 (Problem Details) compliant error response
+ * Schema for API Key entity
  */
-export type Register409 = {
+export type APIKey = Base & APIKeyAllOf;
+
+/**
+ * The current subscription plan
+ */
+export type OrganizationAllOfPlan = typeof OrganizationAllOfPlan[keyof typeof OrganizationAllOfPlan];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationAllOfPlan = {
+  FREE: 'FREE',
+  BASIC: 'BASIC',
+  STANDARD: 'STANDARD',
+  PREMIUM: 'PREMIUM',
+  UNLIMITED: 'UNLIMITED',
+} as const;
+
+export type OrganizationAllOf = {
   /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
+   * The organization's display name
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/'&]+$
    */
-  type?: string;
+  name: string;
   /**
-   * Short, human-readable summary
-   * @minLength 1
+   * URL-friendly unique identifier for the organization
+   * @minLength 3
+   * @maxLength 50
+   * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
    */
-  title: string;
+  slug: string;
   /**
-   * Human-readable explanation specific to this occurrence
+   * The organization's logo URL
    * @minLength 1
+   * @maxLength 2048
    */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+  logo?: string;
+  /**
+   * Email address for billing communications
+   * @minLength 5
+   * @maxLength 255
+   */
+  billingEmail?: string;
+  /** The current subscription plan */
+  plan: OrganizationAllOfPlan;
+  /**
+   * Available credits for this organization
+   * @minimum 0
+   * @maximum 2147483647
+   */
+  credits: number;
+  /**
+   * Stripe customer identifier
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^cus_[a-zA-Z0-9]+$
+   */
+  stripeCustomerIdentifier: string;
+};
+
+/**
+ * Schema for Organization entity
+ */
+export type Organization = Base & OrganizationAllOf;
+
+/**
+ * The role of the member
+ */
+export type MemberAllOfRole = typeof MemberAllOfRole[keyof typeof MemberAllOfRole];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MemberAllOfRole = {
+  admin: 'admin',
+  owner: 'owner',
+  basic: 'basic',
+} as const;
+
+export type MemberAllOf = {
+  /**
+   * The organization this member belongs to
+   * @minLength 36
+   * @maxLength 36
+   */
+  organizationID: string;
+  /** The role of the member */
+  role: MemberAllOfRole;
+  /**
+   * The user who is a member of the organization
+   * @minLength 36
+   * @maxLength 36
+   */
+  userID: string;
+};
+
+/**
+ * Schema for Member entity
+ */
+export type Member = Base & MemberAllOf;
+
+/**
+ * The role of the invitation
+ */
+export type InvitationAllOfRole = typeof InvitationAllOfRole[keyof typeof InvitationAllOfRole];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationAllOfRole = {
+  admin: 'admin',
+  owner: 'owner',
+  basic: 'basic',
+} as const;
+
+/**
+ * The status of the invitation, e.g., pending, accepted, declined
+ */
+export type InvitationAllOfStatus = typeof InvitationAllOfStatus[keyof typeof InvitationAllOfStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationAllOfStatus = {
+  pending: 'pending',
+  accepted: 'accepted',
+  declined: 'declined',
+  expired: 'expired',
+} as const;
+
+export type InvitationAllOf = {
+  /**
+   * The email of the invitated user
+   * @minLength 1
+   * @maxLength 255
+   */
+  email: string;
+  /**
+   * The date and time when the invitation expires
+   * @minLength 1
+   * @maxLength 255
+   */
+  expiresAt: string;
+  /**
+   * The ID of the user who sent this invitation
+   * @minLength 36
+   * @maxLength 36
+   */
+  inviterID: string;
+  /**
+   * The organization the user is being invited to join
+   * @minLength 36
+   * @maxLength 36
+   */
+  organizationID: string;
+  /** The role of the invitation */
+  role: InvitationAllOfRole;
+  /** The status of the invitation, e.g., pending, accepted, declined */
+  status: InvitationAllOfStatus;
+};
+
+/**
+ * Schema for Invitation entity
+ */
+export type Invitation = Base & InvitationAllOf;
+
+export type PipelineAllOf = {
+  /**
+   * The organization identifier
+   * @minLength 36
+   * @maxLength 36
+   */
+  organizationID: string;
+  /**
+   * The pipeline's display name
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/']+$
+   */
+  name?: string;
+  /**
+   * Detailed description of the pipeline's purpose
+   * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/':;]+$
+   */
+  description?: string;
+};
+
+/**
+ * Schema for Pipeline entity
+ */
+export type Pipeline = Base & PipelineAllOf;
+
+export type PipelineStepAllOf = {
+  /**
+   * The pipeline this step belongs to
+   * @minLength 36
+   * @maxLength 36
+   */
+  pipelineID: string;
+  /**
+   * The tool used in this step
+   * @minLength 36
+   * @maxLength 36
+   */
+  toolID: string;
+};
+
+/**
+ * Schema for PipelineStep entity
+ */
+export type PipelineStep = Base & PipelineStepAllOf;
+
+export type RunAllOfStatus = typeof RunAllOfStatus[keyof typeof RunAllOfStatus];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunAllOfStatus = {
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  PROCESSING: 'PROCESSING',
+  QUEUED: 'QUEUED',
+} as const;
+
+export type RunAllOf = {
+  /**
+   * The timestamp when the run completed
+   * @minLength 1
+   * @maxLength 255
+   */
+  completedAt?: string;
+  /**
+   * The error message
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/':;]+$
+   */
+  error?: string;
+  /**
+   * The organization this run belongs to
+   * @minLength 36
+   * @maxLength 36
+   */
+  organizationID: string;
+  /**
+   * The pipeline this run is executing
+   * @minLength 36
+   * @maxLength 36
+   */
+  pipelineID: string;
+  /**
+   * The percent progress of the run (0-100)
+   * @minimum 0
+   * @maximum 100
+   */
+  progress: number;
+  /**
+   * The timestamp when the run started
+   * @minLength 1
+   * @maxLength 255
+   */
+  startedAt?: string;
+  status: RunAllOfStatus;
+  /**
+   * The tool being used in this run
+   * @minLength 36
+   * @maxLength 36
+   */
+  toolID: string;
+};
+
+/**
+ * Schema for Run entity
+ */
+export type Run = Base & RunAllOf;
+
+export type ToolAllOf = {
+  /**
+   * The tool description
+   * @minLength 1
+   * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/':;]+$
+   */
+  description: string;
+  /**
+   * The MIME type of the input for the tool, e.g. text/plain
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-z]+/[a-z0-9\+\-\.]+$
+   */
+  inputMimeType: string;
+  /**
+   * The name of the tool
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/']+$
+   */
+  name: string;
+  /**
+   * The organization that owns this tool
+   * @minLength 36
+   * @maxLength 36
+   */
+  organizationID: string;
+  /**
+   * The MIME type of the output for the tool, e.g. text/plain
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-z]+/[a-z0-9\+\-\.]+$
+   */
+  outputMimeType: string;
+};
+
+/**
+ * Schema for Tool entity
+ */
+export type Tool = Base & ToolAllOf;
+
+export type ArtifactAllOf = {
+  /**
+   * The number of credits required to access this artifact. This is used for metering and billing purposes.
+   * @minimum 0
+   * @maximum 2147483647
+   */
+  credits: number;
+  /**
+   * The artifact's description
+   * @minLength 1
+   * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/':;]+$
+   */
+  description?: string;
+  /**
+   * The MIME type of the artifact, e.g. image/png
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-z]+/[a-z0-9\+\-\.]+$
+   */
+  mimeType: string;
+  /**
+   * The name of the artifact, used for display purposes
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/']+$
+   */
+  name?: string;
+  /**
+   * The organization that owns this artifact
+   * @minLength 36
+   * @maxLength 36
+   */
+  organizationID: string;
+  /**
+   * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
+   * @minLength 1
+   * @maxLength 2048
+   */
+  previewImage?: string;
+  /**
+   * The ID of the entity that produced this artifact
+   * @minLength 36
+   * @maxLength 36
+   */
+  producerID?: string;
+  /**
+   * The artifact text
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/':;]+$
+   */
+  text?: string;
+};
+
+/**
+ * Schema for Artifact entity
+ */
+export type Artifact = Base & ArtifactAllOf;
+
+export type LabelAllOf = {
+  /**
+   * The name of the label
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/']+$
+   */
+  name: string;
+  /**
+   * The organization this label belongs to
+   * @minLength 36
+   * @maxLength 36
+   */
+  organizationID: string;
+};
+
+/**
+ * Schema for Label entity
+ */
+export type Label = Base & LabelAllOf;
+
+/**
+ * Arches AI configuration schema
+ */
+export interface Config {
+  api?: ConfigAPI;
+  auth?: ConfigAuth;
+  billing?: ConfigBilling;
+  database?: ConfigDatabase;
+  intelligence?: ConfigIntelligence;
+  logging?: ConfigLogging;
+  platform?: ConfigPlatform;
+  redis?: ConfigRedis;
+  storage?: ConfigStorage;
+  kubernetes?: ConfigKubernetes;
+}
+
+/**
+ * Deployment environment (development, staging, production)
+ */
+export type ConfigAPIEnvironment = typeof ConfigAPIEnvironment[keyof typeof ConfigAPIEnvironment];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ConfigAPIEnvironment = {
+  development: 'development',
+  staging: 'staging',
+  production: 'production',
+} as const;
+
+/**
+ * Configuration schema for the API server
+ */
+export interface ConfigAPI {
+  /**
+   * A comma-separated list of allowed origins for CORS requests
+   * @minLength 1
+   * @maxLength 2048
+   * @pattern ^[\w\-\.,:/@]+$
+   */
+  cors: string;
+  /**
+   * The public URL for the API
+   * @maxLength 2048
+   */
+  url?: string;
+  /** Enable or disable API documentation */
+  docs: boolean;
+  email?: ConfigEmail;
+  /** Deployment environment (development, staging, production) */
+  environment: ConfigAPIEnvironment;
+  /**
+   * The host address on which the API server will listen
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\-\.:]+$
+   */
+  host: string;
+  /**
+   * The port on which the API server will listen
+   * @minimum 1
+   * @maximum 65535
+   */
+  port: number;
+  /** Enable or disable request validation */
+  validation: boolean;
+  image?: ConfigImage;
+  resources?: ConfigResource;
+}
+
+/**
+ * Authentication configuration for the API server
+ */
+export interface ConfigAuth {
+  /** Enable authentication */
+  enabled: boolean;
+  firebase?: ConfigAuthFirebase;
+  local?: ConfigAuthLocal;
+  magicLink?: ConfigAuthMagicLink;
+  twitter?: ConfigAuthTwitter;
+  google?: ConfigAuthGoogle;
+  github?: ConfigAuthGithub;
+  microsoft?: ConfigAuthMicrosoft;
+}
+
+/**
+ * Billing configuration for Stripe
+ */
+export interface ConfigBilling {
+  /** Enable billing functionality */
+  enabled: boolean;
+  stripe?: ConfigStripe;
+}
+
+/**
+ * Database type (postgresql or sqlite)
+ */
+export type ConfigDatabaseType = typeof ConfigDatabaseType[keyof typeof ConfigDatabaseType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ConfigDatabaseType = {
+  postgresql: 'postgresql',
+  sqlite: 'sqlite',
+} as const;
+
+/**
+ * Database configuration for PostgreSQL
+ */
+export interface ConfigDatabase {
+  /** Enable database */
+  enabled: boolean;
+  /**
+   * Database connection url/string
+   * @minLength 1
+   * @maxLength 2048
+   */
+  url: string;
+  /** Database type (postgresql or sqlite) */
+  type: ConfigDatabaseType;
+  /**
+   * Maximum number of connections in pool (PostgreSQL)
+   * @minimum 1
+   * @maximum 2147483647
+   */
+  maxConns: number;
+  /**
+   * Minimum number of connections in pool (PostgreSQL)
+   * @minimum 0
+   * @maximum 2147483647
+   */
+  minConns: number;
+  /**
+   * Maximum connection lifetime (e.g., "30m")
+   * @minLength 2
+   * @maxLength 20
+   * @pattern ^(\d+[smh])+$
+   */
+  connMaxLifetime?: string;
+  /**
+   * Maximum connection idle time (e.g., "5m")
+   * @minLength 2
+   * @maxLength 20
+   * @pattern ^(\d+[smh])+$
+   */
+  connMaxIdleTime?: string;
+  /**
+   * Health check period for connections (PostgreSQL)
+   * @minLength 2
+   * @maxLength 20
+   * @pattern ^(\d+[smh])+$
+   */
+  healthCheckPeriod?: string;
+  /** Automatically run database migrations on startup */
+  runMigrations: boolean;
+  /** Use managed database deployment */
+  managed: boolean;
+  image?: ConfigImage;
+  persistence?: ConfigPersistence;
+  resources?: ConfigResource;
+}
+
+/**
+ * Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
+ */
+export interface ConfigIntelligence {
+  embedding?: ConfigLLM;
+  llm?: ConfigLLM;
+  runpod?: ConfigRunPod;
+  scraper?: ConfigScraper;
+  speech?: ConfigSpeech;
+  unstructured?: ConfigUnstructured;
+}
+
+/**
+ * Minimum log level to output
+ */
+export type ConfigLoggingLevel = typeof ConfigLoggingLevel[keyof typeof ConfigLoggingLevel];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ConfigLoggingLevel = {
+  fatal: 'fatal',
+  error: 'error',
+  warn: 'warn',
+  info: 'info',
+  debug: 'debug',
+  trace: 'trace',
+  silent: 'silent',
+} as const;
+
+/**
+ * Logging configuration
+ */
+export interface ConfigLogging {
+  /** Minimum log level to output */
+  level: ConfigLoggingLevel;
+  /** Enable pretty-printed logs for development */
+  pretty: boolean;
+}
+
+/**
+ * Platform configuration (host, image, resources)
+ */
+export interface ConfigPlatform {
+  /** Enable platform service */
+  enabled: boolean;
+  /** Use managed platform deployment */
+  managed?: boolean;
+  /**
+   * Platform URL
+   * @maxLength 2048
+   */
+  url?: string;
+  image?: ConfigImage;
+  resources?: ConfigResource;
+}
+
+/**
+ * Redis configuration
+ */
+export interface ConfigRedis {
+  /** Enable Redis */
+  enabled: boolean;
+  /** Use managed Redis deployment */
+  managed?: boolean;
+  /**
+   * Redis authentication password
+   * @minLength 1
+   * @maxLength 72
+   * @pattern ^[\w\-@./#&+!*()]+$
+   */
+  auth: string;
+  /**
+   * Certificate Authority for TLS (optional)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-./]+$
+   */
+  ca?: string;
+  /**
+   * Redis hostname or IP
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z0-9.\-]+$
+   */
+  host: string;
+  /**
+   * Redis port number
+   * @minimum 1
+   * @maximum 65535
+   */
+  port: number;
+  image?: ConfigImage;
+  persistence?: ConfigPersistence;
+  resources?: ConfigResource;
+}
+
+/**
+ * Object storage configuration for MinIO or S3-compatible services
+ */
+export interface ConfigStorage {
+  /** Enable object storage */
+  enabled: boolean;
+  /** Use managed storage deployment */
+  managed?: boolean;
+  /**
+   * MinIO/S3 access key ID
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[A-Z0-9]+$
+   */
+  accesskey: string;
+  /**
+   * S3 bucket name
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-z0-9][a-z0-9\-]*[a-z0-9]$
+   */
+  bucket: string;
+  /**
+   * MinIO server endpoint URL
+   * @minLength 1
+   * @maxLength 2048
+   */
+  endpoint: string;
+  /**
+   * MinIO/S3 secret access key
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[A-Za-z0-9+/=]+$
+   */
+  secretkey: string;
+  image?: ConfigImage;
+  persistence?: ConfigPersistence;
+  resources?: ConfigResource;
+}
+
+/**
+ * Kubernetes-specific deployment configuration
+ */
+export interface ConfigKubernetes {
+  infrastructure?: ConfigInfrastructure;
+  ingress?: ConfigIngress;
+  monitoring?: ConfigMonitoring;
+}
+
+/**
+ * Email configuration for sending emails
+ */
+export interface ConfigEmail {
+  /** Enable email functionality */
+  enabled: boolean;
+  /**
+   * Email service provider (e.g., "gmail", "sendgrid", etc.)
+   * @maxLength 255
+   * @pattern ^[\w\-]+$
+   */
+  service?: string;
+  /**
+   * Username for the email service
+   * @maxLength 255
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
+  user?: string;
+  /**
+   * Password for the email service
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/=]*$
+   */
+  password?: string;
+}
+
+/**
+ * Kubernetes image pull policy
+ */
+export type ConfigImagePullPolicy = typeof ConfigImagePullPolicy[keyof typeof ConfigImagePullPolicy];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ConfigImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never',
+} as const;
+
+/**
+ * Container image configuration
+ */
+export interface ConfigImage {
+  /** Kubernetes image pull policy */
+  pullPolicy: ConfigImagePullPolicy;
+  /**
+   * Container image repository
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$
+   */
+  repository?: string;
+  /**
+   * Container image tag
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z0-9_][a-zA-Z0-9._-]*$
+   */
+  tag: string;
+}
+
+/**
+ * Resource limits
+ */
+export type ConfigResourceLimits = {
+  /**
+   * Maximum CPU allocation
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^\d+m?$
+   */
+  cpu: string;
+  /**
+   * Maximum memory allocation
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^\d+(Mi|Gi|Ki)?$
+   */
+  memory: string;
+};
+
+/**
+ * Resource requests
+ */
+export type ConfigResourceRequests = {
+  /**
+   * Requested CPU allocation
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^\d+m?$
+   */
+  cpu: string;
+  /**
+   * Requested memory allocation
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^\d+(Mi|Gi|Ki)?$
+   */
+  memory: string;
+};
+
+/**
+ * Kubernetes resource configuration
+ */
+export interface ConfigResource {
+  /** Resource limits */
+  limits: ConfigResourceLimits;
+  /** Resource requests */
+  requests: ConfigResourceRequests;
+}
+
+/**
+ * Firebase authentication configuration
+ */
+export interface ConfigAuthFirebase {
+  /** Enable Firebase authentication */
+  enabled: boolean;
+  /**
+   * Firebase service account client email address
+   * @maxLength 255
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
+  clientEmail?: string;
+  /**
+   * Firebase service account private key (PEM format)
+   * @minLength 1
+   * @maxLength 10000
+   * @pattern ^[\w\s\-.,!?()@#+/=\n\r]*$
+   */
+  privateKey?: string;
+  /**
+   * Firebase project ID for authentication
+   * @maxLength 255
+   * @pattern ^[\w\-]+$
+   */
+  projectID?: string;
+}
+
+/**
+ * Local username/password authentication
+ */
+export interface ConfigAuthLocal {
+  /** Enable local authentication */
+  enabled: boolean;
+  /**
+   * Secret key for JWT token signing
+   * @minLength 32
+   * @maxLength 512
+   * @pattern ^[\w\-+=/.]+$
+   */
+  jwtSecret: string;
+  /**
+   * Access token time-to-live duration (e.g., "15m", "1h")
+   * @minLength 2
+   * @maxLength 20
+   * @pattern ^(\d+[smhd])+$
+   */
+  accessTokenTTL: string;
+  /**
+   * Refresh token time-to-live duration (e.g., "7d", "168h")
+   * @minLength 2
+   * @maxLength 20
+   * @pattern ^(\d+[smhd])+$
+   */
+  refreshTokenTTL: string;
+}
+
+export type ConfigAuthMagicLinkDeliveryMethodsEmail = {
+  enabled?: boolean;
+  /** @maxLength 255 */
+  from?: string;
+};
+
+export type ConfigAuthMagicLinkDeliveryMethodsConsole = {
+  /** Enable console output (development only) */
+  enabled?: boolean;
+};
+
+export type ConfigAuthMagicLinkDeliveryMethodsOtp = {
+  enabled?: boolean;
+};
+
+export type ConfigAuthMagicLinkDeliveryMethodsWebhook = {
+  enabled?: boolean;
+  /** @maxLength 2048 */
+  url?: string;
+};
+
+/**
+ * Available delivery methods
+ */
+export type ConfigAuthMagicLinkDeliveryMethods = {
+  email?: ConfigAuthMagicLinkDeliveryMethodsEmail;
+  console?: ConfigAuthMagicLinkDeliveryMethodsConsole;
+  otp?: ConfigAuthMagicLinkDeliveryMethodsOtp;
+  webhook?: ConfigAuthMagicLinkDeliveryMethodsWebhook;
+};
+
+/**
+ * Rate limiting configuration
+ */
+export type ConfigAuthMagicLinkRateLimit = {
+  /**
+   * Maximum number of attempts within window
+   * @minimum 1
+   * @maximum 2147483647
+   */
+  maxAttempts?: number;
+  /**
+   * Time window in minutes
+   * @minimum 1
+   * @maximum 2147483647
+   */
+  windowMinutes?: number;
+};
+
+/**
+ * Magic link authentication configuration
+ */
+export interface ConfigAuthMagicLink {
+  /** Enable magic link authentication */
+  enabled: boolean;
+  /**
+   * Token expiry duration in minutes
+   * @minimum 1
+   * @maximum 60
+   */
+  tokenExpiry?: number;
+  /**
+   * Length of OTP code
+   * @minimum 4
+   * @maximum 8
+   */
+  otpLength?: number;
+  /** Available delivery methods */
+  deliveryMethods?: ConfigAuthMagicLinkDeliveryMethods;
+  /** Rate limiting configuration */
+  rateLimit?: ConfigAuthMagicLinkRateLimit;
+}
+
+/**
+ * Twitter OAuth configuration
+ */
+export interface ConfigAuthTwitter {
+  /** Enable Twitter OAuth */
+  enabled: boolean;
+  /**
+   * OAuth callback URL
+   * @minLength 1
+   * @maxLength 2048
+   */
+  callbackURL?: string;
+  /**
+   * Twitter API consumer key
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\-]+$
+   */
+  consumerKey?: string;
+  /**
+   * Twitter API consumer secret
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\-]+$
+   */
+  consumerSecret?: string;
+}
+
+/**
+ * Google OAuth configuration
+ */
+export interface ConfigAuthGoogle {
+  /** Enable Google OAuth */
+  enabled: boolean;
+  /**
+   * Google OAuth client ID
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\.\-]+$
+   */
+  clientId?: string;
+  /**
+   * Google OAuth client secret
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\-]+$
+   */
+  clientSecret?: string;
+  /**
+   * OAuth callback URL
+   * @maxLength 2048
+   */
+  redirectUrl?: string;
+  /**
+   * OAuth scopes to request
+   * @maxItems 1000
+   */
+  scopes?: string[];
+}
+
+/**
+ * GitHub OAuth configuration
+ */
+export interface ConfigAuthGithub {
+  /** Enable GitHub OAuth */
+  enabled: boolean;
+  /**
+   * GitHub OAuth App client ID
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\.\-]+$
+   */
+  clientId?: string;
+  /**
+   * GitHub OAuth App client secret
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\-]+$
+   */
+  clientSecret?: string;
+  /**
+   * OAuth callback URL
+   * @maxLength 2048
+   */
+  redirectUrl?: string;
+  /**
+   * OAuth scopes to request
+   * @maxItems 1000
+   */
+  scopes?: string[];
+}
+
+/**
+ * Microsoft/Azure AD OAuth configuration
+ */
+export interface ConfigAuthMicrosoft {
+  /** Enable Microsoft OAuth */
+  enabled: boolean;
+  /**
+   * Azure AD Application (client) ID
+   * @minLength 1
+   * @maxLength 255
+   */
+  clientId?: string;
+  /**
+   * Azure AD client secret
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\-~]+$
+   */
+  clientSecret?: string;
+  /**
+   * OAuth callback URL
+   * @maxLength 2048
+   */
+  redirectUrl?: string;
+  /**
+   * Azure AD tenant ID (use 'common' for multi-tenant)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\-]+$
+   */
+  tenant?: string;
+  /**
+   * OAuth scopes to request
+   * @maxItems 1000
+   */
+  scopes?: string[];
+}
+
+/**
+ * Stripe payment configuration
+ */
+export interface ConfigStripe {
+  /**
+   * Stripe secret API key
+   * @minLength 1
+   * @maxLength 512
+   * @pattern ^[a-zA-Z0-9_]+$
+   */
+  token: string;
+  /**
+   * Stripe webhook endpoint secret
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z0-9_]+$
+   */
+  whsec: string;
+}
+
+/**
+ * Persistent storage configuration
+ */
+export interface ConfigPersistence {
+  /** Enable persistent storage */
+  enabled: boolean;
+  /**
+   * Size of persistent volume
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$
+   */
+  size: string;
+}
+
+/**
+ * LLM provider type
+ */
+export type ConfigLLMType = typeof ConfigLLMType[keyof typeof ConfigLLMType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ConfigLLMType = {
+  ollama: 'ollama',
+  openai: 'openai',
+} as const;
+
+/**
+ * Large Language Model configuration
+ */
+export interface ConfigLLM {
+  /** LLM provider type */
+  type: ConfigLLMType;
+  /**
+   * LLM service endpoint URL
+   * @minLength 1
+   * @maxLength 2048
+   */
+  endpoint?: string;
+  /**
+   * Authentication token for LLM service
+   * @minLength 1
+   * @maxLength 512
+   * @pattern ^[a-zA-Z0-9_\-\.]+$
+   */
+  token?: string;
+}
+
+/**
+ * RunPod serverless GPU configuration
+ */
+export interface ConfigRunPod {
+  /** Enable RunPod integration */
+  enabled: boolean;
+  /**
+   * RunPod API token
+   * @minLength 1
+   * @maxLength 512
+   * @pattern ^[a-zA-Z0-9_\-\.]+$
+   */
+  token?: string;
+}
+
+/**
+ * Web scraping service configuration
+ */
+export interface ConfigScraper {
+  /** Enable scraper service */
+  enabled: boolean;
+  /** Use managed scraper deployment */
+  managed?: boolean;
+  /**
+   * Web scraper service endpoint URL
+   * @minLength 1
+   * @maxLength 2048
+   */
+  endpoint?: string;
+  image?: ConfigImage;
+  resources?: ConfigResource;
+}
+
+/**
+ * Speech recognition and TTS services
+ */
+export interface ConfigSpeech {
+  /** Enable speech services */
+  enabled: boolean;
+  /**
+   * Speech-to-text service API token
+   * @minLength 1
+   * @maxLength 512
+   * @pattern ^[a-zA-Z0-9_\-\.]+$
+   */
+  token?: string;
+}
+
+/**
+ * Unstructured.io service for document parsing
+ */
+export interface ConfigUnstructured {
+  /** Enable unstructured document parsing */
+  enabled: boolean;
+  /** Use managed unstructured deployment */
+  managed?: boolean;
+  image?: ConfigImage;
+  resources?: ConfigResource;
+}
+
+/**
+ * Infrastructure configuration for Kubernetes deployments
+ */
+export interface ConfigInfrastructure {
+  images: ConfigImages;
+  migrations: ConfigMigrations;
+  /**
+   * Kubernetes namespace where all resources will be deployed
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+   */
+  namespace: string;
+  serviceAccount: ConfigServiceAccount;
+}
+
+/**
+ * Ingress configuration
+ */
+export interface ConfigIngress {
+  /** Enable ingress */
+  enabled: boolean;
+  /**
+   * Primary domain name for ingress routing
+   * @minLength 1
+   * @maxLength 255
+   */
+  domain?: string;
+  tls?: ConfigTLS;
+}
+
+/**
+ * Monitoring configuration for Grafana and Loki
+ */
+export interface ConfigMonitoring {
+  grafana: ConfigGrafana;
+  loki: ConfigLoki;
+}
+
+/**
+ * Container image configuration
+ */
+export interface ConfigImages {
+  /**
+   * List of Kubernetes secrets for pulling private images
+   * @maxItems 1000
+   */
+  imagePullSecrets: string[];
+  /**
+   * Custom container registry URL (leave empty for Docker Hub)
+   * @maxLength 2048
+   * @pattern ^(|[a-z0-9]([-a-z0-9\.]*[a-z0-9])?(:[0-9]+)?)$
+   */
+  imageRegistry: string;
+}
+
+/**
+ * Database migration configuration
+ */
+export interface ConfigMigrations {
+  /** Enable automatic DB migrations */
+  enabled: boolean;
+}
+
+/**
+ * Kubernetes service account configuration
+ */
+export interface ConfigServiceAccount {
+  /** Create dedicated service account */
+  create: boolean;
+  /**
+   * Custom service account name
+   * @maxLength 255
+   * @pattern ^(|[a-z0-9]([-a-z0-9]*[a-z0-9])?)$
+   */
+  name: string;
+}
+
+/**
+ * TLS configuration
+ */
+export interface ConfigTLS {
+  /** Enable TLS/SSL */
+  enabled: boolean;
+  /**
+   * Cert-manager ClusterIssuer
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+   */
+  issuer?: string;
+  /**
+   * Kubernetes secret name for TLS certificates
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+   */
+  secretName?: string;
+}
+
+/**
+ * Grafana monitoring dashboard configuration
+ */
+export interface ConfigGrafana {
+  /** Enable Grafana */
+  enabled: boolean;
+  /** Use managed Grafana deployment */
+  managed?: boolean;
+  image?: ConfigImage;
+  resources?: ConfigResource;
+}
+
+/**
+ * Loki log aggregation service configuration
+ */
+export interface ConfigLoki {
+  /** Enable Loki */
+  enabled: boolean;
+  /** Use managed Loki deployment */
+  managed?: boolean;
+  /**
+   * Loki host URL
+   * @minLength 1
+   * @maxLength 2048
+   */
+  host?: string;
+  image?: ConfigImage;
+  resources?: ConfigResource;
+}
+
+export type HealthServicesDatabase = typeof HealthServicesDatabase[keyof typeof HealthServicesDatabase];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const HealthServicesDatabase = {
+  healthy: 'healthy',
+  unhealthy: 'unhealthy',
+  degraded: 'degraded',
+} as const;
+
+export type HealthServicesEmail = typeof HealthServicesEmail[keyof typeof HealthServicesEmail];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const HealthServicesEmail = {
+  healthy: 'healthy',
+  unhealthy: 'unhealthy',
+  degraded: 'degraded',
+} as const;
+
+export type HealthServicesRedis = typeof HealthServicesRedis[keyof typeof HealthServicesRedis];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const HealthServicesRedis = {
+  healthy: 'healthy',
+  unhealthy: 'unhealthy',
+  degraded: 'degraded',
+} as const;
+
+export type HealthServices = {
+  database: HealthServicesDatabase;
+  email: HealthServicesEmail;
+  redis: HealthServicesRedis;
+};
+
+/**
+ * Health check response
+ */
+export interface Health {
+  services: HealthServices;
+  /** @maxLength 64 */
+  timestamp: string;
+  /**
+   * System uptime in seconds
+   * @minimum 0
+   * @maximum 9223372036854776000
+   */
+  uptime: number;
+}
+
+/**
+ * Login successful
+ */
+export type SessionCreatedResponse = Session;
+
+/**
+ * 400 Bad Request
+ */
+export type BadRequestResponse = Problem;
+
+/**
+ * 401 Unauthorized
+ */
+export type UnauthorizedResponse = Problem;
+
+/**
+ * 422 Unprocessable Entity
+ */
+export type UnprocessableEntityResponse = Problem;
+
+/**
+ * Too many requests - rate limit exceeded
+ */
+export type TooManyRequestsResponse = Problem;
+
+/**
+ * Internal server error
+ */
+export type InternalServerErrorResponse = Problem;
+
+export type LogoutResponseResponse = {
+  /**
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()]+$
+   */
+  message: string;
+};
+
+/**
+ * 409 Conflict
+ */
+export type ConflictResponse = Problem;
+
+/**
+ * 404 Not Found
+ */
+export type NotFoundResponse = Problem;
+
+export type SessionListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Session[];
+  meta: PaginationMeta;
+};
+
+export type SessionResponseResponse = {
+  data: Session;
+};
+
+export type AccountListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Account[];
+  meta: PaginationMeta;
+};
+
+export type AccountResponseResponse = {
+  data: Account;
+};
+
+/**
+ * 204 No Content
+ */
+export type NoContentResponse = void;
+
+export type EmailVerificationResponseResponse = {
+  session: Session;
+  user: User;
+};
+
+export type UserListResponseResponse = {
+  /** @maxItems 10000 */
+  data: User[];
+  meta: PaginationMeta;
+};
+
+export type UserResponseResponse = {
+  data: User;
+};
+
+export type APIKeyListResponseResponse = {
+  /** @maxItems 10000 */
+  data: APIKey[];
+  meta: PaginationMeta;
+};
+
+export type APIKeyResponseResponse = {
+  data: APIKey;
+};
+
+export type OrganizationListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Organization[];
+  meta: PaginationMeta;
+};
+
+export type OrganizationResponseResponse = {
+  data: Organization;
+};
+
+export type MemberResponseResponse = {
+  data: Member;
+};
+
+export type InvitationListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Invitation[];
+  meta: PaginationMeta;
+};
+
+export type InvitationResponseResponse = {
+  data: Invitation;
+};
+
+export type PipelineListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Pipeline[];
+  meta: PaginationMeta;
+};
+
+export type PipelineResponseResponse = {
+  data: Pipeline;
+};
+
+export type PipelineStepListResponseResponse = {
+  /** @maxItems 10000 */
+  data: PipelineStep[];
+};
+
+export type PipelineExecutionPlanResponseResponseDataLevelsItem = {
+  /**
+   * Execution level (0-based)
+   * @minimum 0
+   * @maximum 2147483647
+   */
+  level: number;
+  /** @maxItems 10000 */
+  steps: string[];
+};
+
+export type PipelineExecutionPlanResponseResponseData = {
+  /**
+   * UUID identifier
+   * @minLength 36
+   * @maxLength 36
+   */
+  pipelineID: string;
+  /** @maxItems 1000 */
+  levels: PipelineExecutionPlanResponseResponseDataLevelsItem[];
+  /**
+   * Total number of steps in the pipeline
+   * @minimum 0
+   * @maximum 2147483647
+   */
+  totalSteps: number;
+  /** Whether the pipeline DAG is valid (no cycles) */
+  isValid: boolean;
+  /**
+   * Estimated execution time in seconds
+   * @minimum 0
+   * @maximum 2147483647
+   */
+  estimatedDuration?: number;
+};
+
+export type PipelineExecutionPlanResponseResponse = {
+  data: PipelineExecutionPlanResponseResponseData;
+};
+
+export type RunListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Run[];
+  meta: PaginationMeta;
+};
+
+export type RunResponseResponse = {
+  data: Run;
+};
+
+export type ToolListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Tool[];
+  meta: PaginationMeta;
+};
+
+export type ToolResponseResponse = {
+  data: Tool;
+};
+
+export type ArtifactListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Artifact[];
+  meta: PaginationMeta;
+};
+
+export type ArtifactResponseResponse = {
+  data: Artifact;
+};
+
+export type LabelListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Label[];
+  meta: PaginationMeta;
+};
+
+export type LabelResponseResponse = {
+  data: Label;
+};
+
+/**
+ * Current configuration
+ */
+export type ConfigResponseResponse = Config;
+
+/**
+ * Health status retrieved successfully
+ */
+export type HealthResponseResponse = Health;
+
+/**
+ * Pagination parameters (limit & offset)
+ */
+export type PageQueryParameter = {
+  /**
+   * Maximum number of items to return
+   * @minimum 1
+   * @maximum 100
+   */
+  limit?: number;
+  /**
+   * Number of items to skip before starting to collect the result set
+   * @minimum 0
+   * @maximum 9007199254740991
+   */
+  offset?: number;
+};
+
+export type SessionsSortParameterItemField = typeof SessionsSortParameterItemField[keyof typeof SessionsSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  organizationID: 'organizationID',
+  expiresAt: 'expiresAt',
+  ipAddress: 'ipAddress',
+  token: 'token',
+  userAgent: 'userAgent',
+  userID: 'userID',
+} as const;
+
+export type SessionsSortParameterItemOrder = typeof SessionsSortParameterItemOrder[keyof typeof SessionsSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type SessionsSortParameterItem = {
+  field: SessionsSortParameterItemField;
+  order: SessionsSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type SessionsSortParameter = SessionsSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type UsersFilterParameterType = typeof UsersFilterParameterType[keyof typeof UsersFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type UsersFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type UsersFilterParameter = {
+  /** The type of filter operation */
+  type: UsersFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: UsersFilterParameterValue;
+};
+
+export type UsersSortParameterItemField = typeof UsersSortParameterItemField[keyof typeof UsersSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  email: 'email',
+  emailVerified: 'emailVerified',
+  image: 'image',
+  name: 'name',
+} as const;
+
+export type UsersSortParameterItemOrder = typeof UsersSortParameterItemOrder[keyof typeof UsersSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type UsersSortParameterItem = {
+  field: UsersSortParameterItemField;
+  order: UsersSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type UsersSortParameter = UsersSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type APIKeysFilterParameterType = typeof APIKeysFilterParameterType[keyof typeof APIKeysFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const APIKeysFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type APIKeysFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type APIKeysFilterParameter = {
+  /** The type of filter operation */
+  type: APIKeysFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: APIKeysFilterParameterValue;
+};
+
+export type APIKeysSortParameterItemField = typeof APIKeysSortParameterItemField[keyof typeof APIKeysSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const APIKeysSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  userID: 'userID',
+  organizationID: 'organizationID',
+  keyHash: 'keyHash',
+  name: 'name',
+  prefix: 'prefix',
+  rateLimit: 'rateLimit',
+  lastUsedAt: 'lastUsedAt',
+  expiresAt: 'expiresAt',
+} as const;
+
+export type APIKeysSortParameterItemOrder = typeof APIKeysSortParameterItemOrder[keyof typeof APIKeysSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const APIKeysSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type APIKeysSortParameterItem = {
+  field: APIKeysSortParameterItemField;
+  order: APIKeysSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type APIKeysSortParameter = APIKeysSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type OrganizationsFilterParameterType = typeof OrganizationsFilterParameterType[keyof typeof OrganizationsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type OrganizationsFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type OrganizationsFilterParameter = {
+  /** The type of filter operation */
+  type: OrganizationsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: OrganizationsFilterParameterValue;
+};
+
+export type OrganizationsSortParameterItemField = typeof OrganizationsSortParameterItemField[keyof typeof OrganizationsSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  billingEmail: 'billingEmail',
+  credits: 'credits',
+  logo: 'logo',
+  metadata: 'metadata',
+  name: 'name',
+  plan: 'plan',
+  slug: 'slug',
+  stripeCustomerIdentifier: 'stripeCustomerIdentifier',
+} as const;
+
+export type OrganizationsSortParameterItemOrder = typeof OrganizationsSortParameterItemOrder[keyof typeof OrganizationsSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type OrganizationsSortParameterItem = {
+  field: OrganizationsSortParameterItemField;
+  order: OrganizationsSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type OrganizationsSortParameter = OrganizationsSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type MembersFilterParameterType = typeof MembersFilterParameterType[keyof typeof MembersFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type MembersFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type MembersFilterParameter = {
+  /** The type of filter operation */
+  type: MembersFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: MembersFilterParameterValue;
+};
+
+export type MembersSortParameterItemField = typeof MembersSortParameterItemField[keyof typeof MembersSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  organizationID: 'organizationID',
+  role: 'role',
+  userID: 'userID',
+} as const;
+
+export type MembersSortParameterItemOrder = typeof MembersSortParameterItemOrder[keyof typeof MembersSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type MembersSortParameterItem = {
+  field: MembersSortParameterItemField;
+  order: MembersSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type MembersSortParameter = MembersSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type InvitationsFilterParameterType = typeof InvitationsFilterParameterType[keyof typeof InvitationsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type InvitationsFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type InvitationsFilterParameter = {
+  /** The type of filter operation */
+  type: InvitationsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: InvitationsFilterParameterValue;
+};
+
+export type InvitationsSortParameterItemField = typeof InvitationsSortParameterItemField[keyof typeof InvitationsSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  email: 'email',
+  expiresAt: 'expiresAt',
+  inviterID: 'inviterID',
+  organizationID: 'organizationID',
+  role: 'role',
+  status: 'status',
+} as const;
+
+export type InvitationsSortParameterItemOrder = typeof InvitationsSortParameterItemOrder[keyof typeof InvitationsSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type InvitationsSortParameterItem = {
+  field: InvitationsSortParameterItemField;
+  order: InvitationsSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type InvitationsSortParameter = InvitationsSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type PipelinesFilterParameterType = typeof PipelinesFilterParameterType[keyof typeof PipelinesFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type PipelinesFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type PipelinesFilterParameter = {
+  /** The type of filter operation */
+  type: PipelinesFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: PipelinesFilterParameterValue;
+};
+
+export type PipelinesSortParameterItemField = typeof PipelinesSortParameterItemField[keyof typeof PipelinesSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  description: 'description',
+  name: 'name',
+  organizationID: 'organizationID',
+} as const;
+
+export type PipelinesSortParameterItemOrder = typeof PipelinesSortParameterItemOrder[keyof typeof PipelinesSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type PipelinesSortParameterItem = {
+  field: PipelinesSortParameterItemField;
+  order: PipelinesSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type PipelinesSortParameter = PipelinesSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type RunsFilterParameterType = typeof RunsFilterParameterType[keyof typeof RunsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type RunsFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type RunsFilterParameter = {
+  /** The type of filter operation */
+  type: RunsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: RunsFilterParameterValue;
+};
+
+export type RunsSortParameterItemField = typeof RunsSortParameterItemField[keyof typeof RunsSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt',
+  error: 'error',
+  organizationID: 'organizationID',
+  pipelineID: 'pipelineID',
+  progress: 'progress',
+  startedAt: 'startedAt',
+  status: 'status',
+  toolID: 'toolID',
+} as const;
+
+export type RunsSortParameterItemOrder = typeof RunsSortParameterItemOrder[keyof typeof RunsSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type RunsSortParameterItem = {
+  field: RunsSortParameterItemField;
+  order: RunsSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type RunsSortParameter = RunsSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type ToolsFilterParameterType = typeof ToolsFilterParameterType[keyof typeof ToolsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type ToolsFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type ToolsFilterParameter = {
+  /** The type of filter operation */
+  type: ToolsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: ToolsFilterParameterValue;
+};
+
+export type ToolsSortParameterItemField = typeof ToolsSortParameterItemField[keyof typeof ToolsSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolsSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  description: 'description',
+  inputMimeType: 'inputMimeType',
+  name: 'name',
+  organizationID: 'organizationID',
+  outputMimeType: 'outputMimeType',
+} as const;
+
+export type ToolsSortParameterItemOrder = typeof ToolsSortParameterItemOrder[keyof typeof ToolsSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolsSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type ToolsSortParameterItem = {
+  field: ToolsSortParameterItemField;
+  order: ToolsSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type ToolsSortParameter = ToolsSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type ArtifactsFilterParameterType = typeof ArtifactsFilterParameterType[keyof typeof ArtifactsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type ArtifactsFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type ArtifactsFilterParameter = {
+  /** The type of filter operation */
+  type: ArtifactsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: ArtifactsFilterParameterValue;
+};
+
+export type ArtifactsSortParameterItemField = typeof ArtifactsSortParameterItemField[keyof typeof ArtifactsSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  credits: 'credits',
+  description: 'description',
+  mimeType: 'mimeType',
+  name: 'name',
+  organizationID: 'organizationID',
+  previewImage: 'previewImage',
+  producerID: 'producerID',
+  text: 'text',
+  url: 'url',
+} as const;
+
+export type ArtifactsSortParameterItemOrder = typeof ArtifactsSortParameterItemOrder[keyof typeof ArtifactsSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type ArtifactsSortParameterItem = {
+  field: ArtifactsSortParameterItemField;
+  order: ArtifactsSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type ArtifactsSortParameter = ArtifactsSortParameterItem[];
+
+/**
+ * The type of filter operation
+ */
+export type LabelsFilterParameterType = typeof LabelsFilterParameterType[keyof typeof LabelsFilterParameterType];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsFilterParameterType = {
+  and: 'and',
+  or: 'or',
+  eq: 'eq',
+  ne: 'ne',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  contains: 'contains',
+  startsWith: 'startsWith',
+  endsWith: 'endsWith',
+} as const;
+
+/**
+ * The value to compare against (for leaf conditions)
+ */
+export type LabelsFilterParameterValue = string | number | boolean;
+
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type LabelsFilterParameter = {
+  /** The type of filter operation */
+  type: LabelsFilterParameterType;
+  /**
+   * The field to filter on (for leaf conditions)
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[a-zA-Z_][a-zA-Z0-9_]*$
+   */
+  field?: string;
+  /** The value to compare against (for leaf conditions) */
+  value?: LabelsFilterParameterValue;
+};
+
+export type LabelsSortParameterItemField = typeof LabelsSortParameterItemField[keyof typeof LabelsSortParameterItemField];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsSortParameterItemField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  organizationID: 'organizationID',
+} as const;
+
+export type LabelsSortParameterItemOrder = typeof LabelsSortParameterItemOrder[keyof typeof LabelsSortParameterItemOrder];
+
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsSortParameterItemOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type LabelsSortParameterItem = {
+  field: LabelsSortParameterItemField;
+  order: LabelsSortParameterItemOrder;
+};
+
+/**
+ * The sort parameter
+ */
+export type LabelsSortParameter = LabelsSortParameterItem[];
+
+export type LoginBody = {
+  /**
+   * The email address associated with the account
+   * @minLength 1
+   * @maxLength 255
+   */
+  email: string;
+  /**
+   * The password for the account
+   * @minLength 1
+   * @maxLength 72
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
+   */
+  password: string;
+  /** Whether to create a long-lived session */
+  rememberMe?: boolean;
+};
+
+export type RegisterBody = {
+  /**
+   * The email address for the new account
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
+  email: string;
+  /**
+   * The name of the user
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
+   */
+  name: string;
+  /**
+   * The password for the account
+   * @minLength 8
+   * @maxLength 72
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
+   */
+  password: string;
 };
 
 /**
@@ -359,196 +2973,49 @@ export type RequestMagicLinkBody = {
   /**
    * Email address or username
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   identifier: string;
   /** How to deliver the magic link */
   deliveryMethod?: RequestMagicLinkBodyDeliveryMethod;
-  /** URL to redirect to after successful authentication */
+  /**
+   * URL to redirect to after successful authentication
+   * @minLength 1
+   * @maxLength 2048
+   */
   redirectUrl?: string;
 };
 
-/**
- * How the magic link was delivered
- */
-export type RequestMagicLink200TokenDeliveryMethod = typeof RequestMagicLink200TokenDeliveryMethod[keyof typeof RequestMagicLink200TokenDeliveryMethod];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RequestMagicLink200TokenDeliveryMethod = {
-  email: 'email',
-  console: 'console',
-  webhook: 'webhook',
-  otp: 'otp',
-  file: 'file',
-} as const;
-
-/**
- * When the token was used (null if unused)
- */
-export type RequestMagicLink200TokenUsedAt = string | null;
-
-/**
- * Schema for MagicLinkToken entity
- */
-export type RequestMagicLink200Token = {
-  /**
-   * Unique identifier for the magic link token
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * User ID if token is for existing user
-   * @minLength 36
-   */
-  userID?: string;
-  /**
-   * The raw magic link token
-   * @minLength 32
-   */
-  token?: string;
-  /**
-   * SHA256 hash of the magic link token
-   * @minLength 64
-   * @maxLength 64
-   */
-  tokenHash: string;
-  /**
-   * Optional 6-digit OTP code
-   * @minLength 6
-   * @maxLength 6
-   * @pattern ^[0-9]{6}$
-   */
-  code?: string;
-  /**
-   * Email or username for authentication
-   * @minLength 1
-   */
-  identifier: string;
-  /** How the magic link was delivered */
-  deliveryMethod?: RequestMagicLink200TokenDeliveryMethod;
-  /**
-   * When the token expires
-   * @minLength 1
-   */
-  expiresAt: string;
-  /** When the token was used (null if unused) */
-  usedAt?: RequestMagicLink200TokenUsedAt;
-  /** IP address of the request */
-  ipAddress?: string;
-  /** User agent of the request */
-  userAgent?: string;
-  /**
-   * When the token was created
-   * @minLength 1
-   */
-  createdAt: string;
-};
-
 export type RequestMagicLink200 = {
+  /**
+   * @minLength 1
+   * @maxLength 500
+   * @pattern ^[\w\s\-.,!?()@]+$
+   */
   message?: string;
   /**
    * OTP code (only returned if deliveryMethod is 'otp')
    * @minLength 6
    * @maxLength 6
+   * @pattern ^[A-Za-z0-9_-]+$
    */
   otpCode?: string;
-  /** Token expiry in seconds */
+  /**
+   * Token expiry in seconds
+   * @minimum 1
+   * @maximum 2147483647
+   */
   expiresIn?: number;
-  /** Schema for MagicLinkToken entity */
-  token?: RequestMagicLink200Token;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type RequestMagicLink400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type RequestMagicLink429 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type RequestMagicLink500 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+  token?: MagicLinkToken;
 };
 
 export type VerifyMagicLinkBody = {
   /**
    * Magic link token from URL
    * @minLength 32
+   * @maxLength 512
+   * @pattern ^[A-Za-z0-9_-]+$
    */
   token?: string;
   /**
@@ -558,187 +3025,13 @@ export type VerifyMagicLinkBody = {
    * @pattern ^[0-9]{6}$
    */
   code?: string;
-  /** Required when using OTP code */
+  /**
+   * Required when using OTP code
+   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
+   */
   identifier?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type VerifyMagicLink201AllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type VerifyMagicLink201AllOfTwo = {
-  /**
-   * The organization ID for this session (nullable for users without org)
-   * @minLength 36
-   */
-  organizationID?: string;
-  /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
-  authMethod?: string;
-  /** The authentication provider (google, github, microsoft, local) */
-  authProvider?: string;
-  /**
-   * The expiration date of the session
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The IP address of the session
-   * @minLength 1
-   */
-  ipAddress?: string;
-  /**
-   * The session token
-   * @minLength 1
-   */
-  token: string;
-  /**
-   * The user agent of the session
-   * @minLength 1
-   */
-  userAgent?: string;
-  /**
-   * The user who owns this session
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Session entity
- */
-export type VerifyMagicLink201 = VerifyMagicLink201AllOf & VerifyMagicLink201AllOfTwo;
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type VerifyMagicLink400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type VerifyMagicLink401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type VerifyMagicLink404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type VerifyMagicLink500 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 /**
@@ -758,7 +3051,10 @@ export const LinkAccountBodyProvider = {
 export type LinkAccountBody = {
   /** The authentication provider to link */
   provider: LinkAccountBodyProvider;
-  /** URL to redirect to after successful linking */
+  /**
+   * URL to redirect to after successful linking
+   * @maxLength 2048
+   */
   redirectUrl?: string;
 };
 
@@ -766,1849 +3062,155 @@ export type LinkAccount200 = {
   /**
    * URL to redirect the user to for provider authorization
    * @minLength 1
+   * @maxLength 2048
    */
   authorizationUrl: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type LinkAccount400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type LinkAccount401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type LinkAccount409 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type ListSessionsParams = {
 /**
  * Pagination parameters (limit & offset)
  */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
+page?: PageQueryParameter;
 /**
  * The sort parameter
+ * @maxItems 10
  */
-sort?: ListSessionsSortItem[];
-};
-
-export type ListSessionsSortItemField = typeof ListSessionsSortItemField[keyof typeof ListSessionsSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListSessionsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationID: 'organizationID',
-  expiresAt: 'expiresAt',
-  ipAddress: 'ipAddress',
-  token: 'token',
-  userAgent: 'userAgent',
-  userID: 'userID',
-} as const;
-
-export type ListSessionsSortItemOrder = typeof ListSessionsSortItemOrder[keyof typeof ListSessionsSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListSessionsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListSessionsSortItem = {
-  field: ListSessionsSortItemField;
-  order: ListSessionsSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListSessions200DataItemAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ListSessions200DataItemAllOfTwo = {
-  /**
-   * The organization ID for this session (nullable for users without org)
-   * @minLength 36
-   */
-  organizationID?: string;
-  /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
-  authMethod?: string;
-  /** The authentication provider (google, github, microsoft, local) */
-  authProvider?: string;
-  /**
-   * The expiration date of the session
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The IP address of the session
-   * @minLength 1
-   */
-  ipAddress?: string;
-  /**
-   * The session token
-   * @minLength 1
-   */
-  token: string;
-  /**
-   * The user agent of the session
-   * @minLength 1
-   */
-  userAgent?: string;
-  /**
-   * The user who owns this session
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Session entity
- */
-export type ListSessions200DataItem = ListSessions200DataItemAllOf & ListSessions200DataItemAllOfTwo;
-
-export type ListSessions200Meta = {
-  /**
-   * Total number of sessions
-   * @minimum 0
-   */
-  total: number;
-};
-
-export type ListSessions200 = {
-  data: ListSessions200DataItem[];
-  meta: ListSessions200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListSessions401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteSession200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type DeleteSession200DataAllOfTwo = {
-  /**
-   * The organization ID for this session (nullable for users without org)
-   * @minLength 36
-   */
-  organizationID?: string;
-  /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
-  authMethod?: string;
-  /** The authentication provider (google, github, microsoft, local) */
-  authProvider?: string;
-  /**
-   * The expiration date of the session
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The IP address of the session
-   * @minLength 1
-   */
-  ipAddress?: string;
-  /**
-   * The session token
-   * @minLength 1
-   */
-  token: string;
-  /**
-   * The user agent of the session
-   * @minLength 1
-   */
-  userAgent?: string;
-  /**
-   * The user who owns this session
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Session entity
- */
-export type DeleteSession200Data = DeleteSession200DataAllOf & DeleteSession200DataAllOfTwo;
-
-export type DeleteSession200 = {
-  /** Schema for Session entity */
-  data: DeleteSession200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteSession401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteSession404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetSession200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetSession200DataAllOfTwo = {
-  /**
-   * The organization ID for this session (nullable for users without org)
-   * @minLength 36
-   */
-  organizationID?: string;
-  /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
-  authMethod?: string;
-  /** The authentication provider (google, github, microsoft, local) */
-  authProvider?: string;
-  /**
-   * The expiration date of the session
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The IP address of the session
-   * @minLength 1
-   */
-  ipAddress?: string;
-  /**
-   * The session token
-   * @minLength 1
-   */
-  token: string;
-  /**
-   * The user agent of the session
-   * @minLength 1
-   */
-  userAgent?: string;
-  /**
-   * The user who owns this session
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Session entity
- */
-export type GetSession200Data = GetSession200DataAllOf & GetSession200DataAllOfTwo;
-
-export type GetSession200 = {
-  /** Schema for Session entity */
-  data: GetSession200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetSession404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+sort?: SessionsSortParameter;
 };
 
 export type UpdateSessionBody = {
   /**
    * The organization ID to set as active for this session
    * @minLength 36
+   * @maxLength 36
    */
   organizationID: string;
 };
 
-/**
- * Base schema for all entities with common fields
- */
-export type UpdateSession200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type UpdateSession200DataAllOfTwo = {
-  /**
-   * The organization ID for this session (nullable for users without org)
-   * @minLength 36
-   */
-  organizationID?: string;
-  /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
-  authMethod?: string;
-  /** The authentication provider (google, github, microsoft, local) */
-  authProvider?: string;
-  /**
-   * The expiration date of the session
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The IP address of the session
-   * @minLength 1
-   */
-  ipAddress?: string;
-  /**
-   * The session token
-   * @minLength 1
-   */
-  token: string;
-  /**
-   * The user agent of the session
-   * @minLength 1
-   */
-  userAgent?: string;
-  /**
-   * The user who owns this session
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Session entity
- */
-export type UpdateSession200Data = UpdateSession200DataAllOf & UpdateSession200DataAllOfTwo;
-
-export type UpdateSession200 = {
-  /** Schema for Session entity */
-  data: UpdateSession200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateSession401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateSession404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListAccounts200DataItemAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The authentication provider identifier
- */
-export type ListAccounts200DataItemAllOfTwoProvider = typeof ListAccounts200DataItemAllOfTwoProvider[keyof typeof ListAccounts200DataItemAllOfTwoProvider];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListAccounts200DataItemAllOfTwoProvider = {
-  local: 'local',
-  google: 'google',
-  github: 'github',
-  microsoft: 'microsoft',
-  apple: 'apple',
-} as const;
-
-export type ListAccounts200DataItemAllOfTwo = {
-  /**
-   * The unique identifier for the account from the provider
-   * @minLength 1
-   */
-  accountIdentifier: string;
-  /**
-   * The user ID this account belongs to
-   * @minLength 36
-   */
-  userID: string;
-  /** The authentication provider identifier */
-  provider: ListAccounts200DataItemAllOfTwoProvider;
-  /** The OAuth access token */
-  accessToken?: string;
-  /** The access token expiration timestamp */
-  accessTokenExpiresAt?: string;
-  /** The OAuth refresh token */
-  refreshToken?: string;
-  /** The refresh token expiration timestamp */
-  refreshTokenExpiresAt?: string;
-  /** The OpenID Connect ID token */
-  idToken?: string;
-  /** The OAuth scope granted */
-  scope?: string;
-};
-
-/**
- * Schema for Account entity (authentication provider account)
- */
-export type ListAccounts200DataItem = ListAccounts200DataItemAllOf & ListAccounts200DataItemAllOfTwo;
-
-export type ListAccounts200Meta = {
-  /** @minimum 0 */
-  total: number;
-};
-
-export type ListAccounts200 = {
-  data: ListAccounts200DataItem[];
-  meta: ListAccounts200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListAccounts401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetAccount200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The authentication provider identifier
- */
-export type GetAccount200DataAllOfTwoProvider = typeof GetAccount200DataAllOfTwoProvider[keyof typeof GetAccount200DataAllOfTwoProvider];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetAccount200DataAllOfTwoProvider = {
-  local: 'local',
-  google: 'google',
-  github: 'github',
-  microsoft: 'microsoft',
-  apple: 'apple',
-} as const;
-
-export type GetAccount200DataAllOfTwo = {
-  /**
-   * The unique identifier for the account from the provider
-   * @minLength 1
-   */
-  accountIdentifier: string;
-  /**
-   * The user ID this account belongs to
-   * @minLength 36
-   */
-  userID: string;
-  /** The authentication provider identifier */
-  provider: GetAccount200DataAllOfTwoProvider;
-  /** The OAuth access token */
-  accessToken?: string;
-  /** The access token expiration timestamp */
-  accessTokenExpiresAt?: string;
-  /** The OAuth refresh token */
-  refreshToken?: string;
-  /** The refresh token expiration timestamp */
-  refreshTokenExpiresAt?: string;
-  /** The OpenID Connect ID token */
-  idToken?: string;
-  /** The OAuth scope granted */
-  scope?: string;
-};
-
-/**
- * Schema for Account entity (authentication provider account)
- */
-export type GetAccount200Data = GetAccount200DataAllOf & GetAccount200DataAllOfTwo;
-
-export type GetAccount200 = {
-  /** Schema for Account entity (authentication provider account) */
-  data: GetAccount200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetAccount404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
 export type UpdateAccountBody = {
-  /** The account provider */
+  /**
+   * The account provider
+   * @maxLength 255
+   * @pattern ^[a-z][a-z0-9-]*$
+   */
   provider?: string;
-  /** The provider account ID */
+  /**
+   * The provider account ID
+   * @maxLength 255
+   * @pattern ^[a-z][a-z0-9-]*$
+   */
   providerAccountIdentifier?: string;
-  /** The account type */
-  type?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type UpdateAccount200DataAllOf = {
   /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The authentication provider identifier
- */
-export type UpdateAccount200DataAllOfTwoProvider = typeof UpdateAccount200DataAllOfTwoProvider[keyof typeof UpdateAccount200DataAllOfTwoProvider];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateAccount200DataAllOfTwoProvider = {
-  local: 'local',
-  google: 'google',
-  github: 'github',
-  microsoft: 'microsoft',
-  apple: 'apple',
-} as const;
-
-export type UpdateAccount200DataAllOfTwo = {
-  /**
-   * The unique identifier for the account from the provider
-   * @minLength 1
-   */
-  accountIdentifier: string;
-  /**
-   * The user ID this account belongs to
-   * @minLength 36
-   */
-  userID: string;
-  /** The authentication provider identifier */
-  provider: UpdateAccount200DataAllOfTwoProvider;
-  /** The OAuth access token */
-  accessToken?: string;
-  /** The access token expiration timestamp */
-  accessTokenExpiresAt?: string;
-  /** The OAuth refresh token */
-  refreshToken?: string;
-  /** The refresh token expiration timestamp */
-  refreshTokenExpiresAt?: string;
-  /** The OpenID Connect ID token */
-  idToken?: string;
-  /** The OAuth scope granted */
-  scope?: string;
-};
-
-/**
- * Schema for Account entity (authentication provider account)
- */
-export type UpdateAccount200Data = UpdateAccount200DataAllOf & UpdateAccount200DataAllOfTwo;
-
-export type UpdateAccount200 = {
-  /** Schema for Account entity (authentication provider account) */
-  data: UpdateAccount200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateAccount404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
+   * The account type
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteAccount200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The authentication provider identifier
- */
-export type DeleteAccount200DataAllOfTwoProvider = typeof DeleteAccount200DataAllOfTwoProvider[keyof typeof DeleteAccount200DataAllOfTwoProvider];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteAccount200DataAllOfTwoProvider = {
-  local: 'local',
-  google: 'google',
-  github: 'github',
-  microsoft: 'microsoft',
-  apple: 'apple',
-} as const;
-
-export type DeleteAccount200DataAllOfTwo = {
-  /**
-   * The unique identifier for the account from the provider
-   * @minLength 1
-   */
-  accountIdentifier: string;
-  /**
-   * The user ID this account belongs to
-   * @minLength 36
-   */
-  userID: string;
-  /** The authentication provider identifier */
-  provider: DeleteAccount200DataAllOfTwoProvider;
-  /** The OAuth access token */
-  accessToken?: string;
-  /** The access token expiration timestamp */
-  accessTokenExpiresAt?: string;
-  /** The OAuth refresh token */
-  refreshToken?: string;
-  /** The refresh token expiration timestamp */
-  refreshTokenExpiresAt?: string;
-  /** The OpenID Connect ID token */
-  idToken?: string;
-  /** The OAuth scope granted */
-  scope?: string;
-};
-
-/**
- * Schema for Account entity (authentication provider account)
- */
-export type DeleteAccount200Data = DeleteAccount200DataAllOf & DeleteAccount200DataAllOfTwo;
-
-export type DeleteAccount200 = {
-  /** Schema for Account entity (authentication provider account) */
-  data: DeleteAccount200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteAccount404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type RequestEmailVerification400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type RequestEmailVerification401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type ConfirmEmailVerificationBody = {
   /**
-   * The password reset token
+   * The email verification token
    * @minLength 1
+   * @maxLength 512
+   * @pattern ^[A-Za-z0-9_-]+$
    */
   token: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ConfirmEmailVerification200SessionAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ConfirmEmailVerification200SessionAllOfTwo = {
-  /**
-   * The organization ID for this session (nullable for users without org)
-   * @minLength 36
-   */
-  organizationID?: string;
-  /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
-  authMethod?: string;
-  /** The authentication provider (google, github, microsoft, local) */
-  authProvider?: string;
-  /**
-   * The expiration date of the session
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The IP address of the session
-   * @minLength 1
-   */
-  ipAddress?: string;
-  /**
-   * The session token
-   * @minLength 1
-   */
-  token: string;
-  /**
-   * The user agent of the session
-   * @minLength 1
-   */
-  userAgent?: string;
-  /**
-   * The user who owns this session
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Session entity
- */
-export type ConfirmEmailVerification200Session = ConfirmEmailVerification200SessionAllOf & ConfirmEmailVerification200SessionAllOfTwo;
-
-/**
- * Base schema for all entities with common fields
- */
-export type ConfirmEmailVerification200UserAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ConfirmEmailVerification200UserAllOfTwo = {
-  /**
-   * The user's email address
-   * @minLength 5
-   * @maxLength 255
-   */
-  email: string;
-  /** Whether the user's email has been verified */
-  emailVerified: boolean;
-  /**
-   * The user's avatar image URL
-   * @minLength 5
-   * @maxLength 2048
-   */
-  image?: string;
-  /**
-   * The user's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-};
-
-/**
- * Schema for User entity
- */
-export type ConfirmEmailVerification200User = ConfirmEmailVerification200UserAllOf & ConfirmEmailVerification200UserAllOfTwo;
-
-export type ConfirmEmailVerification200 = {
-  /** Schema for Session entity */
-  session: ConfirmEmailVerification200Session;
-  /** Schema for User entity */
-  user: ConfirmEmailVerification200User;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ConfirmEmailVerification401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ConfirmEmailVerification404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type RequestPasswordResetBody = {
   /**
    * The e-mail to send the password reset token to
    * @minLength 1
+   * @maxLength 255
    */
   email: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type RequestPasswordReset400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type ConfirmPasswordResetBody = {
   /**
    * The new password
-   * @minLength 1
+   * @minLength 8
+   * @maxLength 72
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   newPassword: string;
   /**
    * The password reset token
    * @minLength 1
+   * @maxLength 512
+   * @pattern ^[A-Za-z0-9_-]+$
    */
   token: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ConfirmPasswordReset401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ConfirmPasswordReset404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type RequestEmailChangeBody = {
   /**
    * The e-mail to send the confirmation token to
    * @minLength 1
-   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   * @maxLength 255
    */
   newEmail: string;
   /**
    * The user ID of the user requesting the email change
    * @minLength 36
+   * @maxLength 36
    */
   userID: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type RequestEmailChange400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type RequestEmailChange401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type ConfirmEmailChangeBody = {
   /**
    * The e-mail to send the confirmation token to
    * @minLength 1
-   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   * @maxLength 255
    */
   newEmail: string;
   /**
    * The password reset token
    * @minLength 1
+   * @maxLength 512
+   * @pattern ^[A-Za-z0-9_-]+$
    */
   token: string;
   /**
    * The user ID of the user requesting the email change
    * @minLength 36
+   * @maxLength 36
    */
   userID: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ConfirmEmailChange204 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ConfirmEmailChange401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ConfirmEmailChange404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type ListUsersParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
-filter?: {
-  /** The type of filter operation */
-  type: ListUsersFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
+filter?: UsersFilterParameter;
 /**
  * Pagination parameters (limit & offset)
  */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
+page?: PageQueryParameter;
 /**
  * The sort parameter
+ * @maxItems 10
  */
-sort?: ListUsersSortItem[];
+sort?: UsersSortParameter;
 };
 
-/**
- * The type of filter operation
- */
-export type ListUsersFilterType = typeof ListUsersFilterType[keyof typeof ListUsersFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListUsersFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListUsersSortItemField = typeof ListUsersSortItemField[keyof typeof ListUsersSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListUsersSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  name: 'name',
-} as const;
-
-export type ListUsersSortItemOrder = typeof ListUsersSortItemOrder[keyof typeof ListUsersSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListUsersSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListUsersSortItem = {
-  field: ListUsersSortItemField;
-  order: ListUsersSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListUsers200DataItemAllOf = {
+export type UpdateUserBody = {
   /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
+   * The user's e-mail
    * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ListUsers200DataItemAllOfTwo = {
-  /**
-   * The user's email address
-   * @minLength 5
    * @maxLength 255
    */
-  email: string;
-  /** Whether the user's email has been verified */
-  emailVerified: boolean;
+  email?: string;
   /**
    * The user's avatar image URL
-   * @minLength 5
    * @maxLength 2048
+   * @pattern ^https?://[\w\-\.]+[\w\-\./:?#@!$&'()*+,;=]*$
    */
   image?: string;
-  /**
-   * The user's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-};
-
-/**
- * Schema for User entity
- */
-export type ListUsers200DataItem = ListUsers200DataItemAllOf & ListUsers200DataItemAllOfTwo;
-
-export type ListUsers200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListUsers200 = {
-  data: ListUsers200DataItem[];
-  meta: ListUsers200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListUsers400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListUsers401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetCurrentUser200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetCurrentUser200DataAllOfTwo = {
-  /**
-   * The user's email address
-   * @minLength 5
-   * @maxLength 255
-   */
-  email: string;
-  /** Whether the user's email has been verified */
-  emailVerified: boolean;
-  /**
-   * The user's avatar image URL
-   * @minLength 5
-   * @maxLength 2048
-   */
-  image?: string;
-  /**
-   * The user's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-};
-
-/**
- * Schema for User entity
- */
-export type GetCurrentUser200Data = GetCurrentUser200DataAllOf & GetCurrentUser200DataAllOfTwo;
-
-export type GetCurrentUser200 = {
-  /** Schema for User entity */
-  data: GetCurrentUser200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetCurrentUser401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type UpdateCurrentUserBody = {
@@ -2616,6 +3218,7 @@ export type UpdateCurrentUserBody = {
    * The user's display name
    * @minLength 1
    * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name?: string;
   /**
@@ -2626,467 +3229,22 @@ export type UpdateCurrentUserBody = {
   image?: string;
 };
 
-/**
- * Base schema for all entities with common fields
- */
-export type UpdateCurrentUser200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type UpdateCurrentUser200DataAllOfTwo = {
-  /**
-   * The user's email address
-   * @minLength 5
-   * @maxLength 255
-   */
-  email: string;
-  /** Whether the user's email has been verified */
-  emailVerified: boolean;
-  /**
-   * The user's avatar image URL
-   * @minLength 5
-   * @maxLength 2048
-   */
-  image?: string;
-  /**
-   * The user's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-};
-
-/**
- * Schema for User entity
- */
-export type UpdateCurrentUser200Data = UpdateCurrentUser200DataAllOf & UpdateCurrentUser200DataAllOfTwo;
-
-export type UpdateCurrentUser200 = {
-  /** Schema for User entity */
-  data: UpdateCurrentUser200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateCurrentUser400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateCurrentUser401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Confirmation string to prevent accidental deletion
- */
-export type DeleteCurrentUserBodyConfirmation = typeof DeleteCurrentUserBodyConfirmation[keyof typeof DeleteCurrentUserBodyConfirmation];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteCurrentUserBodyConfirmation = {
-  DELETE_MY_ACCOUNT: 'DELETE_MY_ACCOUNT',
-} as const;
-
-export type DeleteCurrentUserBody = {
-  /** Confirmation string to prevent accidental deletion */
-  confirmation: DeleteCurrentUserBodyConfirmation;
-};
-
-export type DeleteCurrentUser200 = {
-  /** @minLength 1 */
-  message: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteCurrentUser400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteCurrentUser401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteUser200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type DeleteUser200DataAllOfTwo = {
-  /**
-   * The user's email address
-   * @minLength 5
-   * @maxLength 255
-   */
-  email: string;
-  /** Whether the user's email has been verified */
-  emailVerified: boolean;
-  /**
-   * The user's avatar image URL
-   * @minLength 5
-   * @maxLength 2048
-   */
-  image?: string;
-  /**
-   * The user's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-};
-
-/**
- * Schema for User entity
- */
-export type DeleteUser200Data = DeleteUser200DataAllOf & DeleteUser200DataAllOfTwo;
-
-export type DeleteUser200 = {
-  /** Schema for User entity */
-  data: DeleteUser200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteUser404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetUser200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetUser200DataAllOfTwo = {
-  /**
-   * The user's email address
-   * @minLength 5
-   * @maxLength 255
-   */
-  email: string;
-  /** Whether the user's email has been verified */
-  emailVerified: boolean;
-  /**
-   * The user's avatar image URL
-   * @minLength 5
-   * @maxLength 2048
-   */
-  image?: string;
-  /**
-   * The user's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-};
-
-/**
- * Schema for User entity
- */
-export type GetUser200Data = GetUser200DataAllOf & GetUser200DataAllOfTwo;
-
-export type GetUser200 = {
-  /** Schema for User entity */
-  data: GetUser200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetUser404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type UpdateUserBody = {
-  /**
-   * The user's e-mail
-   * @minLength 1
-   */
-  email?: string;
-  /** The user's avatar image URL */
-  image?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type UpdateUser200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type UpdateUser200DataAllOfTwo = {
-  /**
-   * The user's email address
-   * @minLength 5
-   * @maxLength 255
-   */
-  email: string;
-  /** Whether the user's email has been verified */
-  emailVerified: boolean;
-  /**
-   * The user's avatar image URL
-   * @minLength 5
-   * @maxLength 2048
-   */
-  image?: string;
-  /**
-   * The user's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-};
-
-/**
- * Schema for User entity
- */
-export type UpdateUser200Data = UpdateUser200DataAllOf & UpdateUser200DataAllOfTwo;
-
-export type UpdateUser200 = {
-  /** Schema for User entity */
-  data: UpdateUser200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateUser404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
 export type OauthAuthorizeParams = {
 /**
  * Where to redirect after authorization (optional, uses default if not provided)
+ * @maxLength 2048
  */
 redirect_uri?: string;
 /**
  * OAuth scopes to request (optional, uses default if not provided)
+ * @maxLength 255
+ * @pattern ^[\w\s\-.,!?()@#+/:]*$
  */
 scope?: string;
 /**
  * State parameter for CSRF protection
+ * @maxLength 255
+ * @pattern ^[\w\-]+$
  */
 state?: string;
 };
@@ -3095,425 +3253,52 @@ export type OauthAuthorize200 = {
   /**
    * URL to redirect user for OAuth authorization
    * @minLength 1
+   * @maxLength 2048
    */
-  authorization_url: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type OauthAuthorize400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type OauthAuthorize404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+  authorizationUrl: string;
 };
 
 export type OauthCallbackParams = {
 /**
  * Authorization code from OAuth provider
+ * @maxLength 1024
+ * @pattern ^[\w\-]+$
  */
 code?: string;
 /**
  * State parameter for CSRF protection
+ * @maxLength 255
+ * @pattern ^[\w\-]+$
  */
 state?: string;
 /**
  * Error code if authorization failed
+ * @maxLength 100
+ * @pattern ^[\w\-_]+$
  */
 error?: string;
 /**
  * Human-readable error description
+ * @maxLength 500
+ * @pattern ^[\w\s\-.,!?()@#+/]*$
  */
 error_description?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type OauthCallback200AllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type OauthCallback200AllOfTwo = {
-  /**
-   * The organization ID for this session (nullable for users without org)
-   * @minLength 36
-   */
-  organizationID?: string;
-  /** The authentication method used (magic_link, oauth_google, oauth_github, etc.) */
-  authMethod?: string;
-  /** The authentication provider (google, github, microsoft, local) */
-  authProvider?: string;
-  /**
-   * The expiration date of the session
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The IP address of the session
-   * @minLength 1
-   */
-  ipAddress?: string;
-  /**
-   * The session token
-   * @minLength 1
-   */
-  token: string;
-  /**
-   * The user agent of the session
-   * @minLength 1
-   */
-  userAgent?: string;
-  /**
-   * The user who owns this session
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Session entity
- */
-export type OauthCallback200 = OauthCallback200AllOf & OauthCallback200AllOfTwo;
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type OauthCallback400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type OauthCallback401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type OauthCallback404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type ListAPIKeysParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
-filter?: {
-  /** The type of filter operation */
-  type: ListAPIKeysFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
+filter?: APIKeysFilterParameter;
 /**
  * Pagination parameters (limit & offset)
  */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
+page?: PageQueryParameter;
 /**
  * The sort parameter
+ * @maxItems 10
  */
-sort?: ListAPIKeysSortItem[];
-};
-
-/**
- * The type of filter operation
- */
-export type ListAPIKeysFilterType = typeof ListAPIKeysFilterType[keyof typeof ListAPIKeysFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListAPIKeysFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListAPIKeysSortItemField = typeof ListAPIKeysSortItemField[keyof typeof ListAPIKeysSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListAPIKeysSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  userID: 'userID',
-  organizationID: 'organizationID',
-  keyHash: 'keyHash',
-  name: 'name',
-  prefix: 'prefix',
-  rateLimit: 'rateLimit',
-  lastUsedAt: 'lastUsedAt',
-  expiresAt: 'expiresAt',
-} as const;
-
-export type ListAPIKeysSortItemOrder = typeof ListAPIKeysSortItemOrder[keyof typeof ListAPIKeysSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListAPIKeysSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListAPIKeysSortItem = {
-  field: ListAPIKeysSortItemField;
-  order: ListAPIKeysSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListAPIKeys200DataItemAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ListAPIKeys200DataItemAllOfTwo = {
-  /**
-   * The user who owns this API key
-   * @minLength 36
-   */
-  userID: string;
-  /**
-   * The organization this API key belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * Hashed version of the API key for secure storage
-   * @minLength 1
-   */
-  keyHash: string;
-  /** @minLength 1 */
-  name?: string;
-  /** @minLength 1 */
-  prefix?: string;
-  scopes: string[];
-  /** Requests per minute allowed for this API key */
-  rateLimit: number;
-  /**
-   * When this API key was last used
-   * @minLength 1
-   */
-  lastUsedAt?: string;
-  /**
-   * When this API key expires
-   * @minLength 1
-   */
-  expiresAt?: string;
-};
-
-/**
- * Schema for API Key entity
- */
-export type ListAPIKeys200DataItem = ListAPIKeys200DataItemAllOf & ListAPIKeys200DataItemAllOfTwo;
-
-export type ListAPIKeys200Meta = {
-  total: number;
-};
-
-export type ListAPIKeys200 = {
-  data: ListAPIKeys200DataItem[];
-  meta: ListAPIKeys200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListAPIKeys401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+sort?: APIKeysSortParameter;
 };
 
 export type CreateAPIKeyBody = {
@@ -3521,9 +3306,13 @@ export type CreateAPIKeyBody = {
    * Human-readable name for the API key
    * @minLength 1
    * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name: string;
-  /** List of scopes/permissions for this API key */
+  /**
+   * List of scopes/permissions for this API key
+   * @maxItems 100
+   */
   scopes: string[];
   /**
    * Requests per minute limit (default 60)
@@ -3531,284 +3320,26 @@ export type CreateAPIKeyBody = {
    * @maximum 10000
    */
   rateLimit?: number;
-  /** When the API key expires (optional, no expiry if omitted) */
-  expiresAt?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type CreateAPIKey201AllOf = {
   /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
+   * When the API key expires (optional, no expiry if omitted)
    * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type CreateAPIKey201AllOfTwo = {
-  /**
-   * The user who owns this API key
-   * @minLength 36
-   */
-  userID: string;
-  /**
-   * The organization this API key belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * Hashed version of the API key for secure storage
-   * @minLength 1
-   */
-  keyHash: string;
-  /** @minLength 1 */
-  name?: string;
-  /** @minLength 1 */
-  prefix?: string;
-  scopes: string[];
-  /** Requests per minute allowed for this API key */
-  rateLimit: number;
-  /**
-   * When this API key was last used
-   * @minLength 1
-   */
-  lastUsedAt?: string;
-  /**
-   * When this API key expires
-   * @minLength 1
+   * @maxLength 255
    */
   expiresAt?: string;
-};
-
-/**
- * Schema for API Key entity
- */
-export type CreateAPIKey201 = CreateAPIKey201AllOf & CreateAPIKey201AllOfTwo;
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateAPIKey400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateAPIKey401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetAPIKey200AllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetAPIKey200AllOfTwo = {
-  /**
-   * The user who owns this API key
-   * @minLength 36
-   */
-  userID: string;
-  /**
-   * The organization this API key belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * Hashed version of the API key for secure storage
-   * @minLength 1
-   */
-  keyHash: string;
-  /** @minLength 1 */
-  name?: string;
-  /** @minLength 1 */
-  prefix?: string;
-  scopes: string[];
-  /** Requests per minute allowed for this API key */
-  rateLimit: number;
-  /**
-   * When this API key was last used
-   * @minLength 1
-   */
-  lastUsedAt?: string;
-  /**
-   * When this API key expires
-   * @minLength 1
-   */
-  expiresAt?: string;
-};
-
-/**
- * Schema for API Key entity
- */
-export type GetAPIKey200 = GetAPIKey200AllOf & GetAPIKey200AllOfTwo;
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetAPIKey400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetAPIKey401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetAPIKey404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type UpdateAPIKeyBody = {
   /**
    * Human-readable name for the API key
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name?: string;
-  /** Array of permission scopes */
+  /**
+   * Array of permission scopes
+   * @maxItems 1000
+   */
   scopes?: string[];
   /**
    * Requests per minute allowed for this API key
@@ -3818,951 +3349,65 @@ export type UpdateAPIKeyBody = {
   rateLimit?: number;
 };
 
+export type ListOrganizationsParams = {
 /**
- * Base schema for all entities with common fields
+ * A recursive filter node that can be a condition or group
  */
-export type UpdateAPIKey200AllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type UpdateAPIKey200AllOfTwo = {
-  /**
-   * The user who owns this API key
-   * @minLength 36
-   */
-  userID: string;
-  /**
-   * The organization this API key belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * Hashed version of the API key for secure storage
-   * @minLength 1
-   */
-  keyHash: string;
-  /** @minLength 1 */
-  name?: string;
-  /** @minLength 1 */
-  prefix?: string;
-  scopes: string[];
-  /** Requests per minute allowed for this API key */
-  rateLimit: number;
-  /**
-   * When this API key was last used
-   * @minLength 1
-   */
-  lastUsedAt?: string;
-  /**
-   * When this API key expires
-   * @minLength 1
-   */
-  expiresAt?: string;
-};
-
+filter?: OrganizationsFilterParameter;
 /**
- * Schema for API Key entity
+ * Pagination parameters (limit & offset)
  */
-export type UpdateAPIKey200 = UpdateAPIKey200AllOf & UpdateAPIKey200AllOfTwo;
-
+page?: PageQueryParameter;
 /**
- * RFC 7807 (Problem Details) compliant error response
+ * The sort parameter
+ * @maxItems 10
  */
-export type UpdateAPIKey400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateAPIKey401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateAPIKey404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteAPIKey400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteAPIKey401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteAPIKey404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+sort?: OrganizationsSortParameter;
 };
 
 export type CreateOrganizationBody = {
   /**
    * The billing email to use for the organization
    * @minLength 1
+   * @maxLength 255
    */
   billingEmail: string;
   /**
    * UUID identifier
    * @minLength 36
+   * @maxLength 36
    */
   organizationID: string;
 };
 
-/**
- * Base schema for all entities with common fields
- */
-export type CreateOrganization201DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The current subscription plan
- */
-export type CreateOrganization201DataAllOfTwoPlan = typeof CreateOrganization201DataAllOfTwoPlan[keyof typeof CreateOrganization201DataAllOfTwoPlan];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateOrganization201DataAllOfTwoPlan = {
-  FREE: 'FREE',
-  BASIC: 'BASIC',
-  STANDARD: 'STANDARD',
-  PREMIUM: 'PREMIUM',
-  UNLIMITED: 'UNLIMITED',
-} as const;
-
-export type CreateOrganization201DataAllOfTwo = {
-  /**
-   * The organization's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-  /**
-   * URL-friendly unique identifier for the organization
-   * @minLength 3
-   * @maxLength 50
-   * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
-   */
-  slug: string;
-  /** The organization's logo URL */
-  logo?: string;
-  /** Email address for billing communications */
-  billingEmail?: string;
-  /** The current subscription plan */
-  plan: CreateOrganization201DataAllOfTwoPlan;
-  /**
-   * Available credits for this organization
-   * @minimum 0
-   */
-  credits: number;
-  /**
-   * Stripe customer identifier
-   * @minLength 1
-   */
-  stripeCustomerIdentifier: string;
-};
-
-/**
- * Schema for Organization entity
- */
-export type CreateOrganization201Data = CreateOrganization201DataAllOf & CreateOrganization201DataAllOfTwo;
-
-export type CreateOrganization201 = {
-  /** Schema for Organization entity */
-  data: CreateOrganization201Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateOrganization400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateOrganization401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type ListOrganizationsParams = {
-/**
- * A recursive filter node that can be a condition or group
- */
-filter?: {
-  /** The type of filter operation */
-  type: ListOrganizationsFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
-/**
- * Pagination parameters (limit & offset)
- */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
-/**
- * The sort parameter
- */
-sort?: ListOrganizationsSortItem[];
-};
-
-/**
- * The type of filter operation
- */
-export type ListOrganizationsFilterType = typeof ListOrganizationsFilterType[keyof typeof ListOrganizationsFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListOrganizationsFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListOrganizationsSortItemField = typeof ListOrganizationsSortItemField[keyof typeof ListOrganizationsSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListOrganizationsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  billingEmail: 'billingEmail',
-  credits: 'credits',
-  logo: 'logo',
-  metadata: 'metadata',
-  name: 'name',
-  plan: 'plan',
-  slug: 'slug',
-  stripeCustomerIdentifier: 'stripeCustomerIdentifier',
-} as const;
-
-export type ListOrganizationsSortItemOrder = typeof ListOrganizationsSortItemOrder[keyof typeof ListOrganizationsSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListOrganizationsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListOrganizationsSortItem = {
-  field: ListOrganizationsSortItemField;
-  order: ListOrganizationsSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListOrganizations200DataItemAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The current subscription plan
- */
-export type ListOrganizations200DataItemAllOfTwoPlan = typeof ListOrganizations200DataItemAllOfTwoPlan[keyof typeof ListOrganizations200DataItemAllOfTwoPlan];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListOrganizations200DataItemAllOfTwoPlan = {
-  FREE: 'FREE',
-  BASIC: 'BASIC',
-  STANDARD: 'STANDARD',
-  PREMIUM: 'PREMIUM',
-  UNLIMITED: 'UNLIMITED',
-} as const;
-
-export type ListOrganizations200DataItemAllOfTwo = {
-  /**
-   * The organization's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-  /**
-   * URL-friendly unique identifier for the organization
-   * @minLength 3
-   * @maxLength 50
-   * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
-   */
-  slug: string;
-  /** The organization's logo URL */
-  logo?: string;
-  /** Email address for billing communications */
-  billingEmail?: string;
-  /** The current subscription plan */
-  plan: ListOrganizations200DataItemAllOfTwoPlan;
-  /**
-   * Available credits for this organization
-   * @minimum 0
-   */
-  credits: number;
-  /**
-   * Stripe customer identifier
-   * @minLength 1
-   */
-  stripeCustomerIdentifier: string;
-};
-
-/**
- * Schema for Organization entity
- */
-export type ListOrganizations200DataItem = ListOrganizations200DataItemAllOf & ListOrganizations200DataItemAllOfTwo;
-
-export type ListOrganizations200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListOrganizations200 = {
-  data: ListOrganizations200DataItem[];
-  meta: ListOrganizations200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListOrganizations400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListOrganizations401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteOrganization200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The current subscription plan
- */
-export type DeleteOrganization200DataAllOfTwoPlan = typeof DeleteOrganization200DataAllOfTwoPlan[keyof typeof DeleteOrganization200DataAllOfTwoPlan];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteOrganization200DataAllOfTwoPlan = {
-  FREE: 'FREE',
-  BASIC: 'BASIC',
-  STANDARD: 'STANDARD',
-  PREMIUM: 'PREMIUM',
-  UNLIMITED: 'UNLIMITED',
-} as const;
-
-export type DeleteOrganization200DataAllOfTwo = {
-  /**
-   * The organization's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-  /**
-   * URL-friendly unique identifier for the organization
-   * @minLength 3
-   * @maxLength 50
-   * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
-   */
-  slug: string;
-  /** The organization's logo URL */
-  logo?: string;
-  /** Email address for billing communications */
-  billingEmail?: string;
-  /** The current subscription plan */
-  plan: DeleteOrganization200DataAllOfTwoPlan;
-  /**
-   * Available credits for this organization
-   * @minimum 0
-   */
-  credits: number;
-  /**
-   * Stripe customer identifier
-   * @minLength 1
-   */
-  stripeCustomerIdentifier: string;
-};
-
-/**
- * Schema for Organization entity
- */
-export type DeleteOrganization200Data = DeleteOrganization200DataAllOf & DeleteOrganization200DataAllOfTwo;
-
-export type DeleteOrganization200 = {
-  /** Schema for Organization entity */
-  data: DeleteOrganization200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteOrganization404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetOrganization200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The current subscription plan
- */
-export type GetOrganization200DataAllOfTwoPlan = typeof GetOrganization200DataAllOfTwoPlan[keyof typeof GetOrganization200DataAllOfTwoPlan];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOrganization200DataAllOfTwoPlan = {
-  FREE: 'FREE',
-  BASIC: 'BASIC',
-  STANDARD: 'STANDARD',
-  PREMIUM: 'PREMIUM',
-  UNLIMITED: 'UNLIMITED',
-} as const;
-
-export type GetOrganization200DataAllOfTwo = {
-  /**
-   * The organization's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-  /**
-   * URL-friendly unique identifier for the organization
-   * @minLength 3
-   * @maxLength 50
-   * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
-   */
-  slug: string;
-  /** The organization's logo URL */
-  logo?: string;
-  /** Email address for billing communications */
-  billingEmail?: string;
-  /** The current subscription plan */
-  plan: GetOrganization200DataAllOfTwoPlan;
-  /**
-   * Available credits for this organization
-   * @minimum 0
-   */
-  credits: number;
-  /**
-   * Stripe customer identifier
-   * @minLength 1
-   */
-  stripeCustomerIdentifier: string;
-};
-
-/**
- * Schema for Organization entity
- */
-export type GetOrganization200Data = GetOrganization200DataAllOf & GetOrganization200DataAllOfTwo;
-
-export type GetOrganization200 = {
-  /** Schema for Organization entity */
-  data: GetOrganization200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetOrganization404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
 export type UpdateOrganizationBody = {
-  /** The billing email to use for the organization */
+  /**
+   * The billing email to use for the organization
+   * @maxLength 255
+   */
   billingEmail?: string;
   /**
    * UUID identifier
    * @minLength 36
+   * @maxLength 36
    */
   organizationID?: string;
 };
 
+export type ListMembersParams = {
 /**
- * Base schema for all entities with common fields
+ * A recursive filter node that can be a condition or group
  */
-export type UpdateOrganization200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
+filter?: MembersFilterParameter;
 /**
- * The current subscription plan
+ * Pagination parameters (limit & offset)
  */
-export type UpdateOrganization200DataAllOfTwoPlan = typeof UpdateOrganization200DataAllOfTwoPlan[keyof typeof UpdateOrganization200DataAllOfTwoPlan];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateOrganization200DataAllOfTwoPlan = {
-  FREE: 'FREE',
-  BASIC: 'BASIC',
-  STANDARD: 'STANDARD',
-  PREMIUM: 'PREMIUM',
-  UNLIMITED: 'UNLIMITED',
-} as const;
-
-export type UpdateOrganization200DataAllOfTwo = {
-  /**
-   * The organization's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name: string;
-  /**
-   * URL-friendly unique identifier for the organization
-   * @minLength 3
-   * @maxLength 50
-   * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
-   */
-  slug: string;
-  /** The organization's logo URL */
-  logo?: string;
-  /** Email address for billing communications */
-  billingEmail?: string;
-  /** The current subscription plan */
-  plan: UpdateOrganization200DataAllOfTwoPlan;
-  /**
-   * Available credits for this organization
-   * @minimum 0
-   */
-  credits: number;
-  /**
-   * Stripe customer identifier
-   * @minLength 1
-   */
-  stripeCustomerIdentifier: string;
-};
-
+page?: PageQueryParameter;
 /**
- * Schema for Organization entity
+ * The sort parameter
+ * @maxItems 10
  */
-export type UpdateOrganization200Data = UpdateOrganization200DataAllOf & UpdateOrganization200DataAllOfTwo;
-
-export type UpdateOrganization200 = {
-  /** Schema for Organization entity */
-  data: UpdateOrganization200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateOrganization404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+sort?: MembersSortParameter;
 };
 
 /**
@@ -4784,507 +3429,6 @@ export type CreateMemberBody = {
 };
 
 /**
- * Base schema for all entities with common fields
- */
-export type CreateMember201DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The role of the member
- */
-export type CreateMember201DataAllOfTwoRole = typeof CreateMember201DataAllOfTwoRole[keyof typeof CreateMember201DataAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateMember201DataAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type CreateMember201DataAllOfTwo = {
-  /**
-   * The organization this member belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the member */
-  role: CreateMember201DataAllOfTwoRole;
-  /**
-   * The user who is a member of the organization
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Member entity
- */
-export type CreateMember201Data = CreateMember201DataAllOf & CreateMember201DataAllOfTwo;
-
-export type CreateMember201 = {
-  /** Schema for Member entity */
-  data: CreateMember201Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateMember400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateMember401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type ListMembersParams = {
-/**
- * A recursive filter node that can be a condition or group
- */
-filter?: {
-  /** The type of filter operation */
-  type: ListMembersFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
-/**
- * Pagination parameters (limit & offset)
- */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
-/**
- * The sort parameter
- */
-sort?: ListMembersSortItem[];
-};
-
-/**
- * The type of filter operation
- */
-export type ListMembersFilterType = typeof ListMembersFilterType[keyof typeof ListMembersFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListMembersFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListMembersSortItemField = typeof ListMembersSortItemField[keyof typeof ListMembersSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListMembersSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationID: 'organizationID',
-  role: 'role',
-  userID: 'userID',
-} as const;
-
-export type ListMembersSortItemOrder = typeof ListMembersSortItemOrder[keyof typeof ListMembersSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListMembersSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListMembersSortItem = {
-  field: ListMembersSortItemField;
-  order: ListMembersSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListMembers200DataItemAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The role of the member
- */
-export type ListMembers200DataItemAllOfTwoRole = typeof ListMembers200DataItemAllOfTwoRole[keyof typeof ListMembers200DataItemAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListMembers200DataItemAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type ListMembers200DataItemAllOfTwo = {
-  /**
-   * The organization this member belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the member */
-  role: ListMembers200DataItemAllOfTwoRole;
-  /**
-   * The user who is a member of the organization
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Member entity
- */
-export type ListMembers200DataItem = ListMembers200DataItemAllOf & ListMembers200DataItemAllOfTwo;
-
-export type ListMembers200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListMembers200 = {
-  data: ListMembers200DataItem[];
-  meta: ListMembers200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListMembers400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListMembers401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteMember200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The role of the member
- */
-export type DeleteMember200DataAllOfTwoRole = typeof DeleteMember200DataAllOfTwoRole[keyof typeof DeleteMember200DataAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteMember200DataAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type DeleteMember200DataAllOfTwo = {
-  /**
-   * The organization this member belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the member */
-  role: DeleteMember200DataAllOfTwoRole;
-  /**
-   * The user who is a member of the organization
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Member entity
- */
-export type DeleteMember200Data = DeleteMember200DataAllOf & DeleteMember200DataAllOfTwo;
-
-export type DeleteMember200 = {
-  /** Schema for Member entity */
-  data: DeleteMember200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteMember404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetMember200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The role of the member
- */
-export type GetMember200DataAllOfTwoRole = typeof GetMember200DataAllOfTwoRole[keyof typeof GetMember200DataAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetMember200DataAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type GetMember200DataAllOfTwo = {
-  /**
-   * The organization this member belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the member */
-  role: GetMember200DataAllOfTwoRole;
-  /**
-   * The user who is a member of the organization
-   * @minLength 36
-   */
-  userID: string;
-};
-
-/**
- * Schema for Member entity
- */
-export type GetMember200Data = GetMember200DataAllOf & GetMember200DataAllOfTwo;
-
-export type GetMember200 = {
-  /** Schema for Member entity */
-  data: GetMember200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetMember404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
  * The role of the member
  */
 export type UpdateMemberBodyRole = typeof UpdateMemberBodyRole[keyof typeof UpdateMemberBodyRole];
@@ -5302,92 +3446,20 @@ export type UpdateMemberBody = {
   role?: UpdateMemberBodyRole;
 };
 
+export type ListInvitationsParams = {
 /**
- * Base schema for all entities with common fields
+ * A recursive filter node that can be a condition or group
  */
-export type UpdateMember200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
+filter?: InvitationsFilterParameter;
 /**
- * The role of the member
+ * Pagination parameters (limit & offset)
  */
-export type UpdateMember200DataAllOfTwoRole = typeof UpdateMember200DataAllOfTwoRole[keyof typeof UpdateMember200DataAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateMember200DataAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type UpdateMember200DataAllOfTwo = {
-  /**
-   * The organization this member belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the member */
-  role: UpdateMember200DataAllOfTwoRole;
-  /**
-   * The user who is a member of the organization
-   * @minLength 36
-   */
-  userID: string;
-};
-
+page?: PageQueryParameter;
 /**
- * Schema for Member entity
+ * The sort parameter
+ * @maxItems 10
  */
-export type UpdateMember200Data = UpdateMember200DataAllOf & UpdateMember200DataAllOfTwo;
-
-export type UpdateMember200 = {
-  /** Schema for Member entity */
-  data: UpdateMember200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateMember404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+sort?: InvitationsSortParameter;
 };
 
 /**
@@ -5407,574 +3479,12 @@ export type CreateInvitationBody = {
   /**
    * The email of the invitated user
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   email: string;
   /** The role of the invitation */
   role: CreateInvitationBodyRole;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type CreateInvitation201DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The role of the invitation
- */
-export type CreateInvitation201DataAllOfTwoRole = typeof CreateInvitation201DataAllOfTwoRole[keyof typeof CreateInvitation201DataAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateInvitation201DataAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type CreateInvitation201DataAllOfTwo = {
-  /**
-   * The email of the invitated user
-   * @minLength 1
-   */
-  email: string;
-  /**
-   * The date and time when the invitation expires
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The ID of the user who sent this invitation
-   * @minLength 36
-   */
-  inviterID: string;
-  /**
-   * The organization the user is being invited to join
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the invitation */
-  role: CreateInvitation201DataAllOfTwoRole;
-  /**
-   * The status of the invitation, e.g., pending, accepted, declined
-   * @minLength 1
-   */
-  status: string;
-};
-
-/**
- * Schema for Invitation entity
- */
-export type CreateInvitation201Data = CreateInvitation201DataAllOf & CreateInvitation201DataAllOfTwo;
-
-export type CreateInvitation201 = {
-  /** Schema for Invitation entity */
-  data: CreateInvitation201Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateInvitation400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateInvitation401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type ListInvitationsParams = {
-/**
- * A recursive filter node that can be a condition or group
- */
-filter?: {
-  /** The type of filter operation */
-  type: ListInvitationsFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
-/**
- * Pagination parameters (limit & offset)
- */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
-/**
- * The sort parameter
- */
-sort?: ListInvitationsSortItem[];
-};
-
-/**
- * The type of filter operation
- */
-export type ListInvitationsFilterType = typeof ListInvitationsFilterType[keyof typeof ListInvitationsFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListInvitationsFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListInvitationsSortItemField = typeof ListInvitationsSortItemField[keyof typeof ListInvitationsSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListInvitationsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  inviterID: 'inviterID',
-  organizationID: 'organizationID',
-  role: 'role',
-  status: 'status',
-} as const;
-
-export type ListInvitationsSortItemOrder = typeof ListInvitationsSortItemOrder[keyof typeof ListInvitationsSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListInvitationsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListInvitationsSortItem = {
-  field: ListInvitationsSortItemField;
-  order: ListInvitationsSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListInvitations200DataItemAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The role of the invitation
- */
-export type ListInvitations200DataItemAllOfTwoRole = typeof ListInvitations200DataItemAllOfTwoRole[keyof typeof ListInvitations200DataItemAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListInvitations200DataItemAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type ListInvitations200DataItemAllOfTwo = {
-  /**
-   * The email of the invitated user
-   * @minLength 1
-   */
-  email: string;
-  /**
-   * The date and time when the invitation expires
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The ID of the user who sent this invitation
-   * @minLength 36
-   */
-  inviterID: string;
-  /**
-   * The organization the user is being invited to join
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the invitation */
-  role: ListInvitations200DataItemAllOfTwoRole;
-  /**
-   * The status of the invitation, e.g., pending, accepted, declined
-   * @minLength 1
-   */
-  status: string;
-};
-
-/**
- * Schema for Invitation entity
- */
-export type ListInvitations200DataItem = ListInvitations200DataItemAllOf & ListInvitations200DataItemAllOfTwo;
-
-export type ListInvitations200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListInvitations200 = {
-  data: ListInvitations200DataItem[];
-  meta: ListInvitations200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListInvitations400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListInvitations401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteInvitation200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The role of the invitation
- */
-export type DeleteInvitation200DataAllOfTwoRole = typeof DeleteInvitation200DataAllOfTwoRole[keyof typeof DeleteInvitation200DataAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteInvitation200DataAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type DeleteInvitation200DataAllOfTwo = {
-  /**
-   * The email of the invitated user
-   * @minLength 1
-   */
-  email: string;
-  /**
-   * The date and time when the invitation expires
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The ID of the user who sent this invitation
-   * @minLength 36
-   */
-  inviterID: string;
-  /**
-   * The organization the user is being invited to join
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the invitation */
-  role: DeleteInvitation200DataAllOfTwoRole;
-  /**
-   * The status of the invitation, e.g., pending, accepted, declined
-   * @minLength 1
-   */
-  status: string;
-};
-
-/**
- * Schema for Invitation entity
- */
-export type DeleteInvitation200Data = DeleteInvitation200DataAllOf & DeleteInvitation200DataAllOfTwo;
-
-export type DeleteInvitation200 = {
-  /** Schema for Invitation entity */
-  data: DeleteInvitation200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteInvitation404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetInvitation200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The role of the invitation
- */
-export type GetInvitation200DataAllOfTwoRole = typeof GetInvitation200DataAllOfTwoRole[keyof typeof GetInvitation200DataAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetInvitation200DataAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type GetInvitation200DataAllOfTwo = {
-  /**
-   * The email of the invitated user
-   * @minLength 1
-   */
-  email: string;
-  /**
-   * The date and time when the invitation expires
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The ID of the user who sent this invitation
-   * @minLength 36
-   */
-  inviterID: string;
-  /**
-   * The organization the user is being invited to join
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the invitation */
-  role: GetInvitation200DataAllOfTwoRole;
-  /**
-   * The status of the invitation, e.g., pending, accepted, declined
-   * @minLength 1
-   */
-  status: string;
-};
-
-/**
- * Schema for Invitation entity
- */
-export type GetInvitation200Data = GetInvitation200DataAllOf & GetInvitation200DataAllOfTwo;
-
-export type GetInvitation200 = {
-  /** Schema for Invitation entity */
-  data: GetInvitation200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetInvitation404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 /**
@@ -5991,5211 +3501,272 @@ export const UpdateInvitationBodyRole = {
 } as const;
 
 export type UpdateInvitationBody = {
-  /** The email of the invitated user */
+  /**
+   * The email of the invitated user
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
+   */
   email?: string;
   /** The role of the invitation */
   role?: UpdateInvitationBodyRole;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type UpdateInvitation200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-/**
- * The role of the invitation
- */
-export type UpdateInvitation200DataAllOfTwoRole = typeof UpdateInvitation200DataAllOfTwoRole[keyof typeof UpdateInvitation200DataAllOfTwoRole];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateInvitation200DataAllOfTwoRole = {
-  admin: 'admin',
-  owner: 'owner',
-  basic: 'basic',
-} as const;
-
-export type UpdateInvitation200DataAllOfTwo = {
-  /**
-   * The email of the invitated user
-   * @minLength 1
-   */
-  email: string;
-  /**
-   * The date and time when the invitation expires
-   * @minLength 1
-   */
-  expiresAt: string;
-  /**
-   * The ID of the user who sent this invitation
-   * @minLength 36
-   */
-  inviterID: string;
-  /**
-   * The organization the user is being invited to join
-   * @minLength 36
-   */
-  organizationID: string;
-  /** The role of the invitation */
-  role: UpdateInvitation200DataAllOfTwoRole;
-  /**
-   * The status of the invitation, e.g., pending, accepted, declined
-   * @minLength 1
-   */
-  status: string;
-};
-
-/**
- * Schema for Invitation entity
- */
-export type UpdateInvitation200Data = UpdateInvitation200DataAllOf & UpdateInvitation200DataAllOfTwo;
-
-export type UpdateInvitation200 = {
-  /** Schema for Invitation entity */
-  data: UpdateInvitation200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateInvitation404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type CreatePipelineBody = {
-  /**
-   * The pipeline description
-   * @minLength 1
-   */
-  description?: string;
-  /**
-   * The pipeline name
-   * @minLength 1
-   */
-  name?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type CreatePipeline201DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type CreatePipeline201DataAllOfTwo = {
-  /**
-   * The organization identifier
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name?: string;
-  /**
-   * Detailed description of the pipeline's purpose
-   * @maxLength 1000
-   */
-  description?: string;
-};
-
-/**
- * Schema for Pipeline entity
- */
-export type CreatePipeline201Data = CreatePipeline201DataAllOf & CreatePipeline201DataAllOfTwo;
-
-export type CreatePipeline201 = {
-  /** Schema for Pipeline entity */
-  data: CreatePipeline201Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreatePipeline400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreatePipeline401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type ListPipelinesParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
-filter?: {
-  /** The type of filter operation */
-  type: ListPipelinesFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
+filter?: PipelinesFilterParameter;
 /**
  * Pagination parameters (limit & offset)
  */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
+page?: PageQueryParameter;
 /**
  * The sort parameter
+ * @maxItems 10
  */
-sort?: ListPipelinesSortItem[];
+sort?: PipelinesSortParameter;
 };
 
-/**
- * The type of filter operation
- */
-export type ListPipelinesFilterType = typeof ListPipelinesFilterType[keyof typeof ListPipelinesFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListPipelinesFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListPipelinesSortItemField = typeof ListPipelinesSortItemField[keyof typeof ListPipelinesSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListPipelinesSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  name: 'name',
-  organizationID: 'organizationID',
-} as const;
-
-export type ListPipelinesSortItemOrder = typeof ListPipelinesSortItemOrder[keyof typeof ListPipelinesSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListPipelinesSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListPipelinesSortItem = {
-  field: ListPipelinesSortItemField;
-  order: ListPipelinesSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListPipelines200DataItemAllOf = {
+export type CreatePipelineBody = {
   /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
+   * The pipeline description
    * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ListPipelines200DataItemAllOfTwo = {
-  /**
-   * The organization identifier
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name?: string;
-  /**
-   * Detailed description of the pipeline's purpose
    * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   description?: string;
-};
-
-/**
- * Schema for Pipeline entity
- */
-export type ListPipelines200DataItem = ListPipelines200DataItemAllOf & ListPipelines200DataItemAllOfTwo;
-
-export type ListPipelines200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListPipelines200 = {
-  data: ListPipelines200DataItem[];
-  meta: ListPipelines200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListPipelines400 = {
   /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListPipelines401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeletePipeline200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type DeletePipeline200DataAllOfTwo = {
-  /**
-   * The organization identifier
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline's display name
+   * The pipeline name
    * @minLength 1
    * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name?: string;
-  /**
-   * Detailed description of the pipeline's purpose
-   * @maxLength 1000
-   */
-  description?: string;
-};
-
-/**
- * Schema for Pipeline entity
- */
-export type DeletePipeline200Data = DeletePipeline200DataAllOf & DeletePipeline200DataAllOfTwo;
-
-export type DeletePipeline200 = {
-  /** Schema for Pipeline entity */
-  data: DeletePipeline200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeletePipeline404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetPipeline200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetPipeline200DataAllOfTwo = {
-  /**
-   * The organization identifier
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name?: string;
-  /**
-   * Detailed description of the pipeline's purpose
-   * @maxLength 1000
-   */
-  description?: string;
-};
-
-/**
- * Schema for Pipeline entity
- */
-export type GetPipeline200Data = GetPipeline200DataAllOf & GetPipeline200DataAllOfTwo;
-
-export type GetPipeline200 = {
-  /** Schema for Pipeline entity */
-  data: GetPipeline200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetPipeline404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type UpdatePipelineBody = {
-  /** The pipeline description */
-  description?: string;
-  /** The pipeline name */
-  name?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type UpdatePipeline200DataAllOf = {
   /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type UpdatePipeline200DataAllOfTwo = {
-  /**
-   * The organization identifier
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline's display name
-   * @minLength 1
-   * @maxLength 255
-   */
-  name?: string;
-  /**
-   * Detailed description of the pipeline's purpose
+   * The pipeline description
    * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   description?: string;
+  /**
+   * The pipeline name
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
+   */
+  name?: string;
 };
-
-/**
- * Schema for Pipeline entity
- */
-export type UpdatePipeline200Data = UpdatePipeline200DataAllOf & UpdatePipeline200DataAllOfTwo;
-
-export type UpdatePipeline200 = {
-  /** Schema for Pipeline entity */
-  data: UpdatePipeline200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdatePipeline404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetPipelineSteps200DataItemAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetPipelineSteps200DataItemAllOfTwo = {
-  /**
-   * The pipeline this step belongs to
-   * @minLength 36
-   */
-  pipelineID: string;
-  /**
-   * The tool used in this step
-   * @minLength 36
-   */
-  toolID: string;
-};
-
-/**
- * Schema for PipelineStep entity
- */
-export type GetPipelineSteps200DataItem = GetPipelineSteps200DataItemAllOf & GetPipelineSteps200DataItemAllOfTwo;
-
-export type GetPipelineSteps200 = {
-  data: GetPipelineSteps200DataItem[];
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetPipelineSteps401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetPipelineSteps404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Configuration for the tool
- */
-export type CreatePipelineStepBodyConfig = { [key: string]: unknown };
 
 export type CreatePipelineStepBody = {
   /**
    * UUID identifier
    * @minLength 36
+   * @maxLength 36
    */
   toolID: string;
   /**
    * Name of the step
    * @minLength 1
    * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name: string;
   /**
    * Description of what this step does
    * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   description?: string;
-  /** Configuration for the tool */
-  config?: CreatePipelineStepBodyConfig;
   /**
    * Position in the pipeline (for ordering)
    * @minimum 0
+   * @maximum 2147483647
    */
   position?: number;
-  /** IDs of steps this step depends on */
+  /**
+   * IDs of steps this step depends on
+   * @maxItems 1000
+   */
   dependencies?: string[];
 };
 
-/**
- * Base schema for all entities with common fields
- */
-export type CreatePipelineStep201DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type CreatePipelineStep201DataAllOfTwo = {
-  /**
-   * The pipeline this step belongs to
-   * @minLength 36
-   */
-  pipelineID: string;
-  /**
-   * The tool used in this step
-   * @minLength 36
-   */
-  toolID: string;
-};
-
-/**
- * Schema for PipelineStep entity
- */
-export type CreatePipelineStep201Data = CreatePipelineStep201DataAllOf & CreatePipelineStep201DataAllOfTwo;
-
 export type CreatePipelineStep201 = {
-  /** Schema for PipelineStep entity */
-  data: CreatePipelineStep201Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreatePipelineStep400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreatePipelineStep401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreatePipelineStep404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type GetPipelineExecutionPlan200DataLevelsItem = {
-  /** Execution level (0-based) */
-  level: number;
-  steps: string[];
-};
-
-export type GetPipelineExecutionPlan200Data = {
-  /**
-   * UUID identifier
-   * @minLength 36
-   */
-  pipelineID: string;
-  levels: GetPipelineExecutionPlan200DataLevelsItem[];
-  /** Total number of steps in the pipeline */
-  totalSteps: number;
-  /** Whether the pipeline DAG is valid (no cycles) */
-  isValid: boolean;
-  /** Estimated execution time in seconds */
-  estimatedDuration?: number;
-};
-
-export type GetPipelineExecutionPlan200 = {
-  data: GetPipelineExecutionPlan200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetPipelineExecutionPlan400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetPipelineExecutionPlan401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetPipelineExecutionPlan404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type ValidatePipelineExecutionPlan200Data = {
-  valid: boolean;
-  /** List of any warnings or non-critical issues */
-  issues?: string[];
-};
-
-export type ValidatePipelineExecutionPlan200 = {
-  data: ValidatePipelineExecutionPlan200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ValidatePipelineExecutionPlan400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ValidatePipelineExecutionPlan401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ValidatePipelineExecutionPlan404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type CreateRunBody = {
-  /**
-   * UUID identifier
-   * @minLength 36
-   */
-  pipelineID: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type CreateRun201DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type CreateRun201DataAllOfTwoStatus = typeof CreateRun201DataAllOfTwoStatus[keyof typeof CreateRun201DataAllOfTwoStatus];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateRun201DataAllOfTwoStatus = {
-  COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED',
-  PROCESSING: 'PROCESSING',
-  QUEUED: 'QUEUED',
-} as const;
-
-export type CreateRun201DataAllOfTwo = {
-  /**
-   * The timestamp when the run completed
-   * @minLength 1
-   */
-  completedAt?: string;
-  /**
-   * The error message
-   * @minLength 1
-   */
-  error?: string;
-  /**
-   * The organization this run belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline this run is executing
-   * @minLength 36
-   */
-  pipelineID: string;
-  /** The percent progress of the run */
-  progress: number;
-  /**
-   * The timestamp when the run started
-   * @minLength 1
-   */
-  startedAt?: string;
-  status: CreateRun201DataAllOfTwoStatus;
-  /**
-   * The tool being used in this run
-   * @minLength 36
-   */
-  toolID: string;
-};
-
-/**
- * Schema for Run entity
- */
-export type CreateRun201Data = CreateRun201DataAllOf & CreateRun201DataAllOfTwo;
-
-export type CreateRun201 = {
-  /** Schema for Run entity */
-  data: CreateRun201Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateRun400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateRun401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+  data: PipelineStep;
 };
 
 export type ListRunsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
-filter?: {
-  /** The type of filter operation */
-  type: ListRunsFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
+filter?: RunsFilterParameter;
 /**
  * Pagination parameters (limit & offset)
  */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
+page?: PageQueryParameter;
 /**
  * The sort parameter
+ * @maxItems 10
  */
-sort?: ListRunsSortItem[];
+sort?: RunsSortParameter;
 };
 
-/**
- * The type of filter operation
- */
-export type ListRunsFilterType = typeof ListRunsFilterType[keyof typeof ListRunsFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListRunsFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListRunsSortItemField = typeof ListRunsSortItemField[keyof typeof ListRunsSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListRunsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt',
-  error: 'error',
-  organizationID: 'organizationID',
-  pipelineID: 'pipelineID',
-  progress: 'progress',
-  startedAt: 'startedAt',
-  status: 'status',
-  toolID: 'toolID',
-} as const;
-
-export type ListRunsSortItemOrder = typeof ListRunsSortItemOrder[keyof typeof ListRunsSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListRunsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListRunsSortItem = {
-  field: ListRunsSortItemField;
-  order: ListRunsSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListRuns200DataItemAllOf = {
+export type CreateRunBody = {
   /**
-   * Unique identifier for the resource
+   * UUID identifier
    * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ListRuns200DataItemAllOfTwoStatus = typeof ListRuns200DataItemAllOfTwoStatus[keyof typeof ListRuns200DataItemAllOfTwoStatus];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListRuns200DataItemAllOfTwoStatus = {
-  COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED',
-  PROCESSING: 'PROCESSING',
-  QUEUED: 'QUEUED',
-} as const;
-
-export type ListRuns200DataItemAllOfTwo = {
-  /**
-   * The timestamp when the run completed
-   * @minLength 1
-   */
-  completedAt?: string;
-  /**
-   * The error message
-   * @minLength 1
-   */
-  error?: string;
-  /**
-   * The organization this run belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline this run is executing
-   * @minLength 36
+   * @maxLength 36
    */
   pipelineID: string;
-  /** The percent progress of the run */
-  progress: number;
-  /**
-   * The timestamp when the run started
-   * @minLength 1
-   */
-  startedAt?: string;
-  status: ListRuns200DataItemAllOfTwoStatus;
-  /**
-   * The tool being used in this run
-   * @minLength 36
-   */
-  toolID: string;
-};
-
-/**
- * Schema for Run entity
- */
-export type ListRuns200DataItem = ListRuns200DataItemAllOf & ListRuns200DataItemAllOfTwo;
-
-export type ListRuns200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListRuns200 = {
-  data: ListRuns200DataItem[];
-  meta: ListRuns200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListRuns400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListRuns401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteRun200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type DeleteRun200DataAllOfTwoStatus = typeof DeleteRun200DataAllOfTwoStatus[keyof typeof DeleteRun200DataAllOfTwoStatus];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteRun200DataAllOfTwoStatus = {
-  COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED',
-  PROCESSING: 'PROCESSING',
-  QUEUED: 'QUEUED',
-} as const;
-
-export type DeleteRun200DataAllOfTwo = {
-  /**
-   * The timestamp when the run completed
-   * @minLength 1
-   */
-  completedAt?: string;
-  /**
-   * The error message
-   * @minLength 1
-   */
-  error?: string;
-  /**
-   * The organization this run belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline this run is executing
-   * @minLength 36
-   */
-  pipelineID: string;
-  /** The percent progress of the run */
-  progress: number;
-  /**
-   * The timestamp when the run started
-   * @minLength 1
-   */
-  startedAt?: string;
-  status: DeleteRun200DataAllOfTwoStatus;
-  /**
-   * The tool being used in this run
-   * @minLength 36
-   */
-  toolID: string;
-};
-
-/**
- * Schema for Run entity
- */
-export type DeleteRun200Data = DeleteRun200DataAllOf & DeleteRun200DataAllOfTwo;
-
-export type DeleteRun200 = {
-  /** Schema for Run entity */
-  data: DeleteRun200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteRun404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetRun200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetRun200DataAllOfTwoStatus = typeof GetRun200DataAllOfTwoStatus[keyof typeof GetRun200DataAllOfTwoStatus];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetRun200DataAllOfTwoStatus = {
-  COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED',
-  PROCESSING: 'PROCESSING',
-  QUEUED: 'QUEUED',
-} as const;
-
-export type GetRun200DataAllOfTwo = {
-  /**
-   * The timestamp when the run completed
-   * @minLength 1
-   */
-  completedAt?: string;
-  /**
-   * The error message
-   * @minLength 1
-   */
-  error?: string;
-  /**
-   * The organization this run belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline this run is executing
-   * @minLength 36
-   */
-  pipelineID: string;
-  /** The percent progress of the run */
-  progress: number;
-  /**
-   * The timestamp when the run started
-   * @minLength 1
-   */
-  startedAt?: string;
-  status: GetRun200DataAllOfTwoStatus;
-  /**
-   * The tool being used in this run
-   * @minLength 36
-   */
-  toolID: string;
-};
-
-/**
- * Schema for Run entity
- */
-export type GetRun200Data = GetRun200DataAllOf & GetRun200DataAllOfTwo;
-
-export type GetRun200 = {
-  /** Schema for Run entity */
-  data: GetRun200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetRun404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type UpdateRunBody = {
   /**
    * UUID identifier
    * @minLength 36
+   * @maxLength 36
    */
   pipelineID?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type UpdateRun200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type UpdateRun200DataAllOfTwoStatus = typeof UpdateRun200DataAllOfTwoStatus[keyof typeof UpdateRun200DataAllOfTwoStatus];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateRun200DataAllOfTwoStatus = {
-  COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED',
-  PROCESSING: 'PROCESSING',
-  QUEUED: 'QUEUED',
-} as const;
-
-export type UpdateRun200DataAllOfTwo = {
-  /**
-   * The timestamp when the run completed
-   * @minLength 1
-   */
-  completedAt?: string;
-  /**
-   * The error message
-   * @minLength 1
-   */
-  error?: string;
-  /**
-   * The organization this run belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The pipeline this run is executing
-   * @minLength 36
-   */
-  pipelineID: string;
-  /** The percent progress of the run */
-  progress: number;
-  /**
-   * The timestamp when the run started
-   * @minLength 1
-   */
-  startedAt?: string;
-  status: UpdateRun200DataAllOfTwoStatus;
-  /**
-   * The tool being used in this run
-   * @minLength 36
-   */
-  toolID: string;
-};
-
-/**
- * Schema for Run entity
- */
-export type UpdateRun200Data = UpdateRun200DataAllOf & UpdateRun200DataAllOfTwo;
-
-export type UpdateRun200 = {
-  /** Schema for Run entity */
-  data: UpdateRun200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateRun404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type CreateToolBody = {
-  /**
-   * The tool description
-   * @minLength 1
-   */
-  description: string;
-  /**
-   * The name of the tool
-   * @minLength 1
-   */
-  name: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type CreateTool201DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type CreateTool201DataAllOfTwo = {
-  /**
-   * The tool description
-   * @minLength 1
-   */
-  description: string;
-  /**
-   * The MIME type of the input for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  inputMimeType: string;
-  /**
-   * The name of the tool
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The organization that owns this tool
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The MIME type of the output for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  outputMimeType: string;
-};
-
-/**
- * Schema for Tool entity
- */
-export type CreateTool201Data = CreateTool201DataAllOf & CreateTool201DataAllOfTwo;
-
-export type CreateTool201 = {
-  /** Schema for Tool entity */
-  data: CreateTool201Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateTool400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateTool401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type ListToolsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
-filter?: {
-  /** The type of filter operation */
-  type: ListToolsFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
+filter?: ToolsFilterParameter;
 /**
  * Pagination parameters (limit & offset)
  */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
+page?: PageQueryParameter;
 /**
  * The sort parameter
+ * @maxItems 10
  */
-sort?: ListToolsSortItem[];
+sort?: ToolsSortParameter;
 };
 
-/**
- * The type of filter operation
- */
-export type ListToolsFilterType = typeof ListToolsFilterType[keyof typeof ListToolsFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListToolsFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListToolsSortItemField = typeof ListToolsSortItemField[keyof typeof ListToolsSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListToolsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  inputMimeType: 'inputMimeType',
-  name: 'name',
-  organizationID: 'organizationID',
-  outputMimeType: 'outputMimeType',
-} as const;
-
-export type ListToolsSortItemOrder = typeof ListToolsSortItemOrder[keyof typeof ListToolsSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListToolsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListToolsSortItem = {
-  field: ListToolsSortItemField;
-  order: ListToolsSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListTools200DataItemAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ListTools200DataItemAllOfTwo = {
+export type CreateToolBody = {
   /**
    * The tool description
    * @minLength 1
+   * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   description: string;
   /**
-   * The MIME type of the input for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  inputMimeType: string;
-  /**
    * The name of the tool
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name: string;
-  /**
-   * The organization that owns this tool
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The MIME type of the output for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  outputMimeType: string;
-};
-
-/**
- * Schema for Tool entity
- */
-export type ListTools200DataItem = ListTools200DataItemAllOf & ListTools200DataItemAllOfTwo;
-
-export type ListTools200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListTools200 = {
-  data: ListTools200DataItem[];
-  meta: ListTools200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListTools400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListTools401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteTool200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type DeleteTool200DataAllOfTwo = {
-  /**
-   * The tool description
-   * @minLength 1
-   */
-  description: string;
-  /**
-   * The MIME type of the input for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  inputMimeType: string;
-  /**
-   * The name of the tool
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The organization that owns this tool
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The MIME type of the output for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  outputMimeType: string;
-};
-
-/**
- * Schema for Tool entity
- */
-export type DeleteTool200Data = DeleteTool200DataAllOf & DeleteTool200DataAllOfTwo;
-
-export type DeleteTool200 = {
-  /** Schema for Tool entity */
-  data: DeleteTool200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteTool404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetTool200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetTool200DataAllOfTwo = {
-  /**
-   * The tool description
-   * @minLength 1
-   */
-  description: string;
-  /**
-   * The MIME type of the input for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  inputMimeType: string;
-  /**
-   * The name of the tool
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The organization that owns this tool
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The MIME type of the output for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  outputMimeType: string;
-};
-
-/**
- * Schema for Tool entity
- */
-export type GetTool200Data = GetTool200DataAllOf & GetTool200DataAllOfTwo;
-
-export type GetTool200 = {
-  /** Schema for Tool entity */
-  data: GetTool200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetTool404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type UpdateToolBody = {
   /**
    * The tool description
    * @minLength 1
+   * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   description?: string;
   /**
    * The name of the tool
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type UpdateTool200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type UpdateTool200DataAllOfTwo = {
-  /**
-   * The tool description
-   * @minLength 1
-   */
-  description: string;
-  /**
-   * The MIME type of the input for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  inputMimeType: string;
-  /**
-   * The name of the tool
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The organization that owns this tool
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The MIME type of the output for the tool, e.g. text/plain
-   * @minLength 1
-   */
-  outputMimeType: string;
-};
-
-/**
- * Schema for Tool entity
- */
-export type UpdateTool200Data = UpdateTool200DataAllOf & UpdateTool200DataAllOfTwo;
-
-export type UpdateTool200 = {
-  /** Schema for Tool entity */
-  data: UpdateTool200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateTool404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type CreateArtifactBody = {
-  /**
-   * The name of the artifact
-   * @minLength 1
-   */
-  name?: string;
-  /**
-   * The artifact text
-   * @minLength 1
-   */
-  text: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type CreateArtifact201DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type CreateArtifact201DataAllOfTwo = {
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number;
-  /**
-   * The artifact's description
-   * @minLength 1
-   */
-  description?: string;
-  /**
-   * The MIME type of the artifact, e.g. image/png
-   * @minLength 1
-   */
-  mimeType: string;
-  /**
-   * The name of the artifact, used for display purposes
-   * @minLength 1
-   */
-  name?: string;
-  /**
-   * The organization that owns this artifact
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-   * @minLength 1
-   */
-  previewImage?: string;
-  /**
-   * The ID of the entity that produced this artifact
-   * @minLength 36
-   */
-  producerID?: string;
-  /**
-   * The artifact text
-   * @minLength 1
-   */
-  text?: string;
-};
-
-/**
- * Schema for Artifact entity
- */
-export type CreateArtifact201Data = CreateArtifact201DataAllOf & CreateArtifact201DataAllOfTwo;
-
-export type CreateArtifact201 = {
-  /** Schema for Artifact entity */
-  data: CreateArtifact201Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateArtifact400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateArtifact401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type ListArtifactsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
-filter?: {
-  /** The type of filter operation */
-  type: ListArtifactsFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
+filter?: ArtifactsFilterParameter;
 /**
  * Pagination parameters (limit & offset)
  */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
+page?: PageQueryParameter;
 /**
  * The sort parameter
+ * @maxItems 10
  */
-sort?: ListArtifactsSortItem[];
+sort?: ArtifactsSortParameter;
 };
 
-/**
- * The type of filter operation
- */
-export type ListArtifactsFilterType = typeof ListArtifactsFilterType[keyof typeof ListArtifactsFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListArtifactsFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListArtifactsSortItemField = typeof ListArtifactsSortItemField[keyof typeof ListArtifactsSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListArtifactsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  credits: 'credits',
-  description: 'description',
-  mimeType: 'mimeType',
-  name: 'name',
-  organizationID: 'organizationID',
-  previewImage: 'previewImage',
-  producerID: 'producerID',
-  text: 'text',
-  url: 'url',
-} as const;
-
-export type ListArtifactsSortItemOrder = typeof ListArtifactsSortItemOrder[keyof typeof ListArtifactsSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListArtifactsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListArtifactsSortItem = {
-  field: ListArtifactsSortItemField;
-  order: ListArtifactsSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListArtifacts200DataItemAllOf = {
+export type CreateArtifactBody = {
   /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
+   * The name of the artifact
    * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ListArtifacts200DataItemAllOfTwo = {
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number;
-  /**
-   * The artifact's description
-   * @minLength 1
-   */
-  description?: string;
-  /**
-   * The MIME type of the artifact, e.g. image/png
-   * @minLength 1
-   */
-  mimeType: string;
-  /**
-   * The name of the artifact, used for display purposes
-   * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name?: string;
   /**
-   * The organization that owns this artifact
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-   * @minLength 1
-   */
-  previewImage?: string;
-  /**
-   * The ID of the entity that produced this artifact
-   * @minLength 36
-   */
-  producerID?: string;
-  /**
    * The artifact text
    * @minLength 1
+   * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
-  text?: string;
-};
-
-/**
- * Schema for Artifact entity
- */
-export type ListArtifacts200DataItem = ListArtifacts200DataItemAllOf & ListArtifacts200DataItemAllOfTwo;
-
-export type ListArtifacts200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListArtifacts200 = {
-  data: ListArtifacts200DataItem[];
-  meta: ListArtifacts200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListArtifacts400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListArtifacts401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteArtifact200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type DeleteArtifact200DataAllOfTwo = {
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number;
-  /**
-   * The artifact's description
-   * @minLength 1
-   */
-  description?: string;
-  /**
-   * The MIME type of the artifact, e.g. image/png
-   * @minLength 1
-   */
-  mimeType: string;
-  /**
-   * The name of the artifact, used for display purposes
-   * @minLength 1
-   */
-  name?: string;
-  /**
-   * The organization that owns this artifact
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-   * @minLength 1
-   */
-  previewImage?: string;
-  /**
-   * The ID of the entity that produced this artifact
-   * @minLength 36
-   */
-  producerID?: string;
-  /**
-   * The artifact text
-   * @minLength 1
-   */
-  text?: string;
-};
-
-/**
- * Schema for Artifact entity
- */
-export type DeleteArtifact200Data = DeleteArtifact200DataAllOf & DeleteArtifact200DataAllOfTwo;
-
-export type DeleteArtifact200 = {
-  /** Schema for Artifact entity */
-  data: DeleteArtifact200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteArtifact404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetArtifact200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetArtifact200DataAllOfTwo = {
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number;
-  /**
-   * The artifact's description
-   * @minLength 1
-   */
-  description?: string;
-  /**
-   * The MIME type of the artifact, e.g. image/png
-   * @minLength 1
-   */
-  mimeType: string;
-  /**
-   * The name of the artifact, used for display purposes
-   * @minLength 1
-   */
-  name?: string;
-  /**
-   * The organization that owns this artifact
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-   * @minLength 1
-   */
-  previewImage?: string;
-  /**
-   * The ID of the entity that produced this artifact
-   * @minLength 36
-   */
-  producerID?: string;
-  /**
-   * The artifact text
-   * @minLength 1
-   */
-  text?: string;
-};
-
-/**
- * Schema for Artifact entity
- */
-export type GetArtifact200Data = GetArtifact200DataAllOf & GetArtifact200DataAllOfTwo;
-
-export type GetArtifact200 = {
-  /** Schema for Artifact entity */
-  data: GetArtifact200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetArtifact404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+  text: string;
 };
 
 export type UpdateArtifactBody = {
   /**
    * The name of the artifact
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name?: string;
-  /** The artifact text */
-  text?: string;
-  /** The artifact URL */
-  url?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type UpdateArtifact200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type UpdateArtifact200DataAllOfTwo = {
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number;
-  /**
-   * The artifact's description
-   * @minLength 1
-   */
-  description?: string;
-  /**
-   * The MIME type of the artifact, e.g. image/png
-   * @minLength 1
-   */
-  mimeType: string;
-  /**
-   * The name of the artifact, used for display purposes
-   * @minLength 1
-   */
-  name?: string;
-  /**
-   * The organization that owns this artifact
-   * @minLength 36
-   */
-  organizationID: string;
-  /**
-   * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-   * @minLength 1
-   */
-  previewImage?: string;
-  /**
-   * The ID of the entity that produced this artifact
-   * @minLength 36
-   */
-  producerID?: string;
   /**
    * The artifact text
-   * @minLength 1
+   * @maxLength 1000
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   text?: string;
-};
-
-/**
- * Schema for Artifact entity
- */
-export type UpdateArtifact200Data = UpdateArtifact200DataAllOf & UpdateArtifact200DataAllOfTwo;
-
-export type UpdateArtifact200 = {
-  /** Schema for Artifact entity */
-  data: UpdateArtifact200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateArtifact404 = {
   /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
+   * The artifact URL
+   * @maxLength 2048
    */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type CreateLabelBody = {
-  /**
-   * The name of the label
-   * @minLength 1
-   */
-  name: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type CreateLabel201DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type CreateLabel201DataAllOfTwo = {
-  /**
-   * The name of the label
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The organization this label belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-};
-
-/**
- * Schema for Label entity
- */
-export type CreateLabel201Data = CreateLabel201DataAllOf & CreateLabel201DataAllOfTwo;
-
-export type CreateLabel201 = {
-  /** Schema for Label entity */
-  data: CreateLabel201Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateLabel400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type CreateLabel401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
+  url?: string;
 };
 
 export type ListLabelsParams = {
 /**
  * A recursive filter node that can be a condition or group
  */
-filter?: {
-  /** The type of filter operation */
-  type: ListLabelsFilterType;
-  /**
-   * The field to filter on (for leaf conditions)
-   * @minLength 1
-   */
-  field?: string;
-  /** The value to compare against (for leaf conditions) */
-  value?: unknown;
-};
+filter?: LabelsFilterParameter;
 /**
  * Pagination parameters (limit & offset)
  */
-page?: {
-  /**
-   * Maximum number of items to return
-   * @minimum 1
-   * @maximum 100
-   */
-  limit?: number;
-  /**
-   * Number of items to skip before starting to collect the result set
-   * @minimum 0
-   * @maximum 9007199254740991
-   */
-  offset?: number;
-};
+page?: PageQueryParameter;
 /**
  * The sort parameter
+ * @maxItems 10
  */
-sort?: ListLabelsSortItem[];
+sort?: LabelsSortParameter;
 };
 
-/**
- * The type of filter operation
- */
-export type ListLabelsFilterType = typeof ListLabelsFilterType[keyof typeof ListLabelsFilterType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListLabelsFilterType = {
-  and: 'and',
-  or: 'or',
-  eq: 'eq',
-  ne: 'ne',
-  gt: 'gt',
-  gte: 'gte',
-  lt: 'lt',
-  lte: 'lte',
-  contains: 'contains',
-  startsWith: 'startsWith',
-  endsWith: 'endsWith',
-} as const;
-
-export type ListLabelsSortItemField = typeof ListLabelsSortItemField[keyof typeof ListLabelsSortItemField];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListLabelsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  organizationID: 'organizationID',
-} as const;
-
-export type ListLabelsSortItemOrder = typeof ListLabelsSortItemOrder[keyof typeof ListLabelsSortItemOrder];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ListLabelsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc',
-} as const;
-
-export type ListLabelsSortItem = {
-  field: ListLabelsSortItemField;
-  order: ListLabelsSortItemOrder;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type ListLabels200DataItemAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type ListLabels200DataItemAllOfTwo = {
+export type CreateLabelBody = {
   /**
    * The name of the label
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name: string;
-  /**
-   * The organization this label belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-};
-
-/**
- * Schema for Label entity
- */
-export type ListLabels200DataItem = ListLabels200DataItemAllOf & ListLabels200DataItemAllOfTwo;
-
-export type ListLabels200Meta = {
-  /** Total number of items in the collection */
-  total: number;
-};
-
-export type ListLabels200 = {
-  data: ListLabels200DataItem[];
-  meta: ListLabels200Meta;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListLabels400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type ListLabels401 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type DeleteLabel200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type DeleteLabel200DataAllOfTwo = {
-  /**
-   * The name of the label
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The organization this label belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-};
-
-/**
- * Schema for Label entity
- */
-export type DeleteLabel200Data = DeleteLabel200DataAllOf & DeleteLabel200DataAllOfTwo;
-
-export type DeleteLabel200 = {
-  /** Schema for Label entity */
-  data: DeleteLabel200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type DeleteLabel404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type GetLabel200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type GetLabel200DataAllOfTwo = {
-  /**
-   * The name of the label
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The organization this label belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-};
-
-/**
- * Schema for Label entity
- */
-export type GetLabel200Data = GetLabel200DataAllOf & GetLabel200DataAllOfTwo;
-
-export type GetLabel200 = {
-  /** Schema for Label entity */
-  data: GetLabel200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetLabel404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 
 export type UpdateLabelBody = {
   /**
    * The name of the label
    * @minLength 1
+   * @maxLength 255
+   * @pattern ^[\w\s\-.,!?()@#+/]*$
    */
   name?: string;
-};
-
-/**
- * Base schema for all entities with common fields
- */
-export type UpdateLabel200DataAllOf = {
-  /**
-   * Unique identifier for the resource
-   * @minLength 36
-   */
-  id: string;
-  /**
-   * The date and time when the resource was created
-   * @minLength 1
-   */
-  createdAt: string;
-  /**
-   * The date and time when the resource was last updated
-   * @minLength 1
-   */
-  updatedAt: string;
-};
-
-export type UpdateLabel200DataAllOfTwo = {
-  /**
-   * The name of the label
-   * @minLength 1
-   */
-  name: string;
-  /**
-   * The organization this label belongs to
-   * @minLength 36
-   */
-  organizationID: string;
-};
-
-/**
- * Schema for Label entity
- */
-export type UpdateLabel200Data = UpdateLabel200DataAllOf & UpdateLabel200DataAllOfTwo;
-
-export type UpdateLabel200 = {
-  /** Schema for Label entity */
-  data: UpdateLabel200Data;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type UpdateLabel404 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-/**
- * Email configuration for sending emails
- */
-export type GetConfig200ApiEmail = {
-  /** Enable email functionality */
-  enabled: boolean;
-  /** Email service provider (e.g., "gmail", "sendgrid", etc.) */
-  service?: string;
-  /** Username for the email service */
-  user?: string;
-  /** Password for the email service */
-  password?: string;
-};
-
-/**
- * Kubernetes image pull policy
- */
-export type GetConfig200ApiImagePullPolicy = typeof GetConfig200ApiImagePullPolicy[keyof typeof GetConfig200ApiImagePullPolicy];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200ApiImagePullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never',
-} as const;
-
-/**
- * Container image configuration
- */
-export type GetConfig200ApiImage = {
-  /** Kubernetes image pull policy */
-  pullPolicy: GetConfig200ApiImagePullPolicy;
-  /**
-   * Container image repository
-   * @minLength 1
-   */
-  repository?: string;
-  /**
-   * Container image tag
-   * @minLength 1
-   */
-  tag: string;
-};
-
-/**
- * Resource limits
- */
-export type GetConfig200ApiResourcesLimits = {
-  /**
-   * Maximum CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Maximum memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Resource requests
- */
-export type GetConfig200ApiResourcesRequests = {
-  /**
-   * Requested CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Requested memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Kubernetes resource configuration
- */
-export type GetConfig200ApiResources = {
-  /** Resource limits */
-  limits: GetConfig200ApiResourcesLimits;
-  /** Resource requests */
-  requests: GetConfig200ApiResourcesRequests;
-};
-
-/**
- * Configuration schema for the API server
- */
-export type GetConfig200Api = {
-  /**
-   * A comma-separated list of allowed origins for CORS requests
-   * @minLength 1
-   */
-  cors: string;
-  /** The public URL for the API */
-  url?: string;
-  /** Enable or disable API documentation */
-  docs: boolean;
-  /** Email configuration for sending emails */
-  email?: GetConfig200ApiEmail;
-  /** Deployment environment (development, staging, production) */
-  environment: string;
-  /**
-   * The host address on which the API server will listen
-   * @minLength 1
-   */
-  readonly host: string;
-  /** The port on which the API server will listen */
-  port: number;
-  /** Enable or disable request validation */
-  validation: boolean;
-  /** Container image configuration */
-  image?: GetConfig200ApiImage;
-  /** Kubernetes resource configuration */
-  resources?: GetConfig200ApiResources;
-};
-
-/**
- * Firebase authentication configuration
- */
-export type GetConfig200AuthFirebase = {
-  /** Enable Firebase authentication */
-  enabled: boolean;
-  /** Firebase service account client email address */
-  clientEmail?: string;
-  /**
-   * Firebase service account private key (PEM format)
-   * @minLength 1
-   */
-  privateKey?: string;
-  /**
-   * Firebase project ID for authentication
-   * @minLength 1
-   */
-  projectID?: string;
-};
-
-/**
- * Local username/password authentication
- */
-export type GetConfig200AuthLocal = {
-  /** Enable local authentication */
-  enabled: boolean;
-  /**
-   * Secret key for JWT token signing
-   * @minLength 32
-   */
-  jwtSecret: string;
-  /**
-   * Access token time-to-live duration (e.g., "15m", "1h")
-   * @minLength 2
-   * @pattern ^(\d+[smhd])+$
-   */
-  accessTokenTTL: string;
-  /**
-   * Refresh token time-to-live duration (e.g., "7d", "168h")
-   * @minLength 2
-   * @pattern ^(\d+[smhd])+$
-   */
-  refreshTokenTTL: string;
-};
-
-export type GetConfig200AuthMagicLinkDeliveryMethodsEmail = {
-  enabled?: boolean;
-  from?: string;
-};
-
-export type GetConfig200AuthMagicLinkDeliveryMethodsConsole = {
-  /** Enable console output (development only) */
-  enabled?: boolean;
-};
-
-export type GetConfig200AuthMagicLinkDeliveryMethodsOtp = {
-  enabled?: boolean;
-};
-
-export type GetConfig200AuthMagicLinkDeliveryMethodsWebhook = {
-  enabled?: boolean;
-  url?: string;
-};
-
-/**
- * Available delivery methods
- */
-export type GetConfig200AuthMagicLinkDeliveryMethods = {
-  email?: GetConfig200AuthMagicLinkDeliveryMethodsEmail;
-  console?: GetConfig200AuthMagicLinkDeliveryMethodsConsole;
-  otp?: GetConfig200AuthMagicLinkDeliveryMethodsOtp;
-  webhook?: GetConfig200AuthMagicLinkDeliveryMethodsWebhook;
-};
-
-/**
- * Rate limiting configuration
- */
-export type GetConfig200AuthMagicLinkRateLimit = {
-  /**
-   * Maximum number of attempts within window
-   * @minimum 1
-   */
-  maxAttempts?: number;
-  /**
-   * Time window in minutes
-   * @minimum 1
-   */
-  windowMinutes?: number;
-};
-
-/**
- * Magic link authentication configuration
- */
-export type GetConfig200AuthMagicLink = {
-  /** Enable magic link authentication */
-  enabled: boolean;
-  /**
-   * Token expiry duration in minutes
-   * @minimum 1
-   * @maximum 60
-   */
-  tokenExpiry?: number;
-  /**
-   * Length of OTP code
-   * @minimum 4
-   * @maximum 8
-   */
-  otpLength?: number;
-  /** Available delivery methods */
-  deliveryMethods?: GetConfig200AuthMagicLinkDeliveryMethods;
-  /** Rate limiting configuration */
-  rateLimit?: GetConfig200AuthMagicLinkRateLimit;
-};
-
-/**
- * Twitter OAuth configuration
- */
-export type GetConfig200AuthTwitter = {
-  /** Enable Twitter OAuth */
-  enabled: boolean;
-  /**
-   * OAuth callback URL
-   * @minLength 1
-   */
-  callbackURL?: string;
-  /**
-   * Twitter API consumer key
-   * @minLength 1
-   */
-  consumerKey?: string;
-  /**
-   * Twitter API consumer secret
-   * @minLength 1
-   */
-  consumerSecret?: string;
-};
-
-/**
- * Google OAuth configuration
- */
-export type GetConfig200AuthGoogle = {
-  /** Enable Google OAuth */
-  enabled: boolean;
-  /** Google OAuth client ID */
-  clientId?: string;
-  /** Google OAuth client secret */
-  clientSecret?: string;
-  /** OAuth callback URL */
-  redirectUrl?: string;
-  /** OAuth scopes to request */
-  scopes?: string[];
-};
-
-/**
- * GitHub OAuth configuration
- */
-export type GetConfig200AuthGithub = {
-  /** Enable GitHub OAuth */
-  enabled: boolean;
-  /** GitHub OAuth App client ID */
-  clientId?: string;
-  /** GitHub OAuth App client secret */
-  clientSecret?: string;
-  /** OAuth callback URL */
-  redirectUrl?: string;
-  /** OAuth scopes to request */
-  scopes?: string[];
-};
-
-/**
- * Microsoft/Azure AD OAuth configuration
- */
-export type GetConfig200AuthMicrosoft = {
-  /** Enable Microsoft OAuth */
-  enabled: boolean;
-  /** Azure AD Application (client) ID */
-  clientId?: string;
-  /** Azure AD client secret */
-  clientSecret?: string;
-  /** OAuth callback URL */
-  redirectUrl?: string;
-  /** Azure AD tenant ID (use 'common' for multi-tenant) */
-  tenant?: string;
-  /** OAuth scopes to request */
-  scopes?: string[];
-};
-
-/**
- * Authentication configuration for the API server
- */
-export type GetConfig200Auth = {
-  /** Enable authentication */
-  enabled: boolean;
-  /** Firebase authentication configuration */
-  firebase?: GetConfig200AuthFirebase;
-  /** Local username/password authentication */
-  local?: GetConfig200AuthLocal;
-  /** Magic link authentication configuration */
-  magicLink?: GetConfig200AuthMagicLink;
-  /** Twitter OAuth configuration */
-  twitter?: GetConfig200AuthTwitter;
-  /** Google OAuth configuration */
-  google?: GetConfig200AuthGoogle;
-  /** GitHub OAuth configuration */
-  github?: GetConfig200AuthGithub;
-  /** Microsoft/Azure AD OAuth configuration */
-  microsoft?: GetConfig200AuthMicrosoft;
-};
-
-/**
- * Stripe payment configuration
- */
-export type GetConfig200BillingStripe = {
-  /**
-   * Stripe secret API key
-   * @minLength 1
-   */
-  token: string;
-  /**
-   * Stripe webhook endpoint secret
-   * @minLength 1
-   */
-  whsec: string;
-};
-
-/**
- * Billing configuration for Stripe
- */
-export type GetConfig200Billing = {
-  /** Enable billing functionality */
-  enabled: boolean;
-  /** Stripe payment configuration */
-  stripe?: GetConfig200BillingStripe;
-};
-
-/**
- * Database type (postgresql or sqlite)
- */
-export type GetConfig200DatabaseType = typeof GetConfig200DatabaseType[keyof typeof GetConfig200DatabaseType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200DatabaseType = {
-  postgresql: 'postgresql',
-  sqlite: 'sqlite',
-} as const;
-
-/**
- * Kubernetes image pull policy
- */
-export type GetConfig200DatabaseImagePullPolicy = typeof GetConfig200DatabaseImagePullPolicy[keyof typeof GetConfig200DatabaseImagePullPolicy];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200DatabaseImagePullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never',
-} as const;
-
-/**
- * Container image configuration
- */
-export type GetConfig200DatabaseImage = {
-  /** Kubernetes image pull policy */
-  pullPolicy: GetConfig200DatabaseImagePullPolicy;
-  /**
-   * Container image repository
-   * @minLength 1
-   */
-  repository?: string;
-  /**
-   * Container image tag
-   * @minLength 1
-   */
-  tag: string;
-};
-
-/**
- * Persistent storage configuration
- */
-export type GetConfig200DatabasePersistence = {
-  /** Enable persistent storage */
-  enabled: boolean;
-  /**
-   * Size of persistent volume
-   * @minLength 1
-   */
-  size: string;
-};
-
-/**
- * Resource limits
- */
-export type GetConfig200DatabaseResourcesLimits = {
-  /**
-   * Maximum CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Maximum memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Resource requests
- */
-export type GetConfig200DatabaseResourcesRequests = {
-  /**
-   * Requested CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Requested memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Kubernetes resource configuration
- */
-export type GetConfig200DatabaseResources = {
-  /** Resource limits */
-  limits: GetConfig200DatabaseResourcesLimits;
-  /** Resource requests */
-  requests: GetConfig200DatabaseResourcesRequests;
-};
-
-/**
- * Database configuration for PostgreSQL
- */
-export type GetConfig200Database = {
-  /** Enable database */
-  enabled: boolean;
-  /**
-   * Database connection url/string
-   * @minLength 1
-   */
-  url: string;
-  /** Database type (postgresql or sqlite) */
-  type: GetConfig200DatabaseType;
-  /**
-   * Maximum number of connections in pool (PostgreSQL)
-   * @minimum 1
-   */
-  maxConns: number;
-  /**
-   * Minimum number of connections in pool (PostgreSQL)
-   * @minimum 0
-   */
-  minConns: number;
-  /**
-   * Maximum connection lifetime (e.g., "30m")
-   * @pattern ^(\d+[smh])+$
-   */
-  connMaxLifetime?: string;
-  /**
-   * Maximum connection idle time (e.g., "5m")
-   * @pattern ^(\d+[smh])+$
-   */
-  connMaxIdleTime?: string;
-  /**
-   * Health check period for connections (PostgreSQL)
-   * @pattern ^(\d+[smh])+$
-   */
-  healthCheckPeriod?: string;
-  /** Automatically run database migrations on startup */
-  runMigrations: boolean;
-  /** Use managed database deployment */
-  managed: boolean;
-  /** Container image configuration */
-  image?: GetConfig200DatabaseImage;
-  /** Persistent storage configuration */
-  persistence?: GetConfig200DatabasePersistence;
-  /** Kubernetes resource configuration */
-  resources?: GetConfig200DatabaseResources;
-};
-
-/**
- * LLM provider type
- */
-export type GetConfig200IntelligenceEmbeddingType = typeof GetConfig200IntelligenceEmbeddingType[keyof typeof GetConfig200IntelligenceEmbeddingType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200IntelligenceEmbeddingType = {
-  ollama: 'ollama',
-  openai: 'openai',
-} as const;
-
-/**
- * Large Language Model configuration
- */
-export type GetConfig200IntelligenceEmbedding = {
-  /** LLM provider type */
-  type: GetConfig200IntelligenceEmbeddingType;
-  /**
-   * LLM service endpoint URL
-   * @minLength 1
-   */
-  endpoint?: string;
-  /**
-   * Authentication token for LLM service
-   * @minLength 1
-   */
-  token?: string;
-};
-
-/**
- * LLM provider type
- */
-export type GetConfig200IntelligenceLlmType = typeof GetConfig200IntelligenceLlmType[keyof typeof GetConfig200IntelligenceLlmType];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200IntelligenceLlmType = {
-  ollama: 'ollama',
-  openai: 'openai',
-} as const;
-
-/**
- * Large Language Model configuration
- */
-export type GetConfig200IntelligenceLlm = {
-  /** LLM provider type */
-  type: GetConfig200IntelligenceLlmType;
-  /**
-   * LLM service endpoint URL
-   * @minLength 1
-   */
-  endpoint?: string;
-  /**
-   * Authentication token for LLM service
-   * @minLength 1
-   */
-  token?: string;
-};
-
-/**
- * RunPod serverless GPU configuration
- */
-export type GetConfig200IntelligenceRunpod = {
-  /** Enable RunPod integration */
-  enabled: boolean;
-  /**
-   * RunPod API token
-   * @minLength 1
-   */
-  token?: string;
-};
-
-/**
- * Kubernetes image pull policy
- */
-export type GetConfig200IntelligenceScraperImagePullPolicy = typeof GetConfig200IntelligenceScraperImagePullPolicy[keyof typeof GetConfig200IntelligenceScraperImagePullPolicy];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200IntelligenceScraperImagePullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never',
-} as const;
-
-/**
- * Container image configuration
- */
-export type GetConfig200IntelligenceScraperImage = {
-  /** Kubernetes image pull policy */
-  pullPolicy: GetConfig200IntelligenceScraperImagePullPolicy;
-  /**
-   * Container image repository
-   * @minLength 1
-   */
-  repository?: string;
-  /**
-   * Container image tag
-   * @minLength 1
-   */
-  tag: string;
-};
-
-/**
- * Resource limits
- */
-export type GetConfig200IntelligenceScraperResourcesLimits = {
-  /**
-   * Maximum CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Maximum memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Resource requests
- */
-export type GetConfig200IntelligenceScraperResourcesRequests = {
-  /**
-   * Requested CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Requested memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Kubernetes resource configuration
- */
-export type GetConfig200IntelligenceScraperResources = {
-  /** Resource limits */
-  limits: GetConfig200IntelligenceScraperResourcesLimits;
-  /** Resource requests */
-  requests: GetConfig200IntelligenceScraperResourcesRequests;
-};
-
-/**
- * Web scraping service configuration
- */
-export type GetConfig200IntelligenceScraper = {
-  /** Enable scraper service */
-  enabled: boolean;
-  /** Use managed scraper deployment */
-  managed?: boolean;
-  /**
-   * Web scraper service endpoint URL
-   * @minLength 1
-   */
-  endpoint?: string;
-  /** Container image configuration */
-  image?: GetConfig200IntelligenceScraperImage;
-  /** Kubernetes resource configuration */
-  resources?: GetConfig200IntelligenceScraperResources;
-};
-
-/**
- * Speech recognition and TTS services
- */
-export type GetConfig200IntelligenceSpeech = {
-  /** Enable speech services */
-  enabled: boolean;
-  /**
-   * Speech-to-text service API token
-   * @minLength 1
-   */
-  token?: string;
-};
-
-/**
- * Kubernetes image pull policy
- */
-export type GetConfig200IntelligenceUnstructuredImagePullPolicy = typeof GetConfig200IntelligenceUnstructuredImagePullPolicy[keyof typeof GetConfig200IntelligenceUnstructuredImagePullPolicy];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200IntelligenceUnstructuredImagePullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never',
-} as const;
-
-/**
- * Container image configuration
- */
-export type GetConfig200IntelligenceUnstructuredImage = {
-  /** Kubernetes image pull policy */
-  pullPolicy: GetConfig200IntelligenceUnstructuredImagePullPolicy;
-  /**
-   * Container image repository
-   * @minLength 1
-   */
-  repository?: string;
-  /**
-   * Container image tag
-   * @minLength 1
-   */
-  tag: string;
-};
-
-/**
- * Resource limits
- */
-export type GetConfig200IntelligenceUnstructuredResourcesLimits = {
-  /**
-   * Maximum CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Maximum memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Resource requests
- */
-export type GetConfig200IntelligenceUnstructuredResourcesRequests = {
-  /**
-   * Requested CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Requested memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Kubernetes resource configuration
- */
-export type GetConfig200IntelligenceUnstructuredResources = {
-  /** Resource limits */
-  limits: GetConfig200IntelligenceUnstructuredResourcesLimits;
-  /** Resource requests */
-  requests: GetConfig200IntelligenceUnstructuredResourcesRequests;
-};
-
-/**
- * Unstructured.io service for document parsing
- */
-export type GetConfig200IntelligenceUnstructured = {
-  /** Enable unstructured document parsing */
-  enabled: boolean;
-  /** Use managed unstructured deployment */
-  managed?: boolean;
-  /** Container image configuration */
-  image?: GetConfig200IntelligenceUnstructuredImage;
-  /** Kubernetes resource configuration */
-  resources?: GetConfig200IntelligenceUnstructuredResources;
-};
-
-/**
- * Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
- */
-export type GetConfig200Intelligence = {
-  /** Large Language Model configuration */
-  embedding?: GetConfig200IntelligenceEmbedding;
-  /** Large Language Model configuration */
-  llm?: GetConfig200IntelligenceLlm;
-  /** RunPod serverless GPU configuration */
-  runpod?: GetConfig200IntelligenceRunpod;
-  /** Web scraping service configuration */
-  scraper?: GetConfig200IntelligenceScraper;
-  /** Speech recognition and TTS services */
-  speech?: GetConfig200IntelligenceSpeech;
-  /** Unstructured.io service for document parsing */
-  unstructured?: GetConfig200IntelligenceUnstructured;
-};
-
-/**
- * Minimum log level to output
- */
-export type GetConfig200LoggingLevel = typeof GetConfig200LoggingLevel[keyof typeof GetConfig200LoggingLevel];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200LoggingLevel = {
-  fatal: 'fatal',
-  error: 'error',
-  warn: 'warn',
-  info: 'info',
-  debug: 'debug',
-  trace: 'trace',
-  silent: 'silent',
-} as const;
-
-/**
- * Logging configuration
- */
-export type GetConfig200Logging = {
-  /** Minimum log level to output */
-  level: GetConfig200LoggingLevel;
-  /** Enable pretty-printed logs for development */
-  pretty: boolean;
-};
-
-/**
- * Kubernetes image pull policy
- */
-export type GetConfig200PlatformImagePullPolicy = typeof GetConfig200PlatformImagePullPolicy[keyof typeof GetConfig200PlatformImagePullPolicy];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200PlatformImagePullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never',
-} as const;
-
-/**
- * Container image configuration
- */
-export type GetConfig200PlatformImage = {
-  /** Kubernetes image pull policy */
-  pullPolicy: GetConfig200PlatformImagePullPolicy;
-  /**
-   * Container image repository
-   * @minLength 1
-   */
-  repository?: string;
-  /**
-   * Container image tag
-   * @minLength 1
-   */
-  tag: string;
-};
-
-/**
- * Resource limits
- */
-export type GetConfig200PlatformResourcesLimits = {
-  /**
-   * Maximum CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Maximum memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Resource requests
- */
-export type GetConfig200PlatformResourcesRequests = {
-  /**
-   * Requested CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Requested memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Kubernetes resource configuration
- */
-export type GetConfig200PlatformResources = {
-  /** Resource limits */
-  limits: GetConfig200PlatformResourcesLimits;
-  /** Resource requests */
-  requests: GetConfig200PlatformResourcesRequests;
-};
-
-/**
- * Platform configuration (host, image, resources)
- */
-export type GetConfig200Platform = {
-  /** Enable platform service */
-  enabled: boolean;
-  /** Use managed platform deployment */
-  managed?: boolean;
-  /** Platform URL */
-  url?: string;
-  /** Container image configuration */
-  image?: GetConfig200PlatformImage;
-  /** Kubernetes resource configuration */
-  resources?: GetConfig200PlatformResources;
-};
-
-/**
- * Kubernetes image pull policy
- */
-export type GetConfig200RedisImagePullPolicy = typeof GetConfig200RedisImagePullPolicy[keyof typeof GetConfig200RedisImagePullPolicy];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200RedisImagePullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never',
-} as const;
-
-/**
- * Container image configuration
- */
-export type GetConfig200RedisImage = {
-  /** Kubernetes image pull policy */
-  pullPolicy: GetConfig200RedisImagePullPolicy;
-  /**
-   * Container image repository
-   * @minLength 1
-   */
-  repository?: string;
-  /**
-   * Container image tag
-   * @minLength 1
-   */
-  tag: string;
-};
-
-/**
- * Persistent storage configuration
- */
-export type GetConfig200RedisPersistence = {
-  /** Enable persistent storage */
-  enabled: boolean;
-  /**
-   * Size of persistent volume
-   * @minLength 1
-   */
-  size: string;
-};
-
-/**
- * Resource limits
- */
-export type GetConfig200RedisResourcesLimits = {
-  /**
-   * Maximum CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Maximum memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Resource requests
- */
-export type GetConfig200RedisResourcesRequests = {
-  /**
-   * Requested CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Requested memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Kubernetes resource configuration
- */
-export type GetConfig200RedisResources = {
-  /** Resource limits */
-  limits: GetConfig200RedisResourcesLimits;
-  /** Resource requests */
-  requests: GetConfig200RedisResourcesRequests;
-};
-
-/**
- * Redis configuration
- */
-export type GetConfig200Redis = {
-  /** Enable Redis */
-  enabled: boolean;
-  /** Use managed Redis deployment */
-  managed?: boolean;
-  /**
-   * Redis authentication password
-   * @minLength 1
-   */
-  auth: string;
-  /**
-   * Certificate Authority for TLS (optional)
-   * @minLength 1
-   */
-  ca?: string;
-  /**
-   * Redis hostname or IP
-   * @minLength 1
-   */
-  host: string;
-  /** Redis port number */
-  port: number;
-  /** Container image configuration */
-  image?: GetConfig200RedisImage;
-  /** Persistent storage configuration */
-  persistence?: GetConfig200RedisPersistence;
-  /** Kubernetes resource configuration */
-  resources?: GetConfig200RedisResources;
-};
-
-/**
- * Kubernetes image pull policy
- */
-export type GetConfig200StorageImagePullPolicy = typeof GetConfig200StorageImagePullPolicy[keyof typeof GetConfig200StorageImagePullPolicy];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200StorageImagePullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never',
-} as const;
-
-/**
- * Container image configuration
- */
-export type GetConfig200StorageImage = {
-  /** Kubernetes image pull policy */
-  pullPolicy: GetConfig200StorageImagePullPolicy;
-  /**
-   * Container image repository
-   * @minLength 1
-   */
-  repository?: string;
-  /**
-   * Container image tag
-   * @minLength 1
-   */
-  tag: string;
-};
-
-/**
- * Persistent storage configuration
- */
-export type GetConfig200StoragePersistence = {
-  /** Enable persistent storage */
-  enabled: boolean;
-  /**
-   * Size of persistent volume
-   * @minLength 1
-   */
-  size: string;
-};
-
-/**
- * Resource limits
- */
-export type GetConfig200StorageResourcesLimits = {
-  /**
-   * Maximum CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Maximum memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Resource requests
- */
-export type GetConfig200StorageResourcesRequests = {
-  /**
-   * Requested CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Requested memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Kubernetes resource configuration
- */
-export type GetConfig200StorageResources = {
-  /** Resource limits */
-  limits: GetConfig200StorageResourcesLimits;
-  /** Resource requests */
-  requests: GetConfig200StorageResourcesRequests;
-};
-
-/**
- * Object storage configuration for MinIO or S3-compatible services
- */
-export type GetConfig200Storage = {
-  /** Enable object storage */
-  enabled: boolean;
-  /** Use managed storage deployment */
-  managed?: boolean;
-  /**
-   * MinIO/S3 access key ID
-   * @minLength 1
-   */
-  accesskey: string;
-  /**
-   * S3 bucket name
-   * @minLength 1
-   */
-  bucket: string;
-  /**
-   * MinIO server endpoint URL
-   * @minLength 1
-   */
-  endpoint: string;
-  /**
-   * MinIO/S3 secret access key
-   * @minLength 1
-   */
-  secretkey: string;
-  /** Container image configuration */
-  image?: GetConfig200StorageImage;
-  /** Persistent storage configuration */
-  persistence?: GetConfig200StoragePersistence;
-  /** Kubernetes resource configuration */
-  resources?: GetConfig200StorageResources;
-};
-
-/**
- * Container image configuration
- */
-export type GetConfig200KubernetesInfrastructureImages = {
-  /** List of Kubernetes secrets for pulling private images */
-  imagePullSecrets: string[];
-  /**
-   * Custom container registry URL (leave empty for Docker Hub)
-   * @minLength 1
-   */
-  imageRegistry: string;
-};
-
-/**
- * Database migration configuration
- */
-export type GetConfig200KubernetesInfrastructureMigrations = {
-  /** Enable automatic DB migrations */
-  enabled: boolean;
-};
-
-/**
- * Kubernetes service account configuration
- */
-export type GetConfig200KubernetesInfrastructureServiceAccount = {
-  /** Create dedicated service account */
-  create: boolean;
-  /**
-   * Custom service account name
-   * @minLength 1
-   */
-  name: string;
-};
-
-/**
- * Infrastructure configuration for Kubernetes deployments
- */
-export type GetConfig200KubernetesInfrastructure = {
-  /** Container image configuration */
-  images: GetConfig200KubernetesInfrastructureImages;
-  /** Database migration configuration */
-  migrations: GetConfig200KubernetesInfrastructureMigrations;
-  /**
-   * Kubernetes namespace where all resources will be deployed
-   * @minLength 1
-   */
-  namespace: string;
-  /** Kubernetes service account configuration */
-  serviceAccount: GetConfig200KubernetesInfrastructureServiceAccount;
-};
-
-/**
- * TLS configuration
- */
-export type GetConfig200KubernetesIngressTls = {
-  /** Enable TLS/SSL */
-  enabled: boolean;
-  /**
-   * Cert-manager ClusterIssuer
-   * @minLength 1
-   */
-  issuer?: string;
-  /**
-   * Kubernetes secret name for TLS certificates
-   * @minLength 1
-   */
-  secretName?: string;
-};
-
-/**
- * Ingress configuration
- */
-export type GetConfig200KubernetesIngress = {
-  /** Enable ingress */
-  enabled: boolean;
-  /**
-   * Primary domain name for ingress routing
-   * @minLength 1
-   */
-  domain?: string;
-  /** TLS configuration */
-  tls?: GetConfig200KubernetesIngressTls;
-};
-
-/**
- * Kubernetes image pull policy
- */
-export type GetConfig200KubernetesMonitoringGrafanaImagePullPolicy = typeof GetConfig200KubernetesMonitoringGrafanaImagePullPolicy[keyof typeof GetConfig200KubernetesMonitoringGrafanaImagePullPolicy];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200KubernetesMonitoringGrafanaImagePullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never',
-} as const;
-
-/**
- * Container image configuration
- */
-export type GetConfig200KubernetesMonitoringGrafanaImage = {
-  /** Kubernetes image pull policy */
-  pullPolicy: GetConfig200KubernetesMonitoringGrafanaImagePullPolicy;
-  /**
-   * Container image repository
-   * @minLength 1
-   */
-  repository?: string;
-  /**
-   * Container image tag
-   * @minLength 1
-   */
-  tag: string;
-};
-
-/**
- * Resource limits
- */
-export type GetConfig200KubernetesMonitoringGrafanaResourcesLimits = {
-  /**
-   * Maximum CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Maximum memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Resource requests
- */
-export type GetConfig200KubernetesMonitoringGrafanaResourcesRequests = {
-  /**
-   * Requested CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Requested memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Kubernetes resource configuration
- */
-export type GetConfig200KubernetesMonitoringGrafanaResources = {
-  /** Resource limits */
-  limits: GetConfig200KubernetesMonitoringGrafanaResourcesLimits;
-  /** Resource requests */
-  requests: GetConfig200KubernetesMonitoringGrafanaResourcesRequests;
-};
-
-/**
- * Grafana monitoring dashboard configuration
- */
-export type GetConfig200KubernetesMonitoringGrafana = {
-  /** Enable Grafana */
-  enabled: boolean;
-  /** Use managed Grafana deployment */
-  managed?: boolean;
-  /** Container image configuration */
-  image?: GetConfig200KubernetesMonitoringGrafanaImage;
-  /** Kubernetes resource configuration */
-  resources?: GetConfig200KubernetesMonitoringGrafanaResources;
-};
-
-/**
- * Kubernetes image pull policy
- */
-export type GetConfig200KubernetesMonitoringLokiImagePullPolicy = typeof GetConfig200KubernetesMonitoringLokiImagePullPolicy[keyof typeof GetConfig200KubernetesMonitoringLokiImagePullPolicy];
-
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200KubernetesMonitoringLokiImagePullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never',
-} as const;
-
-/**
- * Container image configuration
- */
-export type GetConfig200KubernetesMonitoringLokiImage = {
-  /** Kubernetes image pull policy */
-  pullPolicy: GetConfig200KubernetesMonitoringLokiImagePullPolicy;
-  /**
-   * Container image repository
-   * @minLength 1
-   */
-  repository?: string;
-  /**
-   * Container image tag
-   * @minLength 1
-   */
-  tag: string;
-};
-
-/**
- * Resource limits
- */
-export type GetConfig200KubernetesMonitoringLokiResourcesLimits = {
-  /**
-   * Maximum CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Maximum memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Resource requests
- */
-export type GetConfig200KubernetesMonitoringLokiResourcesRequests = {
-  /**
-   * Requested CPU allocation
-   * @minLength 1
-   */
-  cpu: string;
-  /**
-   * Requested memory allocation
-   * @minLength 1
-   */
-  memory: string;
-};
-
-/**
- * Kubernetes resource configuration
- */
-export type GetConfig200KubernetesMonitoringLokiResources = {
-  /** Resource limits */
-  limits: GetConfig200KubernetesMonitoringLokiResourcesLimits;
-  /** Resource requests */
-  requests: GetConfig200KubernetesMonitoringLokiResourcesRequests;
-};
-
-/**
- * Loki log aggregation service configuration
- */
-export type GetConfig200KubernetesMonitoringLoki = {
-  /** Enable Loki */
-  enabled: boolean;
-  /** Use managed Loki deployment */
-  managed?: boolean;
-  /**
-   * Loki host URL
-   * @minLength 1
-   */
-  host?: string;
-  /** Container image configuration */
-  image?: GetConfig200KubernetesMonitoringLokiImage;
-  /** Kubernetes resource configuration */
-  resources?: GetConfig200KubernetesMonitoringLokiResources;
-};
-
-/**
- * Monitoring configuration for Grafana and Loki
- */
-export type GetConfig200KubernetesMonitoring = {
-  /** Grafana monitoring dashboard configuration */
-  grafana: GetConfig200KubernetesMonitoringGrafana;
-  /** Loki log aggregation service configuration */
-  loki: GetConfig200KubernetesMonitoringLoki;
-};
-
-/**
- * Kubernetes-specific deployment configuration
- */
-export type GetConfig200Kubernetes = {
-  /** Infrastructure configuration for Kubernetes deployments */
-  infrastructure?: GetConfig200KubernetesInfrastructure;
-  /** Ingress configuration */
-  ingress?: GetConfig200KubernetesIngress;
-  /** Monitoring configuration for Grafana and Loki */
-  monitoring?: GetConfig200KubernetesMonitoring;
-};
-
-/**
- * Arches AI configuration schema
- */
-export type GetConfig200 = {
-  /** Configuration schema for the API server */
-  api?: GetConfig200Api;
-  /** Authentication configuration for the API server */
-  auth?: GetConfig200Auth;
-  /** Billing configuration for Stripe */
-  billing?: GetConfig200Billing;
-  /** Database configuration for PostgreSQL */
-  database?: GetConfig200Database;
-  /** Intelligence configuration (LLMs, embeddings, scraper, speech, etc.) */
-  intelligence?: GetConfig200Intelligence;
-  /** Logging configuration */
-  logging?: GetConfig200Logging;
-  /** Platform configuration (host, image, resources) */
-  platform?: GetConfig200Platform;
-  /** Redis configuration */
-  redis?: GetConfig200Redis;
-  /** Object storage configuration for MinIO or S3-compatible services */
-  storage?: GetConfig200Storage;
-  /** Kubernetes-specific deployment configuration */
-  kubernetes?: GetConfig200Kubernetes;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetConfig400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
-};
-
-export type GetHealth200Services = {
-  /** @minLength 1 */
-  database: string;
-  /** @minLength 1 */
-  email: string;
-  /** @minLength 1 */
-  redis: string;
-};
-
-/**
- * Health check response
- */
-export type GetHealth200 = {
-  services: GetHealth200Services;
-  /** @minLength 1 */
-  timestamp: string;
-  uptime: number;
-};
-
-/**
- * RFC 7807 (Problem Details) compliant error response
- */
-export type GetHealth400 = {
-  /**
-   * HTTP status code
-   * @minimum 100
-   * @maximum 599
-   */
-  status: number;
-  /**
-   * URI identifying the problem type
-   * @minLength 1
-   */
-  type?: string;
-  /**
-   * Short, human-readable summary
-   * @minLength 1
-   */
-  title: string;
-  /**
-   * Human-readable explanation specific to this occurrence
-   * @minLength 1
-   */
-  detail?: string;
-  /** URI identifying the specific occurrence */
-  instance?: string;
 };
 

@@ -3,6 +3,7 @@ package health
 
 import (
 	"context"
+	"time"
 
 	"github.com/archesai/archesai/internal/core/valueobjects"
 )
@@ -35,8 +36,8 @@ func (h *GetHealthQueryHandler) Handle(
 			Email:    "healthy",
 			Redis:    "healthy",
 		},
-		"2024-01-01T00:00:00Z",
-		0.0,
+		time.Now().UTC(),
+		0,
 	)
 	if err != nil {
 		return nil, err

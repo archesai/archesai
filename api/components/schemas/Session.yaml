@@ -86,3 +86,12 @@ allOf:
       - token
       - userID
 unevaluatedProperties: false
+example:
+  id: 550e8400-e29b-41d4-a716-446655440000
+  createdAt: '2023-10-05T14:48:00Z'
+  updatedAt: '2023-10-05T14:48:00Z'
+  organizationID: 550e8400-e29b-41d4-a716-446655440000
+  authMethod: magic_link
+  authProvider: local
+  expiresAt: '2023-10-05T14:48:00Z'
+  ipAddress:

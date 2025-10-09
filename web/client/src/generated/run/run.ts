@@ -28,20 +28,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  CreateRun201,
-  CreateRun400,
-  CreateRun401,
+  BadRequestResponse,
   CreateRunBody,
-  DeleteRun200,
-  DeleteRun404,
-  GetRun200,
-  GetRun404,
-  ListRuns200,
-  ListRuns400,
-  ListRuns401,
+  InternalServerErrorResponse,
   ListRunsParams,
-  UpdateRun200,
-  UpdateRun404,
+  NotFoundResponse,
+  RunListResponseResponse,
+  RunResponseResponse,
+  TooManyRequestsResponse,
+  UnauthorizedResponse,
+  UnprocessableEntityResponse,
   UpdateRunBody
 } from '../orval.schemas';
 
@@ -57,6 +53,173 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
+ * List runs
+ * @summary List runs
+ */
+export const getListRunsUrl = (params?: ListRunsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
+      return;
+    }
+      
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/runs?${stringifiedParams}` : `/runs`
+}
+
+export const listRuns = async (params?: ListRunsParams, options?: RequestInit): Promise<RunListResponseResponse> => {
+  
+  return customFetch<RunListResponseResponse>(getListRunsUrl(params),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+
+
+export const getListRunsQueryKey = (params?: ListRunsParams,) => {
+    return [
+    `/runs`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getListRunsQueryOptions = <TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListRunsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListRunsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listRuns>>> = ({ signal }) => listRuns(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListRunsQueryResult = NonNullable<Awaited<ReturnType<typeof listRuns>>>
+export type ListRunsQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+
+export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params: undefined |  ListRunsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listRuns>>,
+          TError,
+          Awaited<ReturnType<typeof listRuns>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListRunsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listRuns>>,
+          TError,
+          Awaited<ReturnType<typeof listRuns>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListRunsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List runs
+ */
+
+export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListRunsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListRunsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getListRunsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListRunsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListRunsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listRuns>>> = ({ signal }) => listRuns(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListRunsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listRuns>>>
+export type ListRunsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+
+export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params: undefined |  ListRunsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListRunsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListRunsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List runs
+ */
+
+export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListRunsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListRunsSuspenseQueryOptions(params,options)
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * Create a run
  * @summary Create a run
  */
@@ -68,9 +231,9 @@ export const getCreateRunUrl = () => {
   return `/runs`
 }
 
-export const createRun = async (createRunBody: CreateRunBody, options?: RequestInit): Promise<CreateRun201> => {
+export const createRun = async (createRunBody: CreateRunBody, options?: RequestInit): Promise<RunResponseResponse> => {
   
-  return customFetch<CreateRun201>(getCreateRunUrl(),
+  return customFetch<RunResponseResponse>(getCreateRunUrl(),
   {      
     ...options,
     method: 'POST',
@@ -83,7 +246,7 @@ export const createRun = async (createRunBody: CreateRunBody, options?: RequestI
 
 
 
-export const getCreateRunMutationOptions = <TError = CreateRun400 | CreateRun401,
+export const getCreateRunMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createRun>>, TError,{data: CreateRunBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createRun>>, TError,{data: CreateRunBody}, TContext> => {
 
@@ -110,12 +273,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreateRunMutationResult = NonNullable<Awaited<ReturnType<typeof createRun>>>
     export type CreateRunMutationBody = CreateRunBody
-    export type CreateRunMutationError = CreateRun400 | CreateRun401
+    export type CreateRunMutationError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Create a run
  */
-export const useCreateRun = <TError = CreateRun400 | CreateRun401,
+export const useCreateRun = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createRun>>, TError,{data: CreateRunBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createRun>>,
@@ -125,244 +288,6 @@ export const useCreateRun = <TError = CreateRun400 | CreateRun401,
       > => {
 
       const mutationOptions = getCreateRunMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
- * List runs
- * @summary List runs
- */
-export const getListRunsUrl = (params?: ListRunsParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["sort"];
-
-    if (Array.isArray(value) && explodeParameters.includes(key)) {
-      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
-      return;
-    }
-      
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/runs?${stringifiedParams}` : `/runs`
-}
-
-export const listRuns = async (params?: ListRunsParams, options?: RequestInit): Promise<ListRuns200> => {
-  
-  return customFetch<ListRuns200>(getListRunsUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getListRunsQueryKey = (params?: ListRunsParams,) => {
-    return [
-    `/runs`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getListRunsQueryOptions = <TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(params?: ListRunsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListRunsQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listRuns>>> = ({ signal }) => listRuns(params, { signal, ...requestOptions });
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListRunsQueryResult = NonNullable<Awaited<ReturnType<typeof listRuns>>>
-export type ListRunsQueryError = ListRuns400 | ListRuns401
-
-
-export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(
- params: undefined |  ListRunsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listRuns>>,
-          TError,
-          Awaited<ReturnType<typeof listRuns>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(
- params?: ListRunsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listRuns>>,
-          TError,
-          Awaited<ReturnType<typeof listRuns>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(
- params?: ListRunsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary List runs
- */
-
-export function useListRuns<TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(
- params?: ListRunsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListRunsQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-export const getListRunsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(params?: ListRunsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListRunsQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listRuns>>> = ({ signal }) => listRuns(params, { signal, ...requestOptions });
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListRunsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listRuns>>>
-export type ListRunsSuspenseQueryError = ListRuns400 | ListRuns401
-
-
-export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(
- params: undefined |  ListRunsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(
- params?: ListRunsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(
- params?: ListRunsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary List runs
- */
-
-export function useListRunsSuspense<TData = Awaited<ReturnType<typeof listRuns>>, TError = ListRuns400 | ListRuns401>(
- params?: ListRunsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListRunsSuspenseQueryOptions(params,options)
-
-  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-/**
- * Delete a run
- * @summary Delete a run
- */
-export const getDeleteRunUrl = (id: string | undefined | null,) => {
-
-
-  
-
-  return `/runs/${id}`
-}
-
-export const deleteRun = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteRun200> => {
-  
-  return customFetch<DeleteRun200>(getDeleteRunUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
-
-
-export const getDeleteRunMutationOptions = <TError = DeleteRun404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: string | undefined | null}, TContext> => {
-
-const mutationKey = ['deleteRun'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRun>>, {id: string | undefined | null}> = (props) => {
-          const {id} = props ?? {};
-
-          return  deleteRun(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteRunMutationResult = NonNullable<Awaited<ReturnType<typeof deleteRun>>>
-    
-    export type DeleteRunMutationError = DeleteRun404
-
-    /**
- * @summary Delete a run
- */
-export const useDeleteRun = <TError = DeleteRun404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteRun>>,
-        TError,
-        {id: string | undefined | null},
-        TContext
-      > => {
-
-      const mutationOptions = getDeleteRunMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -378,9 +303,9 @@ export const getGetRunUrl = (id: string | undefined | null,) => {
   return `/runs/${id}`
 }
 
-export const getRun = async (id: string | undefined | null, options?: RequestInit): Promise<GetRun200> => {
+export const getRun = async (id: string | undefined | null, options?: RequestInit): Promise<RunListResponseResponse> => {
   
-  return customFetch<GetRun200>(getGetRunUrl(id),
+  return customFetch<RunListResponseResponse>(getGetRunUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -400,7 +325,7 @@ export const getGetRunQueryKey = (id?: string | undefined | null,) => {
     }
 
     
-export const getGetRunQueryOptions = <TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetRunQueryOptions = <TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -419,10 +344,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetRunQueryResult = NonNullable<Awaited<ReturnType<typeof getRun>>>
-export type GetRunQueryError = GetRun404
+export type GetRunQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(
+export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRun>>,
@@ -432,7 +357,7 @@ export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = G
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(
+export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getRun>>,
@@ -442,7 +367,7 @@ export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = G
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(
+export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -450,7 +375,7 @@ export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = G
  * @summary Find a run
  */
 
-export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(
+export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -466,7 +391,7 @@ export function useGetRun<TData = Awaited<ReturnType<typeof getRun>>, TError = G
 
 
 
-export const getGetRunSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetRunSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -485,18 +410,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetRunSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getRun>>>
-export type GetRunSuspenseQueryError = GetRun404
+export type GetRunSuspenseQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(
+export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(
+export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(
+export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -504,7 +429,7 @@ export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TE
  * @summary Find a run
  */
 
-export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = GetRun404>(
+export function useGetRunSuspense<TData = Awaited<ReturnType<typeof getRun>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getRun>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -533,9 +458,9 @@ export const getUpdateRunUrl = (id: string | undefined | null,) => {
 }
 
 export const updateRun = async (id: string | undefined | null,
-    updateRunBody: UpdateRunBody, options?: RequestInit): Promise<UpdateRun200> => {
+    updateRunBody: UpdateRunBody, options?: RequestInit): Promise<RunResponseResponse> => {
   
-  return customFetch<UpdateRun200>(getUpdateRunUrl(id),
+  return customFetch<RunResponseResponse>(getUpdateRunUrl(id),
   {      
     ...options,
     method: 'PATCH',
@@ -548,7 +473,7 @@ export const updateRun = async (id: string | undefined | null,
 
 
 
-export const getUpdateRunMutationOptions = <TError = UpdateRun404,
+export const getUpdateRunMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRun>>, TError,{id: string | undefined | null;data: UpdateRunBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateRun>>, TError,{id: string | undefined | null;data: UpdateRunBody}, TContext> => {
 
@@ -575,12 +500,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateRunMutationResult = NonNullable<Awaited<ReturnType<typeof updateRun>>>
     export type UpdateRunMutationBody = UpdateRunBody
-    export type UpdateRunMutationError = UpdateRun404
+    export type UpdateRunMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Update a run
  */
-export const useUpdateRun = <TError = UpdateRun404,
+export const useUpdateRun = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRun>>, TError,{id: string | undefined | null;data: UpdateRunBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateRun>>,
@@ -590,6 +515,77 @@ export const useUpdateRun = <TError = UpdateRun404,
       > => {
 
       const mutationOptions = getUpdateRunMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Delete a run
+ * @summary Delete a run
+ */
+export const getDeleteRunUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/runs/${id}`
+}
+
+export const deleteRun = async (id: string | undefined | null, options?: RequestInit): Promise<RunResponseResponse> => {
+  
+  return customFetch<RunResponseResponse>(getDeleteRunUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
+    
+    
+  }
+);}
+
+
+
+
+export const getDeleteRunMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: string | undefined | null}, TContext> => {
+
+const mutationKey = ['deleteRun'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRun>>, {id: string | undefined | null}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteRun(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteRunMutationResult = NonNullable<Awaited<ReturnType<typeof deleteRun>>>
+    
+    export type DeleteRunMutationError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Delete a run
+ */
+export const useDeleteRun = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteRun>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteRun>>,
+        TError,
+        {id: string | undefined | null},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteRunMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

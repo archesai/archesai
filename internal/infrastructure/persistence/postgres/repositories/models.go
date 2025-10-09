@@ -150,7 +150,7 @@ type Run struct {
 	Error          *string
 	OrganizationID uuid.UUID
 	PipelineID     uuid.UUID
-	Progress       float64
+	Progress       int32
 	StartedAt      *time.Time
 	Status         string
 	ToolID         uuid.UUID

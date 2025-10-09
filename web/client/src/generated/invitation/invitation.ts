@@ -28,20 +28,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  CreateInvitation201,
-  CreateInvitation400,
-  CreateInvitation401,
+  BadRequestResponse,
   CreateInvitationBody,
-  DeleteInvitation200,
-  DeleteInvitation404,
-  GetInvitation200,
-  GetInvitation404,
-  ListInvitations200,
-  ListInvitations400,
-  ListInvitations401,
+  InternalServerErrorResponse,
+  InvitationListResponseResponse,
+  InvitationResponseResponse,
   ListInvitationsParams,
-  UpdateInvitation200,
-  UpdateInvitation404,
+  NotFoundResponse,
+  TooManyRequestsResponse,
+  UnauthorizedResponse,
+  UnprocessableEntityResponse,
   UpdateInvitationBody
 } from '../orval.schemas';
 
@@ -57,79 +53,6 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
- * Create an invitation
- * @summary Create an invitation
- */
-export const getCreateInvitationUrl = (organizationID: string | undefined | null,) => {
-
-
-  
-
-  return `/organizations/${organizationID}/invitations`
-}
-
-export const createInvitation = async (organizationID: string | undefined | null,
-    createInvitationBody: CreateInvitationBody, options?: RequestInit): Promise<CreateInvitation201> => {
-  
-  return customFetch<CreateInvitation201>(getCreateInvitationUrl(organizationID),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createInvitationBody,)
-  }
-);}
-
-
-
-
-export const getCreateInvitationMutationOptions = <TError = CreateInvitation400 | CreateInvitation401,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createInvitation>>, TError,{organizationID: string | undefined | null;data: CreateInvitationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createInvitation>>, TError,{organizationID: string | undefined | null;data: CreateInvitationBody}, TContext> => {
-
-const mutationKey = ['createInvitation'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createInvitation>>, {organizationID: string | undefined | null;data: CreateInvitationBody}> = (props) => {
-          const {organizationID,data} = props ?? {};
-
-          return  createInvitation(organizationID,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateInvitationMutationResult = NonNullable<Awaited<ReturnType<typeof createInvitation>>>
-    export type CreateInvitationMutationBody = CreateInvitationBody
-    export type CreateInvitationMutationError = CreateInvitation400 | CreateInvitation401
-
-    /**
- * @summary Create an invitation
- */
-export const useCreateInvitation = <TError = CreateInvitation400 | CreateInvitation401,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createInvitation>>, TError,{organizationID: string | undefined | null;data: CreateInvitationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createInvitation>>,
-        TError,
-        {organizationID: string | undefined | null;data: CreateInvitationBody},
-        TContext
-      > => {
-
-      const mutationOptions = getCreateInvitationMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
  * List invitations
  * @summary List invitations
  */
@@ -156,9 +79,9 @@ export const getListInvitationsUrl = (organizationID: string | undefined | null,
 }
 
 export const listInvitations = async (organizationID: string | undefined | null,
-    params?: ListInvitationsParams, options?: RequestInit): Promise<ListInvitations200> => {
+    params?: ListInvitationsParams, options?: RequestInit): Promise<InvitationListResponseResponse> => {
   
-  return customFetch<ListInvitations200>(getListInvitationsUrl(organizationID,params),
+  return customFetch<InvitationListResponseResponse>(getListInvitationsUrl(organizationID,params),
   {      
     ...options,
     method: 'GET'
@@ -179,7 +102,7 @@ export const getListInvitationsQueryKey = (organizationID?: string | undefined |
     }
 
     
-export const getListInvitationsQueryOptions = <TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(organizationID: string | undefined | null,
+export const getListInvitationsQueryOptions = <TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(organizationID: string | undefined | null,
     params?: ListInvitationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -199,10 +122,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListInvitationsQueryResult = NonNullable<Awaited<ReturnType<typeof listInvitations>>>
-export type ListInvitationsQueryError = ListInvitations400 | ListInvitations401
+export type ListInvitationsQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(
+export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     params: undefined |  ListInvitationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -213,7 +136,7 @@ export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitat
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(
+export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     params?: ListInvitationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -224,7 +147,7 @@ export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitat
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(
+export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     params?: ListInvitationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -233,7 +156,7 @@ export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitat
  * @summary List invitations
  */
 
-export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(
+export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     params?: ListInvitationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -250,7 +173,7 @@ export function useListInvitations<TData = Awaited<ReturnType<typeof listInvitat
 
 
 
-export const getListInvitationsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(organizationID: string | undefined | null,
+export const getListInvitationsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(organizationID: string | undefined | null,
     params?: ListInvitationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -270,20 +193,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListInvitationsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listInvitations>>>
-export type ListInvitationsSuspenseQueryError = ListInvitations400 | ListInvitations401
+export type ListInvitationsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(
+export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     params: undefined |  ListInvitationsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(
+export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     params?: ListInvitationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(
+export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     params?: ListInvitationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -292,7 +215,7 @@ export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof lis
  * @summary List invitations
  */
 
-export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof listInvitations>>, TError = ListInvitations400 | ListInvitations401>(
+export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof listInvitations>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     params?: ListInvitationsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listInvitations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -310,38 +233,38 @@ export function useListInvitationsSuspense<TData = Awaited<ReturnType<typeof lis
 
 
 /**
- * Delete an invitation
- * @summary Delete an invitation
+ * Create an invitation
+ * @summary Create an invitation
  */
-export const getDeleteInvitationUrl = (organizationID: string | undefined | null,
-    id: string | undefined | null,) => {
+export const getCreateInvitationUrl = (organizationID: string | undefined | null,) => {
 
 
   
 
-  return `/organizations/${organizationID}/invitations/${id}`
+  return `/organizations/${organizationID}/invitations`
 }
 
-export const deleteInvitation = async (organizationID: string | undefined | null,
-    id: string | undefined | null, options?: RequestInit): Promise<DeleteInvitation200> => {
+export const createInvitation = async (organizationID: string | undefined | null,
+    createInvitationBody: CreateInvitationBody, options?: RequestInit): Promise<InvitationResponseResponse> => {
   
-  return customFetch<DeleteInvitation200>(getDeleteInvitationUrl(organizationID,id),
+  return customFetch<InvitationResponseResponse>(getCreateInvitationUrl(organizationID),
   {      
     ...options,
-    method: 'DELETE'
-    
-    
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createInvitationBody,)
   }
 );}
 
 
 
 
-export const getDeleteInvitationMutationOptions = <TError = DeleteInvitation404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteInvitation>>, TError,{organizationID: string | undefined | null;id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteInvitation>>, TError,{organizationID: string | undefined | null;id: string | undefined | null}, TContext> => {
+export const getCreateInvitationMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createInvitation>>, TError,{organizationID: string | undefined | null;data: CreateInvitationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createInvitation>>, TError,{organizationID: string | undefined | null;data: CreateInvitationBody}, TContext> => {
 
-const mutationKey = ['deleteInvitation'];
+const mutationKey = ['createInvitation'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -351,10 +274,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteInvitation>>, {organizationID: string | undefined | null;id: string | undefined | null}> = (props) => {
-          const {organizationID,id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createInvitation>>, {organizationID: string | undefined | null;data: CreateInvitationBody}> = (props) => {
+          const {organizationID,data} = props ?? {};
 
-          return  deleteInvitation(organizationID,id,requestOptions)
+          return  createInvitation(organizationID,data,requestOptions)
         }
 
         
@@ -362,23 +285,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteInvitationMutationResult = NonNullable<Awaited<ReturnType<typeof deleteInvitation>>>
-    
-    export type DeleteInvitationMutationError = DeleteInvitation404
+    export type CreateInvitationMutationResult = NonNullable<Awaited<ReturnType<typeof createInvitation>>>
+    export type CreateInvitationMutationBody = CreateInvitationBody
+    export type CreateInvitationMutationError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
- * @summary Delete an invitation
+ * @summary Create an invitation
  */
-export const useDeleteInvitation = <TError = DeleteInvitation404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteInvitation>>, TError,{organizationID: string | undefined | null;id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+export const useCreateInvitation = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createInvitation>>, TError,{organizationID: string | undefined | null;data: CreateInvitationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteInvitation>>,
+        Awaited<ReturnType<typeof createInvitation>>,
         TError,
-        {organizationID: string | undefined | null;id: string | undefined | null},
+        {organizationID: string | undefined | null;data: CreateInvitationBody},
         TContext
       > => {
 
-      const mutationOptions = getDeleteInvitationMutationOptions(options);
+      const mutationOptions = getCreateInvitationMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -396,9 +319,9 @@ export const getGetInvitationUrl = (organizationID: string | undefined | null,
 }
 
 export const getInvitation = async (organizationID: string | undefined | null,
-    id: string | undefined | null, options?: RequestInit): Promise<GetInvitation200> => {
+    id: string | undefined | null, options?: RequestInit): Promise<InvitationResponseResponse> => {
   
-  return customFetch<GetInvitation200>(getGetInvitationUrl(organizationID,id),
+  return customFetch<InvitationResponseResponse>(getGetInvitationUrl(organizationID,id),
   {      
     ...options,
     method: 'GET'
@@ -419,7 +342,7 @@ export const getGetInvitationQueryKey = (organizationID?: string | undefined | n
     }
 
     
-export const getGetInvitationQueryOptions = <TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(organizationID: string | undefined | null,
+export const getGetInvitationQueryOptions = <TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -439,10 +362,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetInvitationQueryResult = NonNullable<Awaited<ReturnType<typeof getInvitation>>>
-export type GetInvitationQueryError = GetInvitation404
+export type GetInvitationQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(
+export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -453,7 +376,7 @@ export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(
+export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -464,7 +387,7 @@ export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(
+export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -473,7 +396,7 @@ export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation
  * @summary Get an invitation
  */
 
-export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(
+export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -490,7 +413,7 @@ export function useGetInvitation<TData = Awaited<ReturnType<typeof getInvitation
 
 
 
-export const getGetInvitationSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(organizationID: string | undefined | null,
+export const getGetInvitationSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -510,20 +433,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetInvitationSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getInvitation>>>
-export type GetInvitationSuspenseQueryError = GetInvitation404
+export type GetInvitationSuspenseQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetInvitationSuspense<TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(
+export function useGetInvitationSuspense<TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetInvitationSuspense<TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(
+export function useGetInvitationSuspense<TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetInvitationSuspense<TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(
+export function useGetInvitationSuspense<TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -532,7 +455,7 @@ export function useGetInvitationSuspense<TData = Awaited<ReturnType<typeof getIn
  * @summary Get an invitation
  */
 
-export function useGetInvitationSuspense<TData = Awaited<ReturnType<typeof getInvitation>>, TError = GetInvitation404>(
+export function useGetInvitationSuspense<TData = Awaited<ReturnType<typeof getInvitation>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  organizationID: string | undefined | null,
     id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getInvitation>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -564,9 +487,9 @@ export const getUpdateInvitationUrl = (organizationID: string | undefined | null
 
 export const updateInvitation = async (organizationID: string | undefined | null,
     id: string | undefined | null,
-    updateInvitationBody: UpdateInvitationBody, options?: RequestInit): Promise<UpdateInvitation200> => {
+    updateInvitationBody: UpdateInvitationBody, options?: RequestInit): Promise<InvitationResponseResponse> => {
   
-  return customFetch<UpdateInvitation200>(getUpdateInvitationUrl(organizationID,id),
+  return customFetch<InvitationResponseResponse>(getUpdateInvitationUrl(organizationID,id),
   {      
     ...options,
     method: 'PATCH',
@@ -579,7 +502,7 @@ export const updateInvitation = async (organizationID: string | undefined | null
 
 
 
-export const getUpdateInvitationMutationOptions = <TError = UpdateInvitation404,
+export const getUpdateInvitationMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateInvitation>>, TError,{organizationID: string | undefined | null;id: string | undefined | null;data: UpdateInvitationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateInvitation>>, TError,{organizationID: string | undefined | null;id: string | undefined | null;data: UpdateInvitationBody}, TContext> => {
 
@@ -606,12 +529,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateInvitationMutationResult = NonNullable<Awaited<ReturnType<typeof updateInvitation>>>
     export type UpdateInvitationMutationBody = UpdateInvitationBody
-    export type UpdateInvitationMutationError = UpdateInvitation404
+    export type UpdateInvitationMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Update an invitation
  */
-export const useUpdateInvitation = <TError = UpdateInvitation404,
+export const useUpdateInvitation = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateInvitation>>, TError,{organizationID: string | undefined | null;id: string | undefined | null;data: UpdateInvitationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateInvitation>>,
@@ -621,6 +544,79 @@ export const useUpdateInvitation = <TError = UpdateInvitation404,
       > => {
 
       const mutationOptions = getUpdateInvitationMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Delete an invitation
+ * @summary Delete an invitation
+ */
+export const getDeleteInvitationUrl = (organizationID: string | undefined | null,
+    id: string | undefined | null,) => {
+
+
+  
+
+  return `/organizations/${organizationID}/invitations/${id}`
+}
+
+export const deleteInvitation = async (organizationID: string | undefined | null,
+    id: string | undefined | null, options?: RequestInit): Promise<InvitationResponseResponse> => {
+  
+  return customFetch<InvitationResponseResponse>(getDeleteInvitationUrl(organizationID,id),
+  {      
+    ...options,
+    method: 'DELETE'
+    
+    
+  }
+);}
+
+
+
+
+export const getDeleteInvitationMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteInvitation>>, TError,{organizationID: string | undefined | null;id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteInvitation>>, TError,{organizationID: string | undefined | null;id: string | undefined | null}, TContext> => {
+
+const mutationKey = ['deleteInvitation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteInvitation>>, {organizationID: string | undefined | null;id: string | undefined | null}> = (props) => {
+          const {organizationID,id} = props ?? {};
+
+          return  deleteInvitation(organizationID,id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteInvitationMutationResult = NonNullable<Awaited<ReturnType<typeof deleteInvitation>>>
+    
+    export type DeleteInvitationMutationError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Delete an invitation
+ */
+export const useDeleteInvitation = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteInvitation>>, TError,{organizationID: string | undefined | null;id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteInvitation>>,
+        TError,
+        {organizationID: string | undefined | null;id: string | undefined | null},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteInvitationMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

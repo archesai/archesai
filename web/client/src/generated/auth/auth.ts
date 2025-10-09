@@ -28,81 +28,38 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  ConfirmEmailChange204,
-  ConfirmEmailChange401,
-  ConfirmEmailChange404,
+  AccountListResponseResponse,
+  AccountResponseResponse,
+  BadRequestResponse,
   ConfirmEmailChangeBody,
-  ConfirmEmailVerification200,
-  ConfirmEmailVerification401,
-  ConfirmEmailVerification404,
   ConfirmEmailVerificationBody,
-  ConfirmPasswordReset401,
-  ConfirmPasswordReset404,
   ConfirmPasswordResetBody,
-  DeleteAccount200,
-  DeleteAccount404,
-  DeleteSession200,
-  DeleteSession401,
-  DeleteSession404,
-  GetAccount200,
-  GetAccount404,
-  GetSession200,
-  GetSession404,
+  ConflictResponse,
+  EmailVerificationResponseResponse,
+  InternalServerErrorResponse,
   LinkAccount200,
-  LinkAccount400,
-  LinkAccount401,
-  LinkAccount409,
   LinkAccountBody,
-  ListAccounts200,
-  ListAccounts401,
-  ListSessions200,
-  ListSessions401,
   ListSessionsParams,
-  Login201,
-  Login400,
-  Login401,
   LoginBody,
-  Logout200,
-  Logout401,
-  LogoutAll200,
-  LogoutAll401,
+  LogoutResponseResponse,
+  NoContentResponse,
+  NotFoundResponse,
   OauthAuthorize200,
-  OauthAuthorize400,
-  OauthAuthorize404,
   OauthAuthorizeParams,
-  OauthCallback200,
-  OauthCallback400,
-  OauthCallback401,
-  OauthCallback404,
   OauthCallbackParams,
-  Register201,
-  Register400,
-  Register409,
   RegisterBody,
-  RequestEmailChange400,
-  RequestEmailChange401,
   RequestEmailChangeBody,
-  RequestEmailVerification400,
-  RequestEmailVerification401,
   RequestMagicLink200,
-  RequestMagicLink400,
-  RequestMagicLink429,
-  RequestMagicLink500,
   RequestMagicLinkBody,
-  RequestPasswordReset400,
   RequestPasswordResetBody,
-  UpdateAccount200,
-  UpdateAccount404,
+  SessionCreatedResponse,
+  SessionListResponseResponse,
+  SessionResponseResponse,
+  TooManyRequestsResponse,
+  UnauthorizedResponse,
+  UnprocessableEntityResponse,
   UpdateAccountBody,
-  UpdateSession200,
-  UpdateSession401,
-  UpdateSession404,
   UpdateSessionBody,
-  VerifyMagicLink201,
-  VerifyMagicLink400,
-  VerifyMagicLink401,
-  VerifyMagicLink404,
-  VerifyMagicLink500,
   VerifyMagicLinkBody
 } from '../orval.schemas';
 
@@ -129,9 +86,9 @@ export const getLoginUrl = () => {
   return `/auth/login`
 }
 
-export const login = async (loginBody: LoginBody, options?: RequestInit): Promise<Login201> => {
+export const login = async (loginBody: LoginBody, options?: RequestInit): Promise<SessionCreatedResponse> => {
   
-  return customFetch<Login201>(getLoginUrl(),
+  return customFetch<SessionCreatedResponse>(getLoginUrl(),
   {      
     ...options,
     method: 'POST',
@@ -144,7 +101,7 @@ export const login = async (loginBody: LoginBody, options?: RequestInit): Promis
 
 
 
-export const getLoginMutationOptions = <TError = Login400 | Login401,
+export const getLoginMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: LoginBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: LoginBody}, TContext> => {
 
@@ -171,12 +128,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>
     export type LoginMutationBody = LoginBody
-    export type LoginMutationError = Login400 | Login401
+    export type LoginMutationError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Login
  */
-export const useLogin = <TError = Login400 | Login401,
+export const useLogin = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof login>>, TError,{data: LoginBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof login>>,
@@ -201,9 +158,9 @@ export const getLogoutUrl = () => {
   return `/auth/logout`
 }
 
-export const logout = async ( options?: RequestInit): Promise<Logout200> => {
+export const logout = async ( options?: RequestInit): Promise<LogoutResponseResponse> => {
   
-  return customFetch<Logout200>(getLogoutUrl(),
+  return customFetch<LogoutResponseResponse>(getLogoutUrl(),
   {      
     ...options,
     method: 'POST'
@@ -215,7 +172,7 @@ export const logout = async ( options?: RequestInit): Promise<Logout200> => {
 
 
 
-export const getLogoutMutationOptions = <TError = Logout401,
+export const getLogoutMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext> => {
 
@@ -242,12 +199,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type LogoutMutationResult = NonNullable<Awaited<ReturnType<typeof logout>>>
     
-    export type LogoutMutationError = Logout401
+    export type LogoutMutationError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Logout
  */
-export const useLogout = <TError = Logout401,
+export const useLogout = <TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof logout>>,
@@ -272,9 +229,9 @@ export const getLogoutAllUrl = () => {
   return `/auth/logout-all`
 }
 
-export const logoutAll = async ( options?: RequestInit): Promise<LogoutAll200> => {
+export const logoutAll = async ( options?: RequestInit): Promise<LogoutResponseResponse> => {
   
-  return customFetch<LogoutAll200>(getLogoutAllUrl(),
+  return customFetch<LogoutResponseResponse>(getLogoutAllUrl(),
   {      
     ...options,
     method: 'POST'
@@ -286,7 +243,7 @@ export const logoutAll = async ( options?: RequestInit): Promise<LogoutAll200> =
 
 
 
-export const getLogoutAllMutationOptions = <TError = LogoutAll401,
+export const getLogoutAllMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logoutAll>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof logoutAll>>, TError,void, TContext> => {
 
@@ -313,12 +270,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type LogoutAllMutationResult = NonNullable<Awaited<ReturnType<typeof logoutAll>>>
     
-    export type LogoutAllMutationError = LogoutAll401
+    export type LogoutAllMutationError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Logout all sessions
  */
-export const useLogoutAll = <TError = LogoutAll401,
+export const useLogoutAll = <TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logoutAll>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof logoutAll>>,
@@ -343,9 +300,9 @@ export const getRegisterUrl = () => {
   return `/auth/register`
 }
 
-export const register = async (registerBody: RegisterBody, options?: RequestInit): Promise<Register201> => {
+export const register = async (registerBody: RegisterBody, options?: RequestInit): Promise<SessionCreatedResponse> => {
   
-  return customFetch<Register201>(getRegisterUrl(),
+  return customFetch<SessionCreatedResponse>(getRegisterUrl(),
   {      
     ...options,
     method: 'POST',
@@ -358,7 +315,7 @@ export const register = async (registerBody: RegisterBody, options?: RequestInit
 
 
 
-export const getRegisterMutationOptions = <TError = Register400 | Register409,
+export const getRegisterMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | ConflictResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: RegisterBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: RegisterBody}, TContext> => {
 
@@ -385,12 +342,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RegisterMutationResult = NonNullable<Awaited<ReturnType<typeof register>>>
     export type RegisterMutationBody = RegisterBody
-    export type RegisterMutationError = Register400 | Register409
+    export type RegisterMutationError = BadRequestResponse | UnauthorizedResponse | ConflictResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Register
  */
-export const useRegister = <TError = Register400 | Register409,
+export const useRegister = <TError = BadRequestResponse | UnauthorizedResponse | ConflictResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof register>>, TError,{data: RegisterBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof register>>,
@@ -430,7 +387,7 @@ export const requestMagicLink = async (requestMagicLinkBody: RequestMagicLinkBod
 
 
 
-export const getRequestMagicLinkMutationOptions = <TError = RequestMagicLink400 | RequestMagicLink429 | RequestMagicLink500,
+export const getRequestMagicLinkMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMagicLink>>, TError,{data: RequestMagicLinkBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof requestMagicLink>>, TError,{data: RequestMagicLinkBody}, TContext> => {
 
@@ -457,12 +414,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RequestMagicLinkMutationResult = NonNullable<Awaited<ReturnType<typeof requestMagicLink>>>
     export type RequestMagicLinkMutationBody = RequestMagicLinkBody
-    export type RequestMagicLinkMutationError = RequestMagicLink400 | RequestMagicLink429 | RequestMagicLink500
+    export type RequestMagicLinkMutationError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Request a magic link
  */
-export const useRequestMagicLink = <TError = RequestMagicLink400 | RequestMagicLink429 | RequestMagicLink500,
+export const useRequestMagicLink = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMagicLink>>, TError,{data: RequestMagicLinkBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof requestMagicLink>>,
@@ -487,9 +444,9 @@ export const getVerifyMagicLinkUrl = () => {
   return `/auth/magic-links/verify`
 }
 
-export const verifyMagicLink = async (verifyMagicLinkBody: VerifyMagicLinkBody, options?: RequestInit): Promise<VerifyMagicLink201> => {
+export const verifyMagicLink = async (verifyMagicLinkBody: VerifyMagicLinkBody, options?: RequestInit): Promise<SessionCreatedResponse> => {
   
-  return customFetch<VerifyMagicLink201>(getVerifyMagicLinkUrl(),
+  return customFetch<SessionCreatedResponse>(getVerifyMagicLinkUrl(),
   {      
     ...options,
     method: 'POST',
@@ -502,7 +459,7 @@ export const verifyMagicLink = async (verifyMagicLinkBody: VerifyMagicLinkBody, 
 
 
 
-export const getVerifyMagicLinkMutationOptions = <TError = VerifyMagicLink400 | VerifyMagicLink401 | VerifyMagicLink404 | VerifyMagicLink500,
+export const getVerifyMagicLinkMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyMagicLink>>, TError,{data: VerifyMagicLinkBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof verifyMagicLink>>, TError,{data: VerifyMagicLinkBody}, TContext> => {
 
@@ -529,12 +486,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type VerifyMagicLinkMutationResult = NonNullable<Awaited<ReturnType<typeof verifyMagicLink>>>
     export type VerifyMagicLinkMutationBody = VerifyMagicLinkBody
-    export type VerifyMagicLinkMutationError = VerifyMagicLink400 | VerifyMagicLink401 | VerifyMagicLink404 | VerifyMagicLink500
+    export type VerifyMagicLinkMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Verify a magic link token
  */
-export const useVerifyMagicLink = <TError = VerifyMagicLink400 | VerifyMagicLink401 | VerifyMagicLink404 | VerifyMagicLink500,
+export const useVerifyMagicLink = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyMagicLink>>, TError,{data: VerifyMagicLinkBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof verifyMagicLink>>,
@@ -574,7 +531,7 @@ export const linkAccount = async (linkAccountBody: LinkAccountBody, options?: Re
 
 
 
-export const getLinkAccountMutationOptions = <TError = LinkAccount400 | LinkAccount401 | LinkAccount409,
+export const getLinkAccountMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | ConflictResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof linkAccount>>, TError,{data: LinkAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof linkAccount>>, TError,{data: LinkAccountBody}, TContext> => {
 
@@ -601,12 +558,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type LinkAccountMutationResult = NonNullable<Awaited<ReturnType<typeof linkAccount>>>
     export type LinkAccountMutationBody = LinkAccountBody
-    export type LinkAccountMutationError = LinkAccount400 | LinkAccount401 | LinkAccount409
+    export type LinkAccountMutationError = BadRequestResponse | UnauthorizedResponse | ConflictResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Link authentication provider
  */
-export const useLinkAccount = <TError = LinkAccount400 | LinkAccount401 | LinkAccount409,
+export const useLinkAccount = <TError = BadRequestResponse | UnauthorizedResponse | ConflictResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof linkAccount>>, TError,{data: LinkAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof linkAccount>>,
@@ -644,9 +601,9 @@ export const getListSessionsUrl = (params?: ListSessionsParams,) => {
   return stringifiedParams.length > 0 ? `/auth/sessions?${stringifiedParams}` : `/auth/sessions`
 }
 
-export const listSessions = async (params?: ListSessionsParams, options?: RequestInit): Promise<ListSessions200> => {
+export const listSessions = async (params?: ListSessionsParams, options?: RequestInit): Promise<SessionListResponseResponse> => {
   
-  return customFetch<ListSessions200>(getListSessionsUrl(params),
+  return customFetch<SessionListResponseResponse>(getListSessionsUrl(params),
   {      
     ...options,
     method: 'GET'
@@ -666,7 +623,7 @@ export const getListSessionsQueryKey = (params?: ListSessionsParams,) => {
     }
 
     
-export const getListSessionsQueryOptions = <TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListSessionsQueryOptions = <TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -685,10 +642,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof listSessions>>>
-export type ListSessionsQueryError = ListSessions401
+export type ListSessionsQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(
+export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params: undefined |  ListSessionsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listSessions>>,
@@ -698,7 +655,7 @@ export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(
+export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listSessions>>,
@@ -708,7 +665,7 @@ export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(
+export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -716,7 +673,7 @@ export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>
  * @summary List sessions
  */
 
-export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(
+export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListSessionsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -732,7 +689,7 @@ export function useListSessions<TData = Awaited<ReturnType<typeof listSessions>>
 
 
 
-export const getListSessionsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListSessionsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -751,18 +708,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListSessionsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listSessions>>>
-export type ListSessionsSuspenseQueryError = ListSessions401
+export type ListSessionsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(
+export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params: undefined |  ListSessionsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(
+export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(
+export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -770,7 +727,7 @@ export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSe
  * @summary List sessions
  */
 
-export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = ListSessions401>(
+export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSessions>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListSessionsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -787,77 +744,6 @@ export function useListSessionsSuspense<TData = Awaited<ReturnType<typeof listSe
 
 
 /**
- * Delete a specific session (logout from that session)
- * @summary Delete session (Logout)
- */
-export const getDeleteSessionUrl = (id: string | undefined | null,) => {
-
-
-  
-
-  return `/auth/sessions/${id}`
-}
-
-export const deleteSession = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteSession200> => {
-  
-  return customFetch<DeleteSession200>(getDeleteSessionUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
-
-
-export const getDeleteSessionMutationOptions = <TError = DeleteSession401 | DeleteSession404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: string | undefined | null}, TContext> => {
-
-const mutationKey = ['deleteSession'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteSession>>, {id: string | undefined | null}> = (props) => {
-          const {id} = props ?? {};
-
-          return  deleteSession(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteSessionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteSession>>>
-    
-    export type DeleteSessionMutationError = DeleteSession401 | DeleteSession404
-
-    /**
- * @summary Delete session (Logout)
- */
-export const useDeleteSession = <TError = DeleteSession401 | DeleteSession404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteSession>>,
-        TError,
-        {id: string | undefined | null},
-        TContext
-      > => {
-
-      const mutationOptions = getDeleteSessionMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
  * Find a session
  * @summary Find a session
  */
@@ -869,9 +755,9 @@ export const getGetSessionUrl = (id: string | undefined | null,) => {
   return `/auth/sessions/${id}`
 }
 
-export const getSession = async (id: string | undefined | null, options?: RequestInit): Promise<GetSession200> => {
+export const getSession = async (id: string | undefined | null, options?: RequestInit): Promise<SessionResponseResponse> => {
   
-  return customFetch<GetSession200>(getGetSessionUrl(id),
+  return customFetch<SessionResponseResponse>(getGetSessionUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -891,7 +777,7 @@ export const getGetSessionQueryKey = (id?: string | undefined | null,) => {
     }
 
     
-export const getGetSessionQueryOptions = <TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetSessionQueryOptions = <TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -910,10 +796,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetSessionQueryResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
-export type GetSessionQueryError = GetSession404
+export type GetSessionQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(
+export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSession>>,
@@ -923,7 +809,7 @@ export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TE
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(
+export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getSession>>,
@@ -933,7 +819,7 @@ export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TE
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(
+export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -941,7 +827,7 @@ export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TE
  * @summary Find a session
  */
 
-export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(
+export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -957,7 +843,7 @@ export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TE
 
 
 
-export const getGetSessionSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetSessionSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -976,18 +862,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetSessionSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getSession>>>
-export type GetSessionSuspenseQueryError = GetSession404
+export type GetSessionSuspenseQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(
+export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(
+export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(
+export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -995,7 +881,7 @@ export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSessi
  * @summary Find a session
  */
 
-export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = GetSession404>(
+export function useGetSessionSuspense<TData = Awaited<ReturnType<typeof getSession>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getSession>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1024,9 +910,9 @@ export const getUpdateSessionUrl = (id: string | undefined | null,) => {
 }
 
 export const updateSession = async (id: string | undefined | null,
-    updateSessionBody: UpdateSessionBody, options?: RequestInit): Promise<UpdateSession200> => {
+    updateSessionBody: UpdateSessionBody, options?: RequestInit): Promise<SessionResponseResponse> => {
   
-  return customFetch<UpdateSession200>(getUpdateSessionUrl(id),
+  return customFetch<SessionResponseResponse>(getUpdateSessionUrl(id),
   {      
     ...options,
     method: 'PATCH',
@@ -1039,7 +925,7 @@ export const updateSession = async (id: string | undefined | null,
 
 
 
-export const getUpdateSessionMutationOptions = <TError = UpdateSession401 | UpdateSession404,
+export const getUpdateSessionMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSession>>, TError,{id: string | undefined | null;data: UpdateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateSession>>, TError,{id: string | undefined | null;data: UpdateSessionBody}, TContext> => {
 
@@ -1066,12 +952,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateSessionMutationResult = NonNullable<Awaited<ReturnType<typeof updateSession>>>
     export type UpdateSessionMutationBody = UpdateSessionBody
-    export type UpdateSessionMutationError = UpdateSession401 | UpdateSession404
+    export type UpdateSessionMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Update Session
  */
-export const useUpdateSession = <TError = UpdateSession401 | UpdateSession404,
+export const useUpdateSession = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSession>>, TError,{id: string | undefined | null;data: UpdateSessionBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateSession>>,
@@ -1081,6 +967,77 @@ export const useUpdateSession = <TError = UpdateSession401 | UpdateSession404,
       > => {
 
       const mutationOptions = getUpdateSessionMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Delete a specific session (logout from that session)
+ * @summary Delete session (Logout)
+ */
+export const getDeleteSessionUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/auth/sessions/${id}`
+}
+
+export const deleteSession = async (id: string | undefined | null, options?: RequestInit): Promise<SessionResponseResponse> => {
+  
+  return customFetch<SessionResponseResponse>(getDeleteSessionUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
+    
+    
+  }
+);}
+
+
+
+
+export const getDeleteSessionMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: string | undefined | null}, TContext> => {
+
+const mutationKey = ['deleteSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteSession>>, {id: string | undefined | null}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteSession(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteSessionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteSession>>>
+    
+    export type DeleteSessionMutationError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Delete session (Logout)
+ */
+export const useDeleteSession = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSession>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteSession>>,
+        TError,
+        {id: string | undefined | null},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteSessionMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -1096,9 +1053,9 @@ export const getListAccountsUrl = () => {
   return `/auth/accounts`
 }
 
-export const listAccounts = async ( options?: RequestInit): Promise<ListAccounts200> => {
+export const listAccounts = async ( options?: RequestInit): Promise<AccountListResponseResponse> => {
   
-  return customFetch<ListAccounts200>(getListAccountsUrl(),
+  return customFetch<AccountListResponseResponse>(getListAccountsUrl(),
   {      
     ...options,
     method: 'GET'
@@ -1118,7 +1075,7 @@ export const getListAccountsQueryKey = () => {
     }
 
     
-export const getListAccountsQueryOptions = <TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListAccountsQueryOptions = <TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1137,10 +1094,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListAccountsQueryResult = NonNullable<Awaited<ReturnType<typeof listAccounts>>>
-export type ListAccountsQueryError = ListAccounts401
+export type ListAccountsQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>(
+export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listAccounts>>,
@@ -1150,7 +1107,7 @@ export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>(
+export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listAccounts>>,
@@ -1160,7 +1117,7 @@ export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>(
+export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1168,7 +1125,7 @@ export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>
  * @summary List linked accounts
  */
 
-export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>(
+export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1184,7 +1141,7 @@ export function useListAccounts<TData = Awaited<ReturnType<typeof listAccounts>>
 
 
 
-export const getListAccountsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>( options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListAccountsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>( options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1203,18 +1160,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListAccountsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listAccounts>>>
-export type ListAccountsSuspenseQueryError = ListAccounts401
+export type ListAccountsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>(
+export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>(
+export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>(
+export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1222,7 +1179,7 @@ export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAc
  * @summary List linked accounts
  */
 
-export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = ListAccounts401>(
+export function useListAccountsSuspense<TData = Awaited<ReturnType<typeof listAccounts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAccounts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1250,9 +1207,9 @@ export const getGetAccountUrl = (id: string | undefined | null,) => {
   return `/auth/accounts/${id}`
 }
 
-export const getAccount = async (id: string | undefined | null, options?: RequestInit): Promise<GetAccount200> => {
+export const getAccount = async (id: string | undefined | null, options?: RequestInit): Promise<AccountResponseResponse> => {
   
-  return customFetch<GetAccount200>(getGetAccountUrl(id),
+  return customFetch<AccountResponseResponse>(getGetAccountUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -1272,7 +1229,7 @@ export const getGetAccountQueryKey = (id?: string | undefined | null,) => {
     }
 
     
-export const getGetAccountQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetAccountQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1291,10 +1248,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetAccountQueryResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
-export type GetAccountQueryError = GetAccount404
+export type GetAccountQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAccount>>,
@@ -1304,7 +1261,7 @@ export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TE
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAccount>>,
@@ -1314,7 +1271,7 @@ export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TE
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1322,7 +1279,7 @@ export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TE
  * @summary Find an account
  */
 
-export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(
+export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1338,7 +1295,7 @@ export function useGetAccount<TData = Awaited<ReturnType<typeof getAccount>>, TE
 
 
 
-export const getGetAccountSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetAccountSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -1357,18 +1314,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetAccountSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getAccount>>>
-export type GetAccountSuspenseQueryError = GetAccount404
+export type GetAccountSuspenseQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(
+export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(
+export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(
+export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -1376,7 +1333,7 @@ export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccou
  * @summary Find an account
  */
 
-export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = GetAccount404>(
+export function useGetAccountSuspense<TData = Awaited<ReturnType<typeof getAccount>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAccount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -1405,9 +1362,9 @@ export const getUpdateAccountUrl = (id: string | undefined | null,) => {
 }
 
 export const updateAccount = async (id: string | undefined | null,
-    updateAccountBody: UpdateAccountBody, options?: RequestInit): Promise<UpdateAccount200> => {
+    updateAccountBody: UpdateAccountBody, options?: RequestInit): Promise<AccountResponseResponse> => {
   
-  return customFetch<UpdateAccount200>(getUpdateAccountUrl(id),
+  return customFetch<AccountResponseResponse>(getUpdateAccountUrl(id),
   {      
     ...options,
     method: 'PATCH',
@@ -1420,7 +1377,7 @@ export const updateAccount = async (id: string | undefined | null,
 
 
 
-export const getUpdateAccountMutationOptions = <TError = UpdateAccount404,
+export const getUpdateAccountMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAccount>>, TError,{id: string | undefined | null;data: UpdateAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateAccount>>, TError,{id: string | undefined | null;data: UpdateAccountBody}, TContext> => {
 
@@ -1447,12 +1404,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateAccountMutationResult = NonNullable<Awaited<ReturnType<typeof updateAccount>>>
     export type UpdateAccountMutationBody = UpdateAccountBody
-    export type UpdateAccountMutationError = UpdateAccount404
+    export type UpdateAccountMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Update an account
  */
-export const useUpdateAccount = <TError = UpdateAccount404,
+export const useUpdateAccount = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAccount>>, TError,{id: string | undefined | null;data: UpdateAccountBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateAccount>>,
@@ -1477,9 +1434,9 @@ export const getDeleteAccountUrl = (id: string | undefined | null,) => {
   return `/auth/accounts/${id}`
 }
 
-export const deleteAccount = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteAccount200> => {
+export const deleteAccount = async (id: string | undefined | null, options?: RequestInit): Promise<AccountResponseResponse> => {
   
-  return customFetch<DeleteAccount200>(getDeleteAccountUrl(id),
+  return customFetch<AccountResponseResponse>(getDeleteAccountUrl(id),
   {      
     ...options,
     method: 'DELETE'
@@ -1491,7 +1448,7 @@ export const deleteAccount = async (id: string | undefined | null, options?: Req
 
 
 
-export const getDeleteAccountMutationOptions = <TError = DeleteAccount404,
+export const getDeleteAccountMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: string | undefined | null}, TContext> => {
 
@@ -1518,12 +1475,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DeleteAccountMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAccount>>>
     
-    export type DeleteAccountMutationError = DeleteAccount404
+    export type DeleteAccountMutationError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Delete an account
  */
-export const useDeleteAccount = <TError = DeleteAccount404,
+export const useDeleteAccount = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteAccount>>,
@@ -1548,9 +1505,9 @@ export const getRequestEmailVerificationUrl = () => {
   return `/auth/request-verification`
 }
 
-export const requestEmailVerification = async ( options?: RequestInit): Promise<void> => {
+export const requestEmailVerification = async ( options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<void>(getRequestEmailVerificationUrl(),
+  return customFetch<NoContentResponse>(getRequestEmailVerificationUrl(),
   {      
     ...options,
     method: 'POST'
@@ -1562,7 +1519,7 @@ export const requestEmailVerification = async ( options?: RequestInit): Promise<
 
 
 
-export const getRequestEmailVerificationMutationOptions = <TError = RequestEmailVerification400 | RequestEmailVerification401,
+export const getRequestEmailVerificationMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestEmailVerification>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof requestEmailVerification>>, TError,void, TContext> => {
 
@@ -1589,12 +1546,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RequestEmailVerificationMutationResult = NonNullable<Awaited<ReturnType<typeof requestEmailVerification>>>
     
-    export type RequestEmailVerificationMutationError = RequestEmailVerification400 | RequestEmailVerification401
+    export type RequestEmailVerificationMutationError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Request e-mail verification
  */
-export const useRequestEmailVerification = <TError = RequestEmailVerification400 | RequestEmailVerification401,
+export const useRequestEmailVerification = <TError = BadRequestResponse | UnauthorizedResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestEmailVerification>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof requestEmailVerification>>,
@@ -1619,9 +1576,9 @@ export const getConfirmEmailVerificationUrl = () => {
   return `/auth/verify-email`
 }
 
-export const confirmEmailVerification = async (confirmEmailVerificationBody: ConfirmEmailVerificationBody, options?: RequestInit): Promise<ConfirmEmailVerification200> => {
+export const confirmEmailVerification = async (confirmEmailVerificationBody: ConfirmEmailVerificationBody, options?: RequestInit): Promise<EmailVerificationResponseResponse> => {
   
-  return customFetch<ConfirmEmailVerification200>(getConfirmEmailVerificationUrl(),
+  return customFetch<EmailVerificationResponseResponse>(getConfirmEmailVerificationUrl(),
   {      
     ...options,
     method: 'POST',
@@ -1634,7 +1591,7 @@ export const confirmEmailVerification = async (confirmEmailVerificationBody: Con
 
 
 
-export const getConfirmEmailVerificationMutationOptions = <TError = ConfirmEmailVerification401 | ConfirmEmailVerification404,
+export const getConfirmEmailVerificationMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmEmailVerification>>, TError,{data: ConfirmEmailVerificationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof confirmEmailVerification>>, TError,{data: ConfirmEmailVerificationBody}, TContext> => {
 
@@ -1661,12 +1618,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type ConfirmEmailVerificationMutationResult = NonNullable<Awaited<ReturnType<typeof confirmEmailVerification>>>
     export type ConfirmEmailVerificationMutationBody = ConfirmEmailVerificationBody
-    export type ConfirmEmailVerificationMutationError = ConfirmEmailVerification401 | ConfirmEmailVerification404
+    export type ConfirmEmailVerificationMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Confirm e-mail verification
  */
-export const useConfirmEmailVerification = <TError = ConfirmEmailVerification401 | ConfirmEmailVerification404,
+export const useConfirmEmailVerification = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmEmailVerification>>, TError,{data: ConfirmEmailVerificationBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof confirmEmailVerification>>,
@@ -1691,9 +1648,9 @@ export const getRequestPasswordResetUrl = () => {
   return `/auth/forgot-password`
 }
 
-export const requestPasswordReset = async (requestPasswordResetBody: RequestPasswordResetBody, options?: RequestInit): Promise<void> => {
+export const requestPasswordReset = async (requestPasswordResetBody: RequestPasswordResetBody, options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<void>(getRequestPasswordResetUrl(),
+  return customFetch<NoContentResponse>(getRequestPasswordResetUrl(),
   {      
     ...options,
     method: 'POST',
@@ -1706,7 +1663,7 @@ export const requestPasswordReset = async (requestPasswordResetBody: RequestPass
 
 
 
-export const getRequestPasswordResetMutationOptions = <TError = RequestPasswordReset400,
+export const getRequestPasswordResetMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestPasswordReset>>, TError,{data: RequestPasswordResetBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof requestPasswordReset>>, TError,{data: RequestPasswordResetBody}, TContext> => {
 
@@ -1733,12 +1690,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RequestPasswordResetMutationResult = NonNullable<Awaited<ReturnType<typeof requestPasswordReset>>>
     export type RequestPasswordResetMutationBody = RequestPasswordResetBody
-    export type RequestPasswordResetMutationError = RequestPasswordReset400
+    export type RequestPasswordResetMutationError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Request password reset
  */
-export const useRequestPasswordReset = <TError = RequestPasswordReset400,
+export const useRequestPasswordReset = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestPasswordReset>>, TError,{data: RequestPasswordResetBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof requestPasswordReset>>,
@@ -1763,9 +1720,9 @@ export const getConfirmPasswordResetUrl = () => {
   return `/auth/reset-password`
 }
 
-export const confirmPasswordReset = async (confirmPasswordResetBody: ConfirmPasswordResetBody, options?: RequestInit): Promise<void> => {
+export const confirmPasswordReset = async (confirmPasswordResetBody: ConfirmPasswordResetBody, options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<void>(getConfirmPasswordResetUrl(),
+  return customFetch<NoContentResponse>(getConfirmPasswordResetUrl(),
   {      
     ...options,
     method: 'POST',
@@ -1778,7 +1735,7 @@ export const confirmPasswordReset = async (confirmPasswordResetBody: ConfirmPass
 
 
 
-export const getConfirmPasswordResetMutationOptions = <TError = ConfirmPasswordReset401 | ConfirmPasswordReset404,
+export const getConfirmPasswordResetMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmPasswordReset>>, TError,{data: ConfirmPasswordResetBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof confirmPasswordReset>>, TError,{data: ConfirmPasswordResetBody}, TContext> => {
 
@@ -1805,12 +1762,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type ConfirmPasswordResetMutationResult = NonNullable<Awaited<ReturnType<typeof confirmPasswordReset>>>
     export type ConfirmPasswordResetMutationBody = ConfirmPasswordResetBody
-    export type ConfirmPasswordResetMutationError = ConfirmPasswordReset401 | ConfirmPasswordReset404
+    export type ConfirmPasswordResetMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Verify password reset
  */
-export const useConfirmPasswordReset = <TError = ConfirmPasswordReset401 | ConfirmPasswordReset404,
+export const useConfirmPasswordReset = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmPasswordReset>>, TError,{data: ConfirmPasswordResetBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof confirmPasswordReset>>,
@@ -1835,9 +1792,9 @@ export const getRequestEmailChangeUrl = () => {
   return `/auth/change-email`
 }
 
-export const requestEmailChange = async (requestEmailChangeBody: RequestEmailChangeBody, options?: RequestInit): Promise<void> => {
+export const requestEmailChange = async (requestEmailChangeBody: RequestEmailChangeBody, options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<void>(getRequestEmailChangeUrl(),
+  return customFetch<NoContentResponse>(getRequestEmailChangeUrl(),
   {      
     ...options,
     method: 'POST',
@@ -1850,7 +1807,7 @@ export const requestEmailChange = async (requestEmailChangeBody: RequestEmailCha
 
 
 
-export const getRequestEmailChangeMutationOptions = <TError = RequestEmailChange400 | RequestEmailChange401,
+export const getRequestEmailChangeMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestEmailChange>>, TError,{data: RequestEmailChangeBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof requestEmailChange>>, TError,{data: RequestEmailChangeBody}, TContext> => {
 
@@ -1877,12 +1834,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type RequestEmailChangeMutationResult = NonNullable<Awaited<ReturnType<typeof requestEmailChange>>>
     export type RequestEmailChangeMutationBody = RequestEmailChangeBody
-    export type RequestEmailChangeMutationError = RequestEmailChange400 | RequestEmailChange401
+    export type RequestEmailChangeMutationError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Request e-mail change
  */
-export const useRequestEmailChange = <TError = RequestEmailChange400 | RequestEmailChange401,
+export const useRequestEmailChange = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestEmailChange>>, TError,{data: RequestEmailChangeBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof requestEmailChange>>,
@@ -1907,9 +1864,9 @@ export const getConfirmEmailChangeUrl = () => {
   return `/auth/confirm-email`
 }
 
-export const confirmEmailChange = async (confirmEmailChangeBody: ConfirmEmailChangeBody, options?: RequestInit): Promise<ConfirmEmailChange204> => {
+export const confirmEmailChange = async (confirmEmailChangeBody: ConfirmEmailChangeBody, options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<ConfirmEmailChange204>(getConfirmEmailChangeUrl(),
+  return customFetch<NoContentResponse>(getConfirmEmailChangeUrl(),
   {      
     ...options,
     method: 'POST',
@@ -1922,7 +1879,7 @@ export const confirmEmailChange = async (confirmEmailChangeBody: ConfirmEmailCha
 
 
 
-export const getConfirmEmailChangeMutationOptions = <TError = ConfirmEmailChange401 | ConfirmEmailChange404,
+export const getConfirmEmailChangeMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmEmailChange>>, TError,{data: ConfirmEmailChangeBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof confirmEmailChange>>, TError,{data: ConfirmEmailChangeBody}, TContext> => {
 
@@ -1949,12 +1906,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type ConfirmEmailChangeMutationResult = NonNullable<Awaited<ReturnType<typeof confirmEmailChange>>>
     export type ConfirmEmailChangeMutationBody = ConfirmEmailChangeBody
-    export type ConfirmEmailChangeMutationError = ConfirmEmailChange401 | ConfirmEmailChange404
+    export type ConfirmEmailChangeMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Verify e-mail change
  */
-export const useConfirmEmailChange = <TError = ConfirmEmailChange401 | ConfirmEmailChange404,
+export const useConfirmEmailChange = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmEmailChange>>, TError,{data: ConfirmEmailChangeBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof confirmEmailChange>>,
@@ -2011,7 +1968,7 @@ export const getOauthAuthorizeQueryKey = (provider?: 'google' | 'github' | 'micr
     }
 
     
-export const getOauthAuthorizeQueryOptions = <TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
+export const getOauthAuthorizeQueryOptions = <TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -2031,10 +1988,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type OauthAuthorizeQueryResult = NonNullable<Awaited<ReturnType<typeof oauthAuthorize>>>
-export type OauthAuthorizeQueryError = void | OauthAuthorize400 | OauthAuthorize404
+export type OauthAuthorizeQueryError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(
+export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params: undefined |  OauthAuthorizeParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -2045,7 +2002,7 @@ export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthori
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(
+export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -2056,7 +2013,7 @@ export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthori
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(
+export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -2065,7 +2022,7 @@ export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthori
  * @summary Start OAuth authorization flow
  */
 
-export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(
+export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthAuthorizeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -2082,7 +2039,7 @@ export function useOauthAuthorize<TData = Awaited<ReturnType<typeof oauthAuthori
 
 
 
-export const getOauthAuthorizeSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
+export const getOauthAuthorizeSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -2102,20 +2059,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type OauthAuthorizeSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof oauthAuthorize>>>
-export type OauthAuthorizeSuspenseQueryError = void | OauthAuthorize400 | OauthAuthorize404
+export type OauthAuthorizeSuspenseQueryError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(
+export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params: undefined |  OauthAuthorizeParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(
+export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(
+export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -2124,7 +2081,7 @@ export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oaut
  * @summary Start OAuth authorization flow
  */
 
-export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | OauthAuthorize400 | OauthAuthorize404>(
+export function useOauthAuthorizeSuspense<TData = Awaited<ReturnType<typeof oauthAuthorize>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthAuthorizeParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthAuthorize>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -2162,9 +2119,9 @@ export const getOauthCallbackUrl = (provider: 'google' | 'github' | 'microsoft' 
 }
 
 export const oauthCallback = async (provider: 'google' | 'github' | 'microsoft' | undefined | null,
-    params?: OauthCallbackParams, options?: RequestInit): Promise<OauthCallback200> => {
+    params?: OauthCallbackParams, options?: RequestInit): Promise<SessionCreatedResponse> => {
   
-  return customFetch<OauthCallback200>(getOauthCallbackUrl(provider,params),
+  return customFetch<SessionCreatedResponse>(getOauthCallbackUrl(provider,params),
   {      
     ...options,
     method: 'GET'
@@ -2185,7 +2142,7 @@ export const getOauthCallbackQueryKey = (provider?: 'google' | 'github' | 'micro
     }
 
     
-export const getOauthCallbackQueryOptions = <TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
+export const getOauthCallbackQueryOptions = <TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -2205,10 +2162,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type OauthCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof oauthCallback>>>
-export type OauthCallbackQueryError = void | OauthCallback400 | OauthCallback401 | OauthCallback404
+export type OauthCallbackQueryError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(
+export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params: undefined |  OauthCallbackParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -2219,7 +2176,7 @@ export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(
+export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -2230,7 +2187,7 @@ export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(
+export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -2239,7 +2196,7 @@ export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback
  * @summary Handle OAuth callback
  */
 
-export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(
+export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthCallbackParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
@@ -2256,7 +2213,7 @@ export function useOauthCallback<TData = Awaited<ReturnType<typeof oauthCallback
 
 
 
-export const getOauthCallbackSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
+export const getOauthCallbackSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
@@ -2276,20 +2233,20 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type OauthCallbackSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof oauthCallback>>>
-export type OauthCallbackSuspenseQueryError = void | OauthCallback400 | OauthCallback401 | OauthCallback404
+export type OauthCallbackSuspenseQueryError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(
+export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params: undefined |  OauthCallbackParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(
+export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(
+export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
@@ -2298,7 +2255,7 @@ export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauth
  * @summary Handle OAuth callback
  */
 
-export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | OauthCallback400 | OauthCallback401 | OauthCallback404>(
+export function useOauthCallbackSuspense<TData = Awaited<ReturnType<typeof oauthCallback>>, TError = void | BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  provider: 'google' | 'github' | 'microsoft' | undefined | null,
     params?: OauthCallbackParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof oauthCallback>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 

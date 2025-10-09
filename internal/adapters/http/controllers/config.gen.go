@@ -78,6 +78,50 @@ func (response GetConfig400Response) VisitGetConfigResponse(w http.ResponseWrite
 	return json.NewEncoder(w).Encode(response.BadRequestResponse)
 }
 
+type GetConfig401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetConfig401Response) VisitGetConfigResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetConfig422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetConfig422Response) VisitGetConfigResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetConfig429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetConfig429Response) VisitGetConfigResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetConfig500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetConfig500Response) VisitGetConfigResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // GetConfig handles the GET /config endpoint.

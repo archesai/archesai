@@ -110,6 +110,10 @@ type {{ $operation.ID }}Request struct {
 	{{- $param := . }}
 	{{ $param.Name }} {{ $param.GoType }} `json:"{{ camelCase $param.Name }}"`
 	{{- end }}
+	{{- range $operation.GetHeaderParams }}
+	{{- $param := . }}
+	{{ $param.Name }} {{ $param.GoType }} `json:"{{ camelCase $param.Name }}"`
+	{{- end }}
 	{{- if $operation.GetQueryParams }}
 	Params {{ $operation.ID }}Params
 	{{- end }}
@@ -233,7 +237,7 @@ func (response {{ $operation.ID }}{{ $response.StatusCode }}Response) Visit{{ $o
 // {{ $operation.ID }} handles the {{ $operation.Method }} {{ $operation.Path }} endpoint.
 func (c *{{ $.Tag }}Controller) {{ $operation.ID }}(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
-	{{- if or $operation.GetPathParams $operation.GetQueryParams $operation.RequestBody }}
+	{{- if or $operation.GetPathParams $operation.GetHeaderParams $operation.GetQueryParams $operation.RequestBody }}
 	request := {{ $operation.ID }}Request{}
 	{{- end }}
 	{{- if or $operation.HasBearerAuth $operation.HasCookieAuth }}
@@ -255,6 +259,19 @@ func (c *{{ $.Tag }}Controller) {{ $operation.ID }}(ctx echo.Context) error {
 	if err := runtime.BindStyledParameterWithOptions("simple", "{{ camelCase $param.Name }}", ctx.Param("{{ camelCase $param.Name }}"), &{{ camelCase $param.Name }}, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter {{ camelCase $param.Name }}: %s", err))
 	}
+	request.{{ $param.Name }} = {{ camelCase $param.Name }}
+	{{- end }}
+
+	{{- range $operation.GetHeaderParams }}
+	{{- $param := . }}
+
+	// Header parameter "{{ $param.Name }}"
+	{{ camelCase $param.Name }} := ctx.Request().Header.Get("{{ $param.Name }}")
+	{{- if $param.Required }}
+	if {{ camelCase $param.Name }} == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Missing required header: {{ $param.Name }}")
+	}
+	{{- end }}
 	request.{{ $param.Name }} = {{ camelCase $param.Name }}
 	{{- end }}
 
@@ -306,6 +323,9 @@ func (c *{{ $.Tag }}Controller) {{ $operation.ID }}(ctx echo.Context) error {
 		sessionID, // SessionID for authenticated operations
 		{{- end }}
 		{{- range $operation.GetPathParams }}
+		request.{{ .Name }}, // {{ .Name }}
+		{{- end }}
+		{{- range $operation.GetHeaderParams }}
 		request.{{ .Name }}, // {{ .Name }}
 		{{- end }}
 		{{- if $operation.RequestBody }}

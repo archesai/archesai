@@ -5,6 +5,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 
@@ -55,8 +56,8 @@ type GetHealth200ResponseServices struct {
 
 type GetHealth200Response struct {
 	Services  GetHealth200ResponseServices `json:"services"`
-	Timestamp string                       `json:"timestamp"`
-	Uptime    float64                      `json:"uptime"`
+	Timestamp time.Time                    `json:"timestamp"`
+	Uptime    int64                        `json:"uptime"`
 }
 
 func (response GetHealth200Response) VisitGetHealthResponse(w http.ResponseWriter) error {
@@ -75,6 +76,39 @@ func (response GetHealth400Response) VisitGetHealthResponse(w http.ResponseWrite
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type GetHealth401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetHealth401Response) VisitGetHealthResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetHealth429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetHealth429Response) VisitGetHealthResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetHealth500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetHealth500Response) VisitGetHealthResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method

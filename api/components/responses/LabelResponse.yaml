@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.2/schema/2025-09-17#/$defs/response
+description: Label retrieved successfully
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        data:
+          $ref: ../schemas/Label.yaml
+      required:
+        - data
+      additionalProperties: false
+headers:
+  X-RateLimit-Limit:
+    $ref: ../headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../headers/RateLimitReset.yaml

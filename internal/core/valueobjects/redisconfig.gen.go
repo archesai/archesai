@@ -16,13 +16,13 @@ type RedisConfig struct {
 	Image       *ImageConfig       `json:"image,omitempty" yaml:"image,omitempty"`
 	Managed     *bool              `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed Redis deployment
 	Persistence *PersistenceConfig `json:"persistence,omitempty" yaml:"persistence,omitempty"`
-	Port        float64            `json:"port" yaml:"port"` // Redis port number
+	Port        int32              `json:"port" yaml:"port"` // Redis port number
 	Resources   *ResourceConfig    `json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
 // NewRedisConfig creates a new immutable RedisConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewRedisConfig(auth string, ca *string, enabled bool, host string, image *ImageConfig, managed *bool, persistence *PersistenceConfig, port float64, resources *ResourceConfig) (RedisConfig, error) {
+func NewRedisConfig(auth string, ca *string, enabled bool, host string, image *ImageConfig, managed *bool, persistence *PersistenceConfig, port int32, resources *ResourceConfig) (RedisConfig, error) {
 	// Validate required fields
 	return RedisConfig{
 		Auth:        auth,
@@ -87,7 +87,7 @@ func (v RedisConfig) GetPersistence() *PersistenceConfig {
 
 // GetPort returns the Port value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v RedisConfig) GetPort() float64 {
+func (v RedisConfig) GetPort() int32 {
 	return v.Port
 }
 

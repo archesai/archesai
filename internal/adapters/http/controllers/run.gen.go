@@ -15,6 +15,7 @@ import (
 	commands "github.com/archesai/archesai/internal/application/commands/run"
 	queries "github.com/archesai/archesai/internal/application/queries/run"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // RunController handles HTTP requests for run endpoints.
@@ -105,6 +106,39 @@ func (response CreateRun401Response) VisitCreateRunResponse(w http.ResponseWrite
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type CreateRun422Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateRun422Response) VisitCreateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateRun429Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateRun429Response) VisitCreateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateRun500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response CreateRun500Response) VisitCreateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // CreateRun handles the POST /runs endpoint.
@@ -163,7 +197,8 @@ type GetRunResponse interface {
 }
 
 type GetRun200Response struct {
-	Data entities.Run `json:"data"`
+	Data []entities.Run              `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response GetRun200Response) VisitGetRunResponse(w http.ResponseWriter) error {
@@ -182,6 +217,50 @@ func (response GetRun404Response) VisitGetRunResponse(w http.ResponseWriter) err
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type GetRun429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetRun429Response) VisitGetRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetRun500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetRun500Response) VisitGetRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type GetRun401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetRun401Response) VisitGetRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetRun422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetRun422Response) VisitGetRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Handler method
@@ -248,14 +327,9 @@ type ListRunsResponse interface {
 	VisitListRunsResponse(w http.ResponseWriter) error
 }
 
-// ListRuns200ResponseMeta defines the meta structure
-type ListRuns200ResponseMeta struct {
-	Total float64 `json:"total"`
-}
-
 type ListRuns200Response struct {
-	Data []entities.Run          `json:"data"`
-	Meta ListRuns200ResponseMeta `json:"meta"`
+	Data []entities.Run              `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListRuns200Response) VisitListRunsResponse(w http.ResponseWriter) error {
@@ -285,6 +359,39 @@ func (response ListRuns401Response) VisitListRunsResponse(w http.ResponseWriter)
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListRuns422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListRuns422Response) VisitListRunsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListRuns429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListRuns429Response) VisitListRunsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListRuns500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListRuns500Response) VisitListRunsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -384,6 +491,61 @@ func (response UpdateRun404Response) VisitUpdateRunResponse(w http.ResponseWrite
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type UpdateRun429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateRun429Response) VisitUpdateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateRun500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateRun500Response) VisitUpdateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type UpdateRun400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateRun400Response) VisitUpdateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdateRun401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateRun401Response) VisitUpdateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdateRun422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateRun422Response) VisitUpdateRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // UpdateRun handles the PATCH /runs/{id} endpoint.
@@ -469,6 +631,50 @@ func (response DeleteRun404Response) VisitDeleteRunResponse(w http.ResponseWrite
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeleteRun429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteRun429Response) VisitDeleteRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteRun500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteRun500Response) VisitDeleteRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type DeleteRun401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteRun401Response) VisitDeleteRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeleteRun422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteRun422Response) VisitDeleteRunResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Handler method

@@ -19,7 +19,7 @@ type UpdateAPIKeyCommand struct {
 	SessionID uuid.UUID
 	ID        uuid.UUID
 	Name      *string
-	RateLimit *int
+	RateLimit *int32
 	Scopes    []string
 }
 
@@ -28,7 +28,7 @@ func NewUpdateAPIKeyCommand(
 	SessionID uuid.UUID,
 	ID uuid.UUID,
 	Name *string,
-	RateLimit *int,
+	RateLimit *int32,
 	Scopes []string,
 ) *UpdateAPIKeyCommand {
 	return &UpdateAPIKeyCommand{

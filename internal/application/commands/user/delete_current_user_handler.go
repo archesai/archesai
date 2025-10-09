@@ -32,7 +32,7 @@ func (h *DeleteCurrentUserCommandHandler) Handle(
 	cmd *DeleteCurrentUserCommand,
 ) error {
 	// Validate confirmation string
-	if cmd.Confirmation != "DELETE_MY_ACCOUNT" {
+	if cmd.XConfirm != "DELETE_MY_ACCOUNT" {
 		return fmt.Errorf("invalid confirmation string")
 	}
 

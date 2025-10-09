@@ -5,73 +5,12 @@ get:
     - APIKey
   description: Get details of a specific API key (without the actual key value)
   parameters:
-    - schema:
-        description: UUID identifier
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
-        minLength: 36
-        maxLength: 36
-      in: path
-      name: id
-      required: true
-      description: The unique identifier of the API key
+    - $ref: ../components/parameters/ResourceID.yaml
   security:
     - bearerAuth: []
   responses:
     '200':
-      description: API key details
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                $ref: ../components/schemas/APIKey.yaml
-            required:
-              - data
-            additionalProperties: false
-          example:
-            data:
-              id: 550e8400-e29b-41d4-a716-446655440000
-              userID: 550e8400-e29b-41d4-a716-446655440001
-              organizationID: 550e8400-e29b-41d4-a716-446655440002
-              name: Production API Key
-              keyHash: hashedskliveabc123
-              prefix: sklive
-              scopes:
-                - read:users
-                - write:workflows
-              rateLimit: 1000
-              lastUsedAt: '2024-01-15T09:30:00Z'
-              expiresAt: '2025-01-15T09:30:00Z'
-              createdAt: '2024-01-15T09:30:00Z'
-              updatedAt: '2024-01-15T09:30:00Z'
-      headers:
-        X-RateLimit-Limit:
-          description: The maximum number of requests allowed per time window
-          schema:
-            type: integer
-            example: 1000
-            format: int32
-            minimum: 1
-            maximum: 1000000
-        X-RateLimit-Remaining:
-          description: The number of requests remaining in the current time window
-          schema:
-            type: integer
-            example: 999
-            format: int32
-            minimum: 0
-            maximum: 1000000
-        X-RateLimit-Reset:
-          description: The time at which the current rate limit window resets (Unix timestamp)
-          schema:
-            type: integer
-            example: 1640995200
-            format: int64
-            minimum: 0
-            maximum: 9223372036854775807
+      $ref: ../components/responses/APIKeyListResponse.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':
@@ -91,17 +30,7 @@ patch:
     - APIKey
   description: Update an API key's name, scopes, or rate limit
   parameters:
-    - schema:
-        description: UUID identifier
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
-        minLength: 36
-        maxLength: 36
-      in: path
-      name: id
-      required: true
-      description: The unique identifier of the API key
+    - $ref: ../components/parameters/ResourceID.yaml
   security:
     - bearerAuth: []
   requestBody:
@@ -141,59 +70,7 @@ patch:
           additionalProperties: false
   responses:
     '200':
-      description: API key updated successfully
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                $ref: ../components/schemas/APIKey.yaml
-            required:
-              - data
-            additionalProperties: false
-          example:
-            data:
-              id: 550e8400-e29b-41d4-a716-446655440000
-              userID: 550e8400-e29b-41d4-a716-446655440001
-              organizationID: 550e8400-e29b-41d4-a716-446655440002
-              name: Updated Production API Key
-              keyHash: hashedskliveabc123
-              prefix: sklive
-              scopes:
-                - read:users
-                - write:workflows
-                - read:pipelines
-              rateLimit: 2000
-              lastUsedAt: '2024-01-15T09:30:00Z'
-              expiresAt: '2025-01-15T09:30:00Z'
-              createdAt: '2024-01-15T09:30:00Z'
-              updatedAt: '2024-01-16T10:00:00Z'
-      headers:
-        X-RateLimit-Limit:
-          description: The maximum number of requests allowed per time window
-          schema:
-            type: integer
-            example: 1000
-            format: int32
-            minimum: 1
-            maximum: 1000000
-        X-RateLimit-Remaining:
-          description: The number of requests remaining in the current time window
-          schema:
-            type: integer
-            example: 999
-            format: int32
-            minimum: 0
-            maximum: 1000000
-        X-RateLimit-Reset:
-          description: The time at which the current rate limit window resets (Unix timestamp)
-          schema:
-            type: integer
-            example: 1640995200
-            format: int64
-            minimum: 0
-            maximum: 9223372036854775807
+      $ref: ../components/responses/APIKeyResponse.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':
@@ -213,47 +90,12 @@ delete:
     - APIKey
   description: Delete an API key permanently. This action cannot be undone.
   parameters:
-    - schema:
-        description: UUID identifier
-        type: string
-        format: uuid
-        example: 550e8400-e29b-41d4-a716-446655440000
-        minLength: 36
-        maxLength: 36
-      in: path
-      name: id
-      required: true
-      description: The unique identifier of the API key
+    - $ref: ../components/parameters/ResourceID.yaml
   security:
     - bearerAuth: []
   responses:
     '204':
-      description: API key deleted successfully
-      headers:
-        X-RateLimit-Limit:
-          description: The maximum number of requests allowed per time window
-          schema:
-            type: integer
-            example: 1000
-            format: int32
-            minimum: 1
-            maximum: 1000000
-        X-RateLimit-Remaining:
-          description: The number of requests remaining in the current time window
-          schema:
-            type: integer
-            example: 999
-            format: int32
-            minimum: 0
-            maximum: 1000000
-        X-RateLimit-Reset:
-          description: The time at which the current rate limit window resets (Unix timestamp)
-          schema:
-            type: integer
-            example: 1640995200
-            format: int64
-            minimum: 0
-            maximum: 9223372036854775807
+      $ref: ../components/responses/NoContent.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

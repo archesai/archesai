@@ -15,6 +15,7 @@ import (
 	commands "github.com/archesai/archesai/internal/application/commands/invitation"
 	queries "github.com/archesai/archesai/internal/application/queries/invitation"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // InvitationController handles HTTP requests for invitation endpoints.
@@ -107,6 +108,39 @@ func (response CreateInvitation401Response) VisitCreateInvitationResponse(w http
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type CreateInvitation422Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateInvitation422Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateInvitation429Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateInvitation429Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateInvitation500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response CreateInvitation500Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // CreateInvitation handles the POST /organizations/{organizationID}/invitations endpoint.
@@ -196,6 +230,50 @@ func (response GetInvitation404Response) VisitGetInvitationResponse(w http.Respo
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type GetInvitation429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetInvitation429Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetInvitation500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetInvitation500Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type GetInvitation401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetInvitation401Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetInvitation422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetInvitation422Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // GetInvitation handles the GET /organizations/{organizationID}/invitations/{id} endpoint.
@@ -269,14 +347,9 @@ type ListInvitationsResponse interface {
 	VisitListInvitationsResponse(w http.ResponseWriter) error
 }
 
-// ListInvitations200ResponseMeta defines the meta structure
-type ListInvitations200ResponseMeta struct {
-	Total float64 `json:"total"`
-}
-
 type ListInvitations200Response struct {
-	Data []entities.Invitation          `json:"data"`
-	Meta ListInvitations200ResponseMeta `json:"meta"`
+	Data []entities.Invitation       `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListInvitations200Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
@@ -306,6 +379,39 @@ func (response ListInvitations401Response) VisitListInvitationsResponse(w http.R
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListInvitations422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListInvitations422Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListInvitations429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListInvitations429Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListInvitations500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListInvitations500Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -415,6 +521,61 @@ func (response UpdateInvitation404Response) VisitUpdateInvitationResponse(w http
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type UpdateInvitation429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateInvitation429Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateInvitation500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateInvitation500Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type UpdateInvitation400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateInvitation400Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdateInvitation401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateInvitation401Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdateInvitation422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateInvitation422Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // UpdateInvitation handles the PATCH /organizations/{organizationID}/invitations/{id} endpoint.
@@ -510,6 +671,50 @@ func (response DeleteInvitation404Response) VisitDeleteInvitationResponse(w http
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeleteInvitation429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteInvitation429Response) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteInvitation500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteInvitation500Response) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type DeleteInvitation401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteInvitation401Response) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeleteInvitation422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteInvitation422Response) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Handler method

@@ -28,24 +28,17 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  CreateAPIKey201,
-  CreateAPIKey400,
-  CreateAPIKey401,
+  APIKeyListResponseResponse,
+  APIKeyResponseResponse,
+  BadRequestResponse,
   CreateAPIKeyBody,
-  DeleteAPIKey400,
-  DeleteAPIKey401,
-  DeleteAPIKey404,
-  GetAPIKey200,
-  GetAPIKey400,
-  GetAPIKey401,
-  GetAPIKey404,
-  ListAPIKeys200,
-  ListAPIKeys401,
+  InternalServerErrorResponse,
   ListAPIKeysParams,
-  UpdateAPIKey200,
-  UpdateAPIKey400,
-  UpdateAPIKey401,
-  UpdateAPIKey404,
+  NoContentResponse,
+  NotFoundResponse,
+  TooManyRequestsResponse,
+  UnauthorizedResponse,
+  UnprocessableEntityResponse,
   UpdateAPIKeyBody
 } from '../orval.schemas';
 
@@ -85,9 +78,9 @@ export const getListAPIKeysUrl = (params?: ListAPIKeysParams,) => {
   return stringifiedParams.length > 0 ? `/api-keys?${stringifiedParams}` : `/api-keys`
 }
 
-export const listAPIKeys = async (params?: ListAPIKeysParams, options?: RequestInit): Promise<ListAPIKeys200> => {
+export const listAPIKeys = async (params?: ListAPIKeysParams, options?: RequestInit): Promise<APIKeyListResponseResponse> => {
   
-  return customFetch<ListAPIKeys200>(getListAPIKeysUrl(params),
+  return customFetch<APIKeyListResponseResponse>(getListAPIKeysUrl(params),
   {      
     ...options,
     method: 'GET'
@@ -107,7 +100,7 @@ export const getListAPIKeysQueryKey = (params?: ListAPIKeysParams,) => {
     }
 
     
-export const getListAPIKeysQueryOptions = <TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(params?: ListAPIKeysParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListAPIKeysQueryOptions = <TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListAPIKeysParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -126,10 +119,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListAPIKeysQueryResult = NonNullable<Awaited<ReturnType<typeof listAPIKeys>>>
-export type ListAPIKeysQueryError = ListAPIKeys401
+export type ListAPIKeysQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(
+export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params: undefined |  ListAPIKeysParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listAPIKeys>>,
@@ -139,7 +132,7 @@ export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, 
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(
+export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListAPIKeysParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listAPIKeys>>,
@@ -149,7 +142,7 @@ export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, 
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(
+export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListAPIKeysParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -157,7 +150,7 @@ export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, 
  * @summary List tokens
  */
 
-export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(
+export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListAPIKeysParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -173,7 +166,7 @@ export function useListAPIKeys<TData = Awaited<ReturnType<typeof listAPIKeys>>, 
 
 
 
-export const getListAPIKeysSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(params?: ListAPIKeysParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListAPIKeysSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListAPIKeysParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -192,18 +185,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListAPIKeysSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listAPIKeys>>>
-export type ListAPIKeysSuspenseQueryError = ListAPIKeys401
+export type ListAPIKeysSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(
+export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params: undefined |  ListAPIKeysParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(
+export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListAPIKeysParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(
+export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListAPIKeysParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -211,7 +204,7 @@ export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPI
  * @summary List tokens
  */
 
-export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = ListAPIKeys401>(
+export function useListAPIKeysSuspense<TData = Awaited<ReturnType<typeof listAPIKeys>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  params?: ListAPIKeysParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listAPIKeys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -239,9 +232,9 @@ export const getCreateAPIKeyUrl = () => {
   return `/api-keys`
 }
 
-export const createAPIKey = async (createAPIKeyBody: CreateAPIKeyBody, options?: RequestInit): Promise<CreateAPIKey201> => {
+export const createAPIKey = async (createAPIKeyBody: CreateAPIKeyBody, options?: RequestInit): Promise<APIKeyResponseResponse> => {
   
-  return customFetch<CreateAPIKey201>(getCreateAPIKeyUrl(),
+  return customFetch<APIKeyResponseResponse>(getCreateAPIKeyUrl(),
   {      
     ...options,
     method: 'POST',
@@ -254,7 +247,7 @@ export const createAPIKey = async (createAPIKeyBody: CreateAPIKeyBody, options?:
 
 
 
-export const getCreateAPIKeyMutationOptions = <TError = CreateAPIKey400 | CreateAPIKey401,
+export const getCreateAPIKeyMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAPIKey>>, TError,{data: CreateAPIKeyBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createAPIKey>>, TError,{data: CreateAPIKeyBody}, TContext> => {
 
@@ -281,12 +274,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreateAPIKeyMutationResult = NonNullable<Awaited<ReturnType<typeof createAPIKey>>>
     export type CreateAPIKeyMutationBody = CreateAPIKeyBody
-    export type CreateAPIKeyMutationError = CreateAPIKey400 | CreateAPIKey401
+    export type CreateAPIKeyMutationError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Create a token
  */
-export const useCreateAPIKey = <TError = CreateAPIKey400 | CreateAPIKey401,
+export const useCreateAPIKey = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAPIKey>>, TError,{data: CreateAPIKeyBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createAPIKey>>,
@@ -311,9 +304,9 @@ export const getGetAPIKeyUrl = (id: string | undefined | null,) => {
   return `/api-keys/${id}`
 }
 
-export const getAPIKey = async (id: string | undefined | null, options?: RequestInit): Promise<GetAPIKey200> => {
+export const getAPIKey = async (id: string | undefined | null, options?: RequestInit): Promise<APIKeyListResponseResponse> => {
   
-  return customFetch<GetAPIKey200>(getGetAPIKeyUrl(id),
+  return customFetch<APIKeyListResponseResponse>(getGetAPIKeyUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -333,7 +326,7 @@ export const getGetAPIKeyQueryKey = (id?: string | undefined | null,) => {
     }
 
     
-export const getGetAPIKeyQueryOptions = <TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetAPIKeyQueryOptions = <TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -352,10 +345,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetAPIKeyQueryResult = NonNullable<Awaited<ReturnType<typeof getAPIKey>>>
-export type GetAPIKeyQueryError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404
+export type GetAPIKeyQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(
+export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAPIKey>>,
@@ -365,7 +358,7 @@ export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TErr
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(
+export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getAPIKey>>,
@@ -375,7 +368,7 @@ export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TErr
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(
+export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -383,7 +376,7 @@ export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TErr
  * @summary Get API key details
  */
 
-export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(
+export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -399,7 +392,7 @@ export function useGetAPIKey<TData = Awaited<ReturnType<typeof getAPIKey>>, TErr
 
 
 
-export const getGetAPIKeySuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetAPIKeySuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -418,18 +411,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetAPIKeySuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getAPIKey>>>
-export type GetAPIKeySuspenseQueryError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404
+export type GetAPIKeySuspenseQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(
+export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(
+export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(
+export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -437,7 +430,7 @@ export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey
  * @summary Get API key details
  */
 
-export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = GetAPIKey400 | GetAPIKey401 | GetAPIKey404>(
+export function useGetAPIKeySuspense<TData = Awaited<ReturnType<typeof getAPIKey>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAPIKey>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -466,9 +459,9 @@ export const getUpdateAPIKeyUrl = (id: string | undefined | null,) => {
 }
 
 export const updateAPIKey = async (id: string | undefined | null,
-    updateAPIKeyBody: UpdateAPIKeyBody, options?: RequestInit): Promise<UpdateAPIKey200> => {
+    updateAPIKeyBody: UpdateAPIKeyBody, options?: RequestInit): Promise<APIKeyResponseResponse> => {
   
-  return customFetch<UpdateAPIKey200>(getUpdateAPIKeyUrl(id),
+  return customFetch<APIKeyResponseResponse>(getUpdateAPIKeyUrl(id),
   {      
     ...options,
     method: 'PATCH',
@@ -481,7 +474,7 @@ export const updateAPIKey = async (id: string | undefined | null,
 
 
 
-export const getUpdateAPIKeyMutationOptions = <TError = UpdateAPIKey400 | UpdateAPIKey401 | UpdateAPIKey404,
+export const getUpdateAPIKeyMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAPIKey>>, TError,{id: string | undefined | null;data: UpdateAPIKeyBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateAPIKey>>, TError,{id: string | undefined | null;data: UpdateAPIKeyBody}, TContext> => {
 
@@ -508,12 +501,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateAPIKeyMutationResult = NonNullable<Awaited<ReturnType<typeof updateAPIKey>>>
     export type UpdateAPIKeyMutationBody = UpdateAPIKeyBody
-    export type UpdateAPIKeyMutationError = UpdateAPIKey400 | UpdateAPIKey401 | UpdateAPIKey404
+    export type UpdateAPIKeyMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Update API key
  */
-export const useUpdateAPIKey = <TError = UpdateAPIKey400 | UpdateAPIKey401 | UpdateAPIKey404,
+export const useUpdateAPIKey = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAPIKey>>, TError,{id: string | undefined | null;data: UpdateAPIKeyBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateAPIKey>>,
@@ -538,9 +531,9 @@ export const getDeleteAPIKeyUrl = (id: string | undefined | null,) => {
   return `/api-keys/${id}`
 }
 
-export const deleteAPIKey = async (id: string | undefined | null, options?: RequestInit): Promise<void> => {
+export const deleteAPIKey = async (id: string | undefined | null, options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<void>(getDeleteAPIKeyUrl(id),
+  return customFetch<NoContentResponse>(getDeleteAPIKeyUrl(id),
   {      
     ...options,
     method: 'DELETE'
@@ -552,7 +545,7 @@ export const deleteAPIKey = async (id: string | undefined | null, options?: Requ
 
 
 
-export const getDeleteAPIKeyMutationOptions = <TError = DeleteAPIKey400 | DeleteAPIKey401 | DeleteAPIKey404,
+export const getDeleteAPIKeyMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAPIKey>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteAPIKey>>, TError,{id: string | undefined | null}, TContext> => {
 
@@ -579,12 +572,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DeleteAPIKeyMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAPIKey>>>
     
-    export type DeleteAPIKeyMutationError = DeleteAPIKey400 | DeleteAPIKey401 | DeleteAPIKey404
+    export type DeleteAPIKeyMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Delete API key
  */
-export const useDeleteAPIKey = <TError = DeleteAPIKey400 | DeleteAPIKey401 | DeleteAPIKey404,
+export const useDeleteAPIKey = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAPIKey>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteAPIKey>>,

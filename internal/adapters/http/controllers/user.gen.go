@@ -15,6 +15,7 @@ import (
 	commands "github.com/archesai/archesai/internal/application/commands/user"
 	queries "github.com/archesai/archesai/internal/application/queries/user"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // UserController handles HTTP requests for user endpoints.
@@ -51,17 +52,17 @@ func NewUserController(
 
 // RegisterUserRoutes registers all HTTP routes for the user domain.
 func RegisterUserRoutes(router server.EchoRouter, controller *UserController) {
-	router.GET("/users/me", controller.GetCurrentUser)
+	router.GET("/me", controller.GetCurrentUser)
 	router.GET("/users/:id", controller.GetUser)
 	router.GET("/users", controller.ListUsers)
-	router.PATCH("/users/me", controller.UpdateCurrentUser)
+	router.PATCH("/me", controller.UpdateCurrentUser)
 	router.PATCH("/users/:id", controller.UpdateUser)
-	router.DELETE("/users/me", controller.DeleteCurrentUser)
+	router.DELETE("/me", controller.DeleteCurrentUser)
 	router.DELETE("/users/:id", controller.DeleteUser)
 }
 
 // ============================================================================
-// GetCurrentUser - GET /users/me
+// GetCurrentUser - GET /me
 // ============================================================================
 
 // Request types
@@ -97,9 +98,42 @@ func (response GetCurrentUser401Response) VisitGetCurrentUserResponse(w http.Res
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type GetCurrentUser422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetCurrentUser422Response) VisitGetCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetCurrentUser429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetCurrentUser429Response) VisitGetCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetCurrentUser500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetCurrentUser500Response) VisitGetCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
-// GetCurrentUser handles the GET /users/me endpoint.
+// GetCurrentUser handles the GET /me endpoint.
 func (c *UserController) GetCurrentUser(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 
@@ -169,6 +203,50 @@ func (response GetUser404Response) VisitGetUserResponse(w http.ResponseWriter) e
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type GetUser429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetUser429Response) VisitGetUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetUser500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetUser500Response) VisitGetUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type GetUser401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetUser401Response) VisitGetUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetUser422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetUser422Response) VisitGetUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // GetUser handles the GET /users/{id} endpoint.
@@ -233,14 +311,9 @@ type ListUsersResponse interface {
 	VisitListUsersResponse(w http.ResponseWriter) error
 }
 
-// ListUsers200ResponseMeta defines the meta structure
-type ListUsers200ResponseMeta struct {
-	Total float64 `json:"total"`
-}
-
 type ListUsers200Response struct {
-	Data []entities.User          `json:"data"`
-	Meta ListUsers200ResponseMeta `json:"meta"`
+	Data []entities.User             `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListUsers200Response) VisitListUsersResponse(w http.ResponseWriter) error {
@@ -270,6 +343,39 @@ func (response ListUsers401Response) VisitListUsersResponse(w http.ResponseWrite
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListUsers422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListUsers422Response) VisitListUsersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListUsers429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListUsers429Response) VisitListUsersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListUsers500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListUsers500Response) VisitListUsersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -327,7 +433,7 @@ func (c *UserController) ListUsers(ctx echo.Context) error {
 }
 
 // ============================================================================
-// UpdateCurrentUser - PATCH /users/me
+// UpdateCurrentUser - PATCH /me
 // ============================================================================
 
 // Request types
@@ -380,9 +486,42 @@ func (response UpdateCurrentUser401Response) VisitUpdateCurrentUserResponse(w ht
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type UpdateCurrentUser422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateCurrentUser422Response) VisitUpdateCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateCurrentUser429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateCurrentUser429Response) VisitUpdateCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateCurrentUser500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateCurrentUser500Response) VisitUpdateCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
-// UpdateCurrentUser handles the PATCH /users/me endpoint.
+// UpdateCurrentUser handles the PATCH /me endpoint.
 func (c *UserController) UpdateCurrentUser(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := UpdateCurrentUserRequest{}
@@ -467,6 +606,61 @@ func (response UpdateUser404Response) VisitUpdateUserResponse(w http.ResponseWri
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type UpdateUser429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateUser429Response) VisitUpdateUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateUser500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateUser500Response) VisitUpdateUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type UpdateUser400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateUser400Response) VisitUpdateUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdateUser401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateUser401Response) VisitUpdateUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdateUser422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateUser422Response) VisitUpdateUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // UpdateUser handles the PATCH /users/{id} endpoint.
@@ -518,17 +712,13 @@ func (c *UserController) UpdateUser(ctx echo.Context) error {
 }
 
 // ============================================================================
-// DeleteCurrentUser - DELETE /users/me
+// DeleteCurrentUser - DELETE /me
 // ============================================================================
 
 // Request types
-// DeleteCurrentUserRequestBody defines the request body for DeleteCurrentUser
-type DeleteCurrentUserRequestBody struct {
-	Confirmation string `json:"confirmation"`
-}
 
 type DeleteCurrentUserRequest struct {
-	Body *DeleteCurrentUserRequestBody
+	XConfirm string `json:"xconfirm"`
 }
 
 // Response types
@@ -538,7 +728,7 @@ type DeleteCurrentUserResponse interface {
 }
 
 type DeleteCurrentUser200Response struct {
-	Message string `json:"message"`
+	Data entities.User `json:"data"`
 }
 
 func (response DeleteCurrentUser200Response) VisitDeleteCurrentUserResponse(w http.ResponseWriter) error {
@@ -570,9 +760,42 @@ func (response DeleteCurrentUser401Response) VisitDeleteCurrentUserResponse(w ht
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type DeleteCurrentUser422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteCurrentUser422Response) VisitDeleteCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteCurrentUser429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteCurrentUser429Response) VisitDeleteCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteCurrentUser500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteCurrentUser500Response) VisitDeleteCurrentUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
-// DeleteCurrentUser handles the DELETE /users/me endpoint.
+// DeleteCurrentUser handles the DELETE /me endpoint.
 func (c *UserController) DeleteCurrentUser(ctx echo.Context) error {
 	reqCtx := ctx.Request().Context()
 	request := DeleteCurrentUserRequest{}
@@ -585,11 +808,12 @@ func (c *UserController) DeleteCurrentUser(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
 	}
 
-	// Request body
-	request.Body = &DeleteCurrentUserRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	// Header parameter "XConfirm"
+	xconfirm := ctx.Request().Header.Get("XConfirm")
+	if xconfirm == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Missing required header: XConfirm")
 	}
+	request.XConfirm = xconfirm
 
 	// Set auth scopes
 	ctx.Set(server.BearerAuthScopes, []string{})
@@ -600,8 +824,8 @@ func (c *UserController) DeleteCurrentUser(ctx echo.Context) error {
 
 	// Map request to command parameters
 	cmd := commands.NewDeleteCurrentUserCommand(
-		sessionID,                 // SessionID for authenticated operations
-		request.Body.Confirmation, // Confirmation
+		sessionID,        // SessionID for authenticated operations
+		request.XConfirm, // XConfirm
 	)
 	if err := c.deleteCurrentUserHandler.Handle(reqCtx, cmd); err != nil {
 		return err
@@ -645,6 +869,50 @@ func (response DeleteUser404Response) VisitDeleteUserResponse(w http.ResponseWri
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeleteUser429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteUser429Response) VisitDeleteUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteUser500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteUser500Response) VisitDeleteUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type DeleteUser401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteUser401Response) VisitDeleteUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeleteUser422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteUser422Response) VisitDeleteUserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Handler method

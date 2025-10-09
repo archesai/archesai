@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-10-06T23:47:28-04:00
+  Generated: 2025-10-08T23:31:20-04:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -37,10 +37,11 @@
     <file>biome.json</file>
   </root-files>
   <dir name="api" type="api-spec" purpose="API definitions" files="2" dirs="2" patterns="*.yaml">
-    <dir name="components" purpose="Reusable components" dirs="3">
-      <dir name="parameters" files="25" patterns="*.yaml"/>
-      <dir name="responses" files="7" patterns="*.yaml"/>
-      <dir name="schemas" files="19" dirs="2" patterns="*.yaml">
+    <dir name="components" purpose="Reusable components" dirs="4">
+      <dir name="headers" files="5" patterns="*.yaml"/>
+      <dir name="parameters" files="27" patterns="*.yaml"/>
+      <dir name="responses" files="39" patterns="*.yaml"/>
+      <dir name="schemas" files="21" dirs="2" patterns="*.yaml">
         <dir name="config" purpose="Configuration management" files="37" patterns="*.yaml"/>
         <dir name="xcodegen" files="2" patterns="*.yaml"/>
       </dir>
@@ -149,7 +150,7 @@
       <dir name="events" files="15" patterns="*.gen.go"/>
       <dir name="repositories" files="14" patterns="*.gen.go"/>
       <dir name="services" files="2"/>
-      <dir name="valueobjects" files="43" patterns="*.gen.go"/>
+      <dir name="valueobjects" files="44" patterns="*.gen.go"/>
     </dir>
     <dir name="infrastructure" dirs="11">
       <dir name="auth" purpose="Authentication and authorization" files="4" dirs="1" key-files="service.go">
@@ -178,7 +179,7 @@
       <dir name="testutil" type="testing" purpose="Testing utilities" files="1"/>
     </dir>
   </dir>
-  <dir name="scripts" purpose="Utility scripts" files="5"/>
+  <dir name="scripts" purpose="Utility scripts" files="8"/>
   <dir name="test" type="testing" purpose="Testing utilities" dirs="1">
     <dir name="data" type="testing" files="4" dirs="1">
       <dir name="parsers" type="testing" dirs="4">

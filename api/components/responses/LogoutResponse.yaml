@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.2/schema/2025-09-17#/$defs/response
+description: Logout successful
+content:
+  application/json:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Successfully logged out
+          pattern: ^[\w\s\-.,!?()]+$
+    example:
+      message: Successfully logged out
+headers:
+  Set-Cookie:
+    $ref: ../headers/SetCookie.yaml
+  X-RateLimit-Limit:
+    $ref: ../headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../headers/RateLimitReset.yaml

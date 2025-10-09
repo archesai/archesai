@@ -28,20 +28,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  CreateArtifact201,
-  CreateArtifact400,
-  CreateArtifact401,
+  ArtifactListResponseResponse,
+  ArtifactResponseResponse,
+  BadRequestResponse,
   CreateArtifactBody,
-  DeleteArtifact200,
-  DeleteArtifact404,
-  GetArtifact200,
-  GetArtifact404,
-  ListArtifacts200,
-  ListArtifacts400,
-  ListArtifacts401,
+  InternalServerErrorResponse,
   ListArtifactsParams,
-  UpdateArtifact200,
-  UpdateArtifact404,
+  NotFoundResponse,
+  TooManyRequestsResponse,
+  UnauthorizedResponse,
+  UnprocessableEntityResponse,
   UpdateArtifactBody
 } from '../orval.schemas';
 
@@ -57,6 +53,173 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
 /**
+ * List artifacts
+ * @summary List artifacts
+ */
+export const getListArtifactsUrl = (params?: ListArtifactsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
+      return;
+    }
+      
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/artifacts?${stringifiedParams}` : `/artifacts`
+}
+
+export const listArtifacts = async (params?: ListArtifactsParams, options?: RequestInit): Promise<ArtifactListResponseResponse> => {
+  
+  return customFetch<ArtifactListResponseResponse>(getListArtifactsUrl(params),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+
+
+export const getListArtifactsQueryKey = (params?: ListArtifactsParams,) => {
+    return [
+    `/artifacts`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getListArtifactsQueryOptions = <TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListArtifactsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListArtifactsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listArtifacts>>> = ({ signal }) => listArtifacts(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListArtifactsQueryResult = NonNullable<Awaited<ReturnType<typeof listArtifacts>>>
+export type ListArtifactsQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+
+export function useListArtifacts<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params: undefined |  ListArtifactsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listArtifacts>>,
+          TError,
+          Awaited<ReturnType<typeof listArtifacts>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListArtifacts<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListArtifactsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listArtifacts>>,
+          TError,
+          Awaited<ReturnType<typeof listArtifacts>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListArtifacts<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListArtifactsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List artifacts
+ */
+
+export function useListArtifacts<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListArtifactsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListArtifactsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const getListArtifactsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(params?: ListArtifactsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListArtifactsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listArtifacts>>> = ({ signal }) => listArtifacts(params, { signal, ...requestOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListArtifactsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listArtifacts>>>
+export type ListArtifactsSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+
+export function useListArtifactsSuspense<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params: undefined |  ListArtifactsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListArtifactsSuspense<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListArtifactsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListArtifactsSuspense<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListArtifactsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List artifacts
+ */
+
+export function useListArtifactsSuspense<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+ params?: ListArtifactsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient 
+ ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListArtifactsSuspenseQueryOptions(params,options)
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * Create a artifact
  * @summary Create a artifact
  */
@@ -68,9 +231,9 @@ export const getCreateArtifactUrl = () => {
   return `/artifacts`
 }
 
-export const createArtifact = async (createArtifactBody: CreateArtifactBody, options?: RequestInit): Promise<CreateArtifact201> => {
+export const createArtifact = async (createArtifactBody: CreateArtifactBody, options?: RequestInit): Promise<ArtifactResponseResponse> => {
   
-  return customFetch<CreateArtifact201>(getCreateArtifactUrl(),
+  return customFetch<ArtifactResponseResponse>(getCreateArtifactUrl(),
   {      
     ...options,
     method: 'POST',
@@ -83,7 +246,7 @@ export const createArtifact = async (createArtifactBody: CreateArtifactBody, opt
 
 
 
-export const getCreateArtifactMutationOptions = <TError = CreateArtifact400 | CreateArtifact401,
+export const getCreateArtifactMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createArtifact>>, TError,{data: CreateArtifactBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof createArtifact>>, TError,{data: CreateArtifactBody}, TContext> => {
 
@@ -110,12 +273,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type CreateArtifactMutationResult = NonNullable<Awaited<ReturnType<typeof createArtifact>>>
     export type CreateArtifactMutationBody = CreateArtifactBody
-    export type CreateArtifactMutationError = CreateArtifact400 | CreateArtifact401
+    export type CreateArtifactMutationError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Create a artifact
  */
-export const useCreateArtifact = <TError = CreateArtifact400 | CreateArtifact401,
+export const useCreateArtifact = <TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createArtifact>>, TError,{data: CreateArtifactBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createArtifact>>,
@@ -125,244 +288,6 @@ export const useCreateArtifact = <TError = CreateArtifact400 | CreateArtifact401
       > => {
 
       const mutationOptions = getCreateArtifactMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
- * List artifacts
- * @summary List artifacts
- */
-export const getListArtifactsUrl = (params?: ListArtifactsParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["sort"];
-
-    if (Array.isArray(value) && explodeParameters.includes(key)) {
-      value.forEach((v) => normalizedParams.append(key, v === null ? 'null' : v.toString()));
-      return;
-    }
-      
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/artifacts?${stringifiedParams}` : `/artifacts`
-}
-
-export const listArtifacts = async (params?: ListArtifactsParams, options?: RequestInit): Promise<ListArtifacts200> => {
-  
-  return customFetch<ListArtifacts200>(getListArtifactsUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getListArtifactsQueryKey = (params?: ListArtifactsParams,) => {
-    return [
-    `/artifacts`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getListArtifactsQueryOptions = <TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(params?: ListArtifactsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListArtifactsQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listArtifacts>>> = ({ signal }) => listArtifacts(params, { signal, ...requestOptions });
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListArtifactsQueryResult = NonNullable<Awaited<ReturnType<typeof listArtifacts>>>
-export type ListArtifactsQueryError = ListArtifacts400 | ListArtifacts401
-
-
-export function useListArtifacts<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(
- params: undefined |  ListArtifactsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listArtifacts>>,
-          TError,
-          Awaited<ReturnType<typeof listArtifacts>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListArtifacts<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(
- params?: ListArtifactsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listArtifacts>>,
-          TError,
-          Awaited<ReturnType<typeof listArtifacts>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListArtifacts<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(
- params?: ListArtifactsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary List artifacts
- */
-
-export function useListArtifacts<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(
- params?: ListArtifactsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListArtifactsQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-export const getListArtifactsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(params?: ListArtifactsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListArtifactsQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listArtifacts>>> = ({ signal }) => listArtifacts(params, { signal, ...requestOptions });
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ListArtifactsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof listArtifacts>>>
-export type ListArtifactsSuspenseQueryError = ListArtifacts400 | ListArtifacts401
-
-
-export function useListArtifactsSuspense<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(
- params: undefined |  ListArtifactsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListArtifactsSuspense<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(
- params?: ListArtifactsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListArtifactsSuspense<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(
- params?: ListArtifactsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary List artifacts
- */
-
-export function useListArtifactsSuspense<TData = Awaited<ReturnType<typeof listArtifacts>>, TError = ListArtifacts400 | ListArtifacts401>(
- params?: ListArtifactsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof listArtifacts>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getListArtifactsSuspenseQueryOptions(params,options)
-
-  const query = useSuspenseQuery(queryOptions, queryClient) as  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-/**
- * Delete an artifact
- * @summary Delete an artifact
- */
-export const getDeleteArtifactUrl = (id: string | undefined | null,) => {
-
-
-  
-
-  return `/artifacts/${id}`
-}
-
-export const deleteArtifact = async (id: string | undefined | null, options?: RequestInit): Promise<DeleteArtifact200> => {
-  
-  return customFetch<DeleteArtifact200>(getDeleteArtifactUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
-
-
-export const getDeleteArtifactMutationOptions = <TError = DeleteArtifact404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: string | undefined | null}, TContext> => {
-
-const mutationKey = ['deleteArtifact'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteArtifact>>, {id: string | undefined | null}> = (props) => {
-          const {id} = props ?? {};
-
-          return  deleteArtifact(id,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteArtifactMutationResult = NonNullable<Awaited<ReturnType<typeof deleteArtifact>>>
-    
-    export type DeleteArtifactMutationError = DeleteArtifact404
-
-    /**
- * @summary Delete an artifact
- */
-export const useDeleteArtifact = <TError = DeleteArtifact404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteArtifact>>,
-        TError,
-        {id: string | undefined | null},
-        TContext
-      > => {
-
-      const mutationOptions = getDeleteArtifactMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }
@@ -378,9 +303,9 @@ export const getGetArtifactUrl = (id: string | undefined | null,) => {
   return `/artifacts/${id}`
 }
 
-export const getArtifact = async (id: string | undefined | null, options?: RequestInit): Promise<GetArtifact200> => {
+export const getArtifact = async (id: string | undefined | null, options?: RequestInit): Promise<ArtifactListResponseResponse> => {
   
-  return customFetch<GetArtifact200>(getGetArtifactUrl(id),
+  return customFetch<ArtifactListResponseResponse>(getGetArtifactUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -400,7 +325,7 @@ export const getGetArtifactQueryKey = (id?: string | undefined | null,) => {
     }
 
     
-export const getGetArtifactQueryOptions = <TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetArtifactQueryOptions = <TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -419,10 +344,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetArtifactQueryResult = NonNullable<Awaited<ReturnType<typeof getArtifact>>>
-export type GetArtifactQueryError = GetArtifact404
+export type GetArtifactQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(
+export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getArtifact>>,
@@ -432,7 +357,7 @@ export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, 
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(
+export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getArtifact>>,
@@ -442,7 +367,7 @@ export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, 
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(
+export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -450,7 +375,7 @@ export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, 
  * @summary Find an artifact
  */
 
-export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(
+export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -466,7 +391,7 @@ export function useGetArtifact<TData = Awaited<ReturnType<typeof getArtifact>>, 
 
 
 
-export const getGetArtifactSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetArtifactSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -485,18 +410,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetArtifactSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getArtifact>>>
-export type GetArtifactSuspenseQueryError = GetArtifact404
+export type GetArtifactSuspenseQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(
+export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(
+export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(
+export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -504,7 +429,7 @@ export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArti
  * @summary Find an artifact
  */
 
-export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = GetArtifact404>(
+export function useGetArtifactSuspense<TData = Awaited<ReturnType<typeof getArtifact>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getArtifact>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -533,9 +458,9 @@ export const getUpdateArtifactUrl = (id: string | undefined | null,) => {
 }
 
 export const updateArtifact = async (id: string | undefined | null,
-    updateArtifactBody: UpdateArtifactBody, options?: RequestInit): Promise<UpdateArtifact200> => {
+    updateArtifactBody: UpdateArtifactBody, options?: RequestInit): Promise<ArtifactResponseResponse> => {
   
-  return customFetch<UpdateArtifact200>(getUpdateArtifactUrl(id),
+  return customFetch<ArtifactResponseResponse>(getUpdateArtifactUrl(id),
   {      
     ...options,
     method: 'PATCH',
@@ -548,7 +473,7 @@ export const updateArtifact = async (id: string | undefined | null,
 
 
 
-export const getUpdateArtifactMutationOptions = <TError = UpdateArtifact404,
+export const getUpdateArtifactMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateArtifact>>, TError,{id: string | undefined | null;data: UpdateArtifactBody}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof updateArtifact>>, TError,{id: string | undefined | null;data: UpdateArtifactBody}, TContext> => {
 
@@ -575,12 +500,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UpdateArtifactMutationResult = NonNullable<Awaited<ReturnType<typeof updateArtifact>>>
     export type UpdateArtifactMutationBody = UpdateArtifactBody
-    export type UpdateArtifactMutationError = UpdateArtifact404
+    export type UpdateArtifactMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Update an artifact
  */
-export const useUpdateArtifact = <TError = UpdateArtifact404,
+export const useUpdateArtifact = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateArtifact>>, TError,{id: string | undefined | null;data: UpdateArtifactBody}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateArtifact>>,
@@ -590,6 +515,77 @@ export const useUpdateArtifact = <TError = UpdateArtifact404,
       > => {
 
       const mutationOptions = getUpdateArtifactMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * Delete an artifact
+ * @summary Delete an artifact
+ */
+export const getDeleteArtifactUrl = (id: string | undefined | null,) => {
+
+
+  
+
+  return `/artifacts/${id}`
+}
+
+export const deleteArtifact = async (id: string | undefined | null, options?: RequestInit): Promise<ArtifactResponseResponse> => {
+  
+  return customFetch<ArtifactResponseResponse>(getDeleteArtifactUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
+    
+    
+  }
+);}
+
+
+
+
+export const getDeleteArtifactMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: string | undefined | null}, TContext> => {
+
+const mutationKey = ['deleteArtifact'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteArtifact>>, {id: string | undefined | null}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteArtifact(id,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteArtifactMutationResult = NonNullable<Awaited<ReturnType<typeof deleteArtifact>>>
+    
+    export type DeleteArtifactMutationError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Delete an artifact
+ */
+export const useDeleteArtifact = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteArtifact>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteArtifact>>,
+        TError,
+        {id: string | undefined | null},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteArtifactMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

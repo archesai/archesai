@@ -10,11 +10,10 @@ import (
 type CreatePipelineStepCommand struct {
 	SessionID    uuid.UUID
 	ID           uuid.UUID
-	Config       map[string]any
 	Dependencies []uuid.UUID
 	Description  *string
 	Name         string
-	Position     *int
+	Position     *int32
 	ToolID       uuid.UUID
 }
 
@@ -22,17 +21,15 @@ type CreatePipelineStepCommand struct {
 func NewCreatePipelineStepCommand(
 	SessionID uuid.UUID,
 	ID uuid.UUID,
-	Config map[string]any,
 	Dependencies []uuid.UUID,
 	Description *string,
 	Name string,
-	Position *int,
+	Position *int32,
 	ToolID uuid.UUID,
 ) *CreatePipelineStepCommand {
 	return &CreatePipelineStepCommand{
 		SessionID:    SessionID,
 		ID:           ID,
-		Config:       Config,
 		Dependencies: Dependencies,
 		Description:  Description,
 		Name:         Name,

@@ -1,0 +1,6 @@
+schema:
+  $ref: ../schemas/UUID.yaml
+in: path
+name: id
+required: true
+description: The unique identifier of the resource.

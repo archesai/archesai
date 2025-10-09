@@ -256,7 +256,14 @@ func Zero{{ $schema.Name }}() {{ $schema.Name }} {
 // Get{{ .Name }} returns the {{ .Name }}
 func (e *{{ $schema.Name }}) Get{{ .Name }}() {{ if .Enum }}string{{ else if $isPointer }}*{{ .GoType }}{{ else }}{{ .GoType }}{{ end }} {
 {{- if .Enum }}
+{{- if $isPointer }}
+	if e.{{ .Name }} == nil {
+		return ""
+	}
+	return string(*e.{{ .Name }})
+{{- else }}
 	return string(e.{{ .Name }})
+{{- end }}
 {{- else }}
 	return e.{{ .Name }}
 {{- end }}

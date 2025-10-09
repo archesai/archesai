@@ -15,6 +15,7 @@ import (
 	commands "github.com/archesai/archesai/internal/application/commands/label"
 	queries "github.com/archesai/archesai/internal/application/queries/label"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // LabelController handles HTTP requests for label endpoints.
@@ -105,6 +106,39 @@ func (response CreateLabel401Response) VisitCreateLabelResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type CreateLabel422Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateLabel422Response) VisitCreateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateLabel429Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateLabel429Response) VisitCreateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateLabel500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response CreateLabel500Response) VisitCreateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // CreateLabel handles the POST /labels endpoint.
@@ -163,7 +197,8 @@ type GetLabelResponse interface {
 }
 
 type GetLabel200Response struct {
-	Data entities.Label `json:"data"`
+	Data []entities.Label            `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response GetLabel200Response) VisitGetLabelResponse(w http.ResponseWriter) error {
@@ -182,6 +217,50 @@ func (response GetLabel404Response) VisitGetLabelResponse(w http.ResponseWriter)
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type GetLabel429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetLabel429Response) VisitGetLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetLabel500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetLabel500Response) VisitGetLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type GetLabel401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetLabel401Response) VisitGetLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetLabel422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetLabel422Response) VisitGetLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Handler method
@@ -248,14 +327,9 @@ type ListLabelsResponse interface {
 	VisitListLabelsResponse(w http.ResponseWriter) error
 }
 
-// ListLabels200ResponseMeta defines the meta structure
-type ListLabels200ResponseMeta struct {
-	Total float64 `json:"total"`
-}
-
 type ListLabels200Response struct {
-	Data []entities.Label          `json:"data"`
-	Meta ListLabels200ResponseMeta `json:"meta"`
+	Data []entities.Label            `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListLabels200Response) VisitListLabelsResponse(w http.ResponseWriter) error {
@@ -285,6 +359,39 @@ func (response ListLabels401Response) VisitListLabelsResponse(w http.ResponseWri
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListLabels422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListLabels422Response) VisitListLabelsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListLabels429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListLabels429Response) VisitListLabelsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListLabels500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListLabels500Response) VisitListLabelsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -384,6 +491,61 @@ func (response UpdateLabel404Response) VisitUpdateLabelResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type UpdateLabel429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateLabel429Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateLabel500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateLabel500Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type UpdateLabel400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateLabel400Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdateLabel401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateLabel401Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdateLabel422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateLabel422Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // UpdateLabel handles the PATCH /labels/{id} endpoint.
@@ -469,6 +631,50 @@ func (response DeleteLabel404Response) VisitDeleteLabelResponse(w http.ResponseW
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeleteLabel429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteLabel429Response) VisitDeleteLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteLabel500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteLabel500Response) VisitDeleteLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type DeleteLabel401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteLabel401Response) VisitDeleteLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeleteLabel422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteLabel422Response) VisitDeleteLabelResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Handler method

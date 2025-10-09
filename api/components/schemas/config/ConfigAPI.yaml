@@ -1,8 +1,6 @@
+title: APIConfig
 description: Configuration schema for the API server
 type: object
-title: APIConfig
-x-codegen:
-  schemaType: valueobject
 properties:
   cors:
     description: A comma-separated list of allowed origins for CORS requests
@@ -41,7 +39,6 @@ properties:
     default: 0.0.0.0
     minLength: 1
     example: 0.0.0.0
-    readOnly: true
     maxLength: 255
     pattern: ^[\w\-\.:]+$
   port:
@@ -69,3 +66,5 @@ required:
   - port
   - validation
 additionalProperties: false
+x-codegen:
+  schemaType: valueobject

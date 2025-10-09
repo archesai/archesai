@@ -19,7 +19,7 @@ type CreateAPIKeyCommand struct {
 	SessionID uuid.UUID
 	ExpiresAt *time.Time
 	Name      string
-	RateLimit *int
+	RateLimit *int32
 	Scopes    []string
 }
 
@@ -28,7 +28,7 @@ func NewCreateAPIKeyCommand(
 	SessionID uuid.UUID,
 	ExpiresAt *time.Time,
 	Name string,
-	RateLimit *int,
+	RateLimit *int32,
 	Scopes []string,
 ) *CreateAPIKeyCommand {
 	return &CreateAPIKeyCommand{

@@ -15,6 +15,7 @@ import (
 	commands "github.com/archesai/archesai/internal/application/commands/artifact"
 	queries "github.com/archesai/archesai/internal/application/queries/artifact"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // ArtifactController handles HTTP requests for artifact endpoints.
@@ -106,6 +107,39 @@ func (response CreateArtifact401Response) VisitCreateArtifactResponse(w http.Res
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type CreateArtifact422Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateArtifact422Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateArtifact429Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateArtifact429Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateArtifact500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response CreateArtifact500Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // CreateArtifact handles the POST /artifacts endpoint.
@@ -165,7 +199,8 @@ type GetArtifactResponse interface {
 }
 
 type GetArtifact200Response struct {
-	Data entities.Artifact `json:"data"`
+	Data []entities.Artifact         `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response GetArtifact200Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
@@ -184,6 +219,50 @@ func (response GetArtifact404Response) VisitGetArtifactResponse(w http.ResponseW
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type GetArtifact401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetArtifact401Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetArtifact422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetArtifact422Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetArtifact429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetArtifact429Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetArtifact500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetArtifact500Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -250,14 +329,9 @@ type ListArtifactsResponse interface {
 	VisitListArtifactsResponse(w http.ResponseWriter) error
 }
 
-// ListArtifacts200ResponseMeta defines the meta structure
-type ListArtifacts200ResponseMeta struct {
-	Total float64 `json:"total"`
-}
-
 type ListArtifacts200Response struct {
-	Data []entities.Artifact          `json:"data"`
-	Meta ListArtifacts200ResponseMeta `json:"meta"`
+	Data []entities.Artifact         `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListArtifacts200Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
@@ -287,6 +361,39 @@ func (response ListArtifacts401Response) VisitListArtifactsResponse(w http.Respo
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListArtifacts422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListArtifacts422Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListArtifacts429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListArtifacts429Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListArtifacts500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListArtifacts500Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -388,6 +495,61 @@ func (response UpdateArtifact404Response) VisitUpdateArtifactResponse(w http.Res
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type UpdateArtifact429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateArtifact429Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateArtifact500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateArtifact500Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type UpdateArtifact400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateArtifact400Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdateArtifact401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateArtifact401Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdateArtifact422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateArtifact422Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // UpdateArtifact handles the PATCH /artifacts/{id} endpoint.
@@ -475,6 +637,50 @@ func (response DeleteArtifact404Response) VisitDeleteArtifactResponse(w http.Res
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeleteArtifact401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteArtifact401Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeleteArtifact422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteArtifact422Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteArtifact429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteArtifact429Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteArtifact500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteArtifact500Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method

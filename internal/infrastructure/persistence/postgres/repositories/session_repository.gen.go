@@ -32,9 +32,15 @@ func NewPostgresSessionRepository(db *pgxpool.Pool) *PostgresSessionRepository {
 // Create creates a new session
 func (r *PostgresSessionRepository) Create(ctx context.Context, entity *entities.Session) (*entities.Session, error) {
 	params := CreateSessionParams{
-		ID:             entity.ID,
-		AuthMethod:     entity.AuthMethod,
-		AuthProvider:   entity.AuthProvider,
+		ID:         entity.ID,
+		AuthMethod: entity.AuthMethod,
+		AuthProvider: func() *string {
+			if entity.AuthProvider == nil {
+				return nil
+			}
+			s := string(*entity.AuthProvider)
+			return &s
+		}(),
 		ExpiresAt:      entity.ExpiresAt,
 		IPAddress:      entity.IPAddress,
 		OrganizationID: entity.OrganizationID,
@@ -72,9 +78,15 @@ func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*ent
 func (r *PostgresSessionRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Session) (*entities.Session, error) {
 
 	params := UpdateSessionParams{
-		ID:             id,
-		AuthMethod:     entity.AuthMethod,
-		AuthProvider:   entity.AuthProvider,
+		ID:         id,
+		AuthMethod: entity.AuthMethod,
+		AuthProvider: func() *string {
+			if entity.AuthProvider == nil {
+				return nil
+			}
+			s := string(*entity.AuthProvider)
+			return &s
+		}(),
 		ExpiresAt:      &entity.ExpiresAt,
 		OrganizationID: entity.OrganizationID,
 	}
@@ -136,11 +148,17 @@ func mapSessionFromDB(db *Session) *entities.Session {
 	}
 
 	result := &entities.Session{
-		ID:             db.ID,
-		CreatedAt:      db.CreatedAt,
-		UpdatedAt:      db.UpdatedAt,
-		AuthMethod:     db.AuthMethod,
-		AuthProvider:   db.AuthProvider,
+		ID:         db.ID,
+		CreatedAt:  db.CreatedAt,
+		UpdatedAt:  db.UpdatedAt,
+		AuthMethod: db.AuthMethod,
+		AuthProvider: func() *entities.SessionAuthProvider {
+			if db.AuthProvider == nil {
+				return nil
+			}
+			v := entities.SessionAuthProvider(*db.AuthProvider)
+			return &v
+		}(),
 		ExpiresAt:      db.ExpiresAt,
 		IPAddress:      db.IPAddress,
 		OrganizationID: db.OrganizationID,

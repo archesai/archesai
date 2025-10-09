@@ -117,7 +117,7 @@ func NewService(
 	if cfg.Auth.Microsoft != nil && cfg.Auth.Microsoft.Enabled &&
 		cfg.Auth.Microsoft.ClientID != nil {
 		s.oauthProviders["microsoft"] = oauth.NewMicrosoftProvider(
-			*cfg.Auth.Microsoft.ClientID,
+			cfg.Auth.Microsoft.ClientID.String(),
 			*cfg.Auth.Microsoft.ClientSecret,
 			*cfg.Auth.Microsoft.RedirectURL,
 		)
@@ -402,13 +402,17 @@ func (s *Service) createSession(
 
 	ipAddr := bindHost
 	userAgent := "unknown"
+
+	// Convert authProvider string to SessionAuthProvider enum
+	provider := entities.SessionAuthProvider(authProvider)
+
 	session := &entities.Session{
 		ID:           uuid.New(),
 		UserID:       userID,
 		Token:        token,
 		ExpiresAt:    time.Now().Add(7 * 24 * time.Hour), // 7 days
 		AuthMethod:   &authMethod,
-		AuthProvider: &authProvider,
+		AuthProvider: &provider,
 		IPAddress:    &ipAddr,
 		UserAgent:    &userAgent,
 		CreatedAt:    time.Now(),

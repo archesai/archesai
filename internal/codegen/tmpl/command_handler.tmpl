@@ -27,6 +27,9 @@ type {{ .Operation.ID }}Command struct {
 {{- range .Operation.GetPathParams }}
 	{{ pascalCase .Name }} {{ .GoType }}
 {{- end }}
+{{- range .Operation.GetHeaderParams }}
+	{{ pascalCase .Name }} {{ .GoType }}
+{{- end }}
 {{- if .Operation.RequestBody }}
 {{- range .Operation.RequestBody.GetSortedProperties }}{{- $prop := . }}
 {{- $isOptional := stringContains .JSONTag ",omitempty" }}
@@ -43,6 +46,9 @@ func New{{ .Operation.ID }}Command(
 {{- range .Operation.GetPathParams }}
 	{{ .Name }} {{ .GoType }},
 {{- end }}
+{{- range .Operation.GetHeaderParams }}
+	{{ .Name }} {{ .GoType }},
+{{- end }}
 {{- if .Operation.RequestBody }}
 {{- range .Operation.RequestBody.GetSortedProperties }}{{- $prop := . }}
 {{- $isOptional := stringContains .JSONTag ",omitempty" }}
@@ -55,6 +61,9 @@ func New{{ .Operation.ID }}Command(
 		SessionID: SessionID,
 {{- end }}
 {{- range .Operation.GetPathParams }}
+		{{ pascalCase .Name }}: {{ .Name }},
+{{- end }}
+{{- range .Operation.GetHeaderParams }}
 		{{ pascalCase .Name }}: {{ .Name }},
 {{- end }}
 {{- if .Operation.RequestBody }}

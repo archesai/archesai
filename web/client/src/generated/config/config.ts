@@ -24,8 +24,12 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  GetConfig200,
-  GetConfig400
+  BadRequestResponse,
+  ConfigResponseResponse,
+  InternalServerErrorResponse,
+  TooManyRequestsResponse,
+  UnauthorizedResponse,
+  UnprocessableEntityResponse
 } from '../orval.schemas';
 
 import { customFetch } from '../../fetcher';
@@ -51,9 +55,9 @@ export const getGetConfigUrl = () => {
   return `/config`
 }
 
-export const getConfig = async ( options?: RequestInit): Promise<GetConfig200> => {
+export const getConfig = async ( options?: RequestInit): Promise<ConfigResponseResponse> => {
   
-  return customFetch<GetConfig200>(getGetConfigUrl(),
+  return customFetch<ConfigResponseResponse>(getGetConfigUrl(),
   {      
     ...options,
     method: 'GET'
@@ -73,7 +77,7 @@ export const getGetConfigQueryKey = () => {
     }
 
     
-export const getGetConfigQueryOptions = <TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetConfigQueryOptions = <TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -92,10 +96,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetConfigQueryResult = NonNullable<Awaited<ReturnType<typeof getConfig>>>
-export type GetConfigQueryError = GetConfig400
+export type GetConfigQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>(
+export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getConfig>>,
@@ -105,7 +109,7 @@ export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TErr
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>(
+export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getConfig>>,
@@ -115,7 +119,7 @@ export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TErr
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>(
+export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -123,7 +127,7 @@ export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TErr
  * @summary Get the configuration
  */
 
-export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>(
+export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -139,7 +143,7 @@ export function useGetConfig<TData = Awaited<ReturnType<typeof getConfig>>, TErr
 
 
 
-export const getGetConfigSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>( options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetConfigSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>( options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -158,18 +162,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetConfigSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getConfig>>>
-export type GetConfigSuspenseQueryError = GetConfig400
+export type GetConfigSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetConfigSuspense<TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>(
+export function useGetConfigSuspense<TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetConfigSuspense<TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>(
+export function useGetConfigSuspense<TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetConfigSuspense<TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>(
+export function useGetConfigSuspense<TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -177,7 +181,7 @@ export function useGetConfigSuspense<TData = Awaited<ReturnType<typeof getConfig
  * @summary Get the configuration
  */
 
-export function useGetConfigSuspense<TData = Awaited<ReturnType<typeof getConfig>>, TError = GetConfig400>(
+export function useGetConfigSuspense<TData = Awaited<ReturnType<typeof getConfig>>, TError = BadRequestResponse | UnauthorizedResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {

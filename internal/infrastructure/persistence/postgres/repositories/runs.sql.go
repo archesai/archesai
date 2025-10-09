@@ -34,7 +34,7 @@ type CreateRunParams struct {
 	PipelineID     uuid.UUID
 	ToolID         uuid.UUID
 	Status         string
-	Progress       float64
+	Progress       int32
 }
 
 func (q *Queries) CreateRun(ctx context.Context, arg CreateRunParams) (Run, error) {
@@ -358,7 +358,7 @@ type UpdateRunParams struct {
 	PipelineID  *uuid.UUID
 	ToolID      *uuid.UUID
 	Status      *string
-	Progress    *float64
+	Progress    *int32
 	Error       *string
 	StartedAt   *time.Time
 	CompletedAt *time.Time

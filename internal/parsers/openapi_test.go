@@ -35,13 +35,13 @@ func TestParseOpenAPI(t *testing.T) {
 			name:        "non-existent file",
 			specPath:    "../../test/data/parsers/openapi/non-existent.yaml",
 			wantErr:     true,
-			errContains: "failed to open file",
+			errContains: "no such file",
 		},
 		{
 			name:        "invalid yaml file",
 			specPath:    createTempFile(t, "invalid.yaml", "invalid: [\nyaml: content"),
 			wantErr:     true,
-			errContains: "failed to unmarshal",
+			errContains: "did not find expected",
 		},
 	}
 

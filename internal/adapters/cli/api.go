@@ -66,7 +66,7 @@ func runAPI(cmd *cobra.Command, _ []string) error {
 		cfg.API.Host = viper.GetString("server.host")
 	}
 	if cmd.Flags().Changed("port") {
-		cfg.API.Port = float64(viper.GetInt("server.port"))
+		cfg.API.Port = int32(viper.GetInt("server.port"))
 	}
 
 	// Create application container

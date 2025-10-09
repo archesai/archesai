@@ -15,6 +15,7 @@ import (
 	commands "github.com/archesai/archesai/internal/application/commands/tool"
 	queries "github.com/archesai/archesai/internal/application/queries/tool"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // ToolController handles HTTP requests for tool endpoints.
@@ -106,6 +107,39 @@ func (response CreateTool401Response) VisitCreateToolResponse(w http.ResponseWri
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type CreateTool422Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateTool422Response) VisitCreateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateTool429Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateTool429Response) VisitCreateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateTool500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response CreateTool500Response) VisitCreateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // CreateTool handles the POST /tools endpoint.
@@ -186,6 +220,50 @@ func (response GetTool404Response) VisitGetToolResponse(w http.ResponseWriter) e
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type GetTool429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetTool429Response) VisitGetToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetTool500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetTool500Response) VisitGetToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type GetTool401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetTool401Response) VisitGetToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetTool422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetTool422Response) VisitGetToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // GetTool handles the GET /tools/{id} endpoint.
@@ -250,14 +328,9 @@ type ListToolsResponse interface {
 	VisitListToolsResponse(w http.ResponseWriter) error
 }
 
-// ListTools200ResponseMeta defines the meta structure
-type ListTools200ResponseMeta struct {
-	Total float64 `json:"total"`
-}
-
 type ListTools200Response struct {
-	Data []entities.Tool          `json:"data"`
-	Meta ListTools200ResponseMeta `json:"meta"`
+	Data []entities.Tool             `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListTools200Response) VisitListToolsResponse(w http.ResponseWriter) error {
@@ -287,6 +360,39 @@ func (response ListTools401Response) VisitListToolsResponse(w http.ResponseWrite
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListTools422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListTools422Response) VisitListToolsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListTools429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListTools429Response) VisitListToolsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListTools500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListTools500Response) VisitListToolsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -387,6 +493,61 @@ func (response UpdateTool404Response) VisitUpdateToolResponse(w http.ResponseWri
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type UpdateTool429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateTool429Response) VisitUpdateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateTool500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateTool500Response) VisitUpdateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type UpdateTool400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateTool400Response) VisitUpdateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdateTool401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateTool401Response) VisitUpdateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdateTool422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateTool422Response) VisitUpdateToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // UpdateTool handles the PATCH /tools/{id} endpoint.
@@ -473,6 +634,50 @@ func (response DeleteTool404Response) VisitDeleteToolResponse(w http.ResponseWri
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeleteTool429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteTool429Response) VisitDeleteToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteTool500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteTool500Response) VisitDeleteToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type DeleteTool401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteTool401Response) VisitDeleteToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeleteTool422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteTool422Response) VisitDeleteToolResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Handler method

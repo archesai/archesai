@@ -5,22 +5,27 @@ package valueobjects
 import (
 	"fmt"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 // MicrosoftAuthConfig represents Microsoft/Azure AD OAuth configuration
 type MicrosoftAuthConfig struct {
-	ClientID     *string  `json:"clientId,omitempty" yaml:"clientId,omitempty"`         // Azure AD Application (client) ID
-	ClientSecret *string  `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"` // Azure AD client secret
-	Enabled      bool     `json:"enabled" yaml:"enabled"`                               // Enable Microsoft OAuth
-	RedirectURL  *string  `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`   // OAuth callback URL
-	Scopes       []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
-	Tenant       *string  `json:"tenant,omitempty" yaml:"tenant,omitempty"`             // Azure AD tenant ID (use 'common' for multi-tenant)
+	ClientID     *uuid.UUID `json:"clientId,omitempty" yaml:"clientId,omitempty"`         // Azure AD Application (client) ID
+	ClientSecret *string    `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"` // Azure AD client secret
+	Enabled      bool       `json:"enabled" yaml:"enabled"`                               // Enable Microsoft OAuth
+	RedirectURL  *string    `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`   // OAuth callback URL
+	Scopes       []string   `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
+	Tenant       *string    `json:"tenant,omitempty" yaml:"tenant,omitempty"`             // Azure AD tenant ID (use 'common' for multi-tenant)
 }
 
 // NewMicrosoftAuthConfig creates a new immutable MicrosoftAuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewMicrosoftAuthConfig(clientID *string, clientSecret *string, enabled bool, redirectURL *string, scopes []string, tenant *string) (MicrosoftAuthConfig, error) {
+func NewMicrosoftAuthConfig(clientID *uuid.UUID, clientSecret *string, enabled bool, redirectURL *string, scopes []string, tenant *string) (MicrosoftAuthConfig, error) {
 	// Validate required fields
+	if clientID != nil && *clientID == uuid.Nil {
+		return MicrosoftAuthConfig{}, fmt.Errorf("ClientID cannot be nil UUID")
+	}
 	return MicrosoftAuthConfig{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -39,7 +44,7 @@ func ZeroMicrosoftAuthConfig() MicrosoftAuthConfig {
 
 // GetClientID returns the ClientID value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v MicrosoftAuthConfig) GetClientID() *string {
+func (v MicrosoftAuthConfig) GetClientID() *uuid.UUID {
 	return v.ClientID
 }
 
@@ -79,6 +84,9 @@ func (v MicrosoftAuthConfig) GetTenant() *string {
 // Validate validates the MicrosoftAuthConfig value object.
 // Returns an error if any field fails validation.
 func (v MicrosoftAuthConfig) Validate() error {
+	if v.ClientID != nil && *v.ClientID == uuid.Nil {
+		return fmt.Errorf("ClientID cannot be nil UUID")
+	}
 	return nil
 }
 

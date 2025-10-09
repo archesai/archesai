@@ -11,8 +11,9 @@
           "default": "localhost",
           "description": "A comma-separated list of allowed origins for CORS requests",
           "example": "localhost,https://platform.archesai.com",
-          "maxLength": 255,
+          "maxLength": 2048,
           "minLength": 1,
+          "pattern": "^[\\w\\-\\.,:/@]+$",
           "type": "string"
         },
         "docs": {
@@ -33,20 +34,24 @@
             },
             "password": {
               "description": "Password for the email service",
-              "example": "example-string",
-              "maxLength": 72,
+              "example": "secret-password-123",
+              "maxLength": 255,
+              "pattern": "^[\\w\\s\\-.,!?()@#+/=]*$",
               "type": "string"
             },
             "service": {
               "description": "Email service provider (e.g., \"gmail\", \"sendgrid\", etc.)",
-              "example": "example-string",
+              "example": "sendgrid",
               "maxLength": 255,
+              "pattern": "^[\\w\\-]+$",
               "type": "string"
             },
             "user": {
               "description": "Username for the email service",
-              "example": "example-string",
+              "example": "user@example.com",
+              "format": "email",
               "maxLength": 255,
+              "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
               "type": "string"
             }
           },
@@ -70,7 +75,7 @@
           "example": "0.0.0.0",
           "maxLength": 255,
           "minLength": 1,
-          "readOnly": true,
+          "pattern": "^[\\w\\-\\.:]+$",
           "type": "string"
         },
         "image": {
@@ -86,17 +91,19 @@
             },
             "repository": {
               "description": "Container image repository",
-              "example": "example-string",
+              "example": "archesai/archesai",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$",
               "type": "string"
             },
             "tag": {
               "default": "latest",
               "description": "Container image tag",
-              "example": "example-string",
+              "example": "v1.0.0",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9._-]*$",
               "type": "string"
             }
           },
@@ -218,8 +225,10 @@
           "properties": {
             "clientEmail": {
               "description": "Firebase service account client email address",
-              "example": "example-string",
+              "example": "firebase@project.iam.gserviceaccount.com",
+              "format": "email",
               "maxLength": 255,
+              "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
               "type": "string"
             },
             "enabled": {
@@ -230,11 +239,17 @@
             },
             "privateKey": {
               "description": "Firebase service account private key (PEM format)",
-              "minLength": 1
+              "maxLength": 10000,
+              "minLength": 1,
+              "pattern": "^[\\w\\s\\-.,!?()@#+/=\\n\\r]*$",
+              "type": "string"
             },
             "projectID": {
               "description": "Firebase project ID for authentication",
-              "example": "example-id-123"
+              "example": "example-id-123",
+              "maxLength": 255,
+              "pattern": "^[\\w\\-]+$",
+              "type": "string"
             }
           },
           "required": ["enabled"],
@@ -253,11 +268,16 @@
               "example": "Iv1.abc123def456ghi7",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[\\w\\.\\-]+$",
               "type": "string"
             },
             "clientSecret": {
               "description": "GitHub OAuth App client secret",
-              "example": "abc123def456ghi789jkl012mno345pqr678stu901"
+              "example": "abc123def456ghi789jkl012mno345pqr678stu901",
+              "maxLength": 255,
+              "minLength": 1,
+              "pattern": "^[\\w\\-]+$",
+              "type": "string"
             },
             "enabled": {
               "default": false,
@@ -269,7 +289,8 @@
               "description": "OAuth callback URL",
               "example": "http://localhost:8080/auth/oauth/github/callback",
               "format": "uri",
-              "maxLength": 2048
+              "maxLength": 2048,
+              "type": "string"
             },
             "scopes": {
               "default": ["user:email"],
@@ -277,6 +298,7 @@
               "example": ["read:user"],
               "items": {
                 "maxLength": 255,
+                "pattern": "^[\\w\\s\\-:]+$",
                 "type": "string"
               },
               "maxItems": 1000,
@@ -299,11 +321,16 @@
               "example": "123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[\\w\\.\\-]+$",
               "type": "string"
             },
             "clientSecret": {
               "description": "Google OAuth client secret",
-              "example": "GOCSPX-abc123def456ghi789jkl012"
+              "example": "GOCSPX-abc123def456ghi789jkl012",
+              "maxLength": 255,
+              "minLength": 1,
+              "pattern": "^[\\w\\-]+$",
+              "type": "string"
             },
             "enabled": {
               "default": false,
@@ -315,15 +342,17 @@
               "description": "OAuth callback URL",
               "example": "http://localhost:8080/auth/oauth/google/callback",
               "format": "uri",
-              "maxLength": 2048
+              "maxLength": 2048,
+              "type": "string"
             },
             "scopes": {
               "default": ["openid", "profile", "email"],
               "description": "OAuth scopes to request",
-              "example": null,
+              "example": ["openid", "profile"],
               "items": {
                 "maxLength": 255,
                 "minLength": 1,
+                "pattern": "^[\\w\\s\\-:\\.]+$",
                 "type": "string"
               },
               "maxItems": 1000,
@@ -345,8 +374,10 @@
               "default": "15m",
               "description": "Access token time-to-live duration (e.g., \"15m\", \"1h\")",
               "example": "15m",
+              "maxLength": 20,
               "minLength": 2,
-              "pattern": "^(\\d+[smhd])+$"
+              "pattern": "^(\\d+[smhd])+$",
+              "type": "string"
             },
             "enabled": {
               "default": true,
@@ -360,12 +391,17 @@
               "example": "your-256-bit-secret-key-here-change-in-production",
               "maxLength": 512,
               "minLength": 32,
+              "pattern": "^[\\w\\-+=/.]+$",
               "type": "string"
             },
             "refreshTokenTTL": {
               "default": "168h",
               "description": "Refresh token time-to-live duration (e.g., \"7d\", \"168h\")",
-              "example": "168h"
+              "example": "168h",
+              "maxLength": 20,
+              "minLength": 2,
+              "pattern": "^(\\d+[smhd])+$",
+              "type": "string"
             }
           },
           "required": [
@@ -389,9 +425,16 @@
               "description": "Available delivery methods",
               "properties": {
                 "console": {
-                  "default": false,
-                  "description": "Enable console output (development only)",
-                  "example": false
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": false,
+                      "description": "Enable console output (development only)",
+                      "example": false,
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
                 },
                 "email": {
                   "additionalProperties": false,
@@ -410,13 +453,33 @@
                   },
                   "type": "object"
                 },
-                "otp": null,
+                "otp": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": true,
+                      "example": true,
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                },
                 "webhook": {
-                  "url": {
-                    "example": "https://hooks.example.com/magic-link",
-                    "format": "uri",
-                    "maxLength": 2048
-                  }
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "default": false,
+                      "example": false,
+                      "type": "boolean"
+                    },
+                    "url": {
+                      "example": "https://hooks.example.com/magic-link",
+                      "format": "uri",
+                      "maxLength": 2048,
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
                 }
               },
               "type": "object"
@@ -431,10 +494,13 @@
               "default": 6,
               "description": "Length of OTP code",
               "example": 6,
+              "format": "int32",
               "maximum": 8,
-              "minimum": 4
+              "minimum": 4,
+              "type": "integer"
             },
             "rateLimit": {
+              "additionalProperties": false,
               "description": "Rate limiting configuration",
               "properties": {
                 "maxAttempts": {
@@ -449,9 +515,14 @@
                 "windowMinutes": {
                   "default": 15,
                   "description": "Time window in minutes",
-                  "example": 15
+                  "example": 15,
+                  "format": "int32",
+                  "maximum": 2147483647,
+                  "minimum": 1,
+                  "type": "integer"
                 }
-              }
+              },
+              "type": "object"
             },
             "tokenExpiry": {
               "default": 15,
@@ -477,13 +548,18 @@
             "clientId": {
               "description": "Azure AD Application (client) ID",
               "example": "12345678-1234-1234-1234-123456789012",
+              "format": "uuid",
               "maxLength": 255,
               "minLength": 1,
               "type": "string"
             },
             "clientSecret": {
               "description": "Azure AD client secret",
-              "example": "abc~def123GHI456jkl789MNO012pqr345"
+              "example": "abc~def123GHI456jkl789MNO012pqr345",
+              "maxLength": 255,
+              "minLength": 1,
+              "pattern": "^[\\w\\-~]+$",
+              "type": "string"
             },
             "enabled": {
               "default": false,
@@ -495,14 +571,16 @@
               "description": "OAuth callback URL",
               "example": "http://localhost:8080/auth/oauth/microsoft/callback",
               "format": "uri",
-              "maxLength": 2048
+              "maxLength": 2048,
+              "type": "string"
             },
             "scopes": {
               "default": ["openid", "profile", "email", "User.Read"],
               "description": "OAuth scopes to request",
-              "example": null,
+              "example": ["openid", "profile"],
               "items": {
                 "maxLength": 255,
+                "pattern": "^[\\w\\s\\-:\\.]+$",
                 "type": "string"
               },
               "maxItems": 1000,
@@ -511,7 +589,11 @@
             "tenant": {
               "default": "common",
               "description": "Azure AD tenant ID (use 'common' for multi-tenant)",
-              "example": "common"
+              "example": "common",
+              "maxLength": 255,
+              "minLength": 1,
+              "pattern": "^[\\w\\-]+$",
+              "type": "string"
             }
           },
           "required": ["enabled"],
@@ -527,17 +609,25 @@
           "properties": {
             "callbackURL": {
               "description": "OAuth callback URL",
-              "example": "example-string",
+              "example": "http://localhost:8080/auth/oauth/twitter/callback",
+              "format": "uri",
               "maxLength": 2048,
               "minLength": 1,
               "type": "string"
             },
             "consumerKey": {
               "description": "Twitter API consumer key",
-              "maxLength": 255
+              "maxLength": 255,
+              "minLength": 1,
+              "pattern": "^[\\w\\-]+$",
+              "type": "string"
             },
             "consumerSecret": {
-              "description": "Twitter API consumer secret"
+              "description": "Twitter API consumer secret",
+              "maxLength": 255,
+              "minLength": 1,
+              "pattern": "^[\\w\\-]+$",
+              "type": "string"
             },
             "enabled": {
               "default": false,
@@ -577,16 +667,18 @@
           "properties": {
             "token": {
               "description": "Stripe secret API key",
-              "example": "example-string",
+              "example": "sk_test_51H...",
               "maxLength": 512,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_]+$",
               "type": "string"
             },
             "whsec": {
               "description": "Stripe webhook endpoint secret",
-              "example": "example-string",
+              "example": "whsec_...",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_]+$",
               "type": "string"
             }
           },
@@ -612,12 +704,16 @@
         "connMaxIdleTime": {
           "description": "Maximum connection idle time (e.g., \"5m\")",
           "example": "5m",
+          "maxLength": 20,
+          "minLength": 2,
           "pattern": "^(\\d+[smh])+$",
           "type": "string"
         },
         "connMaxLifetime": {
           "description": "Maximum connection lifetime (e.g., \"30m\")",
           "example": "30m",
+          "maxLength": 20,
+          "minLength": 2,
           "pattern": "^(\\d+[smh])+$",
           "type": "string"
         },
@@ -630,6 +726,8 @@
         "healthCheckPeriod": {
           "description": "Health check period for connections (PostgreSQL)",
           "example": "30s",
+          "maxLength": 20,
+          "minLength": 2,
           "pattern": "^(\\d+[smh])+$",
           "type": "string"
         },
@@ -646,17 +744,19 @@
             },
             "repository": {
               "description": "Container image repository",
-              "example": "example-string",
+              "example": "archesai/archesai",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$",
               "type": "string"
             },
             "tag": {
               "default": "latest",
               "description": "Container image tag",
-              "example": "example-string",
+              "example": "v1.0.0",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9._-]*$",
               "type": "string"
             }
           },
@@ -704,9 +804,10 @@
             "size": {
               "default": "10Gi",
               "description": "Size of persistent volume",
-              "example": "example-string",
+              "example": "10Gi",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$",
               "type": "string"
             }
           },
@@ -797,7 +898,8 @@
         "url": {
           "default": "postgresql://admin:password@127.0.0.1:5432/archesai",
           "description": "Database connection url/string",
-          "example": "example-string",
+          "example": "postgresql://admin:password@127.0.0.1:5432/archesai",
+          "format": "uri",
           "maxLength": 2048,
           "minLength": 1,
           "type": "string"
@@ -828,16 +930,18 @@
           "properties": {
             "endpoint": {
               "description": "LLM service endpoint URL",
-              "example": "example-string",
+              "example": "http://localhost:11434",
+              "format": "uri",
               "maxLength": 2048,
               "minLength": 1,
               "type": "string"
             },
             "token": {
               "description": "Authentication token for LLM service",
-              "example": "example-string",
+              "example": "sk-...",
               "maxLength": 512,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_\\-\\.]+$",
               "type": "string"
             },
             "type": {
@@ -861,16 +965,18 @@
           "properties": {
             "endpoint": {
               "description": "LLM service endpoint URL",
-              "example": "example-string",
+              "example": "http://localhost:11434",
+              "format": "uri",
               "maxLength": 2048,
               "minLength": 1,
               "type": "string"
             },
             "token": {
               "description": "Authentication token for LLM service",
-              "example": "example-string",
+              "example": "sk-...",
               "maxLength": 512,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_\\-\\.]+$",
               "type": "string"
             },
             "type": {
@@ -900,9 +1006,10 @@
             },
             "token": {
               "description": "RunPod API token",
-              "example": "example-string",
+              "example": "rp-...",
               "maxLength": 512,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_\\-\\.]+$",
               "type": "string"
             }
           },
@@ -925,7 +1032,8 @@
             },
             "endpoint": {
               "description": "Web scraper service endpoint URL",
-              "example": "example-string",
+              "example": "http://scraper:8080",
+              "format": "uri",
               "maxLength": 2048,
               "minLength": 1,
               "type": "string"
@@ -943,17 +1051,19 @@
                 },
                 "repository": {
                   "description": "Container image repository",
-                  "example": "example-string",
+                  "example": "archesai/archesai",
                   "maxLength": 255,
                   "minLength": 1,
+                  "pattern": "^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$",
                   "type": "string"
                 },
                 "tag": {
                   "default": "latest",
                   "description": "Container image tag",
-                  "example": "example-string",
+                  "example": "v1.0.0",
                   "maxLength": 255,
                   "minLength": 1,
+                  "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9._-]*$",
                   "type": "string"
                 }
               },
@@ -1054,9 +1164,10 @@
             },
             "token": {
               "description": "Speech-to-text service API token",
-              "example": "example-string",
+              "example": "sk-...",
               "maxLength": 512,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_\\-\\.]+$",
               "type": "string"
             }
           },
@@ -1090,17 +1201,19 @@
                 },
                 "repository": {
                   "description": "Container image repository",
-                  "example": "example-string",
+                  "example": "archesai/archesai",
                   "maxLength": 255,
                   "minLength": 1,
+                  "pattern": "^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$",
                   "type": "string"
                 },
                 "tag": {
                   "default": "latest",
                   "description": "Container image tag",
-                  "example": "example-string",
+                  "example": "v1.0.0",
                   "maxLength": 255,
                   "minLength": 1,
+                  "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9._-]*$",
                   "type": "string"
                 }
               },
@@ -1212,9 +1325,10 @@
                   "default": [],
                   "description": "List of Kubernetes secrets for pulling private images",
                   "items": {
-                    "example": "example-string",
+                    "example": "regcred",
                     "maxLength": 255,
                     "minLength": 1,
+                    "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
                     "type": "string"
                   },
                   "maxItems": 1000,
@@ -1223,9 +1337,9 @@
                 "imageRegistry": {
                   "default": "",
                   "description": "Custom container registry URL (leave empty for Docker Hub)",
-                  "example": "example-string",
+                  "example": "gcr.io",
                   "maxLength": 2048,
-                  "minLength": 1,
+                  "pattern": "^(|[a-z0-9]([-a-z0-9\\.]*[a-z0-9])?(:[0-9]+)?)$",
                   "type": "string"
                 }
               },
@@ -1257,9 +1371,10 @@
             "namespace": {
               "default": "arches-system",
               "description": "Kubernetes namespace where all resources will be deployed",
-              "example": "Example Name",
+              "example": "arches-system",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
               "type": "string"
             },
             "serviceAccount": {
@@ -1275,9 +1390,9 @@
                 "name": {
                   "default": "",
                   "description": "Custom service account name",
-                  "example": "Example Name",
+                  "example": "archesai-sa",
                   "maxLength": 255,
-                  "minLength": 1,
+                  "pattern": "^(|[a-z0-9]([-a-z0-9]*[a-z0-9])?)$",
                   "type": "string"
                 }
               },
@@ -1303,7 +1418,8 @@
             "domain": {
               "default": "archesai.dev",
               "description": "Primary domain name for ingress routing",
-              "example": "example-string",
+              "example": "archesai.dev",
+              "format": "hostname",
               "maxLength": 255,
               "minLength": 1,
               "type": "string"
@@ -1327,17 +1443,19 @@
                 "issuer": {
                   "default": "letsencrypt-staging",
                   "description": "Cert-manager ClusterIssuer",
-                  "example": "example-string",
+                  "example": "letsencrypt-prod",
                   "maxLength": 255,
                   "minLength": 1,
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
                   "type": "string"
                 },
                 "secretName": {
                   "default": "archesai-tls",
                   "description": "Kubernetes secret name for TLS certificates",
-                  "example": "Example Name",
+                  "example": "archesai-tls",
                   "maxLength": 255,
                   "minLength": 1,
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
                   "type": "string"
                 }
               },
@@ -1383,17 +1501,19 @@
                     },
                     "repository": {
                       "description": "Container image repository",
-                      "example": "example-string",
+                      "example": "archesai/archesai",
                       "maxLength": 255,
                       "minLength": 1,
+                      "pattern": "^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$",
                       "type": "string"
                     },
                     "tag": {
                       "default": "latest",
                       "description": "Container image tag",
-                      "example": "example-string",
+                      "example": "v1.0.0",
                       "maxLength": 255,
                       "minLength": 1,
+                      "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9._-]*$",
                       "type": "string"
                     }
                   },
@@ -1495,7 +1615,8 @@
                 "host": {
                   "default": "http://localhost:3100",
                   "description": "Loki host URL",
-                  "example": "example-string",
+                  "example": "http://localhost:3100",
+                  "format": "uri",
                   "maxLength": 2048,
                   "minLength": 1,
                   "type": "string"
@@ -1513,17 +1634,19 @@
                     },
                     "repository": {
                       "description": "Container image repository",
-                      "example": "example-string",
+                      "example": "archesai/archesai",
                       "maxLength": 255,
                       "minLength": 1,
+                      "pattern": "^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$",
                       "type": "string"
                     },
                     "tag": {
                       "default": "latest",
                       "description": "Container image tag",
-                      "example": "example-string",
+                      "example": "v1.0.0",
                       "maxLength": 255,
                       "minLength": 1,
+                      "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9._-]*$",
                       "type": "string"
                     }
                   },
@@ -1683,17 +1806,19 @@
             },
             "repository": {
               "description": "Container image repository",
-              "example": "example-string",
+              "example": "archesai/archesai",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$",
               "type": "string"
             },
             "tag": {
               "default": "latest",
               "description": "Container image tag",
-              "example": "example-string",
+              "example": "v1.0.0",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9._-]*$",
               "type": "string"
             }
           },
@@ -1797,16 +1922,18 @@
         "auth": {
           "default": "password",
           "description": "Redis authentication password",
-          "example": "example-string",
+          "example": "secure-redis-password",
           "maxLength": 72,
           "minLength": 1,
+          "pattern": "^[\\w\\-@./#&+!*()]+$",
           "type": "string"
         },
         "ca": {
           "description": "Certificate Authority for TLS (optional)",
-          "example": "example-string",
+          "example": "/etc/ssl/certs/ca.pem",
           "maxLength": 255,
           "minLength": 1,
+          "pattern": "^[\\w\\s\\-./]+$",
           "type": "string"
         },
         "enabled": {
@@ -1818,9 +1945,10 @@
         "host": {
           "default": "localhost",
           "description": "Redis hostname or IP",
-          "example": "example-string",
+          "example": "redis.example.com",
           "maxLength": 255,
           "minLength": 1,
+          "pattern": "^[a-zA-Z0-9.\\-]+$",
           "type": "string"
         },
         "image": {
@@ -1836,17 +1964,19 @@
             },
             "repository": {
               "description": "Container image repository",
-              "example": "example-string",
+              "example": "archesai/archesai",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$",
               "type": "string"
             },
             "tag": {
               "default": "latest",
               "description": "Container image tag",
-              "example": "example-string",
+              "example": "v1.0.0",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9._-]*$",
               "type": "string"
             }
           },
@@ -1876,9 +2006,10 @@
             "size": {
               "default": "10Gi",
               "description": "Size of persistent volume",
-              "example": "example-string",
+              "example": "10Gi",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$",
               "type": "string"
             }
           },
@@ -1977,17 +2108,19 @@
         "accesskey": {
           "default": "minioadmin",
           "description": "MinIO/S3 access key ID",
-          "example": "example-string",
+          "example": "AKIAIOSFODNN7EXAMPLE",
           "maxLength": 255,
           "minLength": 1,
+          "pattern": "^[A-Z0-9]+$",
           "type": "string"
         },
         "bucket": {
           "default": "archesai",
           "description": "S3 bucket name",
-          "example": "example-string",
+          "example": "archesai",
           "maxLength": 255,
           "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9\\-]*[a-z0-9]$",
           "type": "string"
         },
         "enabled": {
@@ -1999,7 +2132,8 @@
         "endpoint": {
           "default": "http://localhost:9000",
           "description": "MinIO server endpoint URL",
-          "example": "example-string",
+          "example": "http://localhost:9000",
+          "format": "uri",
           "maxLength": 2048,
           "minLength": 1,
           "type": "string"
@@ -2017,17 +2151,19 @@
             },
             "repository": {
               "description": "Container image repository",
-              "example": "example-string",
+              "example": "archesai/archesai",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$",
               "type": "string"
             },
             "tag": {
               "default": "latest",
               "description": "Container image tag",
-              "example": "example-string",
+              "example": "v1.0.0",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_][a-zA-Z0-9._-]*$",
               "type": "string"
             }
           },
@@ -2057,9 +2193,10 @@
             "size": {
               "default": "10Gi",
               "description": "Size of persistent volume",
-              "example": "example-string",
+              "example": "10Gi",
               "maxLength": 255,
               "minLength": 1,
+              "pattern": "^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$",
               "type": "string"
             }
           },
@@ -2137,9 +2274,10 @@
         "secretkey": {
           "default": "minioadmin",
           "description": "MinIO/S3 secret access key",
-          "example": "example-string",
+          "example": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
           "maxLength": 255,
           "minLength": 1,
+          "pattern": "^[A-Za-z0-9+/=]+$",
           "type": "string"
         }
       },

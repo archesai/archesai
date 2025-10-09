@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.2/schema/2025-09-17#/$defs/response
+description: Tools retrieved successfully
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        data:
+          type: array
+          maxItems: 10000
+          items:
+            $ref: ../schemas/Tool.yaml
+        meta:
+          $ref: ../schemas/PaginationMeta.yaml
+      required:
+        - data
+        - meta
+      additionalProperties: false
+headers:
+  X-RateLimit-Limit:
+    $ref: ../headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../headers/RateLimitReset.yaml

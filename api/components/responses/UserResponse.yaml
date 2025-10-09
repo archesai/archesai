@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.2/schema/2025-09-17#/$defs/response
+description: User retrieved successfully
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        data:
+          $ref: ../schemas/User.yaml
+      required:
+        - data
+      additionalProperties: false
+    example:
+      data:
+        id: 550e8400-e29b-41d4-a716-446655440000
+        name: John Doe
+        email: user@example.com
+        emailVerified: true
+        image: https://example.com/avatar.jpg
+        createdAt: '2024-01-15T09:30:00Z'
+        updatedAt: '2024-01-15T09:30:00Z'
+headers:
+  X-RateLimit-Limit:
+    $ref: ../headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../headers/RateLimitReset.yaml

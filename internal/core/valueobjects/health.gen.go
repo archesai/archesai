@@ -5,6 +5,7 @@ package valueobjects
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 // HealthServices represents a nested type for Health
@@ -17,13 +18,13 @@ type HealthServices struct {
 // Health represents Health check response
 type Health struct {
 	Services  HealthServices `json:"services" yaml:"services"`
-	Timestamp string         `json:"timestamp" yaml:"timestamp"`
-	Uptime    float64        `json:"uptime" yaml:"uptime"`
+	Timestamp time.Time      `json:"timestamp" yaml:"timestamp"`
+	Uptime    int64          `json:"uptime" yaml:"uptime"` // System uptime in seconds
 }
 
 // NewHealth creates a new immutable Health value object.
 // Value objects are immutable and validated upon creation.
-func NewHealth(services HealthServices, timestamp string, uptime float64) (Health, error) {
+func NewHealth(services HealthServices, timestamp time.Time, uptime int64) (Health, error) {
 	// Validate required fields
 	return Health{
 		Services:  services,
@@ -46,13 +47,13 @@ func (v Health) GetServices() HealthServices {
 
 // GetTimestamp returns the Timestamp value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Health) GetTimestamp() string {
+func (v Health) GetTimestamp() time.Time {
 	return v.Timestamp
 }
 
 // GetUptime returns the Uptime value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v Health) GetUptime() float64 {
+func (v Health) GetUptime() int64 {
 	return v.Uptime
 }
 

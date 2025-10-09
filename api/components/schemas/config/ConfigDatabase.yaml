@@ -1,6 +1,6 @@
+title: DatabaseConfig
 description: Database configuration for PostgreSQL
 type: object
-title: DatabaseConfig
 properties:
   enabled:
     description: Enable database

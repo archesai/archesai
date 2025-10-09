@@ -8,17 +8,17 @@ import (
 
 // DeleteCurrentUserCommand represents the command to delete a user.
 type DeleteCurrentUserCommand struct {
-	SessionID    uuid.UUID
-	Confirmation string
+	SessionID uuid.UUID
+	XConfirm  string
 }
 
 // NewDeleteCurrentUserCommand creates a new DeleteCurrentUser command.
 func NewDeleteCurrentUserCommand(
 	SessionID uuid.UUID,
-	Confirmation string,
+	XConfirm string,
 ) *DeleteCurrentUserCommand {
 	return &DeleteCurrentUserCommand{
-		SessionID:    SessionID,
-		Confirmation: Confirmation,
+		SessionID: SessionID,
+		XConfirm:  XConfirm,
 	}
 }

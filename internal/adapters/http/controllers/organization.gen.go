@@ -15,6 +15,7 @@ import (
 	commands "github.com/archesai/archesai/internal/application/commands/organization"
 	queries "github.com/archesai/archesai/internal/application/queries/organization"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // OrganizationController handles HTTP requests for organization endpoints.
@@ -106,6 +107,39 @@ func (response CreateOrganization401Response) VisitCreateOrganizationResponse(w 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
 }
 
+type CreateOrganization422Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateOrganization422Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateOrganization429Response struct {
+	server.ProblemDetails
+}
+
+func (response CreateOrganization429Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateOrganization500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response CreateOrganization500Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
 // Handler method
 
 // CreateOrganization handles the POST /organizations endpoint.
@@ -186,6 +220,50 @@ func (response GetOrganization404Response) VisitGetOrganizationResponse(w http.R
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type GetOrganization429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetOrganization429Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetOrganization500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response GetOrganization500Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type GetOrganization401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response GetOrganization401Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type GetOrganization422Response struct {
+	server.ProblemDetails
+}
+
+func (response GetOrganization422Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // GetOrganization handles the GET /organizations/{id} endpoint.
@@ -250,14 +328,9 @@ type ListOrganizationsResponse interface {
 	VisitListOrganizationsResponse(w http.ResponseWriter) error
 }
 
-// ListOrganizations200ResponseMeta defines the meta structure
-type ListOrganizations200ResponseMeta struct {
-	Total float64 `json:"total"`
-}
-
 type ListOrganizations200Response struct {
-	Data []entities.Organization          `json:"data"`
-	Meta ListOrganizations200ResponseMeta `json:"meta"`
+	Data []entities.Organization     `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListOrganizations200Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
@@ -287,6 +360,39 @@ func (response ListOrganizations401Response) VisitListOrganizationsResponse(w ht
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type ListOrganizations422Response struct {
+	server.ProblemDetails
+}
+
+func (response ListOrganizations422Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListOrganizations429Response struct {
+	server.ProblemDetails
+}
+
+func (response ListOrganizations429Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type ListOrganizations500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response ListOrganizations500Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
 }
 
 // Handler method
@@ -387,6 +493,61 @@ func (response UpdateOrganization404Response) VisitUpdateOrganizationResponse(w 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
 }
 
+type UpdateOrganization429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateOrganization429Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateOrganization500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response UpdateOrganization500Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type UpdateOrganization400Response struct {
+	server.BadRequestResponse
+}
+
+func (response UpdateOrganization400Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+}
+
+type UpdateOrganization401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response UpdateOrganization401Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type UpdateOrganization422Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateOrganization422Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // Handler method
 
 // UpdateOrganization handles the PATCH /organizations/{id} endpoint.
@@ -473,6 +634,50 @@ func (response DeleteOrganization404Response) VisitDeleteOrganizationResponse(w 
 	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+}
+
+type DeleteOrganization429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteOrganization429Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteOrganization500Response struct {
+	server.InternalServerErrorResponse
+}
+
+func (response DeleteOrganization500Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+}
+
+type DeleteOrganization401Response struct {
+	server.UnauthorizedResponse
+}
+
+func (response DeleteOrganization401Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+}
+
+type DeleteOrganization422Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteOrganization422Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(422)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 // Handler method
