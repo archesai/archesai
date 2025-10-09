@@ -98,7 +98,7 @@ export const requestMagicLinkResponseTokenTokenHashRegExp = new RegExp('^[a-f0-9
 export const requestMagicLinkResponseTokenCodeMin = 6;
 export const requestMagicLinkResponseTokenCodeMax = 6;
 export const requestMagicLinkResponseTokenCodeRegExp = new RegExp('^[0-9]{6}$');
-export const requestMagicLinkResponseTokenIdentifierMax = 255;export const requestMagicLinkResponseTokenExpiresAtMax = 512;export const requestMagicLinkResponseTokenUsedAtMaxOne = 512;export const requestMagicLinkResponseTokenIpAddressMin = 7;
+export const requestMagicLinkResponseTokenIdentifierMax = 255;export const requestMagicLinkResponseTokenExpiresAtMax = 512;export const requestMagicLinkResponseTokenIpAddressMin = 7;
 export const requestMagicLinkResponseTokenIpAddressMax = 45;export const requestMagicLinkResponseTokenUserAgentMax = 512;
 export const requestMagicLinkResponseTokenUserAgentRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/\\(\\):;]+$');
 export const requestMagicLinkResponseTokenCreatedAtMax = 512;
@@ -116,7 +116,7 @@ export const requestMagicLinkResponse = zod.object({
   "identifier": zod.email().min(1).max(requestMagicLinkResponseTokenIdentifierMax).describe('Email or username for authentication'),
   "deliveryMethod": zod.enum(['email', 'console', 'webhook', 'otp', 'file']).optional().describe('How the magic link was delivered'),
   "expiresAt": zod.iso.datetime({}).min(1).max(requestMagicLinkResponseTokenExpiresAtMax).describe('When the token expires'),
-  "usedAt": zod.union([zod.iso.datetime({}).min(1).max(requestMagicLinkResponseTokenUsedAtMaxOne),zod.null()]).optional().describe('When the token was used (null if unused)'),
+  "usedAt": zod.iso.datetime({}).optional().describe('When the token was used (null if unused)'),
   "ipAddress": zod.string().min(requestMagicLinkResponseTokenIpAddressMin).max(requestMagicLinkResponseTokenIpAddressMax).optional().describe('IP address of the request'),
   "userAgent": zod.string().min(1).max(requestMagicLinkResponseTokenUserAgentMax).regex(requestMagicLinkResponseTokenUserAgentRegExp).optional().describe('User agent of the request'),
   "createdAt": zod.iso.datetime({}).min(1).max(requestMagicLinkResponseTokenCreatedAtMax).describe('When the token was created')
@@ -2838,326 +2838,327 @@ export const deleteLabelResponse = zod.object({
  * Get the configuration of the application
  * @summary Get the configuration
  */
-export const getConfigResponseApiCorsDefault = "localhost";
-export const getConfigResponseApiCorsMax = 2048;
-export const getConfigResponseApiCorsRegExp = new RegExp('^[\\w\\-\\.,:/@]+$');
-export const getConfigResponseApiUrlDefault = "http://localhost:3001";
-export const getConfigResponseApiUrlMax = 2048;export const getConfigResponseApiDocsDefault = true;export const getConfigResponseApiEmailEnabledDefault = false;export const getConfigResponseApiEmailServiceMax = 255;
-export const getConfigResponseApiEmailServiceRegExp = new RegExp('^[\\w\\-]+$');
-export const getConfigResponseApiEmailUserMax = 255;
-export const getConfigResponseApiEmailUserRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const getConfigResponseApiEmailPasswordMax = 255;
-export const getConfigResponseApiEmailPasswordRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/=]*$');
-export const getConfigResponseApiEnvironmentDefault = "development";export const getConfigResponseApiHostDefault = "0.0.0.0";
-export const getConfigResponseApiHostMax = 255;
-export const getConfigResponseApiHostRegExp = new RegExp('^[\\w\\-\\.:]+$');
-export const getConfigResponseApiPortDefault = 3001;
-export const getConfigResponseApiPortMax = 65535;export const getConfigResponseApiValidationDefault = true;export const getConfigResponseApiImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseApiImageRepositoryMax = 255;
-export const getConfigResponseApiImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
-export const getConfigResponseApiImageTagDefault = "latest";
-export const getConfigResponseApiImageTagMax = 255;
-export const getConfigResponseApiImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
-export const getConfigResponseApiResourcesLimitsCpuDefault = "1000m";
-export const getConfigResponseApiResourcesLimitsCpuMax = 255;
-export const getConfigResponseApiResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseApiResourcesLimitsMemoryDefault = "1Gi";
-export const getConfigResponseApiResourcesLimitsMemoryMax = 255;
-export const getConfigResponseApiResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseApiResourcesRequestsCpuDefault = "100m";
-export const getConfigResponseApiResourcesRequestsCpuMax = 255;
-export const getConfigResponseApiResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseApiResourcesRequestsMemoryDefault = "128Mi";
-export const getConfigResponseApiResourcesRequestsMemoryMax = 255;
-export const getConfigResponseApiResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseAuthEnabledDefault = true;export const getConfigResponseAuthFirebaseEnabledDefault = false;export const getConfigResponseAuthFirebaseClientEmailMax = 255;
-export const getConfigResponseAuthFirebaseClientEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
-export const getConfigResponseAuthFirebasePrivateKeyMax = 10000;
-export const getConfigResponseAuthFirebasePrivateKeyRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/=\\n\\r]*$');
-export const getConfigResponseAuthFirebaseProjectIDMax = 255;
-export const getConfigResponseAuthFirebaseProjectIDRegExp = new RegExp('^[\\w\\-]+$');
-export const getConfigResponseAuthLocalEnabledDefault = true;export const getConfigResponseAuthLocalJwtSecretDefault = "change-me-in-production";
-export const getConfigResponseAuthLocalJwtSecretMin = 32;
-export const getConfigResponseAuthLocalJwtSecretMax = 512;
-export const getConfigResponseAuthLocalJwtSecretRegExp = new RegExp('^[\\w\\-+=/.]+$');
-export const getConfigResponseAuthLocalAccessTokenTTLDefault = "15m";
-export const getConfigResponseAuthLocalAccessTokenTTLMin = 2;
-export const getConfigResponseAuthLocalAccessTokenTTLMax = 20;
-export const getConfigResponseAuthLocalAccessTokenTTLRegExp = new RegExp('^(\\d+[smhd])+$');
-export const getConfigResponseAuthLocalRefreshTokenTTLDefault = "168h";
-export const getConfigResponseAuthLocalRefreshTokenTTLMin = 2;
-export const getConfigResponseAuthLocalRefreshTokenTTLMax = 20;
-export const getConfigResponseAuthLocalRefreshTokenTTLRegExp = new RegExp('^(\\d+[smhd])+$');
-export const getConfigResponseAuthMagicLinkEnabledDefault = false;export const getConfigResponseAuthMagicLinkTokenExpiryDefault = 15;
-export const getConfigResponseAuthMagicLinkTokenExpiryMax = 60;export const getConfigResponseAuthMagicLinkOtpLengthDefault = 6;
-export const getConfigResponseAuthMagicLinkOtpLengthMin = 4;
-export const getConfigResponseAuthMagicLinkOtpLengthMax = 8;export const getConfigResponseAuthMagicLinkDeliveryMethodsEmailEnabledDefault = true;export const getConfigResponseAuthMagicLinkDeliveryMethodsEmailFromMax = 255;export const getConfigResponseAuthMagicLinkDeliveryMethodsConsoleEnabledDefault = false;export const getConfigResponseAuthMagicLinkDeliveryMethodsOtpEnabledDefault = true;export const getConfigResponseAuthMagicLinkDeliveryMethodsWebhookEnabledDefault = false;export const getConfigResponseAuthMagicLinkDeliveryMethodsWebhookUrlMax = 2048;export const getConfigResponseAuthMagicLinkRateLimitMaxAttemptsDefault = 5;
-export const getConfigResponseAuthMagicLinkRateLimitMaxAttemptsMax = 2147483647;export const getConfigResponseAuthMagicLinkRateLimitWindowMinutesDefault = 15;
-export const getConfigResponseAuthMagicLinkRateLimitWindowMinutesMax = 2147483647;export const getConfigResponseAuthTwitterEnabledDefault = false;export const getConfigResponseAuthTwitterCallbackURLMax = 2048;export const getConfigResponseAuthTwitterConsumerKeyMax = 255;
-export const getConfigResponseAuthTwitterConsumerKeyRegExp = new RegExp('^[\\w\\-]+$');
-export const getConfigResponseAuthTwitterConsumerSecretMax = 255;
-export const getConfigResponseAuthTwitterConsumerSecretRegExp = new RegExp('^[\\w\\-]+$');
-export const getConfigResponseAuthGoogleEnabledDefault = false;export const getConfigResponseAuthGoogleClientIdMax = 255;
-export const getConfigResponseAuthGoogleClientIdRegExp = new RegExp('^[\\w\\.\\-]+$');
-export const getConfigResponseAuthGoogleClientSecretMax = 255;
-export const getConfigResponseAuthGoogleClientSecretRegExp = new RegExp('^[\\w\\-]+$');
-export const getConfigResponseAuthGoogleRedirectUrlMax = 2048;export const getConfigResponseAuthGoogleScopesItemMax = 255;
-export const getConfigResponseAuthGoogleScopesItemRegExp = new RegExp('^[\\w\\s\\-:\\.]+$');
-export const getConfigResponseAuthGoogleScopesDefault = ["openid", "profile", "email"];
-export const getConfigResponseAuthGoogleScopesMax = 1000;export const getConfigResponseAuthGithubEnabledDefault = false;export const getConfigResponseAuthGithubClientIdMax = 255;
-export const getConfigResponseAuthGithubClientIdRegExp = new RegExp('^[\\w\\.\\-]+$');
-export const getConfigResponseAuthGithubClientSecretMax = 255;
-export const getConfigResponseAuthGithubClientSecretRegExp = new RegExp('^[\\w\\-]+$');
-export const getConfigResponseAuthGithubRedirectUrlMax = 2048;export const getConfigResponseAuthGithubScopesItemMax = 255;
-export const getConfigResponseAuthGithubScopesItemRegExp = new RegExp('^[\\w\\s\\-:]+$');
-export const getConfigResponseAuthGithubScopesDefault = ["user:email"];
-export const getConfigResponseAuthGithubScopesMax = 1000;export const getConfigResponseAuthMicrosoftEnabledDefault = false;export const getConfigResponseAuthMicrosoftClientIdMax = 255;export const getConfigResponseAuthMicrosoftClientSecretMax = 255;
-export const getConfigResponseAuthMicrosoftClientSecretRegExp = new RegExp('^[\\w\\-~]+$');
-export const getConfigResponseAuthMicrosoftRedirectUrlMax = 2048;export const getConfigResponseAuthMicrosoftTenantDefault = "common";
-export const getConfigResponseAuthMicrosoftTenantMax = 255;
-export const getConfigResponseAuthMicrosoftTenantRegExp = new RegExp('^[\\w\\-]+$');
-export const getConfigResponseAuthMicrosoftScopesItemMax = 255;
-export const getConfigResponseAuthMicrosoftScopesItemRegExp = new RegExp('^[\\w\\s\\-:\\.]+$');
-export const getConfigResponseAuthMicrosoftScopesDefault = ["openid", "profile", "email", "User.Read"];
-export const getConfigResponseAuthMicrosoftScopesMax = 1000;export const getConfigResponseBillingEnabledDefault = false;export const getConfigResponseBillingStripeTokenMax = 512;
-export const getConfigResponseBillingStripeTokenRegExp = new RegExp('^[a-zA-Z0-9_]+$');
-export const getConfigResponseBillingStripeWhsecMax = 255;
-export const getConfigResponseBillingStripeWhsecRegExp = new RegExp('^[a-zA-Z0-9_]+$');
-export const getConfigResponseDatabaseEnabledDefault = true;export const getConfigResponseDatabaseUrlDefault = "postgresql://admin:password@127.0.0.1:5432/archesai";
-export const getConfigResponseDatabaseUrlMax = 2048;export const getConfigResponseDatabaseTypeDefault = "postgresql";export const getConfigResponseDatabaseMaxConnsDefault = 25;
-export const getConfigResponseDatabaseMaxConnsMax = 2147483647;export const getConfigResponseDatabaseMinConnsDefault = 5;
-export const getConfigResponseDatabaseMinConnsMin = 0;
-export const getConfigResponseDatabaseMinConnsMax = 2147483647;export const getConfigResponseDatabaseConnMaxLifetimeMin = 2;
-export const getConfigResponseDatabaseConnMaxLifetimeMax = 20;
-export const getConfigResponseDatabaseConnMaxLifetimeRegExp = new RegExp('^(\\d+[smh])+$');
-export const getConfigResponseDatabaseConnMaxIdleTimeMin = 2;
-export const getConfigResponseDatabaseConnMaxIdleTimeMax = 20;
-export const getConfigResponseDatabaseConnMaxIdleTimeRegExp = new RegExp('^(\\d+[smh])+$');
-export const getConfigResponseDatabaseHealthCheckPeriodMin = 2;
-export const getConfigResponseDatabaseHealthCheckPeriodMax = 20;
-export const getConfigResponseDatabaseHealthCheckPeriodRegExp = new RegExp('^(\\d+[smh])+$');
-export const getConfigResponseDatabaseRunMigrationsDefault = false;export const getConfigResponseDatabaseManagedDefault = false;export const getConfigResponseDatabaseImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDatabaseImageRepositoryMax = 255;
-export const getConfigResponseDatabaseImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
-export const getConfigResponseDatabaseImageTagDefault = "latest";
-export const getConfigResponseDatabaseImageTagMax = 255;
-export const getConfigResponseDatabaseImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
-export const getConfigResponseDatabasePersistenceEnabledDefault = true;export const getConfigResponseDatabasePersistenceSizeDefault = "10Gi";
-export const getConfigResponseDatabasePersistenceSizeMax = 255;
-export const getConfigResponseDatabasePersistenceSizeRegExp = new RegExp('^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$');
-export const getConfigResponseDatabaseResourcesLimitsCpuDefault = "1000m";
-export const getConfigResponseDatabaseResourcesLimitsCpuMax = 255;
-export const getConfigResponseDatabaseResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseDatabaseResourcesLimitsMemoryDefault = "1Gi";
-export const getConfigResponseDatabaseResourcesLimitsMemoryMax = 255;
-export const getConfigResponseDatabaseResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseDatabaseResourcesRequestsCpuDefault = "100m";
-export const getConfigResponseDatabaseResourcesRequestsCpuMax = 255;
-export const getConfigResponseDatabaseResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseDatabaseResourcesRequestsMemoryDefault = "128Mi";
-export const getConfigResponseDatabaseResourcesRequestsMemoryMax = 255;
-export const getConfigResponseDatabaseResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseIntelligenceEmbeddingTypeDefault = "ollama";export const getConfigResponseIntelligenceEmbeddingEndpointMax = 2048;export const getConfigResponseIntelligenceEmbeddingTokenMax = 512;
-export const getConfigResponseIntelligenceEmbeddingTokenRegExp = new RegExp('^[a-zA-Z0-9_\\-\\.]+$');
-export const getConfigResponseIntelligenceLlmTypeDefault = "ollama";export const getConfigResponseIntelligenceLlmEndpointMax = 2048;export const getConfigResponseIntelligenceLlmTokenMax = 512;
-export const getConfigResponseIntelligenceLlmTokenRegExp = new RegExp('^[a-zA-Z0-9_\\-\\.]+$');
-export const getConfigResponseIntelligenceRunpodEnabledDefault = false;export const getConfigResponseIntelligenceRunpodTokenMax = 512;
-export const getConfigResponseIntelligenceRunpodTokenRegExp = new RegExp('^[a-zA-Z0-9_\\-\\.]+$');
-export const getConfigResponseIntelligenceScraperEnabledDefault = false;export const getConfigResponseIntelligenceScraperManagedDefault = false;export const getConfigResponseIntelligenceScraperEndpointMax = 2048;export const getConfigResponseIntelligenceScraperImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseIntelligenceScraperImageRepositoryMax = 255;
-export const getConfigResponseIntelligenceScraperImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
-export const getConfigResponseIntelligenceScraperImageTagDefault = "latest";
-export const getConfigResponseIntelligenceScraperImageTagMax = 255;
-export const getConfigResponseIntelligenceScraperImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
-export const getConfigResponseIntelligenceScraperResourcesLimitsCpuDefault = "1000m";
-export const getConfigResponseIntelligenceScraperResourcesLimitsCpuMax = 255;
-export const getConfigResponseIntelligenceScraperResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseIntelligenceScraperResourcesLimitsMemoryDefault = "1Gi";
-export const getConfigResponseIntelligenceScraperResourcesLimitsMemoryMax = 255;
-export const getConfigResponseIntelligenceScraperResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseIntelligenceScraperResourcesRequestsCpuDefault = "100m";
-export const getConfigResponseIntelligenceScraperResourcesRequestsCpuMax = 255;
-export const getConfigResponseIntelligenceScraperResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseIntelligenceScraperResourcesRequestsMemoryDefault = "128Mi";
-export const getConfigResponseIntelligenceScraperResourcesRequestsMemoryMax = 255;
-export const getConfigResponseIntelligenceScraperResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseIntelligenceSpeechEnabledDefault = false;export const getConfigResponseIntelligenceSpeechTokenMax = 512;
-export const getConfigResponseIntelligenceSpeechTokenRegExp = new RegExp('^[a-zA-Z0-9_\\-\\.]+$');
-export const getConfigResponseIntelligenceUnstructuredEnabledDefault = false;export const getConfigResponseIntelligenceUnstructuredManagedDefault = false;export const getConfigResponseIntelligenceUnstructuredImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseIntelligenceUnstructuredImageRepositoryMax = 255;
-export const getConfigResponseIntelligenceUnstructuredImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
-export const getConfigResponseIntelligenceUnstructuredImageTagDefault = "latest";
-export const getConfigResponseIntelligenceUnstructuredImageTagMax = 255;
-export const getConfigResponseIntelligenceUnstructuredImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
-export const getConfigResponseIntelligenceUnstructuredResourcesLimitsCpuDefault = "1000m";
-export const getConfigResponseIntelligenceUnstructuredResourcesLimitsCpuMax = 255;
-export const getConfigResponseIntelligenceUnstructuredResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseIntelligenceUnstructuredResourcesLimitsMemoryDefault = "1Gi";
-export const getConfigResponseIntelligenceUnstructuredResourcesLimitsMemoryMax = 255;
-export const getConfigResponseIntelligenceUnstructuredResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseIntelligenceUnstructuredResourcesRequestsCpuDefault = "100m";
-export const getConfigResponseIntelligenceUnstructuredResourcesRequestsCpuMax = 255;
-export const getConfigResponseIntelligenceUnstructuredResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseIntelligenceUnstructuredResourcesRequestsMemoryDefault = "128Mi";
-export const getConfigResponseIntelligenceUnstructuredResourcesRequestsMemoryMax = 255;
-export const getConfigResponseIntelligenceUnstructuredResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseLoggingLevelDefault = "info";export const getConfigResponseLoggingPrettyDefault = false;export const getConfigResponsePlatformEnabledDefault = false;export const getConfigResponsePlatformManagedDefault = false;export const getConfigResponsePlatformUrlDefault = "http://localhost:3000";
-export const getConfigResponsePlatformUrlMax = 2048;export const getConfigResponsePlatformImagePullPolicyDefault = "IfNotPresent";export const getConfigResponsePlatformImageRepositoryMax = 255;
-export const getConfigResponsePlatformImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
-export const getConfigResponsePlatformImageTagDefault = "latest";
-export const getConfigResponsePlatformImageTagMax = 255;
-export const getConfigResponsePlatformImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
-export const getConfigResponsePlatformResourcesLimitsCpuDefault = "1000m";
-export const getConfigResponsePlatformResourcesLimitsCpuMax = 255;
-export const getConfigResponsePlatformResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponsePlatformResourcesLimitsMemoryDefault = "1Gi";
-export const getConfigResponsePlatformResourcesLimitsMemoryMax = 255;
-export const getConfigResponsePlatformResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponsePlatformResourcesRequestsCpuDefault = "100m";
-export const getConfigResponsePlatformResourcesRequestsCpuMax = 255;
-export const getConfigResponsePlatformResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponsePlatformResourcesRequestsMemoryDefault = "128Mi";
-export const getConfigResponsePlatformResourcesRequestsMemoryMax = 255;
-export const getConfigResponsePlatformResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseRedisEnabledDefault = false;export const getConfigResponseRedisManagedDefault = false;export const getConfigResponseRedisAuthDefault = "password";
-export const getConfigResponseRedisAuthMax = 72;
-export const getConfigResponseRedisAuthRegExp = new RegExp('^[\\w\\-@./#&+!*()]+$');
-export const getConfigResponseRedisCaMax = 255;
-export const getConfigResponseRedisCaRegExp = new RegExp('^[\\w\\s\\-./]+$');
-export const getConfigResponseRedisHostDefault = "localhost";
-export const getConfigResponseRedisHostMax = 255;
-export const getConfigResponseRedisHostRegExp = new RegExp('^[a-zA-Z0-9.\\-]+$');
-export const getConfigResponseRedisPortDefault = 6379;
-export const getConfigResponseRedisPortMax = 65535;export const getConfigResponseRedisImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseRedisImageRepositoryMax = 255;
-export const getConfigResponseRedisImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
-export const getConfigResponseRedisImageTagDefault = "latest";
-export const getConfigResponseRedisImageTagMax = 255;
-export const getConfigResponseRedisImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
-export const getConfigResponseRedisPersistenceEnabledDefault = true;export const getConfigResponseRedisPersistenceSizeDefault = "10Gi";
-export const getConfigResponseRedisPersistenceSizeMax = 255;
-export const getConfigResponseRedisPersistenceSizeRegExp = new RegExp('^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$');
-export const getConfigResponseRedisResourcesLimitsCpuDefault = "1000m";
-export const getConfigResponseRedisResourcesLimitsCpuMax = 255;
-export const getConfigResponseRedisResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseRedisResourcesLimitsMemoryDefault = "1Gi";
-export const getConfigResponseRedisResourcesLimitsMemoryMax = 255;
-export const getConfigResponseRedisResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseRedisResourcesRequestsCpuDefault = "100m";
-export const getConfigResponseRedisResourcesRequestsCpuMax = 255;
-export const getConfigResponseRedisResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseRedisResourcesRequestsMemoryDefault = "128Mi";
-export const getConfigResponseRedisResourcesRequestsMemoryMax = 255;
-export const getConfigResponseRedisResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseStorageEnabledDefault = false;export const getConfigResponseStorageManagedDefault = false;export const getConfigResponseStorageAccesskeyDefault = "minioadmin";
-export const getConfigResponseStorageAccesskeyMax = 255;
-export const getConfigResponseStorageAccesskeyRegExp = new RegExp('^[A-Z0-9]+$');
-export const getConfigResponseStorageBucketDefault = "archesai";
-export const getConfigResponseStorageBucketMax = 255;
-export const getConfigResponseStorageBucketRegExp = new RegExp('^[a-z0-9][a-z0-9\\-]*[a-z0-9]$');
-export const getConfigResponseStorageEndpointDefault = "http://localhost:9000";
-export const getConfigResponseStorageEndpointMax = 2048;export const getConfigResponseStorageSecretkeyDefault = "minioadmin";
-export const getConfigResponseStorageSecretkeyMax = 255;
-export const getConfigResponseStorageSecretkeyRegExp = new RegExp('^[A-Za-z0-9+/=]+$');
-export const getConfigResponseStorageImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseStorageImageRepositoryMax = 255;
-export const getConfigResponseStorageImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
-export const getConfigResponseStorageImageTagDefault = "latest";
-export const getConfigResponseStorageImageTagMax = 255;
-export const getConfigResponseStorageImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
-export const getConfigResponseStoragePersistenceEnabledDefault = true;export const getConfigResponseStoragePersistenceSizeDefault = "10Gi";
-export const getConfigResponseStoragePersistenceSizeMax = 255;
-export const getConfigResponseStoragePersistenceSizeRegExp = new RegExp('^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$');
-export const getConfigResponseStorageResourcesLimitsCpuDefault = "1000m";
-export const getConfigResponseStorageResourcesLimitsCpuMax = 255;
-export const getConfigResponseStorageResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseStorageResourcesLimitsMemoryDefault = "1Gi";
-export const getConfigResponseStorageResourcesLimitsMemoryMax = 255;
-export const getConfigResponseStorageResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseStorageResourcesRequestsCpuDefault = "100m";
-export const getConfigResponseStorageResourcesRequestsCpuMax = 255;
-export const getConfigResponseStorageResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseStorageResourcesRequestsMemoryDefault = "128Mi";
-export const getConfigResponseStorageResourcesRequestsMemoryMax = 255;
-export const getConfigResponseStorageResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseKubernetesInfrastructureImagesImagePullSecretsItemMax = 255;
-export const getConfigResponseKubernetesInfrastructureImagesImagePullSecretsItemRegExp = new RegExp('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$');
-export const getConfigResponseKubernetesInfrastructureImagesImagePullSecretsDefault = [];
-export const getConfigResponseKubernetesInfrastructureImagesImagePullSecretsMax = 1000;export const getConfigResponseKubernetesInfrastructureImagesImageRegistryDefault = "";
-export const getConfigResponseKubernetesInfrastructureImagesImageRegistryMax = 2048;
-export const getConfigResponseKubernetesInfrastructureImagesImageRegistryRegExp = new RegExp('^(|[a-z0-9]([-a-z0-9\\.]*[a-z0-9])?(:[0-9]+)?)$');
-export const getConfigResponseKubernetesInfrastructureMigrationsEnabledDefault = false;export const getConfigResponseKubernetesInfrastructureNamespaceDefault = "arches-system";
-export const getConfigResponseKubernetesInfrastructureNamespaceMax = 255;
-export const getConfigResponseKubernetesInfrastructureNamespaceRegExp = new RegExp('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$');
-export const getConfigResponseKubernetesInfrastructureServiceAccountCreateDefault = true;export const getConfigResponseKubernetesInfrastructureServiceAccountNameDefault = "";
-export const getConfigResponseKubernetesInfrastructureServiceAccountNameMax = 255;
-export const getConfigResponseKubernetesInfrastructureServiceAccountNameRegExp = new RegExp('^(|[a-z0-9]([-a-z0-9]*[a-z0-9])?)$');
-export const getConfigResponseKubernetesIngressEnabledDefault = false;export const getConfigResponseKubernetesIngressDomainDefault = "archesai.dev";
-export const getConfigResponseKubernetesIngressDomainMax = 255;export const getConfigResponseKubernetesIngressTlsEnabledDefault = true;export const getConfigResponseKubernetesIngressTlsIssuerDefault = "letsencrypt-staging";
-export const getConfigResponseKubernetesIngressTlsIssuerMax = 255;
-export const getConfigResponseKubernetesIngressTlsIssuerRegExp = new RegExp('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$');
-export const getConfigResponseKubernetesIngressTlsSecretNameDefault = "archesai-tls";
-export const getConfigResponseKubernetesIngressTlsSecretNameMax = 255;
-export const getConfigResponseKubernetesIngressTlsSecretNameRegExp = new RegExp('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$');
-export const getConfigResponseKubernetesMonitoringGrafanaEnabledDefault = false;export const getConfigResponseKubernetesMonitoringGrafanaManagedDefault = false;export const getConfigResponseKubernetesMonitoringGrafanaImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseKubernetesMonitoringGrafanaImageRepositoryMax = 255;
-export const getConfigResponseKubernetesMonitoringGrafanaImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
-export const getConfigResponseKubernetesMonitoringGrafanaImageTagDefault = "latest";
-export const getConfigResponseKubernetesMonitoringGrafanaImageTagMax = 255;
-export const getConfigResponseKubernetesMonitoringGrafanaImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsCpuDefault = "1000m";
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsCpuMax = 255;
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsMemoryDefault = "1Gi";
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsMemoryMax = 255;
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsCpuDefault = "100m";
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsCpuMax = 255;
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsMemoryDefault = "128Mi";
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsMemoryMax = 255;
-export const getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseKubernetesMonitoringLokiEnabledDefault = false;export const getConfigResponseKubernetesMonitoringLokiManagedDefault = false;export const getConfigResponseKubernetesMonitoringLokiHostDefault = "http://localhost:3100";
-export const getConfigResponseKubernetesMonitoringLokiHostMax = 2048;export const getConfigResponseKubernetesMonitoringLokiImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseKubernetesMonitoringLokiImageRepositoryMax = 255;
-export const getConfigResponseKubernetesMonitoringLokiImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
-export const getConfigResponseKubernetesMonitoringLokiImageTagDefault = "latest";
-export const getConfigResponseKubernetesMonitoringLokiImageTagMax = 255;
-export const getConfigResponseKubernetesMonitoringLokiImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
-export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsCpuDefault = "1000m";
-export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsCpuMax = 255;
-export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsMemoryDefault = "1Gi";
-export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsMemoryMax = 255;
-export const getConfigResponseKubernetesMonitoringLokiResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
-export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsCpuDefault = "100m";
-export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsCpuMax = 255;
-export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
-export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsMemoryDefault = "128Mi";
-export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsMemoryMax = 255;
-export const getConfigResponseKubernetesMonitoringLokiResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataApiCorsDefault = "localhost";
+export const getConfigResponseDataApiCorsMax = 2048;
+export const getConfigResponseDataApiCorsRegExp = new RegExp('^[\\w\\-\\.,:/@]+$');
+export const getConfigResponseDataApiUrlDefault = "http://localhost:3001";
+export const getConfigResponseDataApiUrlMax = 2048;export const getConfigResponseDataApiDocsDefault = true;export const getConfigResponseDataApiEmailEnabledDefault = false;export const getConfigResponseDataApiEmailServiceMax = 255;
+export const getConfigResponseDataApiEmailServiceRegExp = new RegExp('^[\\w\\-]+$');
+export const getConfigResponseDataApiEmailUserMax = 255;
+export const getConfigResponseDataApiEmailUserRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
+export const getConfigResponseDataApiEmailPasswordMax = 255;
+export const getConfigResponseDataApiEmailPasswordRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/=]*$');
+export const getConfigResponseDataApiEnvironmentDefault = "development";export const getConfigResponseDataApiHostDefault = "0.0.0.0";
+export const getConfigResponseDataApiHostMax = 255;
+export const getConfigResponseDataApiHostRegExp = new RegExp('^[\\w\\-\\.:]+$');
+export const getConfigResponseDataApiPortDefault = 3001;
+export const getConfigResponseDataApiPortMax = 65535;export const getConfigResponseDataApiValidationDefault = true;export const getConfigResponseDataApiImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDataApiImageRepositoryMax = 255;
+export const getConfigResponseDataApiImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
+export const getConfigResponseDataApiImageTagDefault = "latest";
+export const getConfigResponseDataApiImageTagMax = 255;
+export const getConfigResponseDataApiImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
+export const getConfigResponseDataApiResourcesLimitsCpuDefault = "1000m";
+export const getConfigResponseDataApiResourcesLimitsCpuMax = 255;
+export const getConfigResponseDataApiResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataApiResourcesLimitsMemoryDefault = "1Gi";
+export const getConfigResponseDataApiResourcesLimitsMemoryMax = 255;
+export const getConfigResponseDataApiResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataApiResourcesRequestsCpuDefault = "100m";
+export const getConfigResponseDataApiResourcesRequestsCpuMax = 255;
+export const getConfigResponseDataApiResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataApiResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDataApiResourcesRequestsMemoryMax = 255;
+export const getConfigResponseDataApiResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataAuthEnabledDefault = true;export const getConfigResponseDataAuthFirebaseEnabledDefault = false;export const getConfigResponseDataAuthFirebaseClientEmailMax = 255;
+export const getConfigResponseDataAuthFirebaseClientEmailRegExp = new RegExp('^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_\'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$');
+export const getConfigResponseDataAuthFirebasePrivateKeyMax = 10000;
+export const getConfigResponseDataAuthFirebasePrivateKeyRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/=\\n\\r]*$');
+export const getConfigResponseDataAuthFirebaseProjectIDMax = 255;
+export const getConfigResponseDataAuthFirebaseProjectIDRegExp = new RegExp('^[\\w\\-]+$');
+export const getConfigResponseDataAuthLocalEnabledDefault = true;export const getConfigResponseDataAuthLocalJwtSecretDefault = "change-me-in-production";
+export const getConfigResponseDataAuthLocalJwtSecretMin = 32;
+export const getConfigResponseDataAuthLocalJwtSecretMax = 512;
+export const getConfigResponseDataAuthLocalJwtSecretRegExp = new RegExp('^[\\w\\-+=/.]+$');
+export const getConfigResponseDataAuthLocalAccessTokenTTLDefault = "15m";
+export const getConfigResponseDataAuthLocalAccessTokenTTLMin = 2;
+export const getConfigResponseDataAuthLocalAccessTokenTTLMax = 20;
+export const getConfigResponseDataAuthLocalAccessTokenTTLRegExp = new RegExp('^(\\d+[smhd])+$');
+export const getConfigResponseDataAuthLocalRefreshTokenTTLDefault = "168h";
+export const getConfigResponseDataAuthLocalRefreshTokenTTLMin = 2;
+export const getConfigResponseDataAuthLocalRefreshTokenTTLMax = 20;
+export const getConfigResponseDataAuthLocalRefreshTokenTTLRegExp = new RegExp('^(\\d+[smhd])+$');
+export const getConfigResponseDataAuthMagicLinkEnabledDefault = false;export const getConfigResponseDataAuthMagicLinkTokenExpiryDefault = 15;
+export const getConfigResponseDataAuthMagicLinkTokenExpiryMax = 60;export const getConfigResponseDataAuthMagicLinkOtpLengthDefault = 6;
+export const getConfigResponseDataAuthMagicLinkOtpLengthMin = 4;
+export const getConfigResponseDataAuthMagicLinkOtpLengthMax = 8;export const getConfigResponseDataAuthMagicLinkDeliveryMethodsEmailEnabledDefault = true;export const getConfigResponseDataAuthMagicLinkDeliveryMethodsEmailFromMax = 255;export const getConfigResponseDataAuthMagicLinkDeliveryMethodsConsoleEnabledDefault = false;export const getConfigResponseDataAuthMagicLinkDeliveryMethodsOtpEnabledDefault = true;export const getConfigResponseDataAuthMagicLinkDeliveryMethodsWebhookEnabledDefault = false;export const getConfigResponseDataAuthMagicLinkDeliveryMethodsWebhookUrlMax = 2048;export const getConfigResponseDataAuthMagicLinkRateLimitMaxAttemptsDefault = 5;
+export const getConfigResponseDataAuthMagicLinkRateLimitMaxAttemptsMax = 2147483647;export const getConfigResponseDataAuthMagicLinkRateLimitWindowMinutesDefault = 15;
+export const getConfigResponseDataAuthMagicLinkRateLimitWindowMinutesMax = 2147483647;export const getConfigResponseDataAuthTwitterEnabledDefault = false;export const getConfigResponseDataAuthTwitterCallbackURLMax = 2048;export const getConfigResponseDataAuthTwitterConsumerKeyMax = 255;
+export const getConfigResponseDataAuthTwitterConsumerKeyRegExp = new RegExp('^[\\w\\-]+$');
+export const getConfigResponseDataAuthTwitterConsumerSecretMax = 255;
+export const getConfigResponseDataAuthTwitterConsumerSecretRegExp = new RegExp('^[\\w\\-]+$');
+export const getConfigResponseDataAuthGoogleEnabledDefault = false;export const getConfigResponseDataAuthGoogleClientIdMax = 255;
+export const getConfigResponseDataAuthGoogleClientIdRegExp = new RegExp('^[\\w\\.\\-]+$');
+export const getConfigResponseDataAuthGoogleClientSecretMax = 255;
+export const getConfigResponseDataAuthGoogleClientSecretRegExp = new RegExp('^[\\w\\-]+$');
+export const getConfigResponseDataAuthGoogleRedirectUrlMax = 2048;export const getConfigResponseDataAuthGoogleScopesItemMax = 255;
+export const getConfigResponseDataAuthGoogleScopesItemRegExp = new RegExp('^[\\w\\s\\-:\\.]+$');
+export const getConfigResponseDataAuthGoogleScopesDefault = ["openid", "profile", "email"];
+export const getConfigResponseDataAuthGoogleScopesMax = 1000;export const getConfigResponseDataAuthGithubEnabledDefault = false;export const getConfigResponseDataAuthGithubClientIdMax = 255;
+export const getConfigResponseDataAuthGithubClientIdRegExp = new RegExp('^[\\w\\.\\-]+$');
+export const getConfigResponseDataAuthGithubClientSecretMax = 255;
+export const getConfigResponseDataAuthGithubClientSecretRegExp = new RegExp('^[\\w\\-]+$');
+export const getConfigResponseDataAuthGithubRedirectUrlMax = 2048;export const getConfigResponseDataAuthGithubScopesItemMax = 255;
+export const getConfigResponseDataAuthGithubScopesItemRegExp = new RegExp('^[\\w\\s\\-:]+$');
+export const getConfigResponseDataAuthGithubScopesDefault = ["user:email"];
+export const getConfigResponseDataAuthGithubScopesMax = 1000;export const getConfigResponseDataAuthMicrosoftEnabledDefault = false;export const getConfigResponseDataAuthMicrosoftClientIdMax = 255;export const getConfigResponseDataAuthMicrosoftClientSecretMax = 255;
+export const getConfigResponseDataAuthMicrosoftClientSecretRegExp = new RegExp('^[\\w\\-~]+$');
+export const getConfigResponseDataAuthMicrosoftRedirectUrlMax = 2048;export const getConfigResponseDataAuthMicrosoftTenantDefault = "common";
+export const getConfigResponseDataAuthMicrosoftTenantMax = 255;
+export const getConfigResponseDataAuthMicrosoftTenantRegExp = new RegExp('^[\\w\\-]+$');
+export const getConfigResponseDataAuthMicrosoftScopesItemMax = 255;
+export const getConfigResponseDataAuthMicrosoftScopesItemRegExp = new RegExp('^[\\w\\s\\-:\\.]+$');
+export const getConfigResponseDataAuthMicrosoftScopesDefault = ["openid", "profile", "email", "User.Read"];
+export const getConfigResponseDataAuthMicrosoftScopesMax = 1000;export const getConfigResponseDataBillingEnabledDefault = false;export const getConfigResponseDataBillingStripeTokenMax = 512;
+export const getConfigResponseDataBillingStripeTokenRegExp = new RegExp('^[a-zA-Z0-9_]+$');
+export const getConfigResponseDataBillingStripeWhsecMax = 255;
+export const getConfigResponseDataBillingStripeWhsecRegExp = new RegExp('^[a-zA-Z0-9_]+$');
+export const getConfigResponseDataDatabaseEnabledDefault = true;export const getConfigResponseDataDatabaseUrlDefault = "postgresql://admin:password@127.0.0.1:5432/archesai";
+export const getConfigResponseDataDatabaseUrlMax = 2048;export const getConfigResponseDataDatabaseTypeDefault = "postgresql";export const getConfigResponseDataDatabaseMaxConnsDefault = 25;
+export const getConfigResponseDataDatabaseMaxConnsMax = 2147483647;export const getConfigResponseDataDatabaseMinConnsDefault = 5;
+export const getConfigResponseDataDatabaseMinConnsMin = 0;
+export const getConfigResponseDataDatabaseMinConnsMax = 2147483647;export const getConfigResponseDataDatabaseConnMaxLifetimeMin = 2;
+export const getConfigResponseDataDatabaseConnMaxLifetimeMax = 20;
+export const getConfigResponseDataDatabaseConnMaxLifetimeRegExp = new RegExp('^(\\d+[smh])+$');
+export const getConfigResponseDataDatabaseConnMaxIdleTimeMin = 2;
+export const getConfigResponseDataDatabaseConnMaxIdleTimeMax = 20;
+export const getConfigResponseDataDatabaseConnMaxIdleTimeRegExp = new RegExp('^(\\d+[smh])+$');
+export const getConfigResponseDataDatabaseHealthCheckPeriodMin = 2;
+export const getConfigResponseDataDatabaseHealthCheckPeriodMax = 20;
+export const getConfigResponseDataDatabaseHealthCheckPeriodRegExp = new RegExp('^(\\d+[smh])+$');
+export const getConfigResponseDataDatabaseRunMigrationsDefault = false;export const getConfigResponseDataDatabaseManagedDefault = false;export const getConfigResponseDataDatabaseImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDataDatabaseImageRepositoryMax = 255;
+export const getConfigResponseDataDatabaseImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
+export const getConfigResponseDataDatabaseImageTagDefault = "latest";
+export const getConfigResponseDataDatabaseImageTagMax = 255;
+export const getConfigResponseDataDatabaseImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
+export const getConfigResponseDataDatabasePersistenceEnabledDefault = true;export const getConfigResponseDataDatabasePersistenceSizeDefault = "10Gi";
+export const getConfigResponseDataDatabasePersistenceSizeMax = 255;
+export const getConfigResponseDataDatabasePersistenceSizeRegExp = new RegExp('^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$');
+export const getConfigResponseDataDatabaseResourcesLimitsCpuDefault = "1000m";
+export const getConfigResponseDataDatabaseResourcesLimitsCpuMax = 255;
+export const getConfigResponseDataDatabaseResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataDatabaseResourcesLimitsMemoryDefault = "1Gi";
+export const getConfigResponseDataDatabaseResourcesLimitsMemoryMax = 255;
+export const getConfigResponseDataDatabaseResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataDatabaseResourcesRequestsCpuDefault = "100m";
+export const getConfigResponseDataDatabaseResourcesRequestsCpuMax = 255;
+export const getConfigResponseDataDatabaseResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataDatabaseResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDataDatabaseResourcesRequestsMemoryMax = 255;
+export const getConfigResponseDataDatabaseResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataIntelligenceEmbeddingTypeDefault = "ollama";export const getConfigResponseDataIntelligenceEmbeddingEndpointMax = 2048;export const getConfigResponseDataIntelligenceEmbeddingTokenMax = 512;
+export const getConfigResponseDataIntelligenceEmbeddingTokenRegExp = new RegExp('^[a-zA-Z0-9_\\-\\.]+$');
+export const getConfigResponseDataIntelligenceLlmTypeDefault = "ollama";export const getConfigResponseDataIntelligenceLlmEndpointMax = 2048;export const getConfigResponseDataIntelligenceLlmTokenMax = 512;
+export const getConfigResponseDataIntelligenceLlmTokenRegExp = new RegExp('^[a-zA-Z0-9_\\-\\.]+$');
+export const getConfigResponseDataIntelligenceRunpodEnabledDefault = false;export const getConfigResponseDataIntelligenceRunpodTokenMax = 512;
+export const getConfigResponseDataIntelligenceRunpodTokenRegExp = new RegExp('^[a-zA-Z0-9_\\-\\.]+$');
+export const getConfigResponseDataIntelligenceScraperEnabledDefault = false;export const getConfigResponseDataIntelligenceScraperManagedDefault = false;export const getConfigResponseDataIntelligenceScraperEndpointMax = 2048;export const getConfigResponseDataIntelligenceScraperImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDataIntelligenceScraperImageRepositoryMax = 255;
+export const getConfigResponseDataIntelligenceScraperImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
+export const getConfigResponseDataIntelligenceScraperImageTagDefault = "latest";
+export const getConfigResponseDataIntelligenceScraperImageTagMax = 255;
+export const getConfigResponseDataIntelligenceScraperImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
+export const getConfigResponseDataIntelligenceScraperResourcesLimitsCpuDefault = "1000m";
+export const getConfigResponseDataIntelligenceScraperResourcesLimitsCpuMax = 255;
+export const getConfigResponseDataIntelligenceScraperResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataIntelligenceScraperResourcesLimitsMemoryDefault = "1Gi";
+export const getConfigResponseDataIntelligenceScraperResourcesLimitsMemoryMax = 255;
+export const getConfigResponseDataIntelligenceScraperResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataIntelligenceScraperResourcesRequestsCpuDefault = "100m";
+export const getConfigResponseDataIntelligenceScraperResourcesRequestsCpuMax = 255;
+export const getConfigResponseDataIntelligenceScraperResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataIntelligenceScraperResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDataIntelligenceScraperResourcesRequestsMemoryMax = 255;
+export const getConfigResponseDataIntelligenceScraperResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataIntelligenceSpeechEnabledDefault = false;export const getConfigResponseDataIntelligenceSpeechTokenMax = 512;
+export const getConfigResponseDataIntelligenceSpeechTokenRegExp = new RegExp('^[a-zA-Z0-9_\\-\\.]+$');
+export const getConfigResponseDataIntelligenceUnstructuredEnabledDefault = false;export const getConfigResponseDataIntelligenceUnstructuredManagedDefault = false;export const getConfigResponseDataIntelligenceUnstructuredImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDataIntelligenceUnstructuredImageRepositoryMax = 255;
+export const getConfigResponseDataIntelligenceUnstructuredImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
+export const getConfigResponseDataIntelligenceUnstructuredImageTagDefault = "latest";
+export const getConfigResponseDataIntelligenceUnstructuredImageTagMax = 255;
+export const getConfigResponseDataIntelligenceUnstructuredImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
+export const getConfigResponseDataIntelligenceUnstructuredResourcesLimitsCpuDefault = "1000m";
+export const getConfigResponseDataIntelligenceUnstructuredResourcesLimitsCpuMax = 255;
+export const getConfigResponseDataIntelligenceUnstructuredResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataIntelligenceUnstructuredResourcesLimitsMemoryDefault = "1Gi";
+export const getConfigResponseDataIntelligenceUnstructuredResourcesLimitsMemoryMax = 255;
+export const getConfigResponseDataIntelligenceUnstructuredResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataIntelligenceUnstructuredResourcesRequestsCpuDefault = "100m";
+export const getConfigResponseDataIntelligenceUnstructuredResourcesRequestsCpuMax = 255;
+export const getConfigResponseDataIntelligenceUnstructuredResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataIntelligenceUnstructuredResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDataIntelligenceUnstructuredResourcesRequestsMemoryMax = 255;
+export const getConfigResponseDataIntelligenceUnstructuredResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataLoggingLevelDefault = "info";export const getConfigResponseDataLoggingPrettyDefault = false;export const getConfigResponseDataPlatformEnabledDefault = false;export const getConfigResponseDataPlatformManagedDefault = false;export const getConfigResponseDataPlatformUrlDefault = "http://localhost:3000";
+export const getConfigResponseDataPlatformUrlMax = 2048;export const getConfigResponseDataPlatformImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDataPlatformImageRepositoryMax = 255;
+export const getConfigResponseDataPlatformImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
+export const getConfigResponseDataPlatformImageTagDefault = "latest";
+export const getConfigResponseDataPlatformImageTagMax = 255;
+export const getConfigResponseDataPlatformImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
+export const getConfigResponseDataPlatformResourcesLimitsCpuDefault = "1000m";
+export const getConfigResponseDataPlatformResourcesLimitsCpuMax = 255;
+export const getConfigResponseDataPlatformResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataPlatformResourcesLimitsMemoryDefault = "1Gi";
+export const getConfigResponseDataPlatformResourcesLimitsMemoryMax = 255;
+export const getConfigResponseDataPlatformResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataPlatformResourcesRequestsCpuDefault = "100m";
+export const getConfigResponseDataPlatformResourcesRequestsCpuMax = 255;
+export const getConfigResponseDataPlatformResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataPlatformResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDataPlatformResourcesRequestsMemoryMax = 255;
+export const getConfigResponseDataPlatformResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataRedisEnabledDefault = false;export const getConfigResponseDataRedisManagedDefault = false;export const getConfigResponseDataRedisAuthDefault = "password";
+export const getConfigResponseDataRedisAuthMax = 72;
+export const getConfigResponseDataRedisAuthRegExp = new RegExp('^[\\w\\-@./#&+!*()]+$');
+export const getConfigResponseDataRedisCaMax = 255;
+export const getConfigResponseDataRedisCaRegExp = new RegExp('^[\\w\\s\\-./]+$');
+export const getConfigResponseDataRedisHostDefault = "localhost";
+export const getConfigResponseDataRedisHostMax = 255;
+export const getConfigResponseDataRedisHostRegExp = new RegExp('^[a-zA-Z0-9.\\-]+$');
+export const getConfigResponseDataRedisPortDefault = 6379;
+export const getConfigResponseDataRedisPortMax = 65535;export const getConfigResponseDataRedisImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDataRedisImageRepositoryMax = 255;
+export const getConfigResponseDataRedisImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
+export const getConfigResponseDataRedisImageTagDefault = "latest";
+export const getConfigResponseDataRedisImageTagMax = 255;
+export const getConfigResponseDataRedisImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
+export const getConfigResponseDataRedisPersistenceEnabledDefault = true;export const getConfigResponseDataRedisPersistenceSizeDefault = "10Gi";
+export const getConfigResponseDataRedisPersistenceSizeMax = 255;
+export const getConfigResponseDataRedisPersistenceSizeRegExp = new RegExp('^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$');
+export const getConfigResponseDataRedisResourcesLimitsCpuDefault = "1000m";
+export const getConfigResponseDataRedisResourcesLimitsCpuMax = 255;
+export const getConfigResponseDataRedisResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataRedisResourcesLimitsMemoryDefault = "1Gi";
+export const getConfigResponseDataRedisResourcesLimitsMemoryMax = 255;
+export const getConfigResponseDataRedisResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataRedisResourcesRequestsCpuDefault = "100m";
+export const getConfigResponseDataRedisResourcesRequestsCpuMax = 255;
+export const getConfigResponseDataRedisResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataRedisResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDataRedisResourcesRequestsMemoryMax = 255;
+export const getConfigResponseDataRedisResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataStorageEnabledDefault = false;export const getConfigResponseDataStorageManagedDefault = false;export const getConfigResponseDataStorageAccesskeyDefault = "minioadmin";
+export const getConfigResponseDataStorageAccesskeyMax = 255;
+export const getConfigResponseDataStorageAccesskeyRegExp = new RegExp('^[A-Z0-9]+$');
+export const getConfigResponseDataStorageBucketDefault = "archesai";
+export const getConfigResponseDataStorageBucketMax = 255;
+export const getConfigResponseDataStorageBucketRegExp = new RegExp('^[a-z0-9][a-z0-9\\-]*[a-z0-9]$');
+export const getConfigResponseDataStorageEndpointDefault = "http://localhost:9000";
+export const getConfigResponseDataStorageEndpointMax = 2048;export const getConfigResponseDataStorageSecretkeyDefault = "minioadmin";
+export const getConfigResponseDataStorageSecretkeyMax = 255;
+export const getConfigResponseDataStorageSecretkeyRegExp = new RegExp('^[A-Za-z0-9+/=]+$');
+export const getConfigResponseDataStorageImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDataStorageImageRepositoryMax = 255;
+export const getConfigResponseDataStorageImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
+export const getConfigResponseDataStorageImageTagDefault = "latest";
+export const getConfigResponseDataStorageImageTagMax = 255;
+export const getConfigResponseDataStorageImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
+export const getConfigResponseDataStoragePersistenceEnabledDefault = true;export const getConfigResponseDataStoragePersistenceSizeDefault = "10Gi";
+export const getConfigResponseDataStoragePersistenceSizeMax = 255;
+export const getConfigResponseDataStoragePersistenceSizeRegExp = new RegExp('^[0-9]+(Ei|Pi|Ti|Gi|Mi|Ki|E|P|T|G|M|K)?$');
+export const getConfigResponseDataStorageResourcesLimitsCpuDefault = "1000m";
+export const getConfigResponseDataStorageResourcesLimitsCpuMax = 255;
+export const getConfigResponseDataStorageResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataStorageResourcesLimitsMemoryDefault = "1Gi";
+export const getConfigResponseDataStorageResourcesLimitsMemoryMax = 255;
+export const getConfigResponseDataStorageResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataStorageResourcesRequestsCpuDefault = "100m";
+export const getConfigResponseDataStorageResourcesRequestsCpuMax = 255;
+export const getConfigResponseDataStorageResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataStorageResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDataStorageResourcesRequestsMemoryMax = 255;
+export const getConfigResponseDataStorageResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataKubernetesInfrastructureImagesImagePullSecretsItemMax = 255;
+export const getConfigResponseDataKubernetesInfrastructureImagesImagePullSecretsItemRegExp = new RegExp('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$');
+export const getConfigResponseDataKubernetesInfrastructureImagesImagePullSecretsDefault = [];
+export const getConfigResponseDataKubernetesInfrastructureImagesImagePullSecretsMax = 1000;export const getConfigResponseDataKubernetesInfrastructureImagesImageRegistryDefault = "";
+export const getConfigResponseDataKubernetesInfrastructureImagesImageRegistryMax = 2048;
+export const getConfigResponseDataKubernetesInfrastructureImagesImageRegistryRegExp = new RegExp('^(|[a-z0-9]([-a-z0-9\\.]*[a-z0-9])?(:[0-9]+)?)$');
+export const getConfigResponseDataKubernetesInfrastructureMigrationsEnabledDefault = false;export const getConfigResponseDataKubernetesInfrastructureNamespaceDefault = "arches-system";
+export const getConfigResponseDataKubernetesInfrastructureNamespaceMax = 255;
+export const getConfigResponseDataKubernetesInfrastructureNamespaceRegExp = new RegExp('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$');
+export const getConfigResponseDataKubernetesInfrastructureServiceAccountCreateDefault = true;export const getConfigResponseDataKubernetesInfrastructureServiceAccountNameDefault = "";
+export const getConfigResponseDataKubernetesInfrastructureServiceAccountNameMax = 255;
+export const getConfigResponseDataKubernetesInfrastructureServiceAccountNameRegExp = new RegExp('^(|[a-z0-9]([-a-z0-9]*[a-z0-9])?)$');
+export const getConfigResponseDataKubernetesIngressEnabledDefault = false;export const getConfigResponseDataKubernetesIngressDomainDefault = "archesai.dev";
+export const getConfigResponseDataKubernetesIngressDomainMax = 255;export const getConfigResponseDataKubernetesIngressTlsEnabledDefault = true;export const getConfigResponseDataKubernetesIngressTlsIssuerDefault = "letsencrypt-staging";
+export const getConfigResponseDataKubernetesIngressTlsIssuerMax = 255;
+export const getConfigResponseDataKubernetesIngressTlsIssuerRegExp = new RegExp('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$');
+export const getConfigResponseDataKubernetesIngressTlsSecretNameDefault = "archesai-tls";
+export const getConfigResponseDataKubernetesIngressTlsSecretNameMax = 255;
+export const getConfigResponseDataKubernetesIngressTlsSecretNameRegExp = new RegExp('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$');
+export const getConfigResponseDataKubernetesMonitoringGrafanaEnabledDefault = false;export const getConfigResponseDataKubernetesMonitoringGrafanaManagedDefault = false;export const getConfigResponseDataKubernetesMonitoringGrafanaImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDataKubernetesMonitoringGrafanaImageRepositoryMax = 255;
+export const getConfigResponseDataKubernetesMonitoringGrafanaImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
+export const getConfigResponseDataKubernetesMonitoringGrafanaImageTagDefault = "latest";
+export const getConfigResponseDataKubernetesMonitoringGrafanaImageTagMax = 255;
+export const getConfigResponseDataKubernetesMonitoringGrafanaImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsCpuDefault = "1000m";
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsCpuMax = 255;
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsMemoryDefault = "1Gi";
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsMemoryMax = 255;
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsCpuDefault = "100m";
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsCpuMax = 255;
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsMemoryMax = 255;
+export const getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataKubernetesMonitoringLokiEnabledDefault = false;export const getConfigResponseDataKubernetesMonitoringLokiManagedDefault = false;export const getConfigResponseDataKubernetesMonitoringLokiHostDefault = "http://localhost:3100";
+export const getConfigResponseDataKubernetesMonitoringLokiHostMax = 2048;export const getConfigResponseDataKubernetesMonitoringLokiImagePullPolicyDefault = "IfNotPresent";export const getConfigResponseDataKubernetesMonitoringLokiImageRepositoryMax = 255;
+export const getConfigResponseDataKubernetesMonitoringLokiImageRepositoryRegExp = new RegExp('^[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*(\\/[a-z0-9]+(([._]|__|[-]+)[a-z0-9]+)*)*$');
+export const getConfigResponseDataKubernetesMonitoringLokiImageTagDefault = "latest";
+export const getConfigResponseDataKubernetesMonitoringLokiImageTagMax = 255;
+export const getConfigResponseDataKubernetesMonitoringLokiImageTagRegExp = new RegExp('^[a-zA-Z0-9_][a-zA-Z0-9._-]*$');
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsCpuDefault = "1000m";
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsCpuMax = 255;
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsMemoryDefault = "1Gi";
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsMemoryMax = 255;
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsCpuDefault = "100m";
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsCpuMax = 255;
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsCpuRegExp = new RegExp('^\\d+m?$');
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsMemoryDefault = "128Mi";
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsMemoryMax = 255;
+export const getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsMemoryRegExp = new RegExp('^\\d+(Mi|Gi|Ki)?$');
 
 
 export const getConfigResponse = zod.object({
+  "data": zod.object({
   "api": zod.object({
-  "cors": zod.string().min(1).max(getConfigResponseApiCorsMax).regex(getConfigResponseApiCorsRegExp).describe('A comma-separated list of allowed origins for CORS requests'),
-  "url": zod.url().max(getConfigResponseApiUrlMax).default(getConfigResponseApiUrlDefault).describe('The public URL for the API'),
+  "cors": zod.string().min(1).max(getConfigResponseDataApiCorsMax).regex(getConfigResponseDataApiCorsRegExp).describe('A comma-separated list of allowed origins for CORS requests'),
+  "url": zod.url().max(getConfigResponseDataApiUrlMax).default(getConfigResponseDataApiUrlDefault).describe('The public URL for the API'),
   "docs": zod.boolean().describe('Enable or disable API documentation'),
   "email": zod.object({
   "enabled": zod.boolean().describe('Enable email functionality'),
-  "service": zod.string().max(getConfigResponseApiEmailServiceMax).regex(getConfigResponseApiEmailServiceRegExp).optional().describe('Email service provider (e.g., \"gmail\", \"sendgrid\", etc.)'),
-  "user": zod.email().max(getConfigResponseApiEmailUserMax).regex(getConfigResponseApiEmailUserRegExp).optional().describe('Username for the email service'),
-  "password": zod.string().max(getConfigResponseApiEmailPasswordMax).regex(getConfigResponseApiEmailPasswordRegExp).optional().describe('Password for the email service')
+  "service": zod.string().max(getConfigResponseDataApiEmailServiceMax).regex(getConfigResponseDataApiEmailServiceRegExp).optional().describe('Email service provider (e.g., \"gmail\", \"sendgrid\", etc.)'),
+  "user": zod.email().max(getConfigResponseDataApiEmailUserMax).regex(getConfigResponseDataApiEmailUserRegExp).optional().describe('Username for the email service'),
+  "password": zod.string().max(getConfigResponseDataApiEmailPasswordMax).regex(getConfigResponseDataApiEmailPasswordRegExp).optional().describe('Password for the email service')
 }).optional().describe('Email configuration for sending emails'),
   "environment": zod.enum(['development', 'staging', 'production']).describe('Deployment environment (development, staging, production)'),
-  "host": zod.string().min(1).max(getConfigResponseApiHostMax).regex(getConfigResponseApiHostRegExp).describe('The host address on which the API server will listen'),
-  "port": zod.number().min(1).max(getConfigResponseApiPortMax).describe('The port on which the API server will listen'),
+  "host": zod.string().min(1).max(getConfigResponseDataApiHostMax).regex(getConfigResponseDataApiHostRegExp).describe('The host address on which the API server will listen'),
+  "port": zod.number().min(1).max(getConfigResponseDataApiPortMax).describe('The port on which the API server will listen'),
   "validation": zod.boolean().describe('Enable or disable request validation'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
-  "repository": zod.string().min(1).max(getConfigResponseApiImageRepositoryMax).regex(getConfigResponseApiImageRepositoryRegExp).optional().describe('Container image repository'),
-  "tag": zod.string().min(1).max(getConfigResponseApiImageTagMax).regex(getConfigResponseApiImageTagRegExp).describe('Container image tag')
+  "repository": zod.string().min(1).max(getConfigResponseDataApiImageRepositoryMax).regex(getConfigResponseDataApiImageRepositoryRegExp).optional().describe('Container image repository'),
+  "tag": zod.string().min(1).max(getConfigResponseDataApiImageTagMax).regex(getConfigResponseDataApiImageTagRegExp).describe('Container image tag')
 }).optional().describe('Container image configuration'),
   "resources": zod.object({
   "limits": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseApiResourcesLimitsCpuMax).regex(getConfigResponseApiResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseApiResourcesLimitsMemoryMax).regex(getConfigResponseApiResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataApiResourcesLimitsCpuMax).regex(getConfigResponseDataApiResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataApiResourcesLimitsMemoryMax).regex(getConfigResponseDataApiResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
 }).describe('Resource limits'),
   "requests": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseApiResourcesRequestsCpuMax).regex(getConfigResponseApiResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseApiResourcesRequestsMemoryMax).regex(getConfigResponseApiResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataApiResourcesRequestsCpuMax).regex(getConfigResponseDataApiResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataApiResourcesRequestsMemoryMax).regex(getConfigResponseDataApiResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
 }).describe('Resource requests')
 }).optional().describe('Kubernetes resource configuration')
 }).optional().describe('Configuration schema for the API server'),
@@ -3165,163 +3166,163 @@ export const getConfigResponse = zod.object({
   "enabled": zod.boolean().describe('Enable authentication'),
   "firebase": zod.object({
   "enabled": zod.boolean().describe('Enable Firebase authentication'),
-  "clientEmail": zod.email().max(getConfigResponseAuthFirebaseClientEmailMax).regex(getConfigResponseAuthFirebaseClientEmailRegExp).optional().describe('Firebase service account client email address'),
-  "privateKey": zod.string().min(1).max(getConfigResponseAuthFirebasePrivateKeyMax).regex(getConfigResponseAuthFirebasePrivateKeyRegExp).optional().describe('Firebase service account private key (PEM format)'),
-  "projectID": zod.string().max(getConfigResponseAuthFirebaseProjectIDMax).regex(getConfigResponseAuthFirebaseProjectIDRegExp).optional().describe('Firebase project ID for authentication')
+  "clientEmail": zod.email().max(getConfigResponseDataAuthFirebaseClientEmailMax).regex(getConfigResponseDataAuthFirebaseClientEmailRegExp).optional().describe('Firebase service account client email address'),
+  "privateKey": zod.string().min(1).max(getConfigResponseDataAuthFirebasePrivateKeyMax).regex(getConfigResponseDataAuthFirebasePrivateKeyRegExp).optional().describe('Firebase service account private key (PEM format)'),
+  "projectID": zod.string().max(getConfigResponseDataAuthFirebaseProjectIDMax).regex(getConfigResponseDataAuthFirebaseProjectIDRegExp).optional().describe('Firebase project ID for authentication')
 }).optional().describe('Firebase authentication configuration'),
   "local": zod.object({
   "enabled": zod.boolean().describe('Enable local authentication'),
-  "jwtSecret": zod.string().min(getConfigResponseAuthLocalJwtSecretMin).max(getConfigResponseAuthLocalJwtSecretMax).regex(getConfigResponseAuthLocalJwtSecretRegExp).describe('Secret key for JWT token signing'),
-  "accessTokenTTL": zod.string().min(getConfigResponseAuthLocalAccessTokenTTLMin).max(getConfigResponseAuthLocalAccessTokenTTLMax).regex(getConfigResponseAuthLocalAccessTokenTTLRegExp).describe('Access token time-to-live duration (e.g., \"15m\", \"1h\")'),
-  "refreshTokenTTL": zod.string().min(getConfigResponseAuthLocalRefreshTokenTTLMin).max(getConfigResponseAuthLocalRefreshTokenTTLMax).regex(getConfigResponseAuthLocalRefreshTokenTTLRegExp).describe('Refresh token time-to-live duration (e.g., \"7d\", \"168h\")')
+  "jwtSecret": zod.string().min(getConfigResponseDataAuthLocalJwtSecretMin).max(getConfigResponseDataAuthLocalJwtSecretMax).regex(getConfigResponseDataAuthLocalJwtSecretRegExp).describe('Secret key for JWT token signing'),
+  "accessTokenTTL": zod.string().min(getConfigResponseDataAuthLocalAccessTokenTTLMin).max(getConfigResponseDataAuthLocalAccessTokenTTLMax).regex(getConfigResponseDataAuthLocalAccessTokenTTLRegExp).describe('Access token time-to-live duration (e.g., \"15m\", \"1h\")'),
+  "refreshTokenTTL": zod.string().min(getConfigResponseDataAuthLocalRefreshTokenTTLMin).max(getConfigResponseDataAuthLocalRefreshTokenTTLMax).regex(getConfigResponseDataAuthLocalRefreshTokenTTLRegExp).describe('Refresh token time-to-live duration (e.g., \"7d\", \"168h\")')
 }).optional().describe('Local username/password authentication'),
   "magicLink": zod.object({
   "enabled": zod.boolean().describe('Enable magic link authentication'),
-  "tokenExpiry": zod.number().min(1).max(getConfigResponseAuthMagicLinkTokenExpiryMax).default(getConfigResponseAuthMagicLinkTokenExpiryDefault).describe('Token expiry duration in minutes'),
-  "otpLength": zod.number().min(getConfigResponseAuthMagicLinkOtpLengthMin).max(getConfigResponseAuthMagicLinkOtpLengthMax).default(getConfigResponseAuthMagicLinkOtpLengthDefault).describe('Length of OTP code'),
+  "tokenExpiry": zod.number().min(1).max(getConfigResponseDataAuthMagicLinkTokenExpiryMax).default(getConfigResponseDataAuthMagicLinkTokenExpiryDefault).describe('Token expiry duration in minutes'),
+  "otpLength": zod.number().min(getConfigResponseDataAuthMagicLinkOtpLengthMin).max(getConfigResponseDataAuthMagicLinkOtpLengthMax).default(getConfigResponseDataAuthMagicLinkOtpLengthDefault).describe('Length of OTP code'),
   "deliveryMethods": zod.object({
   "email": zod.object({
-  "enabled": zod.boolean().default(getConfigResponseAuthMagicLinkDeliveryMethodsEmailEnabledDefault),
-  "from": zod.email().max(getConfigResponseAuthMagicLinkDeliveryMethodsEmailFromMax).optional()
+  "enabled": zod.boolean().default(getConfigResponseDataAuthMagicLinkDeliveryMethodsEmailEnabledDefault),
+  "from": zod.email().max(getConfigResponseDataAuthMagicLinkDeliveryMethodsEmailFromMax).optional()
 }).optional(),
   "console": zod.object({
   "enabled": zod.boolean().optional().describe('Enable console output (development only)')
 }).optional(),
   "otp": zod.object({
-  "enabled": zod.boolean().default(getConfigResponseAuthMagicLinkDeliveryMethodsOtpEnabledDefault)
+  "enabled": zod.boolean().default(getConfigResponseDataAuthMagicLinkDeliveryMethodsOtpEnabledDefault)
 }).optional(),
   "webhook": zod.object({
   "enabled": zod.boolean().optional(),
-  "url": zod.url().max(getConfigResponseAuthMagicLinkDeliveryMethodsWebhookUrlMax).optional()
+  "url": zod.url().max(getConfigResponseDataAuthMagicLinkDeliveryMethodsWebhookUrlMax).optional()
 }).optional()
 }).optional().describe('Available delivery methods'),
   "rateLimit": zod.object({
-  "maxAttempts": zod.number().min(1).max(getConfigResponseAuthMagicLinkRateLimitMaxAttemptsMax).default(getConfigResponseAuthMagicLinkRateLimitMaxAttemptsDefault).describe('Maximum number of attempts within window'),
-  "windowMinutes": zod.number().min(1).max(getConfigResponseAuthMagicLinkRateLimitWindowMinutesMax).default(getConfigResponseAuthMagicLinkRateLimitWindowMinutesDefault).describe('Time window in minutes')
+  "maxAttempts": zod.number().min(1).max(getConfigResponseDataAuthMagicLinkRateLimitMaxAttemptsMax).default(getConfigResponseDataAuthMagicLinkRateLimitMaxAttemptsDefault).describe('Maximum number of attempts within window'),
+  "windowMinutes": zod.number().min(1).max(getConfigResponseDataAuthMagicLinkRateLimitWindowMinutesMax).default(getConfigResponseDataAuthMagicLinkRateLimitWindowMinutesDefault).describe('Time window in minutes')
 }).optional().describe('Rate limiting configuration')
 }).optional().describe('Magic link authentication configuration'),
   "twitter": zod.object({
   "enabled": zod.boolean().describe('Enable Twitter OAuth'),
-  "callbackURL": zod.url().min(1).max(getConfigResponseAuthTwitterCallbackURLMax).optional().describe('OAuth callback URL'),
-  "consumerKey": zod.string().min(1).max(getConfigResponseAuthTwitterConsumerKeyMax).regex(getConfigResponseAuthTwitterConsumerKeyRegExp).optional().describe('Twitter API consumer key'),
-  "consumerSecret": zod.string().min(1).max(getConfigResponseAuthTwitterConsumerSecretMax).regex(getConfigResponseAuthTwitterConsumerSecretRegExp).optional().describe('Twitter API consumer secret')
+  "callbackURL": zod.url().min(1).max(getConfigResponseDataAuthTwitterCallbackURLMax).optional().describe('OAuth callback URL'),
+  "consumerKey": zod.string().min(1).max(getConfigResponseDataAuthTwitterConsumerKeyMax).regex(getConfigResponseDataAuthTwitterConsumerKeyRegExp).optional().describe('Twitter API consumer key'),
+  "consumerSecret": zod.string().min(1).max(getConfigResponseDataAuthTwitterConsumerSecretMax).regex(getConfigResponseDataAuthTwitterConsumerSecretRegExp).optional().describe('Twitter API consumer secret')
 }).optional().describe('Twitter OAuth configuration'),
   "google": zod.object({
   "enabled": zod.boolean().describe('Enable Google OAuth'),
-  "clientId": zod.string().min(1).max(getConfigResponseAuthGoogleClientIdMax).regex(getConfigResponseAuthGoogleClientIdRegExp).optional().describe('Google OAuth client ID'),
-  "clientSecret": zod.string().min(1).max(getConfigResponseAuthGoogleClientSecretMax).regex(getConfigResponseAuthGoogleClientSecretRegExp).optional().describe('Google OAuth client secret'),
-  "redirectUrl": zod.url().max(getConfigResponseAuthGoogleRedirectUrlMax).optional().describe('OAuth callback URL'),
-  "scopes": zod.array(zod.string().min(1).max(getConfigResponseAuthGoogleScopesItemMax).regex(getConfigResponseAuthGoogleScopesItemRegExp)).max(getConfigResponseAuthGoogleScopesMax).default(getConfigResponseAuthGoogleScopesDefault).describe('OAuth scopes to request')
+  "clientId": zod.string().min(1).max(getConfigResponseDataAuthGoogleClientIdMax).regex(getConfigResponseDataAuthGoogleClientIdRegExp).optional().describe('Google OAuth client ID'),
+  "clientSecret": zod.string().min(1).max(getConfigResponseDataAuthGoogleClientSecretMax).regex(getConfigResponseDataAuthGoogleClientSecretRegExp).optional().describe('Google OAuth client secret'),
+  "redirectUrl": zod.url().max(getConfigResponseDataAuthGoogleRedirectUrlMax).optional().describe('OAuth callback URL'),
+  "scopes": zod.array(zod.string().min(1).max(getConfigResponseDataAuthGoogleScopesItemMax).regex(getConfigResponseDataAuthGoogleScopesItemRegExp)).max(getConfigResponseDataAuthGoogleScopesMax).default(getConfigResponseDataAuthGoogleScopesDefault).describe('OAuth scopes to request')
 }).optional().describe('Google OAuth configuration'),
   "github": zod.object({
   "enabled": zod.boolean().describe('Enable GitHub OAuth'),
-  "clientId": zod.string().min(1).max(getConfigResponseAuthGithubClientIdMax).regex(getConfigResponseAuthGithubClientIdRegExp).optional().describe('GitHub OAuth App client ID'),
-  "clientSecret": zod.string().min(1).max(getConfigResponseAuthGithubClientSecretMax).regex(getConfigResponseAuthGithubClientSecretRegExp).optional().describe('GitHub OAuth App client secret'),
-  "redirectUrl": zod.url().max(getConfigResponseAuthGithubRedirectUrlMax).optional().describe('OAuth callback URL'),
-  "scopes": zod.array(zod.string().max(getConfigResponseAuthGithubScopesItemMax).regex(getConfigResponseAuthGithubScopesItemRegExp)).max(getConfigResponseAuthGithubScopesMax).default(getConfigResponseAuthGithubScopesDefault).describe('OAuth scopes to request')
+  "clientId": zod.string().min(1).max(getConfigResponseDataAuthGithubClientIdMax).regex(getConfigResponseDataAuthGithubClientIdRegExp).optional().describe('GitHub OAuth App client ID'),
+  "clientSecret": zod.string().min(1).max(getConfigResponseDataAuthGithubClientSecretMax).regex(getConfigResponseDataAuthGithubClientSecretRegExp).optional().describe('GitHub OAuth App client secret'),
+  "redirectUrl": zod.url().max(getConfigResponseDataAuthGithubRedirectUrlMax).optional().describe('OAuth callback URL'),
+  "scopes": zod.array(zod.string().max(getConfigResponseDataAuthGithubScopesItemMax).regex(getConfigResponseDataAuthGithubScopesItemRegExp)).max(getConfigResponseDataAuthGithubScopesMax).default(getConfigResponseDataAuthGithubScopesDefault).describe('OAuth scopes to request')
 }).optional().describe('GitHub OAuth configuration'),
   "microsoft": zod.object({
   "enabled": zod.boolean().describe('Enable Microsoft OAuth'),
-  "clientId": zod.uuid().min(1).max(getConfigResponseAuthMicrosoftClientIdMax).optional().describe('Azure AD Application (client) ID'),
-  "clientSecret": zod.string().min(1).max(getConfigResponseAuthMicrosoftClientSecretMax).regex(getConfigResponseAuthMicrosoftClientSecretRegExp).optional().describe('Azure AD client secret'),
-  "redirectUrl": zod.url().max(getConfigResponseAuthMicrosoftRedirectUrlMax).optional().describe('OAuth callback URL'),
-  "tenant": zod.string().min(1).max(getConfigResponseAuthMicrosoftTenantMax).regex(getConfigResponseAuthMicrosoftTenantRegExp).default(getConfigResponseAuthMicrosoftTenantDefault).describe('Azure AD tenant ID (use \'common\' for multi-tenant)'),
-  "scopes": zod.array(zod.string().max(getConfigResponseAuthMicrosoftScopesItemMax).regex(getConfigResponseAuthMicrosoftScopesItemRegExp)).max(getConfigResponseAuthMicrosoftScopesMax).default(getConfigResponseAuthMicrosoftScopesDefault).describe('OAuth scopes to request')
+  "clientId": zod.uuid().min(1).max(getConfigResponseDataAuthMicrosoftClientIdMax).optional().describe('Azure AD Application (client) ID'),
+  "clientSecret": zod.string().min(1).max(getConfigResponseDataAuthMicrosoftClientSecretMax).regex(getConfigResponseDataAuthMicrosoftClientSecretRegExp).optional().describe('Azure AD client secret'),
+  "redirectUrl": zod.url().max(getConfigResponseDataAuthMicrosoftRedirectUrlMax).optional().describe('OAuth callback URL'),
+  "tenant": zod.string().min(1).max(getConfigResponseDataAuthMicrosoftTenantMax).regex(getConfigResponseDataAuthMicrosoftTenantRegExp).default(getConfigResponseDataAuthMicrosoftTenantDefault).describe('Azure AD tenant ID (use \'common\' for multi-tenant)'),
+  "scopes": zod.array(zod.string().max(getConfigResponseDataAuthMicrosoftScopesItemMax).regex(getConfigResponseDataAuthMicrosoftScopesItemRegExp)).max(getConfigResponseDataAuthMicrosoftScopesMax).default(getConfigResponseDataAuthMicrosoftScopesDefault).describe('OAuth scopes to request')
 }).optional().describe('Microsoft/Azure AD OAuth configuration')
 }).optional().describe('Authentication configuration for the API server'),
   "billing": zod.object({
   "enabled": zod.boolean().describe('Enable billing functionality'),
   "stripe": zod.object({
-  "token": zod.string().min(1).max(getConfigResponseBillingStripeTokenMax).regex(getConfigResponseBillingStripeTokenRegExp).describe('Stripe secret API key'),
-  "whsec": zod.string().min(1).max(getConfigResponseBillingStripeWhsecMax).regex(getConfigResponseBillingStripeWhsecRegExp).describe('Stripe webhook endpoint secret')
+  "token": zod.string().min(1).max(getConfigResponseDataBillingStripeTokenMax).regex(getConfigResponseDataBillingStripeTokenRegExp).describe('Stripe secret API key'),
+  "whsec": zod.string().min(1).max(getConfigResponseDataBillingStripeWhsecMax).regex(getConfigResponseDataBillingStripeWhsecRegExp).describe('Stripe webhook endpoint secret')
 }).optional().describe('Stripe payment configuration')
 }).optional().describe('Billing configuration for Stripe'),
   "database": zod.object({
   "enabled": zod.boolean().describe('Enable database'),
-  "url": zod.url().min(1).max(getConfigResponseDatabaseUrlMax).describe('Database connection url/string'),
+  "url": zod.url().min(1).max(getConfigResponseDataDatabaseUrlMax).describe('Database connection url/string'),
   "type": zod.enum(['postgresql', 'sqlite']).describe('Database type (postgresql or sqlite)'),
-  "maxConns": zod.number().min(1).max(getConfigResponseDatabaseMaxConnsMax).describe('Maximum number of connections in pool (PostgreSQL)'),
-  "minConns": zod.number().min(getConfigResponseDatabaseMinConnsMin).max(getConfigResponseDatabaseMinConnsMax).describe('Minimum number of connections in pool (PostgreSQL)'),
-  "connMaxLifetime": zod.string().min(getConfigResponseDatabaseConnMaxLifetimeMin).max(getConfigResponseDatabaseConnMaxLifetimeMax).regex(getConfigResponseDatabaseConnMaxLifetimeRegExp).optional().describe('Maximum connection lifetime (e.g., \"30m\")'),
-  "connMaxIdleTime": zod.string().min(getConfigResponseDatabaseConnMaxIdleTimeMin).max(getConfigResponseDatabaseConnMaxIdleTimeMax).regex(getConfigResponseDatabaseConnMaxIdleTimeRegExp).optional().describe('Maximum connection idle time (e.g., \"5m\")'),
-  "healthCheckPeriod": zod.string().min(getConfigResponseDatabaseHealthCheckPeriodMin).max(getConfigResponseDatabaseHealthCheckPeriodMax).regex(getConfigResponseDatabaseHealthCheckPeriodRegExp).optional().describe('Health check period for connections (PostgreSQL)'),
+  "maxConns": zod.number().min(1).max(getConfigResponseDataDatabaseMaxConnsMax).describe('Maximum number of connections in pool (PostgreSQL)'),
+  "minConns": zod.number().min(getConfigResponseDataDatabaseMinConnsMin).max(getConfigResponseDataDatabaseMinConnsMax).describe('Minimum number of connections in pool (PostgreSQL)'),
+  "connMaxLifetime": zod.string().min(getConfigResponseDataDatabaseConnMaxLifetimeMin).max(getConfigResponseDataDatabaseConnMaxLifetimeMax).regex(getConfigResponseDataDatabaseConnMaxLifetimeRegExp).optional().describe('Maximum connection lifetime (e.g., \"30m\")'),
+  "connMaxIdleTime": zod.string().min(getConfigResponseDataDatabaseConnMaxIdleTimeMin).max(getConfigResponseDataDatabaseConnMaxIdleTimeMax).regex(getConfigResponseDataDatabaseConnMaxIdleTimeRegExp).optional().describe('Maximum connection idle time (e.g., \"5m\")'),
+  "healthCheckPeriod": zod.string().min(getConfigResponseDataDatabaseHealthCheckPeriodMin).max(getConfigResponseDataDatabaseHealthCheckPeriodMax).regex(getConfigResponseDataDatabaseHealthCheckPeriodRegExp).optional().describe('Health check period for connections (PostgreSQL)'),
   "runMigrations": zod.boolean().describe('Automatically run database migrations on startup'),
   "managed": zod.boolean().describe('Use managed database deployment'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
-  "repository": zod.string().min(1).max(getConfigResponseDatabaseImageRepositoryMax).regex(getConfigResponseDatabaseImageRepositoryRegExp).optional().describe('Container image repository'),
-  "tag": zod.string().min(1).max(getConfigResponseDatabaseImageTagMax).regex(getConfigResponseDatabaseImageTagRegExp).describe('Container image tag')
+  "repository": zod.string().min(1).max(getConfigResponseDataDatabaseImageRepositoryMax).regex(getConfigResponseDataDatabaseImageRepositoryRegExp).optional().describe('Container image repository'),
+  "tag": zod.string().min(1).max(getConfigResponseDataDatabaseImageTagMax).regex(getConfigResponseDataDatabaseImageTagRegExp).describe('Container image tag')
 }).optional().describe('Container image configuration'),
   "persistence": zod.object({
   "enabled": zod.boolean().describe('Enable persistent storage'),
-  "size": zod.string().min(1).max(getConfigResponseDatabasePersistenceSizeMax).regex(getConfigResponseDatabasePersistenceSizeRegExp).describe('Size of persistent volume')
+  "size": zod.string().min(1).max(getConfigResponseDataDatabasePersistenceSizeMax).regex(getConfigResponseDataDatabasePersistenceSizeRegExp).describe('Size of persistent volume')
 }).optional().describe('Persistent storage configuration'),
   "resources": zod.object({
   "limits": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseDatabaseResourcesLimitsCpuMax).regex(getConfigResponseDatabaseResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseDatabaseResourcesLimitsMemoryMax).regex(getConfigResponseDatabaseResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataDatabaseResourcesLimitsCpuMax).regex(getConfigResponseDataDatabaseResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataDatabaseResourcesLimitsMemoryMax).regex(getConfigResponseDataDatabaseResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
 }).describe('Resource limits'),
   "requests": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseDatabaseResourcesRequestsCpuMax).regex(getConfigResponseDatabaseResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseDatabaseResourcesRequestsMemoryMax).regex(getConfigResponseDatabaseResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataDatabaseResourcesRequestsCpuMax).regex(getConfigResponseDataDatabaseResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataDatabaseResourcesRequestsMemoryMax).regex(getConfigResponseDataDatabaseResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
 }).describe('Resource requests')
 }).optional().describe('Kubernetes resource configuration')
 }).optional().describe('Database configuration for PostgreSQL'),
   "intelligence": zod.object({
   "embedding": zod.object({
   "type": zod.enum(['ollama', 'openai']).describe('LLM provider type'),
-  "endpoint": zod.url().min(1).max(getConfigResponseIntelligenceEmbeddingEndpointMax).optional().describe('LLM service endpoint URL'),
-  "token": zod.string().min(1).max(getConfigResponseIntelligenceEmbeddingTokenMax).regex(getConfigResponseIntelligenceEmbeddingTokenRegExp).optional().describe('Authentication token for LLM service')
+  "endpoint": zod.url().min(1).max(getConfigResponseDataIntelligenceEmbeddingEndpointMax).optional().describe('LLM service endpoint URL'),
+  "token": zod.string().min(1).max(getConfigResponseDataIntelligenceEmbeddingTokenMax).regex(getConfigResponseDataIntelligenceEmbeddingTokenRegExp).optional().describe('Authentication token for LLM service')
 }).optional().describe('Large Language Model configuration'),
   "llm": zod.object({
   "type": zod.enum(['ollama', 'openai']).describe('LLM provider type'),
-  "endpoint": zod.url().min(1).max(getConfigResponseIntelligenceLlmEndpointMax).optional().describe('LLM service endpoint URL'),
-  "token": zod.string().min(1).max(getConfigResponseIntelligenceLlmTokenMax).regex(getConfigResponseIntelligenceLlmTokenRegExp).optional().describe('Authentication token for LLM service')
+  "endpoint": zod.url().min(1).max(getConfigResponseDataIntelligenceLlmEndpointMax).optional().describe('LLM service endpoint URL'),
+  "token": zod.string().min(1).max(getConfigResponseDataIntelligenceLlmTokenMax).regex(getConfigResponseDataIntelligenceLlmTokenRegExp).optional().describe('Authentication token for LLM service')
 }).optional().describe('Large Language Model configuration'),
   "runpod": zod.object({
   "enabled": zod.boolean().describe('Enable RunPod integration'),
-  "token": zod.string().min(1).max(getConfigResponseIntelligenceRunpodTokenMax).regex(getConfigResponseIntelligenceRunpodTokenRegExp).optional().describe('RunPod API token')
+  "token": zod.string().min(1).max(getConfigResponseDataIntelligenceRunpodTokenMax).regex(getConfigResponseDataIntelligenceRunpodTokenRegExp).optional().describe('RunPod API token')
 }).optional().describe('RunPod serverless GPU configuration'),
   "scraper": zod.object({
   "enabled": zod.boolean().describe('Enable scraper service'),
   "managed": zod.boolean().optional().describe('Use managed scraper deployment'),
-  "endpoint": zod.url().min(1).max(getConfigResponseIntelligenceScraperEndpointMax).optional().describe('Web scraper service endpoint URL'),
+  "endpoint": zod.url().min(1).max(getConfigResponseDataIntelligenceScraperEndpointMax).optional().describe('Web scraper service endpoint URL'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
-  "repository": zod.string().min(1).max(getConfigResponseIntelligenceScraperImageRepositoryMax).regex(getConfigResponseIntelligenceScraperImageRepositoryRegExp).optional().describe('Container image repository'),
-  "tag": zod.string().min(1).max(getConfigResponseIntelligenceScraperImageTagMax).regex(getConfigResponseIntelligenceScraperImageTagRegExp).describe('Container image tag')
+  "repository": zod.string().min(1).max(getConfigResponseDataIntelligenceScraperImageRepositoryMax).regex(getConfigResponseDataIntelligenceScraperImageRepositoryRegExp).optional().describe('Container image repository'),
+  "tag": zod.string().min(1).max(getConfigResponseDataIntelligenceScraperImageTagMax).regex(getConfigResponseDataIntelligenceScraperImageTagRegExp).describe('Container image tag')
 }).optional().describe('Container image configuration'),
   "resources": zod.object({
   "limits": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseIntelligenceScraperResourcesLimitsCpuMax).regex(getConfigResponseIntelligenceScraperResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseIntelligenceScraperResourcesLimitsMemoryMax).regex(getConfigResponseIntelligenceScraperResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataIntelligenceScraperResourcesLimitsCpuMax).regex(getConfigResponseDataIntelligenceScraperResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataIntelligenceScraperResourcesLimitsMemoryMax).regex(getConfigResponseDataIntelligenceScraperResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
 }).describe('Resource limits'),
   "requests": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseIntelligenceScraperResourcesRequestsCpuMax).regex(getConfigResponseIntelligenceScraperResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseIntelligenceScraperResourcesRequestsMemoryMax).regex(getConfigResponseIntelligenceScraperResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataIntelligenceScraperResourcesRequestsCpuMax).regex(getConfigResponseDataIntelligenceScraperResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataIntelligenceScraperResourcesRequestsMemoryMax).regex(getConfigResponseDataIntelligenceScraperResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
 }).describe('Resource requests')
 }).optional().describe('Kubernetes resource configuration')
 }).optional().describe('Web scraping service configuration'),
   "speech": zod.object({
   "enabled": zod.boolean().describe('Enable speech services'),
-  "token": zod.string().min(1).max(getConfigResponseIntelligenceSpeechTokenMax).regex(getConfigResponseIntelligenceSpeechTokenRegExp).optional().describe('Speech-to-text service API token')
+  "token": zod.string().min(1).max(getConfigResponseDataIntelligenceSpeechTokenMax).regex(getConfigResponseDataIntelligenceSpeechTokenRegExp).optional().describe('Speech-to-text service API token')
 }).optional().describe('Speech recognition and TTS services'),
   "unstructured": zod.object({
   "enabled": zod.boolean().describe('Enable unstructured document parsing'),
   "managed": zod.boolean().optional().describe('Use managed unstructured deployment'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
-  "repository": zod.string().min(1).max(getConfigResponseIntelligenceUnstructuredImageRepositoryMax).regex(getConfigResponseIntelligenceUnstructuredImageRepositoryRegExp).optional().describe('Container image repository'),
-  "tag": zod.string().min(1).max(getConfigResponseIntelligenceUnstructuredImageTagMax).regex(getConfigResponseIntelligenceUnstructuredImageTagRegExp).describe('Container image tag')
+  "repository": zod.string().min(1).max(getConfigResponseDataIntelligenceUnstructuredImageRepositoryMax).regex(getConfigResponseDataIntelligenceUnstructuredImageRepositoryRegExp).optional().describe('Container image repository'),
+  "tag": zod.string().min(1).max(getConfigResponseDataIntelligenceUnstructuredImageTagMax).regex(getConfigResponseDataIntelligenceUnstructuredImageTagRegExp).describe('Container image tag')
 }).optional().describe('Container image configuration'),
   "resources": zod.object({
   "limits": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseIntelligenceUnstructuredResourcesLimitsCpuMax).regex(getConfigResponseIntelligenceUnstructuredResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseIntelligenceUnstructuredResourcesLimitsMemoryMax).regex(getConfigResponseIntelligenceUnstructuredResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataIntelligenceUnstructuredResourcesLimitsCpuMax).regex(getConfigResponseDataIntelligenceUnstructuredResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataIntelligenceUnstructuredResourcesLimitsMemoryMax).regex(getConfigResponseDataIntelligenceUnstructuredResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
 }).describe('Resource limits'),
   "requests": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseIntelligenceUnstructuredResourcesRequestsCpuMax).regex(getConfigResponseIntelligenceUnstructuredResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseIntelligenceUnstructuredResourcesRequestsMemoryMax).regex(getConfigResponseIntelligenceUnstructuredResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataIntelligenceUnstructuredResourcesRequestsCpuMax).regex(getConfigResponseDataIntelligenceUnstructuredResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataIntelligenceUnstructuredResourcesRequestsMemoryMax).regex(getConfigResponseDataIntelligenceUnstructuredResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
 }).describe('Resource requests')
 }).optional().describe('Kubernetes resource configuration')
 }).optional().describe('Unstructured.io service for document parsing')
@@ -3333,99 +3334,99 @@ export const getConfigResponse = zod.object({
   "platform": zod.object({
   "enabled": zod.boolean().describe('Enable platform service'),
   "managed": zod.boolean().optional().describe('Use managed platform deployment'),
-  "url": zod.url().max(getConfigResponsePlatformUrlMax).default(getConfigResponsePlatformUrlDefault).describe('Platform URL'),
+  "url": zod.url().max(getConfigResponseDataPlatformUrlMax).default(getConfigResponseDataPlatformUrlDefault).describe('Platform URL'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
-  "repository": zod.string().min(1).max(getConfigResponsePlatformImageRepositoryMax).regex(getConfigResponsePlatformImageRepositoryRegExp).optional().describe('Container image repository'),
-  "tag": zod.string().min(1).max(getConfigResponsePlatformImageTagMax).regex(getConfigResponsePlatformImageTagRegExp).describe('Container image tag')
+  "repository": zod.string().min(1).max(getConfigResponseDataPlatformImageRepositoryMax).regex(getConfigResponseDataPlatformImageRepositoryRegExp).optional().describe('Container image repository'),
+  "tag": zod.string().min(1).max(getConfigResponseDataPlatformImageTagMax).regex(getConfigResponseDataPlatformImageTagRegExp).describe('Container image tag')
 }).optional().describe('Container image configuration'),
   "resources": zod.object({
   "limits": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponsePlatformResourcesLimitsCpuMax).regex(getConfigResponsePlatformResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponsePlatformResourcesLimitsMemoryMax).regex(getConfigResponsePlatformResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataPlatformResourcesLimitsCpuMax).regex(getConfigResponseDataPlatformResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataPlatformResourcesLimitsMemoryMax).regex(getConfigResponseDataPlatformResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
 }).describe('Resource limits'),
   "requests": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponsePlatformResourcesRequestsCpuMax).regex(getConfigResponsePlatformResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponsePlatformResourcesRequestsMemoryMax).regex(getConfigResponsePlatformResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataPlatformResourcesRequestsCpuMax).regex(getConfigResponseDataPlatformResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataPlatformResourcesRequestsMemoryMax).regex(getConfigResponseDataPlatformResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
 }).describe('Resource requests')
 }).optional().describe('Kubernetes resource configuration')
 }).optional().describe('Platform configuration (host, image, resources)'),
   "redis": zod.object({
   "enabled": zod.boolean().describe('Enable Redis'),
   "managed": zod.boolean().optional().describe('Use managed Redis deployment'),
-  "auth": zod.string().min(1).max(getConfigResponseRedisAuthMax).regex(getConfigResponseRedisAuthRegExp).describe('Redis authentication password'),
-  "ca": zod.string().min(1).max(getConfigResponseRedisCaMax).regex(getConfigResponseRedisCaRegExp).optional().describe('Certificate Authority for TLS (optional)'),
-  "host": zod.string().min(1).max(getConfigResponseRedisHostMax).regex(getConfigResponseRedisHostRegExp).describe('Redis hostname or IP'),
-  "port": zod.number().min(1).max(getConfigResponseRedisPortMax).describe('Redis port number'),
+  "auth": zod.string().min(1).max(getConfigResponseDataRedisAuthMax).regex(getConfigResponseDataRedisAuthRegExp).describe('Redis authentication password'),
+  "ca": zod.string().min(1).max(getConfigResponseDataRedisCaMax).regex(getConfigResponseDataRedisCaRegExp).optional().describe('Certificate Authority for TLS (optional)'),
+  "host": zod.string().min(1).max(getConfigResponseDataRedisHostMax).regex(getConfigResponseDataRedisHostRegExp).describe('Redis hostname or IP'),
+  "port": zod.number().min(1).max(getConfigResponseDataRedisPortMax).describe('Redis port number'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
-  "repository": zod.string().min(1).max(getConfigResponseRedisImageRepositoryMax).regex(getConfigResponseRedisImageRepositoryRegExp).optional().describe('Container image repository'),
-  "tag": zod.string().min(1).max(getConfigResponseRedisImageTagMax).regex(getConfigResponseRedisImageTagRegExp).describe('Container image tag')
+  "repository": zod.string().min(1).max(getConfigResponseDataRedisImageRepositoryMax).regex(getConfigResponseDataRedisImageRepositoryRegExp).optional().describe('Container image repository'),
+  "tag": zod.string().min(1).max(getConfigResponseDataRedisImageTagMax).regex(getConfigResponseDataRedisImageTagRegExp).describe('Container image tag')
 }).optional().describe('Container image configuration'),
   "persistence": zod.object({
   "enabled": zod.boolean().describe('Enable persistent storage'),
-  "size": zod.string().min(1).max(getConfigResponseRedisPersistenceSizeMax).regex(getConfigResponseRedisPersistenceSizeRegExp).describe('Size of persistent volume')
+  "size": zod.string().min(1).max(getConfigResponseDataRedisPersistenceSizeMax).regex(getConfigResponseDataRedisPersistenceSizeRegExp).describe('Size of persistent volume')
 }).optional().describe('Persistent storage configuration'),
   "resources": zod.object({
   "limits": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseRedisResourcesLimitsCpuMax).regex(getConfigResponseRedisResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseRedisResourcesLimitsMemoryMax).regex(getConfigResponseRedisResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataRedisResourcesLimitsCpuMax).regex(getConfigResponseDataRedisResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataRedisResourcesLimitsMemoryMax).regex(getConfigResponseDataRedisResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
 }).describe('Resource limits'),
   "requests": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseRedisResourcesRequestsCpuMax).regex(getConfigResponseRedisResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseRedisResourcesRequestsMemoryMax).regex(getConfigResponseRedisResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataRedisResourcesRequestsCpuMax).regex(getConfigResponseDataRedisResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataRedisResourcesRequestsMemoryMax).regex(getConfigResponseDataRedisResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
 }).describe('Resource requests')
 }).optional().describe('Kubernetes resource configuration')
 }).optional().describe('Redis configuration'),
   "storage": zod.object({
   "enabled": zod.boolean().describe('Enable object storage'),
   "managed": zod.boolean().optional().describe('Use managed storage deployment'),
-  "accesskey": zod.string().min(1).max(getConfigResponseStorageAccesskeyMax).regex(getConfigResponseStorageAccesskeyRegExp).describe('MinIO/S3 access key ID'),
-  "bucket": zod.string().min(1).max(getConfigResponseStorageBucketMax).regex(getConfigResponseStorageBucketRegExp).describe('S3 bucket name'),
-  "endpoint": zod.url().min(1).max(getConfigResponseStorageEndpointMax).describe('MinIO server endpoint URL'),
-  "secretkey": zod.string().min(1).max(getConfigResponseStorageSecretkeyMax).regex(getConfigResponseStorageSecretkeyRegExp).describe('MinIO/S3 secret access key'),
+  "accesskey": zod.string().min(1).max(getConfigResponseDataStorageAccesskeyMax).regex(getConfigResponseDataStorageAccesskeyRegExp).describe('MinIO/S3 access key ID'),
+  "bucket": zod.string().min(1).max(getConfigResponseDataStorageBucketMax).regex(getConfigResponseDataStorageBucketRegExp).describe('S3 bucket name'),
+  "endpoint": zod.url().min(1).max(getConfigResponseDataStorageEndpointMax).describe('MinIO server endpoint URL'),
+  "secretkey": zod.string().min(1).max(getConfigResponseDataStorageSecretkeyMax).regex(getConfigResponseDataStorageSecretkeyRegExp).describe('MinIO/S3 secret access key'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
-  "repository": zod.string().min(1).max(getConfigResponseStorageImageRepositoryMax).regex(getConfigResponseStorageImageRepositoryRegExp).optional().describe('Container image repository'),
-  "tag": zod.string().min(1).max(getConfigResponseStorageImageTagMax).regex(getConfigResponseStorageImageTagRegExp).describe('Container image tag')
+  "repository": zod.string().min(1).max(getConfigResponseDataStorageImageRepositoryMax).regex(getConfigResponseDataStorageImageRepositoryRegExp).optional().describe('Container image repository'),
+  "tag": zod.string().min(1).max(getConfigResponseDataStorageImageTagMax).regex(getConfigResponseDataStorageImageTagRegExp).describe('Container image tag')
 }).optional().describe('Container image configuration'),
   "persistence": zod.object({
   "enabled": zod.boolean().describe('Enable persistent storage'),
-  "size": zod.string().min(1).max(getConfigResponseStoragePersistenceSizeMax).regex(getConfigResponseStoragePersistenceSizeRegExp).describe('Size of persistent volume')
+  "size": zod.string().min(1).max(getConfigResponseDataStoragePersistenceSizeMax).regex(getConfigResponseDataStoragePersistenceSizeRegExp).describe('Size of persistent volume')
 }).optional().describe('Persistent storage configuration'),
   "resources": zod.object({
   "limits": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseStorageResourcesLimitsCpuMax).regex(getConfigResponseStorageResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseStorageResourcesLimitsMemoryMax).regex(getConfigResponseStorageResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataStorageResourcesLimitsCpuMax).regex(getConfigResponseDataStorageResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataStorageResourcesLimitsMemoryMax).regex(getConfigResponseDataStorageResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
 }).describe('Resource limits'),
   "requests": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseStorageResourcesRequestsCpuMax).regex(getConfigResponseStorageResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseStorageResourcesRequestsMemoryMax).regex(getConfigResponseStorageResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataStorageResourcesRequestsCpuMax).regex(getConfigResponseDataStorageResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataStorageResourcesRequestsMemoryMax).regex(getConfigResponseDataStorageResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
 }).describe('Resource requests')
 }).optional().describe('Kubernetes resource configuration')
 }).optional().describe('Object storage configuration for MinIO or S3-compatible services'),
   "kubernetes": zod.object({
   "infrastructure": zod.object({
   "images": zod.object({
-  "imagePullSecrets": zod.array(zod.string().min(1).max(getConfigResponseKubernetesInfrastructureImagesImagePullSecretsItemMax).regex(getConfigResponseKubernetesInfrastructureImagesImagePullSecretsItemRegExp)).max(getConfigResponseKubernetesInfrastructureImagesImagePullSecretsMax).describe('List of Kubernetes secrets for pulling private images'),
-  "imageRegistry": zod.string().max(getConfigResponseKubernetesInfrastructureImagesImageRegistryMax).regex(getConfigResponseKubernetesInfrastructureImagesImageRegistryRegExp).describe('Custom container registry URL (leave empty for Docker Hub)')
+  "imagePullSecrets": zod.array(zod.string().min(1).max(getConfigResponseDataKubernetesInfrastructureImagesImagePullSecretsItemMax).regex(getConfigResponseDataKubernetesInfrastructureImagesImagePullSecretsItemRegExp)).max(getConfigResponseDataKubernetesInfrastructureImagesImagePullSecretsMax).describe('List of Kubernetes secrets for pulling private images'),
+  "imageRegistry": zod.string().max(getConfigResponseDataKubernetesInfrastructureImagesImageRegistryMax).regex(getConfigResponseDataKubernetesInfrastructureImagesImageRegistryRegExp).describe('Custom container registry URL (leave empty for Docker Hub)')
 }).describe('Container image configuration'),
   "migrations": zod.object({
   "enabled": zod.boolean().describe('Enable automatic DB migrations')
 }).describe('Database migration configuration'),
-  "namespace": zod.string().min(1).max(getConfigResponseKubernetesInfrastructureNamespaceMax).regex(getConfigResponseKubernetesInfrastructureNamespaceRegExp).describe('Kubernetes namespace where all resources will be deployed'),
+  "namespace": zod.string().min(1).max(getConfigResponseDataKubernetesInfrastructureNamespaceMax).regex(getConfigResponseDataKubernetesInfrastructureNamespaceRegExp).describe('Kubernetes namespace where all resources will be deployed'),
   "serviceAccount": zod.object({
   "create": zod.boolean().describe('Create dedicated service account'),
-  "name": zod.string().max(getConfigResponseKubernetesInfrastructureServiceAccountNameMax).regex(getConfigResponseKubernetesInfrastructureServiceAccountNameRegExp).describe('Custom service account name')
+  "name": zod.string().max(getConfigResponseDataKubernetesInfrastructureServiceAccountNameMax).regex(getConfigResponseDataKubernetesInfrastructureServiceAccountNameRegExp).describe('Custom service account name')
 }).describe('Kubernetes service account configuration')
 }).optional().describe('Infrastructure configuration for Kubernetes deployments'),
   "ingress": zod.object({
   "enabled": zod.boolean().describe('Enable ingress'),
-  "domain": zod.url().min(1).max(getConfigResponseKubernetesIngressDomainMax).default(getConfigResponseKubernetesIngressDomainDefault).describe('Primary domain name for ingress routing'),
+  "domain": zod.url().min(1).max(getConfigResponseDataKubernetesIngressDomainMax).default(getConfigResponseDataKubernetesIngressDomainDefault).describe('Primary domain name for ingress routing'),
   "tls": zod.object({
   "enabled": zod.boolean().describe('Enable TLS/SSL'),
-  "issuer": zod.string().min(1).max(getConfigResponseKubernetesIngressTlsIssuerMax).regex(getConfigResponseKubernetesIngressTlsIssuerRegExp).default(getConfigResponseKubernetesIngressTlsIssuerDefault).describe('Cert-manager ClusterIssuer'),
-  "secretName": zod.string().min(1).max(getConfigResponseKubernetesIngressTlsSecretNameMax).regex(getConfigResponseKubernetesIngressTlsSecretNameRegExp).default(getConfigResponseKubernetesIngressTlsSecretNameDefault).describe('Kubernetes secret name for TLS certificates')
+  "issuer": zod.string().min(1).max(getConfigResponseDataKubernetesIngressTlsIssuerMax).regex(getConfigResponseDataKubernetesIngressTlsIssuerRegExp).default(getConfigResponseDataKubernetesIngressTlsIssuerDefault).describe('Cert-manager ClusterIssuer'),
+  "secretName": zod.string().min(1).max(getConfigResponseDataKubernetesIngressTlsSecretNameMax).regex(getConfigResponseDataKubernetesIngressTlsSecretNameRegExp).default(getConfigResponseDataKubernetesIngressTlsSecretNameDefault).describe('Kubernetes secret name for TLS certificates')
 }).optional().describe('TLS configuration')
 }).optional().describe('Ingress configuration'),
   "monitoring": zod.object({
@@ -3434,43 +3435,44 @@ export const getConfigResponse = zod.object({
   "managed": zod.boolean().optional().describe('Use managed Grafana deployment'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
-  "repository": zod.string().min(1).max(getConfigResponseKubernetesMonitoringGrafanaImageRepositoryMax).regex(getConfigResponseKubernetesMonitoringGrafanaImageRepositoryRegExp).optional().describe('Container image repository'),
-  "tag": zod.string().min(1).max(getConfigResponseKubernetesMonitoringGrafanaImageTagMax).regex(getConfigResponseKubernetesMonitoringGrafanaImageTagRegExp).describe('Container image tag')
+  "repository": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringGrafanaImageRepositoryMax).regex(getConfigResponseDataKubernetesMonitoringGrafanaImageRepositoryRegExp).optional().describe('Container image repository'),
+  "tag": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringGrafanaImageTagMax).regex(getConfigResponseDataKubernetesMonitoringGrafanaImageTagRegExp).describe('Container image tag')
 }).optional().describe('Container image configuration'),
   "resources": zod.object({
   "limits": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsCpuMax).regex(getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsMemoryMax).regex(getConfigResponseKubernetesMonitoringGrafanaResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsCpuMax).regex(getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsMemoryMax).regex(getConfigResponseDataKubernetesMonitoringGrafanaResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
 }).describe('Resource limits'),
   "requests": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsCpuMax).regex(getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsMemoryMax).regex(getConfigResponseKubernetesMonitoringGrafanaResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsCpuMax).regex(getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsMemoryMax).regex(getConfigResponseDataKubernetesMonitoringGrafanaResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
 }).describe('Resource requests')
 }).optional().describe('Kubernetes resource configuration')
 }).describe('Grafana monitoring dashboard configuration'),
   "loki": zod.object({
   "enabled": zod.boolean().describe('Enable Loki'),
   "managed": zod.boolean().optional().describe('Use managed Loki deployment'),
-  "host": zod.url().min(1).max(getConfigResponseKubernetesMonitoringLokiHostMax).default(getConfigResponseKubernetesMonitoringLokiHostDefault).describe('Loki host URL'),
+  "host": zod.url().min(1).max(getConfigResponseDataKubernetesMonitoringLokiHostMax).default(getConfigResponseDataKubernetesMonitoringLokiHostDefault).describe('Loki host URL'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
-  "repository": zod.string().min(1).max(getConfigResponseKubernetesMonitoringLokiImageRepositoryMax).regex(getConfigResponseKubernetesMonitoringLokiImageRepositoryRegExp).optional().describe('Container image repository'),
-  "tag": zod.string().min(1).max(getConfigResponseKubernetesMonitoringLokiImageTagMax).regex(getConfigResponseKubernetesMonitoringLokiImageTagRegExp).describe('Container image tag')
+  "repository": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringLokiImageRepositoryMax).regex(getConfigResponseDataKubernetesMonitoringLokiImageRepositoryRegExp).optional().describe('Container image repository'),
+  "tag": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringLokiImageTagMax).regex(getConfigResponseDataKubernetesMonitoringLokiImageTagRegExp).describe('Container image tag')
 }).optional().describe('Container image configuration'),
   "resources": zod.object({
   "limits": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseKubernetesMonitoringLokiResourcesLimitsCpuMax).regex(getConfigResponseKubernetesMonitoringLokiResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseKubernetesMonitoringLokiResourcesLimitsMemoryMax).regex(getConfigResponseKubernetesMonitoringLokiResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsCpuMax).regex(getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsCpuRegExp).describe('Maximum CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsMemoryMax).regex(getConfigResponseDataKubernetesMonitoringLokiResourcesLimitsMemoryRegExp).describe('Maximum memory allocation')
 }).describe('Resource limits'),
   "requests": zod.object({
-  "cpu": zod.string().min(1).max(getConfigResponseKubernetesMonitoringLokiResourcesRequestsCpuMax).regex(getConfigResponseKubernetesMonitoringLokiResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
-  "memory": zod.string().min(1).max(getConfigResponseKubernetesMonitoringLokiResourcesRequestsMemoryMax).regex(getConfigResponseKubernetesMonitoringLokiResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
+  "cpu": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsCpuMax).regex(getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsCpuRegExp).describe('Requested CPU allocation'),
+  "memory": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsMemoryMax).regex(getConfigResponseDataKubernetesMonitoringLokiResourcesRequestsMemoryRegExp).describe('Requested memory allocation')
 }).describe('Resource requests')
 }).optional().describe('Kubernetes resource configuration')
 }).describe('Loki log aggregation service configuration')
 }).optional().describe('Monitoring configuration for Grafana and Loki')
 }).optional().describe('Kubernetes-specific deployment configuration')
-}).describe('Arches AI configuration schema')
+}).optional().describe('Arches AI configuration schema')
+}).describe('Configuration object')
 
 
 /**

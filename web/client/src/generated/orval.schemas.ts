@@ -152,11 +152,6 @@ export const MagicLinkTokenDeliveryMethod = {
 } as const;
 
 /**
- * When the token was used (null if unused)
- */
-export type MagicLinkTokenUsedAt = string | null;
-
-/**
  * Schema for MagicLinkToken entity
  */
 export interface MagicLinkToken {
@@ -208,7 +203,7 @@ export interface MagicLinkToken {
    */
   expiresAt: string;
   /** When the token was used (null if unused) */
-  usedAt?: MagicLinkTokenUsedAt;
+  usedAt?: string;
   /**
    * IP address of the request
    * @minLength 7
@@ -2075,9 +2070,11 @@ export type LabelResponseResponse = {
 };
 
 /**
- * Current configuration
+ * Configuration object
  */
-export type ConfigResponseResponse = Config;
+export type ConfigResponseResponse = {
+  data?: Config;
+};
 
 /**
  * Health status retrieved successfully

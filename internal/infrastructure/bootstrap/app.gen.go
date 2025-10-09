@@ -622,14 +622,6 @@ func (a *App) registerRoutes() {
 	// Register readiness check that can access the database
 	a.Server.SetReadinessCheck(a.readinessCheck)
 
-	// Setup API documentation if enabled
-	if a.Config.API.Docs {
-		a.Logger.Info("enabling API documentation")
-		if err := a.Server.SetupDocs(); err != nil {
-			a.Logger.Error("failed to setup API docs", "error", err)
-		}
-	}
-
 	// Register all application routes
 	a.RegisterRoutes(e)
 	a.Logger.Info("routes registered")

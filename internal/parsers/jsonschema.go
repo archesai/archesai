@@ -181,9 +181,9 @@ func (p *JSONSchemaParser) extractSchemaBasicInfo(
 	// Extract x-codegen extension if at top level
 	if name != "" && schema.Extensions != nil {
 		if ext, ok := schema.Extensions.Get("x-codegen"); ok {
-			parser := &XCodegenParser{}
-			if xcodegen, err := parser.ParseExtension(ext, name); err == nil {
-				result.XCodegen = xcodegen
+			var xcodegen XCodegenExtension
+			if err := ext.Decode(&xcodegen); err == nil {
+				result.XCodegen = &xcodegen
 			}
 		}
 	}
@@ -361,7 +361,7 @@ func (p *JSONSchemaParser) resolvePropertyReference(
 	}
 
 	// Determine package qualification
-	targetPackage := p.extractPropertyPackage(resolvedSchema, actualTypeName)
+	targetPackage := p.extractPropertyPackage(resolvedSchema)
 
 	// Set the GoType with proper qualification
 	qualifiedType := p.qualifyPropertyType(actualTypeName, targetPackage, currentSchemaType)
@@ -378,19 +378,19 @@ func (p *JSONSchemaParser) resolvePropertyReference(
 }
 
 // extractPropertyPackage extracts the package type for a property schema
-func (p *JSONSchemaParser) extractPropertyPackage(schema *base.Schema, typeName string) string {
+func (p *JSONSchemaParser) extractPropertyPackage(schema *base.Schema) string {
 	if schema.Extensions == nil {
 		return string(XCodegenExtensionSchemaTypeEntity)
 	}
 
-	xExt, ok := schema.Extensions.Get("x-codegen")
+	ext, ok := schema.Extensions.Get("x-codegen")
 	if !ok {
 		return string(XCodegenExtensionSchemaTypeEntity)
 	}
 
-	parser := &XCodegenParser{}
-	xcodegen, err := parser.ParseExtension(xExt, typeName)
-	if err != nil || xcodegen == nil {
+	var xcodegen XCodegenExtension
+	err := ext.Decode(&xcodegen)
+	if err != nil {
 		return string(XCodegenExtensionSchemaTypeEntity)
 	}
 

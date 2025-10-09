@@ -48,16 +48,7 @@ type GetConfigResponse interface {
 }
 
 type GetConfig200Response struct {
-	API          valueobjects.APIConfig          `json:"api,omitempty"`
-	Auth         valueobjects.AuthConfig         `json:"auth,omitempty"`
-	Billing      valueobjects.BillingConfig      `json:"billing,omitempty"`
-	Database     valueobjects.DatabaseConfig     `json:"database,omitempty"`
-	Intelligence valueobjects.IntelligenceConfig `json:"intelligence,omitempty"`
-	Kubernetes   valueobjects.KubernetesConfig   `json:"kubernetes,omitempty"`
-	Logging      valueobjects.LoggingConfig      `json:"logging,omitempty"`
-	Platform     valueobjects.PlatformConfig     `json:"platform,omitempty"`
-	Redis        valueobjects.RedisConfig        `json:"redis,omitempty"`
-	Storage      valueobjects.StorageConfig      `json:"storage,omitempty"`
+	Data valueobjects.Config `json:"data,omitempty"`
 }
 
 func (response GetConfig200Response) VisitGetConfigResponse(w http.ResponseWriter) error {

@@ -3362,12 +3362,8 @@ components:
           maxLength: 512
         usedAt:
           description: When the token was used (null if unused)
-          oneOf:
-            - type: string
-              format: date-time
-              minLength: 1
-              maxLength: 512
-            - type: 'null'
+          type: string
+          format: date-time
           example: '2023-10-05T14:48:00Z'
         ipAddress:
           description: IP address of the request
@@ -6701,7 +6697,11 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Config'
+            description: Configuration object
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Config'
       headers:
         X-RateLimit-Limit:
           $ref: '#/components/headers/RateLimitLimit'

@@ -42,16 +42,6 @@ func (s *Server) SetupMiddleware() {
 		},
 	}))
 
-	// TODO: Update to use domain-scoped validation middleware
-	// Use our validation middleware to check all requests against the
-	// OpenAPI schema.
-	// swagger, err := api.GetSwagger()
-	// if err != nil {
-	// 	fmt.Fprintf(os.Stderr, "Error loading swagger spec\n: %s", err)
-	// 	os.Exit(1)
-	// }
-	// s.echo.Use(echomiddleware.OapiRequestValidator(swagger))
-
 	// Recover middleware
 	s.echo.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		LogErrorFunc: func(c echo.Context, err error, stack []byte) error {

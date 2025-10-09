@@ -65,14 +65,14 @@ type MagicLinkToken struct {
 	Identifier     string                        `json:"identifier" yaml:"identifier"`                             // Email or username for authentication
 	Token          *string                       `json:"token,omitempty" yaml:"token,omitempty"`                   // The raw magic link token
 	TokenHash      string                        `json:"tokenHash" yaml:"tokenHash"`                               // SHA256 hash of the magic link token
-	UsedAt         *any                          `json:"usedAt,omitempty" yaml:"usedAt,omitempty"`                 // When the token was used (null if unused)
+	UsedAt         *time.Time                    `json:"usedAt,omitempty" yaml:"usedAt,omitempty"`                 // When the token was used (null if unused)
 	UserAgent      *string                       `json:"userAgent,omitempty" yaml:"userAgent,omitempty"`           // User agent of the request
 	UserID         *uuid.UUID                    `json:"userID,omitempty" yaml:"userID,omitempty"`                 // User ID if token is for existing user
 }
 
 // NewMagicLinkToken creates a new immutable MagicLinkToken value object.
 // Value objects are immutable and validated upon creation.
-func NewMagicLinkToken(id uuid.UUID, code *string, createdAt time.Time, deliveryMethod *MagicLinkTokenDeliveryMethod, expiresAt time.Time, ipAddress *string, identifier string, token *string, tokenHash string, usedAt *any, userAgent *string, userID *uuid.UUID) (MagicLinkToken, error) {
+func NewMagicLinkToken(id uuid.UUID, code *string, createdAt time.Time, deliveryMethod *MagicLinkTokenDeliveryMethod, expiresAt time.Time, ipAddress *string, identifier string, token *string, tokenHash string, usedAt *time.Time, userAgent *string, userID *uuid.UUID) (MagicLinkToken, error) {
 	// Validate required fields
 	if id == uuid.Nil {
 		return MagicLinkToken{}, fmt.Errorf("ID cannot be nil UUID")
@@ -161,7 +161,7 @@ func (v MagicLinkToken) GetTokenHash() string {
 
 // GetUsedAt returns the UsedAt value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v MagicLinkToken) GetUsedAt() *any {
+func (v MagicLinkToken) GetUsedAt() *time.Time {
 	return v.UsedAt
 }
 
