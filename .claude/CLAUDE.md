@@ -44,7 +44,7 @@ See Makefile Commands
 ### Mockery Guidelines
 
 - **ALWAYS USE MOCKERY FOR GETTING MOCKS** - Never create mocked services or repositories manually
-- **Run `go tool mockery`**
+- **Run `go tool -modfile=tools.mod mockery`**
 - **We are running Mockery v3**
 - **Mockery config is `.mockery.yaml`**
 

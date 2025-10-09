@@ -5,9 +5,7 @@ style: deepObject
 explode: true
 schema:
   $ref: ../schemas/FilterNode.yaml
-description: |
-  Filter pipelines by field values. Supported fields:
-  - createdAt, id, updatedAt, description, name, organizationID
+description: Filter by field values
 example:
   type: eq
   field: organizationID

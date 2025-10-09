@@ -5,10 +5,7 @@ style: deepObject
 explode: true
 schema:
   $ref: ../schemas/FilterNode.yaml
-description: |
-  Filter organizations by field values. Supported fields:
-  - createdAt, id, updatedAt, billingEmail, credits, logo
-  - metadata, name, plan, slug, stripeCustomerIdentifier
+description: Filter by field values
 example:
   type: eq
   field: name

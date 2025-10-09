@@ -8,11 +8,13 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/archesai/archesai/internal/codegen"
+	"github.com/archesai/archesai/internal/parsers"
 )
 
 var (
 	verbose    bool
 	outputPath string
+	orvalFix   bool
 )
 
 // rootCmd represents the base command
@@ -103,6 +105,31 @@ The package name is automatically inferred from the output directory.`,
 	},
 }
 
+// bundleCmd represents the bundle subcommand
+var bundleCmd = &cobra.Command{
+	Use:   "bundle [input] [output]",
+	Short: "Bundle OpenAPI specification into a single file",
+	Long: `Bundle an OpenAPI specification with external references into a single document.
+All references will be resolved and the resulting document will be a valid OpenAPI
+specification, containing no external references.
+
+Example:
+  codegen bundle api/openapi.yaml api/openapi.bundled.yaml
+  codegen bundle api/openapi.yaml api/openapi.bundled.yaml --orval-fix`,
+	Args: cobra.ExactArgs(2),
+	RunE: func(_ *cobra.Command, args []string) error {
+		inputPath := args[0]
+		outputPath := args[1]
+
+		parser := parsers.NewOpenAPIParser()
+		if err := parser.Bundle(inputPath, outputPath, orvalFix); err != nil {
+			return fmt.Errorf("bundling failed: %w", err)
+		}
+
+		return nil
+	},
+}
+
 func init() {
 	// Global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
@@ -110,9 +137,14 @@ func init() {
 	// Add flags to jsonschema command
 	jsonschemaCmd.Flags().StringVar(&outputPath, "output", "", "Output file path")
 
+	// Add flags to bundle command
+	bundleCmd.Flags().
+		BoolVar(&orvalFix, "orval-fix", false, "Resolve pathItems references for Orval compatibility")
+
 	// Add subcommands
 	rootCmd.AddCommand(openapiCmd)
 	rootCmd.AddCommand(jsonschemaCmd)
+	rootCmd.AddCommand(bundleCmd)
 }
 
 func main() {

@@ -23,7 +23,7 @@ jobs:
 
       - run: |
           go test -race -coverprofile=coverage.out -covermode=atomic ./...
-          go tool cover -func=coverage.out > coverage.txt
+          go tool -modfile=tools.mod cover -func=coverage.out > coverage.txt
 
       - run: chmod +x scripts/generate-coverage-report.sh && ./scripts/generate-coverage-report.sh
 

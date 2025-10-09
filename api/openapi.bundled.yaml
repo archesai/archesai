@@ -3219,7 +3219,7 @@ components:
         authMethod: magic_link
         authProvider: local
         expiresAt: '2023-10-05T14:48:00Z'
-        ipAddress: null
+        ipAddress:
     Base:
       title: Base
       description: Base schema for all entities with common fields
@@ -6788,11 +6788,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter users by field values. Supported fields:
-
-        - createdAt, id, updatedAt, email, emailVerified, image, name
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: email
@@ -6841,13 +6837,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter API keys by field values. Supported fields:
-
-        - createdAt, id, updatedAt, userID, organizationID
-
-        - keyHash, name, prefix, rateLimit, lastUsedAt, expiresAt
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: userID
@@ -6900,13 +6890,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter organizations by field values. Supported fields:
-
-        - createdAt, id, updatedAt, billingEmail, credits, logo
-
-        - metadata, name, plan, slug, stripeCustomerIdentifier
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: name
@@ -6959,11 +6943,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter members by field values. Supported fields:
-
-        - createdAt, id, updatedAt, organizationID, role, userID
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: role
@@ -7018,13 +6998,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter invitations by field values. Supported fields:
-
-        - createdAt, id, updatedAt, email, expiresAt
-
-        - inviterID, organizationID, role, status
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: status
@@ -7075,11 +7049,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter pipelines by field values. Supported fields:
-
-        - createdAt, id, updatedAt, description, name, organizationID
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: organizationID
@@ -7127,13 +7097,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter runs by field values. Supported fields:
-
-        - createdAt, id, updatedAt, completedAt, error, organizationID
-
-        - pipelineID, progress, startedAt, status, toolID
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: status
@@ -7186,13 +7150,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter tools by field values. Supported fields:
-
-        - createdAt, id, updatedAt, description, inputMimeType
-
-        - name, organizationID, outputMimeType
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: inputMimeType
@@ -7242,13 +7200,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter artifacts by field values. Supported fields:
-
-        - createdAt, id, updatedAt, credits, description, mimeType
-
-        - name, organizationID, previewImage, producerID, text, url
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: mimeType
@@ -7302,11 +7254,7 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/FilterNode'
-      description: 'Filter labels by field values. Supported fields:
-
-        - createdAt, id, updatedAt, name, organizationID
-
-        '
+      description: Filter by field values
       example:
         type: eq
         field: name

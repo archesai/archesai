@@ -115,7 +115,7 @@ run-config-show: ## Launch the configuration wizard
 dev-api: ## Run API server with hot reload
 	@echo -e "$(YELLOW)▶ Starting API server with hot reload on port 3001...$(NC)"
 	@echo -e "$(YELLOW)Press Ctrl+C to stop$(NC)"
-	@go tool air
+	@go tool -modfile=tools.mod air
 
 .PHONY: dev-platform
 dev-platform: ## Run platform with hot reload
@@ -157,22 +157,13 @@ deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
 # ------------------------------------------
 
 .PHONY: generate
-generate: ## Generate all code
-	@echo -e "$(BLUE)━━━ Code Generation Pipeline ━━━$(NC)"
-	@START_TOTAL=$$(date +%s%3N); \
-	echo -e "$(CYAN)[0/5] OpenAPI Bundling$(NC)" && START=$$(date +%s%3N) && $(MAKE) bundle-openapi && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ OpenAPI bundling complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[1/5] Database Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-sqlc && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Database generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[2/5] Unified Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-codegen && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Unified code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[3/5] Mock Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-mocks && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Mock generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[4/5] Client Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-js-client && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Client generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(CYAN)[5/5] Helm Schema Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate-helm-schema && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Helm schema generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	END_TOTAL=$$(date +%s%3N); \
-	echo -e "$(GREEN)✓ All code generation complete in $$((END_TOTAL-START_TOTAL))ms!$(NC)"
+generate: generate-sqlc generate-codegen generate-mocks generate-js-client generate-helm-schema ## Generate all code
+	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
 .PHONY: generate-sqlc
 generate-sqlc: generate-schema-sqlite ## Generate database code with sqlc
 	@echo -e "$(YELLOW)▶ Generating sqlc code...$(NC)"
-	@cd internal/infrastructure/persistence/postgres && go tool sqlc generate
+	@cd internal/infrastructure/persistence/postgres && go tool -modfile=../../../../tools.mod sqlc generate
 	@echo -e "$(GREEN)✓ sqlc generation complete!$(NC)"
 
 .PHONY: generate-schema-sqlite
@@ -182,13 +173,13 @@ generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
 	@echo -e "$(GREEN)✓ Schema conversion complete!$(NC)"
 
 .PHONY: generate-codegen-types
-generate-codegen-types: ## Generate types for codegen configuration
+generate-codegen-types: bundle-openapi ## Generate types for codegen configuration
 	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
 	@go run cmd/codegen/main.go jsonschema api/components/schemas/xcodegen/CodegenExtension.yaml --output internal/parsers
 	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
 
 .PHONY: generate-codegen
-generate-codegen: generate-codegen-types ## Generate codegen
+generate-codegen: generate-codegen-types bundle-openapi ## Generate codegen
 	@echo -e "$(YELLOW)▶ Generating code from OpenAPI schemas...$(NC)"
 	@go run cmd/codegen/main.go openapi ./api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
@@ -196,11 +187,11 @@ generate-codegen: generate-codegen-types ## Generate codegen
 .PHONY: generate-mocks
 generate-mocks: ## Generate test mocks using mockery
 	@echo -e "$(YELLOW)▶ Generating test mocks...$(NC)"
-	@go tool mockery
+	@go tool -modfile=tools.mod mockery
 	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"
 
 .PHONY: generate-js-client
-generate-js-client: ## Generate JavaScript/TypeScript client from OpenAPI
+generate-js-client: bundle-openapi ## Generate JavaScript/TypeScript client from OpenAPI
 	@echo -e "$(YELLOW)▶ Generating JavaScript/TypeScript client...$(NC)"
 	@cd ./web/client && (pnpm orval > /dev/null 2>&1 || (echo -e "$(RED)✗ JavaScript client generation failed$(NC)" && pnpm orval && exit 1))
 	@echo -e "$(GREEN)✓ JavaScript/TypeScript client generated!$(NC)"
@@ -322,7 +313,7 @@ lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
 	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@go tool vacuum lint ./api/openapi.yaml --details --no-banner --hard-mode --no-clip --all-results --pipeline-output --no-style
+	@go tool -modfile=tools.mod vacuum lint ./api/openapi.yaml --details --no-banner --hard-mode --no-clip --all-results --pipeline-output --no-style
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
 .PHONY: lint-typecheck
@@ -437,31 +428,31 @@ db-migrate: db-migrate-up ## Alias for db-migrate-up
 .PHONY: db-migrate-up
 db-migrate-up: ## Apply database migrations
 	@echo -e "$(YELLOW)▶ Applying migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool goose postgres "$(DATABASE_URL)" up
+	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose postgres "$(DATABASE_URL)" up
 	@echo -e "$(GREEN)✓ Migrations applied!$(NC)"
 
 .PHONY: db-migrate-down
 db-migrate-down: ## Rollback database migrations
 	@echo -e "$(YELLOW)▶ Rolling back migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool goose postgres "$(DATABASE_URL)" down
+	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose postgres "$(DATABASE_URL)" down
 	@echo -e "$(GREEN)✓ Migrations rolled back!$(NC)"
 
 .PHONY: db-migrate-create
 db-migrate-create: ## Create new migration (usage: make db-migrate-create name=add_users)
 	@echo -e "$(YELLOW)▶ Creating migration: $(name)...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool goose create $(name) sql
+	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose create $(name) sql
 	@echo -e "$(GREEN)✓ Migration created!$(NC)"
 
 .PHONY: db-migrate-status
 db-migrate-status: ## Show migration status
 	@echo -e "$(YELLOW)▶ Checking migration status...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool goose postgres "$(DATABASE_URL)" status
+	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose postgres "$(DATABASE_URL)" status
 	@echo -e "$(GREEN)✓ Migration status checked!$(NC)"
 
 .PHONY: db-migrate-reset
 db-migrate-reset: ## Reset database to initial state
 	@echo -e "$(YELLOW)▶ Resetting database...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool goose postgres "$(DATABASE_URL)" reset
+	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose postgres "$(DATABASE_URL)" reset
 	@echo -e "$(GREEN)✓ Database reset complete!$(NC)"
 
 # ------------------------------------------
@@ -471,9 +462,8 @@ db-migrate-reset: ## Reset database to initial state
 .PHONY: bundle-openapi
 bundle-openapi: ## Bundle OpenAPI into single file
 	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
-	@go tool vacuum bundle ./api/openapi.yaml ./api/openapi.bundled.yaml --base ./api --composed --hard-mode
-	@python3 scripts/resolve-pathitems.py
-	@pnpm prettier --write ./api/openapi.bundled.yaml
+	@go run cmd/codegen/main.go bundle ./api/openapi.yaml ./api/openapi.bundled.yaml --orval-fix
+	@pnpm prettier --write ./api/openapi.bundled.yaml --log-level warn
 	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
 
 # ------------------------------------------

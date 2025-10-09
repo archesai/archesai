@@ -5,9 +5,7 @@ style: deepObject
 explode: true
 schema:
   $ref: ../schemas/FilterNode.yaml
-description: |
-  Filter users by field values. Supported fields:
-  - createdAt, id, updatedAt, email, emailVerified, image, name
+description: Filter by field values
 example:
   type: eq
   field: email

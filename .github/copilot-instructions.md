@@ -44,7 +44,7 @@ This repo is a Go monorepo with a TypeScript frontend. It uses OpenAPI-first dev
 ## Testing and mocks
 
 - Run tests with `make test`.
-- Use Mockery-generated mocks only (v3). Generate via `make generate-mocks` or `go tool mockery`. Mocks live in `mocks_test.go`. Don’t hand-roll mocks.
+- Use Mockery-generated mocks only (v3). Generate via `make generate-mocks` or `go tool -modfile=tools.mod mockery`. Mocks live in `mocks_test.go`. Don’t hand-roll mocks.
 
 ## Frontend and clients
 

@@ -5,11 +5,7 @@ style: deepObject
 explode: true
 schema:
   $ref: ../schemas/FilterNode.yaml
-description: |
-  Filter accounts by field values. Supported fields:
-  - createdAt, id, updatedAt, accessToken, accessTokenExpiresAt
-  - accountID, idToken, password, providerID, refreshToken
-  - refreshTokenExpiresAt, scope, userID
+description: Filter by field values
 example:
   type: eq
   field: providerID

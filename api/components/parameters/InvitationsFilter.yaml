@@ -5,10 +5,7 @@ style: deepObject
 explode: true
 schema:
   $ref: ../schemas/FilterNode.yaml
-description: |
-  Filter invitations by field values. Supported fields:
-  - createdAt, id, updatedAt, email, expiresAt
-  - inviterID, organizationID, role, status
+description: Filter by field values
 example:
   type: eq
   field: status
