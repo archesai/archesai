@@ -12,7 +12,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/oapi-codegen/runtime v1.1.2
-	github.com/ollama/ollama v0.12.3
+	github.com/ollama/ollama v0.12.5
 	github.com/openai/openai-go v1.12.0
 	github.com/pb33f/libopenapi v0.28.0
 	github.com/pgvector/pgvector-go v0.3.0
