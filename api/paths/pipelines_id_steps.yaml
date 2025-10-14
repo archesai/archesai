@@ -78,6 +78,9 @@ post:
                 example: 550e8400-e29b-41d4-a716-446655440000
                 minLength: 36
                 maxLength: 36
+              example:
+                - 550e8400-e29b-41d4-a716-446655440001
+                - 450e8400-e29b-41d4-a716-446655440002
           required:
             - toolID
             - name
@@ -86,17 +89,7 @@ post:
     - bearerAuth: []
   responses:
     '201':
-      description: Pipeline step created successfully
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                $ref: ../components/schemas/PipelineStep.yaml
-            required:
-              - data
-            additionalProperties: false
+      $ref: ../components/responses/PipelineStepResponse.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '404':

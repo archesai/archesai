@@ -29,7 +29,7 @@ export const ArtifactDetailsHeader = ({
           variant="outline"
         >
           <a
-            href={artifact.text} // FIXME - not a link
+            href={artifact.text as string} // FIXME - not a link
             rel="noopener noreferrer"
             target="_blank"
           >

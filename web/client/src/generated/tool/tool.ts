@@ -32,6 +32,7 @@ import type {
   CreateToolBody,
   InternalServerErrorResponse,
   ListToolsParams,
+  NoContentResponse,
   NotFoundResponse,
   TooManyRequestsResponse,
   ToolListResponseResponse,
@@ -532,9 +533,9 @@ export const getDeleteToolUrl = (id: string | undefined | null,) => {
   return `/tools/${id}`
 }
 
-export const deleteTool = async (id: string | undefined | null, options?: RequestInit): Promise<void> => {
+export const deleteTool = async (id: string | undefined | null, options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<void>(getDeleteToolUrl(id),
+  return customFetch<NoContentResponse>(getDeleteToolUrl(id),
   {      
     ...options,
     method: 'DELETE'

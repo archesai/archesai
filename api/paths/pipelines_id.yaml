@@ -79,7 +79,7 @@ delete:
     - bearerAuth: []
   responses:
     '204':
-      description: Pipeline successfully deleted
+      $ref: ../components/responses/NoContent.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

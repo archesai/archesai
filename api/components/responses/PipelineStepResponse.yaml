@@ -1,11 +1,11 @@
-description: Label retrieved successfully
+description: Pipeline step response
 content:
   application/json:
     schema:
       type: object
       properties:
         data:
-          $ref: ../schemas/Label.yaml
+          $ref: ../schemas/PipelineStep.yaml
       required:
         - data
       additionalProperties: false

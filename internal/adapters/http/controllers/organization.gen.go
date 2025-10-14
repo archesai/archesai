@@ -801,6 +801,9 @@ type DeleteOrganization204Response struct {
 }
 
 func (response DeleteOrganization204Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(204)
 
 	return nil

@@ -30,15 +30,16 @@ import type {
 import type {
   BadRequestResponse,
   CreatePipelineBody,
-  CreatePipelineStep201,
   CreatePipelineStepBody,
   InternalServerErrorResponse,
   ListPipelinesParams,
+  NoContentResponse,
   NotFoundResponse,
   PipelineExecutionPlanResponseResponse,
   PipelineListResponseResponse,
   PipelineResponseResponse,
   PipelineStepListResponseResponse,
+  PipelineStepResponseResponse,
   TooManyRequestsResponse,
   UnauthorizedResponse,
   UnprocessableEntityResponse,
@@ -536,9 +537,9 @@ export const getDeletePipelineUrl = (id: string | undefined | null,) => {
   return `/pipelines/${id}`
 }
 
-export const deletePipeline = async (id: string | undefined | null, options?: RequestInit): Promise<void> => {
+export const deletePipeline = async (id: string | undefined | null, options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<void>(getDeletePipelineUrl(id),
+  return customFetch<NoContentResponse>(getDeletePipelineUrl(id),
   {      
     ...options,
     method: 'DELETE'
@@ -762,9 +763,9 @@ export const getCreatePipelineStepUrl = (id: string | undefined | null,) => {
 }
 
 export const createPipelineStep = async (id: string | undefined | null,
-    createPipelineStepBody: CreatePipelineStepBody, options?: RequestInit): Promise<CreatePipelineStep201> => {
+    createPipelineStepBody: CreatePipelineStepBody, options?: RequestInit): Promise<PipelineStepResponseResponse> => {
   
-  return customFetch<CreatePipelineStep201>(getCreatePipelineStepUrl(id),
+  return customFetch<PipelineStepResponseResponse>(getCreatePipelineStepUrl(id),
   {      
     ...options,
     method: 'POST',

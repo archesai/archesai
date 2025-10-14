@@ -98,7 +98,7 @@ export const requestMagicLinkResponseTokenTokenHashRegExp = new RegExp('^[a-f0-9
 export const requestMagicLinkResponseTokenCodeMin = 6;
 export const requestMagicLinkResponseTokenCodeMax = 6;
 export const requestMagicLinkResponseTokenCodeRegExp = new RegExp('^[0-9]{6}$');
-export const requestMagicLinkResponseTokenIdentifierMax = 255;export const requestMagicLinkResponseTokenExpiresAtMax = 512;export const requestMagicLinkResponseTokenIpAddressMin = 7;
+export const requestMagicLinkResponseTokenIdentifierMax = 255;export const requestMagicLinkResponseTokenExpiresAtMax = 512;export const requestMagicLinkResponseTokenUsedAtMax = 512;export const requestMagicLinkResponseTokenIpAddressMin = 7;
 export const requestMagicLinkResponseTokenIpAddressMax = 45;export const requestMagicLinkResponseTokenUserAgentMax = 512;
 export const requestMagicLinkResponseTokenUserAgentRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/\\(\\):;]+$');
 export const requestMagicLinkResponseTokenCreatedAtMax = 512;
@@ -116,7 +116,7 @@ export const requestMagicLinkResponse = zod.object({
   "identifier": zod.email().min(1).max(requestMagicLinkResponseTokenIdentifierMax).describe('Email or username for authentication'),
   "deliveryMethod": zod.enum(['email', 'console', 'webhook', 'otp', 'file']).nullish().describe('How the magic link was delivered'),
   "expiresAt": zod.iso.datetime({}).min(1).max(requestMagicLinkResponseTokenExpiresAtMax).describe('When the token expires'),
-  "usedAt": zod.iso.datetime({}).nullish().describe('When the token was used (null if unused)'),
+  "usedAt": zod.iso.datetime({}).min(1).max(requestMagicLinkResponseTokenUsedAtMax).nullish().describe('When the token was used (null if unused)'),
   "ipAddress": zod.string().min(requestMagicLinkResponseTokenIpAddressMin).max(requestMagicLinkResponseTokenIpAddressMax).nullish().describe('IP address of the request'),
   "userAgent": zod.string().min(1).max(requestMagicLinkResponseTokenUserAgentMax).regex(requestMagicLinkResponseTokenUserAgentRegExp).nullish().describe('User agent of the request'),
   "createdAt": zod.iso.datetime({}).min(1).max(requestMagicLinkResponseTokenCreatedAtMax).nullable().describe('When the token was created')

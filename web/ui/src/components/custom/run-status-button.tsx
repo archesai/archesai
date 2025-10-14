@@ -16,8 +16,8 @@ import {
 
 interface RunLike {
   status: string;
-  startedAt?: string;
-  completedAt?: string;
+  startedAt?: string | null;
+  completedAt?: string | null;
   error?: string | null;
 }
 

@@ -263,6 +263,9 @@ type CreatePipelineStep201Response struct {
 
 func (response CreatePipelineStep201Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
@@ -1557,6 +1560,9 @@ type DeletePipeline204Response struct {
 }
 
 func (response DeletePipeline204Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(204)
 
 	return nil

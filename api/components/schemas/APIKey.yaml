@@ -56,7 +56,7 @@ allOf:
       keyHash:
         type: string
         minLength: 1
-        example: hashedskliveabc123...
+        example: hashedskliveabc123
         description: Hashed version of the API key for secure storage
         maxLength: 255
         pattern: ^[a-zA-Z0-9]+$

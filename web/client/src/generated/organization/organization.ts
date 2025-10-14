@@ -32,6 +32,7 @@ import type {
   CreateOrganizationBody,
   InternalServerErrorResponse,
   ListOrganizationsParams,
+  NoContentResponse,
   NotFoundResponse,
   OrganizationListResponseResponse,
   OrganizationResponseResponse,
@@ -532,9 +533,9 @@ export const getDeleteOrganizationUrl = (id: string | undefined | null,) => {
   return `/organizations/${id}`
 }
 
-export const deleteOrganization = async (id: string | undefined | null, options?: RequestInit): Promise<void> => {
+export const deleteOrganization = async (id: string | undefined | null, options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<void>(getDeleteOrganizationUrl(id),
+  return customFetch<NoContentResponse>(getDeleteOrganizationUrl(id),
   {      
     ...options,
     method: 'DELETE'

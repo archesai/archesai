@@ -68,6 +68,8 @@ properties:
     type: [string, 'null']
     format: date-time
     example: '2023-10-05T14:48:00Z'
+    minLength: 1
+    maxLength: 512
   ipAddress:
     description: IP address of the request
     type: [string, 'null']

@@ -178,6 +178,8 @@ export type MagicLinkTokenDeliveryMethod = 'email' | 'console' | 'webhook' | 'ot
 
 /**
  * When the token was used (null if unused)
+ * @minLength 1
+ * @maxLength 512
  */
 export type MagicLinkTokenUsedAt = string | null;
 
@@ -254,7 +256,11 @@ export interface MagicLinkToken {
    * @maxLength 512
    */
   expiresAt: string;
-  /** When the token was used (null if unused) */
+  /**
+   * When the token was used (null if unused)
+   * @minLength 1
+   * @maxLength 512
+   */
   usedAt?: MagicLinkTokenUsedAt;
   /**
    * IP address of the request
@@ -2230,6 +2236,10 @@ export type PipelineStepListResponseResponse = {
   data: PipelineStep[];
 };
 
+export type PipelineStepResponseResponse = {
+  data: PipelineStep;
+};
+
 export type PipelineExecutionPlanResponseResponseDataLevelsItem = {
   /**
    * Execution level (0-based)
@@ -3828,10 +3838,6 @@ export type CreatePipelineStepBody = {
    * @maxItems 1000
    */
   dependencies?: string[];
-};
-
-export type CreatePipelineStep201 = {
-  data: PipelineStep;
 };
 
 export type ListRunsParams = {

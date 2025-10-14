@@ -23,7 +23,6 @@
     "prettier": "catalog:",
     "rollup-plugin-visualizer": "catalog:vite",
     "tailwindcss": "catalog:ui",
-    "task-master-ai": "catalog:",
     "tw-animate-css": "catalog:ui",
     "typescript": "catalog:",
     "vite": "catalog:vite",

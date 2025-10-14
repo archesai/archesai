@@ -12,11 +12,11 @@ export const useOAuthProviders = () => {
   const { data: config, isLoading, error } = useGetConfig();
 
   const providers = () => {
-    if (!config?.auth) return [];
+    if (!config?.data?.auth) return [];
 
     const availableProviders = [];
 
-    if (config.auth.google?.enabled) {
+    if (config.data?.auth.google?.enabled) {
       availableProviders.push({
         enabled: true,
         id: "google" as const,
@@ -24,7 +24,7 @@ export const useOAuthProviders = () => {
       });
     }
 
-    if (config.auth.github?.enabled) {
+    if (config.data?.auth.github?.enabled) {
       availableProviders.push({
         enabled: true,
         id: "github" as const,
@@ -32,7 +32,7 @@ export const useOAuthProviders = () => {
       });
     }
 
-    if (config.auth.microsoft?.enabled) {
+    if (config.data?.auth.microsoft?.enabled) {
       availableProviders.push({
         enabled: true,
         id: "microsoft" as const,

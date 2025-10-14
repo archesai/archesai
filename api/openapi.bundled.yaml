@@ -1772,7 +1772,7 @@ paths:
         - bearerAuth: []
       responses:
         '204':
-          description: Organization successfully deleted
+          $ref: '#/components/responses/NoContent'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -2288,7 +2288,7 @@ paths:
         - bearerAuth: []
       responses:
         '204':
-          description: Pipeline successfully deleted
+          $ref: '#/components/responses/NoContent'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -2382,6 +2382,9 @@ paths:
                     example: 550e8400-e29b-41d4-a716-446655440000
                     minLength: 36
                     maxLength: 36
+                  example:
+                    - 550e8400-e29b-41d4-a716-446655440001
+                    - 450e8400-e29b-41d4-a716-446655440002
               required:
                 - toolID
                 - name
@@ -2390,17 +2393,7 @@ paths:
         - bearerAuth: []
       responses:
         '201':
-          description: Pipeline step created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/PipelineStep'
-                required:
-                  - data
-                additionalProperties: false
+          $ref: '#/components/responses/PipelineStepResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -2776,7 +2769,7 @@ paths:
         - bearerAuth: []
       responses:
         '204':
-          description: Tool successfully deleted
+          $ref: '#/components/responses/NoContent'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -3442,6 +3435,8 @@ components:
             - 'null'
           format: date-time
           example: '2023-10-05T14:48:00Z'
+          minLength: 1
+          maxLength: 512
         ipAddress:
           description: IP address of the request
           type:
@@ -3824,7 +3819,7 @@ components:
             keyHash:
               type: string
               minLength: 1
-              example: hashedskliveabc123...
+              example: hashedskliveabc123
               description: Hashed version of the API key for secure storage
               maxLength: 255
               pattern: ^[a-zA-Z0-9]+$
@@ -6705,6 +6700,25 @@ components:
                 toolID: 550e8400-e29b-41d4-a716-446655440011
                 createdAt: '2024-01-15T09:30:00Z'
                 updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    PipelineStepResponse:
+      description: Pipeline step response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/PipelineStep'
+            required:
+              - data
+            additionalProperties: false
       headers:
         X-RateLimit-Limit:
           $ref: '#/components/headers/RateLimitLimit'

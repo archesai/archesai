@@ -41,7 +41,6 @@ import type { JSX } from "react";
 import {
   createContext,
   forwardRef,
-  useCallback,
   useContext,
   useId,
   useLayoutEffect,
@@ -188,16 +187,13 @@ function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
     setActiveID(null);
   };
 
-  const onDragCancel = useCallback(
-    (event: DragEndEvent) => {
-      sortableProps.onDragCancel?.(event);
+  const onDragCancel = (event: DragEndEvent) => {
+    sortableProps.onDragCancel?.(event);
 
-      if (event.activatorEvent.defaultPrevented) return;
+    if (event.activatorEvent.defaultPrevented) return;
 
-      setActiveID(null);
-    },
-    [sortableProps.onDragCancel],
-  );
+    setActiveID(null);
+  };
 
   const announcements: Announcements = useMemo(
     () => ({
