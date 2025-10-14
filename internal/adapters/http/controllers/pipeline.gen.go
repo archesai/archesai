@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
@@ -57,16 +56,16 @@ func NewPipelineController(
 }
 
 // RegisterPipelineRoutes registers all HTTP routes for the pipeline domain.
-func RegisterPipelineRoutes(router server.EchoRouter, controller *PipelineController) {
-	router.POST("/pipelines", controller.CreatePipeline)
-	router.POST("/pipelines/:id/steps", controller.CreatePipelineStep)
-	router.POST("/pipelines/:id/execution-plans", controller.ValidatePipelineExecutionPlan)
-	router.GET("/pipelines/:id", controller.GetPipeline)
-	router.GET("/pipelines/:id/execution-plans", controller.GetPipelineExecutionPlan)
-	router.GET("/pipelines/:id/steps", controller.GetPipelineSteps)
-	router.GET("/pipelines", controller.ListPipelines)
-	router.PATCH("/pipelines/:id", controller.UpdatePipeline)
-	router.DELETE("/pipelines/:id", controller.DeletePipeline)
+func RegisterPipelineRoutes(mux *http.ServeMux, controller *PipelineController) {
+	mux.HandleFunc("POST /pipelines", controller.CreatePipeline)
+	mux.HandleFunc("POST /pipelines/{id}/steps", controller.CreatePipelineStep)
+	mux.HandleFunc("POST /pipelines/{id}/execution-plans", controller.ValidatePipelineExecutionPlan)
+	mux.HandleFunc("GET /pipelines/{id}", controller.GetPipeline)
+	mux.HandleFunc("GET /pipelines/{id}/execution-plans", controller.GetPipelineExecutionPlan)
+	mux.HandleFunc("GET /pipelines/{id}/steps", controller.GetPipelineSteps)
+	mux.HandleFunc("GET /pipelines", controller.ListPipelines)
+	mux.HandleFunc("PATCH /pipelines/{id}", controller.UpdatePipeline)
+	mux.HandleFunc("DELETE /pipelines/{id}", controller.DeletePipeline)
 }
 
 // ============================================================================
@@ -96,31 +95,40 @@ type CreatePipeline201Response struct {
 
 func (response CreatePipeline201Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type CreatePipeline400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response CreatePipeline400Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreatePipeline401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response CreatePipeline401Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreatePipeline422Response struct {
@@ -129,9 +137,12 @@ type CreatePipeline422Response struct {
 
 func (response CreatePipeline422Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreatePipeline429Response struct {
@@ -140,45 +151,60 @@ type CreatePipeline429Response struct {
 
 func (response CreatePipeline429Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreatePipeline500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response CreatePipeline500Response) VisitCreatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // CreatePipeline handles the POST /pipelines endpoint.
-func (c *PipelineController) CreatePipeline(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *PipelineController) CreatePipeline(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := CreatePipelineRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := CreatePipeline401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitCreatePipelineResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Request body
 	request.Body = &CreatePipelineRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := CreatePipeline400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreatePipelineResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -189,13 +215,21 @@ func (c *PipelineController) CreatePipeline(ctx echo.Context) error {
 		request.Body.Description, // Description
 		request.Body.Name,        // Name
 	)
-	result, err := c.createPipelineHandler.Handle(reqCtx, cmd)
+	result, err := c.createPipelineHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := CreatePipeline500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreatePipelineResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusCreated, map[string]interface{}{
-		"data": result,
-	})
+
+	response := CreatePipeline201Response{Data: *result}
+	if err := response.VisitCreatePipelineResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -235,36 +269,45 @@ func (response CreatePipelineStep201Response) VisitCreatePipelineStepResponse(w 
 }
 
 type CreatePipelineStep400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response CreatePipelineStep400Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
-}
-
-type CreatePipelineStep404Response struct {
-	server.NotFoundResponse
-}
-
-func (response CreatePipelineStep404Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreatePipelineStep401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response CreatePipelineStep401Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type CreatePipelineStep404Response struct {
+	server.ProblemDetails
+}
+
+func (response CreatePipelineStep404Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreatePipelineStep422Response struct {
@@ -273,9 +316,12 @@ type CreatePipelineStep422Response struct {
 
 func (response CreatePipelineStep422Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreatePipelineStep429Response struct {
@@ -284,52 +330,73 @@ type CreatePipelineStep429Response struct {
 
 func (response CreatePipelineStep429Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreatePipelineStep500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response CreatePipelineStep500Response) VisitCreatePipelineStepResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // CreatePipelineStep handles the POST /pipelines/{id}/steps endpoint.
-func (c *PipelineController) CreatePipelineStep(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *PipelineController) CreatePipelineStep(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := CreatePipelineStepRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := CreatePipelineStep401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitCreatePipelineStepResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := CreatePipelineStep400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitCreatePipelineStepResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
 
 	// Request body
 	request.Body = &CreatePipelineStepRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := CreatePipelineStep400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreatePipelineStepResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -344,13 +411,24 @@ func (c *PipelineController) CreatePipelineStep(ctx echo.Context) error {
 		request.Body.Position,     // Position
 		request.Body.ToolID,       // ToolID
 	)
-	result, err := c.createPipelineStepHandler.Handle(reqCtx, cmd)
+	result, err := c.createPipelineStepHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := CreatePipelineStep500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreatePipelineStepResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusCreated, map[string]interface{}{
-		"data": result,
-	})
+
+	// Custom handler - result type varies, response structure not standardized
+	// TODO: Implement proper type assertion and response mapping
+	_ = result
+	response := CreatePipelineStep201Response{}
+	if err := response.VisitCreatePipelineStepResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -375,42 +453,54 @@ type ValidatePipelineExecutionPlan200Response struct {
 
 func (response ValidatePipelineExecutionPlan200Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type ValidatePipelineExecutionPlan400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response ValidatePipelineExecutionPlan400Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
-}
-
-type ValidatePipelineExecutionPlan404Response struct {
-	server.NotFoundResponse
-}
-
-func (response ValidatePipelineExecutionPlan404Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ValidatePipelineExecutionPlan401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response ValidatePipelineExecutionPlan401Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type ValidatePipelineExecutionPlan404Response struct {
+	server.ProblemDetails
+}
+
+func (response ValidatePipelineExecutionPlan404Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ValidatePipelineExecutionPlan422Response struct {
@@ -419,9 +509,12 @@ type ValidatePipelineExecutionPlan422Response struct {
 
 func (response ValidatePipelineExecutionPlan422Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ValidatePipelineExecutionPlan429Response struct {
@@ -430,46 +523,61 @@ type ValidatePipelineExecutionPlan429Response struct {
 
 func (response ValidatePipelineExecutionPlan429Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ValidatePipelineExecutionPlan500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response ValidatePipelineExecutionPlan500Response) VisitValidatePipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // ValidatePipelineExecutionPlan handles the POST /pipelines/{id}/execution-plans endpoint.
-func (c *PipelineController) ValidatePipelineExecutionPlan(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *PipelineController) ValidatePipelineExecutionPlan(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := ValidatePipelineExecutionPlanRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := ValidatePipelineExecutionPlan401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitValidatePipelineExecutionPlanResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := ValidatePipelineExecutionPlan400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitValidatePipelineExecutionPlanResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -479,13 +587,24 @@ func (c *PipelineController) ValidatePipelineExecutionPlan(ctx echo.Context) err
 		sessionID,  // SessionID for authenticated operations
 		request.ID, // ID
 	)
-	result, err := c.validatePipelineExecutionPlanHandler.Handle(reqCtx, cmd)
+	result, err := c.validatePipelineExecutionPlanHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := ValidatePipelineExecutionPlan500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitValidatePipelineExecutionPlanResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusCreated, map[string]interface{}{
-		"data": result,
-	})
+
+	// Custom handler - result type varies, response structure not standardized
+	// TODO: Implement proper type assertion and response mapping
+	_ = result
+	response := ValidatePipelineExecutionPlan200Response{}
+	if err := response.VisitValidatePipelineExecutionPlanResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -510,53 +629,54 @@ type GetPipeline200Response struct {
 
 func (response GetPipeline200Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetPipeline404Response struct {
-	server.NotFoundResponse
-}
-
-func (response GetPipeline404Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type GetPipeline429Response struct {
+type GetPipeline400Response struct {
 	server.ProblemDetails
 }
 
-func (response GetPipeline429Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
+func (response GetPipeline400Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response)
-}
-
-type GetPipeline500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response GetPipeline500Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipeline401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response GetPipeline401Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetPipeline404Response struct {
+	server.ProblemDetails
+}
+
+func (response GetPipeline404Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipeline422Response struct {
@@ -565,35 +685,75 @@ type GetPipeline422Response struct {
 
 func (response GetPipeline422Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetPipeline429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetPipeline429Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetPipeline500Response struct {
+	server.ProblemDetails
+}
+
+func (response GetPipeline500Response) VisitGetPipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // GetPipeline handles the GET /pipelines/{id} endpoint.
-func (c *PipelineController) GetPipeline(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *PipelineController) GetPipeline(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := GetPipelineRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := GetPipeline401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := GetPipeline400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -602,14 +762,21 @@ func (c *PipelineController) GetPipeline(ctx echo.Context) error {
 		request.ID, // ID
 	)
 
-	result, err := c.getPipelineHandler.Handle(reqCtx, query)
+	result, err := c.getPipelineHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := GetPipeline500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	response := GetPipeline200Response{Data: *result}
+	if err := response.VisitGetPipelineResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -649,42 +816,54 @@ type GetPipelineExecutionPlan200Response struct {
 
 func (response GetPipelineExecutionPlan200Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type GetPipelineExecutionPlan400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response GetPipelineExecutionPlan400Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
-}
-
-type GetPipelineExecutionPlan404Response struct {
-	server.NotFoundResponse
-}
-
-func (response GetPipelineExecutionPlan404Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipelineExecutionPlan401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response GetPipelineExecutionPlan401Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetPipelineExecutionPlan404Response struct {
+	server.ProblemDetails
+}
+
+func (response GetPipelineExecutionPlan404Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipelineExecutionPlan422Response struct {
@@ -693,9 +872,12 @@ type GetPipelineExecutionPlan422Response struct {
 
 func (response GetPipelineExecutionPlan422Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipelineExecutionPlan429Response struct {
@@ -704,46 +886,61 @@ type GetPipelineExecutionPlan429Response struct {
 
 func (response GetPipelineExecutionPlan429Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipelineExecutionPlan500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response GetPipelineExecutionPlan500Response) VisitGetPipelineExecutionPlanResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // GetPipelineExecutionPlan handles the GET /pipelines/{id}/execution-plans endpoint.
-func (c *PipelineController) GetPipelineExecutionPlan(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *PipelineController) GetPipelineExecutionPlan(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := GetPipelineExecutionPlanRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := GetPipelineExecutionPlan401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineExecutionPlanResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := GetPipelineExecutionPlan400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineExecutionPlanResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -752,14 +949,24 @@ func (c *PipelineController) GetPipelineExecutionPlan(ctx echo.Context) error {
 		request.ID, // ID
 	)
 
-	result, err := c.getPipelineExecutionPlanHandler.Handle(reqCtx, query)
+	result, err := c.getPipelineExecutionPlanHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := GetPipelineExecutionPlan500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineExecutionPlanResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	// Custom handler - result type varies, response structure not standardized
+	// TODO: Implement proper type assertion and response mapping
+	_ = result
+	response := GetPipelineExecutionPlan200Response{}
+	if err := response.VisitGetPipelineExecutionPlanResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -784,31 +991,54 @@ type GetPipelineSteps200Response struct {
 
 func (response GetPipelineSteps200Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetPipelineSteps404Response struct {
-	server.NotFoundResponse
+type GetPipelineSteps400Response struct {
+	server.ProblemDetails
 }
 
-func (response GetPipelineSteps404Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
+func (response GetPipelineSteps400Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipelineSteps401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response GetPipelineSteps401Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetPipelineSteps404Response struct {
+	server.ProblemDetails
+}
+
+func (response GetPipelineSteps404Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipelineSteps422Response struct {
@@ -817,9 +1047,12 @@ type GetPipelineSteps422Response struct {
 
 func (response GetPipelineSteps422Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipelineSteps429Response struct {
@@ -828,46 +1061,61 @@ type GetPipelineSteps429Response struct {
 
 func (response GetPipelineSteps429Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetPipelineSteps500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response GetPipelineSteps500Response) VisitGetPipelineStepsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // GetPipelineSteps handles the GET /pipelines/{id}/steps endpoint.
-func (c *PipelineController) GetPipelineSteps(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *PipelineController) GetPipelineSteps(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := GetPipelineStepsRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := GetPipelineSteps401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineStepsResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := GetPipelineSteps400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineStepsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -876,14 +1124,24 @@ func (c *PipelineController) GetPipelineSteps(ctx echo.Context) error {
 		request.ID, // ID
 	)
 
-	result, err := c.getPipelineStepsHandler.Handle(reqCtx, query)
+	result, err := c.getPipelineStepsHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := GetPipelineSteps500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitGetPipelineStepsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	// Custom handler - result type varies, response structure not standardized
+	// TODO: Implement proper type assertion and response mapping
+	_ = result
+	response := GetPipelineSteps200Response{}
+	if err := response.VisitGetPipelineStepsResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -915,31 +1173,40 @@ type ListPipelines200Response struct {
 
 func (response ListPipelines200Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type ListPipelines400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response ListPipelines400Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListPipelines401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response ListPipelines401Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListPipelines422Response struct {
@@ -948,9 +1215,12 @@ type ListPipelines422Response struct {
 
 func (response ListPipelines422Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListPipelines429Response struct {
@@ -959,55 +1229,85 @@ type ListPipelines429Response struct {
 
 func (response ListPipelines429Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListPipelines500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response ListPipelines500Response) VisitListPipelinesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // ListPipelines handles the GET /pipelines endpoint.
-func (c *PipelineController) ListPipelines(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *PipelineController) ListPipelines(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := ListPipelinesRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := ListPipelines401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitListPipelinesResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Query parameters
 	var params ListPipelinesParams
-	// Optional query parameter "Filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
+
+	// Optional query parameter "filter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &params.Filter); err != nil {
+		errorResp := ListPipelines400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListPipelinesResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+
+	// Optional query parameter "page"
+	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &params.Page); err != nil {
+		errorResp := ListPipelines400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListPipelinesResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+
+	// Optional query parameter "sort"
+	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort); err != nil {
+		errorResp := ListPipelines400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListPipelinesResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.Params = params
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -1016,17 +1316,32 @@ func (c *PipelineController) ListPipelines(ctx echo.Context) error {
 	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listPipelinesHandler.Handle(reqCtx, query)
+	results, total, err := c.listPipelinesHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := ListPipelines500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitListPipelinesResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": results,
-		"meta": map[string]interface{}{
-			"total": total,
-		},
-	})
+	// Convert pointer slice to value slice for response
+	data := make([]entities.Pipeline, len(results))
+	for i, item := range results {
+		if item != nil {
+			data[i] = *item
+		}
+	}
+
+	response := ListPipelines200Response{
+		Data: data,
+		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+	}
+	if err := response.VisitListPipelinesResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -1057,64 +1372,54 @@ type UpdatePipeline200Response struct {
 
 func (response UpdatePipeline200Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdatePipeline404Response struct {
-	server.NotFoundResponse
-}
-
-func (response UpdatePipeline404Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type UpdatePipeline429Response struct {
-	server.ProblemDetails
-}
-
-func (response UpdatePipeline429Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type UpdatePipeline500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response UpdatePipeline500Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
-}
-
 type UpdatePipeline400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response UpdatePipeline400Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdatePipeline401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response UpdatePipeline401Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdatePipeline404Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdatePipeline404Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdatePipeline422Response struct {
@@ -1123,41 +1428,87 @@ type UpdatePipeline422Response struct {
 
 func (response UpdatePipeline422Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdatePipeline429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdatePipeline429Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdatePipeline500Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdatePipeline500Response) VisitUpdatePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // UpdatePipeline handles the PATCH /pipelines/{id} endpoint.
-func (c *PipelineController) UpdatePipeline(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *PipelineController) UpdatePipeline(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := UpdatePipelineRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := UpdatePipeline401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitUpdatePipelineResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := UpdatePipeline400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdatePipelineResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
 
 	// Request body
 	request.Body = &UpdatePipelineRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := UpdatePipeline400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdatePipelineResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -1169,13 +1520,21 @@ func (c *PipelineController) UpdatePipeline(ctx echo.Context) error {
 		request.Body.Description, // Description
 		request.Body.Name,        // Name
 	)
-	result, err := c.updatePipelineHandler.Handle(reqCtx, cmd)
+	result, err := c.updatePipelineHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := UpdatePipeline500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdatePipelineResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+
+	response := UpdatePipeline200Response{Data: *result}
+	if err := response.VisitUpdatePipelineResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -1194,59 +1553,55 @@ type DeletePipelineResponse interface {
 	VisitDeletePipelineResponse(w http.ResponseWriter) error
 }
 
-type DeletePipeline200Response struct {
-	Data entities.Pipeline `json:"data"`
+type DeletePipeline204Response struct {
 }
 
-func (response DeletePipeline200Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
+func (response DeletePipeline204Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
 
-	return json.NewEncoder(w).Encode(response)
+	return nil
 }
 
-type DeletePipeline404Response struct {
-	server.NotFoundResponse
-}
-
-func (response DeletePipeline404Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type DeletePipeline429Response struct {
+type DeletePipeline400Response struct {
 	server.ProblemDetails
 }
 
-func (response DeletePipeline429Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+func (response DeletePipeline400Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response)
-}
-
-type DeletePipeline500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response DeletePipeline500Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeletePipeline401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response DeletePipeline401Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeletePipeline404Response struct {
+	server.ProblemDetails
+}
+
+func (response DeletePipeline404Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeletePipeline422Response struct {
@@ -1255,35 +1610,75 @@ type DeletePipeline422Response struct {
 
 func (response DeletePipeline422Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeletePipeline429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeletePipeline429Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeletePipeline500Response struct {
+	server.ProblemDetails
+}
+
+func (response DeletePipeline500Response) VisitDeletePipelineResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // DeletePipeline handles the DELETE /pipelines/{id} endpoint.
-func (c *PipelineController) DeletePipeline(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *PipelineController) DeletePipeline(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := DeletePipelineRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := DeletePipeline401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitDeletePipelineResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := DeletePipeline400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitDeletePipelineResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -1293,8 +1688,18 @@ func (c *PipelineController) DeletePipeline(ctx echo.Context) error {
 		sessionID,  // SessionID for authenticated operations
 		request.ID, // ID
 	)
-	if err := c.deletePipelineHandler.Handle(reqCtx, cmd); err != nil {
-		return err
+	if err := c.deletePipelineHandler.Handle(ctx, cmd); err != nil {
+		errorResp := DeletePipeline500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitDeletePipelineResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.NoContent(http.StatusNoContent)
+
+	response := DeletePipeline204Response{}
+	if err := response.VisitDeletePipelineResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }

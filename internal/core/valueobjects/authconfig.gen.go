@@ -9,7 +9,9 @@ import (
 
 // AuthConfig represents Authentication configuration for the API server
 type AuthConfig struct {
-	Enabled   bool                 `json:"enabled" yaml:"enabled"` // Enable authentication
+
+	// Enabled Enable authentication
+	Enabled   bool                 `json:"enabled" yaml:"enabled"`
 	Firebase  *FirebaseAuthConfig  `json:"firebase,omitempty" yaml:"firebase,omitempty"`
 	Github    *GitHubAuthConfig    `json:"github,omitempty" yaml:"github,omitempty"`
 	Google    *GoogleAuthConfig    `json:"google,omitempty" yaml:"google,omitempty"`
@@ -21,7 +23,16 @@ type AuthConfig struct {
 
 // NewAuthConfig creates a new immutable AuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewAuthConfig(enabled bool, firebase *FirebaseAuthConfig, github *GitHubAuthConfig, google *GoogleAuthConfig, local *LocalAuthConfig, magicLink *MagicLinkAuthConfig, microsoft *MicrosoftAuthConfig, twitter *TwitterAuthConfig) (AuthConfig, error) {
+func NewAuthConfig(
+	enabled bool,
+	firebase *FirebaseAuthConfig,
+	github *GitHubAuthConfig,
+	google *GoogleAuthConfig,
+	local *LocalAuthConfig,
+	magicLink *MagicLinkAuthConfig,
+	microsoft *MicrosoftAuthConfig,
+	twitter *TwitterAuthConfig,
+) (AuthConfig, error) {
 	// Validate required fields
 	return AuthConfig{
 		Enabled:   enabled,

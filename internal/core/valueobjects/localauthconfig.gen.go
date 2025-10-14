@@ -9,15 +9,28 @@ import (
 
 // LocalAuthConfig represents Local username/password authentication
 type LocalAuthConfig struct {
-	AccessTokenTTL  string `json:"accessTokenTTL" yaml:"accessTokenTTL"`   // Access token time-to-live duration (e.g., "15m", "1h")
-	Enabled         bool   `json:"enabled" yaml:"enabled"`                 // Enable local authentication
-	JWTSecret       string `json:"jwtSecret" yaml:"jwtSecret"`             // Secret key for JWT token signing
-	RefreshTokenTTL string `json:"refreshTokenTTL" yaml:"refreshTokenTTL"` // Refresh token time-to-live duration (e.g., "7d", "168h")
+
+	// AccessTokenTTL Access token time-to-live duration (e.g., "15m", "1h")
+	AccessTokenTTL string `json:"accessTokenTTL" yaml:"accessTokenTTL"`
+
+	// Enabled Enable local authentication
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// JWTSecret Secret key for JWT token signing
+	JWTSecret string `json:"jwtSecret" yaml:"jwtSecret"`
+
+	// RefreshTokenTTL Refresh token time-to-live duration (e.g., "7d", "168h")
+	RefreshTokenTTL string `json:"refreshTokenTTL" yaml:"refreshTokenTTL"`
 }
 
 // NewLocalAuthConfig creates a new immutable LocalAuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewLocalAuthConfig(accessTokenTtl string, enabled bool, jwtSecret string, refreshTokenTtl string) (LocalAuthConfig, error) {
+func NewLocalAuthConfig(
+	accessTokenTtl string,
+	enabled bool,
+	jwtSecret string,
+	refreshTokenTtl string,
+) (LocalAuthConfig, error) {
 	// Validate required fields
 	return LocalAuthConfig{
 		AccessTokenTTL:  accessTokenTtl,

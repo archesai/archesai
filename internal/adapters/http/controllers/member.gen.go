@@ -8,13 +8,13 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/member"
 	queries "github.com/archesai/archesai/internal/application/queries/member"
 	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // MemberController handles HTTP requests for member endpoints.
@@ -44,12 +44,12 @@ func NewMemberController(
 }
 
 // RegisterMemberRoutes registers all HTTP routes for the member domain.
-func RegisterMemberRoutes(router server.EchoRouter, controller *MemberController) {
-	router.POST("/organizations/:organizationID/members", controller.CreateMember)
-	router.GET("/organizations/:organizationID/members/:id", controller.GetMember)
-	router.GET("/organizations/:organizationID/members", controller.ListMembers)
-	router.PATCH("/organizations/:organizationID/members/:id", controller.UpdateMember)
-	router.DELETE("/organizations/:organizationID/members/:id", controller.DeleteMember)
+func RegisterMemberRoutes(mux *http.ServeMux, controller *MemberController) {
+	mux.HandleFunc("POST /organizations/{organizationID}/members", controller.CreateMember)
+	mux.HandleFunc("GET /organizations/{organizationID}/members/{id}", controller.GetMember)
+	mux.HandleFunc("GET /organizations/{organizationID}/members", controller.ListMembers)
+	mux.HandleFunc("PATCH /organizations/{organizationID}/members/{id}", controller.UpdateMember)
+	mux.HandleFunc("DELETE /organizations/{organizationID}/members/{id}", controller.DeleteMember)
 }
 
 // ============================================================================
@@ -74,36 +74,45 @@ type CreateMemberResponse interface {
 }
 
 type CreateMember201Response struct {
-	Data entities.Organization `json:"data"`
+	Data entities.Member `json:"data"`
 }
 
 func (response CreateMember201Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type CreateMember400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response CreateMember400Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateMember401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response CreateMember401Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateMember422Response struct {
@@ -112,9 +121,12 @@ type CreateMember422Response struct {
 
 func (response CreateMember422Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateMember429Response struct {
@@ -123,52 +135,73 @@ type CreateMember429Response struct {
 
 func (response CreateMember429Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateMember500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response CreateMember500Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // CreateMember handles the POST /organizations/{organizationID}/members endpoint.
-func (c *MemberController) CreateMember(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *MemberController) CreateMember(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := CreateMemberRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := CreateMember401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitCreateMemberResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", r.PathValue("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := CreateMember400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter organizationID: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitCreateMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.OrganizationID = organizationID
 
 	// Request body
 	request.Body = &CreateMemberRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := CreateMember400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreateMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -179,13 +212,21 @@ func (c *MemberController) CreateMember(ctx echo.Context) error {
 		request.OrganizationID, // OrganizationID
 		request.Body.Role,      // Role
 	)
-	result, err := c.createMemberHandler.Handle(reqCtx, cmd)
+	result, err := c.createMemberHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := CreateMember500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreateMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusCreated, map[string]interface{}{
-		"data": result,
-	})
+
+	response := CreateMember201Response{Data: *result}
+	if err := response.VisitCreateMemberResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -211,53 +252,54 @@ type GetMember200Response struct {
 
 func (response GetMember200Response) VisitGetMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetMember404Response struct {
-	server.NotFoundResponse
-}
-
-func (response GetMember404Response) VisitGetMemberResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type GetMember429Response struct {
+type GetMember400Response struct {
 	server.ProblemDetails
 }
 
-func (response GetMember429Response) VisitGetMemberResponse(w http.ResponseWriter) error {
+func (response GetMember400Response) VisitGetMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response)
-}
-
-type GetMember500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response GetMember500Response) VisitGetMemberResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetMember401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response GetMember401Response) VisitGetMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetMember404Response struct {
+	server.ProblemDetails
+}
+
+func (response GetMember404Response) VisitGetMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetMember422Response struct {
@@ -266,42 +308,88 @@ type GetMember422Response struct {
 
 func (response GetMember422Response) VisitGetMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetMember429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetMember429Response) VisitGetMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetMember500Response struct {
+	server.ProblemDetails
+}
+
+func (response GetMember500Response) VisitGetMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // GetMember handles the GET /organizations/{organizationID}/members/{id} endpoint.
-func (c *MemberController) GetMember(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *MemberController) GetMember(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := GetMemberRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := GetMember401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitGetMemberResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", r.PathValue("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := GetMember400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter organizationID: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.OrganizationID = organizationID
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := GetMember400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -311,14 +399,21 @@ func (c *MemberController) GetMember(ctx echo.Context) error {
 		request.ID,             // ID
 	)
 
-	result, err := c.getMemberHandler.Handle(reqCtx, query)
+	result, err := c.getMemberHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := GetMember500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitGetMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	response := GetMember200Response{Data: *result}
+	if err := response.VisitGetMemberResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -345,36 +440,46 @@ type ListMembersResponse interface {
 }
 
 type ListMembers200Response struct {
-	Data entities.Member `json:"data"`
+	Data []entities.Member           `json:"data"`
+	Meta valueobjects.PaginationMeta `json:"meta"`
 }
 
 func (response ListMembers200Response) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type ListMembers400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response ListMembers400Response) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListMembers401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response ListMembers401Response) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListMembers422Response struct {
@@ -383,9 +488,12 @@ type ListMembers422Response struct {
 
 func (response ListMembers422Response) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListMembers429Response struct {
@@ -394,62 +502,98 @@ type ListMembers429Response struct {
 
 func (response ListMembers429Response) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListMembers500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response ListMembers500Response) VisitListMembersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // ListMembers handles the GET /organizations/{organizationID}/members endpoint.
-func (c *MemberController) ListMembers(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *MemberController) ListMembers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := ListMembersRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := ListMembers401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitListMembersResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", r.PathValue("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := ListMembers400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter organizationID: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListMembersResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.OrganizationID = organizationID
 
 	// Query parameters
 	var params ListMembersParams
-	// Optional query parameter "Filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
+
+	// Optional query parameter "filter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &params.Filter); err != nil {
+		errorResp := ListMembers400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListMembersResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+
+	// Optional query parameter "page"
+	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &params.Page); err != nil {
+		errorResp := ListMembers400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListMembersResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+
+	// Optional query parameter "sort"
+	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort); err != nil {
+		errorResp := ListMembers400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListMembersResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.Params = params
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -459,17 +603,32 @@ func (c *MemberController) ListMembers(ctx echo.Context) error {
 	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listMembersHandler.Handle(reqCtx, query)
+	results, total, err := c.listMembersHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := ListMembers500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitListMembersResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": results,
-		"meta": map[string]interface{}{
-			"total": total,
-		},
-	})
+	// Convert pointer slice to value slice for response
+	data := make([]entities.Member, len(results))
+	for i, item := range results {
+		if item != nil {
+			data[i] = *item
+		}
+	}
+
+	response := ListMembers200Response{
+		Data: data,
+		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+	}
+	if err := response.VisitListMembersResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -500,64 +659,54 @@ type UpdateMember200Response struct {
 
 func (response UpdateMember200Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateMember404Response struct {
-	server.NotFoundResponse
-}
-
-func (response UpdateMember404Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type UpdateMember429Response struct {
-	server.ProblemDetails
-}
-
-func (response UpdateMember429Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type UpdateMember500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response UpdateMember500Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
-}
-
 type UpdateMember400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response UpdateMember400Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateMember401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response UpdateMember401Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateMember404Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateMember404Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateMember422Response struct {
@@ -566,48 +715,100 @@ type UpdateMember422Response struct {
 
 func (response UpdateMember422Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateMember429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateMember429Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateMember500Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateMember500Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // UpdateMember handles the PATCH /organizations/{organizationID}/members/{id} endpoint.
-func (c *MemberController) UpdateMember(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *MemberController) UpdateMember(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := UpdateMemberRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := UpdateMember401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateMemberResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", r.PathValue("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := UpdateMember400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter organizationID: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.OrganizationID = organizationID
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := UpdateMember400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
 
 	// Request body
 	request.Body = &UpdateMemberRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := UpdateMember400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -619,13 +820,21 @@ func (c *MemberController) UpdateMember(ctx echo.Context) error {
 		request.ID,             // ID
 		request.Body.Role,      // Role
 	)
-	result, err := c.updateMemberHandler.Handle(reqCtx, cmd)
+	result, err := c.updateMemberHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := UpdateMember500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+
+	response := UpdateMember200Response{Data: *result}
+	if err := response.VisitUpdateMemberResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -645,59 +854,58 @@ type DeleteMemberResponse interface {
 	VisitDeleteMemberResponse(w http.ResponseWriter) error
 }
 
-type DeleteMember200Response struct {
-	Data entities.Member `json:"data"`
+type DeleteMember204Response struct {
 }
 
-func (response DeleteMember200Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
+func (response DeleteMember204Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(204)
 
-	return json.NewEncoder(w).Encode(response)
+	return nil
 }
 
-type DeleteMember404Response struct {
-	server.NotFoundResponse
-}
-
-func (response DeleteMember404Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type DeleteMember429Response struct {
+type DeleteMember400Response struct {
 	server.ProblemDetails
 }
 
-func (response DeleteMember429Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+func (response DeleteMember400Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response)
-}
-
-type DeleteMember500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response DeleteMember500Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteMember401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response DeleteMember401Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeleteMember404Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteMember404Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteMember422Response struct {
@@ -706,42 +914,88 @@ type DeleteMember422Response struct {
 
 func (response DeleteMember422Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeleteMember429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteMember429Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeleteMember500Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteMember500Response) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // DeleteMember handles the DELETE /organizations/{organizationID}/members/{id} endpoint.
-func (c *MemberController) DeleteMember(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *MemberController) DeleteMember(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := DeleteMemberRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := DeleteMember401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteMemberResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "organizationID"
 	var organizationID uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", ctx.Param("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter organizationID: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "organizationID", r.PathValue("organizationID"), &organizationID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := DeleteMember400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter organizationID: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.OrganizationID = organizationID
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := DeleteMember400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -752,8 +1006,18 @@ func (c *MemberController) DeleteMember(ctx echo.Context) error {
 		request.OrganizationID, // OrganizationID
 		request.ID,             // ID
 	)
-	if err := c.deleteMemberHandler.Handle(reqCtx, cmd); err != nil {
-		return err
+	if err := c.deleteMemberHandler.Handle(ctx, cmd); err != nil {
+		errorResp := DeleteMember500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteMemberResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.NoContent(http.StatusNoContent)
+
+	response := DeleteMember204Response{}
+	if err := response.VisitDeleteMemberResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }

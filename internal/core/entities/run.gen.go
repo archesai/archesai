@@ -53,26 +53,50 @@ func ParseRunStatus(s string) (RunStatus, error) {
 
 // Run represents Schema for Run entity
 type Run struct {
-	ID             uuid.UUID            `json:"id" yaml:"id"`                                       // Unique identifier for the resource
-	CompletedAt    *time.Time           `json:"completedAt,omitempty" yaml:"completedAt,omitempty"` // The timestamp when the run completed
-	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`                         // The date and time when the resource was created
-	Error          *string              `json:"error,omitempty" yaml:"error,omitempty"`             // The error message
-	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"`               // The organization this run belongs to
-	PipelineID     uuid.UUID            `json:"pipelineID" yaml:"pipelineID"`                       // The pipeline this run is executing
-	Progress       int32                `json:"progress" yaml:"progress"`                           // The percent progress of the run (0-100)
-	StartedAt      *time.Time           `json:"startedAt,omitempty" yaml:"startedAt,omitempty"`     // The timestamp when the run started
-	Status         RunStatus            `json:"status" yaml:"status"`
-	ToolID         uuid.UUID            `json:"toolID" yaml:"toolID"`       // The tool being used in this run
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"` // The date and time when the resource was last updated
-	events         []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// CompletedAt The timestamp when the run completed
+	CompletedAt *time.Time `json:"completedAt" yaml:"completedAt"`
+
+	// Error The error message
+	Error *string `json:"error" yaml:"error"`
+
+	// OrganizationID The organization this run belongs to
+	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
+
+	// PipelineID The pipeline this run is executing
+	PipelineID uuid.UUID `json:"pipelineID" yaml:"pipelineID"`
+
+	// Progress The percent progress of the run (0-100)
+	Progress int32 `json:"progress" yaml:"progress"`
+
+	// StartedAt The timestamp when the run started
+	StartedAt *time.Time `json:"startedAt" yaml:"startedAt"`
+	Status    RunStatus  `json:"status" yaml:"status"`
+
+	// ToolID The tool being used in this run
+	ToolID uuid.UUID `json:"toolID" yaml:"toolID"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewRun creates a new Run entity.
 // All required fields must be provided and valid.
 func NewRun(
+	completedAt *time.Time,
+	error *string,
 	organizationID uuid.UUID,
 	pipelineID uuid.UUID,
 	progress int32,
+	startedAt *time.Time,
 	status RunStatus,
 	toolID uuid.UUID,
 ) (*Run, error) {
@@ -85,12 +109,15 @@ func NewRun(
 	run := &Run{
 		ID:             id,
 		CreatedAt:      now,
+		UpdatedAt:      now,
+		CompletedAt:    completedAt,
+		Error:          error,
 		OrganizationID: organizationID,
 		PipelineID:     pipelineID,
 		Progress:       progress,
+		StartedAt:      startedAt,
 		Status:         status,
 		ToolID:         toolID,
-		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	run.addEvent(events.NewRunCreatedEvent(id))
@@ -103,14 +130,19 @@ func (e *Run) GetID() uuid.UUID {
 	return e.ID
 }
 
-// GetCompletedAt returns the CompletedAt
-func (e *Run) GetCompletedAt() *time.Time {
-	return e.CompletedAt
-}
-
 // GetCreatedAt returns the CreatedAt
 func (e *Run) GetCreatedAt() time.Time {
 	return e.CreatedAt
+}
+
+// GetUpdatedAt returns the UpdatedAt
+func (e *Run) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
+}
+
+// GetCompletedAt returns the CompletedAt
+func (e *Run) GetCompletedAt() *time.Time {
+	return e.CompletedAt
 }
 
 // GetError returns the Error
@@ -139,18 +171,13 @@ func (e *Run) GetStartedAt() *time.Time {
 }
 
 // GetStatus returns the Status
-func (e *Run) GetStatus() string {
-	return string(e.Status)
+func (e *Run) GetStatus() RunStatus {
+	return e.Status
 }
 
 // GetToolID returns the ToolID
 func (e *Run) GetToolID() uuid.UUID {
 	return e.ToolID
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *Run) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
 }
 
 // Events returns the domain events

@@ -38,6 +38,7 @@ func LoadTemplates() (map[string]*template.Template, error) {
 		"query_handler.tmpl",
 		"bootstrap.tmpl",
 		"infrastructure.tmpl",
+		"schema_hcl.tmpl",
 	}
 
 	// Load header template first as it's used by other templates
@@ -102,5 +103,9 @@ func TemplateFuncs() template.FuncMap {
 			}
 			return *s
 		},
+
+		// HCL generation helpers
+		"mapToHCLType":     parsers.SchemaToHCLType,
+		"formatHCLDefault": parsers.FormatHCLDefault,
 	}
 }

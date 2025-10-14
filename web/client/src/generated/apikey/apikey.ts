@@ -306,9 +306,9 @@ export const getGetAPIKeyUrl = (id: string | undefined | null,) => {
   return `/api-keys/${id}`
 }
 
-export const getAPIKey = async (id: string | undefined | null, options?: RequestInit): Promise<APIKeyListResponseResponse> => {
+export const getAPIKey = async (id: string | undefined | null, options?: RequestInit): Promise<APIKeyResponseResponse> => {
   
-  return customFetch<APIKeyListResponseResponse>(getGetAPIKeyUrl(id),
+  return customFetch<APIKeyResponseResponse>(getGetAPIKeyUrl(id),
   {      
     ...options,
     method: 'GET'

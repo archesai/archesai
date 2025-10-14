@@ -9,13 +9,20 @@ import (
 
 // ServiceAccountConfig represents Kubernetes service account configuration
 type ServiceAccountConfig struct {
-	Create bool   `json:"create" yaml:"create"` // Create dedicated service account
-	Name   string `json:"name" yaml:"name"`     // Custom service account name
+
+	// Create Create dedicated service account
+	Create bool `json:"create" yaml:"create"`
+
+	// Name Custom service account name
+	Name string `json:"name" yaml:"name"`
 }
 
 // NewServiceAccountConfig creates a new immutable ServiceAccountConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewServiceAccountConfig(create bool, name string) (ServiceAccountConfig, error) {
+func NewServiceAccountConfig(
+	create bool,
+	name string,
+) (ServiceAccountConfig, error) {
 	// Validate required fields
 	return ServiceAccountConfig{
 		Create: create,

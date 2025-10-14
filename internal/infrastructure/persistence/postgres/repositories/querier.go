@@ -29,7 +29,6 @@ type Querier interface {
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateTool(ctx context.Context, arg CreateToolParams) (Tool, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
-	CreateVerificationToken(ctx context.Context, arg CreateVerificationTokenParams) (VerificationToken, error)
 	DeleteAPIKey(ctx context.Context, arg DeleteAPIKeyParams) error
 	DeleteAPIKeysByUser(ctx context.Context, arg DeleteAPIKeysByUserParams) error
 	DeleteAccount(ctx context.Context, arg DeleteAccountParams) error
@@ -57,8 +56,6 @@ type Querier interface {
 	DeleteTool(ctx context.Context, arg DeleteToolParams) error
 	DeleteToolsByOrganization(ctx context.Context, arg DeleteToolsByOrganizationParams) error
 	DeleteUser(ctx context.Context, arg DeleteUserParams) error
-	DeleteVerificationToken(ctx context.Context, arg DeleteVerificationTokenParams) error
-	DeleteVerificationTokensByIdentifier(ctx context.Context, arg DeleteVerificationTokensByIdentifierParams) error
 	GetAPIKey(ctx context.Context, arg GetAPIKeyParams) (APIKey, error)
 	GetAPIKeyByKeyHash(ctx context.Context, arg GetAPIKeyByKeyHashParams) (APIKey, error)
 	GetAccount(ctx context.Context, arg GetAccountParams) (Account, error)
@@ -88,8 +85,6 @@ type Querier interface {
 	GetUser(ctx context.Context, arg GetUserParams) (User, error)
 	GetUserByEmail(ctx context.Context, arg GetUserByEmailParams) (User, error)
 	GetUserBySessionID(ctx context.Context, arg GetUserBySessionIDParams) (User, error)
-	GetVerificationToken(ctx context.Context, arg GetVerificationTokenParams) (VerificationToken, error)
-	GetVerificationTokenByValue(ctx context.Context, arg GetVerificationTokenByValueParams) (VerificationToken, error)
 	ListAPIKeys(ctx context.Context, arg ListAPIKeysParams) ([]APIKey, error)
 	ListAPIKeysByOrganization(ctx context.Context, arg ListAPIKeysByOrganizationParams) ([]APIKey, error)
 	ListAPIKeysByUser(ctx context.Context, arg ListAPIKeysByUserParams) ([]APIKey, error)
@@ -122,8 +117,6 @@ type Querier interface {
 	ListTools(ctx context.Context, arg ListToolsParams) ([]Tool, error)
 	ListToolsByOrganization(ctx context.Context, arg ListToolsByOrganizationParams) ([]Tool, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
-	ListVerificationTokens(ctx context.Context, arg ListVerificationTokensParams) ([]VerificationToken, error)
-	ListVerificationTokensByIdentifier(ctx context.Context, arg ListVerificationTokensByIdentifierParams) ([]VerificationToken, error)
 	UpdateAPIKey(ctx context.Context, arg UpdateAPIKeyParams) (APIKey, error)
 	UpdateAPIKeyLastUsed(ctx context.Context, arg UpdateAPIKeyLastUsedParams) error
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)
@@ -138,7 +131,6 @@ type Querier interface {
 	UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error)
 	UpdateTool(ctx context.Context, arg UpdateToolParams) (Tool, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
-	UpdateVerificationToken(ctx context.Context, arg UpdateVerificationTokenParams) (VerificationToken, error)
 }
 
 var _ Querier = (*Queries)(nil)

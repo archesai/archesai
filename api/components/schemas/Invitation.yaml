@@ -16,6 +16,15 @@ x-codegen:
     excludeFromUpdate:
       - InviterID
       - OrganizationID
+    relations:
+      - field: inviterID
+        references: user
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
     additionalMethods:
       - name: ListInvitationsByOrganization
         params:
@@ -80,6 +89,7 @@ allOf:
           - owner
           - basic
         example: admin
+        default: basic
       status:
         description: The status of the invitation, e.g., pending, accepted, declined
         type: string
@@ -89,6 +99,7 @@ allOf:
           - declined
           - expired
         example: pending
+        default: pending
     required:
       - email
       - expiresAt

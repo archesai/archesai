@@ -17,7 +17,9 @@ type MagicLinkAuthConfigDeliveryMethods struct {
 
 // MagicLinkAuthConfigDeliveryMethodsConsole represents a nested type for MagicLinkAuthConfig
 type MagicLinkAuthConfigDeliveryMethodsConsole struct {
-	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"` // Enable console output (development only)
+
+	// Enabled Enable console output (development only)
+	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 }
 
 // MagicLinkAuthConfigDeliveryMethodsEmail represents a nested type for MagicLinkAuthConfig
@@ -39,22 +41,42 @@ type MagicLinkAuthConfigDeliveryMethodsWebhook struct {
 
 // MagicLinkAuthConfigRateLimit represents Rate limiting configuration
 type MagicLinkAuthConfigRateLimit struct {
-	MaxAttempts   *int32 `json:"maxAttempts,omitempty" yaml:"maxAttempts,omitempty"`     // Maximum number of attempts within window
-	WindowMinutes *int32 `json:"windowMinutes,omitempty" yaml:"windowMinutes,omitempty"` // Time window in minutes
+
+	// MaxAttempts Maximum number of attempts within window
+	MaxAttempts *int32 `json:"maxAttempts,omitempty" yaml:"maxAttempts,omitempty"`
+
+	// WindowMinutes Time window in minutes
+	WindowMinutes *int32 `json:"windowMinutes,omitempty" yaml:"windowMinutes,omitempty"`
 }
 
 // MagicLinkAuthConfig represents Magic link authentication configuration
 type MagicLinkAuthConfig struct {
-	DeliveryMethods *MagicLinkAuthConfigDeliveryMethods `json:"deliveryMethods,omitempty" yaml:"deliveryMethods,omitempty"` // Available delivery methods
-	Enabled         bool                                `json:"enabled" yaml:"enabled"`                                     // Enable magic link authentication
-	OtpLength       *int32                              `json:"otpLength,omitempty" yaml:"otpLength,omitempty"`             // Length of OTP code
-	RateLimit       *MagicLinkAuthConfigRateLimit       `json:"rateLimit,omitempty" yaml:"rateLimit,omitempty"`             // Rate limiting configuration
-	TokenExpiry     *int32                              `json:"tokenExpiry,omitempty" yaml:"tokenExpiry,omitempty"`         // Token expiry duration in minutes
+
+	// DeliveryMethods Available delivery methods
+	DeliveryMethods *MagicLinkAuthConfigDeliveryMethods `json:"deliveryMethods,omitempty" yaml:"deliveryMethods,omitempty"`
+
+	// Enabled Enable magic link authentication
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// OtpLength Length of OTP code
+	OtpLength *int32 `json:"otpLength,omitempty" yaml:"otpLength,omitempty"`
+
+	// RateLimit Rate limiting configuration
+	RateLimit *MagicLinkAuthConfigRateLimit `json:"rateLimit,omitempty" yaml:"rateLimit,omitempty"`
+
+	// TokenExpiry Token expiry duration in minutes
+	TokenExpiry *int32 `json:"tokenExpiry,omitempty" yaml:"tokenExpiry,omitempty"`
 }
 
 // NewMagicLinkAuthConfig creates a new immutable MagicLinkAuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewMagicLinkAuthConfig(deliveryMethods *MagicLinkAuthConfigDeliveryMethods, enabled bool, otpLength *int32, rateLimit *MagicLinkAuthConfigRateLimit, tokenExpiry *int32) (MagicLinkAuthConfig, error) {
+func NewMagicLinkAuthConfig(
+	deliveryMethods *MagicLinkAuthConfigDeliveryMethods,
+	enabled bool,
+	otpLength *int32,
+	rateLimit *MagicLinkAuthConfigRateLimit,
+	tokenExpiry *int32,
+) (MagicLinkAuthConfig, error) {
 	// Validate required fields
 	return MagicLinkAuthConfig{
 		DeliveryMethods: deliveryMethods,

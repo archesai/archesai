@@ -19,12 +19,18 @@ type HealthServices struct {
 type Health struct {
 	Services  HealthServices `json:"services" yaml:"services"`
 	Timestamp time.Time      `json:"timestamp" yaml:"timestamp"`
-	Uptime    int64          `json:"uptime" yaml:"uptime"` // System uptime in seconds
+
+	// Uptime System uptime in seconds
+	Uptime int64 `json:"uptime" yaml:"uptime"`
 }
 
 // NewHealth creates a new immutable Health value object.
 // Value objects are immutable and validated upon creation.
-func NewHealth(services HealthServices, timestamp time.Time, uptime int64) (Health, error) {
+func NewHealth(
+	services HealthServices,
+	timestamp time.Time,
+	uptime int64,
+) (Health, error) {
 	// Validate required fields
 	return Health{
 		Services:  services,

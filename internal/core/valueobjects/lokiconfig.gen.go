@@ -9,16 +9,28 @@ import (
 
 // LokiConfig represents Loki log aggregation service configuration
 type LokiConfig struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"`               // Enable Loki
-	Host      *string         `json:"host,omitempty" yaml:"host,omitempty"` // Loki host URL
-	Image     *ImageConfig    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed Loki deployment
+
+	// Enabled Enable Loki
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// Host Loki host URL
+	Host  *string      `json:"host,omitempty" yaml:"host,omitempty"`
+	Image *ImageConfig `json:"image,omitempty" yaml:"image,omitempty"`
+
+	// Managed Use managed Loki deployment
+	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"`
 	Resources *ResourceConfig `json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
 // NewLokiConfig creates a new immutable LokiConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewLokiConfig(enabled bool, host *string, image *ImageConfig, managed *bool, resources *ResourceConfig) (LokiConfig, error) {
+func NewLokiConfig(
+	enabled bool,
+	host *string,
+	image *ImageConfig,
+	managed *bool,
+	resources *ResourceConfig,
+) (LokiConfig, error) {
 	// Validate required fields
 	return LokiConfig{
 		Enabled:   enabled,

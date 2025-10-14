@@ -4,10 +4,9 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/labstack/echo/v4"
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	queries "github.com/archesai/archesai/internal/application/queries/health"
@@ -28,8 +27,8 @@ func NewHealthController(
 }
 
 // RegisterHealthRoutes registers all HTTP routes for the health domain.
-func RegisterHealthRoutes(router server.EchoRouter, controller *HealthController) {
-	router.GET("/health", controller.GetHealth)
+func RegisterHealthRoutes(mux *http.ServeMux, controller *HealthController) {
+	mux.HandleFunc("GET /health", controller.GetHealth)
 }
 
 // ============================================================================
@@ -62,31 +61,40 @@ type GetHealth200Response struct {
 
 func (response GetHealth200Response) VisitGetHealthResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type GetHealth400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response GetHealth400Response) VisitGetHealthResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetHealth401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response GetHealth401Response) VisitGetHealthResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetHealth429Response struct {
@@ -95,38 +103,55 @@ type GetHealth429Response struct {
 
 func (response GetHealth429Response) VisitGetHealthResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetHealth500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response GetHealth500Response) VisitGetHealthResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // GetHealth handles the GET /health endpoint.
-func (c *HealthController) GetHealth(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *HealthController) GetHealth(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
 	// Determine which handler to call based on operation
 	// Query handler
 	query := queries.NewGetHealthQuery()
 
-	result, err := c.getHealthHandler.Handle(reqCtx, query)
+	result, err := c.getHealthHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := GetHealth500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitGetHealthResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	// Custom handler - result type varies, response structure not standardized
+	// TODO: Implement proper type assertion and response mapping
+	_ = result
+	response := GetHealth200Response{}
+	if err := response.VisitGetHealthResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }

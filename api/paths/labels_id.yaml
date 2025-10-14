@@ -10,17 +10,19 @@ get:
     - bearerAuth: []
   responses:
     '200':
-      $ref: ../components/responses/LabelListResponse.yaml
+      $ref: ../components/responses/LabelResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
     '404':
       $ref: ../components/responses/NotFound.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
     '429':
       $ref: ../components/responses/TooManyRequests.yaml
     '500':
       $ref: ../components/responses/InternalServerError.yaml
-    '401':
-      $ref: ../components/responses/Unauthorized.yaml
-    '422':
-      $ref: ../components/responses/UnprocessableEntity.yaml
 patch:
   operationId: UpdateLabel
   summary: Update a label
@@ -71,15 +73,17 @@ delete:
   security:
     - bearerAuth: []
   responses:
-    '200':
-      $ref: ../components/responses/LabelResponse.yaml
+    '204':
+      $ref: ../components/responses/NoContent.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
     '404':
       $ref: ../components/responses/NotFound.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
     '429':
       $ref: ../components/responses/TooManyRequests.yaml
     '500':
       $ref: ../components/responses/InternalServerError.yaml
-    '401':
-      $ref: ../components/responses/Unauthorized.yaml
-    '422':
-      $ref: ../components/responses/UnprocessableEntity.yaml

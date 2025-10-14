@@ -25,19 +25,19 @@ func NewConfirmPasswordResetCommandHandler(
 func (h *ConfirmPasswordResetCommandHandler) Handle(
 	ctx context.Context,
 	cmd *ConfirmPasswordResetCommand,
-) (any, error) {
+) error {
 	if cmd.Token == "" {
-		return nil, fmt.Errorf("token is required")
+		return fmt.Errorf("token is required")
 	}
 	if cmd.NewPassword == "" {
-		return nil, fmt.Errorf("new password is required")
+		return fmt.Errorf("new password is required")
 	}
 
 	// Confirm password reset
 	err := h.authService.ConfirmPasswordReset(ctx, cmd.Token, cmd.NewPassword)
 	if err != nil {
-		return nil, fmt.Errorf("failed to reset password: %w", err)
+		return fmt.Errorf("failed to reset password: %w", err)
 	}
 
-	return nil, nil
+	return nil
 }

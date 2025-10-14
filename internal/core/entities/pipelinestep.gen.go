@@ -11,12 +11,23 @@ import (
 
 // PipelineStep represents Schema for PipelineStep entity
 type PipelineStep struct {
-	ID         uuid.UUID            `json:"id" yaml:"id"`                 // Unique identifier for the resource
-	CreatedAt  time.Time            `json:"createdAt" yaml:"createdAt"`   // The date and time when the resource was created
-	PipelineID uuid.UUID            `json:"pipelineID" yaml:"pipelineID"` // The pipeline this step belongs to
-	ToolID     uuid.UUID            `json:"toolID" yaml:"toolID"`         // The tool used in this step
-	UpdatedAt  time.Time            `json:"updatedAt" yaml:"updatedAt"`   // The date and time when the resource was last updated
-	events     []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// PipelineID The pipeline this step belongs to
+	PipelineID uuid.UUID `json:"pipelineID" yaml:"pipelineID"`
+
+	// ToolID The tool used in this step
+	ToolID uuid.UUID `json:"toolID" yaml:"toolID"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewPipelineStep creates a new PipelineStep entity.
@@ -31,9 +42,9 @@ func NewPipelineStep(
 	pipelinestep := &PipelineStep{
 		ID:         id,
 		CreatedAt:  now,
+		UpdatedAt:  now,
 		PipelineID: pipelineID,
 		ToolID:     toolID,
-		UpdatedAt:  now,
 		events:     []events.DomainEvent{},
 	}
 	pipelinestep.addEvent(events.NewPipelineStepCreatedEvent(id))
@@ -51,6 +62,11 @@ func (e *PipelineStep) GetCreatedAt() time.Time {
 	return e.CreatedAt
 }
 
+// GetUpdatedAt returns the UpdatedAt
+func (e *PipelineStep) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
+}
+
 // GetPipelineID returns the PipelineID
 func (e *PipelineStep) GetPipelineID() uuid.UUID {
 	return e.PipelineID
@@ -59,11 +75,6 @@ func (e *PipelineStep) GetPipelineID() uuid.UUID {
 // GetToolID returns the ToolID
 func (e *PipelineStep) GetToolID() uuid.UUID {
 	return e.ToolID
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *PipelineStep) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
 }
 
 // Events returns the domain events

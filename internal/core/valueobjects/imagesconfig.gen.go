@@ -9,13 +9,20 @@ import (
 
 // ImagesConfig represents Container image configuration
 type ImagesConfig struct {
-	ImagePullSecrets []string `json:"imagePullSecrets" yaml:"imagePullSecrets"` // List of Kubernetes secrets for pulling private images
-	ImageRegistry    string   `json:"imageRegistry" yaml:"imageRegistry"`       // Custom container registry URL (leave empty for Docker Hub)
+
+	// ImagePullSecrets List of Kubernetes secrets for pulling private images
+	ImagePullSecrets []string `json:"imagePullSecrets" yaml:"imagePullSecrets"`
+
+	// ImageRegistry Custom container registry URL (leave empty for Docker Hub)
+	ImageRegistry string `json:"imageRegistry" yaml:"imageRegistry"`
 }
 
 // NewImagesConfig creates a new immutable ImagesConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewImagesConfig(imagePullSecrets []string, imageRegistry string) (ImagesConfig, error) {
+func NewImagesConfig(
+	imagePullSecrets []string,
+	imageRegistry string,
+) (ImagesConfig, error) {
 	// Validate required fields
 	return ImagesConfig{
 		ImagePullSecrets: imagePullSecrets,

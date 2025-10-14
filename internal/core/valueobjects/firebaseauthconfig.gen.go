@@ -9,15 +9,28 @@ import (
 
 // FirebaseAuthConfig represents Firebase authentication configuration
 type FirebaseAuthConfig struct {
-	ClientEmail *string `json:"clientEmail,omitempty" yaml:"clientEmail,omitempty"` // Firebase service account client email address
-	Enabled     bool    `json:"enabled" yaml:"enabled"`                             // Enable Firebase authentication
-	PrivateKey  *string `json:"privateKey,omitempty" yaml:"privateKey,omitempty"`   // Firebase service account private key (PEM format)
-	ProjectID   *string `json:"projectID,omitempty" yaml:"projectID,omitempty"`     // Firebase project ID for authentication
+
+	// ClientEmail Firebase service account client email address
+	ClientEmail *string `json:"clientEmail,omitempty" yaml:"clientEmail,omitempty"`
+
+	// Enabled Enable Firebase authentication
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// PrivateKey Firebase service account private key (PEM format)
+	PrivateKey *string `json:"privateKey,omitempty" yaml:"privateKey,omitempty"`
+
+	// ProjectID Firebase project ID for authentication
+	ProjectID *string `json:"projectID,omitempty" yaml:"projectID,omitempty"`
 }
 
 // NewFirebaseAuthConfig creates a new immutable FirebaseAuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewFirebaseAuthConfig(clientEmail *string, enabled bool, privateKey *string, projectID *string) (FirebaseAuthConfig, error) {
+func NewFirebaseAuthConfig(
+	clientEmail *string,
+	enabled bool,
+	privateKey *string,
+	projectID *string,
+) (FirebaseAuthConfig, error) {
 	// Validate required fields
 	return FirebaseAuthConfig{
 		ClientEmail: clientEmail,

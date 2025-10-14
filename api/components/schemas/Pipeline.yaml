@@ -13,6 +13,11 @@ x-codegen:
       - OrganizationID
     indices:
       - organizationID
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: CASCADE
     additionalMethods:
       - name: ListPipelinesByOrganization
         params:
@@ -34,14 +39,14 @@ allOf:
         maxLength: 36
       name:
         description: The pipeline's display name
-        type: string
+        type: [string, 'null']
         minLength: 1
         maxLength: 255
         example: Data Processing Pipeline
         pattern: ^[\w\s\-.,!?()@#+/']+$
       description:
         description: Detailed description of the pipeline's purpose
-        type: string
+        type: [string, 'null']
         maxLength: 1000
         pattern: ^[\w\s\-.,!?()@#+/':;]+$
         example:
@@ -49,4 +54,6 @@ allOf:
           steps
     required:
       - organizationID
+      - name
+      - description
 unevaluatedProperties: false

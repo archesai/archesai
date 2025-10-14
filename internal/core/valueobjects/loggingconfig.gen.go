@@ -59,13 +59,20 @@ func ParseLoggingConfigLevel(s string) (LoggingConfigLevel, error) {
 
 // LoggingConfig represents Logging configuration
 type LoggingConfig struct {
-	Level  LoggingConfigLevel `json:"level" yaml:"level"`   // Minimum log level to output
-	Pretty bool               `json:"pretty" yaml:"pretty"` // Enable pretty-printed logs for development
+
+	// Level Minimum log level to output
+	Level LoggingConfigLevel `json:"level" yaml:"level"`
+
+	// Pretty Enable pretty-printed logs for development
+	Pretty bool `json:"pretty" yaml:"pretty"`
 }
 
 // NewLoggingConfig creates a new immutable LoggingConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewLoggingConfig(level LoggingConfigLevel, pretty bool) (LoggingConfig, error) {
+func NewLoggingConfig(
+	level LoggingConfigLevel,
+	pretty bool,
+) (LoggingConfig, error) {
 	// Validate required fields
 	if !level.IsValid() {
 		return LoggingConfig{}, fmt.Errorf("invalid Level: %s", level)

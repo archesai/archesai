@@ -87,8 +87,8 @@ delete:
           - DELETE_MY_ACCOUNT
         example: DELETE_MY_ACCOUNT
   responses:
-    '200':
-      $ref: ../components/responses/UserResponse.yaml
+    '204':
+      $ref: ../components/responses/NoContent.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

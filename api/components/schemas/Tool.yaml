@@ -13,6 +13,11 @@ x-codegen:
       - OrganizationID
     indices:
       - organizationID
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: CASCADE
     additionalMethods:
       - name: ListToolsByOrganization
         params:
@@ -36,6 +41,7 @@ allOf:
         description: The MIME type of the input for the tool, e.g. text/plain
         type: string
         minLength: 1
+        default: application/octet-stream
         example: text/plain
         maxLength: 255
         pattern: ^[a-z]+/[a-z0-9\+\-\.]+$
@@ -57,6 +63,7 @@ allOf:
         description: The MIME type of the output for the tool, e.g. text/plain
         type: string
         minLength: 1
+        default: application/octet-stream
         example: application/json
         maxLength: 255
         pattern: ^[a-z]+/[a-z0-9\+\-\.]+$

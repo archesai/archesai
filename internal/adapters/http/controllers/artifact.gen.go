@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
@@ -45,12 +44,12 @@ func NewArtifactController(
 }
 
 // RegisterArtifactRoutes registers all HTTP routes for the artifact domain.
-func RegisterArtifactRoutes(router server.EchoRouter, controller *ArtifactController) {
-	router.POST("/artifacts", controller.CreateArtifact)
-	router.GET("/artifacts/:id", controller.GetArtifact)
-	router.GET("/artifacts", controller.ListArtifacts)
-	router.PATCH("/artifacts/:id", controller.UpdateArtifact)
-	router.DELETE("/artifacts/:id", controller.DeleteArtifact)
+func RegisterArtifactRoutes(mux *http.ServeMux, controller *ArtifactController) {
+	mux.HandleFunc("POST /artifacts", controller.CreateArtifact)
+	mux.HandleFunc("GET /artifacts/{id}", controller.GetArtifact)
+	mux.HandleFunc("GET /artifacts", controller.ListArtifacts)
+	mux.HandleFunc("PATCH /artifacts/{id}", controller.UpdateArtifact)
+	mux.HandleFunc("DELETE /artifacts/{id}", controller.DeleteArtifact)
 }
 
 // ============================================================================
@@ -80,31 +79,40 @@ type CreateArtifact201Response struct {
 
 func (response CreateArtifact201Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type CreateArtifact400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response CreateArtifact400Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateArtifact401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response CreateArtifact401Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateArtifact422Response struct {
@@ -113,9 +121,12 @@ type CreateArtifact422Response struct {
 
 func (response CreateArtifact422Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateArtifact429Response struct {
@@ -124,45 +135,60 @@ type CreateArtifact429Response struct {
 
 func (response CreateArtifact429Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateArtifact500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response CreateArtifact500Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // CreateArtifact handles the POST /artifacts endpoint.
-func (c *ArtifactController) CreateArtifact(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *ArtifactController) CreateArtifact(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := CreateArtifactRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := CreateArtifact401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitCreateArtifactResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Request body
 	request.Body = &CreateArtifactRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := CreateArtifact400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreateArtifactResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -173,13 +199,21 @@ func (c *ArtifactController) CreateArtifact(ctx echo.Context) error {
 		request.Body.Name, // Name
 		request.Body.Text, // Text
 	)
-	result, err := c.createArtifactHandler.Handle(reqCtx, cmd)
+	result, err := c.createArtifactHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := CreateArtifact500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreateArtifactResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusCreated, map[string]interface{}{
-		"data": result,
-	})
+
+	response := CreateArtifact201Response{Data: *result}
+	if err := response.VisitCreateArtifactResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -199,37 +233,59 @@ type GetArtifactResponse interface {
 }
 
 type GetArtifact200Response struct {
-	Data []entities.Artifact         `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data entities.Artifact `json:"data"`
 }
 
 func (response GetArtifact200Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetArtifact404Response struct {
-	server.NotFoundResponse
+type GetArtifact400Response struct {
+	server.ProblemDetails
 }
 
-func (response GetArtifact404Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
+func (response GetArtifact400Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetArtifact401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response GetArtifact401Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetArtifact404Response struct {
+	server.ProblemDetails
+}
+
+func (response GetArtifact404Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetArtifact422Response struct {
@@ -238,9 +294,12 @@ type GetArtifact422Response struct {
 
 func (response GetArtifact422Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetArtifact429Response struct {
@@ -249,46 +308,61 @@ type GetArtifact429Response struct {
 
 func (response GetArtifact429Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetArtifact500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response GetArtifact500Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // GetArtifact handles the GET /artifacts/{id} endpoint.
-func (c *ArtifactController) GetArtifact(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *ArtifactController) GetArtifact(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := GetArtifactRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := GetArtifact401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitGetArtifactResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := GetArtifact400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetArtifactResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -297,14 +371,21 @@ func (c *ArtifactController) GetArtifact(ctx echo.Context) error {
 		request.ID, // ID
 	)
 
-	result, err := c.getArtifactHandler.Handle(reqCtx, query)
+	result, err := c.getArtifactHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := GetArtifact500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitGetArtifactResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	response := GetArtifact200Response{Data: *result}
+	if err := response.VisitGetArtifactResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -336,31 +417,40 @@ type ListArtifacts200Response struct {
 
 func (response ListArtifacts200Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type ListArtifacts400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response ListArtifacts400Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListArtifacts401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response ListArtifacts401Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListArtifacts422Response struct {
@@ -369,9 +459,12 @@ type ListArtifacts422Response struct {
 
 func (response ListArtifacts422Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListArtifacts429Response struct {
@@ -380,55 +473,85 @@ type ListArtifacts429Response struct {
 
 func (response ListArtifacts429Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListArtifacts500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response ListArtifacts500Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // ListArtifacts handles the GET /artifacts endpoint.
-func (c *ArtifactController) ListArtifacts(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *ArtifactController) ListArtifacts(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := ListArtifactsRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := ListArtifacts401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitListArtifactsResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Query parameters
 	var params ListArtifactsParams
-	// Optional query parameter "Filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
+
+	// Optional query parameter "filter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &params.Filter); err != nil {
+		errorResp := ListArtifacts400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListArtifactsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+
+	// Optional query parameter "page"
+	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &params.Page); err != nil {
+		errorResp := ListArtifacts400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListArtifactsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+
+	// Optional query parameter "sort"
+	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort); err != nil {
+		errorResp := ListArtifacts400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListArtifactsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.Params = params
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -437,17 +560,32 @@ func (c *ArtifactController) ListArtifacts(ctx echo.Context) error {
 	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listArtifactsHandler.Handle(reqCtx, query)
+	results, total, err := c.listArtifactsHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := ListArtifacts500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitListArtifactsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": results,
-		"meta": map[string]interface{}{
-			"total": total,
-		},
-	})
+	// Convert pointer slice to value slice for response
+	data := make([]entities.Artifact, len(results))
+	for i, item := range results {
+		if item != nil {
+			data[i] = *item
+		}
+	}
+
+	response := ListArtifacts200Response{
+		Data: data,
+		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+	}
+	if err := response.VisitListArtifactsResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -479,64 +617,54 @@ type UpdateArtifact200Response struct {
 
 func (response UpdateArtifact200Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateArtifact404Response struct {
-	server.NotFoundResponse
-}
-
-func (response UpdateArtifact404Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type UpdateArtifact429Response struct {
-	server.ProblemDetails
-}
-
-func (response UpdateArtifact429Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type UpdateArtifact500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response UpdateArtifact500Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
-}
-
 type UpdateArtifact400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response UpdateArtifact400Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateArtifact401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response UpdateArtifact401Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateArtifact404Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateArtifact404Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateArtifact422Response struct {
@@ -545,41 +673,87 @@ type UpdateArtifact422Response struct {
 
 func (response UpdateArtifact422Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateArtifact429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateArtifact429Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateArtifact500Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateArtifact500Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // UpdateArtifact handles the PATCH /artifacts/{id} endpoint.
-func (c *ArtifactController) UpdateArtifact(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *ArtifactController) UpdateArtifact(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := UpdateArtifactRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := UpdateArtifact401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateArtifactResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := UpdateArtifact400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateArtifactResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
 
 	// Request body
 	request.Body = &UpdateArtifactRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := UpdateArtifact400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateArtifactResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -592,13 +766,21 @@ func (c *ArtifactController) UpdateArtifact(ctx echo.Context) error {
 		request.Body.Text, // Text
 		request.Body.URL,  // URL
 	)
-	result, err := c.updateArtifactHandler.Handle(reqCtx, cmd)
+	result, err := c.updateArtifactHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := UpdateArtifact500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateArtifactResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+
+	response := UpdateArtifact200Response{Data: *result}
+	if err := response.VisitUpdateArtifactResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -617,37 +799,58 @@ type DeleteArtifactResponse interface {
 	VisitDeleteArtifactResponse(w http.ResponseWriter) error
 }
 
-type DeleteArtifact200Response struct {
-	Data entities.Artifact `json:"data"`
+type DeleteArtifact204Response struct {
 }
 
-func (response DeleteArtifact200Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
+func (response DeleteArtifact204Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(204)
 
-	return json.NewEncoder(w).Encode(response)
+	return nil
 }
 
-type DeleteArtifact404Response struct {
-	server.NotFoundResponse
+type DeleteArtifact400Response struct {
+	server.ProblemDetails
 }
 
-func (response DeleteArtifact404Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+func (response DeleteArtifact400Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteArtifact401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response DeleteArtifact401Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeleteArtifact404Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteArtifact404Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteArtifact422Response struct {
@@ -656,9 +859,12 @@ type DeleteArtifact422Response struct {
 
 func (response DeleteArtifact422Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteArtifact429Response struct {
@@ -667,46 +873,61 @@ type DeleteArtifact429Response struct {
 
 func (response DeleteArtifact429Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteArtifact500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response DeleteArtifact500Response) VisitDeleteArtifactResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // DeleteArtifact handles the DELETE /artifacts/{id} endpoint.
-func (c *ArtifactController) DeleteArtifact(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *ArtifactController) DeleteArtifact(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := DeleteArtifactRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := DeleteArtifact401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteArtifactResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := DeleteArtifact400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteArtifactResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -716,8 +937,18 @@ func (c *ArtifactController) DeleteArtifact(ctx echo.Context) error {
 		sessionID,  // SessionID for authenticated operations
 		request.ID, // ID
 	)
-	if err := c.deleteArtifactHandler.Handle(reqCtx, cmd); err != nil {
-		return err
+	if err := c.deleteArtifactHandler.Handle(ctx, cmd); err != nil {
+		errorResp := DeleteArtifact500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteArtifactResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.NoContent(http.StatusNoContent)
+
+	response := DeleteArtifact204Response{}
+	if err := response.VisitDeleteArtifactResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }

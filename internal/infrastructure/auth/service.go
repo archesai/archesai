@@ -233,6 +233,7 @@ func (s *Service) VerifyMagicLink(
 		newUser, createErr := entities.NewUser(
 			claims.Identifier,
 			true,              // Magic link verifies email
+			nil,               // No image initially
 			claims.Identifier, // Default name to email
 		)
 		if createErr != nil {
@@ -470,7 +471,7 @@ func (s *Service) Register(
 	}
 
 	// Create the user
-	user, err := entities.NewUser(email, false, name)
+	user, err := entities.NewUser(email, false, nil, name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user entity: %w", err)
 	}

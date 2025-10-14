@@ -9,13 +9,20 @@ import (
 
 // SpeechConfig represents Speech recognition and TTS services
 type SpeechConfig struct {
-	Enabled bool    `json:"enabled" yaml:"enabled"`                 // Enable speech services
-	Token   *string `json:"token,omitempty" yaml:"token,omitempty"` // Speech-to-text service API token
+
+	// Enabled Enable speech services
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// Token Speech-to-text service API token
+	Token *string `json:"token,omitempty" yaml:"token,omitempty"`
 }
 
 // NewSpeechConfig creates a new immutable SpeechConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewSpeechConfig(enabled bool, token *string) (SpeechConfig, error) {
+func NewSpeechConfig(
+	enabled bool,
+	token *string,
+) (SpeechConfig, error) {
 	// Validate required fields
 	return SpeechConfig{
 		Enabled: enabled,

@@ -28,22 +28,22 @@ func NewConfirmEmailChangeCommandHandler(
 func (h *ConfirmEmailChangeCommandHandler) Handle(
 	ctx context.Context,
 	cmd *ConfirmEmailChangeCommand,
-) (any, error) {
+) error {
 	if cmd.Token == "" {
-		return nil, fmt.Errorf("token is required")
+		return fmt.Errorf("token is required")
 	}
 	if cmd.NewEmail == "" {
-		return nil, fmt.Errorf("new email is required")
+		return fmt.Errorf("new email is required")
 	}
 	if cmd.UserID == uuid.Nil {
-		return nil, fmt.Errorf("user ID is required")
+		return fmt.Errorf("user ID is required")
 	}
 
 	// Confirm email change
 	err := h.authService.ConfirmEmailChange(ctx, cmd.Token, cmd.NewEmail, cmd.UserID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to confirm email change: %w", err)
+		return fmt.Errorf("failed to confirm email change: %w", err)
 	}
 
-	return nil, nil
+	return nil
 }

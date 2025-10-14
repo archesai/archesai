@@ -91,16 +91,35 @@ func ParseInvitationStatus(s string) (InvitationStatus, error) {
 
 // Invitation represents Schema for Invitation entity
 type Invitation struct {
-	ID             uuid.UUID            `json:"id" yaml:"id"`                         // Unique identifier for the resource
-	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`           // The date and time when the resource was created
-	Email          string               `json:"email" yaml:"email"`                   // The email of the invitated user
-	ExpiresAt      time.Time            `json:"expiresAt" yaml:"expiresAt"`           // The date and time when the invitation expires
-	InviterID      uuid.UUID            `json:"inviterID" yaml:"inviterID"`           // The ID of the user who sent this invitation
-	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"` // The organization the user is being invited to join
-	Role           InvitationRole       `json:"role" yaml:"role"`                     // The role of the invitation
-	Status         InvitationStatus     `json:"status" yaml:"status"`                 // The status of the invitation, e.g., pending, accepted, declined
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`           // The date and time when the resource was last updated
-	events         []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// Email The email of the invitated user
+	Email string `json:"email" yaml:"email"`
+
+	// ExpiresAt The date and time when the invitation expires
+	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
+
+	// InviterID The ID of the user who sent this invitation
+	InviterID uuid.UUID `json:"inviterID" yaml:"inviterID"`
+
+	// OrganizationID The organization the user is being invited to join
+	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
+
+	// Role The role of the invitation
+	Role InvitationRole `json:"role" yaml:"role"`
+
+	// Status The status of the invitation, e.g., pending, accepted, declined
+	Status InvitationStatus `json:"status" yaml:"status"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewInvitation creates a new Invitation entity.
@@ -128,13 +147,13 @@ func NewInvitation(
 	invitation := &Invitation{
 		ID:             id,
 		CreatedAt:      now,
+		UpdatedAt:      now,
 		Email:          email,
 		ExpiresAt:      expiresAt,
 		InviterID:      inviterID,
 		OrganizationID: organizationID,
 		Role:           role,
 		Status:         status,
-		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	invitation.addEvent(events.NewInvitationCreatedEvent(id))
@@ -150,6 +169,11 @@ func (e *Invitation) GetID() uuid.UUID {
 // GetCreatedAt returns the CreatedAt
 func (e *Invitation) GetCreatedAt() time.Time {
 	return e.CreatedAt
+}
+
+// GetUpdatedAt returns the UpdatedAt
+func (e *Invitation) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
 }
 
 // GetEmail returns the Email
@@ -173,18 +197,13 @@ func (e *Invitation) GetOrganizationID() uuid.UUID {
 }
 
 // GetRole returns the Role
-func (e *Invitation) GetRole() string {
-	return string(e.Role)
+func (e *Invitation) GetRole() InvitationRole {
+	return e.Role
 }
 
 // GetStatus returns the Status
-func (e *Invitation) GetStatus() string {
-	return string(e.Status)
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *Invitation) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
+func (e *Invitation) GetStatus() InvitationStatus {
+	return e.Status
 }
 
 // Events returns the domain events

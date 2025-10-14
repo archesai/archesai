@@ -9,16 +9,32 @@ import (
 
 // GitHubAuthConfig represents GitHub OAuth configuration
 type GitHubAuthConfig struct {
-	ClientID     *string  `json:"clientId,omitempty" yaml:"clientId,omitempty"`         // GitHub OAuth App client ID
-	ClientSecret *string  `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"` // GitHub OAuth App client secret
-	Enabled      bool     `json:"enabled" yaml:"enabled"`                               // Enable GitHub OAuth
-	RedirectURL  *string  `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`   // OAuth callback URL
-	Scopes       []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
+
+	// ClientID GitHub OAuth App client ID
+	ClientID *string `json:"clientId,omitempty" yaml:"clientId,omitempty"`
+
+	// ClientSecret GitHub OAuth App client secret
+	ClientSecret *string `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"`
+
+	// Enabled Enable GitHub OAuth
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// RedirectURL OAuth callback URL
+	RedirectURL *string `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`
+
+	// Scopes OAuth scopes to request
+	Scopes *[]string `json:"scopes,omitempty" yaml:"scopes,omitempty"`
 }
 
 // NewGitHubAuthConfig creates a new immutable GitHubAuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewGitHubAuthConfig(clientID *string, clientSecret *string, enabled bool, redirectURL *string, scopes []string) (GitHubAuthConfig, error) {
+func NewGitHubAuthConfig(
+	clientID *string,
+	clientSecret *string,
+	enabled bool,
+	redirectURL *string,
+	scopes *[]string,
+) (GitHubAuthConfig, error) {
 	// Validate required fields
 	return GitHubAuthConfig{
 		ClientID:     clientID,
@@ -61,11 +77,8 @@ func (v GitHubAuthConfig) GetRedirectURL() *string {
 
 // GetScopes returns the Scopes value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v GitHubAuthConfig) GetScopes() []string {
-	// Return a copy for slices and maps to maintain immutability
-	result := make([]string, len(v.Scopes))
-	copy(result, v.Scopes)
-	return result
+func (v GitHubAuthConfig) GetScopes() *[]string {
+	return v.Scopes
 }
 
 // Validate validates the GitHubAuthConfig value object.

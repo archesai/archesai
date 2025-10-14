@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
@@ -45,12 +44,12 @@ func NewOrganizationController(
 }
 
 // RegisterOrganizationRoutes registers all HTTP routes for the organization domain.
-func RegisterOrganizationRoutes(router server.EchoRouter, controller *OrganizationController) {
-	router.POST("/organizations", controller.CreateOrganization)
-	router.GET("/organizations/:id", controller.GetOrganization)
-	router.GET("/organizations", controller.ListOrganizations)
-	router.PATCH("/organizations/:id", controller.UpdateOrganization)
-	router.DELETE("/organizations/:id", controller.DeleteOrganization)
+func RegisterOrganizationRoutes(mux *http.ServeMux, controller *OrganizationController) {
+	mux.HandleFunc("POST /organizations", controller.CreateOrganization)
+	mux.HandleFunc("GET /organizations/{id}", controller.GetOrganization)
+	mux.HandleFunc("GET /organizations", controller.ListOrganizations)
+	mux.HandleFunc("PATCH /organizations/{id}", controller.UpdateOrganization)
+	mux.HandleFunc("DELETE /organizations/{id}", controller.DeleteOrganization)
 }
 
 // ============================================================================
@@ -80,31 +79,40 @@ type CreateOrganization201Response struct {
 
 func (response CreateOrganization201Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type CreateOrganization400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response CreateOrganization400Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateOrganization401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response CreateOrganization401Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateOrganization422Response struct {
@@ -113,9 +121,12 @@ type CreateOrganization422Response struct {
 
 func (response CreateOrganization422Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateOrganization429Response struct {
@@ -124,45 +135,60 @@ type CreateOrganization429Response struct {
 
 func (response CreateOrganization429Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateOrganization500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response CreateOrganization500Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // CreateOrganization handles the POST /organizations endpoint.
-func (c *OrganizationController) CreateOrganization(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *OrganizationController) CreateOrganization(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := CreateOrganizationRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := CreateOrganization401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitCreateOrganizationResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Request body
 	request.Body = &CreateOrganizationRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := CreateOrganization400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreateOrganizationResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -173,13 +199,21 @@ func (c *OrganizationController) CreateOrganization(ctx echo.Context) error {
 		request.Body.BillingEmail,   // BillingEmail
 		request.Body.OrganizationID, // OrganizationID
 	)
-	result, err := c.createOrganizationHandler.Handle(reqCtx, cmd)
+	result, err := c.createOrganizationHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := CreateOrganization500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreateOrganizationResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusCreated, map[string]interface{}{
-		"data": result,
-	})
+
+	response := CreateOrganization201Response{Data: *result}
+	if err := response.VisitCreateOrganizationResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -204,53 +238,54 @@ type GetOrganization200Response struct {
 
 func (response GetOrganization200Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetOrganization404Response struct {
-	server.NotFoundResponse
-}
-
-func (response GetOrganization404Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type GetOrganization429Response struct {
+type GetOrganization400Response struct {
 	server.ProblemDetails
 }
 
-func (response GetOrganization429Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+func (response GetOrganization400Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response)
-}
-
-type GetOrganization500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response GetOrganization500Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetOrganization401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response GetOrganization401Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetOrganization404Response struct {
+	server.ProblemDetails
+}
+
+func (response GetOrganization404Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetOrganization422Response struct {
@@ -259,35 +294,75 @@ type GetOrganization422Response struct {
 
 func (response GetOrganization422Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetOrganization429Response struct {
+	server.ProblemDetails
+}
+
+func (response GetOrganization429Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetOrganization500Response struct {
+	server.ProblemDetails
+}
+
+func (response GetOrganization500Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // GetOrganization handles the GET /organizations/{id} endpoint.
-func (c *OrganizationController) GetOrganization(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *OrganizationController) GetOrganization(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := GetOrganizationRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := GetOrganization401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitGetOrganizationResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := GetOrganization400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetOrganizationResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -296,14 +371,21 @@ func (c *OrganizationController) GetOrganization(ctx echo.Context) error {
 		request.ID, // ID
 	)
 
-	result, err := c.getOrganizationHandler.Handle(reqCtx, query)
+	result, err := c.getOrganizationHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := GetOrganization500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitGetOrganizationResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	response := GetOrganization200Response{Data: *result}
+	if err := response.VisitGetOrganizationResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -335,31 +417,40 @@ type ListOrganizations200Response struct {
 
 func (response ListOrganizations200Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type ListOrganizations400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response ListOrganizations400Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListOrganizations401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response ListOrganizations401Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListOrganizations422Response struct {
@@ -368,9 +459,12 @@ type ListOrganizations422Response struct {
 
 func (response ListOrganizations422Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListOrganizations429Response struct {
@@ -379,55 +473,85 @@ type ListOrganizations429Response struct {
 
 func (response ListOrganizations429Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListOrganizations500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response ListOrganizations500Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // ListOrganizations handles the GET /organizations endpoint.
-func (c *OrganizationController) ListOrganizations(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *OrganizationController) ListOrganizations(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := ListOrganizationsRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := ListOrganizations401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitListOrganizationsResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Query parameters
 	var params ListOrganizationsParams
-	// Optional query parameter "Filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
+
+	// Optional query parameter "filter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &params.Filter); err != nil {
+		errorResp := ListOrganizations400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListOrganizationsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+
+	// Optional query parameter "page"
+	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &params.Page); err != nil {
+		errorResp := ListOrganizations400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListOrganizationsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+
+	// Optional query parameter "sort"
+	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort); err != nil {
+		errorResp := ListOrganizations400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListOrganizationsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.Params = params
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -436,17 +560,32 @@ func (c *OrganizationController) ListOrganizations(ctx echo.Context) error {
 	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listOrganizationsHandler.Handle(reqCtx, query)
+	results, total, err := c.listOrganizationsHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := ListOrganizations500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitListOrganizationsResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": results,
-		"meta": map[string]interface{}{
-			"total": total,
-		},
-	})
+	// Convert pointer slice to value slice for response
+	data := make([]entities.Organization, len(results))
+	for i, item := range results {
+		if item != nil {
+			data[i] = *item
+		}
+	}
+
+	response := ListOrganizations200Response{
+		Data: data,
+		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+	}
+	if err := response.VisitListOrganizationsResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -477,64 +616,54 @@ type UpdateOrganization200Response struct {
 
 func (response UpdateOrganization200Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type UpdateOrganization404Response struct {
-	server.NotFoundResponse
-}
-
-func (response UpdateOrganization404Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type UpdateOrganization429Response struct {
-	server.ProblemDetails
-}
-
-func (response UpdateOrganization429Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type UpdateOrganization500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response UpdateOrganization500Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
-}
-
 type UpdateOrganization400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response UpdateOrganization400Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateOrganization401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response UpdateOrganization401Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateOrganization404Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateOrganization404Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateOrganization422Response struct {
@@ -543,41 +672,87 @@ type UpdateOrganization422Response struct {
 
 func (response UpdateOrganization422Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateOrganization429Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateOrganization429Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateOrganization500Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateOrganization500Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // UpdateOrganization handles the PATCH /organizations/{id} endpoint.
-func (c *OrganizationController) UpdateOrganization(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *OrganizationController) UpdateOrganization(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := UpdateOrganizationRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := UpdateOrganization401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateOrganizationResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := UpdateOrganization400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateOrganizationResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
 
 	// Request body
 	request.Body = &UpdateOrganizationRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := UpdateOrganization400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateOrganizationResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -589,13 +764,21 @@ func (c *OrganizationController) UpdateOrganization(ctx echo.Context) error {
 		request.Body.BillingEmail,   // BillingEmail
 		request.Body.OrganizationID, // OrganizationID
 	)
-	result, err := c.updateOrganizationHandler.Handle(reqCtx, cmd)
+	result, err := c.updateOrganizationHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := UpdateOrganization500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateOrganizationResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+
+	response := UpdateOrganization200Response{Data: *result}
+	if err := response.VisitUpdateOrganizationResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -614,59 +797,55 @@ type DeleteOrganizationResponse interface {
 	VisitDeleteOrganizationResponse(w http.ResponseWriter) error
 }
 
-type DeleteOrganization200Response struct {
-	Data entities.Organization `json:"data"`
+type DeleteOrganization204Response struct {
 }
 
-func (response DeleteOrganization200Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
+func (response DeleteOrganization204Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
 
-	return json.NewEncoder(w).Encode(response)
+	return nil
 }
 
-type DeleteOrganization404Response struct {
-	server.NotFoundResponse
-}
-
-func (response DeleteOrganization404Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
-}
-
-type DeleteOrganization429Response struct {
+type DeleteOrganization400Response struct {
 	server.ProblemDetails
 }
 
-func (response DeleteOrganization429Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+func (response DeleteOrganization400Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(429)
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response)
-}
-
-type DeleteOrganization500Response struct {
-	server.InternalServerErrorResponse
-}
-
-func (response DeleteOrganization500Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(500)
-
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteOrganization401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response DeleteOrganization401Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeleteOrganization404Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteOrganization404Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteOrganization422Response struct {
@@ -675,35 +854,75 @@ type DeleteOrganization422Response struct {
 
 func (response DeleteOrganization422Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeleteOrganization429Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteOrganization429Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(429)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeleteOrganization500Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteOrganization500Response) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // DeleteOrganization handles the DELETE /organizations/{id} endpoint.
-func (c *OrganizationController) DeleteOrganization(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *OrganizationController) DeleteOrganization(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := DeleteOrganizationRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := DeleteOrganization401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteOrganizationResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := DeleteOrganization400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteOrganizationResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -713,8 +932,18 @@ func (c *OrganizationController) DeleteOrganization(ctx echo.Context) error {
 		sessionID,  // SessionID for authenticated operations
 		request.ID, // ID
 	)
-	if err := c.deleteOrganizationHandler.Handle(reqCtx, cmd); err != nil {
-		return err
+	if err := c.deleteOrganizationHandler.Handle(ctx, cmd); err != nil {
+		errorResp := DeleteOrganization500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteOrganizationResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.NoContent(http.StatusNoContent)
+
+	response := DeleteOrganization204Response{}
+	if err := response.VisitDeleteOrganizationResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }

@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
@@ -46,12 +45,12 @@ func NewAPIKeyController(
 }
 
 // RegisterAPIKeyRoutes registers all HTTP routes for the apikey domain.
-func RegisterAPIKeyRoutes(router server.EchoRouter, controller *APIKeyController) {
-	router.POST("/api-keys", controller.CreateAPIKey)
-	router.GET("/api-keys/:id", controller.GetAPIKey)
-	router.GET("/api-keys", controller.ListAPIKeys)
-	router.PATCH("/api-keys/:id", controller.UpdateAPIKey)
-	router.DELETE("/api-keys/:id", controller.DeleteAPIKey)
+func RegisterAPIKeyRoutes(mux *http.ServeMux, controller *APIKeyController) {
+	mux.HandleFunc("POST /api-keys", controller.CreateAPIKey)
+	mux.HandleFunc("GET /api-keys/{id}", controller.GetAPIKey)
+	mux.HandleFunc("GET /api-keys", controller.ListAPIKeys)
+	mux.HandleFunc("PATCH /api-keys/{id}", controller.UpdateAPIKey)
+	mux.HandleFunc("DELETE /api-keys/{id}", controller.DeleteAPIKey)
 }
 
 // ============================================================================
@@ -83,31 +82,40 @@ type CreateAPIKey201Response struct {
 
 func (response CreateAPIKey201Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type CreateAPIKey400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response CreateAPIKey400Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateAPIKey401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response CreateAPIKey401Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateAPIKey422Response struct {
@@ -116,9 +124,12 @@ type CreateAPIKey422Response struct {
 
 func (response CreateAPIKey422Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateAPIKey429Response struct {
@@ -127,45 +138,60 @@ type CreateAPIKey429Response struct {
 
 func (response CreateAPIKey429Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type CreateAPIKey500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response CreateAPIKey500Response) VisitCreateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // CreateAPIKey handles the POST /api-keys endpoint.
-func (c *APIKeyController) CreateAPIKey(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *APIKeyController) CreateAPIKey(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := CreateAPIKeyRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := CreateAPIKey401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitCreateAPIKeyResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Request body
 	request.Body = &CreateAPIKeyRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := CreateAPIKey400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreateAPIKeyResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -178,13 +204,21 @@ func (c *APIKeyController) CreateAPIKey(ctx echo.Context) error {
 		request.Body.RateLimit, // RateLimit
 		request.Body.Scopes,    // Scopes
 	)
-	result, err := c.createAPIKeyHandler.Handle(reqCtx, cmd)
+	result, err := c.createAPIKeyHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := CreateAPIKey500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitCreateAPIKeyResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusCreated, map[string]interface{}{
-		"data": result,
-	})
+
+	response := CreateAPIKey201Response{Data: *result}
+	if err := response.VisitCreateAPIKeyResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -204,37 +238,59 @@ type GetAPIKeyResponse interface {
 }
 
 type GetAPIKey200Response struct {
-	Data []entities.APIKey           `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data entities.APIKey `json:"data"`
 }
 
 func (response GetAPIKey200Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type GetAPIKey400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response GetAPIKey400Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetAPIKey401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response GetAPIKey401Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type GetAPIKey404Response struct {
+	server.ProblemDetails
+}
+
+func (response GetAPIKey404Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetAPIKey422Response struct {
@@ -243,20 +299,12 @@ type GetAPIKey422Response struct {
 
 func (response GetAPIKey422Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
-}
-
-type GetAPIKey404Response struct {
-	server.NotFoundResponse
-}
-
-func (response GetAPIKey404Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetAPIKey429Response struct {
@@ -265,46 +313,61 @@ type GetAPIKey429Response struct {
 
 func (response GetAPIKey429Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetAPIKey500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response GetAPIKey500Response) VisitGetAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // GetAPIKey handles the GET /api-keys/{id} endpoint.
-func (c *APIKeyController) GetAPIKey(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *APIKeyController) GetAPIKey(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := GetAPIKeyRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := GetAPIKey401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitGetAPIKeyResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := GetAPIKey400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitGetAPIKeyResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -313,14 +376,21 @@ func (c *APIKeyController) GetAPIKey(ctx echo.Context) error {
 		request.ID, // ID
 	)
 
-	result, err := c.getAPIKeyHandler.Handle(reqCtx, query)
+	result, err := c.getAPIKeyHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := GetAPIKey500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitGetAPIKeyResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	response := GetAPIKey200Response{Data: *result}
+	if err := response.VisitGetAPIKeyResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -352,31 +422,40 @@ type ListAPIKeys200Response struct {
 
 func (response ListAPIKeys200Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type ListAPIKeys400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response ListAPIKeys400Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListAPIKeys401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response ListAPIKeys401Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListAPIKeys422Response struct {
@@ -385,9 +464,12 @@ type ListAPIKeys422Response struct {
 
 func (response ListAPIKeys422Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListAPIKeys429Response struct {
@@ -396,55 +478,85 @@ type ListAPIKeys429Response struct {
 
 func (response ListAPIKeys429Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type ListAPIKeys500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response ListAPIKeys500Response) VisitListAPIKeysResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // ListAPIKeys handles the GET /api-keys endpoint.
-func (c *APIKeyController) ListAPIKeys(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *APIKeyController) ListAPIKeys(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := ListAPIKeysRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := ListAPIKeys401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitListAPIKeysResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Query parameters
 	var params ListAPIKeysParams
-	// Optional query parameter "Filter"
-	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", ctx.QueryParams(), &params.Filter); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
+
+	// Optional query parameter "filter"
+	if err := runtime.BindQueryParameter("deepObject", true, false, "filter", r.URL.Query(), &params.Filter); err != nil {
+		errorResp := ListAPIKeys400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter filter: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListAPIKeysResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Page"
-	if err := runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+
+	// Optional query parameter "page"
+	if err := runtime.BindQueryParameter("form", true, false, "page", r.URL.Query(), &params.Page); err != nil {
+		errorResp := ListAPIKeys400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter page: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListAPIKeysResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	// Optional query parameter "Sort"
-	if err := runtime.BindQueryParameter("form", true, false, "sort", ctx.QueryParams(), &params.Sort); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter sort: %s", err))
+
+	// Optional query parameter "sort"
+	if err := runtime.BindQueryParameter("form", true, false, "sort", r.URL.Query(), &params.Sort); err != nil {
+		errorResp := ListAPIKeys400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter sort: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitListAPIKeysResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.Params = params
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Query handler
@@ -453,17 +565,32 @@ func (c *APIKeyController) ListAPIKeys(ctx echo.Context) error {
 	)
 	// TODO: Apply filters, pagination, sorting from request.Params
 
-	results, total, err := c.listAPIKeysHandler.Handle(reqCtx, query)
+	results, total, err := c.listAPIKeysHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := ListAPIKeys500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitListAPIKeysResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": results,
-		"meta": map[string]interface{}{
-			"total": total,
-		},
-	})
+	// Convert pointer slice to value slice for response
+	data := make([]entities.APIKey, len(results))
+	for i, item := range results {
+		if item != nil {
+			data[i] = *item
+		}
+	}
+
+	response := ListAPIKeys200Response{
+		Data: data,
+		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+	}
+	if err := response.VisitListAPIKeysResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -495,31 +622,54 @@ type UpdateAPIKey200Response struct {
 
 func (response UpdateAPIKey200Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type UpdateAPIKey400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response UpdateAPIKey400Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateAPIKey401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response UpdateAPIKey401Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type UpdateAPIKey404Response struct {
+	server.ProblemDetails
+}
+
+func (response UpdateAPIKey404Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateAPIKey422Response struct {
@@ -528,20 +678,12 @@ type UpdateAPIKey422Response struct {
 
 func (response UpdateAPIKey422Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
-}
-
-type UpdateAPIKey404Response struct {
-	server.NotFoundResponse
-}
-
-func (response UpdateAPIKey404Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateAPIKey429Response struct {
@@ -550,52 +692,73 @@ type UpdateAPIKey429Response struct {
 
 func (response UpdateAPIKey429Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type UpdateAPIKey500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response UpdateAPIKey500Response) VisitUpdateAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // UpdateAPIKey handles the PATCH /api-keys/{id} endpoint.
-func (c *APIKeyController) UpdateAPIKey(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *APIKeyController) UpdateAPIKey(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := UpdateAPIKeyRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := UpdateAPIKey401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateAPIKeyResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := UpdateAPIKey400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateAPIKeyResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
 
 	// Request body
 	request.Body = &UpdateAPIKeyRequestBody{}
-	if err := ctx.Bind(request.Body); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(request.Body); err != nil {
+		errorResp := UpdateAPIKey400Response{
+			ProblemDetails: server.NewBadRequestResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateAPIKeyResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -608,13 +771,21 @@ func (c *APIKeyController) UpdateAPIKey(ctx echo.Context) error {
 		request.Body.RateLimit, // RateLimit
 		request.Body.Scopes,    // Scopes
 	)
-	result, err := c.updateAPIKeyHandler.Handle(reqCtx, cmd)
+	result, err := c.updateAPIKeyHandler.Handle(ctx, cmd)
 	if err != nil {
-		return err
+		errorResp := UpdateAPIKey500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitUpdateAPIKeyResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+
+	response := UpdateAPIKey200Response{Data: *result}
+	if err := response.VisitUpdateAPIKeyResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }
 
 // ============================================================================
@@ -637,31 +808,54 @@ type DeleteAPIKey204Response struct {
 }
 
 func (response DeleteAPIKey204Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(204)
 
 	return nil
 }
 
 type DeleteAPIKey400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response DeleteAPIKey400Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteAPIKey401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response DeleteAPIKey401Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
+}
+
+type DeleteAPIKey404Response struct {
+	server.ProblemDetails
+}
+
+func (response DeleteAPIKey404Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteAPIKey422Response struct {
@@ -670,20 +864,12 @@ type DeleteAPIKey422Response struct {
 
 func (response DeleteAPIKey422Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
-}
-
-type DeleteAPIKey404Response struct {
-	server.NotFoundResponse
-}
-
-func (response DeleteAPIKey404Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/problem+json")
-	w.WriteHeader(404)
-
-	return json.NewEncoder(w).Encode(response.NotFoundResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteAPIKey429Response struct {
@@ -692,46 +878,61 @@ type DeleteAPIKey429Response struct {
 
 func (response DeleteAPIKey429Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type DeleteAPIKey500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response DeleteAPIKey500Response) VisitDeleteAPIKeyResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // DeleteAPIKey handles the DELETE /api-keys/{id} endpoint.
-func (c *APIKeyController) DeleteAPIKey(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *APIKeyController) DeleteAPIKey(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	request := DeleteAPIKeyRequest{}
 
 	// Extract session ID from context for authenticated operations
-	var sessionID uuid.UUID
-	if sid := ctx.Get("sessionID"); sid != nil {
-		sessionID = sid.(uuid.UUID)
-	} else {
-		return echo.NewHTTPError(http.StatusUnauthorized, "session required")
+	sessionID, ok := ctx.Value(server.SessionIDContextKey).(uuid.UUID)
+	if !ok {
+		errorResp := DeleteAPIKey401Response{
+			ProblemDetails: server.NewUnauthorizedResponse("session required", r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteAPIKeyResponse(w); err != nil {
+			// Log error - response may have already been partially written
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
 	// Path parameter "id"
 	var id uuid.UUID
-	if err := runtime.BindStyledParameterWithOptions("simple", "id", ctx.Param("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	if err := runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true}); err != nil {
+		errorResp := DeleteAPIKey400Response{
+			ProblemDetails: server.NewBadRequestResponse(fmt.Sprintf("Invalid format for parameter id: %s", err), r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteAPIKeyResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 	request.ID = id
-
-	// Set auth scopes
-	ctx.Set(server.BearerAuthScopes, []string{})
 
 	// Determine which handler to call based on operation
 	// Command handler
@@ -741,8 +942,18 @@ func (c *APIKeyController) DeleteAPIKey(ctx echo.Context) error {
 		sessionID,  // SessionID for authenticated operations
 		request.ID, // ID
 	)
-	if err := c.deleteAPIKeyHandler.Handle(reqCtx, cmd); err != nil {
-		return err
+	if err := c.deleteAPIKeyHandler.Handle(ctx, cmd); err != nil {
+		errorResp := DeleteAPIKey500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitDeleteAPIKeyResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
-	return ctx.NoContent(http.StatusNoContent)
+
+	response := DeleteAPIKey204Response{}
+	if err := response.VisitDeleteAPIKeyResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }

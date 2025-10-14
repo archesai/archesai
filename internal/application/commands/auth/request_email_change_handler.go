@@ -27,19 +27,19 @@ func NewRequestEmailChangeCommandHandler(
 func (h *RequestEmailChangeCommandHandler) Handle(
 	ctx context.Context,
 	cmd *RequestEmailChangeCommand,
-) (any, error) {
+) error {
 	if cmd.SessionID == uuid.Nil {
-		return nil, fmt.Errorf("session ID is required")
+		return fmt.Errorf("session ID is required")
 	}
 	if cmd.NewEmail == "" {
-		return nil, fmt.Errorf("new email is required")
+		return fmt.Errorf("new email is required")
 	}
 
 	// Request email change
 	err := h.authService.RequestEmailChange(ctx, cmd.SessionID, cmd.NewEmail)
 	if err != nil {
-		return nil, fmt.Errorf("failed to request email change: %w", err)
+		return fmt.Errorf("failed to request email change: %w", err)
 	}
 
-	return nil, nil
+	return nil
 }

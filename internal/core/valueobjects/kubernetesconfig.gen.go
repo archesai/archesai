@@ -16,7 +16,11 @@ type KubernetesConfig struct {
 
 // NewKubernetesConfig creates a new immutable KubernetesConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewKubernetesConfig(infrastructure *InfrastructureConfig, ingress *IngressConfig, monitoring *MonitoringConfig) (KubernetesConfig, error) {
+func NewKubernetesConfig(
+	infrastructure *InfrastructureConfig,
+	ingress *IngressConfig,
+	monitoring *MonitoringConfig,
+) (KubernetesConfig, error) {
 	// Validate required fields
 	return KubernetesConfig{
 		Infrastructure: infrastructure,

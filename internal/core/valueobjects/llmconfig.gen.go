@@ -44,14 +44,24 @@ func ParseLLMConfigType(s string) (LLMConfigType, error) {
 
 // LLMConfig represents Large Language Model configuration
 type LLMConfig struct {
-	Endpoint *string       `json:"endpoint,omitempty" yaml:"endpoint,omitempty"` // LLM service endpoint URL
-	Token    *string       `json:"token,omitempty" yaml:"token,omitempty"`       // Authentication token for LLM service
-	Type     LLMConfigType `json:"type" yaml:"type"`                             // LLM provider type
+
+	// Endpoint LLM service endpoint URL
+	Endpoint *string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+
+	// Token Authentication token for LLM service
+	Token *string `json:"token,omitempty" yaml:"token,omitempty"`
+
+	// Type LLM provider type
+	Type LLMConfigType `json:"type" yaml:"type"`
 }
 
 // NewLLMConfig creates a new immutable LLMConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewLLMConfig(endpoint *string, token *string, type_ LLMConfigType) (LLMConfig, error) {
+func NewLLMConfig(
+	endpoint *string,
+	token *string,
+	type_ LLMConfigType,
+) (LLMConfig, error) {
 	// Validate required fields
 	if !type_.IsValid() {
 		return LLMConfig{}, fmt.Errorf("invalid Type: %s", type_)

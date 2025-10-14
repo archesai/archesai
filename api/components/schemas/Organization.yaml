@@ -46,14 +46,14 @@ allOf:
         example: acme-corp
       logo:
         description: The organization's logo URL
-        type: string
+        type: [string, 'null']
         format: uri
         minLength: 1
         example: https://example.com/org-logo.png
         maxLength: 2048
       billingEmail:
         description: Email address for billing communications
-        type: string
+        type: [string, 'null']
         format: email
         minLength: 5
         example: billing@acme.com
@@ -91,4 +91,6 @@ allOf:
       - plan
       - credits
       - stripeCustomerIdentifier
+      - logo
+      - billingEmail
 unevaluatedProperties: false

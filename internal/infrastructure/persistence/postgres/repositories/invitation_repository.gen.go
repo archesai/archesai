@@ -70,9 +70,7 @@ func (r *PostgresInvitationRepository) Get(ctx context.Context, id uuid.UUID) (*
 func (r *PostgresInvitationRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Invitation) (*entities.Invitation, error) {
 
 	roleStr := string(entity.Role)
-
 	statusStr := string(entity.Status)
-
 	params := UpdateInvitationParams{
 		ID:        id,
 		Email:     &entity.Email,

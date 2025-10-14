@@ -1,6 +1,7 @@
 package parsers
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -30,6 +31,23 @@ const (
 	formatInt64    = "int64"
 	formatFloat    = "float"
 	formatDouble   = "double"
+)
+
+// HCL/PostgreSQL type constants
+const (
+	hclTypeText            = "text"
+	hclTypeInteger         = "integer"
+	hclTypeBigint          = "bigint"
+	hclTypeBoolean         = "boolean"
+	hclTypeUUID            = "uuid"
+	hclTypeTimestamptz     = "timestamptz"
+	hclTypeDate            = "date"
+	hclTypeTime            = "time"
+	hclTypeBytea           = "bytea"
+	hclTypeReal            = "real"
+	hclTypeDoublePrecision = "double precision"
+	hclTypeNumeric         = "numeric"
+	hclTypeJSONB           = "jsonb"
 )
 
 // Go type constants
@@ -260,4 +278,175 @@ func objectToGoType(schema *base.Schema, doc *v3.Document, currentPackage string
 	}
 	// For objects with properties, just use map[string]any
 	return goTypeMapString
+}
+
+// SchemaToHCLType converts a SchemaDef to HCL/PostgreSQL type string
+func SchemaToHCLType(field *SchemaDef) string {
+	// Handle special formats first
+	switch field.Format {
+	case formatUUID:
+		return hclTypeUUID
+	case formatDateTime:
+		return hclTypeTimestamptz
+	case formatDate:
+		return hclTypeDate
+	case "time":
+		return hclTypeTime
+	case "ipv4", "ipv6":
+		return hclTypeText
+	case formatEmail, formatURI, formatHostname:
+		return hclTypeText
+	case "binary":
+		return hclTypeBytea
+	case formatInt32:
+		return hclTypeInteger
+	case formatInt64:
+		return hclTypeBigint
+	case formatFloat:
+		return hclTypeReal
+	case formatDouble:
+		return hclTypeDoublePrecision
+	}
+
+	// Handle arrays
+	if field.Type == schemaTypeArray && field.Items != nil {
+		itemType := SchemaToHCLType(field.Items)
+		return "sql(\"" + itemType + "[]\")"
+	}
+
+	// Handle basic types
+	switch field.Type {
+	case schemaTypeString:
+		// Check for specific field names that need special types
+		if strings.Contains(strings.ToLower(field.Name), "embedding") {
+			return "sql(\"vector(1536)\")"
+		}
+		// Check for enums
+		if len(field.Enum) > 0 {
+			return hclTypeText
+		}
+		// For now, just use text for all strings
+		// TODO: Add MaxLength support when available in SchemaDef
+		return hclTypeText
+	case schemaTypeInteger:
+		if field.Format == formatInt64 {
+			return hclTypeBigint
+		}
+		return hclTypeInteger
+	case schemaTypeNumber:
+		if field.Format == formatFloat {
+			return hclTypeReal
+		}
+		return hclTypeNumeric
+	case schemaTypeBoolean:
+		return hclTypeBoolean
+	case schemaTypeObject:
+		// For nested objects, use JSONB
+		return hclTypeJSONB
+	default:
+		return hclTypeText
+	}
+}
+
+// FormatHCLDefault formats default values for HCL
+func FormatHCLDefault(field *SchemaDef) string {
+	if field.DefaultValue == nil {
+		return ""
+	}
+
+	// Handle special SQL functions
+	switch field.Name {
+	case "ID", "id":
+		return "sql(\"gen_random_uuid()\")"
+	case "CreatedAt", "createdAt", "created_at":
+		return "sql(\"CURRENT_TIMESTAMP\")"
+	case "UpdatedAt", "updatedAt", "updated_at":
+		return "sql(\"CURRENT_TIMESTAMP\")"
+	}
+
+	// Format based on type
+	switch v := field.DefaultValue.(type) {
+	case string:
+		// Check if it's a SQL expression
+		if strings.HasPrefix(v, "sql(") {
+			return v
+		}
+		// For arrays represented as strings
+		if field.Type == schemaTypeArray && v == "{}" {
+			return "\"{}\""
+		}
+		// Regular string default
+		return "\"" + v + "\""
+	case int:
+		return strconv.Itoa(v)
+	case int32:
+		return strconv.Itoa(int(v))
+	case int64:
+		return strconv.FormatInt(v, 10)
+	case float32:
+		return strconv.FormatFloat(float64(v), 'f', -1, 32)
+	case float64:
+		return strconv.FormatFloat(v, 'f', -1, 64)
+	case bool:
+		return strconv.FormatBool(v)
+	default:
+		// Convert to string to analyze the value
+		str := fmt.Sprintf("%v", v)
+
+		// Extract value from YAML struct representation
+		// Pattern: "&{... !!str VALUE ...}" or "&{... !!int VALUE ...}"
+		if strings.Contains(str, "!!str ") {
+			// Find the value after !!str
+			parts := strings.Split(str, "!!str ")
+			if len(parts) > 1 {
+				// Extract the value (it's the next word after !!str)
+				valuePart := strings.TrimSpace(parts[1])
+				words := strings.Fields(valuePart)
+				if len(words) > 0 {
+					value := words[0]
+					// For string values, wrap in quotes
+					return "\"" + value + "\""
+				}
+			}
+		}
+
+		if strings.Contains(str, "!!int ") {
+			// Find the value after !!int
+			parts := strings.Split(str, "!!int ")
+			if len(parts) > 1 {
+				// Extract the value (it's the next word after !!int)
+				valuePart := strings.TrimSpace(parts[1])
+				words := strings.Fields(valuePart)
+				if len(words) > 0 {
+					return words[0]
+				}
+			}
+		}
+
+		// Handle simple type detection from the formatted string
+		if field.Type == schemaTypeBoolean {
+			if strings.Contains(str, "false") {
+				return "false"
+			}
+			if strings.Contains(str, "true") {
+				return "true"
+			}
+		}
+
+		if field.Type == schemaTypeInteger {
+			// Check for zero value
+			if strings.Contains(str, " 0 ") || strings.Contains(str, " 0}") {
+				return "0"
+			}
+		}
+
+		if field.Type == schemaTypeArray {
+			if strings.Contains(str, "[]") || strings.Contains(str, "{}") {
+				return "\"{}\""
+			}
+		}
+
+		// Don't output malformed defaults
+		return ""
+	}
 }

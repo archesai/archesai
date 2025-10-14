@@ -9,26 +9,72 @@ import (
 
 // XCodegenExtensionRepository represents Repository generation configuration
 type XCodegenExtensionRepository struct {
-	AdditionalMethods []AdditionalMethodsItem `json:"additionalMethods,omitempty" yaml:"additionalMethods,omitempty"` // Additional repository methods to generate
-	ExcludeFromCreate []string                `json:"excludeFromCreate,omitempty" yaml:"excludeFromCreate,omitempty"` // Fields to exclude from Create operations (e.g., auto-generated or DB-set fields)
-	ExcludeFromUpdate []string                `json:"excludeFromUpdate,omitempty" yaml:"excludeFromUpdate,omitempty"` // Fields to exclude from Update operations (e.g., immutable fields)
-	Indices           []string                `json:"indices,omitempty" yaml:"indices,omitempty"`                     // Database indices to create
-	Operations        []string                `json:"operations,omitempty" yaml:"operations,omitempty"`               // Standard CRUD operations to generate
-	TableName         *string                 `json:"tableName,omitempty" yaml:"tableName,omitempty"`                 // Override default table name
+
+	// AdditionalMethods Additional repository methods to generate
+	AdditionalMethods *[]AdditionalMethodsItem `json:"additionalMethods,omitempty" yaml:"additionalMethods,omitempty"`
+
+	// ExcludeFromCreate Fields to exclude from Create operations (e.g., auto-generated or DB-set fields)
+	ExcludeFromCreate *[]string `json:"excludeFromCreate,omitempty" yaml:"excludeFromCreate,omitempty"`
+
+	// ExcludeFromUpdate Fields to exclude from Update operations (e.g., immutable fields)
+	ExcludeFromUpdate *[]string `json:"excludeFromUpdate,omitempty" yaml:"excludeFromUpdate,omitempty"`
+
+	// Indices Database indices to create
+	Indices *[]string `json:"indices,omitempty" yaml:"indices,omitempty"`
+
+	// Operations Standard CRUD operations to generate
+	Operations *[]string `json:"operations,omitempty" yaml:"operations,omitempty"`
+
+	// Relations Foreign key relationships to other entities
+	Relations *[]RelationsItem `json:"relations,omitempty" yaml:"relations,omitempty"`
+
+	// TableName Override default table name
+	TableName *string `json:"tableName,omitempty" yaml:"tableName,omitempty"`
 }
 
 // AdditionalMethodsItem represents a nested type for XCodegenExtension
 type AdditionalMethodsItem struct {
-	Name    string       `json:"name" yaml:"name"`                         // Method name
-	Params  []ParamsItem `json:"params,omitempty" yaml:"params,omitempty"` // Method parameters
-	Returns string       `json:"returns" yaml:"returns"`                   // Return type (single or multiple)
+
+	// Name Method name
+	Name string `json:"name" yaml:"name"`
+
+	// Params Method parameters
+	Params *[]ParamsItem `json:"params,omitempty" yaml:"params,omitempty"`
+
+	// Returns Return type (single or multiple)
+	Returns string `json:"returns" yaml:"returns"`
 }
 
 // ParamsItem represents a nested type for XCodegenExtension
 type ParamsItem struct {
-	Format *string `json:"format,omitempty" yaml:"format,omitempty"` // Parameter format (e.g., uuid, email) - optional
-	Name   string  `json:"name" yaml:"name"`                         // Parameter name
-	Type   string  `json:"type" yaml:"type"`                         // Parameter type (e.g., string, int)
+
+	// Format Parameter format (e.g., uuid, email) - optional
+	Format *string `json:"format,omitempty" yaml:"format,omitempty"`
+
+	// Name Parameter name
+	Name string `json:"name" yaml:"name"`
+
+	// Type Parameter type (e.g., string, int)
+	Type string `json:"type" yaml:"type"`
+}
+
+// RelationsItem represents a nested type for XCodegenExtension
+type RelationsItem struct {
+
+	// Field The field name in this entity that references another entity
+	Field string `json:"field" yaml:"field"`
+
+	// OnDelete Foreign key ON DELETE action
+	OnDelete *string `json:"onDelete,omitempty" yaml:"onDelete,omitempty"`
+
+	// OnUpdate Foreign key ON UPDATE action
+	OnUpdate *string `json:"onUpdate,omitempty" yaml:"onUpdate,omitempty"`
+
+	// References The table name being referenced (snake_case)
+	References string `json:"references" yaml:"references"`
+
+	// ReferencesField The field in the referenced table (defaults to 'id')
+	ReferencesField *string `json:"referencesField,omitempty" yaml:"referencesField,omitempty"`
 }
 
 // XCodegenExtensionSchemaType represents the enumeration of valid values for SchemaType
@@ -68,13 +114,20 @@ func ParseXCodegenExtensionSchemaType(s string) (XCodegenExtensionSchemaType, er
 
 // XCodegenExtension represents Configuration for code generation from OpenAPI schemas
 type XCodegenExtension struct {
-	Repository *XCodegenExtensionRepository `json:"repository,omitempty" yaml:"repository,omitempty"` // Repository generation configuration
-	SchemaType XCodegenExtensionSchemaType  `json:"schemaType" yaml:"schemaType"`                     // Type of domain object (entity, valueobject)
+
+	// Repository Repository generation configuration
+	Repository *XCodegenExtensionRepository `json:"repository,omitempty" yaml:"repository,omitempty"`
+
+	// SchemaType Type of domain object (entity, valueobject)
+	SchemaType XCodegenExtensionSchemaType `json:"schemaType" yaml:"schemaType"`
 }
 
 // NewXCodegenExtension creates a new immutable XCodegenExtension value object.
 // Value objects are immutable and validated upon creation.
-func NewXCodegenExtension(repository *XCodegenExtensionRepository, schemaType XCodegenExtensionSchemaType) (XCodegenExtension, error) {
+func NewXCodegenExtension(
+	repository *XCodegenExtensionRepository,
+	schemaType XCodegenExtensionSchemaType,
+) (XCodegenExtension, error) {
 	// Validate required fields
 	if !schemaType.IsValid() {
 		return XCodegenExtension{}, fmt.Errorf("invalid SchemaType: %s", schemaType)

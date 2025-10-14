@@ -7,9 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"time"
 
-	"github.com/labstack/echo/v4"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/archesai/archesai/internal/adapters/http/controllers"
@@ -616,83 +614,60 @@ func (a *App) Close() error {
 
 // registerRoutes registers all application routes with the server.
 func (a *App) registerRoutes() {
-	// Get the echo instance from the server
-	e := a.Server.Echo()
-
-	// Register readiness check that can access the database
-	a.Server.SetReadinessCheck(a.readinessCheck)
+	// Get the mux from the server
+	mux := a.Server.Mux()
 
 	// Register all application routes
-	a.RegisterRoutes(e)
+	a.RegisterRoutes(mux)
 	a.Logger.Info("routes registered")
 }
 
-// readinessCheck checks if the service is ready to handle requests.
-func (a *App) readinessCheck(ctx echo.Context) error {
-	// Check database connection
-	if err := a.infra.Database.SQLDB().PingContext(ctx.Request().Context()); err != nil {
-		a.Logger.Error("database health check failed", "error", err)
-		return ctx.JSON(http.StatusServiceUnavailable, map[string]interface{}{
-			"status": "unhealthy",
-			"error":  "database connection failed",
-		})
-	}
-
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"status":    "ready",
-		"timestamp": time.Now().Unix(),
-	})
-}
-
-// RegisterRoutes registers all application routes with the Echo server.
-func (a *App) RegisterRoutes(e *echo.Echo) {
+// RegisterRoutes registers all application routes with the http.ServeMux.
+func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	a.Logger.Info("registering API routes...")
-
-	// API v1 group
-	v1 := e.Group("/api/v1")
 
 	// ========================================
 	// API ROUTES
 	// ========================================
 	// Auth routes
 	a.Logger.Info("registering auth routes")
-	controllers.RegisterAuthRoutes(v1, a.AuthController)
+	controllers.RegisterAuthRoutes(mux, a.AuthController)
 	// apikey routes
 	a.Logger.Info("registering apikey routes")
-	controllers.RegisterAPIKeyRoutes(v1, a.APIKeyController)
+	controllers.RegisterAPIKeyRoutes(mux, a.APIKeyController)
 	// artifact routes
 	a.Logger.Info("registering artifact routes")
-	controllers.RegisterArtifactRoutes(v1, a.ArtifactController)
+	controllers.RegisterArtifactRoutes(mux, a.ArtifactController)
 	// config routes
 	a.Logger.Info("registering config routes")
-	controllers.RegisterConfigRoutes(v1, a.ConfigController)
+	controllers.RegisterConfigRoutes(mux, a.ConfigController)
 	// health routes
 	a.Logger.Info("registering health routes")
-	controllers.RegisterHealthRoutes(v1, a.HealthController)
+	controllers.RegisterHealthRoutes(mux, a.HealthController)
 	// invitation routes
 	a.Logger.Info("registering invitation routes")
-	controllers.RegisterInvitationRoutes(v1, a.InvitationController)
+	controllers.RegisterInvitationRoutes(mux, a.InvitationController)
 	// label routes
 	a.Logger.Info("registering label routes")
-	controllers.RegisterLabelRoutes(v1, a.LabelController)
+	controllers.RegisterLabelRoutes(mux, a.LabelController)
 	// member routes
 	a.Logger.Info("registering member routes")
-	controllers.RegisterMemberRoutes(v1, a.MemberController)
+	controllers.RegisterMemberRoutes(mux, a.MemberController)
 	// organization routes
 	a.Logger.Info("registering organization routes")
-	controllers.RegisterOrganizationRoutes(v1, a.OrganizationController)
+	controllers.RegisterOrganizationRoutes(mux, a.OrganizationController)
 	// pipeline routes
 	a.Logger.Info("registering pipeline routes")
-	controllers.RegisterPipelineRoutes(v1, a.PipelineController)
+	controllers.RegisterPipelineRoutes(mux, a.PipelineController)
 	// run routes
 	a.Logger.Info("registering run routes")
-	controllers.RegisterRunRoutes(v1, a.RunController)
+	controllers.RegisterRunRoutes(mux, a.RunController)
 	// tool routes
 	a.Logger.Info("registering tool routes")
-	controllers.RegisterToolRoutes(v1, a.ToolController)
+	controllers.RegisterToolRoutes(mux, a.ToolController)
 	// user routes
 	a.Logger.Info("registering user routes")
-	controllers.RegisterUserRoutes(v1, a.UserController)
+	controllers.RegisterUserRoutes(mux, a.UserController)
 
 	a.Logger.Info("all routes registered successfully")
 }

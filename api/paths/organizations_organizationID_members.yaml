@@ -20,7 +20,7 @@ get:
     - bearerAuth: []
   responses:
     '200':
-      $ref: ../components/responses/MemberResponse.yaml
+      $ref: ../components/responses/MemberListResponse.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':
@@ -68,7 +68,7 @@ post:
     - bearerAuth: []
   responses:
     '201':
-      $ref: ../components/responses/OrganizationResponse.yaml
+      $ref: ../components/responses/MemberResponse.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

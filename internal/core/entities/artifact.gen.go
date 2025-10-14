@@ -12,26 +12,58 @@ import (
 
 // Artifact represents Schema for Artifact entity
 type Artifact struct {
-	ID             uuid.UUID            `json:"id" yaml:"id"`                                         // Unique identifier for the resource
-	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`                           // The date and time when the resource was created
-	Credits        int32                `json:"credits" yaml:"credits"`                               // The number of credits required to access this artifact. This is used for metering and billing purposes.
-	Description    *string              `json:"description,omitempty" yaml:"description,omitempty"`   // The artifact's description
-	MimeType       string               `json:"mimeType" yaml:"mimeType"`                             // The MIME type of the artifact, e.g. image/png
-	Name           *string              `json:"name,omitempty" yaml:"name,omitempty"`                 // The name of the artifact, used for display purposes
-	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"`                 // The organization that owns this artifact
-	PreviewImage   *string              `json:"previewImage,omitempty" yaml:"previewImage,omitempty"` // The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-	ProducerID     *uuid.UUID           `json:"producerID,omitempty" yaml:"producerID,omitempty"`     // The ID of the entity that produced this artifact
-	Text           *string              `json:"text,omitempty" yaml:"text,omitempty"`                 // The artifact text
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`                           // The date and time when the resource was last updated
-	events         []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// Credits The number of credits required to access this artifact. This is used for metering and billing purposes.
+	Credits int32 `json:"credits" yaml:"credits"`
+
+	// Description The artifact's description
+	Description *string `json:"description" yaml:"description"`
+
+	// MimeType The MIME type of the artifact, e.g. image/png
+	MimeType string `json:"mimeType" yaml:"mimeType"`
+
+	// Name The name of the artifact, used for display purposes
+	Name *string `json:"name" yaml:"name"`
+
+	// OrganizationID The organization that owns this artifact
+	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
+
+	// PreviewImage The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
+	PreviewImage *string `json:"previewImage" yaml:"previewImage"`
+
+	// ProducerID The ID of the entity that produced this artifact
+	ProducerID *uuid.UUID `json:"producerID" yaml:"producerID"`
+
+	// Text The artifact text
+	Text *string `json:"text" yaml:"text"`
+
+	// URL The URL of the artifact if it's stored externally
+	URL *string `json:"url" yaml:"url"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewArtifact creates a new Artifact entity.
 // All required fields must be provided and valid.
 func NewArtifact(
 	credits int32,
+	description *string,
 	mimeType string,
+	name *string,
 	organizationID uuid.UUID,
+	previewImage *string,
+	producerID *uuid.UUID,
+	text *string,
+	url *string,
 ) (*Artifact, error) {
 	// Validate required fields
 	if mimeType == "" {
@@ -42,10 +74,16 @@ func NewArtifact(
 	artifact := &Artifact{
 		ID:             id,
 		CreatedAt:      now,
-		Credits:        credits,
-		MimeType:       mimeType,
-		OrganizationID: organizationID,
 		UpdatedAt:      now,
+		Credits:        credits,
+		Description:    description,
+		MimeType:       mimeType,
+		Name:           name,
+		OrganizationID: organizationID,
+		PreviewImage:   previewImage,
+		ProducerID:     producerID,
+		Text:           text,
+		URL:            url,
 		events:         []events.DomainEvent{},
 	}
 	artifact.addEvent(events.NewArtifactCreatedEvent(id))
@@ -61,6 +99,11 @@ func (e *Artifact) GetID() uuid.UUID {
 // GetCreatedAt returns the CreatedAt
 func (e *Artifact) GetCreatedAt() time.Time {
 	return e.CreatedAt
+}
+
+// GetUpdatedAt returns the UpdatedAt
+func (e *Artifact) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
 }
 
 // GetCredits returns the Credits
@@ -103,9 +146,9 @@ func (e *Artifact) GetText() *string {
 	return e.Text
 }
 
-// GetUpdatedAt returns the UpdatedAt
-func (e *Artifact) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
+// GetURL returns the URL
+func (e *Artifact) GetURL() *string {
+	return e.URL
 }
 
 // Events returns the domain events

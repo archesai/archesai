@@ -56,37 +56,68 @@ func ParseMagicLinkTokenDeliveryMethod(s string) (MagicLinkTokenDeliveryMethod, 
 
 // MagicLinkToken represents Schema for MagicLinkToken entity
 type MagicLinkToken struct {
-	ID             uuid.UUID                     `json:"id" yaml:"id"`                                             // Unique identifier for the magic link token
-	Code           *string                       `json:"code,omitempty" yaml:"code,omitempty"`                     // Optional 6-digit OTP code
-	CreatedAt      time.Time                     `json:"createdAt" yaml:"createdAt"`                               // When the token was created
-	DeliveryMethod *MagicLinkTokenDeliveryMethod `json:"deliveryMethod,omitempty" yaml:"deliveryMethod,omitempty"` // How the magic link was delivered
-	ExpiresAt      time.Time                     `json:"expiresAt" yaml:"expiresAt"`                               // When the token expires
-	IPAddress      *string                       `json:"ipAddress,omitempty" yaml:"ipAddress,omitempty"`           // IP address of the request
-	Identifier     string                        `json:"identifier" yaml:"identifier"`                             // Email or username for authentication
-	Token          *string                       `json:"token,omitempty" yaml:"token,omitempty"`                   // The raw magic link token
-	TokenHash      string                        `json:"tokenHash" yaml:"tokenHash"`                               // SHA256 hash of the magic link token
-	UsedAt         *time.Time                    `json:"usedAt,omitempty" yaml:"usedAt,omitempty"`                 // When the token was used (null if unused)
-	UserAgent      *string                       `json:"userAgent,omitempty" yaml:"userAgent,omitempty"`           // User agent of the request
-	UserID         *uuid.UUID                    `json:"userID,omitempty" yaml:"userID,omitempty"`                 // User ID if token is for existing user
+
+	// ID Unique identifier for the magic link token
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt When the token was created
+	CreatedAt *time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// Code Optional 6-digit OTP code
+	Code *string `json:"code,omitempty" yaml:"code,omitempty"`
+
+	// DeliveryMethod How the magic link was delivered
+	DeliveryMethod *MagicLinkTokenDeliveryMethod `json:"deliveryMethod,omitempty" yaml:"deliveryMethod,omitempty"`
+
+	// ExpiresAt When the token expires
+	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
+
+	// IPAddress IP address of the request
+	IPAddress *string `json:"ipAddress,omitempty" yaml:"ipAddress,omitempty"`
+
+	// Identifier Email or username for authentication
+	Identifier string `json:"identifier" yaml:"identifier"`
+
+	// Token The raw magic link token
+	Token *string `json:"token,omitempty" yaml:"token,omitempty"`
+
+	// TokenHash SHA256 hash of the magic link token
+	TokenHash string `json:"tokenHash" yaml:"tokenHash"`
+
+	// UsedAt When the token was used (null if unused)
+	UsedAt *time.Time `json:"usedAt,omitempty" yaml:"usedAt,omitempty"`
+
+	// UserAgent User agent of the request
+	UserAgent *string `json:"userAgent,omitempty" yaml:"userAgent,omitempty"`
+
+	// UserID User ID if token is for existing user
+	UserID *uuid.UUID `json:"userID,omitempty" yaml:"userID,omitempty"`
 }
 
 // NewMagicLinkToken creates a new immutable MagicLinkToken value object.
 // Value objects are immutable and validated upon creation.
-func NewMagicLinkToken(id uuid.UUID, code *string, createdAt time.Time, deliveryMethod *MagicLinkTokenDeliveryMethod, expiresAt time.Time, ipAddress *string, identifier string, token *string, tokenHash string, usedAt *time.Time, userAgent *string, userID *uuid.UUID) (MagicLinkToken, error) {
+func NewMagicLinkToken(
+	id uuid.UUID,
+	createdAt *time.Time,
+	code *string,
+	deliveryMethod *MagicLinkTokenDeliveryMethod,
+	expiresAt time.Time,
+	ipAddress *string,
+	identifier string,
+	token *string,
+	tokenHash string,
+	usedAt *time.Time,
+	userAgent *string,
+	userID *uuid.UUID,
+) (MagicLinkToken, error) {
 	// Validate required fields
 	if id == uuid.Nil {
 		return MagicLinkToken{}, fmt.Errorf("ID cannot be nil UUID")
 	}
-	if deliveryMethod != nil && !deliveryMethod.IsValid() {
-		return MagicLinkToken{}, fmt.Errorf("invalid DeliveryMethod: %s", deliveryMethod)
-	}
-	if userID != nil && *userID == uuid.Nil {
-		return MagicLinkToken{}, fmt.Errorf("UserID cannot be nil UUID")
-	}
 	return MagicLinkToken{
 		ID:             id,
-		Code:           code,
 		CreatedAt:      createdAt,
+		Code:           code,
 		DeliveryMethod: deliveryMethod,
 		ExpiresAt:      expiresAt,
 		IPAddress:      ipAddress,
@@ -111,16 +142,16 @@ func (v MagicLinkToken) GetID() uuid.UUID {
 	return v.ID
 }
 
+// GetCreatedAt returns the CreatedAt value.
+// Value objects are immutable, so this returns a copy of the value.
+func (v MagicLinkToken) GetCreatedAt() *time.Time {
+	return v.CreatedAt
+}
+
 // GetCode returns the Code value.
 // Value objects are immutable, so this returns a copy of the value.
 func (v MagicLinkToken) GetCode() *string {
 	return v.Code
-}
-
-// GetCreatedAt returns the CreatedAt value.
-// Value objects are immutable, so this returns a copy of the value.
-func (v MagicLinkToken) GetCreatedAt() time.Time {
-	return v.CreatedAt
 }
 
 // GetDeliveryMethod returns the DeliveryMethod value.
@@ -183,11 +214,11 @@ func (v MagicLinkToken) Validate() error {
 	if v.ID == uuid.Nil {
 		return fmt.Errorf("ID cannot be nil UUID")
 	}
-	if v.DeliveryMethod != nil && !v.DeliveryMethod.IsValid() {
-		return fmt.Errorf("invalid DeliveryMethod: %s", v.DeliveryMethod)
-	}
-	if v.UserID != nil && *v.UserID == uuid.Nil {
-		return fmt.Errorf("UserID cannot be nil UUID")
+	// Optional enum - validate only if present
+	if v.DeliveryMethod != nil {
+		if !v.DeliveryMethod.IsValid() {
+			return fmt.Errorf("invalid DeliveryMethod: %s", v.DeliveryMethod)
+		}
 	}
 	return nil
 }
@@ -203,8 +234,8 @@ func (v MagicLinkToken) IsZero() bool {
 func (v MagicLinkToken) String() string {
 	var fields []string
 	fields = append(fields, fmt.Sprintf("ID: %v", v.ID))
-	fields = append(fields, fmt.Sprintf("Code: %v", v.Code))
 	fields = append(fields, fmt.Sprintf("CreatedAt: %v", v.CreatedAt))
+	fields = append(fields, fmt.Sprintf("Code: %v", v.Code))
 	fields = append(fields, fmt.Sprintf("DeliveryMethod: %v", v.DeliveryMethod))
 	fields = append(fields, fmt.Sprintf("ExpiresAt: %v", v.ExpiresAt))
 	fields = append(fields, fmt.Sprintf("IPAddress: %v", v.IPAddress))

@@ -9,13 +9,18 @@ import (
 
 // BillingConfig represents Billing configuration for Stripe
 type BillingConfig struct {
-	Enabled bool          `json:"enabled" yaml:"enabled"` // Enable billing functionality
+
+	// Enabled Enable billing functionality
+	Enabled bool          `json:"enabled" yaml:"enabled"`
 	Stripe  *StripeConfig `json:"stripe,omitempty" yaml:"stripe,omitempty"`
 }
 
 // NewBillingConfig creates a new immutable BillingConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewBillingConfig(enabled bool, stripe *StripeConfig) (BillingConfig, error) {
+func NewBillingConfig(
+	enabled bool,
+	stripe *StripeConfig,
+) (BillingConfig, error) {
 	// Validate required fields
 	return BillingConfig{
 		Enabled: enabled,

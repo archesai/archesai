@@ -12,26 +12,49 @@ import (
 
 // APIKey represents Schema for API Key entity
 type APIKey struct {
-	ID             uuid.UUID            `json:"id" yaml:"id"`                                     // Unique identifier for the resource
-	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`                       // The date and time when the resource was created
-	ExpiresAt      *time.Time           `json:"expiresAt,omitempty" yaml:"expiresAt,omitempty"`   // When this API key expires
-	KeyHash        string               `json:"keyHash" yaml:"keyHash"`                           // Hashed version of the API key for secure storage
-	LastUsedAt     *time.Time           `json:"lastUsedAt,omitempty" yaml:"lastUsedAt,omitempty"` // When this API key was last used
-	Name           *string              `json:"name,omitempty" yaml:"name,omitempty"`
-	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"` // The organization this API key belongs to
-	Prefix         *string              `json:"prefix,omitempty" yaml:"prefix,omitempty"`
-	RateLimit      int32                `json:"rateLimit" yaml:"rateLimit"` // Requests per minute allowed for this API key
-	Scopes         []string             `json:"scopes" yaml:"scopes"`
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"` // The date and time when the resource was last updated
-	UserID         uuid.UUID            `json:"userID" yaml:"userID"`       // The user who owns this API key
-	events         []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// ExpiresAt When this API key expires
+	ExpiresAt *time.Time `json:"expiresAt" yaml:"expiresAt"`
+
+	// KeyHash Hashed version of the API key for secure storage
+	KeyHash string `json:"keyHash" yaml:"keyHash"`
+
+	// LastUsedAt When this API key was last used
+	LastUsedAt *time.Time `json:"lastUsedAt" yaml:"lastUsedAt"`
+	Name       *string    `json:"name" yaml:"name"`
+
+	// OrganizationID The organization this API key belongs to
+	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
+	Prefix         *string   `json:"prefix" yaml:"prefix"`
+
+	// RateLimit Requests per minute allowed for this API key
+	RateLimit int32    `json:"rateLimit" yaml:"rateLimit"`
+	Scopes    []string `json:"scopes" yaml:"scopes"`
+
+	// UserID The user who owns this API key
+	UserID uuid.UUID `json:"userID" yaml:"userID"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewAPIKey creates a new APIKey entity.
 // All required fields must be provided and valid.
 func NewAPIKey(
+	expiresAt *time.Time,
 	keyHash string,
+	lastUsedAt *time.Time,
+	name *string,
 	organizationID uuid.UUID,
+	prefix *string,
 	rateLimit int32,
 	scopes []string,
 	userID uuid.UUID,
@@ -45,11 +68,15 @@ func NewAPIKey(
 	apikey := &APIKey{
 		ID:             id,
 		CreatedAt:      now,
+		UpdatedAt:      now,
+		ExpiresAt:      expiresAt,
 		KeyHash:        keyHash,
+		LastUsedAt:     lastUsedAt,
+		Name:           name,
 		OrganizationID: organizationID,
+		Prefix:         prefix,
 		RateLimit:      rateLimit,
 		Scopes:         scopes,
-		UpdatedAt:      now,
 		UserID:         userID,
 		events:         []events.DomainEvent{},
 	}
@@ -66,6 +93,11 @@ func (e *APIKey) GetID() uuid.UUID {
 // GetCreatedAt returns the CreatedAt
 func (e *APIKey) GetCreatedAt() time.Time {
 	return e.CreatedAt
+}
+
+// GetUpdatedAt returns the UpdatedAt
+func (e *APIKey) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
 }
 
 // GetExpiresAt returns the ExpiresAt
@@ -106,11 +138,6 @@ func (e *APIKey) GetRateLimit() int32 {
 // GetScopes returns the Scopes
 func (e *APIKey) GetScopes() []string {
 	return e.Scopes
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *APIKey) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
 }
 
 // GetUserID returns the UserID

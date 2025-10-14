@@ -13,7 +13,7 @@ properties:
     maxLength: 36
   userID:
     description: User ID if token is for existing user
-    type: string
+    type: [string, 'null']
     format: uuid
     example: 550e8400-e29b-41d4-a716-446655440000
     minLength: 36
@@ -34,7 +34,7 @@ properties:
     pattern: ^[a-f0-9]{64}$
   code:
     description: Optional 6-digit OTP code
-    type: string
+    type: [string, 'null']
     minLength: 6
     maxLength: 6
     pattern: ^[0-9]{6}$
@@ -48,7 +48,7 @@ properties:
     maxLength: 255
   deliveryMethod:
     description: How the magic link was delivered
-    type: string
+    type: [string, 'null']
     enum:
       - email
       - console
@@ -65,26 +65,26 @@ properties:
     maxLength: 512
   usedAt:
     description: When the token was used (null if unused)
-    type: string
+    type: [string, 'null']
     format: date-time
     example: '2023-10-05T14:48:00Z'
   ipAddress:
     description: IP address of the request
-    type: string
+    type: [string, 'null']
     format: ipv4
     minLength: 7
     maxLength: 45
     example: 192.168.1.1
   userAgent:
     description: User agent of the request
-    type: string
+    type: [string, 'null']
     minLength: 1
     maxLength: 512
     pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
     example: Mozilla/5.0
   createdAt:
     description: When the token was created
-    type: string
+    type: [string, 'null']
     format: date-time
     minLength: 1
     example: '2023-10-05T14:48:00Z'

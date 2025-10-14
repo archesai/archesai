@@ -9,16 +9,28 @@ import (
 
 // ScraperConfig represents Web scraping service configuration
 type ScraperConfig struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"`                       // Enable scraper service
-	Endpoint  *string         `json:"endpoint,omitempty" yaml:"endpoint,omitempty"` // Web scraper service endpoint URL
-	Image     *ImageConfig    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed scraper deployment
+
+	// Enabled Enable scraper service
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// Endpoint Web scraper service endpoint URL
+	Endpoint *string      `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	Image    *ImageConfig `json:"image,omitempty" yaml:"image,omitempty"`
+
+	// Managed Use managed scraper deployment
+	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"`
 	Resources *ResourceConfig `json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
 // NewScraperConfig creates a new immutable ScraperConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewScraperConfig(enabled bool, endpoint *string, image *ImageConfig, managed *bool, resources *ResourceConfig) (ScraperConfig, error) {
+func NewScraperConfig(
+	enabled bool,
+	endpoint *string,
+	image *ImageConfig,
+	managed *bool,
+	resources *ResourceConfig,
+) (ScraperConfig, error) {
 	// Validate required fields
 	return ScraperConfig{
 		Enabled:   enabled,

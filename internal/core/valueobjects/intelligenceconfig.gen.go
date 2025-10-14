@@ -19,7 +19,14 @@ type IntelligenceConfig struct {
 
 // NewIntelligenceConfig creates a new immutable IntelligenceConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewIntelligenceConfig(embedding *LLMConfig, llm *LLMConfig, runpod *RunPodConfig, scraper *ScraperConfig, speech *SpeechConfig, unstructured *UnstructuredConfig) (IntelligenceConfig, error) {
+func NewIntelligenceConfig(
+	embedding *LLMConfig,
+	llm *LLMConfig,
+	runpod *RunPodConfig,
+	scraper *ScraperConfig,
+	speech *SpeechConfig,
+	unstructured *UnstructuredConfig,
+) (IntelligenceConfig, error) {
 	// Validate required fields
 	return IntelligenceConfig{
 		Embedding:    embedding,

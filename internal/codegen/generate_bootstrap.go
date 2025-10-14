@@ -97,7 +97,7 @@ func (g *Generator) GenerateBootstrap(
 
 		// Commands and Queries are now auto-determined from operations
 		// For entities, we assume they have both commands and queries
-		if schema.XCodegen.SchemaType == schemaTypeEntity {
+		if schema.XCodegen.SchemaType == parsers.XCodegenExtensionSchemaTypeEntity {
 			domain.HasCommands = true
 			domain.HasQueries = true
 		}

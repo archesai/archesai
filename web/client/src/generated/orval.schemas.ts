@@ -6,19 +6,39 @@
  * OpenAPI spec version: v0.0.0
  */
 /**
+ * The organization ID for this session (nullable for users without org)
+ * @minLength 36
+ * @maxLength 36
+ */
+export type SessionAllOfOrganizationID = string | null;
+
+/**
+ * The authentication method used (magic_link, oauth_google, oauth_github, etc.)
+ * @minLength 1
+ * @maxLength 100
+ * @pattern ^[a-z_]+$
+ */
+export type SessionAllOfAuthMethod = string | null;
+
+/**
  * The authentication provider (google, github, microsoft, local)
  */
-export type SessionAllOfAuthProvider = typeof SessionAllOfAuthProvider[keyof typeof SessionAllOfAuthProvider];
+export type SessionAllOfAuthProvider = 'local' | 'google' | 'github' | 'microsoft' | 'apple' | null;
 
+/**
+ * The IP address of the session
+ * @minLength 7
+ * @maxLength 45
+ */
+export type SessionAllOfIpAddress = string | null;
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionAllOfAuthProvider = {
-  local: 'local',
-  google: 'google',
-  github: 'github',
-  microsoft: 'microsoft',
-  apple: 'apple',
-} as const;
+/**
+ * The user agent of the session
+ * @minLength 1
+ * @maxLength 255
+ * @pattern ^[\w\s\-.,!?()@#+/\(\):;]+$
+ */
+export type SessionAllOfUserAgent = string | null;
 
 export type SessionAllOf = {
   /**
@@ -26,16 +46,16 @@ export type SessionAllOf = {
    * @minLength 36
    * @maxLength 36
    */
-  organizationID?: string;
+  organizationID: SessionAllOfOrganizationID;
   /**
    * The authentication method used (magic_link, oauth_google, oauth_github, etc.)
    * @minLength 1
    * @maxLength 100
    * @pattern ^[a-z_]+$
    */
-  authMethod?: string;
+  authMethod: SessionAllOfAuthMethod;
   /** The authentication provider (google, github, microsoft, local) */
-  authProvider?: SessionAllOfAuthProvider;
+  authProvider: SessionAllOfAuthProvider;
   /**
    * The expiration date of the session
    * @minLength 1
@@ -47,7 +67,7 @@ export type SessionAllOf = {
    * @minLength 7
    * @maxLength 45
    */
-  ipAddress?: string;
+  ipAddress: SessionAllOfIpAddress;
   /**
    * The session token
    * @minLength 1
@@ -61,7 +81,7 @@ export type SessionAllOf = {
    * @maxLength 255
    * @pattern ^[\w\s\-.,!?()@#+/\(\):;]+$
    */
-  userAgent?: string;
+  userAgent: SessionAllOfUserAgent;
   /**
    * The user who owns this session
    * @minLength 36
@@ -137,19 +157,51 @@ export interface Problem {
 }
 
 /**
+ * User ID if token is for existing user
+ * @minLength 36
+ * @maxLength 36
+ */
+export type MagicLinkTokenUserID = string | null;
+
+/**
+ * Optional 6-digit OTP code
+ * @minLength 6
+ * @maxLength 6
+ * @pattern ^[0-9]{6}$
+ */
+export type MagicLinkTokenCode = string | null;
+
+/**
  * How the magic link was delivered
  */
-export type MagicLinkTokenDeliveryMethod = typeof MagicLinkTokenDeliveryMethod[keyof typeof MagicLinkTokenDeliveryMethod];
+export type MagicLinkTokenDeliveryMethod = 'email' | 'console' | 'webhook' | 'otp' | 'file' | null;
 
+/**
+ * When the token was used (null if unused)
+ */
+export type MagicLinkTokenUsedAt = string | null;
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MagicLinkTokenDeliveryMethod = {
-  email: 'email',
-  console: 'console',
-  webhook: 'webhook',
-  otp: 'otp',
-  file: 'file',
-} as const;
+/**
+ * IP address of the request
+ * @minLength 7
+ * @maxLength 45
+ */
+export type MagicLinkTokenIpAddress = string | null;
+
+/**
+ * User agent of the request
+ * @minLength 1
+ * @maxLength 512
+ * @pattern ^[\w\s\-.,!?()@#+/\(\):;]+$
+ */
+export type MagicLinkTokenUserAgent = string | null;
+
+/**
+ * When the token was created
+ * @minLength 1
+ * @maxLength 512
+ */
+export type MagicLinkTokenCreatedAt = string | null;
 
 /**
  * Schema for MagicLinkToken entity
@@ -166,7 +218,7 @@ export interface MagicLinkToken {
    * @minLength 36
    * @maxLength 36
    */
-  userID?: string;
+  userID?: MagicLinkTokenUserID;
   /**
    * The raw magic link token
    * @minLength 32
@@ -187,7 +239,7 @@ export interface MagicLinkToken {
    * @maxLength 6
    * @pattern ^[0-9]{6}$
    */
-  code?: string;
+  code?: MagicLinkTokenCode;
   /**
    * Email or username for authentication
    * @minLength 1
@@ -203,26 +255,26 @@ export interface MagicLinkToken {
    */
   expiresAt: string;
   /** When the token was used (null if unused) */
-  usedAt?: string;
+  usedAt?: MagicLinkTokenUsedAt;
   /**
    * IP address of the request
    * @minLength 7
    * @maxLength 45
    */
-  ipAddress?: string;
+  ipAddress?: MagicLinkTokenIpAddress;
   /**
    * User agent of the request
    * @minLength 1
    * @maxLength 512
    * @pattern ^[\w\s\-.,!?()@#+/\(\):;]+$
    */
-  userAgent?: string;
+  userAgent?: MagicLinkTokenUserAgent;
   /**
    * When the token was created
    * @minLength 1
    * @maxLength 512
    */
-  createdAt: string;
+  createdAt: MagicLinkTokenCreatedAt;
 }
 
 /**
@@ -277,6 +329,52 @@ export const AccountAllOfProvider = {
   apple: 'apple',
 } as const;
 
+/**
+ * The OAuth access token
+ * @minLength 1
+ * @maxLength 512
+ * @pattern ^[A-Za-z0-9_\-\.]+$
+ */
+export type AccountAllOfAccessToken = string | null;
+
+/**
+ * The access token expiration timestamp
+ * @minLength 1
+ * @maxLength 255
+ */
+export type AccountAllOfAccessTokenExpiresAt = string | null;
+
+/**
+ * The OAuth refresh token
+ * @minLength 1
+ * @maxLength 512
+ * @pattern ^[A-Za-z0-9_\-\./]+$
+ */
+export type AccountAllOfRefreshToken = string | null;
+
+/**
+ * The refresh token expiration timestamp
+ * @minLength 1
+ * @maxLength 255
+ */
+export type AccountAllOfRefreshTokenExpiresAt = string | null;
+
+/**
+ * The OpenID Connect ID token
+ * @minLength 1
+ * @maxLength 2048
+ * @pattern ^[A-Za-z0-9_\-\.]+$
+ */
+export type AccountAllOfIdToken = string | null;
+
+/**
+ * The OAuth scope granted
+ * @minLength 1
+ * @maxLength 255
+ * @pattern ^[\w\s\-:]+$
+ */
+export type AccountAllOfScope = string | null;
+
 export type AccountAllOf = {
   /**
    * The unique identifier for the account from the provider
@@ -299,46 +397,53 @@ export type AccountAllOf = {
    * @maxLength 512
    * @pattern ^[A-Za-z0-9_\-\.]+$
    */
-  accessToken?: string;
+  accessToken: AccountAllOfAccessToken;
   /**
    * The access token expiration timestamp
    * @minLength 1
    * @maxLength 255
    */
-  accessTokenExpiresAt?: string;
+  accessTokenExpiresAt: AccountAllOfAccessTokenExpiresAt;
   /**
    * The OAuth refresh token
    * @minLength 1
    * @maxLength 512
    * @pattern ^[A-Za-z0-9_\-\./]+$
    */
-  refreshToken?: string;
+  refreshToken: AccountAllOfRefreshToken;
   /**
    * The refresh token expiration timestamp
    * @minLength 1
    * @maxLength 255
    */
-  refreshTokenExpiresAt?: string;
+  refreshTokenExpiresAt: AccountAllOfRefreshTokenExpiresAt;
   /**
    * The OpenID Connect ID token
    * @minLength 1
    * @maxLength 2048
    * @pattern ^[A-Za-z0-9_\-\.]+$
    */
-  idToken?: string;
+  idToken: AccountAllOfIdToken;
   /**
    * The OAuth scope granted
    * @minLength 1
    * @maxLength 255
    * @pattern ^[\w\s\-:]+$
    */
-  scope?: string;
+  scope: AccountAllOfScope;
 };
 
 /**
  * Schema for Account entity (authentication provider account)
  */
 export type Account = Base & AccountAllOf;
+
+/**
+ * The user's avatar image URL
+ * @minLength 5
+ * @maxLength 2048
+ */
+export type UserAllOfImage = string | null;
 
 export type UserAllOf = {
   /**
@@ -354,7 +459,7 @@ export type UserAllOf = {
    * @minLength 5
    * @maxLength 2048
    */
-  image?: string;
+  image: UserAllOfImage;
   /**
    * The user's display name
    * @minLength 1
@@ -412,6 +517,34 @@ export interface FilterNode {
   value?: FilterNodeValue;
 }
 
+/**
+ * @minLength 1
+ * @maxLength 255
+ * @pattern ^[\w\s\-.,!?()@#+/']+$
+ */
+export type APIKeyAllOfName = string | null;
+
+/**
+ * @minLength 1
+ * @maxLength 255
+ * @pattern ^[a-z]+$
+ */
+export type APIKeyAllOfPrefix = string | null;
+
+/**
+ * When this API key was last used
+ * @minLength 1
+ * @maxLength 255
+ */
+export type APIKeyAllOfLastUsedAt = string | null;
+
+/**
+ * When this API key expires
+ * @minLength 1
+ * @maxLength 255
+ */
+export type APIKeyAllOfExpiresAt = string | null;
+
 export type APIKeyAllOf = {
   /**
    * The user who owns this API key
@@ -437,13 +570,13 @@ export type APIKeyAllOf = {
    * @maxLength 255
    * @pattern ^[\w\s\-.,!?()@#+/']+$
    */
-  name?: string;
+  name: APIKeyAllOfName;
   /**
    * @minLength 1
    * @maxLength 255
    * @pattern ^[a-z]+$
    */
-  prefix?: string;
+  prefix: APIKeyAllOfPrefix;
   /** @maxItems 1000 */
   scopes: string[];
   /**
@@ -457,19 +590,33 @@ export type APIKeyAllOf = {
    * @minLength 1
    * @maxLength 255
    */
-  lastUsedAt?: string;
+  lastUsedAt: APIKeyAllOfLastUsedAt;
   /**
    * When this API key expires
    * @minLength 1
    * @maxLength 255
    */
-  expiresAt?: string;
+  expiresAt: APIKeyAllOfExpiresAt;
 };
 
 /**
  * Schema for API Key entity
  */
 export type APIKey = Base & APIKeyAllOf;
+
+/**
+ * The organization's logo URL
+ * @minLength 1
+ * @maxLength 2048
+ */
+export type OrganizationAllOfLogo = string | null;
+
+/**
+ * Email address for billing communications
+ * @minLength 5
+ * @maxLength 255
+ */
+export type OrganizationAllOfBillingEmail = string | null;
 
 /**
  * The current subscription plan
@@ -506,13 +653,13 @@ export type OrganizationAllOf = {
    * @minLength 1
    * @maxLength 2048
    */
-  logo?: string;
+  logo: OrganizationAllOfLogo;
   /**
    * Email address for billing communications
    * @minLength 5
    * @maxLength 255
    */
-  billingEmail?: string;
+  billingEmail: OrganizationAllOfBillingEmail;
   /** The current subscription plan */
   plan: OrganizationAllOfPlan;
   /**
@@ -633,6 +780,21 @@ export type InvitationAllOf = {
  */
 export type Invitation = Base & InvitationAllOf;
 
+/**
+ * The pipeline's display name
+ * @minLength 1
+ * @maxLength 255
+ * @pattern ^[\w\s\-.,!?()@#+/']+$
+ */
+export type PipelineAllOfName = string | null;
+
+/**
+ * Detailed description of the pipeline's purpose
+ * @maxLength 1000
+ * @pattern ^[\w\s\-.,!?()@#+/':;]+$
+ */
+export type PipelineAllOfDescription = string | null;
+
 export type PipelineAllOf = {
   /**
    * The organization identifier
@@ -646,13 +808,13 @@ export type PipelineAllOf = {
    * @maxLength 255
    * @pattern ^[\w\s\-.,!?()@#+/']+$
    */
-  name?: string;
+  name: PipelineAllOfName;
   /**
    * Detailed description of the pipeline's purpose
    * @maxLength 1000
    * @pattern ^[\w\s\-.,!?()@#+/':;]+$
    */
-  description?: string;
+  description: PipelineAllOfDescription;
 };
 
 /**
@@ -680,6 +842,28 @@ export type PipelineStepAllOf = {
  */
 export type PipelineStep = Base & PipelineStepAllOf;
 
+/**
+ * The timestamp when the run completed
+ * @minLength 1
+ * @maxLength 255
+ */
+export type RunAllOfCompletedAt = string | null;
+
+/**
+ * The error message
+ * @minLength 1
+ * @maxLength 255
+ * @pattern ^[\w\s\-.,!?()@#+/':;]+$
+ */
+export type RunAllOfError = string | null;
+
+/**
+ * The timestamp when the run started
+ * @minLength 1
+ * @maxLength 255
+ */
+export type RunAllOfStartedAt = string | null;
+
 export type RunAllOfStatus = typeof RunAllOfStatus[keyof typeof RunAllOfStatus];
 
 
@@ -697,14 +881,14 @@ export type RunAllOf = {
    * @minLength 1
    * @maxLength 255
    */
-  completedAt?: string;
+  completedAt: RunAllOfCompletedAt;
   /**
    * The error message
    * @minLength 1
    * @maxLength 255
    * @pattern ^[\w\s\-.,!?()@#+/':;]+$
    */
-  error?: string;
+  error: RunAllOfError;
   /**
    * The organization this run belongs to
    * @minLength 36
@@ -728,7 +912,7 @@ export type RunAllOf = {
    * @minLength 1
    * @maxLength 255
    */
-  startedAt?: string;
+  startedAt: RunAllOfStartedAt;
   status: RunAllOfStatus;
   /**
    * The tool being used in this run
@@ -785,6 +969,51 @@ export type ToolAllOf = {
  */
 export type Tool = Base & ToolAllOf;
 
+/**
+ * The artifact's description
+ * @minLength 1
+ * @maxLength 1000
+ * @pattern ^[\w\s\-.,!?()@#+/':;]+$
+ */
+export type ArtifactAllOfDescription = string | null;
+
+/**
+ * The name of the artifact, used for display purposes
+ * @minLength 1
+ * @maxLength 255
+ * @pattern ^[\w\s\-.,!?()@#+/']+$
+ */
+export type ArtifactAllOfName = string | null;
+
+/**
+ * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
+ * @minLength 1
+ * @maxLength 2048
+ */
+export type ArtifactAllOfPreviewImage = string | null;
+
+/**
+ * The ID of the entity that produced this artifact
+ * @minLength 36
+ * @maxLength 36
+ */
+export type ArtifactAllOfProducerID = string | null;
+
+/**
+ * The artifact text
+ * @minLength 1
+ * @maxLength 255
+ * @pattern ^[\w\s\-.,!?()@#+/':;]+$
+ */
+export type ArtifactAllOfText = string | null;
+
+/**
+ * The URL of the artifact if it's stored externally
+ * @minLength 1
+ * @maxLength 2048
+ */
+export type ArtifactAllOfUrl = string | null;
+
 export type ArtifactAllOf = {
   /**
    * The number of credits required to access this artifact. This is used for metering and billing purposes.
@@ -798,7 +1027,7 @@ export type ArtifactAllOf = {
    * @maxLength 1000
    * @pattern ^[\w\s\-.,!?()@#+/':;]+$
    */
-  description?: string;
+  description: ArtifactAllOfDescription;
   /**
    * The MIME type of the artifact, e.g. image/png
    * @minLength 1
@@ -812,7 +1041,7 @@ export type ArtifactAllOf = {
    * @maxLength 255
    * @pattern ^[\w\s\-.,!?()@#+/']+$
    */
-  name?: string;
+  name: ArtifactAllOfName;
   /**
    * The organization that owns this artifact
    * @minLength 36
@@ -824,20 +1053,26 @@ export type ArtifactAllOf = {
    * @minLength 1
    * @maxLength 2048
    */
-  previewImage?: string;
+  previewImage: ArtifactAllOfPreviewImage;
   /**
    * The ID of the entity that produced this artifact
    * @minLength 36
    * @maxLength 36
    */
-  producerID?: string;
+  producerID: ArtifactAllOfProducerID;
   /**
    * The artifact text
    * @minLength 1
    * @maxLength 255
    * @pattern ^[\w\s\-.,!?()@#+/':;]+$
    */
-  text?: string;
+  text: ArtifactAllOfText;
+  /**
+   * The URL of the artifact if it's stored externally
+   * @minLength 1
+   * @maxLength 2048
+   */
+  url: ArtifactAllOfUrl;
 };
 
 /**
@@ -1910,6 +2145,11 @@ export type SessionResponseResponse = {
   data: Session;
 };
 
+/**
+ * 204 No Content
+ */
+export type NoContentResponse = void;
+
 export type AccountListResponseResponse = {
   /** @maxItems 10000 */
   data: Account[];
@@ -1919,11 +2159,6 @@ export type AccountListResponseResponse = {
 export type AccountResponseResponse = {
   data: Account;
 };
-
-/**
- * 204 No Content
- */
-export type NoContentResponse = void;
 
 export type EmailVerificationResponseResponse = {
   session: Session;
@@ -1958,6 +2193,12 @@ export type OrganizationListResponseResponse = {
 
 export type OrganizationResponseResponse = {
   data: Organization;
+};
+
+export type MemberListResponseResponse = {
+  /** @maxItems 10000 */
+  data: Member[];
+  meta: PaginationMeta;
 };
 
 export type MemberResponseResponse = {

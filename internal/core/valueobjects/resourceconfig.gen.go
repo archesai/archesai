@@ -9,25 +9,40 @@ import (
 
 // ResourceConfigLimits represents Resource limits
 type ResourceConfigLimits struct {
-	CPU    string `json:"cpu" yaml:"cpu"`       // Maximum CPU allocation
-	Memory string `json:"memory" yaml:"memory"` // Maximum memory allocation
+
+	// CPU Maximum CPU allocation
+	CPU string `json:"cpu" yaml:"cpu"`
+
+	// Memory Maximum memory allocation
+	Memory string `json:"memory" yaml:"memory"`
 }
 
 // ResourceConfigRequests represents Resource requests
 type ResourceConfigRequests struct {
-	CPU    string `json:"cpu" yaml:"cpu"`       // Requested CPU allocation
-	Memory string `json:"memory" yaml:"memory"` // Requested memory allocation
+
+	// CPU Requested CPU allocation
+	CPU string `json:"cpu" yaml:"cpu"`
+
+	// Memory Requested memory allocation
+	Memory string `json:"memory" yaml:"memory"`
 }
 
 // ResourceConfig represents Kubernetes resource configuration
 type ResourceConfig struct {
-	Limits   ResourceConfigLimits   `json:"limits" yaml:"limits"`     // Resource limits
-	Requests ResourceConfigRequests `json:"requests" yaml:"requests"` // Resource requests
+
+	// Limits Resource limits
+	Limits ResourceConfigLimits `json:"limits" yaml:"limits"`
+
+	// Requests Resource requests
+	Requests ResourceConfigRequests `json:"requests" yaml:"requests"`
 }
 
 // NewResourceConfig creates a new immutable ResourceConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewResourceConfig(limits ResourceConfigLimits, requests ResourceConfigRequests) (ResourceConfig, error) {
+func NewResourceConfig(
+	limits ResourceConfigLimits,
+	requests ResourceConfigRequests,
+) (ResourceConfig, error) {
 	// Validate required fields
 	return ResourceConfig{
 		Limits:   limits,

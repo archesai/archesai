@@ -67,7 +67,6 @@ func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*enti
 func (r *PostgresMemberRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Member) (*entities.Member, error) {
 
 	roleStr := string(entity.Role)
-
 	params := UpdateMemberParams{
 		ID:   id,
 		Role: &roleStr,

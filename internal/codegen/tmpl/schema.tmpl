@@ -64,9 +64,14 @@ func Parse{{ $schema.Name }}(s string) ({{ $schema.Name }}, error) {
 {{- range $schema.CollectNestedTypes }}
 // {{ .GoType }} represents {{ if .Description }}{{ .Description }}{{ else }}a nested type for {{ $schema.Name }}{{ end }}
 type {{ .GoType }} struct {
-{{- range .GetSortedProperties }}{{- $prop := . }}
-{{- $isOptional := stringContains .JSONTag ",omitempty" }}
-	{{ .Name }} {{ if and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}*{{ end }}{{ .GoType }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
+{{- range .GetSortedProperties }}{{- $prop := . }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}
+{{- if .Description }}
+
+	// {{ .Name }} {{ .Description }}
+{{- else }}
+
+{{- end }}
+	{{ .Name }} {{ if $isOptional }}*{{ .GoType }}{{ else }}{{ if .Nullable }}*{{ end }}{{ .GoType }}{{ end }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}
 {{- end }}
 }
 {{- end }}
@@ -115,11 +120,17 @@ func Parse{{ $schema.Name }}{{ $field.Name }}(s string) ({{ $fieldType }}, error
 
 // {{ $schema.Name }} represents {{ if $schema.Description }}{{ $schema.Description }}{{ else }}a {{ $schema.Name }}{{ end }}
 type {{ $schema.Name }} struct {
-{{- range $schema.GetSortedProperties }}{{- $prop := . }}
-{{- $isOptional := stringContains .JSONTag ",omitempty" }}
-	{{ .Name }} {{ if and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}*{{ end }}{{ if .Enum }}{{ $schema.Name }}{{ .Name }}{{ else }}{{ .GoType }}{{ end }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}{{ if .Description }} // {{ .Description }}{{ end }}
+{{- range $schema.GetSortedProperties }}{{- $prop := . }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}{{- $baseType := .GoType }}{{- if .Enum }}{{- $baseType = print $schema.Name .Name }}{{- end }}
+{{- if .Description }}
+
+	// {{ .Name }} {{ .Description }}
+{{- else }}
+
+{{- end }}
+	{{ .Name }} {{ if $isOptional }}*{{ $baseType }}{{ else }}{{ if .Nullable }}*{{ end }}{{ $baseType }}{{ end }}{{ if or .JSONTag .YAMLTag }} `{{ if .JSONTag }}json:"{{ .JSONTag }}"{{ end }}{{ if and .JSONTag .YAMLTag }} {{ end }}{{ if .YAMLTag }}yaml:"{{ .YAMLTag }}"{{ end }}`{{ end }}
 {{- end }}
 {{- if and $isEntity $schema.HasDomainEvents }}
+
 	events []events.DomainEvent `json:"-" yaml:"-"`
 {{- end }}
 }
@@ -135,71 +146,64 @@ type {{ $schema.Name }} struct {
 {{- end }}
 func New{{ $schema.Name }}(
 {{- if $isEntity }}
-{{- range $schema.GetSortedProperties }}
-{{- if and ($schema.IsPropertyRequired .JSONTag) (not (or (eq .Name "ID") (eq .Name "CreatedAt") (eq .Name "UpdatedAt"))) }}
-	{{ camelCase .Name }} {{ if .Enum }}{{ $schema.Name }}{{ .Name }}{{ else }}{{ .GoType }}{{ end }},
+{{- range $schema.GetSortedProperties }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}{{- $baseType := .GoType }}{{- if .Enum }}{{- $baseType = print $schema.Name .Name }}{{- end }}
+{{- if and ($schema.IsPropertyRequired .JSONTag) (not $isOptional) (not (or (eq .Name "ID") (eq .Name "CreatedAt") (eq .Name "UpdatedAt"))) }}
+	{{ camelCase .Name }} {{ if .Nullable }}*{{ end }}{{ $baseType }},
 {{- end }}
 {{- end }}
 ) (*{{ $schema.Name }}, error) {
 {{- else }}
-{{- range $i, $f := $schema.GetSortedProperties }}{{- $isOptional := stringContains $f.JSONTag ",omitempty" }}{{- $needsPointer := and $isOptional (not (hasPrefix $f.GoType "*")) (not (hasPrefix $f.GoType "[]")) (not (hasPrefix $f.GoType "map")) }}{{ if $i }}, {{ end }}{{ camelCase $f.Name }} {{ if $needsPointer }}*{{ end }}{{ if $f.Enum }}{{ $schema.Name }}{{ $f.Name }}{{ else }}{{ $f.GoType }}{{ end }}{{ end }}) ({{ $schema.Name }}, error) {
+{{- range $schema.GetSortedProperties }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}{{- $baseType := .GoType }}{{- if .Enum }}{{- $baseType = print $schema.Name .Name }}{{- end }}
+	{{ camelCase .Name }} {{ if $isOptional }}*{{ $baseType }}{{ else }}{{ if .Nullable }}*{{ end }}{{ $baseType }}{{ end }},
+{{- end }}
+) ({{ $schema.Name }}, error) {
 {{- end }}
 	// Validate required fields
-{{- range $schema.GetSortedProperties }}{{- $field := . }}
-{{- if and $isEntity ($schema.IsPropertyRequired $field.JSONTag) }}
+{{- range $schema.GetSortedProperties }}{{- $field := . }}{{- $isOptional := stringContains $field.JSONTag ",omitempty" }}{{- $baseType := .GoType }}{{- if .Enum }}{{- $baseType = print $schema.Name .Name }}{{- end }}
+{{- if and $isEntity ($schema.IsPropertyRequired $field.JSONTag) (not $isOptional) }}
 {{- if .Enum }}
 	if !{{ camelCase .Name }}.IsValid() {
 		return {{ if $isEntity }}nil{{ else }}{{ $schema.Name }}{}{{ end }}, fmt.Errorf("invalid {{ .Name }}: %s", {{ camelCase .Name }})
 	}
-{{- else if and (eq .GoType "string") (not (or (eq .Name "CreatedAt") (eq .Name "UpdatedAt") (eq .Name "ID"))) }}
+{{- else if and (eq .GoType "string") (not (or (eq .Name "CreatedAt") (eq .Name "UpdatedAt") (eq .Name "ID"))) (not .Nullable) }}
 	if {{ camelCase .Name }} == "" {
 		return {{ if $isEntity }}nil{{ else }}{{ $schema.Name }}{}{{ end }}, fmt.Errorf("{{ .Name }} cannot be empty")
 	}
-{{- else if eq .GoType "int" }}
+{{- else if and (eq .GoType "int") (not .Nullable) }}
 	if {{ camelCase .Name }} < 0 {
 		return {{ if $isEntity }}nil{{ else }}{{ $schema.Name }}{}{{ end }}, fmt.Errorf("{{ .Name }} cannot be negative")
 	}
-{{- else if eq .GoType "float64" }}
+{{- else if and (eq .GoType "float64") (not .Nullable) }}
 	if {{ camelCase .Name }} < 0 {
 		return {{ if $isEntity }}nil{{ else }}{{ $schema.Name }}{}{{ end }}, fmt.Errorf("{{ .Name }} cannot be negative")
 	}
 {{- end }}
-{{- else if $isValueObject }}
-{{- $isOptional := stringContains .JSONTag ",omitempty" }}
-{{- $needsPointer := and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}
-{{- if .Enum }}
-{{- if $needsPointer }}
-	if {{ camelCase .Name }} != nil && !{{ camelCase .Name }}.IsValid() {
-		return {{ $schema.Name }}{}, fmt.Errorf("invalid {{ .Name }}: %s", {{ camelCase .Name }})
+{{- else if and $isValueObject (not $isOptional) }}
+{{- if and .Enum .Nullable }}
+	// Nullable enum - validate only if present
+	if {{ camelCase .Name }} != nil && !(*{{ camelCase .Name }}).IsValid() {
+		return {{ $schema.Name }}{}, fmt.Errorf("invalid {{ .Name }}: %s", *{{ camelCase .Name }})
 	}
-{{- else }}
+{{- else if .Enum }}
 	if !{{ camelCase .Name }}.IsValid() {
 		return {{ $schema.Name }}{}, fmt.Errorf("invalid {{ .Name }}: %s", {{ camelCase .Name }})
 	}
-{{- end }}
-{{- else if and .Required (eq .GoType "string") }}
+{{- else if and .Required (eq .GoType "string") (not .Nullable) }}
 	if {{ camelCase .Name }} == "" {
 		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be empty")
 	}
-{{- else if and .Required (eq .GoType "int") }}
+{{- else if and .Required (eq .GoType "int") (not .Nullable) }}
 	if {{ camelCase .Name }} < 0 {
 		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be negative")
 	}
-{{- else if and .Required (eq .GoType "float64") }}
+{{- else if and .Required (eq .GoType "float64") (not .Nullable) }}
 	if {{ camelCase .Name }} < 0 {
 		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be negative")
 	}
-{{- else if eq .GoType "uuid.UUID" }}
-{{- $isOptional := stringContains .JSONTag ",omitempty" }}
-{{- if $isOptional }}
-	if {{ camelCase .Name }} != nil && *{{ camelCase .Name }} == uuid.Nil {
-		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be nil UUID")
-	}
-{{- else }}
+{{- else if and (eq .GoType "uuid.UUID") (not .Nullable) (not $isOptional) }}
 	if {{ camelCase .Name }} == uuid.Nil {
 		return {{ $schema.Name }}{}, fmt.Errorf("{{ .Name }} cannot be nil UUID")
 	}
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -208,16 +212,15 @@ func New{{ $schema.Name }}(
 	now := time.Now().UTC()
 	id := uuid.New()
 	{{ lower $schema.Name }} := &{{ $schema.Name }}{
-{{- range $schema.GetSortedProperties }}
-{{- $isOptional := stringContains .JSONTag ",omitempty" }}
+{{- range $schema.GetSortedProperties }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}
 {{- if eq .Name "ID" }}
-		{{ .Name }}: {{ if $isOptional }}&id{{ else }}id{{ end }},
+		{{ .Name }}: id,
 {{- else if eq .Name "CreatedAt" }}
-		{{ .Name }}: {{ if $isOptional }}&now{{ else }}now{{ end }},
+		{{ .Name }}: now,
 {{- else if eq .Name "UpdatedAt" }}
-		{{ .Name }}: {{ if $isOptional }}&now{{ else }}now{{ end }},
-{{- else if ($schema.IsPropertyRequired .JSONTag) }}
-		{{ .Name }}: {{ if and $isOptional (not (hasPrefix .GoType "*")) }}&{{ end }}{{ camelCase .Name }},
+		{{ .Name }}: now,
+{{- else if and ($schema.IsPropertyRequired .JSONTag) (not $isOptional) }}
+		{{ .Name }}: {{ camelCase .Name }},
 {{- end }}
 {{- end }}
 {{- if $schema.HasDomainEvents }}
@@ -250,31 +253,21 @@ func Zero{{ $schema.Name }}() {{ $schema.Name }} {
 {{- end }}
 
 {{- /* Getters */ -}}
-{{- range $schema.GetSortedProperties }}
+{{- range $schema.GetSortedProperties }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}{{- $baseType := .GoType }}{{- if .Enum }}{{- $baseType = print $schema.Name .Name }}{{- end }}
 
-{{- if $isEntity }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}{{- $isPointer := and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}
+{{- if $isEntity }}
 // Get{{ .Name }} returns the {{ .Name }}
-func (e *{{ $schema.Name }}) Get{{ .Name }}() {{ if .Enum }}string{{ else if $isPointer }}*{{ .GoType }}{{ else }}{{ .GoType }}{{ end }} {
-{{- if .Enum }}
-{{- if $isPointer }}
-	if e.{{ .Name }} == nil {
-		return ""
-	}
-	return string(*e.{{ .Name }})
-{{- else }}
-	return string(e.{{ .Name }})
-{{- end }}
-{{- else }}
+func (e *{{ $schema.Name }}) Get{{ .Name }}() {{ if $isOptional }}*{{ $baseType }}{{ else }}{{ if .Nullable }}*{{ end }}{{ $baseType }}{{ end }} {
 	return e.{{ .Name }}
-{{- end }}
 }
-{{- else if $isValueObject }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}{{- $needsPointer := and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}
+{{- else if $isValueObject }}
 // Get{{ .Name }} returns the {{ .Name }} value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v {{ $schema.Name }}) Get{{ .Name }}() {{ if $needsPointer }}*{{ end }}{{ if .Enum }}{{ $schema.Name }}{{ .Name }}{{ else }}{{ .GoType }}{{ end }} {
-{{- if .Enum }}
+func (v {{ $schema.Name }}) Get{{ .Name }}() {{ if $isOptional }}*{{ $baseType }}{{ else }}{{ if .Nullable }}*{{ end }}{{ $baseType }}{{ end }} {
+{{- if $isOptional }}
 	return v.{{ .Name }}
 {{- else if or (hasPrefix .GoType "[]") (hasPrefix .GoType "map") }}
+{{- if not .Nullable }}
 	// Return a copy for slices and maps to maintain immutability
 	{{- if hasPrefix .GoType "[]" }}
 	result := make({{ .GoType }}, len(v.{{ .Name }}))
@@ -290,6 +283,9 @@ func (v {{ $schema.Name }}) Get{{ .Name }}() {{ if $needsPointer }}*{{ end }}{{ 
 {{- else }}
 	return v.{{ .Name }}
 {{- end }}
+{{- else }}
+	return v.{{ .Name }}
+{{- end }}
 }
 {{- end }}
 {{- end }}
@@ -300,41 +296,39 @@ func (v {{ $schema.Name }}) Get{{ .Name }}() {{ if $needsPointer }}*{{ end }}{{ 
 // Validate validates the {{ $schema.Name }} value object.
 // Returns an error if any field fails validation.
 func (v {{ $schema.Name }}) Validate() error {
-{{- range $schema.GetSortedProperties }}{{- $field := . }}
-{{- $isOptional := stringContains .JSONTag ",omitempty" }}
-{{- $needsPointer := and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}
-{{- if .Enum }}
-{{- if $needsPointer }}
-	if v.{{ .Name }} != nil && !v.{{ .Name }}.IsValid() {
-		return fmt.Errorf("invalid {{ .Name }}: %s", v.{{ .Name }})
+{{- range $schema.GetSortedProperties }}{{- $field := . }}{{- $isOptional := stringContains .JSONTag ",omitempty" }}
+{{- if and .Enum $isOptional }}
+	// Optional enum - validate only if present
+	if v.{{ .Name }} != nil {
+		if !v.{{ .Name }}.IsValid() {
+			return fmt.Errorf("invalid {{ .Name }}: %s", v.{{ .Name }})
+		}
 	}
-{{- else }}
+{{- else if and .Enum .Nullable }}
+	// Nullable enum - validate only if present
+	if v.{{ .Name }} != nil && !(*v.{{ .Name }}).IsValid() {
+		return fmt.Errorf("invalid {{ .Name }}: %s", *v.{{ .Name }})
+	}
+{{- else if .Enum }}
 	if !v.{{ .Name }}.IsValid() {
 		return fmt.Errorf("invalid {{ .Name }}: %s", v.{{ .Name }})
 	}
-{{- end }}
-{{- else if and .Required (eq .GoType "string") }}
+{{- else if and .Required (eq .GoType "string") (not .Nullable) (not $isOptional) }}
 	if v.{{ .Name }} == "" {
 		return fmt.Errorf("{{ .Name }} cannot be empty")
 	}
-{{- else if and .Required (eq .GoType "int") }}
+{{- else if and .Required (eq .GoType "int") (not .Nullable) (not $isOptional) }}
 	if v.{{ .Name }} < 0 {
 		return fmt.Errorf("{{ .Name }} cannot be negative")
 	}
-{{- else if and .Required (eq .GoType "float64") }}
+{{- else if and .Required (eq .GoType "float64") (not .Nullable) (not $isOptional) }}
 	if v.{{ .Name }} < 0 {
 		return fmt.Errorf("{{ .Name }} cannot be negative")
 	}
-{{- else if eq .GoType "uuid.UUID" }}
-{{- if $isOptional }}
-	if v.{{ .Name }} != nil && *v.{{ .Name }} == uuid.Nil {
-		return fmt.Errorf("{{ .Name }} cannot be nil UUID")
-	}
-{{- else }}
+{{- else if and (eq .GoType "uuid.UUID") (not .Nullable) (not $isOptional) }}
 	if v.{{ .Name }} == uuid.Nil {
 		return fmt.Errorf("{{ .Name }} cannot be nil UUID")
 	}
-{{- end }}
 {{- end }}
 {{- end }}
 	return nil
@@ -351,15 +345,7 @@ func (v {{ $schema.Name }}) IsZero() bool {
 func (v {{ $schema.Name }}) String() string {
 	var fields []string
 {{- range $schema.GetSortedProperties }}
-{{- if and (not .Enum) (isPointer .GoType) }}
-	if v.{{ .Name }} != nil {
-		fields = append(fields, fmt.Sprintf("{{ .Name }}: %v", *v.{{ .Name }}))
-	} else {
-		fields = append(fields, "{{ .Name }}: <nil>")
-	}
-{{- else }}
 	fields = append(fields, fmt.Sprintf("{{ .Name }}: %v", v.{{ .Name }}))
-{{- end }}
 {{- end }}
 	return fmt.Sprintf("{{ $schema.Name }}{%s}", strings.Join(fields, ", "))
 }

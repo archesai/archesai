@@ -9,15 +9,22 @@ import (
 
 // InfrastructureConfig represents Infrastructure configuration for Kubernetes deployments
 type InfrastructureConfig struct {
-	Images         ImagesConfig         `json:"images" yaml:"images"`
-	Migrations     MigrationsConfig     `json:"migrations" yaml:"migrations"`
-	Namespace      string               `json:"namespace" yaml:"namespace"` // Kubernetes namespace where all resources will be deployed
+	Images     ImagesConfig     `json:"images" yaml:"images"`
+	Migrations MigrationsConfig `json:"migrations" yaml:"migrations"`
+
+	// Namespace Kubernetes namespace where all resources will be deployed
+	Namespace      string               `json:"namespace" yaml:"namespace"`
 	ServiceAccount ServiceAccountConfig `json:"serviceAccount" yaml:"serviceAccount"`
 }
 
 // NewInfrastructureConfig creates a new immutable InfrastructureConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewInfrastructureConfig(images ImagesConfig, migrations MigrationsConfig, namespace string, serviceAccount ServiceAccountConfig) (InfrastructureConfig, error) {
+func NewInfrastructureConfig(
+	images ImagesConfig,
+	migrations MigrationsConfig,
+	namespace string,
+	serviceAccount ServiceAccountConfig,
+) (InfrastructureConfig, error) {
 	// Validate required fields
 	return InfrastructureConfig{
 		Images:         images,

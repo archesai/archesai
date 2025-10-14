@@ -9,14 +9,22 @@ import (
 
 // IngressConfig represents Ingress configuration
 type IngressConfig struct {
-	Domain  *string    `json:"domain,omitempty" yaml:"domain,omitempty"` // Primary domain name for ingress routing
-	Enabled bool       `json:"enabled" yaml:"enabled"`                   // Enable ingress
+
+	// Domain Primary domain name for ingress routing
+	Domain *string `json:"domain,omitempty" yaml:"domain,omitempty"`
+
+	// Enabled Enable ingress
+	Enabled bool       `json:"enabled" yaml:"enabled"`
 	Tls     *TLSConfig `json:"tls,omitempty" yaml:"tls,omitempty"`
 }
 
 // NewIngressConfig creates a new immutable IngressConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewIngressConfig(domain *string, enabled bool, tls *TLSConfig) (IngressConfig, error) {
+func NewIngressConfig(
+	domain *string,
+	enabled bool,
+	tls *TLSConfig,
+) (IngressConfig, error) {
 	// Validate required fields
 	return IngressConfig{
 		Domain:  domain,

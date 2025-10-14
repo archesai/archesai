@@ -7,22 +7,18 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/labstack/echo/v4"
 )
 
 // WebsocketHandler handles WebSocket connections (currently unused)
 // TODO: Remove if not needed or implement WebSocket functionality
 // nolint:unused // Preserved for future WebSocket implementation
-func (s *Server) WebsocketHandler(c echo.Context) error {
-	w := c.Response().Writer
-	r := c.Request()
+func (s *Server) WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	socket, err := websocket.Accept(w, r, nil)
 
 	if err != nil {
 		log.Printf("could not open websocket: %v", err)
-		_, _ = w.Write([]byte("could not open websocket"))
-		w.WriteHeader(http.StatusInternalServerError)
-		return nil
+		http.Error(w, "could not open websocket", http.StatusInternalServerError)
+		return
 	}
 
 	defer func() {
@@ -42,5 +38,4 @@ func (s *Server) WebsocketHandler(c echo.Context) error {
 		}
 		time.Sleep(time.Second * 2)
 	}
-	return nil
 }

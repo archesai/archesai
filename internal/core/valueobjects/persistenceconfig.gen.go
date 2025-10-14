@@ -9,13 +9,20 @@ import (
 
 // PersistenceConfig represents Persistent storage configuration
 type PersistenceConfig struct {
-	Enabled bool   `json:"enabled" yaml:"enabled"` // Enable persistent storage
-	Size    string `json:"size" yaml:"size"`       // Size of persistent volume
+
+	// Enabled Enable persistent storage
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// Size Size of persistent volume
+	Size string `json:"size" yaml:"size"`
 }
 
 // NewPersistenceConfig creates a new immutable PersistenceConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewPersistenceConfig(enabled bool, size string) (PersistenceConfig, error) {
+func NewPersistenceConfig(
+	enabled bool,
+	size string,
+) (PersistenceConfig, error) {
 	// Validate required fields
 	return PersistenceConfig{
 		Enabled: enabled,

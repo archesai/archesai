@@ -34,6 +34,7 @@ import type {
   LabelListResponseResponse,
   LabelResponseResponse,
   ListLabelsParams,
+  NoContentResponse,
   NotFoundResponse,
   TooManyRequestsResponse,
   UnauthorizedResponse,
@@ -305,9 +306,9 @@ export const getGetLabelUrl = (id: string | undefined | null,) => {
   return `/labels/${id}`
 }
 
-export const getLabel = async (id: string | undefined | null, options?: RequestInit): Promise<LabelListResponseResponse> => {
+export const getLabel = async (id: string | undefined | null, options?: RequestInit): Promise<LabelResponseResponse> => {
   
-  return customFetch<LabelListResponseResponse>(getGetLabelUrl(id),
+  return customFetch<LabelResponseResponse>(getGetLabelUrl(id),
   {      
     ...options,
     method: 'GET'
@@ -327,7 +328,7 @@ export const getGetLabelQueryKey = (id?: string | undefined | null,) => {
     }
 
     
-export const getGetLabelQueryOptions = <TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetLabelQueryOptions = <TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -346,10 +347,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetLabelQueryResult = NonNullable<Awaited<ReturnType<typeof getLabel>>>
-export type GetLabelQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+export type GetLabelQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getLabel>>,
@@ -359,7 +360,7 @@ export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getLabel>>,
@@ -369,7 +370,7 @@ export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -377,7 +378,7 @@ export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError
  * @summary Find a label
  */
 
-export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -393,7 +394,7 @@ export function useGetLabel<TData = Awaited<ReturnType<typeof getLabel>>, TError
 
 
 
-export const getGetLabelSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetLabelSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -412,18 +413,18 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type GetLabelSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getLabel>>>
-export type GetLabelSuspenseQueryError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+export type GetLabelSuspenseQueryError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
 
-export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -431,7 +432,7 @@ export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>
  * @summary Find a label
  */
 
-export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
+export function useGetLabelSuspense<TData = Awaited<ReturnType<typeof getLabel>>, TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse>(
  id: string | undefined | null, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getLabel>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient 
  ):  UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -532,9 +533,9 @@ export const getDeleteLabelUrl = (id: string | undefined | null,) => {
   return `/labels/${id}`
 }
 
-export const deleteLabel = async (id: string | undefined | null, options?: RequestInit): Promise<LabelResponseResponse> => {
+export const deleteLabel = async (id: string | undefined | null, options?: RequestInit): Promise<NoContentResponse> => {
   
-  return customFetch<LabelResponseResponse>(getDeleteLabelUrl(id),
+  return customFetch<NoContentResponse>(getDeleteLabelUrl(id),
   {      
     ...options,
     method: 'DELETE'
@@ -546,7 +547,7 @@ export const deleteLabel = async (id: string | undefined | null, options?: Reque
 
 
 
-export const getDeleteLabelMutationOptions = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+export const getDeleteLabelMutationOptions = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteLabel>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteLabel>>, TError,{id: string | undefined | null}, TContext> => {
 
@@ -573,12 +574,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type DeleteLabelMutationResult = NonNullable<Awaited<ReturnType<typeof deleteLabel>>>
     
-    export type DeleteLabelMutationError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
+    export type DeleteLabelMutationError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse
 
     /**
  * @summary Delete a label
  */
-export const useDeleteLabel = <TError = UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
+export const useDeleteLabel = <TError = BadRequestResponse | UnauthorizedResponse | NotFoundResponse | UnprocessableEntityResponse | TooManyRequestsResponse | InternalServerErrorResponse,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteLabel>>, TError,{id: string | undefined | null}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteLabel>>,

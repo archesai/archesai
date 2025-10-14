@@ -11,18 +11,33 @@ import (
 
 // Pipeline represents Schema for Pipeline entity
 type Pipeline struct {
-	ID             uuid.UUID            `json:"id" yaml:"id"`                                       // Unique identifier for the resource
-	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`                         // The date and time when the resource was created
-	Description    *string              `json:"description,omitempty" yaml:"description,omitempty"` // Detailed description of the pipeline's purpose
-	Name           *string              `json:"name,omitempty" yaml:"name,omitempty"`               // The pipeline's display name
-	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"`               // The organization identifier
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`                         // The date and time when the resource was last updated
-	events         []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// Description Detailed description of the pipeline's purpose
+	Description *string `json:"description" yaml:"description"`
+
+	// Name The pipeline's display name
+	Name *string `json:"name" yaml:"name"`
+
+	// OrganizationID The organization identifier
+	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewPipeline creates a new Pipeline entity.
 // All required fields must be provided and valid.
 func NewPipeline(
+	description *string,
+	name *string,
 	organizationID uuid.UUID,
 ) (*Pipeline, error) {
 	// Validate required fields
@@ -31,8 +46,10 @@ func NewPipeline(
 	pipeline := &Pipeline{
 		ID:             id,
 		CreatedAt:      now,
-		OrganizationID: organizationID,
 		UpdatedAt:      now,
+		Description:    description,
+		Name:           name,
+		OrganizationID: organizationID,
 		events:         []events.DomainEvent{},
 	}
 	pipeline.addEvent(events.NewPipelineCreatedEvent(id))
@@ -50,6 +67,11 @@ func (e *Pipeline) GetCreatedAt() time.Time {
 	return e.CreatedAt
 }
 
+// GetUpdatedAt returns the UpdatedAt
+func (e *Pipeline) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
+}
+
 // GetDescription returns the Description
 func (e *Pipeline) GetDescription() *string {
 	return e.Description
@@ -63,11 +85,6 @@ func (e *Pipeline) GetName() *string {
 // GetOrganizationID returns the OrganizationID
 func (e *Pipeline) GetOrganizationID() uuid.UUID {
 	return e.OrganizationID
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *Pipeline) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
 }
 
 // Events returns the domain events

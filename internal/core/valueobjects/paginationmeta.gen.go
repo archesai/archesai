@@ -9,12 +9,16 @@ import (
 
 // PaginationMeta represents Pagination metadata
 type PaginationMeta struct {
-	Total int32 `json:"total" yaml:"total"` // Total number of items in the collection
+
+	// Total Total number of items in the collection
+	Total int32 `json:"total" yaml:"total"`
 }
 
 // NewPaginationMeta creates a new immutable PaginationMeta value object.
 // Value objects are immutable and validated upon creation.
-func NewPaginationMeta(total int32) (PaginationMeta, error) {
+func NewPaginationMeta(
+	total int32,
+) (PaginationMeta, error) {
 	// Validate required fields
 	return PaginationMeta{
 		Total: total,

@@ -116,6 +116,11 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 		return "", fmt.Errorf("failed to generate bootstrap files: %w", err)
 	}
 
+	log.Info("Generating HCL database schema")
+	if err := g.GenerateHCL(schemas); err != nil {
+		return "", fmt.Errorf("failed to generate HCL schema: %w", err)
+	}
+
 	// 10. Format output if needed
 	outputStr := output.String()
 	if outputStr != "" {

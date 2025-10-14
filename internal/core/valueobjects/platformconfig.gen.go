@@ -9,16 +9,28 @@ import (
 
 // PlatformConfig represents Platform configuration (host, image, resources)
 type PlatformConfig struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"` // Enable platform service
-	Image     *ImageConfig    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed platform deployment
+
+	// Enabled Enable platform service
+	Enabled bool         `json:"enabled" yaml:"enabled"`
+	Image   *ImageConfig `json:"image,omitempty" yaml:"image,omitempty"`
+
+	// Managed Use managed platform deployment
+	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"`
 	Resources *ResourceConfig `json:"resources,omitempty" yaml:"resources,omitempty"`
-	URL       *string         `json:"url,omitempty" yaml:"url,omitempty"` // Platform URL
+
+	// URL Platform URL
+	URL *string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // NewPlatformConfig creates a new immutable PlatformConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewPlatformConfig(enabled bool, image *ImageConfig, managed *bool, resources *ResourceConfig, url *string) (PlatformConfig, error) {
+func NewPlatformConfig(
+	enabled bool,
+	image *ImageConfig,
+	managed *bool,
+	resources *ResourceConfig,
+	url *string,
+) (PlatformConfig, error) {
 	// Validate required fields
 	return PlatformConfig{
 		Enabled:   enabled,

@@ -11,21 +11,37 @@ import (
 
 // MicrosoftAuthConfig represents Microsoft/Azure AD OAuth configuration
 type MicrosoftAuthConfig struct {
-	ClientID     *uuid.UUID `json:"clientId,omitempty" yaml:"clientId,omitempty"`         // Azure AD Application (client) ID
-	ClientSecret *string    `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"` // Azure AD client secret
-	Enabled      bool       `json:"enabled" yaml:"enabled"`                               // Enable Microsoft OAuth
-	RedirectURL  *string    `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`   // OAuth callback URL
-	Scopes       []string   `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
-	Tenant       *string    `json:"tenant,omitempty" yaml:"tenant,omitempty"`             // Azure AD tenant ID (use 'common' for multi-tenant)
+
+	// ClientID Azure AD Application (client) ID
+	ClientID *uuid.UUID `json:"clientId,omitempty" yaml:"clientId,omitempty"`
+
+	// ClientSecret Azure AD client secret
+	ClientSecret *string `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"`
+
+	// Enabled Enable Microsoft OAuth
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// RedirectURL OAuth callback URL
+	RedirectURL *string `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`
+
+	// Scopes OAuth scopes to request
+	Scopes *[]string `json:"scopes,omitempty" yaml:"scopes,omitempty"`
+
+	// Tenant Azure AD tenant ID (use 'common' for multi-tenant)
+	Tenant *string `json:"tenant,omitempty" yaml:"tenant,omitempty"`
 }
 
 // NewMicrosoftAuthConfig creates a new immutable MicrosoftAuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewMicrosoftAuthConfig(clientID *uuid.UUID, clientSecret *string, enabled bool, redirectURL *string, scopes []string, tenant *string) (MicrosoftAuthConfig, error) {
+func NewMicrosoftAuthConfig(
+	clientID *uuid.UUID,
+	clientSecret *string,
+	enabled bool,
+	redirectURL *string,
+	scopes *[]string,
+	tenant *string,
+) (MicrosoftAuthConfig, error) {
 	// Validate required fields
-	if clientID != nil && *clientID == uuid.Nil {
-		return MicrosoftAuthConfig{}, fmt.Errorf("ClientID cannot be nil UUID")
-	}
 	return MicrosoftAuthConfig{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -68,11 +84,8 @@ func (v MicrosoftAuthConfig) GetRedirectURL() *string {
 
 // GetScopes returns the Scopes value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v MicrosoftAuthConfig) GetScopes() []string {
-	// Return a copy for slices and maps to maintain immutability
-	result := make([]string, len(v.Scopes))
-	copy(result, v.Scopes)
-	return result
+func (v MicrosoftAuthConfig) GetScopes() *[]string {
+	return v.Scopes
 }
 
 // GetTenant returns the Tenant value.
@@ -84,9 +97,6 @@ func (v MicrosoftAuthConfig) GetTenant() *string {
 // Validate validates the MicrosoftAuthConfig value object.
 // Returns an error if any field fails validation.
 func (v MicrosoftAuthConfig) Validate() error {
-	if v.ClientID != nil && *v.ClientID == uuid.Nil {
-		return fmt.Errorf("ClientID cannot be nil UUID")
-	}
 	return nil
 }
 

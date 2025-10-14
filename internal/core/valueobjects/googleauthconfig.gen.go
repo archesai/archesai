@@ -9,16 +9,32 @@ import (
 
 // GoogleAuthConfig represents Google OAuth configuration
 type GoogleAuthConfig struct {
-	ClientID     *string  `json:"clientId,omitempty" yaml:"clientId,omitempty"`         // Google OAuth client ID
-	ClientSecret *string  `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"` // Google OAuth client secret
-	Enabled      bool     `json:"enabled" yaml:"enabled"`                               // Enable Google OAuth
-	RedirectURL  *string  `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`   // OAuth callback URL
-	Scopes       []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`             // OAuth scopes to request
+
+	// ClientID Google OAuth client ID
+	ClientID *string `json:"clientId,omitempty" yaml:"clientId,omitempty"`
+
+	// ClientSecret Google OAuth client secret
+	ClientSecret *string `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"`
+
+	// Enabled Enable Google OAuth
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// RedirectURL OAuth callback URL
+	RedirectURL *string `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`
+
+	// Scopes OAuth scopes to request
+	Scopes *[]string `json:"scopes,omitempty" yaml:"scopes,omitempty"`
 }
 
 // NewGoogleAuthConfig creates a new immutable GoogleAuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewGoogleAuthConfig(clientID *string, clientSecret *string, enabled bool, redirectURL *string, scopes []string) (GoogleAuthConfig, error) {
+func NewGoogleAuthConfig(
+	clientID *string,
+	clientSecret *string,
+	enabled bool,
+	redirectURL *string,
+	scopes *[]string,
+) (GoogleAuthConfig, error) {
 	// Validate required fields
 	return GoogleAuthConfig{
 		ClientID:     clientID,
@@ -61,11 +77,8 @@ func (v GoogleAuthConfig) GetRedirectURL() *string {
 
 // GetScopes returns the Scopes value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v GoogleAuthConfig) GetScopes() []string {
-	// Return a copy for slices and maps to maintain immutability
-	result := make([]string, len(v.Scopes))
-	copy(result, v.Scopes)
-	return result
+func (v GoogleAuthConfig) GetScopes() *[]string {
+	return v.Scopes
 }
 
 // Validate validates the GoogleAuthConfig value object.

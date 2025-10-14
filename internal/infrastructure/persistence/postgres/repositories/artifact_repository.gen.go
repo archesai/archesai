@@ -41,6 +41,7 @@ func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *entitie
 		PreviewImage:   entity.PreviewImage,
 		ProducerID:     entity.ProducerID,
 		Text:           entity.Text,
+		URL:            entity.URL,
 	}
 
 	result, err := r.queries.CreateArtifact(ctx, params)
@@ -79,6 +80,7 @@ func (r *PostgresArtifactRepository) Update(ctx context.Context, id uuid.UUID, e
 		Name:         entity.Name,
 		PreviewImage: entity.PreviewImage,
 		Text:         entity.Text,
+		URL:          entity.URL,
 	}
 
 	result, err := r.queries.UpdateArtifact(ctx, params)
@@ -157,6 +159,9 @@ func (r *PostgresArtifactRepository) ListArtifactsByOrganization(ctx context.Con
 func (r *PostgresArtifactRepository) ListArtifactsByProducer(ctx context.Context, producerID string) ([]*entities.Artifact, error) {
 	params := ListArtifactsByProducerParams{
 		ProducerID: func() *uuid.UUID {
+			if producerID == "" {
+				return nil
+			}
 			id := uuid.MustParse(producerID)
 			return &id
 		}(),
@@ -194,6 +199,7 @@ func mapArtifactFromDB(db *Artifact) *entities.Artifact {
 		PreviewImage:   db.PreviewImage,
 		ProducerID:     db.ProducerID,
 		Text:           db.Text,
+		URL:            db.URL,
 	}
 
 	return result

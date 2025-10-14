@@ -69,6 +69,33 @@ properties:
       tableName:
         description: Override default table name
         type: string
+      relations:
+        description: Foreign key relationships to other entities
+        type: array
+        items:
+          type: object
+          properties:
+            field:
+              description: The field name in this entity that references another entity
+              type: string
+            references:
+              description: The table name being referenced (snake_case)
+              type: string
+            referencesField:
+              description: The field in the referenced table (defaults to 'id')
+              type: string
+            onUpdate:
+              description: Foreign key ON UPDATE action
+              type: string
+              enum: [CASCADE, SET_NULL, SET_DEFAULT, RESTRICT, NO_ACTION]
+              default: NO_ACTION
+            onDelete:
+              description: Foreign key ON DELETE action
+              type: string
+              enum: [CASCADE, SET_NULL, SET_DEFAULT, RESTRICT, NO_ACTION]
+              default: CASCADE
+          required: [field, references]
+          additionalProperties: false
     additionalProperties: false
 # This schema defines the x-codegen extension structure
 # It needs x-codegen to generate the Go types for parsing

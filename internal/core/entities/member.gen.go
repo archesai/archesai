@@ -50,13 +50,26 @@ func ParseMemberRole(s string) (MemberRole, error) {
 
 // Member represents Schema for Member entity
 type Member struct {
-	ID             uuid.UUID            `json:"id" yaml:"id"`                         // Unique identifier for the resource
-	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`           // The date and time when the resource was created
-	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"` // The organization this member belongs to
-	Role           MemberRole           `json:"role" yaml:"role"`                     // The role of the member
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`           // The date and time when the resource was last updated
-	UserID         uuid.UUID            `json:"userID" yaml:"userID"`                 // The user who is a member of the organization
-	events         []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// OrganizationID The organization this member belongs to
+	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
+
+	// Role The role of the member
+	Role MemberRole `json:"role" yaml:"role"`
+
+	// UserID The user who is a member of the organization
+	UserID uuid.UUID `json:"userID" yaml:"userID"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewMember creates a new Member entity.
@@ -75,9 +88,9 @@ func NewMember(
 	member := &Member{
 		ID:             id,
 		CreatedAt:      now,
+		UpdatedAt:      now,
 		OrganizationID: organizationID,
 		Role:           role,
-		UpdatedAt:      now,
 		UserID:         userID,
 		events:         []events.DomainEvent{},
 	}
@@ -96,19 +109,19 @@ func (e *Member) GetCreatedAt() time.Time {
 	return e.CreatedAt
 }
 
+// GetUpdatedAt returns the UpdatedAt
+func (e *Member) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
+}
+
 // GetOrganizationID returns the OrganizationID
 func (e *Member) GetOrganizationID() uuid.UUID {
 	return e.OrganizationID
 }
 
 // GetRole returns the Role
-func (e *Member) GetRole() string {
-	return string(e.Role)
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *Member) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
+func (e *Member) GetRole() MemberRole {
+	return e.Role
 }
 
 // GetUserID returns the UserID

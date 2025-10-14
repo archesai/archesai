@@ -71,7 +71,6 @@ func (r *PostgresOrganizationRepository) Get(ctx context.Context, id uuid.UUID) 
 func (r *PostgresOrganizationRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Organization) (*entities.Organization, error) {
 
 	planStr := string(entity.Plan)
-
 	params := UpdateOrganizationParams{
 		ID:           id,
 		BillingEmail: entity.BillingEmail,

@@ -15,6 +15,15 @@ x-codegen:
     excludeFromUpdate:
       - OrganizationID
       - UserID
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
+      - field: userID
+        references: user
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
     additionalMethods:
       - name: ListMembersByOrganization
         params:
@@ -60,6 +69,7 @@ allOf:
           - owner
           - basic
         example: admin
+        default: basic
       userID:
         description: The user who is a member of the organization
         type: string

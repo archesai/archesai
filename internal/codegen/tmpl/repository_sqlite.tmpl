@@ -67,14 +67,14 @@ func (r *SQLite{{ $entity.Name }}Repository) List(ctx context.Context, limit, of
 	return nil, 0, fmt.Errorf("List{{ $entity.Name }}s not yet implemented - requires custom mapping")
 }
 
-{{ if and $entity.XCodegen $entity.XCodegen.Repository $entity.XCodegen.Repository.AdditionalMethods }}
+{{ if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{if $repo.AdditionalMethods}}
 // Additional methods
-{{ range $entity.XCodegen.Repository.AdditionalMethods }}
+{{ range $repo.AdditionalMethods }}
 {{- $additionalMethod := . }}
 // {{ $additionalMethod.Name }} retrieves {{if eq $additionalMethod.Returns "multiple"}}multiple {{ lower $entity.Name }}s{{ else }}a single {{ lower $entity.Name }}{{ end }}{{ if $additionalMethod.Params }} by {{ range $i, $param := $additionalMethod.Params }}{{ if $i }} and {{ end }}{{ $param.Name }}{{ end }}{{ end }}
-func (r *SQLite{{ $entity.Name }}Repository) {{ $additionalMethod.Name }}(ctx context.Context{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*entities.{{ $entity.Name }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*entities.{{ $entity.Name }}{{ end }}, error) {
+func (r *SQLite{{ $entity.Name }}Repository) {{ $additionalMethod.Name }}(ctx context.Context{{ if $additionalMethod.Params }}{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*entities.{{ $entity.Name }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*entities.{{ $entity.Name }}{{ end }}, error) {
 	// TODO: Implement {{ $additionalMethod.Name }}
 	return nil, fmt.Errorf("{{ $additionalMethod.Name }} not yet implemented - requires custom mapping")
 }
 {{ end }}
-{{ end }}
+{{ end }}{{ end }}

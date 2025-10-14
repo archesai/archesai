@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/pb33f/libopenapi"
@@ -350,21 +351,21 @@ func ExtractResponses(op *v3.Operation, doc *v3.Document) ([]ResponseDef, error)
 		return responses, nil
 	}
 
-	for responsePair := op.Responses.Codes.First(); responsePair != nil; responsePair = responsePair.Next() {
-		statusCode := responsePair.Key()
-		response := responsePair.Value()
-
+	for statusCode, response := range op.Responses.Codes.FromNewest() {
 		if response != nil {
 			// Initialize response definition with basic info
 			responseDef := ResponseDef{
 				StatusCode: statusCode,
+				Headers:    make(map[string]*SchemaDef),
 			}
 
-			// Try to extract schema if present
+			// Extract content-type and schema from response content
 			if response.Content != nil {
-				if mediaType, ok := response.Content.Get("application/json"); ok {
-					if mediaType.Schema != nil {
-						schema := mediaType.Schema.Schema()
+				// Try application/json first
+				for contentType, content := range response.Content.FromNewest() {
+					responseDef.ContentType = contentType
+					if content.Schema != nil {
+						schema := content.Schema.Schema()
 						if schema != nil {
 							responseName := fmt.Sprintf("%s%sResponse", op.OperationId, statusCode)
 							jsonParser := NewJSONSchemaParser().WithOpenAPIDoc(doc)
@@ -386,6 +387,34 @@ func ExtractResponses(op *v3.Operation, doc *v3.Document) ([]ResponseDef, error)
 				}
 			}
 
+			// Extract headers from the response
+			if response.Headers != nil {
+				for headerName, header := range response.Headers.FromNewest() {
+					if header != nil && header.Schema != nil {
+						schema := header.Schema.Schema()
+						if schema != nil {
+							// Create a SchemaDef for the header
+							headerDef := &SchemaDef{
+								Name:        headerName,
+								Description: header.Description,
+							}
+
+							// Get type info
+							if len(schema.Type) > 0 {
+								headerDef.Type = schema.Type[0]
+							}
+							if schema.Format != "" {
+								headerDef.Format = schema.Format
+							}
+							headerDef.Schema = schema
+							headerDef.GoType = SchemaToGoType(schema, nil, "")
+
+							responseDef.Headers[headerName] = headerDef
+						}
+					}
+				}
+			}
+
 			// For responses without a schema, create a minimal SchemaDef
 			if responseDef.SchemaDef == nil {
 				responseDef.SchemaDef = &SchemaDef{
@@ -397,6 +426,13 @@ func ExtractResponses(op *v3.Operation, doc *v3.Document) ([]ResponseDef, error)
 			responses = append(responses, responseDef)
 		}
 	}
+
+	// Sort responses by status code (success responses first, then errors in numerical order)
+	sort.Slice(responses, func(i, j int) bool {
+		iCode, _ := strconv.Atoi(responses[i].StatusCode)
+		jCode, _ := strconv.Atoi(responses[j].StatusCode)
+		return iCode < jCode
+	})
 
 	return responses, nil
 }

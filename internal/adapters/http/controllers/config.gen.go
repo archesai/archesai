@@ -4,9 +4,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
-
-	"github.com/labstack/echo/v4"
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	queries "github.com/archesai/archesai/internal/application/queries/config"
@@ -28,8 +27,8 @@ func NewConfigController(
 }
 
 // RegisterConfigRoutes registers all HTTP routes for the config domain.
-func RegisterConfigRoutes(router server.EchoRouter, controller *ConfigController) {
-	router.GET("/config", controller.GetConfig)
+func RegisterConfigRoutes(mux *http.ServeMux, controller *ConfigController) {
+	mux.HandleFunc("GET /config", controller.GetConfig)
 }
 
 // ============================================================================
@@ -53,31 +52,40 @@ type GetConfig200Response struct {
 
 func (response GetConfig200Response) VisitGetConfigResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
 type GetConfig400Response struct {
-	server.BadRequestResponse
+	server.ProblemDetails
 }
 
 func (response GetConfig400Response) VisitGetConfigResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(400)
 
-	return json.NewEncoder(w).Encode(response.BadRequestResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetConfig401Response struct {
-	server.UnauthorizedResponse
+	server.ProblemDetails
 }
 
 func (response GetConfig401Response) VisitGetConfigResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(401)
 
-	return json.NewEncoder(w).Encode(response.UnauthorizedResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetConfig422Response struct {
@@ -86,9 +94,12 @@ type GetConfig422Response struct {
 
 func (response GetConfig422Response) VisitGetConfigResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(422)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetConfig429Response struct {
@@ -97,38 +108,55 @@ type GetConfig429Response struct {
 
 func (response GetConfig429Response) VisitGetConfigResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Retry-After", "")           // TODO: Set actual value for Retry-After
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(429)
 
-	return json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 type GetConfig500Response struct {
-	server.InternalServerErrorResponse
+	server.ProblemDetails
 }
 
 func (response GetConfig500Response) VisitGetConfigResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("X-RateLimit-Limit", "")     // TODO: Set actual value for X-RateLimit-Limit
+	w.Header().Set("X-RateLimit-Remaining", "") // TODO: Set actual value for X-RateLimit-Remaining
+	w.Header().Set("X-RateLimit-Reset", "")     // TODO: Set actual value for X-RateLimit-Reset
 	w.WriteHeader(500)
 
-	return json.NewEncoder(w).Encode(response.InternalServerErrorResponse)
+	return json.NewEncoder(w).Encode(response.ProblemDetails)
 }
 
 // Handler method
 
 // GetConfig handles the GET /config endpoint.
-func (c *ConfigController) GetConfig(ctx echo.Context) error {
-	reqCtx := ctx.Request().Context()
+func (c *ConfigController) GetConfig(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
 	// Determine which handler to call based on operation
 	// Query handler
 	query := queries.NewGetConfigQuery()
 
-	result, err := c.getConfigHandler.Handle(reqCtx, query)
+	result, err := c.getConfigHandler.Handle(ctx, query)
 	if err != nil {
-		return err
+		errorResp := GetConfig500Response{
+			ProblemDetails: server.NewInternalServerErrorResponse(err.Error(), r.URL.Path),
+		}
+		if err := errorResp.VisitGetConfigResponse(w); err != nil {
+			fmt.Fprintf(w, "error writing response: %v", err)
+		}
+		return
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"data": result,
-	})
+	// Custom handler - result type varies, response structure not standardized
+	// TODO: Implement proper type assertion and response mapping
+	_ = result
+	response := GetConfig200Response{}
+	if err := response.VisitGetConfigResponse(w); err != nil {
+		fmt.Fprintf(w, "error writing response: %v", err)
+	}
 }

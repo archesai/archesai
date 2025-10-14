@@ -71,14 +71,24 @@ func ParseFilterNodeType(s string) (FilterNodeType, error) {
 
 // FilterNode represents A recursive filter node that can be a condition or group
 type FilterNode struct {
-	Field *string        `json:"field,omitempty" yaml:"field,omitempty"` // The field to filter on (for leaf conditions)
-	Type  FilterNodeType `json:"type" yaml:"type"`                       // The type of filter operation
-	Value *any           `json:"value,omitempty" yaml:"value,omitempty"` // The value to compare against (for leaf conditions)
+
+	// Field The field to filter on (for leaf conditions)
+	Field *string `json:"field,omitempty" yaml:"field,omitempty"`
+
+	// Type The type of filter operation
+	Type FilterNodeType `json:"type" yaml:"type"`
+
+	// Value The value to compare against (for leaf conditions)
+	Value *any `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // NewFilterNode creates a new immutable FilterNode value object.
 // Value objects are immutable and validated upon creation.
-func NewFilterNode(field *string, type_ FilterNodeType, value *any) (FilterNode, error) {
+func NewFilterNode(
+	field *string,
+	type_ FilterNodeType,
+	value *any,
+) (FilterNode, error) {
 	// Validate required fields
 	if !type_.IsValid() {
 		return FilterNode{}, fmt.Errorf("invalid Type: %s", type_)

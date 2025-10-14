@@ -69,7 +69,6 @@ func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*entitie
 func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Run) (*entities.Run, error) {
 
 	statusStr := string(entity.Status)
-
 	params := UpdateRunParams{
 		ID:          id,
 		CompletedAt: entity.CompletedAt,

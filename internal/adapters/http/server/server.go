@@ -1,7 +1,7 @@
 // Package server provides HTTP server infrastructure for the API.
 //
 // The package includes:
-// - HTTP server setup with Echo framework
+// - HTTP server setup with Go 1.22+ stdlib routing
 // - Middleware configuration (CORS, logging, recovery)
 // - WebSocket support for real-time communication
 // - OpenAPI documentation serving
@@ -16,8 +16,6 @@ import (
 	"os"
 	"os/signal"
 	"time"
-
-	"github.com/labstack/echo/v4"
 
 	"github.com/archesai/archesai/internal/infrastructure/config"
 )
@@ -78,43 +76,46 @@ const (
 
 // Server represents the API server.
 type Server struct {
-	echo   *echo.Echo
+	mux    *http.ServeMux
+	server *http.Server
 	config *config.API
 	logger *slog.Logger
 }
 
 // NewServer creates a new API server.
 func NewServer(config *config.API, logger *slog.Logger) *Server {
-	e := echo.New()
-	e.HideBanner = true
-	e.HidePort = true
+	mux := http.NewServeMux()
 
 	server := &Server{
-		echo:   e,
+		mux:    mux,
 		config: config,
 		logger: logger,
 	}
 
-	// Set custom error handler for RFC 7807 problem details
-	e.HTTPErrorHandler = server.CustomErrorHandler
-
-	server.SetupMiddleware()
-	server.SetupInfrastructureRoutes()
-
 	return server
 }
 
-// Echo returns the underlying echo instance for route registration.
-func (s *Server) Echo() *echo.Echo {
-	return s.echo
+// Mux returns the underlying http.ServeMux for route registration.
+func (s *Server) Mux() *http.ServeMux {
+	return s.mux
 }
 
 // ListenAndServe starts the server without signal handling
 // This is useful when the caller wants to manage the server lifecycle.
 func (s *Server) ListenAndServe() error {
 	addr := fmt.Sprintf(":%d", int(s.config.Port))
+
+	s.server = &http.Server{
+		Addr:           addr,
+		Handler:        s.mux,
+		ReadTimeout:    DefaultReadTimeout,
+		WriteTimeout:   DefaultWriteTimeout,
+		IdleTimeout:    DefaultIdleTimeout,
+		MaxHeaderBytes: DefaultMaxHeaderBytes,
+	}
+
 	s.logger.Info("starting server", "address", addr)
-	return s.echo.Start(addr)
+	return s.server.ListenAndServe()
 }
 
 // Start starts the server with built-in signal handling
@@ -136,10 +137,10 @@ func (s *Server) Start() error {
 	s.logger.Info("shutting down server...")
 
 	// Graceful shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultShutdownTimeout)
 	defer cancel()
 
-	if err := s.echo.Shutdown(ctx); err != nil {
+	if err := s.server.Shutdown(ctx); err != nil {
 		s.logger.Error("server forced to shutdown", "error", err)
 		return err
 	}
@@ -150,5 +151,8 @@ func (s *Server) Start() error {
 
 // Shutdown shuts down the server gracefully.
 func (s *Server) Shutdown(ctx context.Context) error {
-	return s.echo.Shutdown(ctx)
+	if s.server == nil {
+		return nil
+	}
+	return s.server.Shutdown(ctx)
 }

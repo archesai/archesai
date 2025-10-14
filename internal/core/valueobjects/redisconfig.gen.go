@@ -9,20 +9,42 @@ import (
 
 // RedisConfig represents Redis configuration
 type RedisConfig struct {
-	Auth        string             `json:"auth" yaml:"auth"`                 // Redis authentication password
-	Ca          *string            `json:"ca,omitempty" yaml:"ca,omitempty"` // Certificate Authority for TLS (optional)
-	Enabled     bool               `json:"enabled" yaml:"enabled"`           // Enable Redis
-	Host        string             `json:"host" yaml:"host"`                 // Redis hostname or IP
-	Image       *ImageConfig       `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed     *bool              `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed Redis deployment
+
+	// Auth Redis authentication password
+	Auth string `json:"auth" yaml:"auth"`
+
+	// Ca Certificate Authority for TLS (optional)
+	Ca *string `json:"ca,omitempty" yaml:"ca,omitempty"`
+
+	// Enabled Enable Redis
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// Host Redis hostname or IP
+	Host  string       `json:"host" yaml:"host"`
+	Image *ImageConfig `json:"image,omitempty" yaml:"image,omitempty"`
+
+	// Managed Use managed Redis deployment
+	Managed     *bool              `json:"managed,omitempty" yaml:"managed,omitempty"`
 	Persistence *PersistenceConfig `json:"persistence,omitempty" yaml:"persistence,omitempty"`
-	Port        int32              `json:"port" yaml:"port"` // Redis port number
-	Resources   *ResourceConfig    `json:"resources,omitempty" yaml:"resources,omitempty"`
+
+	// Port Redis port number
+	Port      int32           `json:"port" yaml:"port"`
+	Resources *ResourceConfig `json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
 // NewRedisConfig creates a new immutable RedisConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewRedisConfig(auth string, ca *string, enabled bool, host string, image *ImageConfig, managed *bool, persistence *PersistenceConfig, port int32, resources *ResourceConfig) (RedisConfig, error) {
+func NewRedisConfig(
+	auth string,
+	ca *string,
+	enabled bool,
+	host string,
+	image *ImageConfig,
+	managed *bool,
+	persistence *PersistenceConfig,
+	port int32,
+	resources *ResourceConfig,
+) (RedisConfig, error) {
 	// Validate required fields
 	return RedisConfig{
 		Auth:        auth,

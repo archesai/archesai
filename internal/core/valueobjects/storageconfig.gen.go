@@ -9,20 +9,42 @@ import (
 
 // StorageConfig represents Object storage configuration for MinIO or S3-compatible services
 type StorageConfig struct {
-	Accesskey   string             `json:"accesskey" yaml:"accesskey"` // MinIO/S3 access key ID
-	Bucket      string             `json:"bucket" yaml:"bucket"`       // S3 bucket name
-	Enabled     bool               `json:"enabled" yaml:"enabled"`     // Enable object storage
-	Endpoint    string             `json:"endpoint" yaml:"endpoint"`   // MinIO server endpoint URL
-	Image       *ImageConfig       `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed     *bool              `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed storage deployment
+
+	// Accesskey MinIO/S3 access key ID
+	Accesskey string `json:"accesskey" yaml:"accesskey"`
+
+	// Bucket S3 bucket name
+	Bucket string `json:"bucket" yaml:"bucket"`
+
+	// Enabled Enable object storage
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// Endpoint MinIO server endpoint URL
+	Endpoint string       `json:"endpoint" yaml:"endpoint"`
+	Image    *ImageConfig `json:"image,omitempty" yaml:"image,omitempty"`
+
+	// Managed Use managed storage deployment
+	Managed     *bool              `json:"managed,omitempty" yaml:"managed,omitempty"`
 	Persistence *PersistenceConfig `json:"persistence,omitempty" yaml:"persistence,omitempty"`
 	Resources   *ResourceConfig    `json:"resources,omitempty" yaml:"resources,omitempty"`
-	Secretkey   string             `json:"secretkey" yaml:"secretkey"` // MinIO/S3 secret access key
+
+	// Secretkey MinIO/S3 secret access key
+	Secretkey string `json:"secretkey" yaml:"secretkey"`
 }
 
 // NewStorageConfig creates a new immutable StorageConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewStorageConfig(accesskey string, bucket string, enabled bool, endpoint string, image *ImageConfig, managed *bool, persistence *PersistenceConfig, resources *ResourceConfig, secretkey string) (StorageConfig, error) {
+func NewStorageConfig(
+	accesskey string,
+	bucket string,
+	enabled bool,
+	endpoint string,
+	image *ImageConfig,
+	managed *bool,
+	persistence *PersistenceConfig,
+	resources *ResourceConfig,
+	secretkey string,
+) (StorageConfig, error) {
 	// Validate required fields
 	return StorageConfig{
 		Accesskey:   accesskey,

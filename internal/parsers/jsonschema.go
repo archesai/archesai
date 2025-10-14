@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/pb33f/libopenapi/datamodel/high/base"
@@ -183,6 +184,12 @@ func (p *JSONSchemaParser) extractSchemaBasicInfo(
 		if ext, ok := schema.Extensions.Get("x-codegen"); ok {
 			var xcodegen XCodegenExtension
 			if err := ext.Decode(&xcodegen); err == nil {
+				// Sort the indices if they exist
+				if xcodegen.Repository != nil && xcodegen.Repository.Indices != nil {
+					indices := *xcodegen.Repository.Indices
+					sort.Strings(indices)
+					xcodegen.Repository.Indices = &indices
+				}
 				result.XCodegen = &xcodegen
 			}
 		}
@@ -190,7 +197,18 @@ func (p *JSONSchemaParser) extractSchemaBasicInfo(
 
 	// Determine type from schema
 	if len(schema.Type) > 0 {
-		result.Type = schema.Type[0]
+		// Check if type array contains 'null' for nullable fields
+		for _, t := range schema.Type {
+			if t == "null" {
+				result.Nullable = true
+			} else {
+				result.Type = t // Use the non-null type
+			}
+		}
+		// If only one type and it's not null, use it
+		if len(schema.Type) == 1 && result.Type == "" {
+			result.Type = schema.Type[0]
+		}
 	} else if len(schema.AllOf) > 0 {
 		// If there's an allOf with no explicit type, assume object
 		result.Type = schemaTypeObject
@@ -201,7 +219,7 @@ func (p *JSONSchemaParser) extractSchemaBasicInfo(
 		result.Format = schema.Format
 	}
 
-	// Extract common properties
+	// Extract common properties (keep backward compatibility with explicit Nullable field)
 	if schema.Nullable != nil {
 		result.Nullable = *schema.Nullable
 	}

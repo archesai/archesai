@@ -9,15 +9,24 @@ import (
 
 // UnstructuredConfig represents Unstructured.io service for document parsing
 type UnstructuredConfig struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"` // Enable unstructured document parsing
-	Image     *ImageConfig    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed unstructured deployment
+
+	// Enabled Enable unstructured document parsing
+	Enabled bool         `json:"enabled" yaml:"enabled"`
+	Image   *ImageConfig `json:"image,omitempty" yaml:"image,omitempty"`
+
+	// Managed Use managed unstructured deployment
+	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"`
 	Resources *ResourceConfig `json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
 // NewUnstructuredConfig creates a new immutable UnstructuredConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewUnstructuredConfig(enabled bool, image *ImageConfig, managed *bool, resources *ResourceConfig) (UnstructuredConfig, error) {
+func NewUnstructuredConfig(
+	enabled bool,
+	image *ImageConfig,
+	managed *bool,
+	resources *ResourceConfig,
+) (UnstructuredConfig, error) {
 	// Validate required fields
 	return UnstructuredConfig{
 		Enabled:   enabled,

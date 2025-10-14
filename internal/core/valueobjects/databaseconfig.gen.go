@@ -44,24 +44,58 @@ func ParseDatabaseConfigType(s string) (DatabaseConfigType, error) {
 
 // DatabaseConfig represents Database configuration for PostgreSQL
 type DatabaseConfig struct {
-	ConnMaxIdleTime   *string            `json:"connMaxIdleTime,omitempty" yaml:"connMaxIdleTime,omitempty"`     // Maximum connection idle time (e.g., "5m")
-	ConnMaxLifetime   *string            `json:"connMaxLifetime,omitempty" yaml:"connMaxLifetime,omitempty"`     // Maximum connection lifetime (e.g., "30m")
-	Enabled           bool               `json:"enabled" yaml:"enabled"`                                         // Enable database
-	HealthCheckPeriod *string            `json:"healthCheckPeriod,omitempty" yaml:"healthCheckPeriod,omitempty"` // Health check period for connections (PostgreSQL)
-	Image             *ImageConfig       `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed           bool               `json:"managed" yaml:"managed"`   // Use managed database deployment
-	MaxConns          int32              `json:"maxConns" yaml:"maxConns"` // Maximum number of connections in pool (PostgreSQL)
-	MinConns          int32              `json:"minConns" yaml:"minConns"` // Minimum number of connections in pool (PostgreSQL)
-	Persistence       *PersistenceConfig `json:"persistence,omitempty" yaml:"persistence,omitempty"`
-	Resources         *ResourceConfig    `json:"resources,omitempty" yaml:"resources,omitempty"`
-	RunMigrations     bool               `json:"runMigrations" yaml:"runMigrations"` // Automatically run database migrations on startup
-	Type              DatabaseConfigType `json:"type" yaml:"type"`                   // Database type (postgresql or sqlite)
-	URL               string             `json:"url" yaml:"url"`                     // Database connection url/string
+
+	// ConnMaxIdleTime Maximum connection idle time (e.g., "5m")
+	ConnMaxIdleTime *string `json:"connMaxIdleTime,omitempty" yaml:"connMaxIdleTime,omitempty"`
+
+	// ConnMaxLifetime Maximum connection lifetime (e.g., "30m")
+	ConnMaxLifetime *string `json:"connMaxLifetime,omitempty" yaml:"connMaxLifetime,omitempty"`
+
+	// Enabled Enable database
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// HealthCheckPeriod Health check period for connections (PostgreSQL)
+	HealthCheckPeriod *string      `json:"healthCheckPeriod,omitempty" yaml:"healthCheckPeriod,omitempty"`
+	Image             *ImageConfig `json:"image,omitempty" yaml:"image,omitempty"`
+
+	// Managed Use managed database deployment
+	Managed bool `json:"managed" yaml:"managed"`
+
+	// MaxConns Maximum number of connections in pool (PostgreSQL)
+	MaxConns int32 `json:"maxConns" yaml:"maxConns"`
+
+	// MinConns Minimum number of connections in pool (PostgreSQL)
+	MinConns    int32              `json:"minConns" yaml:"minConns"`
+	Persistence *PersistenceConfig `json:"persistence,omitempty" yaml:"persistence,omitempty"`
+	Resources   *ResourceConfig    `json:"resources,omitempty" yaml:"resources,omitempty"`
+
+	// RunMigrations Automatically run database migrations on startup
+	RunMigrations bool `json:"runMigrations" yaml:"runMigrations"`
+
+	// Type Database type (postgresql or sqlite)
+	Type DatabaseConfigType `json:"type" yaml:"type"`
+
+	// URL Database connection url/string
+	URL string `json:"url" yaml:"url"`
 }
 
 // NewDatabaseConfig creates a new immutable DatabaseConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewDatabaseConfig(connMaxIdleTime *string, connMaxLifetime *string, enabled bool, healthCheckPeriod *string, image *ImageConfig, managed bool, maxConns int32, minConns int32, persistence *PersistenceConfig, resources *ResourceConfig, runMigrations bool, type_ DatabaseConfigType, url string) (DatabaseConfig, error) {
+func NewDatabaseConfig(
+	connMaxIdleTime *string,
+	connMaxLifetime *string,
+	enabled bool,
+	healthCheckPeriod *string,
+	image *ImageConfig,
+	managed bool,
+	maxConns int32,
+	minConns int32,
+	persistence *PersistenceConfig,
+	resources *ResourceConfig,
+	runMigrations bool,
+	type_ DatabaseConfigType,
+	url string,
+) (DatabaseConfig, error) {
 	// Validate required fields
 	if !type_.IsValid() {
 		return DatabaseConfig{}, fmt.Errorf("invalid Type: %s", type_)

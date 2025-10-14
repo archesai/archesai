@@ -19,6 +19,19 @@ x-codegen:
       - StartedAt
     excludeFromUpdate:
       - OrganizationID
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: CASCADE
+      - field: pipelineID
+        references: pipeline
+        onDelete: SET_NULL
+        onUpdate: CASCADE
+      - field: toolID
+        references: tool
+        onDelete: SET_NULL
+        onUpdate: CASCADE
     additionalMethods:
       - name: ListRunsByPipeline
         params:
@@ -47,14 +60,14 @@ allOf:
     properties:
       completedAt:
         description: The timestamp when the run completed
-        type: string
+        type: [string, 'null']
         format: date-time
         example: '2024-01-15T09:30:00Z'
         minLength: 1
         maxLength: 255
       error:
         description: The error message
-        type: string
+        type: [string, 'null']
         example: Pipeline execution failed at step 3
         minLength: 1
         maxLength: 255
@@ -78,11 +91,12 @@ allOf:
         type: integer
         format: int32
         minimum: 0
+        default: 0
         maximum: 100
         example: 75
       startedAt:
         description: The timestamp when the run started
-        type: string
+        type: [string, 'null']
         format: date-time
         example: '2024-01-15T09:30:00Z'
         minLength: 1
@@ -95,6 +109,7 @@ allOf:
           - PROCESSING
           - QUEUED
         example: COMPLETED
+        default: QUEUED
       toolID:
         description: The tool being used in this run
         type: string
@@ -108,4 +123,7 @@ allOf:
       - progress
       - status
       - toolID
+      - completedAt
+      - error
+      - startedAt
 unevaluatedProperties: false

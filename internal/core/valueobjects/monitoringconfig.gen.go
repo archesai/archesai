@@ -15,7 +15,10 @@ type MonitoringConfig struct {
 
 // NewMonitoringConfig creates a new immutable MonitoringConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewMonitoringConfig(grafana GrafanaConfig, loki LokiConfig) (MonitoringConfig, error) {
+func NewMonitoringConfig(
+	grafana GrafanaConfig,
+	loki LokiConfig,
+) (MonitoringConfig, error) {
 	// Validate required fields
 	return MonitoringConfig{
 		Grafana: grafana,

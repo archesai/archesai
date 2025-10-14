@@ -12,12 +12,14 @@ get:
   responses:
     '200':
       $ref: ../components/responses/SessionResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
-    '422':
-      $ref: ../components/responses/UnprocessableEntity.yaml
     '404':
       $ref: ../components/responses/NotFound.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
     '429':
       $ref: ../components/responses/TooManyRequests.yaml
     '500':
@@ -75,14 +77,16 @@ delete:
   security:
     - bearerAuth: []
   responses:
-    '200':
-      $ref: ../components/responses/SessionResponse.yaml
+    '204':
+      $ref: ../components/responses/NoContent.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
     '401':
       $ref: ../components/responses/Unauthorized.yaml
-    '422':
-      $ref: ../components/responses/UnprocessableEntity.yaml
     '404':
       $ref: ../components/responses/NotFound.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
     '429':
       $ref: ../components/responses/TooManyRequests.yaml
     '500':

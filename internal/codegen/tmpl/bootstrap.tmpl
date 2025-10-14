@@ -23,7 +23,6 @@ import (
 	"time"
 
 	"golang.org/x/sync/errgroup"
-	"github.com/labstack/echo/v4"
 
 	"github.com/archesai/archesai/internal/adapters/http/controllers"
 	"github.com/archesai/archesai/internal/adapters/http/server"
@@ -262,52 +261,29 @@ func (a *App) Close() error {
 
 // registerRoutes registers all application routes with the server.
 func (a *App) registerRoutes() {
-	// Get the echo instance from the server
-	e := a.Server.Echo()
-
-	// Register readiness check that can access the database
-	a.Server.SetReadinessCheck(a.readinessCheck)
+	// Get the mux from the server
+	mux := a.Server.Mux()
 
 	// Register all application routes
-	a.RegisterRoutes(e)
+	a.RegisterRoutes(mux)
 	a.Logger.Info("routes registered")
 }
 
-// readinessCheck checks if the service is ready to handle requests.
-func (a *App) readinessCheck(ctx echo.Context) error {
-	// Check database connection
-	if err := a.infra.Database.SQLDB().PingContext(ctx.Request().Context()); err != nil {
-		a.Logger.Error("database health check failed", "error", err)
-		return ctx.JSON(http.StatusServiceUnavailable, map[string]interface{}{
-			"status": "unhealthy",
-			"error":  "database connection failed",
-		})
-	}
-
-	return ctx.JSON(http.StatusOK, map[string]interface{}{
-		"status":    "ready",
-		"timestamp": time.Now().Unix(),
-	})
-}
-
-// RegisterRoutes registers all application routes with the Echo server.
-func (a *App) RegisterRoutes(e *echo.Echo) {
+// RegisterRoutes registers all application routes with the http.ServeMux.
+func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	a.Logger.Info("registering API routes...")
-
-	// API v1 group
-	v1 := e.Group("/api/v1")
 
 	// ========================================
 	// API ROUTES
 	// ========================================
 	// Auth routes
 	a.Logger.Info("registering auth routes")
-	controllers.RegisterAuthRoutes(v1, a.AuthController)
+	controllers.RegisterAuthRoutes(mux, a.AuthController)
 {{- range .Domains }}
 {{- if .HasController }}
 	// {{ lower .Name }} routes
 	a.Logger.Info("registering {{ lower .Name }} routes")
-	controllers.Register{{ .Name }}Routes(v1, a.{{ .Name }}Controller)
+	controllers.Register{{ .Name }}Routes(mux, a.{{ .Name }}Controller)
 {{- end }}
 {{- end }}
 

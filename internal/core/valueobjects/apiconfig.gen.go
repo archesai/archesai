@@ -47,21 +47,46 @@ func ParseAPIConfigEnvironment(s string) (APIConfigEnvironment, error) {
 
 // APIConfig represents Configuration schema for the API server
 type APIConfig struct {
-	Cors        string               `json:"cors" yaml:"cors"` // A comma-separated list of allowed origins for CORS requests
-	Docs        bool                 `json:"docs" yaml:"docs"` // Enable or disable API documentation
-	Email       *EmailConfig         `json:"email,omitempty" yaml:"email,omitempty"`
-	Environment APIConfigEnvironment `json:"environment" yaml:"environment"` // Deployment environment (development, staging, production)
-	Host        string               `json:"host" yaml:"host"`               // The host address on which the API server will listen
-	Image       *ImageConfig         `json:"image,omitempty" yaml:"image,omitempty"`
-	Port        int32                `json:"port" yaml:"port"` // The port on which the API server will listen
-	Resources   *ResourceConfig      `json:"resources,omitempty" yaml:"resources,omitempty"`
-	URL         *string              `json:"url,omitempty" yaml:"url,omitempty"` // The public URL for the API
-	Validation  bool                 `json:"validation" yaml:"validation"`       // Enable or disable request validation
+
+	// Cors A comma-separated list of allowed origins for CORS requests
+	Cors string `json:"cors" yaml:"cors"`
+
+	// Docs Enable or disable API documentation
+	Docs  bool         `json:"docs" yaml:"docs"`
+	Email *EmailConfig `json:"email,omitempty" yaml:"email,omitempty"`
+
+	// Environment Deployment environment (development, staging, production)
+	Environment APIConfigEnvironment `json:"environment" yaml:"environment"`
+
+	// Host The host address on which the API server will listen
+	Host  string       `json:"host" yaml:"host"`
+	Image *ImageConfig `json:"image,omitempty" yaml:"image,omitempty"`
+
+	// Port The port on which the API server will listen
+	Port      int32           `json:"port" yaml:"port"`
+	Resources *ResourceConfig `json:"resources,omitempty" yaml:"resources,omitempty"`
+
+	// URL The public URL for the API
+	URL *string `json:"url,omitempty" yaml:"url,omitempty"`
+
+	// Validation Enable or disable request validation
+	Validation bool `json:"validation" yaml:"validation"`
 }
 
 // NewAPIConfig creates a new immutable APIConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewAPIConfig(cors string, docs bool, email *EmailConfig, environment APIConfigEnvironment, host string, image *ImageConfig, port int32, resources *ResourceConfig, url *string, validation bool) (APIConfig, error) {
+func NewAPIConfig(
+	cors string,
+	docs bool,
+	email *EmailConfig,
+	environment APIConfigEnvironment,
+	host string,
+	image *ImageConfig,
+	port int32,
+	resources *ResourceConfig,
+	url *string,
+	validation bool,
+) (APIConfig, error) {
 	// Validate required fields
 	if !environment.IsValid() {
 		return APIConfig{}, fmt.Errorf("invalid Environment: %s", environment)

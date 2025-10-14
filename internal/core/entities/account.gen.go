@@ -56,26 +56,57 @@ func ParseAccountProvider(s string) (AccountProvider, error) {
 
 // Account represents Schema for Account entity (authentication provider account)
 type Account struct {
-	ID                    uuid.UUID            `json:"id" yaml:"id"`                                                           // Unique identifier for the resource
-	AccessToken           *string              `json:"accessToken,omitempty" yaml:"accessToken,omitempty"`                     // The OAuth access token
-	AccessTokenExpiresAt  *time.Time           `json:"accessTokenExpiresAt,omitempty" yaml:"accessTokenExpiresAt,omitempty"`   // The access token expiration timestamp
-	AccountIdentifier     string               `json:"accountIdentifier" yaml:"accountIdentifier"`                             // The unique identifier for the account from the provider
-	CreatedAt             time.Time            `json:"createdAt" yaml:"createdAt"`                                             // The date and time when the resource was created
-	IDToken               *string              `json:"idToken,omitempty" yaml:"idToken,omitempty"`                             // The OpenID Connect ID token
-	Provider              AccountProvider      `json:"provider" yaml:"provider"`                                               // The authentication provider identifier
-	RefreshToken          *string              `json:"refreshToken,omitempty" yaml:"refreshToken,omitempty"`                   // The OAuth refresh token
-	RefreshTokenExpiresAt *time.Time           `json:"refreshTokenExpiresAt,omitempty" yaml:"refreshTokenExpiresAt,omitempty"` // The refresh token expiration timestamp
-	Scope                 *string              `json:"scope,omitempty" yaml:"scope,omitempty"`                                 // The OAuth scope granted
-	UpdatedAt             time.Time            `json:"updatedAt" yaml:"updatedAt"`                                             // The date and time when the resource was last updated
-	UserID                uuid.UUID            `json:"userID" yaml:"userID"`                                                   // The user ID this account belongs to
-	events                []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// AccessToken The OAuth access token
+	AccessToken *string `json:"accessToken" yaml:"accessToken"`
+
+	// AccessTokenExpiresAt The access token expiration timestamp
+	AccessTokenExpiresAt *time.Time `json:"accessTokenExpiresAt" yaml:"accessTokenExpiresAt"`
+
+	// AccountIdentifier The unique identifier for the account from the provider
+	AccountIdentifier string `json:"accountIdentifier" yaml:"accountIdentifier"`
+
+	// IDToken The OpenID Connect ID token
+	IDToken *string `json:"idToken" yaml:"idToken"`
+
+	// Provider The authentication provider identifier
+	Provider AccountProvider `json:"provider" yaml:"provider"`
+
+	// RefreshToken The OAuth refresh token
+	RefreshToken *string `json:"refreshToken" yaml:"refreshToken"`
+
+	// RefreshTokenExpiresAt The refresh token expiration timestamp
+	RefreshTokenExpiresAt *time.Time `json:"refreshTokenExpiresAt" yaml:"refreshTokenExpiresAt"`
+
+	// Scope The OAuth scope granted
+	Scope *string `json:"scope" yaml:"scope"`
+
+	// UserID The user ID this account belongs to
+	UserID uuid.UUID `json:"userID" yaml:"userID"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewAccount creates a new Account entity.
 // All required fields must be provided and valid.
 func NewAccount(
+	accessToken *string,
+	accessTokenExpiresAt *time.Time,
 	accountIdentifier string,
+	idToken *string,
 	provider AccountProvider,
+	refreshToken *string,
+	refreshTokenExpiresAt *time.Time,
+	scope *string,
 	userID uuid.UUID,
 ) (*Account, error) {
 	// Validate required fields
@@ -88,13 +119,19 @@ func NewAccount(
 	now := time.Now().UTC()
 	id := uuid.New()
 	account := &Account{
-		ID:                id,
-		AccountIdentifier: accountIdentifier,
-		CreatedAt:         now,
-		Provider:          provider,
-		UpdatedAt:         now,
-		UserID:            userID,
-		events:            []events.DomainEvent{},
+		ID:                    id,
+		CreatedAt:             now,
+		UpdatedAt:             now,
+		AccessToken:           accessToken,
+		AccessTokenExpiresAt:  accessTokenExpiresAt,
+		AccountIdentifier:     accountIdentifier,
+		IDToken:               idToken,
+		Provider:              provider,
+		RefreshToken:          refreshToken,
+		RefreshTokenExpiresAt: refreshTokenExpiresAt,
+		Scope:                 scope,
+		UserID:                userID,
+		events:                []events.DomainEvent{},
 	}
 	account.addEvent(events.NewAccountCreatedEvent(id))
 
@@ -104,6 +141,16 @@ func NewAccount(
 // GetID returns the ID
 func (e *Account) GetID() uuid.UUID {
 	return e.ID
+}
+
+// GetCreatedAt returns the CreatedAt
+func (e *Account) GetCreatedAt() time.Time {
+	return e.CreatedAt
+}
+
+// GetUpdatedAt returns the UpdatedAt
+func (e *Account) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
 }
 
 // GetAccessToken returns the AccessToken
@@ -121,19 +168,14 @@ func (e *Account) GetAccountIdentifier() string {
 	return e.AccountIdentifier
 }
 
-// GetCreatedAt returns the CreatedAt
-func (e *Account) GetCreatedAt() time.Time {
-	return e.CreatedAt
-}
-
 // GetIDToken returns the IDToken
 func (e *Account) GetIDToken() *string {
 	return e.IDToken
 }
 
 // GetProvider returns the Provider
-func (e *Account) GetProvider() string {
-	return string(e.Provider)
+func (e *Account) GetProvider() AccountProvider {
+	return e.Provider
 }
 
 // GetRefreshToken returns the RefreshToken
@@ -149,11 +191,6 @@ func (e *Account) GetRefreshTokenExpiresAt() *time.Time {
 // GetScope returns the Scope
 func (e *Account) GetScope() *string {
 	return e.Scope
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *Account) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
 }
 
 // GetUserID returns the UserID

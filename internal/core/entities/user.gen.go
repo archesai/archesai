@@ -12,14 +12,29 @@ import (
 
 // User represents Schema for User entity
 type User struct {
-	ID            uuid.UUID            `json:"id" yaml:"id"`                           // Unique identifier for the resource
-	CreatedAt     time.Time            `json:"createdAt" yaml:"createdAt"`             // The date and time when the resource was created
-	Email         string               `json:"email" yaml:"email"`                     // The user's email address
-	EmailVerified bool                 `json:"emailVerified" yaml:"emailVerified"`     // Whether the user's email has been verified
-	Image         *string              `json:"image,omitempty" yaml:"image,omitempty"` // The user's avatar image URL
-	Name          string               `json:"name" yaml:"name"`                       // The user's display name
-	UpdatedAt     time.Time            `json:"updatedAt" yaml:"updatedAt"`             // The date and time when the resource was last updated
-	events        []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// Email The user's email address
+	Email string `json:"email" yaml:"email"`
+
+	// EmailVerified Whether the user's email has been verified
+	EmailVerified bool `json:"emailVerified" yaml:"emailVerified"`
+
+	// Image The user's avatar image URL
+	Image *string `json:"image" yaml:"image"`
+
+	// Name The user's display name
+	Name string `json:"name" yaml:"name"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewUser creates a new User entity.
@@ -27,6 +42,7 @@ type User struct {
 func NewUser(
 	email string,
 	emailVerified bool,
+	image *string,
 	name string,
 ) (*User, error) {
 	// Validate required fields
@@ -41,10 +57,11 @@ func NewUser(
 	user := &User{
 		ID:            id,
 		CreatedAt:     now,
+		UpdatedAt:     now,
 		Email:         email,
 		EmailVerified: emailVerified,
+		Image:         image,
 		Name:          name,
-		UpdatedAt:     now,
 		events:        []events.DomainEvent{},
 	}
 	user.addEvent(events.NewUserCreatedEvent(id))
@@ -60,6 +77,11 @@ func (e *User) GetID() uuid.UUID {
 // GetCreatedAt returns the CreatedAt
 func (e *User) GetCreatedAt() time.Time {
 	return e.CreatedAt
+}
+
+// GetUpdatedAt returns the UpdatedAt
+func (e *User) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
 }
 
 // GetEmail returns the Email
@@ -80,11 +102,6 @@ func (e *User) GetImage() *string {
 // GetName returns the Name
 func (e *User) GetName() string {
 	return e.Name
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *User) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
 }
 
 // Events returns the domain events

@@ -12,15 +12,32 @@ import (
 
 // Tool represents Schema for Tool entity
 type Tool struct {
-	ID             uuid.UUID            `json:"id" yaml:"id"`                         // Unique identifier for the resource
-	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`           // The date and time when the resource was created
-	Description    string               `json:"description" yaml:"description"`       // The tool description
-	InputMimeType  string               `json:"inputMimeType" yaml:"inputMimeType"`   // The MIME type of the input for the tool, e.g. text/plain
-	Name           string               `json:"name" yaml:"name"`                     // The name of the tool
-	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"` // The organization that owns this tool
-	OutputMimeType string               `json:"outputMimeType" yaml:"outputMimeType"` // The MIME type of the output for the tool, e.g. text/plain
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`           // The date and time when the resource was last updated
-	events         []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// Description The tool description
+	Description string `json:"description" yaml:"description"`
+
+	// InputMimeType The MIME type of the input for the tool, e.g. text/plain
+	InputMimeType string `json:"inputMimeType" yaml:"inputMimeType"`
+
+	// Name The name of the tool
+	Name string `json:"name" yaml:"name"`
+
+	// OrganizationID The organization that owns this tool
+	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
+
+	// OutputMimeType The MIME type of the output for the tool, e.g. text/plain
+	OutputMimeType string `json:"outputMimeType" yaml:"outputMimeType"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewTool creates a new Tool entity.
@@ -50,12 +67,12 @@ func NewTool(
 	tool := &Tool{
 		ID:             id,
 		CreatedAt:      now,
+		UpdatedAt:      now,
 		Description:    description,
 		InputMimeType:  inputMimeType,
 		Name:           name,
 		OrganizationID: organizationID,
 		OutputMimeType: outputMimeType,
-		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	tool.addEvent(events.NewToolCreatedEvent(id))
@@ -71,6 +88,11 @@ func (e *Tool) GetID() uuid.UUID {
 // GetCreatedAt returns the CreatedAt
 func (e *Tool) GetCreatedAt() time.Time {
 	return e.CreatedAt
+}
+
+// GetUpdatedAt returns the UpdatedAt
+func (e *Tool) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
 }
 
 // GetDescription returns the Description
@@ -96,11 +118,6 @@ func (e *Tool) GetOrganizationID() uuid.UUID {
 // GetOutputMimeType returns the OutputMimeType
 func (e *Tool) GetOutputMimeType() string {
 	return e.OutputMimeType
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *Tool) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
 }
 
 // Events returns the domain events

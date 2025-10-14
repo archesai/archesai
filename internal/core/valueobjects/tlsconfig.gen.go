@@ -9,14 +9,24 @@ import (
 
 // TLSConfig represents TLS configuration
 type TLSConfig struct {
-	Enabled    bool    `json:"enabled" yaml:"enabled"`                           // Enable TLS/SSL
-	Issuer     *string `json:"issuer,omitempty" yaml:"issuer,omitempty"`         // Cert-manager ClusterIssuer
-	SecretName *string `json:"secretName,omitempty" yaml:"secretName,omitempty"` // Kubernetes secret name for TLS certificates
+
+	// Enabled Enable TLS/SSL
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// Issuer Cert-manager ClusterIssuer
+	Issuer *string `json:"issuer,omitempty" yaml:"issuer,omitempty"`
+
+	// SecretName Kubernetes secret name for TLS certificates
+	SecretName *string `json:"secretName,omitempty" yaml:"secretName,omitempty"`
 }
 
 // NewTLSConfig creates a new immutable TLSConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewTLSConfig(enabled bool, issuer *string, secretName *string) (TLSConfig, error) {
+func NewTLSConfig(
+	enabled bool,
+	issuer *string,
+	secretName *string,
+) (TLSConfig, error) {
 	// Validate required fields
 	return TLSConfig{
 		Enabled:    enabled,

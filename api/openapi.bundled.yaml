@@ -501,12 +501,14 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/SessionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
@@ -564,14 +566,16 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/SessionResponse'
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
@@ -624,10 +628,12 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/AccountResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -720,12 +726,14 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/AccountResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -1028,16 +1036,18 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
     patch:
       operationId: UpdateUser
       summary: Update an user
@@ -1095,18 +1105,20 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/UserResponse'
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
   /me:
     get:
       x-codegen-custom-handler: true
@@ -1195,8 +1207,8 @@ paths:
               - DELETE_MY_ACCOUNT
             example: DELETE_MY_ACCOUNT
       responses:
-        '200':
-          $ref: '#/components/responses/UserResponse'
+        '204':
+          $ref: '#/components/responses/NoContent'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1507,7 +1519,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/APIKeyListResponse'
+          $ref: '#/components/responses/APIKeyResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1691,16 +1703,18 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/OrganizationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
     patch:
       operationId: UpdateOrganization
       summary: Update an organization
@@ -1757,18 +1771,20 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/OrganizationResponse'
+        '204':
+          description: Organization successfully deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
   /organizations/{organizationID}/members:
     get:
       operationId: ListMembers
@@ -1792,7 +1808,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/MemberResponse'
+          $ref: '#/components/responses/MemberListResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1840,7 +1856,7 @@ paths:
         - bearerAuth: []
       responses:
         '201':
-          $ref: '#/components/responses/OrganizationResponse'
+          $ref: '#/components/responses/MemberResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1866,16 +1882,18 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/MemberResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
     patch:
       operationId: UpdateMember
       summary: Update a member
@@ -1929,18 +1947,20 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/MemberResponse'
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
   /organizations/{organizationID}/invitations:
     get:
       operationId: ListInvitations
@@ -2032,16 +2052,18 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/InvitationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
     patch:
       operationId: UpdateInvitation
       summary: Update an invitation
@@ -2101,18 +2123,20 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/InvitationResponse'
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
   /pipelines:
     get:
       operationId: ListPipelines
@@ -2196,16 +2220,18 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/PipelineResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
     patch:
       operationId: UpdatePipeline
       summary: Update a pipeline
@@ -2261,18 +2287,20 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/PipelineResponse'
+        '204':
+          description: Pipeline successfully deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
   /pipelines/{id}/steps:
     get:
       operationId: GetPipelineSteps
@@ -2288,10 +2316,12 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/PipelineStepListResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -2513,17 +2543,19 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/RunListResponse'
+          $ref: '#/components/responses/RunResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
     patch:
       operationId: UpdateRun
       summary: Update a run
@@ -2574,18 +2606,20 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/RunResponse'
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
   /tools:
     get:
       operationId: ListTools
@@ -2672,16 +2706,18 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/ToolResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
     patch:
       operationId: UpdateTool
       summary: Update a tool
@@ -2739,18 +2775,20 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/ToolResponse'
+        '204':
+          description: Tool successfully deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
   /artifacts:
     get:
       operationId: ListArtifacts
@@ -2835,11 +2873,13 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/ArtifactListResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/ArtifactResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -2908,12 +2948,14 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/ArtifactResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -2997,17 +3039,19 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/LabelListResponse'
+          $ref: '#/components/responses/LabelResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
     patch:
       operationId: UpdateLabel
       summary: Update a label
@@ -3058,18 +3102,20 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
-          $ref: '#/components/responses/LabelResponse'
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/InternalServerError'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
   /config:
     get:
       x-codegen-custom-handler: true
@@ -3141,6 +3187,14 @@ components:
             - UserID
             - UserAgent
             - Token
+          relations:
+            - field: userID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+          indices:
+            - userID
+            - token
       description: Schema for Session entity
       title: Session
       allOf:
@@ -3149,21 +3203,27 @@ components:
           properties:
             organizationID:
               description: The organization ID for this session (nullable for users without org)
-              type: string
+              type:
+                - string
+                - 'null'
               format: uuid
               example: 550e8400-e29b-41d4-a716-446655440000
               minLength: 36
               maxLength: 36
             authMethod:
               description: The authentication method used (magic_link, oauth_google, oauth_github, etc.)
-              type: string
+              type:
+                - string
+                - 'null'
               minLength: 1
               maxLength: 100
               example: magic_link
               pattern: ^[a-z_]+$
             authProvider:
               description: The authentication provider (google, github, microsoft, local)
-              type: string
+              type:
+                - string
+                - 'null'
               enum:
                 - local
                 - google
@@ -3180,7 +3240,9 @@ components:
               maxLength: 255
             ipAddress:
               description: The IP address of the session
-              type: string
+              type:
+                - string
+                - 'null'
               format: ipv4
               example: 192.168.1.1
               minLength: 7
@@ -3194,7 +3256,9 @@ components:
               pattern: ^[A-Za-z0-9_\-\.]+$
             userAgent:
               description: The user agent of the session
-              type: string
+              type:
+                - string
+                - 'null'
               example: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
               minLength: 1
               maxLength: 255
@@ -3210,6 +3274,11 @@ components:
             - expiresAt
             - token
             - userID
+            - organizationID
+            - authMethod
+            - authProvider
+            - ipAddress
+            - userAgent
       unevaluatedProperties: false
       example:
         id: 550e8400-e29b-41d4-a716-446655440000
@@ -3310,7 +3379,9 @@ components:
           maxLength: 36
         userID:
           description: User ID if token is for existing user
-          type: string
+          type:
+            - string
+            - 'null'
           format: uuid
           example: 550e8400-e29b-41d4-a716-446655440000
           minLength: 36
@@ -3331,7 +3402,9 @@ components:
           pattern: ^[a-f0-9]{64}$
         code:
           description: Optional 6-digit OTP code
-          type: string
+          type:
+            - string
+            - 'null'
           minLength: 6
           maxLength: 6
           pattern: ^[0-9]{6}$
@@ -3345,7 +3418,9 @@ components:
           maxLength: 255
         deliveryMethod:
           description: How the magic link was delivered
-          type: string
+          type:
+            - string
+            - 'null'
           enum:
             - email
             - console
@@ -3362,26 +3437,34 @@ components:
           maxLength: 512
         usedAt:
           description: When the token was used (null if unused)
-          type: string
+          type:
+            - string
+            - 'null'
           format: date-time
           example: '2023-10-05T14:48:00Z'
         ipAddress:
           description: IP address of the request
-          type: string
+          type:
+            - string
+            - 'null'
           format: ipv4
           minLength: 7
           maxLength: 45
           example: 192.168.1.1
         userAgent:
           description: User agent of the request
-          type: string
+          type:
+            - string
+            - 'null'
           minLength: 1
           maxLength: 512
           pattern: ^[\w\s\-.,!?()@#+/\(\):;]+$
           example: Mozilla/5.0
         createdAt:
           description: When the token was created
-          type: string
+          type:
+            - string
+            - 'null'
           format: date-time
           minLength: 1
           example: '2023-10-05T14:48:00Z'
@@ -3458,6 +3541,11 @@ components:
             - AccountIdentifier
             - Provider
             - UserID
+          relations:
+            - field: userID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
           additionalMethods:
             - name: GetAccountByProvider
               params:
@@ -3503,7 +3591,9 @@ components:
               example: google
             accessToken:
               description: The OAuth access token
-              type: string
+              type:
+                - string
+                - 'null'
               minLength: 1
               example: ya29.a0AfH6SMBa...
               x-sensitive: true
@@ -3511,14 +3601,18 @@ components:
               pattern: ^[A-Za-z0-9_\-\.]+$
             accessTokenExpiresAt:
               description: The access token expiration timestamp
-              type: string
+              type:
+                - string
+                - 'null'
               format: date-time
               minLength: 1
               example: '2024-12-31T23:59:59Z'
               maxLength: 255
             refreshToken:
               description: The OAuth refresh token
-              type: string
+              type:
+                - string
+                - 'null'
               minLength: 1
               example: 1//0fM8N5...
               x-sensitive: true
@@ -3526,14 +3620,18 @@ components:
               pattern: ^[A-Za-z0-9_\-\./]+$
             refreshTokenExpiresAt:
               description: The refresh token expiration timestamp
-              type: string
+              type:
+                - string
+                - 'null'
               format: date-time
               minLength: 1
               example: '2025-12-31T23:59:59Z'
               maxLength: 255
             idToken:
               description: The OpenID Connect ID token
-              type: string
+              type:
+                - string
+                - 'null'
               minLength: 1
               example: eyJhbGciOiJSUzI1NiIs...
               x-sensitive: true
@@ -3541,15 +3639,23 @@ components:
               pattern: ^[A-Za-z0-9_\-\.]+$
             scope:
               description: The OAuth scope granted
-              type: string
+              type:
+                - string
+                - 'null'
               minLength: 1
               example: openid profile email
               maxLength: 255
               pattern: ^[\w\s\-:]+$
           required:
+            - accessToken
+            - accessTokenExpiresAt
             - accountIdentifier
             - userID
             - provider
+            - idToken
+            - refreshToken
+            - refreshTokenExpiresAt
+            - scope
       unevaluatedProperties: false
     User:
       description: Schema for User entity
@@ -3595,7 +3701,9 @@ components:
               example: true
             image:
               description: The user's avatar image URL
-              type: string
+              type:
+                - string
+                - 'null'
               minLength: 5
               maxLength: 2048
               format: uri
@@ -3611,6 +3719,7 @@ components:
             - email
             - emailVerified
             - name
+            - image
       unevaluatedProperties: false
     FilterNode:
       title: FilterNode
@@ -3678,6 +3787,20 @@ components:
             - KeyHash
             - Prefix
             - LastUsedAt
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+            - field: userID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+          indices:
+            - organizationID
+            - userID
+            - keyHash
+            - lastUsedAt
       title: APIKey
       description: Schema for API Key entity
       allOf:
@@ -3706,13 +3829,17 @@ components:
               maxLength: 255
               pattern: ^[a-zA-Z0-9]+$
             name:
-              type: string
+              type:
+                - string
+                - 'null'
               minLength: 1
               example: Production API Key
               maxLength: 255
               pattern: ^[\w\s\-.,!?()@#+/']+$
             prefix:
-              type: string
+              type:
+                - string
+                - 'null'
               minLength: 1
               example: sklive
               maxLength: 255
@@ -3727,22 +3854,28 @@ components:
                 - read:users
                 - write:workflows
               maxItems: 1000
+              default: []
             rateLimit:
               type: integer
               format: int32
               minimum: 1
               maximum: 2147483647
               example: 1000
+              default: 60
               description: Requests per minute allowed for this API key
             lastUsedAt:
-              type: string
+              type:
+                - string
+                - 'null'
               format: date-time
               minLength: 1
               example: '2024-01-15T09:30:00Z'
               description: When this API key was last used
               maxLength: 255
             expiresAt:
-              type: string
+              type:
+                - string
+                - 'null'
               format: date-time
               minLength: 1
               example: '2025-01-15T09:30:00Z'
@@ -3754,6 +3887,10 @@ components:
             - keyHash
             - organizationID
             - userID
+            - name
+            - prefix
+            - lastUsedAt
+            - expiresAt
       unevaluatedProperties: false
     Organization:
       title: Organization
@@ -3804,14 +3941,18 @@ components:
               example: acme-corp
             logo:
               description: The organization's logo URL
-              type: string
+              type:
+                - string
+                - 'null'
               format: uri
               minLength: 1
               example: https://example.com/org-logo.png
               maxLength: 2048
             billingEmail:
               description: Email address for billing communications
-              type: string
+              type:
+                - string
+                - 'null'
               format: email
               minLength: 5
               example: billing@acme.com
@@ -3849,6 +3990,8 @@ components:
             - plan
             - credits
             - stripeCustomerIdentifier
+            - logo
+            - billingEmail
       unevaluatedProperties: false
     Member:
       title: Member
@@ -3868,6 +4011,15 @@ components:
           excludeFromUpdate:
             - OrganizationID
             - UserID
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+            - field: userID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
           additionalMethods:
             - name: ListMembersByOrganization
               params:
@@ -3913,6 +4065,7 @@ components:
                 - owner
                 - basic
               example: admin
+              default: basic
             userID:
               description: The user who is a member of the organization
               type: string
@@ -3944,6 +4097,15 @@ components:
           excludeFromUpdate:
             - InviterID
             - OrganizationID
+          relations:
+            - field: inviterID
+              references: user
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: NO_ACTION
           additionalMethods:
             - name: ListInvitationsByOrganization
               params:
@@ -4008,6 +4170,7 @@ components:
                 - owner
                 - basic
               example: admin
+              default: basic
             status:
               description: The status of the invitation, e.g., pending, accepted, declined
               type: string
@@ -4017,6 +4180,7 @@ components:
                 - declined
                 - expired
               example: pending
+              default: pending
           required:
             - email
             - expiresAt
@@ -4041,6 +4205,11 @@ components:
             - OrganizationID
           indices:
             - organizationID
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: CASCADE
           additionalMethods:
             - name: ListPipelinesByOrganization
               params:
@@ -4062,19 +4231,25 @@ components:
               maxLength: 36
             name:
               description: The pipeline's display name
-              type: string
+              type:
+                - string
+                - 'null'
               minLength: 1
               maxLength: 255
               example: Data Processing Pipeline
               pattern: ^[\w\s\-.,!?()@#+/']+$
             description:
               description: Detailed description of the pipeline's purpose
-              type: string
+              type:
+                - string
+                - 'null'
               maxLength: 1000
               pattern: ^[\w\s\-.,!?()@#+/':;]+$
               example: Processes incoming data through validation, transformation, and storage steps
           required:
             - organizationID
+            - name
+            - description
       unevaluatedProperties: false
     PipelineStep:
       x-codegen:
@@ -4139,6 +4314,19 @@ components:
             - StartedAt
           excludeFromUpdate:
             - OrganizationID
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: CASCADE
+            - field: pipelineID
+              references: pipeline
+              onDelete: SET_NULL
+              onUpdate: CASCADE
+            - field: toolID
+              references: tool
+              onDelete: SET_NULL
+              onUpdate: CASCADE
           additionalMethods:
             - name: ListRunsByPipeline
               params:
@@ -4167,14 +4355,18 @@ components:
           properties:
             completedAt:
               description: The timestamp when the run completed
-              type: string
+              type:
+                - string
+                - 'null'
               format: date-time
               example: '2024-01-15T09:30:00Z'
               minLength: 1
               maxLength: 255
             error:
               description: The error message
-              type: string
+              type:
+                - string
+                - 'null'
               example: Pipeline execution failed at step 3
               minLength: 1
               maxLength: 255
@@ -4198,11 +4390,14 @@ components:
               type: integer
               format: int32
               minimum: 0
+              default: 0
               maximum: 100
               example: 75
             startedAt:
               description: The timestamp when the run started
-              type: string
+              type:
+                - string
+                - 'null'
               format: date-time
               example: '2024-01-15T09:30:00Z'
               minLength: 1
@@ -4215,6 +4410,7 @@ components:
                 - PROCESSING
                 - QUEUED
               example: COMPLETED
+              default: QUEUED
             toolID:
               description: The tool being used in this run
               type: string
@@ -4228,6 +4424,9 @@ components:
             - progress
             - status
             - toolID
+            - completedAt
+            - error
+            - startedAt
       unevaluatedProperties: false
     Tool:
       description: Schema for Tool entity
@@ -4245,6 +4444,11 @@ components:
             - OrganizationID
           indices:
             - organizationID
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: CASCADE
           additionalMethods:
             - name: ListToolsByOrganization
               params:
@@ -4268,6 +4472,7 @@ components:
               description: The MIME type of the input for the tool, e.g. text/plain
               type: string
               minLength: 1
+              default: application/octet-stream
               example: text/plain
               maxLength: 255
               pattern: ^[a-z]+/[a-z0-9\+\-\.]+$
@@ -4289,6 +4494,7 @@ components:
               description: The MIME type of the output for the tool, e.g. text/plain
               type: string
               minLength: 1
+              default: application/octet-stream
               example: application/json
               maxLength: 255
               pattern: ^[a-z]+/[a-z0-9\+\-\.]+$
@@ -4317,6 +4523,15 @@ components:
           excludeFromUpdate:
             - OrganizationID
             - ProducerID
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: CASCADE
+            - field: producerID
+              references: run
+              onDelete: SET_NULL
+              onUpdate: CASCADE
           additionalMethods:
             - name: ListArtifactsByOrganization
               params:
@@ -4341,11 +4556,14 @@ components:
               type: integer
               format: int32
               minimum: 0
+              default: 0
               maximum: 2147483647
               example: 42
             description:
               description: The artifact's description
-              type: string
+              type:
+                - string
+                - 'null'
               example: Example description text
               minLength: 1
               maxLength: 1000
@@ -4355,11 +4573,14 @@ components:
               type: string
               minLength: 1
               example: image/png
+              default: application/octet-stream
               maxLength: 255
               pattern: ^[a-z]+/[a-z0-9\+\-\.]+$
             name:
               description: The name of the artifact, used for display purposes
-              type: string
+              type:
+                - string
+                - 'null'
               example: Data Export Results
               minLength: 1
               maxLength: 255
@@ -4373,29 +4594,50 @@ components:
               maxLength: 36
             previewImage:
               description: The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-              type: string
+              type:
+                - string
+                - 'null'
               format: uri
               example: https://example.com/preview.jpg
               minLength: 1
               maxLength: 2048
             producerID:
               description: The ID of the entity that produced this artifact
-              type: string
+              type:
+                - string
+                - 'null'
               format: uuid
               example: 550e8400-e29b-41d4-a716-446655440000
               minLength: 36
               maxLength: 36
             text:
               description: The artifact text
-              type: string
+              type:
+                - string
+                - 'null'
               example: Processed data ready for analysis
               minLength: 1
               maxLength: 255
               pattern: ^[\w\s\-.,!?()@#+/':;]+$
+            url:
+              description: The URL of the artifact if it's stored externally
+              type:
+                - string
+                - 'null'
+              format: uri
+              example: https://example.com/artifact.pdf
+              minLength: 1
+              maxLength: 2048
           required:
             - credits
             - mimeType
             - organizationID
+            - description
+            - name
+            - previewImage
+            - producerID
+            - text
+            - url
       unevaluatedProperties: false
     Label:
       title: Label
@@ -4414,6 +4656,11 @@ components:
           indices:
             - organizationID
             - name
+          relations:
+            - field: organizationID
+              references: organization
+              onDelete: CASCADE
+              onUpdate: CASCADE
           additionalMethods:
             - name: ListLabelsByOrganization
               params:
@@ -6033,6 +6280,15 @@ components:
           $ref: '#/components/headers/RateLimitRemaining'
         X-RateLimit-Reset:
           $ref: '#/components/headers/RateLimitReset'
+    NoContent:
+      description: 204 No Content
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
     AccountListResponse:
       description: Accounts retrieved successfully
       content:
@@ -6070,15 +6326,6 @@ components:
             required:
               - data
             additionalProperties: false
-      headers:
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/RateLimitLimit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/RateLimitRemaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/RateLimitReset'
-    NoContent:
-      description: 204 No Content
       headers:
         X-RateLimit-Limit:
           $ref: '#/components/headers/RateLimitLimit'
@@ -6279,6 +6526,31 @@ components:
               stripeCustomerIdentifier: cus_1234567890
               createdAt: '2024-01-15T09:30:00Z'
               updatedAt: '2024-01-15T09:30:00Z'
+      headers:
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/RateLimitLimit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/RateLimitRemaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/RateLimitReset'
+    MemberListResponse:
+      description: Members retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                maxItems: 10000
+                items:
+                  $ref: '#/components/schemas/Member'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+            required:
+              - data
+              - meta
+            additionalProperties: false
       headers:
         X-RateLimit-Limit:
           $ref: '#/components/headers/RateLimitLimit'

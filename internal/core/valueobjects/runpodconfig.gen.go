@@ -9,13 +9,20 @@ import (
 
 // RunPodConfig represents RunPod serverless GPU configuration
 type RunPodConfig struct {
-	Enabled bool    `json:"enabled" yaml:"enabled"`                 // Enable RunPod integration
-	Token   *string `json:"token,omitempty" yaml:"token,omitempty"` // RunPod API token
+
+	// Enabled Enable RunPod integration
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// Token RunPod API token
+	Token *string `json:"token,omitempty" yaml:"token,omitempty"`
 }
 
 // NewRunPodConfig creates a new immutable RunPodConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewRunPodConfig(enabled bool, token *string) (RunPodConfig, error) {
+func NewRunPodConfig(
+	enabled bool,
+	token *string,
+) (RunPodConfig, error) {
 	// Validate required fields
 	return RunPodConfig{
 		Enabled: enabled,

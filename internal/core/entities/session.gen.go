@@ -56,41 +56,77 @@ func ParseSessionAuthProvider(s string) (SessionAuthProvider, error) {
 
 // Session represents Schema for Session entity
 type Session struct {
-	ID             uuid.UUID            `json:"id" yaml:"id"`                                             // Unique identifier for the resource
-	AuthMethod     *string              `json:"authMethod,omitempty" yaml:"authMethod,omitempty"`         // The authentication method used (magic_link, oauth_google, oauth_github, etc.)
-	AuthProvider   *SessionAuthProvider `json:"authProvider,omitempty" yaml:"authProvider,omitempty"`     // The authentication provider (google, github, microsoft, local)
-	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`                               // The date and time when the resource was created
-	ExpiresAt      time.Time            `json:"expiresAt" yaml:"expiresAt"`                               // The expiration date of the session
-	IPAddress      *string              `json:"ipAddress,omitempty" yaml:"ipAddress,omitempty"`           // The IP address of the session
-	OrganizationID *uuid.UUID           `json:"organizationID,omitempty" yaml:"organizationID,omitempty"` // The organization ID for this session (nullable for users without org)
-	Token          string               `json:"token" yaml:"token"`                                       // The session token
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`                               // The date and time when the resource was last updated
-	UserAgent      *string              `json:"userAgent,omitempty" yaml:"userAgent,omitempty"`           // The user agent of the session
-	UserID         uuid.UUID            `json:"userID" yaml:"userID"`                                     // The user who owns this session
-	events         []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// AuthMethod The authentication method used (magic_link, oauth_google, oauth_github, etc.)
+	AuthMethod *string `json:"authMethod" yaml:"authMethod"`
+
+	// AuthProvider The authentication provider (google, github, microsoft, local)
+	AuthProvider *SessionAuthProvider `json:"authProvider" yaml:"authProvider"`
+
+	// ExpiresAt The expiration date of the session
+	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
+
+	// IPAddress The IP address of the session
+	IPAddress *string `json:"ipAddress" yaml:"ipAddress"`
+
+	// OrganizationID The organization ID for this session (nullable for users without org)
+	OrganizationID *uuid.UUID `json:"organizationID" yaml:"organizationID"`
+
+	// Token The session token
+	Token string `json:"token" yaml:"token"`
+
+	// UserAgent The user agent of the session
+	UserAgent *string `json:"userAgent" yaml:"userAgent"`
+
+	// UserID The user who owns this session
+	UserID uuid.UUID `json:"userID" yaml:"userID"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewSession creates a new Session entity.
 // All required fields must be provided and valid.
 func NewSession(
+	authMethod *string,
+	authProvider *SessionAuthProvider,
 	expiresAt time.Time,
+	ipAddress *string,
+	organizationID *uuid.UUID,
 	token string,
+	userAgent *string,
 	userID uuid.UUID,
 ) (*Session, error) {
 	// Validate required fields
+	if !authProvider.IsValid() {
+		return nil, fmt.Errorf("invalid AuthProvider: %s", authProvider)
+	}
 	if token == "" {
 		return nil, fmt.Errorf("Token cannot be empty")
 	}
 	now := time.Now().UTC()
 	id := uuid.New()
 	session := &Session{
-		ID:        id,
-		CreatedAt: now,
-		ExpiresAt: expiresAt,
-		Token:     token,
-		UpdatedAt: now,
-		UserID:    userID,
-		events:    []events.DomainEvent{},
+		ID:             id,
+		CreatedAt:      now,
+		UpdatedAt:      now,
+		AuthMethod:     authMethod,
+		AuthProvider:   authProvider,
+		ExpiresAt:      expiresAt,
+		IPAddress:      ipAddress,
+		OrganizationID: organizationID,
+		Token:          token,
+		UserAgent:      userAgent,
+		UserID:         userID,
+		events:         []events.DomainEvent{},
 	}
 	session.addEvent(events.NewSessionCreatedEvent(id))
 
@@ -102,22 +138,24 @@ func (e *Session) GetID() uuid.UUID {
 	return e.ID
 }
 
+// GetCreatedAt returns the CreatedAt
+func (e *Session) GetCreatedAt() time.Time {
+	return e.CreatedAt
+}
+
+// GetUpdatedAt returns the UpdatedAt
+func (e *Session) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
+}
+
 // GetAuthMethod returns the AuthMethod
 func (e *Session) GetAuthMethod() *string {
 	return e.AuthMethod
 }
 
 // GetAuthProvider returns the AuthProvider
-func (e *Session) GetAuthProvider() string {
-	if e.AuthProvider == nil {
-		return ""
-	}
-	return string(*e.AuthProvider)
-}
-
-// GetCreatedAt returns the CreatedAt
-func (e *Session) GetCreatedAt() time.Time {
-	return e.CreatedAt
+func (e *Session) GetAuthProvider() *SessionAuthProvider {
+	return e.AuthProvider
 }
 
 // GetExpiresAt returns the ExpiresAt
@@ -138,11 +176,6 @@ func (e *Session) GetOrganizationID() *uuid.UUID {
 // GetToken returns the Token
 func (e *Session) GetToken() string {
 	return e.Token
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *Session) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
 }
 
 // GetUserAgent returns the UserAgent

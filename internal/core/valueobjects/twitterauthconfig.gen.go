@@ -9,15 +9,28 @@ import (
 
 // TwitterAuthConfig represents Twitter OAuth configuration
 type TwitterAuthConfig struct {
-	CallbackURL    *string `json:"callbackURL,omitempty" yaml:"callbackURL,omitempty"`       // OAuth callback URL
-	ConsumerKey    *string `json:"consumerKey,omitempty" yaml:"consumerKey,omitempty"`       // Twitter API consumer key
-	ConsumerSecret *string `json:"consumerSecret,omitempty" yaml:"consumerSecret,omitempty"` // Twitter API consumer secret
-	Enabled        bool    `json:"enabled" yaml:"enabled"`                                   // Enable Twitter OAuth
+
+	// CallbackURL OAuth callback URL
+	CallbackURL *string `json:"callbackURL,omitempty" yaml:"callbackURL,omitempty"`
+
+	// ConsumerKey Twitter API consumer key
+	ConsumerKey *string `json:"consumerKey,omitempty" yaml:"consumerKey,omitempty"`
+
+	// ConsumerSecret Twitter API consumer secret
+	ConsumerSecret *string `json:"consumerSecret,omitempty" yaml:"consumerSecret,omitempty"`
+
+	// Enabled Enable Twitter OAuth
+	Enabled bool `json:"enabled" yaml:"enabled"`
 }
 
 // NewTwitterAuthConfig creates a new immutable TwitterAuthConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewTwitterAuthConfig(callbackURL *string, consumerKey *string, consumerSecret *string, enabled bool) (TwitterAuthConfig, error) {
+func NewTwitterAuthConfig(
+	callbackURL *string,
+	consumerKey *string,
+	consumerSecret *string,
+	enabled bool,
+) (TwitterAuthConfig, error) {
 	// Validate required fields
 	return TwitterAuthConfig{
 		CallbackURL:    callbackURL,

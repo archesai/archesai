@@ -12,12 +12,23 @@ import (
 
 // Label represents Schema for Label entity
 type Label struct {
-	ID             uuid.UUID            `json:"id" yaml:"id"`                         // Unique identifier for the resource
-	CreatedAt      time.Time            `json:"createdAt" yaml:"createdAt"`           // The date and time when the resource was created
-	Name           string               `json:"name" yaml:"name"`                     // The name of the label
-	OrganizationID uuid.UUID            `json:"organizationID" yaml:"organizationID"` // The organization this label belongs to
-	UpdatedAt      time.Time            `json:"updatedAt" yaml:"updatedAt"`           // The date and time when the resource was last updated
-	events         []events.DomainEvent `json:"-" yaml:"-"`
+
+	// ID Unique identifier for the resource
+	ID uuid.UUID `json:"id" yaml:"id"`
+
+	// CreatedAt The date and time when the resource was created
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+
+	// UpdatedAt The date and time when the resource was last updated
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
+
+	// Name The name of the label
+	Name string `json:"name" yaml:"name"`
+
+	// OrganizationID The organization this label belongs to
+	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
+
+	events []events.DomainEvent `json:"-" yaml:"-"`
 }
 
 // NewLabel creates a new Label entity.
@@ -35,9 +46,9 @@ func NewLabel(
 	label := &Label{
 		ID:             id,
 		CreatedAt:      now,
+		UpdatedAt:      now,
 		Name:           name,
 		OrganizationID: organizationID,
-		UpdatedAt:      now,
 		events:         []events.DomainEvent{},
 	}
 	label.addEvent(events.NewLabelCreatedEvent(id))
@@ -55,6 +66,11 @@ func (e *Label) GetCreatedAt() time.Time {
 	return e.CreatedAt
 }
 
+// GetUpdatedAt returns the UpdatedAt
+func (e *Label) GetUpdatedAt() time.Time {
+	return e.UpdatedAt
+}
+
 // GetName returns the Name
 func (e *Label) GetName() string {
 	return e.Name
@@ -63,11 +79,6 @@ func (e *Label) GetName() string {
 // GetOrganizationID returns the OrganizationID
 func (e *Label) GetOrganizationID() uuid.UUID {
 	return e.OrganizationID
-}
-
-// GetUpdatedAt returns the UpdatedAt
-func (e *Label) GetUpdatedAt() time.Time {
-	return e.UpdatedAt
 }
 
 // Events returns the domain events

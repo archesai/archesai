@@ -9,13 +9,20 @@ import (
 
 // StripeConfig represents Stripe payment configuration
 type StripeConfig struct {
-	Token string `json:"token" yaml:"token"` // Stripe secret API key
-	Whsec string `json:"whsec" yaml:"whsec"` // Stripe webhook endpoint secret
+
+	// Token Stripe secret API key
+	Token string `json:"token" yaml:"token"`
+
+	// Whsec Stripe webhook endpoint secret
+	Whsec string `json:"whsec" yaml:"whsec"`
 }
 
 // NewStripeConfig creates a new immutable StripeConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewStripeConfig(token string, whsec string) (StripeConfig, error) {
+func NewStripeConfig(
+	token string,
+	whsec string,
+) (StripeConfig, error) {
 	// Validate required fields
 	return StripeConfig{
 		Token: token,

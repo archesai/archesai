@@ -47,14 +47,24 @@ func ParseImageConfigPullPolicy(s string) (ImageConfigPullPolicy, error) {
 
 // ImageConfig represents Container image configuration
 type ImageConfig struct {
-	PullPolicy ImageConfigPullPolicy `json:"pullPolicy" yaml:"pullPolicy"`                     // Kubernetes image pull policy
-	Repository *string               `json:"repository,omitempty" yaml:"repository,omitempty"` // Container image repository
-	Tag        string                `json:"tag" yaml:"tag"`                                   // Container image tag
+
+	// PullPolicy Kubernetes image pull policy
+	PullPolicy ImageConfigPullPolicy `json:"pullPolicy" yaml:"pullPolicy"`
+
+	// Repository Container image repository
+	Repository *string `json:"repository,omitempty" yaml:"repository,omitempty"`
+
+	// Tag Container image tag
+	Tag string `json:"tag" yaml:"tag"`
 }
 
 // NewImageConfig creates a new immutable ImageConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewImageConfig(pullPolicy ImageConfigPullPolicy, repository *string, tag string) (ImageConfig, error) {
+func NewImageConfig(
+	pullPolicy ImageConfigPullPolicy,
+	repository *string,
+	tag string,
+) (ImageConfig, error) {
 	// Validate required fields
 	if !pullPolicy.IsValid() {
 		return ImageConfig{}, fmt.Errorf("invalid PullPolicy: %s", pullPolicy)

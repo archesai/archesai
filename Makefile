@@ -428,31 +428,31 @@ db-migrate: db-migrate-up ## Alias for db-migrate-up
 .PHONY: db-migrate-up
 db-migrate-up: ## Apply database migrations
 	@echo -e "$(YELLOW)▶ Applying migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose postgres "$(DATABASE_URL)" up
+	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose postgres "$(DATABASE_URL)" up
 	@echo -e "$(GREEN)✓ Migrations applied!$(NC)"
 
 .PHONY: db-migrate-down
 db-migrate-down: ## Rollback database migrations
 	@echo -e "$(YELLOW)▶ Rolling back migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose postgres "$(DATABASE_URL)" down
+	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose postgres "$(DATABASE_URL)" down
 	@echo -e "$(GREEN)✓ Migrations rolled back!$(NC)"
 
 .PHONY: db-migrate-create
 db-migrate-create: ## Create new migration (usage: make db-migrate-create name=add_users)
 	@echo -e "$(YELLOW)▶ Creating migration: $(name)...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose create $(name) sql
+	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose create $(name) sql
 	@echo -e "$(GREEN)✓ Migration created!$(NC)"
 
 .PHONY: db-migrate-status
 db-migrate-status: ## Show migration status
 	@echo -e "$(YELLOW)▶ Checking migration status...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose postgres "$(DATABASE_URL)" status
+	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose postgres "$(DATABASE_URL)" status
 	@echo -e "$(GREEN)✓ Migration status checked!$(NC)"
 
 .PHONY: db-migrate-reset
 db-migrate-reset: ## Reset database to initial state
 	@echo -e "$(YELLOW)▶ Resetting database...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=tools.mod goose postgres "$(DATABASE_URL)" reset
+	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose postgres "$(DATABASE_URL)" reset
 	@echo -e "$(GREEN)✓ Database reset complete!$(NC)"
 
 # ------------------------------------------

@@ -9,15 +9,28 @@ import (
 
 // EmailConfig represents Email configuration for sending emails
 type EmailConfig struct {
-	Enabled  bool    `json:"enabled" yaml:"enabled"`                       // Enable email functionality
-	Password *string `json:"password,omitempty" yaml:"password,omitempty"` // Password for the email service
-	Service  *string `json:"service,omitempty" yaml:"service,omitempty"`   // Email service provider (e.g., "gmail", "sendgrid", etc.)
-	User     *string `json:"user,omitempty" yaml:"user,omitempty"`         // Username for the email service
+
+	// Enabled Enable email functionality
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// Password Password for the email service
+	Password *string `json:"password,omitempty" yaml:"password,omitempty"`
+
+	// Service Email service provider (e.g., "gmail", "sendgrid", etc.)
+	Service *string `json:"service,omitempty" yaml:"service,omitempty"`
+
+	// User Username for the email service
+	User *string `json:"user,omitempty" yaml:"user,omitempty"`
 }
 
 // NewEmailConfig creates a new immutable EmailConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewEmailConfig(enabled bool, password *string, service *string, user *string) (EmailConfig, error) {
+func NewEmailConfig(
+	enabled bool,
+	password *string,
+	service *string,
+	user *string,
+) (EmailConfig, error) {
 	// Validate required fields
 	return EmailConfig{
 		Enabled:  enabled,

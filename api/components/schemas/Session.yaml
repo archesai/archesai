@@ -12,6 +12,14 @@ x-codegen:
       - UserID
       - UserAgent
       - Token
+    relations:
+      - field: userID
+        references: user
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
+    indices:
+      - userID
+      - token
 description: Schema for Session entity
 title: Session
 allOf:
@@ -22,7 +30,7 @@ allOf:
         description:
           The organization ID for this session (nullable for users without
           org)
-        type: string
+        type: [string, 'null']
         format: uuid
         example: 550e8400-e29b-41d4-a716-446655440000
         minLength: 36
@@ -31,14 +39,14 @@ allOf:
         description:
           The authentication method used (magic_link, oauth_google, oauth_github,
           etc.)
-        type: string
+        type: [string, 'null']
         minLength: 1
         maxLength: 100
         example: magic_link
         pattern: ^[a-z_]+$
       authProvider:
         description: The authentication provider (google, github, microsoft, local)
-        type: string
+        type: [string, 'null']
         enum:
           - local
           - google
@@ -55,7 +63,7 @@ allOf:
         maxLength: 255
       ipAddress:
         description: The IP address of the session
-        type: string
+        type: [string, 'null']
         format: ipv4
         example: 192.168.1.1
         minLength: 7
@@ -69,7 +77,7 @@ allOf:
         pattern: ^[A-Za-z0-9_\-\.]+$
       userAgent:
         description: The user agent of the session
-        type: string
+        type: [string, 'null']
         example: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
         minLength: 1
         maxLength: 255
@@ -85,6 +93,11 @@ allOf:
       - expiresAt
       - token
       - userID
+      - organizationID
+      - authMethod
+      - authProvider
+      - ipAddress
+      - userAgent
 unevaluatedProperties: false
 example:
   id: 550e8400-e29b-41d4-a716-446655440000

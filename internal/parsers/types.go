@@ -121,8 +121,10 @@ func (o *OperationDef) HasCookieAuth() bool {
 
 // ResponseDef represents a response in an operation
 type ResponseDef struct {
-	*SchemaDef        // Embed schema definition for response body
-	StatusCode string // HTTP status code
+	*SchemaDef                        // Embed schema definition for response body
+	StatusCode  string                // HTTP status code
+	ContentType string                // Content-Type for the response (e.g., "application/json")
+	Headers     map[string]*SchemaDef // Response headers
 }
 
 // IsSuccess returns true if the response is a successful one (2xx status code)
@@ -131,6 +133,39 @@ func (r *ResponseDef) IsSuccess() bool {
 		return code >= 200 && code < 300
 	}
 	return false
+}
+
+// GetSortedHeaders returns headers sorted by name for consistent iteration
+func (r *ResponseDef) GetSortedHeaders() []struct {
+	Name   string
+	Schema *SchemaDef
+} {
+	if r.Headers == nil {
+		return nil
+	}
+
+	// Create a slice of header names and sort them
+	var names []string
+	for name := range r.Headers {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	// Build the sorted slice
+	var sorted []struct {
+		Name   string
+		Schema *SchemaDef
+	}
+	for _, name := range names {
+		sorted = append(sorted, struct {
+			Name   string
+			Schema *SchemaDef
+		}{
+			Name:   name,
+			Schema: r.Headers[name],
+		})
+	}
+	return sorted
 }
 
 // RequestBodyDef represents the request body definition for an API operation
@@ -244,15 +279,33 @@ func (s *SchemaDef) GetSortedProperties() []*SchemaDef {
 	for name := range s.Properties {
 		names = append(names, name)
 	}
-	// Sort alphabetically but put ID first if it exists
+	// FIXME: Ensure id, created_at, and updated_at stay at the top
+	// Sort alphabetically but put ID, CreatedAt, and UpdatedAt first
 	sort.Slice(names, func(i, j int) bool {
-		if strings.EqualFold(names[i], "ID") {
-			return true
+		// Define priority order for special fields
+		priority := func(name string) int {
+			switch strings.ToLower(name) {
+			case "id":
+				return 0
+			case "createdat", "created_at":
+				return 1
+			case "updatedat", "updated_at":
+				return 2
+			default:
+				return 999
+			}
 		}
-		if strings.EqualFold(names[j], "ID") {
-			return false
+
+		priI := priority(names[i])
+		priJ := priority(names[j])
+
+		// If both have the same priority, sort alphabetically
+		if priI == priJ {
+			return names[i] < names[j]
 		}
-		return names[i] < names[j]
+
+		// Otherwise, sort by priority
+		return priI < priJ
 	})
 
 	// Build the sorted slice

@@ -9,12 +9,16 @@ import (
 
 // MigrationsConfig represents Database migration configuration
 type MigrationsConfig struct {
-	Enabled bool `json:"enabled" yaml:"enabled"` // Enable automatic DB migrations
+
+	// Enabled Enable automatic DB migrations
+	Enabled bool `json:"enabled" yaml:"enabled"`
 }
 
 // NewMigrationsConfig creates a new immutable MigrationsConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewMigrationsConfig(enabled bool) (MigrationsConfig, error) {
+func NewMigrationsConfig(
+	enabled bool,
+) (MigrationsConfig, error) {
 	// Validate required fields
 	return MigrationsConfig{
 		Enabled: enabled,

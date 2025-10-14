@@ -23,7 +23,18 @@ type Config struct {
 
 // NewConfig creates a new immutable Config value object.
 // Value objects are immutable and validated upon creation.
-func NewConfig(api *APIConfig, auth *AuthConfig, billing *BillingConfig, database *DatabaseConfig, intelligence *IntelligenceConfig, kubernetes *KubernetesConfig, logging *LoggingConfig, platform *PlatformConfig, redis *RedisConfig, storage *StorageConfig) (Config, error) {
+func NewConfig(
+	api *APIConfig,
+	auth *AuthConfig,
+	billing *BillingConfig,
+	database *DatabaseConfig,
+	intelligence *IntelligenceConfig,
+	kubernetes *KubernetesConfig,
+	logging *LoggingConfig,
+	platform *PlatformConfig,
+	redis *RedisConfig,
+	storage *StorageConfig,
+) (Config, error) {
 	// Validate required fields
 	return Config{
 		API:          api,

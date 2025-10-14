@@ -41,7 +41,7 @@ allOf:
         example: true
       image:
         description: The user's avatar image URL
-        type: string
+        type: [string, 'null']
         minLength: 5
         maxLength: 2048
         format: uri
@@ -57,4 +57,5 @@ allOf:
       - email
       - emailVerified
       - name
+      - image
 unevaluatedProperties: false

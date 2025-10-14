@@ -9,15 +9,24 @@ import (
 
 // GrafanaConfig represents Grafana monitoring dashboard configuration
 type GrafanaConfig struct {
-	Enabled   bool            `json:"enabled" yaml:"enabled"` // Enable Grafana
-	Image     *ImageConfig    `json:"image,omitempty" yaml:"image,omitempty"`
-	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"` // Use managed Grafana deployment
+
+	// Enabled Enable Grafana
+	Enabled bool         `json:"enabled" yaml:"enabled"`
+	Image   *ImageConfig `json:"image,omitempty" yaml:"image,omitempty"`
+
+	// Managed Use managed Grafana deployment
+	Managed   *bool           `json:"managed,omitempty" yaml:"managed,omitempty"`
 	Resources *ResourceConfig `json:"resources,omitempty" yaml:"resources,omitempty"`
 }
 
 // NewGrafanaConfig creates a new immutable GrafanaConfig value object.
 // Value objects are immutable and validated upon creation.
-func NewGrafanaConfig(enabled bool, image *ImageConfig, managed *bool, resources *ResourceConfig) (GrafanaConfig, error) {
+func NewGrafanaConfig(
+	enabled bool,
+	image *ImageConfig,
+	managed *bool,
+	resources *ResourceConfig,
+) (GrafanaConfig, error) {
 	// Validate required fields
 	return GrafanaConfig{
 		Enabled:   enabled,
