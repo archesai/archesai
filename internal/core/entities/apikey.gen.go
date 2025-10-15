@@ -63,6 +63,12 @@ func NewAPIKey(
 	if keyHash == "" {
 		return nil, fmt.Errorf("KeyHash cannot be empty")
 	}
+	if organizationID == uuid.Nil {
+		return nil, fmt.Errorf("OrganizationID cannot be nil UUID")
+	}
+	if userID == uuid.Nil {
+		return nil, fmt.Errorf("UserID cannot be nil UUID")
+	}
 	now := time.Now().UTC()
 	id := uuid.New()
 	apikey := &APIKey{

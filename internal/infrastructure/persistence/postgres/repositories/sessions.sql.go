@@ -42,7 +42,7 @@ VALUES
     NOW()
   )
 RETURNING
-  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, metadata, organization_id, token, user_agent, user_id
+  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
 `
 
 type CreateSessionParams struct {
@@ -78,7 +78,6 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 		&i.AuthProvider,
 		&i.ExpiresAt,
 		&i.IPAddress,
-		&i.Metadata,
 		&i.OrganizationID,
 		&i.Token,
 		&i.UserAgent,
@@ -119,7 +118,7 @@ func (q *Queries) DeleteSessionsByUser(ctx context.Context, arg DeleteSessionsBy
 
 const getSession = `-- name: GetSession :one
 SELECT
-  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, metadata, organization_id, token, user_agent, user_id
+  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
 FROM
   session
 WHERE
@@ -143,7 +142,6 @@ func (q *Queries) GetSession(ctx context.Context, arg GetSessionParams) (Session
 		&i.AuthProvider,
 		&i.ExpiresAt,
 		&i.IPAddress,
-		&i.Metadata,
 		&i.OrganizationID,
 		&i.Token,
 		&i.UserAgent,
@@ -154,7 +152,7 @@ func (q *Queries) GetSession(ctx context.Context, arg GetSessionParams) (Session
 
 const getSessionByToken = `-- name: GetSessionByToken :one
 SELECT
-  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, metadata, organization_id, token, user_agent, user_id
+  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
 FROM
   session
 WHERE
@@ -178,7 +176,6 @@ func (q *Queries) GetSessionByToken(ctx context.Context, arg GetSessionByTokenPa
 		&i.AuthProvider,
 		&i.ExpiresAt,
 		&i.IPAddress,
-		&i.Metadata,
 		&i.OrganizationID,
 		&i.Token,
 		&i.UserAgent,
@@ -189,7 +186,7 @@ func (q *Queries) GetSessionByToken(ctx context.Context, arg GetSessionByTokenPa
 
 const listSessions = `-- name: ListSessions :many
 SELECT
-  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, metadata, organization_id, token, user_agent, user_id
+  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
 FROM
   session
 ORDER BY
@@ -222,7 +219,6 @@ func (q *Queries) ListSessions(ctx context.Context, arg ListSessionsParams) ([]S
 			&i.AuthProvider,
 			&i.ExpiresAt,
 			&i.IPAddress,
-			&i.Metadata,
 			&i.OrganizationID,
 			&i.Token,
 			&i.UserAgent,
@@ -240,7 +236,7 @@ func (q *Queries) ListSessions(ctx context.Context, arg ListSessionsParams) ([]S
 
 const listSessionsByUser = `-- name: ListSessionsByUser :many
 SELECT
-  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, metadata, organization_id, token, user_agent, user_id
+  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
 FROM
   session
 WHERE
@@ -276,7 +272,6 @@ func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUser
 			&i.AuthProvider,
 			&i.ExpiresAt,
 			&i.IPAddress,
-			&i.Metadata,
 			&i.OrganizationID,
 			&i.Token,
 			&i.UserAgent,
@@ -306,7 +301,7 @@ SET
 WHERE
   id = $1
 RETURNING
-  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, metadata, organization_id, token, user_agent, user_id
+  id, created_at, updated_at, auth_method, auth_provider, expires_at, ip_address, organization_id, token, user_agent, user_id
 `
 
 type UpdateSessionParams struct {
@@ -334,7 +329,6 @@ func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (S
 		&i.AuthProvider,
 		&i.ExpiresAt,
 		&i.IPAddress,
-		&i.Metadata,
 		&i.OrganizationID,
 		&i.Token,
 		&i.UserAgent,

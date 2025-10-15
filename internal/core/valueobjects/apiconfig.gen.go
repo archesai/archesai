@@ -88,8 +88,14 @@ func NewAPIConfig(
 	validation bool,
 ) (APIConfig, error) {
 	// Validate required fields
+	if cors == "" {
+		return APIConfig{}, fmt.Errorf("Cors cannot be empty")
+	}
 	if !environment.IsValid() {
 		return APIConfig{}, fmt.Errorf("invalid Environment: %s", environment)
+	}
+	if host == "" {
+		return APIConfig{}, fmt.Errorf("Host cannot be empty")
 	}
 	return APIConfig{
 		Cors:        cors,

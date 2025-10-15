@@ -3,16 +3,13 @@ package testutil
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
-	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib" // PostgreSQL driver for database/sql
-	"github.com/pressly/goose/v3"
 	"github.com/redis/go-redis/v9"
 	"github.com/testcontainers/testcontainers-go"
 	tcpostgres "github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -79,32 +76,6 @@ func StartPostgresContainer(ctx context.Context, t *testing.T) *PostgresContaine
 	})
 
 	return pc
-}
-
-// RunMigrations runs database migrations on the test database.
-func (pc *PostgresContainer) RunMigrations(migrationsPath string) error {
-	db, err := sql.Open("pgx", pc.DSN)
-	if err != nil {
-		return fmt.Errorf("failed to open database: %w", err)
-	}
-	defer func() { _ = db.Close() }()
-
-	// Set environment variables for PostgreSQL
-	_ = os.Setenv("TIMESTAMP_TYPE", "TIMESTAMPTZ")
-	_ = os.Setenv("TIMESTAMP_DEFAULT", "CURRENT_TIMESTAMP")
-	_ = os.Setenv("REAL_TYPE", "DOUBLE PRECISION")
-
-	// Set goose dialect
-	if err := goose.SetDialect("postgres"); err != nil {
-		return fmt.Errorf("failed to set dialect: %w", err)
-	}
-
-	// Run migrations
-	if err := goose.Up(db, migrationsPath); err != nil {
-		return fmt.Errorf("failed to run migrations: %w", err)
-	}
-
-	return nil
 }
 
 // Stop stops the PostgreSQL container.

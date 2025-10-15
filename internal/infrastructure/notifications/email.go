@@ -17,14 +17,12 @@ type EmailSender interface {
 // EmailDeliverer sends magic links via email.
 type EmailDeliverer struct {
 	sender EmailSender
-	logger *slog.Logger
 }
 
 // NewEmailDeliverer creates an email deliverer.
-func NewEmailDeliverer(sender EmailSender, logger *slog.Logger) *EmailDeliverer {
+func NewEmailDeliverer(sender EmailSender) *EmailDeliverer {
 	return &EmailDeliverer{
 		sender: sender,
-		logger: logger,
 	}
 }
 
@@ -56,7 +54,7 @@ The Arches Team
 		return fmt.Errorf("sending email: %w", err)
 	}
 
-	d.logger.Info("Magic link sent via email",
+	slog.Info("Magic link sent via email",
 		"identifier", token.Identifier,
 		"expires_in", time.Until(token.ExpiresAt).Round(time.Second),
 	)

@@ -1,9 +1,9 @@
+// Package cli provides command-line interface commands for the Arches platform.
 package cli
 
 import (
 	"context"
 	"fmt"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -47,10 +47,10 @@ func init() {
 
 	// Bind to viper
 	if err := viper.BindPFlag("server.host", apiCmd.Flags().Lookup("host")); err != nil {
-		log.Fatalf("failed to bind host flag: %v", err)
+		slog.Error("failed to bind host flag", "err", err)
 	}
 	if err := viper.BindPFlag("server.port", apiCmd.Flags().Lookup("port")); err != nil {
-		log.Fatalf("failed to bind port flag: %v", err)
+		slog.Error("failed to bind port flag", "err", err)
 	}
 }
 
@@ -86,25 +86,25 @@ func runAPI(cmd *cobra.Command, _ []string) error {
 
 	// Run server in goroutine
 	go func() {
-		log.Printf("api server starting on %s:%d", cfg.API.Host, int(cfg.API.Port))
+		slog.Info("api server starting", "host", cfg.API.Host, "port", int(cfg.API.Port))
 		if err := appContainer.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("failed to start server: %v", err)
+			slog.Error("failed to start server", "err", err)
 		}
 	}()
 
 	// Wait for interrupt signal
 	<-quit
-	log.Println("shutting down server...")
+	slog.Info("shutting down server...")
 
 	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := appContainer.Server.Shutdown(ctx); err != nil {
-		log.Printf("server forced to shutdown: %v", err)
+		slog.Error("server forced to shutdown", "err", err)
 		return err
 	}
 
-	log.Println("server gracefully stopped")
+	slog.Info("server gracefully stopped")
 	return nil
 }

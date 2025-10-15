@@ -12,14 +12,11 @@ import (
 
 // OTPDeliverer displays OTP codes (for development).
 type OTPDeliverer struct {
-	logger *slog.Logger
 }
 
 // NewOTPDeliverer creates a new OTP deliverer.
-func NewOTPDeliverer(logger *slog.Logger) *OTPDeliverer {
-	return &OTPDeliverer{
-		logger: logger,
-	}
+func NewOTPDeliverer() *OTPDeliverer {
+	return &OTPDeliverer{}
 }
 
 // Deliver displays the OTP code.
@@ -28,19 +25,19 @@ func (d *OTPDeliverer) Deliver(
 	token *valueobjects.MagicLinkToken,
 	_ string,
 ) error {
-	d.logger.Info("🔐 OTP Code Generated",
+	slog.Info("🔐 OTP Code Generated",
 		"identifier", token.Identifier,
 		"code", token.Token,
 		"expires_in", time.Until(token.ExpiresAt).Round(time.Second),
 	)
 
-	fmt.Println("\n" + strings.Repeat("=", 80))
-	fmt.Println("🔐 ONE-TIME PASSWORD")
-	fmt.Println(strings.Repeat("-", 80))
-	fmt.Printf("For: %s\n", token.Identifier)
-	fmt.Printf("Code: %s\n", *token.Token)
-	fmt.Printf("Expires in: %v\n", time.Until(token.ExpiresAt).Round(time.Second))
-	fmt.Println(strings.Repeat("=", 80) + "\n")
+	slog.Info(fmt.Sprintln("\n" + strings.Repeat("=", 80)))
+	slog.Info(fmt.Sprintln("🔐 ONE-TIME PASSWORD"))
+	slog.Info(fmt.Sprintln(strings.Repeat("-", 80)))
+	slog.Info(fmt.Sprintf("For: %s\n", token.Identifier))
+	slog.Info(fmt.Sprintf("Code: %s\n", *token.Token))
+	slog.Info(fmt.Sprintf("Expires in: %v\n", time.Until(token.ExpiresAt).Round(time.Second)))
+	slog.Info(fmt.Sprintln(strings.Repeat("=", 80) + "\n"))
 
 	return nil
 }

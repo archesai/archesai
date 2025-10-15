@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 )
 
@@ -11,7 +12,7 @@ func (s *Server) recoverMiddleware(next http.Handler) http.Handler {
 		defer func() {
 			if err := recover(); err != nil {
 				requestID, _ := r.Context().Value(RequestIDContextKey).(string)
-				s.logger.Error("panic recovered",
+				slog.Error("panic recovered",
 					"id", requestID,
 					"error", err,
 				)

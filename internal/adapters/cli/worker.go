@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -36,10 +36,10 @@ func init() {
 
 	// Bind to viper
 	if err := viper.BindPFlag("worker.queues", workerCmd.Flags().Lookup("queues")); err != nil {
-		log.Fatalf("Failed to bind queues flag: %v", err)
+		slog.Error("Failed to bind queues flag", "err", err)
 	}
 	if err := viper.BindPFlag("worker.concurrency", workerCmd.Flags().Lookup("concurrency")); err != nil {
-		log.Fatalf("Failed to bind concurrency flag: %v", err)
+		slog.Error("Failed to bind concurrency flag", "err", err)
 	}
 }
 
@@ -47,8 +47,8 @@ func runWorker(_ *cobra.Command, _ []string) error {
 	queues := viper.GetStringSlice("worker.queues")
 	concurrency := viper.GetInt("worker.concurrency")
 
-	log.Printf("⚙️  Worker would start processing queues: %v", queues)
-	log.Printf("   Concurrency: %d workers", concurrency)
+	slog.Info(fmt.Sprintf("⚙️  Worker would start processing queues: %v", queues))
+	slog.Info(fmt.Sprintf("   Concurrency: %d workers", concurrency))
 
 	// TODO: Implement worker
 	// This would:

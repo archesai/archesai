@@ -2,16 +2,19 @@ package cli
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/archesai/archesai/internal/shared/logger"
 )
 
 var (
 	cfgFile string
 	verbose bool
+	pretty  bool
 )
 
 // rootCmd represents the base command when called without any subcommands.
@@ -42,10 +45,14 @@ func init() {
 	rootCmd.PersistentFlags().
 		StringVar(&cfgFile, "config", "", "config file (default is .archesai.yaml)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVar(&pretty, "pretty", false, "enable pretty logging output")
 
 	// Bind flags to viper
 	if err := viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose")); err != nil {
-		log.Fatalf("Failed to bind verbose flag: %v", err)
+		slog.Error("Failed to bind verbose flag", "err", err)
+	}
+	if err := viper.BindPFlag("pretty", rootCmd.PersistentFlags().Lookup("pretty")); err != nil {
+		slog.Error("Failed to bind pretty flag", "err", err)
 	}
 }
 
@@ -70,4 +77,18 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil && verbose {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+
+	// Configure logger based on flags
+	logLevel := "info"
+	if verbose {
+		logLevel = "debug"
+	}
+
+	logCfg := logger.Config{
+		Level:  logLevel,
+		Pretty: pretty,
+	}
+
+	// Set as default logger
+	slog.SetDefault(logger.New(logCfg))
 }

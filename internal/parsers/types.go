@@ -1,6 +1,7 @@
 package parsers
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -383,4 +384,221 @@ func (s *SchemaDef) collectNestedTypesRecursive(result *[]*SchemaDef, visited ma
 			}
 		}
 	}
+}
+
+// Template helper methods for cleaner code generation
+
+// IsOptional returns true if the property is optional (has omitempty tag)
+func (s *SchemaDef) IsOptional() bool {
+	return strings.Contains(s.JSONTag, ",omitempty")
+}
+
+// IsRequired returns true if the property is required (doesn't have omitempty tag)
+func (s *SchemaDef) IsRequired() bool {
+	return !s.IsOptional()
+}
+
+// NeedsPointer returns true if the field type needs to be a pointer
+func (s *SchemaDef) NeedsPointer() bool {
+	// Optional fields need pointers unless they're already pointers, slices, or maps
+	if s.IsOptional() {
+		return !strings.HasPrefix(s.GoType, "*") &&
+			!strings.HasPrefix(s.GoType, "[]") &&
+			!strings.HasPrefix(s.GoType, "map")
+	}
+	// Non-optional nullable fields need pointers
+	return s.Nullable
+}
+
+// GetFieldType returns the complete Go type for this field, including pointer if needed
+func (s *SchemaDef) GetFieldType(parentSchema *SchemaDef) string {
+	baseType := s.GoType
+	if len(s.Enum) > 0 && parentSchema != nil {
+		baseType = parentSchema.Name + s.Name
+	}
+	if s.NeedsPointer() {
+		return "*" + baseType
+	}
+	return baseType
+}
+
+// GetBaseType returns the base Go type without pointer or qualification
+func (s *SchemaDef) GetBaseType(parentSchema *SchemaDef) string {
+	if len(s.Enum) > 0 && parentSchema != nil {
+		return parentSchema.Name + s.Name
+	}
+	return s.GoType
+}
+
+// NeedsValidation returns true if this field requires validation in constructor
+func (s *SchemaDef) NeedsValidation(isEntity bool, parentSchema *SchemaDef) bool {
+	// For entities, only validate required non-optional fields that aren't special
+	if isEntity {
+		if s.IsSpecialField() {
+			return false
+		}
+		if !parentSchema.IsPropertyRequired(s.JSONTag) || s.IsOptional() {
+			return false
+		}
+	} else {
+		// For value objects, validate all non-optional fields
+		if s.IsOptional() {
+			return false
+		}
+	}
+
+	// Now check if the field type needs validation
+	if len(s.Enum) > 0 {
+		return true
+	}
+	if s.GoType == "string" && !s.Nullable {
+		return true
+	}
+	if (s.GoType == "int" || s.GoType == "float64") && !s.Nullable {
+		return true
+	}
+	if s.GoType == "uuid.UUID" && !s.Nullable {
+		return true
+	}
+	return false
+}
+
+// IsSpecialField returns true if this is a special entity field
+func (s *SchemaDef) IsSpecialField() bool {
+	return s.Name == "ID" || s.Name == "CreatedAt" || s.Name == "UpdatedAt"
+}
+
+// ShouldIncludeInConstructor returns true if field should be in entity constructor
+func (s *SchemaDef) ShouldIncludeInConstructor(parentSchema *SchemaDef) bool {
+	// For entities, only include required, non-special fields
+	if parentSchema.GetSchemaType() == string(XCodegenExtensionSchemaTypeEntity) {
+		return parentSchema.IsPropertyRequired(s.JSONTag) &&
+			!s.IsOptional() &&
+			!s.IsSpecialField()
+	}
+	// For value objects, include all fields
+	return true
+}
+
+// GetValidationError returns the validation error message for this field
+func (s *SchemaDef) GetValidationError(_ *SchemaDef) string {
+	if len(s.Enum) > 0 {
+		return fmt.Sprintf("invalid %s: %%s", s.Name)
+	}
+	if s.GoType == "string" {
+		return fmt.Sprintf("%s cannot be empty", s.Name)
+	}
+	if s.GoType == "int" || s.GoType == "float64" {
+		return fmt.Sprintf("%s cannot be negative", s.Name)
+	}
+	if s.GoType == "uuid.UUID" {
+		return fmt.Sprintf("%s cannot be nil UUID", s.Name)
+	}
+	return fmt.Sprintf("invalid %s", s.Name)
+}
+
+// Repository template helpers for database operations
+
+// GetCreateParamValue returns the Go expression for mapping entity field to DB param in Create operations
+func (s *SchemaDef) GetCreateParamValue(entityVar string, _ *SchemaDef) string {
+	fieldAccess := fmt.Sprintf("%s.%s", entityVar, s.Name)
+
+	// Optional fields - pass through directly
+	if s.IsOptional() {
+		return fieldAccess
+	}
+
+	// Nullable enum - convert to *string
+	if s.Nullable && len(s.Enum) > 0 {
+		return fmt.Sprintf(
+			"func() *string { if %s == nil { return nil }; s := string(*%s); return &s }()",
+			fieldAccess, fieldAccess,
+		)
+	}
+
+	// Regular enum - convert to string
+	if len(s.Enum) > 0 {
+		return fmt.Sprintf("string(%s)", fieldAccess)
+	}
+
+	// Nullable or pointer/slice types - pass through
+	if s.Nullable || strings.HasPrefix(s.GoType, "*") ||
+		strings.HasPrefix(s.GoType, "[]") {
+		return fieldAccess
+	}
+
+	// Everything else - pass through
+	return fieldAccess
+}
+
+// GetUpdateParamValue returns the Go expression for mapping entity field to DB param in Update operations
+func (s *SchemaDef) GetUpdateParamValue(entityVar string, _ *SchemaDef) string {
+	fieldAccess := fmt.Sprintf("%s.%s", entityVar, s.Name)
+	varName := fmt.Sprintf("%s%s", strings.ToLower(string(s.Name[0])), s.Name[1:]) + "Str"
+
+	// Optional fields - pass through directly
+	if s.IsOptional() {
+		return fieldAccess
+	}
+
+	// Nullable enum - convert to *string
+	if s.Nullable && len(s.Enum) > 0 {
+		return fmt.Sprintf(
+			"func() *string { if %s == nil { return nil }; s := string(*%s); return &s }()",
+			fieldAccess, fieldAccess,
+		)
+	}
+
+	// Regular enum - use pre-declared variable
+	if len(s.Enum) > 0 {
+		return "&" + varName
+	}
+
+	// Nullable or already pointer/slice - pass through
+	if s.Nullable || strings.HasPrefix(s.GoType, "*") ||
+		strings.HasPrefix(s.GoType, "[]") {
+		return fieldAccess
+	}
+
+	// Primitives need pointer
+	return "&" + fieldAccess
+}
+
+// NeedsUpdateVarDeclaration returns true if Update operation needs a variable declaration
+func (s *SchemaDef) NeedsUpdateVarDeclaration() bool {
+	return !s.IsOptional() && len(s.Enum) > 0 && !s.Nullable
+}
+
+// GetUpdateVarDeclaration returns the variable declaration for Update operation
+func (s *SchemaDef) GetUpdateVarDeclaration(entityVar string) string {
+	if !s.NeedsUpdateVarDeclaration() {
+		return ""
+	}
+	varName := fmt.Sprintf("%s%s", strings.ToLower(string(s.Name[0])), s.Name[1:]) + "Str"
+	return fmt.Sprintf("%s := string(%s.%s)", varName, entityVar, s.Name)
+}
+
+// GetDBMapValue returns the Go expression for mapping DB field to entity field
+func (s *SchemaDef) GetDBMapValue(dbVar string, parentSchema *SchemaDef) string {
+	fieldAccess := fmt.Sprintf("%s.%s", dbVar, s.Name)
+	enumType := ""
+	if parentSchema != nil && len(s.Enum) > 0 {
+		enumType = fmt.Sprintf("entities.%s%s", parentSchema.Name, s.Name)
+	}
+
+	// Nullable enum - convert *string to *EnumType
+	if s.Nullable && len(s.Enum) > 0 {
+		return fmt.Sprintf(
+			"func() *%s { if %s == nil { return nil }; v := %s(*%s); return &v }()",
+			enumType, fieldAccess, enumType, fieldAccess,
+		)
+	}
+
+	// Regular enum - cast string to EnumType
+	if len(s.Enum) > 0 {
+		return fmt.Sprintf("%s(%s)", enumType, fieldAccess)
+	}
+
+	// Everything else - pass through
+	return fieldAccess
 }

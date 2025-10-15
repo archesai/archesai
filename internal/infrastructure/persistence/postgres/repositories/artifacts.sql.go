@@ -28,7 +28,7 @@ INSERT INTO
 VALUES
   ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING
-  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url
 `
 
 type CreateArtifactParams struct {
@@ -64,7 +64,6 @@ func (q *Queries) CreateArtifact(ctx context.Context, arg CreateArtifactParams) 
 		&i.UpdatedAt,
 		&i.Credits,
 		&i.Description,
-		&i.Embedding,
 		&i.MimeType,
 		&i.Name,
 		&i.OrganizationID,
@@ -108,7 +107,7 @@ func (q *Queries) DeleteArtifactsByOrganization(ctx context.Context, arg DeleteA
 
 const getArtifact = `-- name: GetArtifact :one
 SELECT
-  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url
 FROM
   artifact
 WHERE
@@ -130,7 +129,6 @@ func (q *Queries) GetArtifact(ctx context.Context, arg GetArtifactParams) (Artif
 		&i.UpdatedAt,
 		&i.Credits,
 		&i.Description,
-		&i.Embedding,
 		&i.MimeType,
 		&i.Name,
 		&i.OrganizationID,
@@ -144,7 +142,7 @@ func (q *Queries) GetArtifact(ctx context.Context, arg GetArtifactParams) (Artif
 
 const listArtifacts = `-- name: ListArtifacts :many
 SELECT
-  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url
 FROM
   artifact
 ORDER BY
@@ -175,7 +173,6 @@ func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([
 			&i.UpdatedAt,
 			&i.Credits,
 			&i.Description,
-			&i.Embedding,
 			&i.MimeType,
 			&i.Name,
 			&i.OrganizationID,
@@ -196,7 +193,7 @@ func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([
 
 const listArtifactsByOrganization = `-- name: ListArtifactsByOrganization :many
 SELECT
-  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url
 FROM
   artifact
 WHERE
@@ -230,7 +227,6 @@ func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtif
 			&i.UpdatedAt,
 			&i.Credits,
 			&i.Description,
-			&i.Embedding,
 			&i.MimeType,
 			&i.Name,
 			&i.OrganizationID,
@@ -251,7 +247,7 @@ func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtif
 
 const listArtifactsByProducer = `-- name: ListArtifactsByProducer :many
 SELECT
-  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url
 FROM
   artifact
 WHERE
@@ -285,7 +281,6 @@ func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifacts
 			&i.UpdatedAt,
 			&i.Credits,
 			&i.Description,
-			&i.Embedding,
 			&i.MimeType,
 			&i.Name,
 			&i.OrganizationID,
@@ -317,7 +312,7 @@ SET
 WHERE
   id = $1
 RETURNING
-  id, created_at, updated_at, credits, description, embedding, mime_type, name, organization_id, preview_image, producer_id, text, url
+  id, created_at, updated_at, credits, description, mime_type, name, organization_id, preview_image, producer_id, text, url
 `
 
 type UpdateArtifactParams struct {
@@ -349,7 +344,6 @@ func (q *Queries) UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) 
 		&i.UpdatedAt,
 		&i.Credits,
 		&i.Description,
-		&i.Embedding,
 		&i.MimeType,
 		&i.Name,
 		&i.OrganizationID,

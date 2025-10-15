@@ -3,16 +3,19 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/archesai/archesai/internal/codegen"
 	"github.com/archesai/archesai/internal/parsers"
+	"github.com/archesai/archesai/internal/shared/logger"
 )
 
 var (
 	verbose    bool
+	pretty     bool
 	outputPath string
 	orvalFix   bool
 )
@@ -35,21 +38,13 @@ var openapiCmd = &cobra.Command{
 	Long: `Generate multiple Go files based on x-codegen extensions in the OpenAPI spec.
 
 If no path is provided, defaults to api/openapi.bundled.yaml`,
-	Args: cobra.MaximumNArgs(1),
+	Args:          cobra.MaximumNArgs(1),
+	SilenceErrors: true,
+	SilenceUsage:  true, // Don't show usage on execution errors, only on arg errors
 	RunE: func(_ *cobra.Command, args []string) error {
 		path := "api/openapi.bundled.yaml"
 		if len(args) > 0 {
 			path = args[0]
-		}
-
-		if verbose {
-			if err := os.Setenv("ARCHESAI_LOGGING_LEVEL", "debug"); err != nil {
-				return fmt.Errorf("failed to set logging level: %w", err)
-			}
-		} else {
-			if err := os.Setenv("ARCHESAI_LOGGING_LEVEL", "error"); err != nil {
-				return fmt.Errorf("failed to set logging level: %w", err)
-			}
 		}
 
 		generator := codegen.NewGenerator()
@@ -74,22 +69,14 @@ var jsonschemaCmd = &cobra.Command{
 The path argument is the JSON Schema file to process.
 Requires --output flag for the output directory.
 The package name is automatically inferred from the output directory.`,
-	Args: cobra.ExactArgs(1),
+	Args:          cobra.ExactArgs(1),
+	SilenceErrors: true,
+	SilenceUsage:  true, // Don't show usage on execution errors, only on arg errors
 	RunE: func(_ *cobra.Command, args []string) error {
 		schemaPath := args[0]
 
 		if outputPath == "" {
 			return fmt.Errorf("--output flag is required")
-		}
-
-		if verbose {
-			if err := os.Setenv("ARCHESAI_LOGGING_LEVEL", "debug"); err != nil {
-				return fmt.Errorf("failed to set logging level: %w", err)
-			}
-		} else {
-			if err := os.Setenv("ARCHESAI_LOGGING_LEVEL", "error"); err != nil {
-				return fmt.Errorf("failed to set logging level: %w", err)
-			}
 		}
 
 		generator := codegen.NewGenerator()
@@ -116,7 +103,9 @@ specification, containing no external references.
 Example:
   codegen bundle api/openapi.yaml api/openapi.bundled.yaml
   codegen bundle api/openapi.yaml api/openapi.bundled.yaml --orval-fix`,
-	Args: cobra.ExactArgs(2),
+	Args:          cobra.ExactArgs(2),
+	SilenceErrors: true,
+	SilenceUsage:  true, // Don't show usage on execution errors, only on arg errors
 	RunE: func(_ *cobra.Command, args []string) error {
 		inputPath := args[0]
 		outputPath := args[1]
@@ -131,8 +120,11 @@ Example:
 }
 
 func init() {
+	cobra.OnInitialize(initLogger)
+
 	// Global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().BoolVar(&pretty, "pretty", false, "enable pretty logging output")
 
 	// Add flags to jsonschema command
 	jsonschemaCmd.Flags().StringVar(&outputPath, "output", "", "Output file path")
@@ -145,6 +137,21 @@ func init() {
 	rootCmd.AddCommand(openapiCmd)
 	rootCmd.AddCommand(jsonschemaCmd)
 	rootCmd.AddCommand(bundleCmd)
+}
+
+// initLogger initializes the logger based on flags
+func initLogger() {
+	logLevel := "info"
+	if verbose {
+		logLevel = "debug"
+	}
+
+	logCfg := logger.Config{
+		Level:  logLevel,
+		Pretty: pretty,
+	}
+
+	slog.SetDefault(logger.New(logCfg))
 }
 
 func main() {

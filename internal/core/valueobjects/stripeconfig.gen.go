@@ -24,6 +24,12 @@ func NewStripeConfig(
 	whsec string,
 ) (StripeConfig, error) {
 	// Validate required fields
+	if token == "" {
+		return StripeConfig{}, fmt.Errorf("Token cannot be empty")
+	}
+	if whsec == "" {
+		return StripeConfig{}, fmt.Errorf("Whsec cannot be empty")
+	}
 	return StripeConfig{
 		Token: token,
 		Whsec: whsec,

@@ -98,7 +98,6 @@ The TUI provides interactive prompts and feedback for all operations.
 package main
 
 import (
-    "log"
     "os"
 
     "github.com/archesai/archesai/internal/adapters/llm"

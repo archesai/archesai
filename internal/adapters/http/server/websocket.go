@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -16,14 +16,14 @@ func (s *Server) WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	socket, err := websocket.Accept(w, r, nil)
 
 	if err != nil {
-		log.Printf("could not open websocket: %v", err)
+		slog.Error("could not open websocket", "error", err)
 		http.Error(w, "could not open websocket", http.StatusInternalServerError)
 		return
 	}
 
 	defer func() {
 		if err := socket.Close(websocket.StatusGoingAway, "server closing websocket"); err != nil {
-			log.Printf("error closing websocket: %v", err)
+			slog.Error("error closing websocket", "err", err)
 		}
 	}()
 

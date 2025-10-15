@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log/slog"
 	"net/http"
 	"time"
 )
@@ -29,7 +30,7 @@ func (s *Server) loggerMiddleware(next http.Handler) http.Handler {
 		duration := time.Since(start)
 		requestID, _ := r.Context().Value(RequestIDContextKey).(string)
 
-		s.logger.Info("request",
+		slog.Info("request",
 			"id", requestID,
 			"method", r.Method,
 			"uri", r.RequestURI,

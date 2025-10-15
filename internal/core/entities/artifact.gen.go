@@ -69,6 +69,9 @@ func NewArtifact(
 	if mimeType == "" {
 		return nil, fmt.Errorf("MimeType cannot be empty")
 	}
+	if organizationID == uuid.Nil {
+		return nil, fmt.Errorf("OrganizationID cannot be nil UUID")
+	}
 	now := time.Now().UTC()
 	id := uuid.New()
 	artifact := &Artifact{

@@ -114,6 +114,12 @@ func NewMagicLinkToken(
 	if id == uuid.Nil {
 		return MagicLinkToken{}, fmt.Errorf("ID cannot be nil UUID")
 	}
+	if identifier == "" {
+		return MagicLinkToken{}, fmt.Errorf("Identifier cannot be empty")
+	}
+	if tokenHash == "" {
+		return MagicLinkToken{}, fmt.Errorf("TokenHash cannot be empty")
+	}
 	return MagicLinkToken{
 		ID:             id,
 		CreatedAt:      createdAt,
@@ -215,10 +221,8 @@ func (v MagicLinkToken) Validate() error {
 		return fmt.Errorf("ID cannot be nil UUID")
 	}
 	// Optional enum - validate only if present
-	if v.DeliveryMethod != nil {
-		if !v.DeliveryMethod.IsValid() {
-			return fmt.Errorf("invalid DeliveryMethod: %s", v.DeliveryMethod)
-		}
+	if v.DeliveryMethod != nil && !v.DeliveryMethod.IsValid() {
+		return fmt.Errorf("invalid DeliveryMethod: %s", v.DeliveryMethod)
 	}
 	return nil
 }

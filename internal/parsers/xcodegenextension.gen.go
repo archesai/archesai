@@ -11,22 +11,22 @@ import (
 type XCodegenExtensionRepository struct {
 
 	// AdditionalMethods Additional repository methods to generate
-	AdditionalMethods *[]AdditionalMethodsItem `json:"additionalMethods,omitempty" yaml:"additionalMethods,omitempty"`
+	AdditionalMethods []AdditionalMethodsItem `json:"additionalMethods,omitempty" yaml:"additionalMethods,omitempty"`
 
 	// ExcludeFromCreate Fields to exclude from Create operations (e.g., auto-generated or DB-set fields)
-	ExcludeFromCreate *[]string `json:"excludeFromCreate,omitempty" yaml:"excludeFromCreate,omitempty"`
+	ExcludeFromCreate []string `json:"excludeFromCreate,omitempty" yaml:"excludeFromCreate,omitempty"`
 
 	// ExcludeFromUpdate Fields to exclude from Update operations (e.g., immutable fields)
-	ExcludeFromUpdate *[]string `json:"excludeFromUpdate,omitempty" yaml:"excludeFromUpdate,omitempty"`
+	ExcludeFromUpdate []string `json:"excludeFromUpdate,omitempty" yaml:"excludeFromUpdate,omitempty"`
 
 	// Indices Database indices to create
-	Indices *[]string `json:"indices,omitempty" yaml:"indices,omitempty"`
+	Indices []string `json:"indices,omitempty" yaml:"indices,omitempty"`
 
 	// Operations Standard CRUD operations to generate
-	Operations *[]string `json:"operations,omitempty" yaml:"operations,omitempty"`
+	Operations []string `json:"operations,omitempty" yaml:"operations,omitempty"`
 
 	// Relations Foreign key relationships to other entities
-	Relations *[]RelationsItem `json:"relations,omitempty" yaml:"relations,omitempty"`
+	Relations []RelationsItem `json:"relations,omitempty" yaml:"relations,omitempty"`
 
 	// TableName Override default table name
 	TableName *string `json:"tableName,omitempty" yaml:"tableName,omitempty"`
@@ -39,7 +39,7 @@ type AdditionalMethodsItem struct {
 	Name string `json:"name" yaml:"name"`
 
 	// Params Method parameters
-	Params *[]ParamsItem `json:"params,omitempty" yaml:"params,omitempty"`
+	Params []ParamsItem `json:"params,omitempty" yaml:"params,omitempty"`
 
 	// Returns Return type (single or multiple)
 	Returns string `json:"returns" yaml:"returns"`

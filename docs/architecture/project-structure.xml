@@ -191,7 +191,6 @@
     </dir>
   </dir>
   <dir name="tools" purpose="Development tools" dirs="2">
-    <dir name="pg-to-sqlite" files="1" key-files="main.go"/>
     <dir name="tsconfig" type="npm-package" files="1" dirs="1" key-files="package.json">
       <dir name="src" files="4"/>
     </dir>

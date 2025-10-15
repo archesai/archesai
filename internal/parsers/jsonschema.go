@@ -185,10 +185,8 @@ func (p *JSONSchemaParser) extractSchemaBasicInfo(
 			var xcodegen XCodegenExtension
 			if err := ext.Decode(&xcodegen); err == nil {
 				// Sort the indices if they exist
-				if xcodegen.Repository != nil && xcodegen.Repository.Indices != nil {
-					indices := *xcodegen.Repository.Indices
-					sort.Strings(indices)
-					xcodegen.Repository.Indices = &indices
+				if xcodegen.Repository != nil && len(xcodegen.Repository.Indices) > 0 {
+					sort.Strings(xcodegen.Repository.Indices)
 				}
 				result.XCodegen = &xcodegen
 			}

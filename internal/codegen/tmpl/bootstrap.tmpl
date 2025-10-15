@@ -51,7 +51,6 @@ type App struct {
 	infra *Infrastructure
 
 	// Public infrastructure access
-	Logger *slog.Logger
 	Config *config.Config
 	Server *server.Server
 
@@ -72,30 +71,28 @@ func NewApp(cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("failed to initialize infrastructure: %w", err)
 	}
 
-	log := infra.Logger
-
 	// Run migrations if enabled
 	if cfg.Database.RunMigrations {
-		log.Info("running database migrations")
-		if err := database.RunMigrations(infra.Database.SQLDB(), infra.Database.TypeString(), log); err != nil {
-			log.Error("failed to run migrations", "error", err)
+		slog.Info("running database migrations")
+		if err := database.RunMigrations(infra.Database); err != nil {
+			slog.Error("failed to run migrations", "error", err)
 			isProduction := cfg.API.Environment == "production"
 			if isProduction {
 				return nil, fmt.Errorf("failed to run migrations: %w", err)
 			}
 		}
-		log.Info("database migrations completed")
+		slog.Info("database migrations completed")
 	}
 
 	// Create repositories
-	log.Info("creating repositories")
+	slog.Info("creating repositories")
 	repos, err := NewRepositories(infra)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create repositories: %w", err)
 	}
 
 	// Initialize auth service after repositories are available
-	log.Info("initializing auth service")
+	slog.Info("initializing auth service")
 	var stringCache cache.Cache[string]
 	if infra.redisClient != nil {
 		stringCache = cache.NewRedisCache[string](infra.redisClient.GetRedisClient(), "auth:tokens")
@@ -104,17 +101,16 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 
 	// Initialize notification deliverers
-	magicLinkDeliverer := notifications.NewConsoleDeliverer(log)
-	otpDeliverer := notifications.NewOTPDeliverer(log)
+	magicLinkDeliverer := notifications.NewConsoleDeliverer()
+	otpDeliverer := notifications.NewOTPDeliverer()
 
-	infra.AuthService = auth.NewService(cfg, repos.Sessions, repos.Users, repos.Accounts, stringCache, magicLinkDeliverer, otpDeliverer, log)
-	log.Info("auth service ready")
+	infra.AuthService = auth.NewService(cfg, repos.Sessions, repos.Users, repos.Accounts, stringCache, magicLinkDeliverer, otpDeliverer)
+	slog.Info("auth service ready")
 
 	// Create app instance to populate
 	app := &App{
 		// Infrastructure
 		infra:  infra,
-		Logger: log,
 		Config: cfg,
 	}
 
@@ -122,20 +118,20 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g, _ := errgroup.WithContext(context.Background())
 
 	// Initialize config domain (infrastructure query - needs special handling)
-	log.Info("initializing config domain")
+	slog.Info("initializing config domain")
 	getConfigHandler := configQueries.NewGetConfigQueryHandler(cfg)
 	app.ConfigController = controllers.NewConfigController(getConfigHandler)
-	log.Info("config domain ready")
+	slog.Info("config domain ready")
 
 	// Initialize health domain (infrastructure query - needs special handling)
-	log.Info("initializing health domain")
+	slog.Info("initializing health domain")
 	getHealthHandler := healthQueries.NewGetHealthQueryHandler()
 	app.HealthController = controllers.NewHealthController(getHealthHandler)
-	log.Info("health domain ready")
+	slog.Info("health domain ready")
 
 	// Initialize auth domain (cross-cutting concern spanning multiple entities)
 	g.Go(func() error {
-		log.Info("initializing auth domain")
+		slog.Info("initializing auth domain")
 
 		// Create command handlers (in REST operation order matching controller signature)
 		confirmEmailChangeHandler := authCommands.NewConfirmEmailChangeCommandHandler(infra.AuthService)
@@ -191,7 +187,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listSessionsHandler,
 		)
 
-		log.Info("auth domain ready")
+		slog.Info("auth domain ready")
 		return nil
 	})
 
@@ -200,7 +196,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 
 	// Initialize {{ lower .Name }} domain
 	g.Go(func() error {
-		log.Info("initializing {{ lower .Name }} domain")
+		slog.Info("initializing {{ lower .Name }} domain")
 
 		{{- if or .HasCommands .HasQueries }}
 		// Create command and query handlers
@@ -228,7 +224,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 			{{- end }}
 		)
 
-		log.Info("{{ lower .Name }} domain ready")
+		slog.Info("{{ lower .Name }} domain ready")
 		return nil
 	})
 {{- end }}
@@ -240,19 +236,19 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 
 	// Create the HTTP server
-	log.Info("creating HTTP server")
-	app.Server = server.NewServer(cfg.API, log)
+	slog.Info("creating HTTP server")
+	app.Server = server.NewServer(cfg.API)
 
 	// Register all application routes
 	app.registerRoutes()
 
-	log.Info("application initialized successfully")
+	slog.Info("application initialized successfully")
 	return app, nil
 }
 
 // Close cleans up all resources.
 func (a *App) Close() error {
-	a.Logger.Info("shutting down application")
+	slog.Info("shutting down application")
 	if a.infra != nil {
 		return a.infra.Close()
 	}
@@ -266,26 +262,26 @@ func (a *App) registerRoutes() {
 
 	// Register all application routes
 	a.RegisterRoutes(mux)
-	a.Logger.Info("routes registered")
+	slog.Info("routes registered")
 }
 
 // RegisterRoutes registers all application routes with the http.ServeMux.
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
-	a.Logger.Info("registering API routes...")
+	slog.Info("registering API routes...")
 
 	// ========================================
 	// API ROUTES
 	// ========================================
 	// Auth routes
-	a.Logger.Info("registering auth routes")
+	slog.Info("registering auth routes")
 	controllers.RegisterAuthRoutes(mux, a.AuthController)
 {{- range .Domains }}
 {{- if .HasController }}
 	// {{ lower .Name }} routes
-	a.Logger.Info("registering {{ lower .Name }} routes")
+	slog.Info("registering {{ lower .Name }} routes")
 	controllers.Register{{ .Name }}Routes(mux, a.{{ .Name }}Controller)
 {{- end }}
 {{- end }}
 
-	a.Logger.Info("all routes registered successfully")
+	slog.Info("all routes registered successfully")
 }

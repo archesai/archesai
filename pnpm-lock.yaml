@@ -13,12 +13,21 @@ catalogs:
     '@biomejs/biome':
       specifier: 2.2.6
       version: 2.2.6
+    '@types/js-yaml':
+      specifier: 4.0.9
+      version: 4.0.9
     '@types/node':
       specifier: 24.7.2
       version: 24.7.2
     '@xyflow/react':
       specifier: 12.8.6
       version: 12.8.6
+    ajv:
+      specifier: 8.17.1
+      version: 8.17.1
+    js-yaml:
+      specifier: 4.1.0
+      version: 4.1.0
     markdownlint-cli:
       specifier: 0.45.0
       version: 0.45.0
@@ -216,11 +225,8 @@ importers:
         specifier: catalog:test
         version: 16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@types/js-yaml':
-        specifier: ^4.0.9
+        specifier: 'catalog:'
         version: 4.0.9
-      '@types/json-schema':
-        specifier: ^7.0.15
-        version: 7.0.15
       '@types/node':
         specifier: 'catalog:'
         version: 24.7.2
@@ -240,7 +246,7 @@ importers:
         specifier: catalog:vite
         version: 1.0.0
       js-yaml:
-        specifier: ^4.1.0
+        specifier: 'catalog:'
         version: 4.1.0
       jsdom:
         specifier: catalog:test
@@ -278,6 +284,19 @@ importers:
       web-vitals:
         specifier: catalog:test
         version: 5.1.0
+
+  deployments/containers/runners/node:
+    dependencies:
+      ajv:
+        specifier: 'catalog:'
+        version: 8.17.1
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.7.2
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   web/client:
     dependencies:
@@ -10196,7 +10215,7 @@ snapshots:
 
   '@types/sax@1.2.7':
     dependencies:
-      '@types/node': 17.0.45
+      '@types/node': 24.7.2
 
   '@types/shimmer@1.2.0': {}
 

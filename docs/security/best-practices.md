@@ -414,7 +414,7 @@ type SecurityEvent struct {
 }
 
 func LogSecurityEvent(event SecurityEvent) {
-    logger.Info("security_event",
+    slog.Info("security_event",
         zap.String("type", event.Type),
         zap.String("user_id", event.UserID),
         zap.String("ip", event.IP),

@@ -116,6 +116,9 @@ func NewAccount(
 	if !provider.IsValid() {
 		return nil, fmt.Errorf("invalid Provider: %s", provider)
 	}
+	if userID == uuid.Nil {
+		return nil, fmt.Errorf("UserID cannot be nil UUID")
+	}
 	now := time.Now().UTC()
 	id := uuid.New()
 	account := &Account{

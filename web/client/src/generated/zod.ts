@@ -16,7 +16,7 @@ export const loginBodyPasswordRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/]*$');
 export const loginBodyRememberMeDefault = false;
 
 export const loginBody = zod.object({
-  "email": zod.email().min(1).max(loginBodyEmailMax).describe('The email address associated with the account'),
+  "email": zod.string().email().min(1).max(loginBodyEmailMax).describe('The email address associated with the account'),
   "password": zod.string().min(1).max(loginBodyPasswordMax).regex(loginBodyPasswordRegExp).describe('The password for the account'),
   "rememberMe": zod.boolean().optional().describe('Whether to create a long-lived session')
 })
@@ -62,7 +62,7 @@ export const registerBodyPasswordRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/]*$')
 
 
 export const registerBody = zod.object({
-  "email": zod.email().min(1).max(registerBodyEmailMax).regex(registerBodyEmailRegExp).describe('The email address for the new account'),
+  "email": zod.string().email().min(1).max(registerBodyEmailMax).regex(registerBodyEmailRegExp).describe('The email address for the new account'),
   "name": zod.string().min(1).max(registerBodyNameMax).regex(registerBodyNameRegExp).describe('The name of the user'),
   "password": zod.string().min(registerBodyPasswordMin).max(registerBodyPasswordMax).regex(registerBodyPasswordRegExp).describe('The password for the account')
 })
@@ -79,7 +79,7 @@ export const requestMagicLinkBodyDeliveryMethodDefault = "email";export const re
 export const requestMagicLinkBody = zod.object({
   "identifier": zod.string().min(1).max(requestMagicLinkBodyIdentifierMax).regex(requestMagicLinkBodyIdentifierRegExp).describe('Email address or username'),
   "deliveryMethod": zod.enum(['email', 'console', 'otp', 'webhook']).default(requestMagicLinkBodyDeliveryMethodDefault).describe('How to deliver the magic link'),
-  "redirectUrl": zod.url().min(1).max(requestMagicLinkBodyRedirectUrlMax).optional().describe('URL to redirect to after successful authentication')
+  "redirectUrl": zod.string().url().min(1).max(requestMagicLinkBodyRedirectUrlMax).optional().describe('URL to redirect to after successful authentication')
 })
 
 export const requestMagicLinkResponseMessageMax = 500;
@@ -108,18 +108,18 @@ export const requestMagicLinkResponse = zod.object({
   "otpCode": zod.string().min(requestMagicLinkResponseOtpCodeMin).max(requestMagicLinkResponseOtpCodeMax).regex(requestMagicLinkResponseOtpCodeRegExp).optional().describe('OTP code (only returned if deliveryMethod is \'otp\')'),
   "expiresIn": zod.number().min(1).max(requestMagicLinkResponseExpiresInMax).optional().describe('Token expiry in seconds'),
   "token": zod.object({
-  "id": zod.uuid().min(requestMagicLinkResponseTokenIdMin).max(requestMagicLinkResponseTokenIdMax).describe('Unique identifier for the magic link token'),
-  "userID": zod.uuid().min(requestMagicLinkResponseTokenUserIDMin).max(requestMagicLinkResponseTokenUserIDMax).nullish().describe('User ID if token is for existing user'),
+  "id": zod.string().uuid().min(requestMagicLinkResponseTokenIdMin).max(requestMagicLinkResponseTokenIdMax).describe('Unique identifier for the magic link token'),
+  "userID": zod.string().uuid().min(requestMagicLinkResponseTokenUserIDMin).max(requestMagicLinkResponseTokenUserIDMax).nullish().describe('User ID if token is for existing user'),
   "token": zod.string().min(requestMagicLinkResponseTokenTokenMin).max(requestMagicLinkResponseTokenTokenMax).regex(requestMagicLinkResponseTokenTokenRegExp).optional().describe('The raw magic link token'),
   "tokenHash": zod.string().min(requestMagicLinkResponseTokenTokenHashMin).max(requestMagicLinkResponseTokenTokenHashMax).regex(requestMagicLinkResponseTokenTokenHashRegExp).describe('SHA256 hash of the magic link token'),
   "code": zod.string().min(requestMagicLinkResponseTokenCodeMin).max(requestMagicLinkResponseTokenCodeMax).regex(requestMagicLinkResponseTokenCodeRegExp).nullish().describe('Optional 6-digit OTP code'),
-  "identifier": zod.email().min(1).max(requestMagicLinkResponseTokenIdentifierMax).describe('Email or username for authentication'),
+  "identifier": zod.string().email().min(1).max(requestMagicLinkResponseTokenIdentifierMax).describe('Email or username for authentication'),
   "deliveryMethod": zod.enum(['email', 'console', 'webhook', 'otp', 'file']).nullish().describe('How the magic link was delivered'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(requestMagicLinkResponseTokenExpiresAtMax).describe('When the token expires'),
-  "usedAt": zod.iso.datetime({}).min(1).max(requestMagicLinkResponseTokenUsedAtMax).nullish().describe('When the token was used (null if unused)'),
+  "expiresAt": zod.string().datetime({}).min(1).max(requestMagicLinkResponseTokenExpiresAtMax).describe('When the token expires'),
+  "usedAt": zod.string().datetime({}).min(1).max(requestMagicLinkResponseTokenUsedAtMax).nullish().describe('When the token was used (null if unused)'),
   "ipAddress": zod.string().min(requestMagicLinkResponseTokenIpAddressMin).max(requestMagicLinkResponseTokenIpAddressMax).nullish().describe('IP address of the request'),
   "userAgent": zod.string().min(1).max(requestMagicLinkResponseTokenUserAgentMax).regex(requestMagicLinkResponseTokenUserAgentRegExp).nullish().describe('User agent of the request'),
-  "createdAt": zod.iso.datetime({}).min(1).max(requestMagicLinkResponseTokenCreatedAtMax).nullable().describe('When the token was created')
+  "createdAt": zod.string().datetime({}).min(1).max(requestMagicLinkResponseTokenCreatedAtMax).nullable().describe('When the token was created')
 }).optional().describe('Schema for MagicLinkToken entity')
 })
 
@@ -153,13 +153,13 @@ export const linkAccountBodyRedirectUrlMax = 2048;
 
 export const linkAccountBody = zod.object({
   "provider": zod.enum(['google', 'github', 'microsoft', 'apple']).describe('The authentication provider to link'),
-  "redirectUrl": zod.url().max(linkAccountBodyRedirectUrlMax).optional().describe('URL to redirect to after successful linking')
+  "redirectUrl": zod.string().url().max(linkAccountBodyRedirectUrlMax).optional().describe('URL to redirect to after successful linking')
 })
 
 export const linkAccountResponseAuthorizationUrlMax = 2048;
 
 export const linkAccountResponse = zod.object({
-  "authorizationUrl": zod.url().min(1).max(linkAccountResponseAuthorizationUrlMax).describe('URL to redirect the user to for provider authorization')
+  "authorizationUrl": zod.string().url().min(1).max(linkAccountResponseAuthorizationUrlMax).describe('URL to redirect the user to for provider authorization')
 })
 
 
@@ -198,18 +198,18 @@ export const listSessionsResponseMetaTotalMax = 2147483647;
 
 export const listSessionsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listSessionsResponseDataItemIdMin).max(listSessionsResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listSessionsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listSessionsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listSessionsResponseDataItemIdMin).max(listSessionsResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listSessionsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listSessionsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(listSessionsResponseDataItemOrganizationIDMin).max(listSessionsResponseDataItemOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.string().uuid().min(listSessionsResponseDataItemOrganizationIDMin).max(listSessionsResponseDataItemOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().min(1).max(listSessionsResponseDataItemAuthMethodMax).regex(listSessionsResponseDataItemAuthMethodRegExp).nullable().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).nullable().describe('The authentication provider (google, github, microsoft, local)'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(listSessionsResponseDataItemExpiresAtMax).describe('The expiration date of the session'),
+  "expiresAt": zod.string().datetime({}).min(1).max(listSessionsResponseDataItemExpiresAtMax).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(listSessionsResponseDataItemIpAddressMin).max(listSessionsResponseDataItemIpAddressMax).nullable().describe('The IP address of the session'),
   "token": zod.string().min(1).max(listSessionsResponseDataItemTokenMax).regex(listSessionsResponseDataItemTokenRegExp).describe('The session token'),
   "userAgent": zod.string().min(1).max(listSessionsResponseDataItemUserAgentMax).regex(listSessionsResponseDataItemUserAgentRegExp).nullable().describe('The user agent of the session'),
-  "userID": zod.uuid().min(listSessionsResponseDataItemUserIDMin).max(listSessionsResponseDataItemUserIDMax).describe('The user who owns this session')
+  "userID": zod.string().uuid().min(listSessionsResponseDataItemUserIDMin).max(listSessionsResponseDataItemUserIDMax).describe('The user who owns this session')
 })).describe('Schema for Session entity')).max(listSessionsResponseDataMax),
   "meta": zod.object({
   "total": zod.number().min(listSessionsResponseMetaTotalMin).max(listSessionsResponseMetaTotalMax).describe('Total number of items in the collection')
@@ -225,7 +225,7 @@ export const getSessionPathIdMin = 36;
 export const getSessionPathIdMax = 36;
 
 export const getSessionParams = zod.object({
-  "id": zod.uuid().min(getSessionPathIdMin).max(getSessionPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getSessionPathIdMin).max(getSessionPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getSessionResponseDataIdMin = 36;
@@ -242,18 +242,18 @@ export const getSessionResponseDataUserIDMax = 36;
 
 export const getSessionResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getSessionResponseDataIdMin).max(getSessionResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getSessionResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getSessionResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getSessionResponseDataIdMin).max(getSessionResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getSessionResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getSessionResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(getSessionResponseDataOrganizationIDMin).max(getSessionResponseDataOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.string().uuid().min(getSessionResponseDataOrganizationIDMin).max(getSessionResponseDataOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().min(1).max(getSessionResponseDataAuthMethodMax).regex(getSessionResponseDataAuthMethodRegExp).nullable().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).nullable().describe('The authentication provider (google, github, microsoft, local)'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(getSessionResponseDataExpiresAtMax).describe('The expiration date of the session'),
+  "expiresAt": zod.string().datetime({}).min(1).max(getSessionResponseDataExpiresAtMax).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(getSessionResponseDataIpAddressMin).max(getSessionResponseDataIpAddressMax).nullable().describe('The IP address of the session'),
   "token": zod.string().min(1).max(getSessionResponseDataTokenMax).regex(getSessionResponseDataTokenRegExp).describe('The session token'),
   "userAgent": zod.string().min(1).max(getSessionResponseDataUserAgentMax).regex(getSessionResponseDataUserAgentRegExp).nullable().describe('The user agent of the session'),
-  "userID": zod.uuid().min(getSessionResponseDataUserIDMin).max(getSessionResponseDataUserIDMax).describe('The user who owns this session')
+  "userID": zod.string().uuid().min(getSessionResponseDataUserIDMin).max(getSessionResponseDataUserIDMax).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 })
 
@@ -266,14 +266,14 @@ export const updateSessionPathIdMin = 36;
 export const updateSessionPathIdMax = 36;
 
 export const updateSessionParams = zod.object({
-  "id": zod.uuid().min(updateSessionPathIdMin).max(updateSessionPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(updateSessionPathIdMin).max(updateSessionPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateSessionBodyOrganizationIDMin = 36;
 export const updateSessionBodyOrganizationIDMax = 36;
 
 export const updateSessionBody = zod.object({
-  "organizationID": zod.uuid().min(updateSessionBodyOrganizationIDMin).max(updateSessionBodyOrganizationIDMax).describe('The organization ID to set as active for this session')
+  "organizationID": zod.string().uuid().min(updateSessionBodyOrganizationIDMin).max(updateSessionBodyOrganizationIDMax).describe('The organization ID to set as active for this session')
 })
 
 export const updateSessionResponseDataIdMin = 36;
@@ -290,18 +290,18 @@ export const updateSessionResponseDataUserIDMax = 36;
 
 export const updateSessionResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateSessionResponseDataIdMin).max(updateSessionResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateSessionResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateSessionResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateSessionResponseDataIdMin).max(updateSessionResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateSessionResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateSessionResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(updateSessionResponseDataOrganizationIDMin).max(updateSessionResponseDataOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.string().uuid().min(updateSessionResponseDataOrganizationIDMin).max(updateSessionResponseDataOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().min(1).max(updateSessionResponseDataAuthMethodMax).regex(updateSessionResponseDataAuthMethodRegExp).nullable().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).nullable().describe('The authentication provider (google, github, microsoft, local)'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(updateSessionResponseDataExpiresAtMax).describe('The expiration date of the session'),
+  "expiresAt": zod.string().datetime({}).min(1).max(updateSessionResponseDataExpiresAtMax).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(updateSessionResponseDataIpAddressMin).max(updateSessionResponseDataIpAddressMax).nullable().describe('The IP address of the session'),
   "token": zod.string().min(1).max(updateSessionResponseDataTokenMax).regex(updateSessionResponseDataTokenRegExp).describe('The session token'),
   "userAgent": zod.string().min(1).max(updateSessionResponseDataUserAgentMax).regex(updateSessionResponseDataUserAgentRegExp).nullable().describe('The user agent of the session'),
-  "userID": zod.uuid().min(updateSessionResponseDataUserIDMin).max(updateSessionResponseDataUserIDMax).describe('The user who owns this session')
+  "userID": zod.string().uuid().min(updateSessionResponseDataUserIDMin).max(updateSessionResponseDataUserIDMax).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 })
 
@@ -314,7 +314,7 @@ export const deleteSessionPathIdMin = 36;
 export const deleteSessionPathIdMax = 36;
 
 export const deleteSessionParams = zod.object({
-  "id": zod.uuid().min(deleteSessionPathIdMin).max(deleteSessionPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(deleteSessionPathIdMin).max(deleteSessionPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -339,17 +339,17 @@ export const listAccountsResponseMetaTotalMax = 2147483647;
 
 export const listAccountsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listAccountsResponseDataItemIdMin).max(listAccountsResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listAccountsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listAccountsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listAccountsResponseDataItemIdMin).max(listAccountsResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listAccountsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listAccountsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "accountIdentifier": zod.string().min(1).max(listAccountsResponseDataItemAccountIdentifierMax).regex(listAccountsResponseDataItemAccountIdentifierRegExp).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(listAccountsResponseDataItemUserIDMin).max(listAccountsResponseDataItemUserIDMax).describe('The user ID this account belongs to'),
+  "userID": zod.string().uuid().min(listAccountsResponseDataItemUserIDMin).max(listAccountsResponseDataItemUserIDMax).describe('The user ID this account belongs to'),
   "provider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
   "accessToken": zod.string().min(1).max(listAccountsResponseDataItemAccessTokenMax).regex(listAccountsResponseDataItemAccessTokenRegExp).nullable().describe('The OAuth access token'),
-  "accessTokenExpiresAt": zod.iso.datetime({}).min(1).max(listAccountsResponseDataItemAccessTokenExpiresAtMax).nullable().describe('The access token expiration timestamp'),
+  "accessTokenExpiresAt": zod.string().datetime({}).min(1).max(listAccountsResponseDataItemAccessTokenExpiresAtMax).nullable().describe('The access token expiration timestamp'),
   "refreshToken": zod.string().min(1).max(listAccountsResponseDataItemRefreshTokenMax).regex(listAccountsResponseDataItemRefreshTokenRegExp).nullable().describe('The OAuth refresh token'),
-  "refreshTokenExpiresAt": zod.iso.datetime({}).min(1).max(listAccountsResponseDataItemRefreshTokenExpiresAtMax).nullable().describe('The refresh token expiration timestamp'),
+  "refreshTokenExpiresAt": zod.string().datetime({}).min(1).max(listAccountsResponseDataItemRefreshTokenExpiresAtMax).nullable().describe('The refresh token expiration timestamp'),
   "idToken": zod.string().min(1).max(listAccountsResponseDataItemIdTokenMax).regex(listAccountsResponseDataItemIdTokenRegExp).nullable().describe('The OpenID Connect ID token'),
   "scope": zod.string().min(1).max(listAccountsResponseDataItemScopeMax).regex(listAccountsResponseDataItemScopeRegExp).nullable().describe('The OAuth scope granted')
 })).describe('Schema for Account entity (authentication provider account)')).max(listAccountsResponseDataMax),
@@ -367,7 +367,7 @@ export const getAccountPathIdMin = 36;
 export const getAccountPathIdMax = 36;
 
 export const getAccountParams = zod.object({
-  "id": zod.uuid().min(getAccountPathIdMin).max(getAccountPathIdMax).describe('The unique identifier of the resource')
+  "id": zod.string().uuid().min(getAccountPathIdMin).max(getAccountPathIdMax).describe('The unique identifier of the resource')
 })
 
 export const getAccountResponseDataIdMin = 36;
@@ -386,17 +386,17 @@ export const getAccountResponseDataScopeRegExp = new RegExp('^[\\w\\s\\-:]+$');
 
 export const getAccountResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getAccountResponseDataIdMin).max(getAccountResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getAccountResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getAccountResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getAccountResponseDataIdMin).max(getAccountResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getAccountResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getAccountResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "accountIdentifier": zod.string().min(1).max(getAccountResponseDataAccountIdentifierMax).regex(getAccountResponseDataAccountIdentifierRegExp).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(getAccountResponseDataUserIDMin).max(getAccountResponseDataUserIDMax).describe('The user ID this account belongs to'),
+  "userID": zod.string().uuid().min(getAccountResponseDataUserIDMin).max(getAccountResponseDataUserIDMax).describe('The user ID this account belongs to'),
   "provider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
   "accessToken": zod.string().min(1).max(getAccountResponseDataAccessTokenMax).regex(getAccountResponseDataAccessTokenRegExp).nullable().describe('The OAuth access token'),
-  "accessTokenExpiresAt": zod.iso.datetime({}).min(1).max(getAccountResponseDataAccessTokenExpiresAtMax).nullable().describe('The access token expiration timestamp'),
+  "accessTokenExpiresAt": zod.string().datetime({}).min(1).max(getAccountResponseDataAccessTokenExpiresAtMax).nullable().describe('The access token expiration timestamp'),
   "refreshToken": zod.string().min(1).max(getAccountResponseDataRefreshTokenMax).regex(getAccountResponseDataRefreshTokenRegExp).nullable().describe('The OAuth refresh token'),
-  "refreshTokenExpiresAt": zod.iso.datetime({}).min(1).max(getAccountResponseDataRefreshTokenExpiresAtMax).nullable().describe('The refresh token expiration timestamp'),
+  "refreshTokenExpiresAt": zod.string().datetime({}).min(1).max(getAccountResponseDataRefreshTokenExpiresAtMax).nullable().describe('The refresh token expiration timestamp'),
   "idToken": zod.string().min(1).max(getAccountResponseDataIdTokenMax).regex(getAccountResponseDataIdTokenRegExp).nullable().describe('The OpenID Connect ID token'),
   "scope": zod.string().min(1).max(getAccountResponseDataScopeMax).regex(getAccountResponseDataScopeRegExp).nullable().describe('The OAuth scope granted')
 })).describe('Schema for Account entity (authentication provider account)')
@@ -411,7 +411,7 @@ export const updateAccountPathIdMin = 36;
 export const updateAccountPathIdMax = 36;
 
 export const updateAccountParams = zod.object({
-  "id": zod.uuid().min(updateAccountPathIdMin).max(updateAccountPathIdMax).describe('The unique identifier of the resource')
+  "id": zod.string().uuid().min(updateAccountPathIdMin).max(updateAccountPathIdMax).describe('The unique identifier of the resource')
 })
 
 export const updateAccountBodyProviderMax = 255;
@@ -444,17 +444,17 @@ export const updateAccountResponseDataScopeRegExp = new RegExp('^[\\w\\s\\-:]+$'
 
 export const updateAccountResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateAccountResponseDataIdMin).max(updateAccountResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateAccountResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateAccountResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateAccountResponseDataIdMin).max(updateAccountResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateAccountResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateAccountResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "accountIdentifier": zod.string().min(1).max(updateAccountResponseDataAccountIdentifierMax).regex(updateAccountResponseDataAccountIdentifierRegExp).describe('The unique identifier for the account from the provider'),
-  "userID": zod.uuid().min(updateAccountResponseDataUserIDMin).max(updateAccountResponseDataUserIDMax).describe('The user ID this account belongs to'),
+  "userID": zod.string().uuid().min(updateAccountResponseDataUserIDMin).max(updateAccountResponseDataUserIDMax).describe('The user ID this account belongs to'),
   "provider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).describe('The authentication provider identifier'),
   "accessToken": zod.string().min(1).max(updateAccountResponseDataAccessTokenMax).regex(updateAccountResponseDataAccessTokenRegExp).nullable().describe('The OAuth access token'),
-  "accessTokenExpiresAt": zod.iso.datetime({}).min(1).max(updateAccountResponseDataAccessTokenExpiresAtMax).nullable().describe('The access token expiration timestamp'),
+  "accessTokenExpiresAt": zod.string().datetime({}).min(1).max(updateAccountResponseDataAccessTokenExpiresAtMax).nullable().describe('The access token expiration timestamp'),
   "refreshToken": zod.string().min(1).max(updateAccountResponseDataRefreshTokenMax).regex(updateAccountResponseDataRefreshTokenRegExp).nullable().describe('The OAuth refresh token'),
-  "refreshTokenExpiresAt": zod.iso.datetime({}).min(1).max(updateAccountResponseDataRefreshTokenExpiresAtMax).nullable().describe('The refresh token expiration timestamp'),
+  "refreshTokenExpiresAt": zod.string().datetime({}).min(1).max(updateAccountResponseDataRefreshTokenExpiresAtMax).nullable().describe('The refresh token expiration timestamp'),
   "idToken": zod.string().min(1).max(updateAccountResponseDataIdTokenMax).regex(updateAccountResponseDataIdTokenRegExp).nullable().describe('The OpenID Connect ID token'),
   "scope": zod.string().min(1).max(updateAccountResponseDataScopeMax).regex(updateAccountResponseDataScopeRegExp).nullable().describe('The OAuth scope granted')
 })).describe('Schema for Account entity (authentication provider account)')
@@ -469,7 +469,7 @@ export const deleteAccountPathIdMin = 36;
 export const deleteAccountPathIdMax = 36;
 
 export const deleteAccountParams = zod.object({
-  "id": zod.uuid().min(deleteAccountPathIdMin).max(deleteAccountPathIdMax).describe('The unique identifier of the resource')
+  "id": zod.string().uuid().min(deleteAccountPathIdMin).max(deleteAccountPathIdMax).describe('The unique identifier of the resource')
 })
 
 
@@ -504,27 +504,27 @@ export const confirmEmailVerificationResponseUserNameRegExp = new RegExp('^[\\w\
 
 export const confirmEmailVerificationResponse = zod.object({
   "session": zod.object({
-  "id": zod.uuid().min(confirmEmailVerificationResponseSessionIdMin).max(confirmEmailVerificationResponseSessionIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(confirmEmailVerificationResponseSessionCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(confirmEmailVerificationResponseSessionUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(confirmEmailVerificationResponseSessionIdMin).max(confirmEmailVerificationResponseSessionIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(confirmEmailVerificationResponseSessionCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(confirmEmailVerificationResponseSessionUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(confirmEmailVerificationResponseSessionOrganizationIDMin).max(confirmEmailVerificationResponseSessionOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.string().uuid().min(confirmEmailVerificationResponseSessionOrganizationIDMin).max(confirmEmailVerificationResponseSessionOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().min(1).max(confirmEmailVerificationResponseSessionAuthMethodMax).regex(confirmEmailVerificationResponseSessionAuthMethodRegExp).nullable().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).nullable().describe('The authentication provider (google, github, microsoft, local)'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(confirmEmailVerificationResponseSessionExpiresAtMax).describe('The expiration date of the session'),
+  "expiresAt": zod.string().datetime({}).min(1).max(confirmEmailVerificationResponseSessionExpiresAtMax).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(confirmEmailVerificationResponseSessionIpAddressMin).max(confirmEmailVerificationResponseSessionIpAddressMax).nullable().describe('The IP address of the session'),
   "token": zod.string().min(1).max(confirmEmailVerificationResponseSessionTokenMax).regex(confirmEmailVerificationResponseSessionTokenRegExp).describe('The session token'),
   "userAgent": zod.string().min(1).max(confirmEmailVerificationResponseSessionUserAgentMax).regex(confirmEmailVerificationResponseSessionUserAgentRegExp).nullable().describe('The user agent of the session'),
-  "userID": zod.uuid().min(confirmEmailVerificationResponseSessionUserIDMin).max(confirmEmailVerificationResponseSessionUserIDMax).describe('The user who owns this session')
+  "userID": zod.string().uuid().min(confirmEmailVerificationResponseSessionUserIDMin).max(confirmEmailVerificationResponseSessionUserIDMax).describe('The user who owns this session')
 })).describe('Schema for Session entity'),
   "user": zod.object({
-  "id": zod.uuid().min(confirmEmailVerificationResponseUserIdMin).max(confirmEmailVerificationResponseUserIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(confirmEmailVerificationResponseUserCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(confirmEmailVerificationResponseUserUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(confirmEmailVerificationResponseUserIdMin).max(confirmEmailVerificationResponseUserIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(confirmEmailVerificationResponseUserCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(confirmEmailVerificationResponseUserUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(confirmEmailVerificationResponseUserEmailMin).max(confirmEmailVerificationResponseUserEmailMax).describe('The user\'s email address'),
+  "email": zod.string().email().min(confirmEmailVerificationResponseUserEmailMin).max(confirmEmailVerificationResponseUserEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.url().min(confirmEmailVerificationResponseUserImageMin).max(confirmEmailVerificationResponseUserImageMax).nullable().describe('The user\'s avatar image URL'),
+  "image": zod.string().url().min(confirmEmailVerificationResponseUserImageMin).max(confirmEmailVerificationResponseUserImageMax).nullable().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(confirmEmailVerificationResponseUserNameMax).regex(confirmEmailVerificationResponseUserNameRegExp).describe('The user\'s display name')
 })).describe('Schema for User entity')
 })
@@ -537,7 +537,7 @@ export const confirmEmailVerificationResponse = zod.object({
 export const requestPasswordResetBodyEmailMax = 255;
 
 export const requestPasswordResetBody = zod.object({
-  "email": zod.email().min(1).max(requestPasswordResetBodyEmailMax).describe('The e-mail to send the password reset token to')
+  "email": zod.string().email().min(1).max(requestPasswordResetBodyEmailMax).describe('The e-mail to send the password reset token to')
 })
 
 
@@ -566,8 +566,8 @@ export const requestEmailChangeBodyNewEmailMax = 255;export const requestEmailCh
 export const requestEmailChangeBodyUserIDMax = 36;
 
 export const requestEmailChangeBody = zod.object({
-  "newEmail": zod.email().min(1).max(requestEmailChangeBodyNewEmailMax).describe('The e-mail to send the confirmation token to'),
-  "userID": zod.uuid().min(requestEmailChangeBodyUserIDMin).max(requestEmailChangeBodyUserIDMax).describe('The user ID of the user requesting the email change')
+  "newEmail": zod.string().email().min(1).max(requestEmailChangeBodyNewEmailMax).describe('The e-mail to send the confirmation token to'),
+  "userID": zod.string().uuid().min(requestEmailChangeBodyUserIDMin).max(requestEmailChangeBodyUserIDMax).describe('The user ID of the user requesting the email change')
 })
 
 
@@ -581,9 +581,9 @@ export const confirmEmailChangeBodyUserIDMin = 36;
 export const confirmEmailChangeBodyUserIDMax = 36;
 
 export const confirmEmailChangeBody = zod.object({
-  "newEmail": zod.email().min(1).max(confirmEmailChangeBodyNewEmailMax).describe('The e-mail to send the confirmation token to'),
+  "newEmail": zod.string().email().min(1).max(confirmEmailChangeBodyNewEmailMax).describe('The e-mail to send the confirmation token to'),
   "token": zod.string().min(1).max(confirmEmailChangeBodyTokenMax).regex(confirmEmailChangeBodyTokenRegExp).describe('The password reset token'),
-  "userID": zod.uuid().min(confirmEmailChangeBodyUserIDMin).max(confirmEmailChangeBodyUserIDMax).describe('The user ID of the user requesting the email change')
+  "userID": zod.string().uuid().min(confirmEmailChangeBodyUserIDMin).max(confirmEmailChangeBodyUserIDMax).describe('The user ID of the user requesting the email change')
 })
 
 
@@ -627,13 +627,13 @@ export const listUsersResponseMetaTotalMax = 2147483647;
 
 export const listUsersResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listUsersResponseDataItemIdMin).max(listUsersResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listUsersResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listUsersResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listUsersResponseDataItemIdMin).max(listUsersResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listUsersResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listUsersResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(listUsersResponseDataItemEmailMin).max(listUsersResponseDataItemEmailMax).describe('The user\'s email address'),
+  "email": zod.string().email().min(listUsersResponseDataItemEmailMin).max(listUsersResponseDataItemEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.url().min(listUsersResponseDataItemImageMin).max(listUsersResponseDataItemImageMax).nullable().describe('The user\'s avatar image URL'),
+  "image": zod.string().url().min(listUsersResponseDataItemImageMin).max(listUsersResponseDataItemImageMax).nullable().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(listUsersResponseDataItemNameMax).regex(listUsersResponseDataItemNameRegExp).describe('The user\'s display name')
 })).describe('Schema for User entity')).max(listUsersResponseDataMax),
   "meta": zod.object({
@@ -650,7 +650,7 @@ export const getUserPathIdMin = 36;
 export const getUserPathIdMax = 36;
 
 export const getUserParams = zod.object({
-  "id": zod.uuid().min(getUserPathIdMin).max(getUserPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getUserPathIdMin).max(getUserPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getUserResponseDataIdMin = 36;
@@ -662,13 +662,13 @@ export const getUserResponseDataNameRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+/\'
 
 export const getUserResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getUserResponseDataIdMin).max(getUserResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getUserResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getUserResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getUserResponseDataIdMin).max(getUserResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getUserResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getUserResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(getUserResponseDataEmailMin).max(getUserResponseDataEmailMax).describe('The user\'s email address'),
+  "email": zod.string().email().min(getUserResponseDataEmailMin).max(getUserResponseDataEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.url().min(getUserResponseDataImageMin).max(getUserResponseDataImageMax).nullable().describe('The user\'s avatar image URL'),
+  "image": zod.string().url().min(getUserResponseDataImageMin).max(getUserResponseDataImageMax).nullable().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(getUserResponseDataNameMax).regex(getUserResponseDataNameRegExp).describe('The user\'s display name')
 })).describe('Schema for User entity')
 })
@@ -682,7 +682,7 @@ export const updateUserPathIdMin = 36;
 export const updateUserPathIdMax = 36;
 
 export const updateUserParams = zod.object({
-  "id": zod.uuid().min(updateUserPathIdMin).max(updateUserPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(updateUserPathIdMin).max(updateUserPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateUserBodyEmailMax = 255;export const updateUserBodyImageMax = 2048;
@@ -690,8 +690,8 @@ export const updateUserBodyImageRegExp = new RegExp('^https?://[\\w\\-\\.]+[\\w\
 
 
 export const updateUserBody = zod.object({
-  "email": zod.email().min(1).max(updateUserBodyEmailMax).optional().describe('The user\'s e-mail'),
-  "image": zod.url().max(updateUserBodyImageMax).regex(updateUserBodyImageRegExp).optional().describe('The user\'s avatar image URL')
+  "email": zod.string().email().min(1).max(updateUserBodyEmailMax).optional().describe('The user\'s e-mail'),
+  "image": zod.string().url().max(updateUserBodyImageMax).regex(updateUserBodyImageRegExp).optional().describe('The user\'s avatar image URL')
 })
 
 export const updateUserResponseDataIdMin = 36;
@@ -703,13 +703,13 @@ export const updateUserResponseDataNameRegExp = new RegExp('^[\\w\\s\\-.,!?()@#+
 
 export const updateUserResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateUserResponseDataIdMin).max(updateUserResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateUserResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateUserResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateUserResponseDataIdMin).max(updateUserResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateUserResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateUserResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(updateUserResponseDataEmailMin).max(updateUserResponseDataEmailMax).describe('The user\'s email address'),
+  "email": zod.string().email().min(updateUserResponseDataEmailMin).max(updateUserResponseDataEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.url().min(updateUserResponseDataImageMin).max(updateUserResponseDataImageMax).nullable().describe('The user\'s avatar image URL'),
+  "image": zod.string().url().min(updateUserResponseDataImageMin).max(updateUserResponseDataImageMax).nullable().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(updateUserResponseDataNameMax).regex(updateUserResponseDataNameRegExp).describe('The user\'s display name')
 })).describe('Schema for User entity')
 })
@@ -723,7 +723,7 @@ export const deleteUserPathIdMin = 36;
 export const deleteUserPathIdMax = 36;
 
 export const deleteUserParams = zod.object({
-  "id": zod.uuid().min(deleteUserPathIdMin).max(deleteUserPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(deleteUserPathIdMin).max(deleteUserPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -740,13 +740,13 @@ export const getCurrentUserResponseDataNameRegExp = new RegExp('^[\\w\\s\\-.,!?(
 
 export const getCurrentUserResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getCurrentUserResponseDataIdMin).max(getCurrentUserResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getCurrentUserResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getCurrentUserResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getCurrentUserResponseDataIdMin).max(getCurrentUserResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getCurrentUserResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getCurrentUserResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(getCurrentUserResponseDataEmailMin).max(getCurrentUserResponseDataEmailMax).describe('The user\'s email address'),
+  "email": zod.string().email().min(getCurrentUserResponseDataEmailMin).max(getCurrentUserResponseDataEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.url().min(getCurrentUserResponseDataImageMin).max(getCurrentUserResponseDataImageMax).nullable().describe('The user\'s avatar image URL'),
+  "image": zod.string().url().min(getCurrentUserResponseDataImageMin).max(getCurrentUserResponseDataImageMax).nullable().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(getCurrentUserResponseDataNameMax).regex(getCurrentUserResponseDataNameRegExp).describe('The user\'s display name')
 })).describe('Schema for User entity')
 })
@@ -763,7 +763,7 @@ export const updateCurrentUserBodyImageMax = 2048;
 
 export const updateCurrentUserBody = zod.object({
   "name": zod.string().min(1).max(updateCurrentUserBodyNameMax).regex(updateCurrentUserBodyNameRegExp).optional().describe('The user\'s display name'),
-  "image": zod.url().min(updateCurrentUserBodyImageMin).max(updateCurrentUserBodyImageMax).optional().describe('The user\'s avatar image URL')
+  "image": zod.string().url().min(updateCurrentUserBodyImageMin).max(updateCurrentUserBodyImageMax).optional().describe('The user\'s avatar image URL')
 })
 
 export const updateCurrentUserResponseDataIdMin = 36;
@@ -775,13 +775,13 @@ export const updateCurrentUserResponseDataNameRegExp = new RegExp('^[\\w\\s\\-.,
 
 export const updateCurrentUserResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateCurrentUserResponseDataIdMin).max(updateCurrentUserResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateCurrentUserResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateCurrentUserResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateCurrentUserResponseDataIdMin).max(updateCurrentUserResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateCurrentUserResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateCurrentUserResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(updateCurrentUserResponseDataEmailMin).max(updateCurrentUserResponseDataEmailMax).describe('The user\'s email address'),
+  "email": zod.string().email().min(updateCurrentUserResponseDataEmailMin).max(updateCurrentUserResponseDataEmailMax).describe('The user\'s email address'),
   "emailVerified": zod.boolean().describe('Whether the user\'s email has been verified'),
-  "image": zod.url().min(updateCurrentUserResponseDataImageMin).max(updateCurrentUserResponseDataImageMax).nullable().describe('The user\'s avatar image URL'),
+  "image": zod.string().url().min(updateCurrentUserResponseDataImageMin).max(updateCurrentUserResponseDataImageMax).nullable().describe('The user\'s avatar image URL'),
   "name": zod.string().min(1).max(updateCurrentUserResponseDataNameMax).regex(updateCurrentUserResponseDataNameRegExp).describe('The user\'s display name')
 })).describe('Schema for User entity')
 })
@@ -811,7 +811,7 @@ export const oauthAuthorizeQueryStateRegExp = new RegExp('^[\\w\\-]+$');
 
 
 export const oauthAuthorizeQueryParams = zod.object({
-  "redirect_uri": zod.url().max(oauthAuthorizeQueryRedirectUriMax).optional().describe('Where to redirect after authorization (optional, uses default if not provided)'),
+  "redirect_uri": zod.string().url().max(oauthAuthorizeQueryRedirectUriMax).optional().describe('Where to redirect after authorization (optional, uses default if not provided)'),
   "scope": zod.string().max(oauthAuthorizeQueryScopeMax).regex(oauthAuthorizeQueryScopeRegExp).optional().describe('OAuth scopes to request (optional, uses default if not provided)'),
   "state": zod.string().max(oauthAuthorizeQueryStateMax).regex(oauthAuthorizeQueryStateRegExp).optional().describe('State parameter for CSRF protection')
 })
@@ -819,7 +819,7 @@ export const oauthAuthorizeQueryParams = zod.object({
 export const oauthAuthorizeResponseAuthorizationUrlMax = 2048;
 
 export const oauthAuthorizeResponse = zod.object({
-  "authorizationUrl": zod.url().min(1).max(oauthAuthorizeResponseAuthorizationUrlMax).describe('URL to redirect user for OAuth authorization')
+  "authorizationUrl": zod.string().url().min(1).max(oauthAuthorizeResponseAuthorizationUrlMax).describe('URL to redirect user for OAuth authorization')
 })
 
 
@@ -861,18 +861,18 @@ export const oauthCallbackResponseUserIDMin = 36;
 export const oauthCallbackResponseUserIDMax = 36;
 
 export const oauthCallbackResponse = zod.object({
-  "id": zod.uuid().min(oauthCallbackResponseIdMin).max(oauthCallbackResponseIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(oauthCallbackResponseCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(oauthCallbackResponseUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(oauthCallbackResponseIdMin).max(oauthCallbackResponseIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(oauthCallbackResponseCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(oauthCallbackResponseUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(oauthCallbackResponseOrganizationIDMin).max(oauthCallbackResponseOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
+  "organizationID": zod.string().uuid().min(oauthCallbackResponseOrganizationIDMin).max(oauthCallbackResponseOrganizationIDMax).nullable().describe('The organization ID for this session (nullable for users without org)'),
   "authMethod": zod.string().min(1).max(oauthCallbackResponseAuthMethodMax).regex(oauthCallbackResponseAuthMethodRegExp).nullable().describe('The authentication method used (magic_link, oauth_google, oauth_github, etc.)'),
   "authProvider": zod.enum(['local', 'google', 'github', 'microsoft', 'apple']).nullable().describe('The authentication provider (google, github, microsoft, local)'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(oauthCallbackResponseExpiresAtMax).describe('The expiration date of the session'),
+  "expiresAt": zod.string().datetime({}).min(1).max(oauthCallbackResponseExpiresAtMax).describe('The expiration date of the session'),
   "ipAddress": zod.string().min(oauthCallbackResponseIpAddressMin).max(oauthCallbackResponseIpAddressMax).nullable().describe('The IP address of the session'),
   "token": zod.string().min(1).max(oauthCallbackResponseTokenMax).regex(oauthCallbackResponseTokenRegExp).describe('The session token'),
   "userAgent": zod.string().min(1).max(oauthCallbackResponseUserAgentMax).regex(oauthCallbackResponseUserAgentRegExp).nullable().describe('The user agent of the session'),
-  "userID": zod.uuid().min(oauthCallbackResponseUserIDMin).max(oauthCallbackResponseUserIDMax).describe('The user who owns this session')
+  "userID": zod.string().uuid().min(oauthCallbackResponseUserIDMin).max(oauthCallbackResponseUserIDMax).describe('The user who owns this session')
 })).describe('Schema for Session entity')
 
 
@@ -924,19 +924,19 @@ export const listAPIKeysResponseMetaTotalMax = 2147483647;
 
 export const listAPIKeysResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listAPIKeysResponseDataItemIdMin).max(listAPIKeysResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listAPIKeysResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listAPIKeysResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listAPIKeysResponseDataItemIdMin).max(listAPIKeysResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listAPIKeysResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listAPIKeysResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "userID": zod.uuid().min(listAPIKeysResponseDataItemUserIDMin).max(listAPIKeysResponseDataItemUserIDMax).describe('The user who owns this API key'),
-  "organizationID": zod.uuid().min(listAPIKeysResponseDataItemOrganizationIDMin).max(listAPIKeysResponseDataItemOrganizationIDMax).describe('The organization this API key belongs to'),
+  "userID": zod.string().uuid().min(listAPIKeysResponseDataItemUserIDMin).max(listAPIKeysResponseDataItemUserIDMax).describe('The user who owns this API key'),
+  "organizationID": zod.string().uuid().min(listAPIKeysResponseDataItemOrganizationIDMin).max(listAPIKeysResponseDataItemOrganizationIDMax).describe('The organization this API key belongs to'),
   "keyHash": zod.string().min(1).max(listAPIKeysResponseDataItemKeyHashMax).regex(listAPIKeysResponseDataItemKeyHashRegExp).describe('Hashed version of the API key for secure storage'),
   "name": zod.string().min(1).max(listAPIKeysResponseDataItemNameMax).regex(listAPIKeysResponseDataItemNameRegExp).nullable(),
   "prefix": zod.string().min(1).max(listAPIKeysResponseDataItemPrefixMax).regex(listAPIKeysResponseDataItemPrefixRegExp).nullable(),
   "scopes": zod.array(zod.string().max(listAPIKeysResponseDataItemScopesItemMax).regex(listAPIKeysResponseDataItemScopesItemRegExp)).max(listAPIKeysResponseDataItemScopesMax),
   "rateLimit": zod.number().min(1).max(listAPIKeysResponseDataItemRateLimitMax).describe('Requests per minute allowed for this API key'),
-  "lastUsedAt": zod.iso.datetime({}).min(1).max(listAPIKeysResponseDataItemLastUsedAtMax).nullable().describe('When this API key was last used'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(listAPIKeysResponseDataItemExpiresAtMax).nullable().describe('When this API key expires')
+  "lastUsedAt": zod.string().datetime({}).min(1).max(listAPIKeysResponseDataItemLastUsedAtMax).nullable().describe('When this API key was last used'),
+  "expiresAt": zod.string().datetime({}).min(1).max(listAPIKeysResponseDataItemExpiresAtMax).nullable().describe('When this API key expires')
 })).describe('Schema for API Key entity')).max(listAPIKeysResponseDataMax),
   "meta": zod.object({
   "total": zod.number().min(listAPIKeysResponseMetaTotalMin).max(listAPIKeysResponseMetaTotalMax).describe('Total number of items in the collection')
@@ -959,7 +959,7 @@ export const createAPIKeyBody = zod.object({
   "name": zod.string().min(1).max(createAPIKeyBodyNameMax).regex(createAPIKeyBodyNameRegExp).describe('Human-readable name for the API key'),
   "scopes": zod.array(zod.string().min(1).max(createAPIKeyBodyScopesItemMax).regex(createAPIKeyBodyScopesItemRegExp)).max(createAPIKeyBodyScopesMax).describe('List of scopes/permissions for this API key'),
   "rateLimit": zod.number().min(1).max(createAPIKeyBodyRateLimitMax).default(createAPIKeyBodyRateLimitDefault).describe('Requests per minute limit (default 60)'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(createAPIKeyBodyExpiresAtMax).optional().describe('When the API key expires (optional, no expiry if omitted)')
+  "expiresAt": zod.string().datetime({}).min(1).max(createAPIKeyBodyExpiresAtMax).optional().describe('When the API key expires (optional, no expiry if omitted)')
 })
 
 
@@ -971,7 +971,7 @@ export const getAPIKeyPathIdMin = 36;
 export const getAPIKeyPathIdMax = 36;
 
 export const getAPIKeyParams = zod.object({
-  "id": zod.uuid().min(getAPIKeyPathIdMin).max(getAPIKeyPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getAPIKeyPathIdMin).max(getAPIKeyPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getAPIKeyResponseDataIdMin = 36;
@@ -991,19 +991,19 @@ export const getAPIKeyResponseDataRateLimitMax = 2147483647;export const getAPIK
 
 export const getAPIKeyResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getAPIKeyResponseDataIdMin).max(getAPIKeyResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getAPIKeyResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getAPIKeyResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getAPIKeyResponseDataIdMin).max(getAPIKeyResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getAPIKeyResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getAPIKeyResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "userID": zod.uuid().min(getAPIKeyResponseDataUserIDMin).max(getAPIKeyResponseDataUserIDMax).describe('The user who owns this API key'),
-  "organizationID": zod.uuid().min(getAPIKeyResponseDataOrganizationIDMin).max(getAPIKeyResponseDataOrganizationIDMax).describe('The organization this API key belongs to'),
+  "userID": zod.string().uuid().min(getAPIKeyResponseDataUserIDMin).max(getAPIKeyResponseDataUserIDMax).describe('The user who owns this API key'),
+  "organizationID": zod.string().uuid().min(getAPIKeyResponseDataOrganizationIDMin).max(getAPIKeyResponseDataOrganizationIDMax).describe('The organization this API key belongs to'),
   "keyHash": zod.string().min(1).max(getAPIKeyResponseDataKeyHashMax).regex(getAPIKeyResponseDataKeyHashRegExp).describe('Hashed version of the API key for secure storage'),
   "name": zod.string().min(1).max(getAPIKeyResponseDataNameMax).regex(getAPIKeyResponseDataNameRegExp).nullable(),
   "prefix": zod.string().min(1).max(getAPIKeyResponseDataPrefixMax).regex(getAPIKeyResponseDataPrefixRegExp).nullable(),
   "scopes": zod.array(zod.string().max(getAPIKeyResponseDataScopesItemMax).regex(getAPIKeyResponseDataScopesItemRegExp)).max(getAPIKeyResponseDataScopesMax),
   "rateLimit": zod.number().min(1).max(getAPIKeyResponseDataRateLimitMax).describe('Requests per minute allowed for this API key'),
-  "lastUsedAt": zod.iso.datetime({}).min(1).max(getAPIKeyResponseDataLastUsedAtMax).nullable().describe('When this API key was last used'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(getAPIKeyResponseDataExpiresAtMax).nullable().describe('When this API key expires')
+  "lastUsedAt": zod.string().datetime({}).min(1).max(getAPIKeyResponseDataLastUsedAtMax).nullable().describe('When this API key was last used'),
+  "expiresAt": zod.string().datetime({}).min(1).max(getAPIKeyResponseDataExpiresAtMax).nullable().describe('When this API key expires')
 })).describe('Schema for API Key entity')
 })
 
@@ -1016,7 +1016,7 @@ export const updateAPIKeyPathIdMin = 36;
 export const updateAPIKeyPathIdMax = 36;
 
 export const updateAPIKeyParams = zod.object({
-  "id": zod.uuid().min(updateAPIKeyPathIdMin).max(updateAPIKeyPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(updateAPIKeyPathIdMin).max(updateAPIKeyPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateAPIKeyBodyNameMax = 255;
@@ -1048,19 +1048,19 @@ export const updateAPIKeyResponseDataRateLimitMax = 2147483647;export const upda
 
 export const updateAPIKeyResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateAPIKeyResponseDataIdMin).max(updateAPIKeyResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateAPIKeyResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateAPIKeyResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateAPIKeyResponseDataIdMin).max(updateAPIKeyResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateAPIKeyResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateAPIKeyResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "userID": zod.uuid().min(updateAPIKeyResponseDataUserIDMin).max(updateAPIKeyResponseDataUserIDMax).describe('The user who owns this API key'),
-  "organizationID": zod.uuid().min(updateAPIKeyResponseDataOrganizationIDMin).max(updateAPIKeyResponseDataOrganizationIDMax).describe('The organization this API key belongs to'),
+  "userID": zod.string().uuid().min(updateAPIKeyResponseDataUserIDMin).max(updateAPIKeyResponseDataUserIDMax).describe('The user who owns this API key'),
+  "organizationID": zod.string().uuid().min(updateAPIKeyResponseDataOrganizationIDMin).max(updateAPIKeyResponseDataOrganizationIDMax).describe('The organization this API key belongs to'),
   "keyHash": zod.string().min(1).max(updateAPIKeyResponseDataKeyHashMax).regex(updateAPIKeyResponseDataKeyHashRegExp).describe('Hashed version of the API key for secure storage'),
   "name": zod.string().min(1).max(updateAPIKeyResponseDataNameMax).regex(updateAPIKeyResponseDataNameRegExp).nullable(),
   "prefix": zod.string().min(1).max(updateAPIKeyResponseDataPrefixMax).regex(updateAPIKeyResponseDataPrefixRegExp).nullable(),
   "scopes": zod.array(zod.string().max(updateAPIKeyResponseDataScopesItemMax).regex(updateAPIKeyResponseDataScopesItemRegExp)).max(updateAPIKeyResponseDataScopesMax),
   "rateLimit": zod.number().min(1).max(updateAPIKeyResponseDataRateLimitMax).describe('Requests per minute allowed for this API key'),
-  "lastUsedAt": zod.iso.datetime({}).min(1).max(updateAPIKeyResponseDataLastUsedAtMax).nullable().describe('When this API key was last used'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(updateAPIKeyResponseDataExpiresAtMax).nullable().describe('When this API key expires')
+  "lastUsedAt": zod.string().datetime({}).min(1).max(updateAPIKeyResponseDataLastUsedAtMax).nullable().describe('When this API key was last used'),
+  "expiresAt": zod.string().datetime({}).min(1).max(updateAPIKeyResponseDataExpiresAtMax).nullable().describe('When this API key expires')
 })).describe('Schema for API Key entity')
 })
 
@@ -1073,7 +1073,7 @@ export const deleteAPIKeyPathIdMin = 36;
 export const deleteAPIKeyPathIdMax = 36;
 
 export const deleteAPIKeyParams = zod.object({
-  "id": zod.uuid().min(deleteAPIKeyPathIdMin).max(deleteAPIKeyPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(deleteAPIKeyPathIdMin).max(deleteAPIKeyPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -1123,14 +1123,14 @@ export const listOrganizationsResponseMetaTotalMax = 2147483647;
 
 export const listOrganizationsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listOrganizationsResponseDataItemIdMin).max(listOrganizationsResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listOrganizationsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listOrganizationsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listOrganizationsResponseDataItemIdMin).max(listOrganizationsResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listOrganizationsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listOrganizationsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "name": zod.string().min(1).max(listOrganizationsResponseDataItemNameMax).regex(listOrganizationsResponseDataItemNameRegExp).describe('The organization\'s display name'),
   "slug": zod.string().min(listOrganizationsResponseDataItemSlugMin).max(listOrganizationsResponseDataItemSlugMax).regex(listOrganizationsResponseDataItemSlugRegExp).describe('URL-friendly unique identifier for the organization'),
-  "logo": zod.url().min(1).max(listOrganizationsResponseDataItemLogoMax).nullable().describe('The organization\'s logo URL'),
-  "billingEmail": zod.email().min(listOrganizationsResponseDataItemBillingEmailMin).max(listOrganizationsResponseDataItemBillingEmailMax).nullable().describe('Email address for billing communications'),
+  "logo": zod.string().url().min(1).max(listOrganizationsResponseDataItemLogoMax).nullable().describe('The organization\'s logo URL'),
+  "billingEmail": zod.string().email().min(listOrganizationsResponseDataItemBillingEmailMin).max(listOrganizationsResponseDataItemBillingEmailMax).nullable().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(listOrganizationsResponseDataItemCreditsMin).max(listOrganizationsResponseDataItemCreditsMax).describe('Available credits for this organization'),
   "stripeCustomerIdentifier": zod.string().min(1).max(listOrganizationsResponseDataItemStripeCustomerIdentifierMax).regex(listOrganizationsResponseDataItemStripeCustomerIdentifierRegExp).describe('Stripe customer identifier')
@@ -1149,8 +1149,8 @@ export const createOrganizationBodyBillingEmailMax = 255;export const createOrga
 export const createOrganizationBodyOrganizationIDMax = 36;
 
 export const createOrganizationBody = zod.object({
-  "billingEmail": zod.email().min(1).max(createOrganizationBodyBillingEmailMax).describe('The billing email to use for the organization'),
-  "organizationID": zod.uuid().min(createOrganizationBodyOrganizationIDMin).max(createOrganizationBodyOrganizationIDMax).describe('UUID identifier')
+  "billingEmail": zod.string().email().min(1).max(createOrganizationBodyBillingEmailMax).describe('The billing email to use for the organization'),
+  "organizationID": zod.string().uuid().min(createOrganizationBodyOrganizationIDMin).max(createOrganizationBodyOrganizationIDMax).describe('UUID identifier')
 })
 
 
@@ -1162,7 +1162,7 @@ export const getOrganizationPathIdMin = 36;
 export const getOrganizationPathIdMax = 36;
 
 export const getOrganizationParams = zod.object({
-  "id": zod.uuid().min(getOrganizationPathIdMin).max(getOrganizationPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getOrganizationPathIdMin).max(getOrganizationPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getOrganizationResponseDataIdMin = 36;
@@ -1180,14 +1180,14 @@ export const getOrganizationResponseDataStripeCustomerIdentifierRegExp = new Reg
 
 export const getOrganizationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getOrganizationResponseDataIdMin).max(getOrganizationResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getOrganizationResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getOrganizationResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getOrganizationResponseDataIdMin).max(getOrganizationResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getOrganizationResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getOrganizationResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "name": zod.string().min(1).max(getOrganizationResponseDataNameMax).regex(getOrganizationResponseDataNameRegExp).describe('The organization\'s display name'),
   "slug": zod.string().min(getOrganizationResponseDataSlugMin).max(getOrganizationResponseDataSlugMax).regex(getOrganizationResponseDataSlugRegExp).describe('URL-friendly unique identifier for the organization'),
-  "logo": zod.url().min(1).max(getOrganizationResponseDataLogoMax).nullable().describe('The organization\'s logo URL'),
-  "billingEmail": zod.email().min(getOrganizationResponseDataBillingEmailMin).max(getOrganizationResponseDataBillingEmailMax).nullable().describe('Email address for billing communications'),
+  "logo": zod.string().url().min(1).max(getOrganizationResponseDataLogoMax).nullable().describe('The organization\'s logo URL'),
+  "billingEmail": zod.string().email().min(getOrganizationResponseDataBillingEmailMin).max(getOrganizationResponseDataBillingEmailMax).nullable().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(getOrganizationResponseDataCreditsMin).max(getOrganizationResponseDataCreditsMax).describe('Available credits for this organization'),
   "stripeCustomerIdentifier": zod.string().min(1).max(getOrganizationResponseDataStripeCustomerIdentifierMax).regex(getOrganizationResponseDataStripeCustomerIdentifierRegExp).describe('Stripe customer identifier')
@@ -1203,15 +1203,15 @@ export const updateOrganizationPathIdMin = 36;
 export const updateOrganizationPathIdMax = 36;
 
 export const updateOrganizationParams = zod.object({
-  "id": zod.uuid().min(updateOrganizationPathIdMin).max(updateOrganizationPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(updateOrganizationPathIdMin).max(updateOrganizationPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateOrganizationBodyBillingEmailMax = 255;export const updateOrganizationBodyOrganizationIDMin = 36;
 export const updateOrganizationBodyOrganizationIDMax = 36;
 
 export const updateOrganizationBody = zod.object({
-  "billingEmail": zod.email().max(updateOrganizationBodyBillingEmailMax).optional().describe('The billing email to use for the organization'),
-  "organizationID": zod.uuid().min(updateOrganizationBodyOrganizationIDMin).max(updateOrganizationBodyOrganizationIDMax).optional().describe('UUID identifier')
+  "billingEmail": zod.string().email().max(updateOrganizationBodyBillingEmailMax).optional().describe('The billing email to use for the organization'),
+  "organizationID": zod.string().uuid().min(updateOrganizationBodyOrganizationIDMin).max(updateOrganizationBodyOrganizationIDMax).optional().describe('UUID identifier')
 })
 
 export const updateOrganizationResponseDataIdMin = 36;
@@ -1229,14 +1229,14 @@ export const updateOrganizationResponseDataStripeCustomerIdentifierRegExp = new 
 
 export const updateOrganizationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateOrganizationResponseDataIdMin).max(updateOrganizationResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateOrganizationResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateOrganizationResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateOrganizationResponseDataIdMin).max(updateOrganizationResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateOrganizationResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateOrganizationResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "name": zod.string().min(1).max(updateOrganizationResponseDataNameMax).regex(updateOrganizationResponseDataNameRegExp).describe('The organization\'s display name'),
   "slug": zod.string().min(updateOrganizationResponseDataSlugMin).max(updateOrganizationResponseDataSlugMax).regex(updateOrganizationResponseDataSlugRegExp).describe('URL-friendly unique identifier for the organization'),
-  "logo": zod.url().min(1).max(updateOrganizationResponseDataLogoMax).nullable().describe('The organization\'s logo URL'),
-  "billingEmail": zod.email().min(updateOrganizationResponseDataBillingEmailMin).max(updateOrganizationResponseDataBillingEmailMax).nullable().describe('Email address for billing communications'),
+  "logo": zod.string().url().min(1).max(updateOrganizationResponseDataLogoMax).nullable().describe('The organization\'s logo URL'),
+  "billingEmail": zod.string().email().min(updateOrganizationResponseDataBillingEmailMin).max(updateOrganizationResponseDataBillingEmailMax).nullable().describe('Email address for billing communications'),
   "plan": zod.enum(['FREE', 'BASIC', 'STANDARD', 'PREMIUM', 'UNLIMITED']).describe('The current subscription plan'),
   "credits": zod.number().min(updateOrganizationResponseDataCreditsMin).max(updateOrganizationResponseDataCreditsMax).describe('Available credits for this organization'),
   "stripeCustomerIdentifier": zod.string().min(1).max(updateOrganizationResponseDataStripeCustomerIdentifierMax).regex(updateOrganizationResponseDataStripeCustomerIdentifierRegExp).describe('Stripe customer identifier')
@@ -1252,7 +1252,7 @@ export const deleteOrganizationPathIdMin = 36;
 export const deleteOrganizationPathIdMax = 36;
 
 export const deleteOrganizationParams = zod.object({
-  "id": zod.uuid().min(deleteOrganizationPathIdMin).max(deleteOrganizationPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(deleteOrganizationPathIdMin).max(deleteOrganizationPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -1263,7 +1263,7 @@ export const deleteOrganizationParams = zod.object({
 export const listMembersPathOrganizationIDMax = 36;
 
 export const listMembersParams = zod.object({
-  "organizationID": zod.uuid().max(listMembersPathOrganizationIDMax).describe('Organization ID')
+  "organizationID": zod.string().uuid().max(listMembersPathOrganizationIDMax).describe('Organization ID')
 })
 
 export const listMembersQueryFilterFieldMax = 255;
@@ -1300,13 +1300,13 @@ export const listMembersResponseMetaTotalMax = 2147483647;
 
 export const listMembersResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listMembersResponseDataItemIdMin).max(listMembersResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listMembersResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listMembersResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listMembersResponseDataItemIdMin).max(listMembersResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listMembersResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listMembersResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(listMembersResponseDataItemOrganizationIDMin).max(listMembersResponseDataItemOrganizationIDMax).describe('The organization this member belongs to'),
+  "organizationID": zod.string().uuid().min(listMembersResponseDataItemOrganizationIDMin).max(listMembersResponseDataItemOrganizationIDMax).describe('The organization this member belongs to'),
   "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the member'),
-  "userID": zod.uuid().min(listMembersResponseDataItemUserIDMin).max(listMembersResponseDataItemUserIDMax).describe('The user who is a member of the organization')
+  "userID": zod.string().uuid().min(listMembersResponseDataItemUserIDMin).max(listMembersResponseDataItemUserIDMax).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')).max(listMembersResponseDataMax),
   "meta": zod.object({
   "total": zod.number().min(listMembersResponseMetaTotalMin).max(listMembersResponseMetaTotalMax).describe('Total number of items in the collection')
@@ -1321,7 +1321,7 @@ export const listMembersResponse = zod.object({
 export const createMemberPathOrganizationIDMax = 36;
 
 export const createMemberParams = zod.object({
-  "organizationID": zod.uuid().max(createMemberPathOrganizationIDMax).describe('Organization ID')
+  "organizationID": zod.string().uuid().max(createMemberPathOrganizationIDMax).describe('Organization ID')
 })
 
 export const createMemberBody = zod.object({
@@ -1338,8 +1338,8 @@ export const getMemberPathOrganizationIDMax = 36;export const getMemberPathIdMin
 export const getMemberPathIdMax = 36;
 
 export const getMemberParams = zod.object({
-  "organizationID": zod.uuid().min(getMemberPathOrganizationIDMin).max(getMemberPathOrganizationIDMax).describe('The unique identifier of the organization.'),
-  "id": zod.uuid().min(getMemberPathIdMin).max(getMemberPathIdMax).describe('The unique identifier of the resource.')
+  "organizationID": zod.string().uuid().min(getMemberPathOrganizationIDMin).max(getMemberPathOrganizationIDMax).describe('The unique identifier of the organization.'),
+  "id": zod.string().uuid().min(getMemberPathIdMin).max(getMemberPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getMemberResponseDataIdMin = 36;
@@ -1349,13 +1349,13 @@ export const getMemberResponseDataUserIDMax = 36;
 
 export const getMemberResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getMemberResponseDataIdMin).max(getMemberResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getMemberResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getMemberResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getMemberResponseDataIdMin).max(getMemberResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getMemberResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getMemberResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(getMemberResponseDataOrganizationIDMin).max(getMemberResponseDataOrganizationIDMax).describe('The organization this member belongs to'),
+  "organizationID": zod.string().uuid().min(getMemberResponseDataOrganizationIDMin).max(getMemberResponseDataOrganizationIDMax).describe('The organization this member belongs to'),
   "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the member'),
-  "userID": zod.uuid().min(getMemberResponseDataUserIDMin).max(getMemberResponseDataUserIDMax).describe('The user who is a member of the organization')
+  "userID": zod.string().uuid().min(getMemberResponseDataUserIDMin).max(getMemberResponseDataUserIDMax).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')
 })
 
@@ -1369,8 +1369,8 @@ export const updateMemberPathOrganizationIDMax = 36;export const updateMemberPat
 export const updateMemberPathIdMax = 36;
 
 export const updateMemberParams = zod.object({
-  "organizationID": zod.uuid().min(updateMemberPathOrganizationIDMin).max(updateMemberPathOrganizationIDMax).describe('The unique identifier of the organization.'),
-  "id": zod.uuid().min(updateMemberPathIdMin).max(updateMemberPathIdMax).describe('The unique identifier of the resource.')
+  "organizationID": zod.string().uuid().min(updateMemberPathOrganizationIDMin).max(updateMemberPathOrganizationIDMax).describe('The unique identifier of the organization.'),
+  "id": zod.string().uuid().min(updateMemberPathIdMin).max(updateMemberPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateMemberBody = zod.object({
@@ -1384,13 +1384,13 @@ export const updateMemberResponseDataUserIDMax = 36;
 
 export const updateMemberResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateMemberResponseDataIdMin).max(updateMemberResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateMemberResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateMemberResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateMemberResponseDataIdMin).max(updateMemberResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateMemberResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateMemberResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(updateMemberResponseDataOrganizationIDMin).max(updateMemberResponseDataOrganizationIDMax).describe('The organization this member belongs to'),
+  "organizationID": zod.string().uuid().min(updateMemberResponseDataOrganizationIDMin).max(updateMemberResponseDataOrganizationIDMax).describe('The organization this member belongs to'),
   "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the member'),
-  "userID": zod.uuid().min(updateMemberResponseDataUserIDMin).max(updateMemberResponseDataUserIDMax).describe('The user who is a member of the organization')
+  "userID": zod.string().uuid().min(updateMemberResponseDataUserIDMin).max(updateMemberResponseDataUserIDMax).describe('The user who is a member of the organization')
 })).describe('Schema for Member entity')
 })
 
@@ -1404,8 +1404,8 @@ export const deleteMemberPathOrganizationIDMax = 36;export const deleteMemberPat
 export const deleteMemberPathIdMax = 36;
 
 export const deleteMemberParams = zod.object({
-  "organizationID": zod.uuid().min(deleteMemberPathOrganizationIDMin).max(deleteMemberPathOrganizationIDMax).describe('The unique identifier of the organization.'),
-  "id": zod.uuid().min(deleteMemberPathIdMin).max(deleteMemberPathIdMax).describe('The unique identifier of the resource.')
+  "organizationID": zod.string().uuid().min(deleteMemberPathOrganizationIDMin).max(deleteMemberPathOrganizationIDMax).describe('The unique identifier of the organization.'),
+  "id": zod.string().uuid().min(deleteMemberPathIdMin).max(deleteMemberPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -1417,7 +1417,7 @@ export const listInvitationsPathOrganizationIDMin = 36;
 export const listInvitationsPathOrganizationIDMax = 36;
 
 export const listInvitationsParams = zod.object({
-  "organizationID": zod.uuid().min(listInvitationsPathOrganizationIDMin).max(listInvitationsPathOrganizationIDMax).describe('The unique identifier of the organization.')
+  "organizationID": zod.string().uuid().min(listInvitationsPathOrganizationIDMin).max(listInvitationsPathOrganizationIDMax).describe('The unique identifier of the organization.')
 })
 
 export const listInvitationsQueryFilterFieldMax = 255;
@@ -1454,14 +1454,14 @@ export const listInvitationsResponseMetaTotalMax = 2147483647;
 
 export const listInvitationsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listInvitationsResponseDataItemIdMin).max(listInvitationsResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listInvitationsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listInvitationsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listInvitationsResponseDataItemIdMin).max(listInvitationsResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listInvitationsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listInvitationsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(1).max(listInvitationsResponseDataItemEmailMax).describe('The email of the invitated user'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(listInvitationsResponseDataItemExpiresAtMax).describe('The date and time when the invitation expires'),
-  "inviterID": zod.uuid().min(listInvitationsResponseDataItemInviterIDMin).max(listInvitationsResponseDataItemInviterIDMax).describe('The ID of the user who sent this invitation'),
-  "organizationID": zod.uuid().min(listInvitationsResponseDataItemOrganizationIDMin).max(listInvitationsResponseDataItemOrganizationIDMax).describe('The organization the user is being invited to join'),
+  "email": zod.string().email().min(1).max(listInvitationsResponseDataItemEmailMax).describe('The email of the invitated user'),
+  "expiresAt": zod.string().datetime({}).min(1).max(listInvitationsResponseDataItemExpiresAtMax).describe('The date and time when the invitation expires'),
+  "inviterID": zod.string().uuid().min(listInvitationsResponseDataItemInviterIDMin).max(listInvitationsResponseDataItemInviterIDMax).describe('The ID of the user who sent this invitation'),
+  "organizationID": zod.string().uuid().min(listInvitationsResponseDataItemOrganizationIDMin).max(listInvitationsResponseDataItemOrganizationIDMax).describe('The organization the user is being invited to join'),
   "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the invitation'),
   "status": zod.enum(['pending', 'accepted', 'declined', 'expired']).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')).max(listInvitationsResponseDataMax),
@@ -1479,7 +1479,7 @@ export const createInvitationPathOrganizationIDMin = 36;
 export const createInvitationPathOrganizationIDMax = 36;
 
 export const createInvitationParams = zod.object({
-  "organizationID": zod.uuid().min(createInvitationPathOrganizationIDMin).max(createInvitationPathOrganizationIDMax).describe('The unique identifier of the organization.')
+  "organizationID": zod.string().uuid().min(createInvitationPathOrganizationIDMin).max(createInvitationPathOrganizationIDMax).describe('The unique identifier of the organization.')
 })
 
 export const createInvitationBodyEmailMax = 255;
@@ -1501,8 +1501,8 @@ export const getInvitationPathOrganizationIDMax = 36;export const getInvitationP
 export const getInvitationPathIdMax = 36;
 
 export const getInvitationParams = zod.object({
-  "organizationID": zod.uuid().min(getInvitationPathOrganizationIDMin).max(getInvitationPathOrganizationIDMax).describe('The unique identifier of the organization.'),
-  "id": zod.uuid().min(getInvitationPathIdMin).max(getInvitationPathIdMax).describe('The unique identifier of the resource.')
+  "organizationID": zod.string().uuid().min(getInvitationPathOrganizationIDMin).max(getInvitationPathOrganizationIDMax).describe('The unique identifier of the organization.'),
+  "id": zod.string().uuid().min(getInvitationPathIdMin).max(getInvitationPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getInvitationResponseDataIdMin = 36;
@@ -1512,14 +1512,14 @@ export const getInvitationResponseDataOrganizationIDMax = 36;export const getInv
 
 export const getInvitationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getInvitationResponseDataIdMin).max(getInvitationResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getInvitationResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getInvitationResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getInvitationResponseDataIdMin).max(getInvitationResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getInvitationResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getInvitationResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(1).max(getInvitationResponseDataEmailMax).describe('The email of the invitated user'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(getInvitationResponseDataExpiresAtMax).describe('The date and time when the invitation expires'),
-  "inviterID": zod.uuid().min(getInvitationResponseDataInviterIDMin).max(getInvitationResponseDataInviterIDMax).describe('The ID of the user who sent this invitation'),
-  "organizationID": zod.uuid().min(getInvitationResponseDataOrganizationIDMin).max(getInvitationResponseDataOrganizationIDMax).describe('The organization the user is being invited to join'),
+  "email": zod.string().email().min(1).max(getInvitationResponseDataEmailMax).describe('The email of the invitated user'),
+  "expiresAt": zod.string().datetime({}).min(1).max(getInvitationResponseDataExpiresAtMax).describe('The date and time when the invitation expires'),
+  "inviterID": zod.string().uuid().min(getInvitationResponseDataInviterIDMin).max(getInvitationResponseDataInviterIDMax).describe('The ID of the user who sent this invitation'),
+  "organizationID": zod.string().uuid().min(getInvitationResponseDataOrganizationIDMin).max(getInvitationResponseDataOrganizationIDMax).describe('The organization the user is being invited to join'),
   "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the invitation'),
   "status": zod.enum(['pending', 'accepted', 'declined', 'expired']).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')
@@ -1535,8 +1535,8 @@ export const updateInvitationPathOrganizationIDMax = 36;export const updateInvit
 export const updateInvitationPathIdMax = 36;
 
 export const updateInvitationParams = zod.object({
-  "organizationID": zod.uuid().min(updateInvitationPathOrganizationIDMin).max(updateInvitationPathOrganizationIDMax).describe('The unique identifier of the organization.'),
-  "id": zod.uuid().min(updateInvitationPathIdMin).max(updateInvitationPathIdMax).describe('The unique identifier of the resource.')
+  "organizationID": zod.string().uuid().min(updateInvitationPathOrganizationIDMin).max(updateInvitationPathOrganizationIDMax).describe('The unique identifier of the organization.'),
+  "id": zod.string().uuid().min(updateInvitationPathIdMin).max(updateInvitationPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateInvitationBodyEmailMax = 255;
@@ -1555,14 +1555,14 @@ export const updateInvitationResponseDataOrganizationIDMax = 36;export const upd
 
 export const updateInvitationResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateInvitationResponseDataIdMin).max(updateInvitationResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateInvitationResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateInvitationResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateInvitationResponseDataIdMin).max(updateInvitationResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateInvitationResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateInvitationResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "email": zod.email().min(1).max(updateInvitationResponseDataEmailMax).describe('The email of the invitated user'),
-  "expiresAt": zod.iso.datetime({}).min(1).max(updateInvitationResponseDataExpiresAtMax).describe('The date and time when the invitation expires'),
-  "inviterID": zod.uuid().min(updateInvitationResponseDataInviterIDMin).max(updateInvitationResponseDataInviterIDMax).describe('The ID of the user who sent this invitation'),
-  "organizationID": zod.uuid().min(updateInvitationResponseDataOrganizationIDMin).max(updateInvitationResponseDataOrganizationIDMax).describe('The organization the user is being invited to join'),
+  "email": zod.string().email().min(1).max(updateInvitationResponseDataEmailMax).describe('The email of the invitated user'),
+  "expiresAt": zod.string().datetime({}).min(1).max(updateInvitationResponseDataExpiresAtMax).describe('The date and time when the invitation expires'),
+  "inviterID": zod.string().uuid().min(updateInvitationResponseDataInviterIDMin).max(updateInvitationResponseDataInviterIDMax).describe('The ID of the user who sent this invitation'),
+  "organizationID": zod.string().uuid().min(updateInvitationResponseDataOrganizationIDMin).max(updateInvitationResponseDataOrganizationIDMax).describe('The organization the user is being invited to join'),
   "role": zod.enum(['admin', 'owner', 'basic']).describe('The role of the invitation'),
   "status": zod.enum(['pending', 'accepted', 'declined', 'expired']).describe('The status of the invitation, e.g., pending, accepted, declined')
 })).describe('Schema for Invitation entity')
@@ -1578,8 +1578,8 @@ export const deleteInvitationPathOrganizationIDMax = 36;export const deleteInvit
 export const deleteInvitationPathIdMax = 36;
 
 export const deleteInvitationParams = zod.object({
-  "organizationID": zod.uuid().min(deleteInvitationPathOrganizationIDMin).max(deleteInvitationPathOrganizationIDMax).describe('The unique identifier of the organization.'),
-  "id": zod.uuid().min(deleteInvitationPathIdMin).max(deleteInvitationPathIdMax).describe('The unique identifier of the resource.')
+  "organizationID": zod.string().uuid().min(deleteInvitationPathOrganizationIDMin).max(deleteInvitationPathOrganizationIDMax).describe('The unique identifier of the organization.'),
+  "id": zod.string().uuid().min(deleteInvitationPathIdMin).max(deleteInvitationPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -1624,11 +1624,11 @@ export const listPipelinesResponseMetaTotalMax = 2147483647;
 
 export const listPipelinesResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listPipelinesResponseDataItemIdMin).max(listPipelinesResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listPipelinesResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listPipelinesResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listPipelinesResponseDataItemIdMin).max(listPipelinesResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listPipelinesResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listPipelinesResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(listPipelinesResponseDataItemOrganizationIDMin).max(listPipelinesResponseDataItemOrganizationIDMax).describe('The organization identifier'),
+  "organizationID": zod.string().uuid().min(listPipelinesResponseDataItemOrganizationIDMin).max(listPipelinesResponseDataItemOrganizationIDMax).describe('The organization identifier'),
   "name": zod.string().min(1).max(listPipelinesResponseDataItemNameMax).regex(listPipelinesResponseDataItemNameRegExp).nullable().describe('The pipeline\'s display name'),
   "description": zod.string().max(listPipelinesResponseDataItemDescriptionMax).regex(listPipelinesResponseDataItemDescriptionRegExp).nullable().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')).max(listPipelinesResponseDataMax),
@@ -1662,7 +1662,7 @@ export const getPipelinePathIdMin = 36;
 export const getPipelinePathIdMax = 36;
 
 export const getPipelineParams = zod.object({
-  "id": zod.uuid().min(getPipelinePathIdMin).max(getPipelinePathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getPipelinePathIdMin).max(getPipelinePathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getPipelineResponseDataIdMin = 36;
@@ -1675,11 +1675,11 @@ export const getPipelineResponseDataDescriptionRegExp = new RegExp('^[\\w\\s\\-.
 
 export const getPipelineResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getPipelineResponseDataIdMin).max(getPipelineResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getPipelineResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getPipelineResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getPipelineResponseDataIdMin).max(getPipelineResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getPipelineResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getPipelineResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(getPipelineResponseDataOrganizationIDMin).max(getPipelineResponseDataOrganizationIDMax).describe('The organization identifier'),
+  "organizationID": zod.string().uuid().min(getPipelineResponseDataOrganizationIDMin).max(getPipelineResponseDataOrganizationIDMax).describe('The organization identifier'),
   "name": zod.string().min(1).max(getPipelineResponseDataNameMax).regex(getPipelineResponseDataNameRegExp).nullable().describe('The pipeline\'s display name'),
   "description": zod.string().max(getPipelineResponseDataDescriptionMax).regex(getPipelineResponseDataDescriptionRegExp).nullable().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')
@@ -1694,7 +1694,7 @@ export const updatePipelinePathIdMin = 36;
 export const updatePipelinePathIdMax = 36;
 
 export const updatePipelineParams = zod.object({
-  "id": zod.uuid().min(updatePipelinePathIdMin).max(updatePipelinePathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(updatePipelinePathIdMin).max(updatePipelinePathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updatePipelineBodyDescriptionMax = 1000;
@@ -1718,11 +1718,11 @@ export const updatePipelineResponseDataDescriptionRegExp = new RegExp('^[\\w\\s\
 
 export const updatePipelineResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updatePipelineResponseDataIdMin).max(updatePipelineResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updatePipelineResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updatePipelineResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updatePipelineResponseDataIdMin).max(updatePipelineResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updatePipelineResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updatePipelineResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(updatePipelineResponseDataOrganizationIDMin).max(updatePipelineResponseDataOrganizationIDMax).describe('The organization identifier'),
+  "organizationID": zod.string().uuid().min(updatePipelineResponseDataOrganizationIDMin).max(updatePipelineResponseDataOrganizationIDMax).describe('The organization identifier'),
   "name": zod.string().min(1).max(updatePipelineResponseDataNameMax).regex(updatePipelineResponseDataNameRegExp).nullable().describe('The pipeline\'s display name'),
   "description": zod.string().max(updatePipelineResponseDataDescriptionMax).regex(updatePipelineResponseDataDescriptionRegExp).nullable().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')
@@ -1737,7 +1737,7 @@ export const deletePipelinePathIdMin = 36;
 export const deletePipelinePathIdMax = 36;
 
 export const deletePipelineParams = zod.object({
-  "id": zod.uuid().min(deletePipelinePathIdMin).max(deletePipelinePathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(deletePipelinePathIdMin).max(deletePipelinePathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -1749,7 +1749,7 @@ export const getPipelineStepsPathIdMin = 36;
 export const getPipelineStepsPathIdMax = 36;
 
 export const getPipelineStepsParams = zod.object({
-  "id": zod.uuid().min(getPipelineStepsPathIdMin).max(getPipelineStepsPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getPipelineStepsPathIdMin).max(getPipelineStepsPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getPipelineStepsResponseDataItemIdMin = 36;
@@ -1759,12 +1759,12 @@ export const getPipelineStepsResponseDataItemToolIDMax = 36;export const getPipe
 
 export const getPipelineStepsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(getPipelineStepsResponseDataItemIdMin).max(getPipelineStepsResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getPipelineStepsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getPipelineStepsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getPipelineStepsResponseDataItemIdMin).max(getPipelineStepsResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getPipelineStepsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getPipelineStepsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "pipelineID": zod.uuid().min(getPipelineStepsResponseDataItemPipelineIDMin).max(getPipelineStepsResponseDataItemPipelineIDMax).describe('The pipeline this step belongs to'),
-  "toolID": zod.uuid().min(getPipelineStepsResponseDataItemToolIDMin).max(getPipelineStepsResponseDataItemToolIDMax).describe('The tool used in this step')
+  "pipelineID": zod.string().uuid().min(getPipelineStepsResponseDataItemPipelineIDMin).max(getPipelineStepsResponseDataItemPipelineIDMax).describe('The pipeline this step belongs to'),
+  "toolID": zod.string().uuid().min(getPipelineStepsResponseDataItemToolIDMin).max(getPipelineStepsResponseDataItemToolIDMax).describe('The tool used in this step')
 })).describe('Schema for PipelineStep entity')).max(getPipelineStepsResponseDataMax)
 })
 
@@ -1777,7 +1777,7 @@ export const createPipelineStepPathIdMin = 36;
 export const createPipelineStepPathIdMax = 36;
 
 export const createPipelineStepParams = zod.object({
-  "id": zod.uuid().min(createPipelineStepPathIdMin).max(createPipelineStepPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(createPipelineStepPathIdMin).max(createPipelineStepPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const createPipelineStepBodyToolIDMin = 36;
@@ -1790,11 +1790,11 @@ export const createPipelineStepBodyPositionMax = 2147483647;export const createP
 export const createPipelineStepBodyDependenciesItemMax = 36;export const createPipelineStepBodyDependenciesMax = 1000;
 
 export const createPipelineStepBody = zod.object({
-  "toolID": zod.uuid().min(createPipelineStepBodyToolIDMin).max(createPipelineStepBodyToolIDMax).describe('UUID identifier'),
+  "toolID": zod.string().uuid().min(createPipelineStepBodyToolIDMin).max(createPipelineStepBodyToolIDMax).describe('UUID identifier'),
   "name": zod.string().min(1).max(createPipelineStepBodyNameMax).regex(createPipelineStepBodyNameRegExp).describe('Name of the step'),
   "description": zod.string().max(createPipelineStepBodyDescriptionMax).regex(createPipelineStepBodyDescriptionRegExp).optional().describe('Description of what this step does'),
   "position": zod.number().min(createPipelineStepBodyPositionMin).max(createPipelineStepBodyPositionMax).optional().describe('Position in the pipeline (for ordering)'),
-  "dependencies": zod.array(zod.uuid().min(createPipelineStepBodyDependenciesItemMin).max(createPipelineStepBodyDependenciesItemMax).describe('UUID identifier')).max(createPipelineStepBodyDependenciesMax).optional().describe('IDs of steps this step depends on')
+  "dependencies": zod.array(zod.string().uuid().min(createPipelineStepBodyDependenciesItemMin).max(createPipelineStepBodyDependenciesItemMax).describe('UUID identifier')).max(createPipelineStepBodyDependenciesMax).optional().describe('IDs of steps this step depends on')
 })
 
 
@@ -1806,7 +1806,7 @@ export const getPipelineExecutionPlanPathIdMin = 36;
 export const getPipelineExecutionPlanPathIdMax = 36;
 
 export const getPipelineExecutionPlanParams = zod.object({
-  "id": zod.uuid().min(getPipelineExecutionPlanPathIdMin).max(getPipelineExecutionPlanPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getPipelineExecutionPlanPathIdMin).max(getPipelineExecutionPlanPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getPipelineExecutionPlanResponseDataPipelineIDMin = 36;
@@ -1818,10 +1818,10 @@ export const getPipelineExecutionPlanResponseDataEstimatedDurationMax = 21474836
 
 export const getPipelineExecutionPlanResponse = zod.object({
   "data": zod.object({
-  "pipelineID": zod.uuid().min(getPipelineExecutionPlanResponseDataPipelineIDMin).max(getPipelineExecutionPlanResponseDataPipelineIDMax).describe('UUID identifier'),
+  "pipelineID": zod.string().uuid().min(getPipelineExecutionPlanResponseDataPipelineIDMin).max(getPipelineExecutionPlanResponseDataPipelineIDMax).describe('UUID identifier'),
   "levels": zod.array(zod.object({
   "level": zod.number().min(getPipelineExecutionPlanResponseDataLevelsItemLevelMin).max(getPipelineExecutionPlanResponseDataLevelsItemLevelMax).describe('Execution level (0-based)'),
-  "steps": zod.array(zod.uuid().min(getPipelineExecutionPlanResponseDataLevelsItemStepsItemMin).max(getPipelineExecutionPlanResponseDataLevelsItemStepsItemMax).describe('Step IDs that can run in parallel at this level')).max(getPipelineExecutionPlanResponseDataLevelsItemStepsMax)
+  "steps": zod.array(zod.string().uuid().min(getPipelineExecutionPlanResponseDataLevelsItemStepsItemMin).max(getPipelineExecutionPlanResponseDataLevelsItemStepsItemMax).describe('Step IDs that can run in parallel at this level')).max(getPipelineExecutionPlanResponseDataLevelsItemStepsMax)
 })).max(getPipelineExecutionPlanResponseDataLevelsMax),
   "totalSteps": zod.number().min(getPipelineExecutionPlanResponseDataTotalStepsMin).max(getPipelineExecutionPlanResponseDataTotalStepsMax).describe('Total number of steps in the pipeline'),
   "isValid": zod.boolean().describe('Whether the pipeline DAG is valid (no cycles)'),
@@ -1838,7 +1838,7 @@ export const validatePipelineExecutionPlanPathIdMin = 36;
 export const validatePipelineExecutionPlanPathIdMax = 36;
 
 export const validatePipelineExecutionPlanParams = zod.object({
-  "id": zod.uuid().min(validatePipelineExecutionPlanPathIdMin).max(validatePipelineExecutionPlanPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(validatePipelineExecutionPlanPathIdMin).max(validatePipelineExecutionPlanPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const validatePipelineExecutionPlanResponseDataIdMin = 36;
@@ -1851,11 +1851,11 @@ export const validatePipelineExecutionPlanResponseDataDescriptionRegExp = new Re
 
 export const validatePipelineExecutionPlanResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(validatePipelineExecutionPlanResponseDataIdMin).max(validatePipelineExecutionPlanResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(validatePipelineExecutionPlanResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(validatePipelineExecutionPlanResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(validatePipelineExecutionPlanResponseDataIdMin).max(validatePipelineExecutionPlanResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(validatePipelineExecutionPlanResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(validatePipelineExecutionPlanResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "organizationID": zod.uuid().min(validatePipelineExecutionPlanResponseDataOrganizationIDMin).max(validatePipelineExecutionPlanResponseDataOrganizationIDMax).describe('The organization identifier'),
+  "organizationID": zod.string().uuid().min(validatePipelineExecutionPlanResponseDataOrganizationIDMin).max(validatePipelineExecutionPlanResponseDataOrganizationIDMax).describe('The organization identifier'),
   "name": zod.string().min(1).max(validatePipelineExecutionPlanResponseDataNameMax).regex(validatePipelineExecutionPlanResponseDataNameRegExp).nullable().describe('The pipeline\'s display name'),
   "description": zod.string().max(validatePipelineExecutionPlanResponseDataDescriptionMax).regex(validatePipelineExecutionPlanResponseDataDescriptionRegExp).nullable().describe('Detailed description of the pipeline\'s purpose')
 })).describe('Schema for Pipeline entity')
@@ -1905,18 +1905,18 @@ export const listRunsResponseMetaTotalMax = 2147483647;
 
 export const listRunsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listRunsResponseDataItemIdMin).max(listRunsResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listRunsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listRunsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listRunsResponseDataItemIdMin).max(listRunsResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listRunsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listRunsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "completedAt": zod.iso.datetime({}).min(1).max(listRunsResponseDataItemCompletedAtMax).nullable().describe('The timestamp when the run completed'),
+  "completedAt": zod.string().datetime({}).min(1).max(listRunsResponseDataItemCompletedAtMax).nullable().describe('The timestamp when the run completed'),
   "error": zod.string().min(1).max(listRunsResponseDataItemErrorMax).regex(listRunsResponseDataItemErrorRegExp).nullable().describe('The error message'),
-  "organizationID": zod.uuid().min(listRunsResponseDataItemOrganizationIDMin).max(listRunsResponseDataItemOrganizationIDMax).describe('The organization this run belongs to'),
-  "pipelineID": zod.uuid().min(listRunsResponseDataItemPipelineIDMin).max(listRunsResponseDataItemPipelineIDMax).describe('The pipeline this run is executing'),
+  "organizationID": zod.string().uuid().min(listRunsResponseDataItemOrganizationIDMin).max(listRunsResponseDataItemOrganizationIDMax).describe('The organization this run belongs to'),
+  "pipelineID": zod.string().uuid().min(listRunsResponseDataItemPipelineIDMin).max(listRunsResponseDataItemPipelineIDMax).describe('The pipeline this run is executing'),
   "progress": zod.number().min(listRunsResponseDataItemProgressMin).max(listRunsResponseDataItemProgressMax).describe('The percent progress of the run (0-100)'),
-  "startedAt": zod.iso.datetime({}).min(1).max(listRunsResponseDataItemStartedAtMax).nullable().describe('The timestamp when the run started'),
+  "startedAt": zod.string().datetime({}).min(1).max(listRunsResponseDataItemStartedAtMax).nullable().describe('The timestamp when the run started'),
   "status": zod.enum(['COMPLETED', 'FAILED', 'PROCESSING', 'QUEUED']),
-  "toolID": zod.uuid().min(listRunsResponseDataItemToolIDMin).max(listRunsResponseDataItemToolIDMax).describe('The tool being used in this run')
+  "toolID": zod.string().uuid().min(listRunsResponseDataItemToolIDMin).max(listRunsResponseDataItemToolIDMax).describe('The tool being used in this run')
 })).describe('Schema for Run entity')).max(listRunsResponseDataMax),
   "meta": zod.object({
   "total": zod.number().min(listRunsResponseMetaTotalMin).max(listRunsResponseMetaTotalMax).describe('Total number of items in the collection')
@@ -1932,7 +1932,7 @@ export const createRunBodyPipelineIDMin = 36;
 export const createRunBodyPipelineIDMax = 36;
 
 export const createRunBody = zod.object({
-  "pipelineID": zod.uuid().min(createRunBodyPipelineIDMin).max(createRunBodyPipelineIDMax).describe('UUID identifier')
+  "pipelineID": zod.string().uuid().min(createRunBodyPipelineIDMin).max(createRunBodyPipelineIDMax).describe('UUID identifier')
 })
 
 
@@ -1944,7 +1944,7 @@ export const getRunPathIdMin = 36;
 export const getRunPathIdMax = 36;
 
 export const getRunParams = zod.object({
-  "id": zod.uuid().min(getRunPathIdMin).max(getRunPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getRunPathIdMin).max(getRunPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getRunResponseDataIdMin = 36;
@@ -1959,18 +1959,18 @@ export const getRunResponseDataToolIDMax = 36;
 
 export const getRunResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getRunResponseDataIdMin).max(getRunResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getRunResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getRunResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getRunResponseDataIdMin).max(getRunResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getRunResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getRunResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "completedAt": zod.iso.datetime({}).min(1).max(getRunResponseDataCompletedAtMax).nullable().describe('The timestamp when the run completed'),
+  "completedAt": zod.string().datetime({}).min(1).max(getRunResponseDataCompletedAtMax).nullable().describe('The timestamp when the run completed'),
   "error": zod.string().min(1).max(getRunResponseDataErrorMax).regex(getRunResponseDataErrorRegExp).nullable().describe('The error message'),
-  "organizationID": zod.uuid().min(getRunResponseDataOrganizationIDMin).max(getRunResponseDataOrganizationIDMax).describe('The organization this run belongs to'),
-  "pipelineID": zod.uuid().min(getRunResponseDataPipelineIDMin).max(getRunResponseDataPipelineIDMax).describe('The pipeline this run is executing'),
+  "organizationID": zod.string().uuid().min(getRunResponseDataOrganizationIDMin).max(getRunResponseDataOrganizationIDMax).describe('The organization this run belongs to'),
+  "pipelineID": zod.string().uuid().min(getRunResponseDataPipelineIDMin).max(getRunResponseDataPipelineIDMax).describe('The pipeline this run is executing'),
   "progress": zod.number().min(getRunResponseDataProgressMin).max(getRunResponseDataProgressMax).describe('The percent progress of the run (0-100)'),
-  "startedAt": zod.iso.datetime({}).min(1).max(getRunResponseDataStartedAtMax).nullable().describe('The timestamp when the run started'),
+  "startedAt": zod.string().datetime({}).min(1).max(getRunResponseDataStartedAtMax).nullable().describe('The timestamp when the run started'),
   "status": zod.enum(['COMPLETED', 'FAILED', 'PROCESSING', 'QUEUED']),
-  "toolID": zod.uuid().min(getRunResponseDataToolIDMin).max(getRunResponseDataToolIDMax).describe('The tool being used in this run')
+  "toolID": zod.string().uuid().min(getRunResponseDataToolIDMin).max(getRunResponseDataToolIDMax).describe('The tool being used in this run')
 })).describe('Schema for Run entity')
 })
 
@@ -1983,14 +1983,14 @@ export const updateRunPathIdMin = 36;
 export const updateRunPathIdMax = 36;
 
 export const updateRunParams = zod.object({
-  "id": zod.uuid().min(updateRunPathIdMin).max(updateRunPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(updateRunPathIdMin).max(updateRunPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateRunBodyPipelineIDMin = 36;
 export const updateRunBodyPipelineIDMax = 36;
 
 export const updateRunBody = zod.object({
-  "pipelineID": zod.uuid().min(updateRunBodyPipelineIDMin).max(updateRunBodyPipelineIDMax).optional().describe('UUID identifier')
+  "pipelineID": zod.string().uuid().min(updateRunBodyPipelineIDMin).max(updateRunBodyPipelineIDMax).optional().describe('UUID identifier')
 })
 
 export const updateRunResponseDataIdMin = 36;
@@ -2005,18 +2005,18 @@ export const updateRunResponseDataToolIDMax = 36;
 
 export const updateRunResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateRunResponseDataIdMin).max(updateRunResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateRunResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateRunResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateRunResponseDataIdMin).max(updateRunResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateRunResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateRunResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
-  "completedAt": zod.iso.datetime({}).min(1).max(updateRunResponseDataCompletedAtMax).nullable().describe('The timestamp when the run completed'),
+  "completedAt": zod.string().datetime({}).min(1).max(updateRunResponseDataCompletedAtMax).nullable().describe('The timestamp when the run completed'),
   "error": zod.string().min(1).max(updateRunResponseDataErrorMax).regex(updateRunResponseDataErrorRegExp).nullable().describe('The error message'),
-  "organizationID": zod.uuid().min(updateRunResponseDataOrganizationIDMin).max(updateRunResponseDataOrganizationIDMax).describe('The organization this run belongs to'),
-  "pipelineID": zod.uuid().min(updateRunResponseDataPipelineIDMin).max(updateRunResponseDataPipelineIDMax).describe('The pipeline this run is executing'),
+  "organizationID": zod.string().uuid().min(updateRunResponseDataOrganizationIDMin).max(updateRunResponseDataOrganizationIDMax).describe('The organization this run belongs to'),
+  "pipelineID": zod.string().uuid().min(updateRunResponseDataPipelineIDMin).max(updateRunResponseDataPipelineIDMax).describe('The pipeline this run is executing'),
   "progress": zod.number().min(updateRunResponseDataProgressMin).max(updateRunResponseDataProgressMax).describe('The percent progress of the run (0-100)'),
-  "startedAt": zod.iso.datetime({}).min(1).max(updateRunResponseDataStartedAtMax).nullable().describe('The timestamp when the run started'),
+  "startedAt": zod.string().datetime({}).min(1).max(updateRunResponseDataStartedAtMax).nullable().describe('The timestamp when the run started'),
   "status": zod.enum(['COMPLETED', 'FAILED', 'PROCESSING', 'QUEUED']),
-  "toolID": zod.uuid().min(updateRunResponseDataToolIDMin).max(updateRunResponseDataToolIDMax).describe('The tool being used in this run')
+  "toolID": zod.string().uuid().min(updateRunResponseDataToolIDMin).max(updateRunResponseDataToolIDMax).describe('The tool being used in this run')
 })).describe('Schema for Run entity')
 })
 
@@ -2029,7 +2029,7 @@ export const deleteRunPathIdMin = 36;
 export const deleteRunPathIdMax = 36;
 
 export const deleteRunParams = zod.object({
-  "id": zod.uuid().min(deleteRunPathIdMin).max(deleteRunPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(deleteRunPathIdMin).max(deleteRunPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -2080,14 +2080,14 @@ export const listToolsResponseMetaTotalMax = 2147483647;
 
 export const listToolsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listToolsResponseDataItemIdMin).max(listToolsResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listToolsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listToolsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listToolsResponseDataItemIdMin).max(listToolsResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listToolsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listToolsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "description": zod.string().min(1).max(listToolsResponseDataItemDescriptionMax).regex(listToolsResponseDataItemDescriptionRegExp).describe('The tool description'),
   "inputMimeType": zod.string().min(1).max(listToolsResponseDataItemInputMimeTypeMax).regex(listToolsResponseDataItemInputMimeTypeRegExp).describe('The MIME type of the input for the tool, e.g. text/plain'),
   "name": zod.string().min(1).max(listToolsResponseDataItemNameMax).regex(listToolsResponseDataItemNameRegExp).describe('The name of the tool'),
-  "organizationID": zod.uuid().min(listToolsResponseDataItemOrganizationIDMin).max(listToolsResponseDataItemOrganizationIDMax).describe('The organization that owns this tool'),
+  "organizationID": zod.string().uuid().min(listToolsResponseDataItemOrganizationIDMin).max(listToolsResponseDataItemOrganizationIDMax).describe('The organization that owns this tool'),
   "outputMimeType": zod.string().min(1).max(listToolsResponseDataItemOutputMimeTypeMax).regex(listToolsResponseDataItemOutputMimeTypeRegExp).describe('The MIME type of the output for the tool, e.g. text/plain')
 })).describe('Schema for Tool entity')).max(listToolsResponseDataMax),
   "meta": zod.object({
@@ -2120,7 +2120,7 @@ export const getToolPathIdMin = 36;
 export const getToolPathIdMax = 36;
 
 export const getToolParams = zod.object({
-  "id": zod.uuid().min(getToolPathIdMin).max(getToolPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getToolPathIdMin).max(getToolPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getToolResponseDataIdMin = 36;
@@ -2139,14 +2139,14 @@ export const getToolResponseDataOutputMimeTypeRegExp = new RegExp('^[a-z]+/[a-z0
 
 export const getToolResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getToolResponseDataIdMin).max(getToolResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getToolResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getToolResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getToolResponseDataIdMin).max(getToolResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getToolResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getToolResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "description": zod.string().min(1).max(getToolResponseDataDescriptionMax).regex(getToolResponseDataDescriptionRegExp).describe('The tool description'),
   "inputMimeType": zod.string().min(1).max(getToolResponseDataInputMimeTypeMax).regex(getToolResponseDataInputMimeTypeRegExp).describe('The MIME type of the input for the tool, e.g. text/plain'),
   "name": zod.string().min(1).max(getToolResponseDataNameMax).regex(getToolResponseDataNameRegExp).describe('The name of the tool'),
-  "organizationID": zod.uuid().min(getToolResponseDataOrganizationIDMin).max(getToolResponseDataOrganizationIDMax).describe('The organization that owns this tool'),
+  "organizationID": zod.string().uuid().min(getToolResponseDataOrganizationIDMin).max(getToolResponseDataOrganizationIDMax).describe('The organization that owns this tool'),
   "outputMimeType": zod.string().min(1).max(getToolResponseDataOutputMimeTypeMax).regex(getToolResponseDataOutputMimeTypeRegExp).describe('The MIME type of the output for the tool, e.g. text/plain')
 })).describe('Schema for Tool entity')
 })
@@ -2160,7 +2160,7 @@ export const updateToolPathIdMin = 36;
 export const updateToolPathIdMax = 36;
 
 export const updateToolParams = zod.object({
-  "id": zod.uuid().min(updateToolPathIdMin).max(updateToolPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(updateToolPathIdMin).max(updateToolPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateToolBodyDescriptionMax = 1000;
@@ -2190,14 +2190,14 @@ export const updateToolResponseDataOutputMimeTypeRegExp = new RegExp('^[a-z]+/[a
 
 export const updateToolResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateToolResponseDataIdMin).max(updateToolResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateToolResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateToolResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateToolResponseDataIdMin).max(updateToolResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateToolResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateToolResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "description": zod.string().min(1).max(updateToolResponseDataDescriptionMax).regex(updateToolResponseDataDescriptionRegExp).describe('The tool description'),
   "inputMimeType": zod.string().min(1).max(updateToolResponseDataInputMimeTypeMax).regex(updateToolResponseDataInputMimeTypeRegExp).describe('The MIME type of the input for the tool, e.g. text/plain'),
   "name": zod.string().min(1).max(updateToolResponseDataNameMax).regex(updateToolResponseDataNameRegExp).describe('The name of the tool'),
-  "organizationID": zod.uuid().min(updateToolResponseDataOrganizationIDMin).max(updateToolResponseDataOrganizationIDMax).describe('The organization that owns this tool'),
+  "organizationID": zod.string().uuid().min(updateToolResponseDataOrganizationIDMin).max(updateToolResponseDataOrganizationIDMax).describe('The organization that owns this tool'),
   "outputMimeType": zod.string().min(1).max(updateToolResponseDataOutputMimeTypeMax).regex(updateToolResponseDataOutputMimeTypeRegExp).describe('The MIME type of the output for the tool, e.g. text/plain')
 })).describe('Schema for Tool entity')
 })
@@ -2211,7 +2211,7 @@ export const deleteToolPathIdMin = 36;
 export const deleteToolPathIdMax = 36;
 
 export const deleteToolParams = zod.object({
-  "id": zod.uuid().min(deleteToolPathIdMin).max(deleteToolPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(deleteToolPathIdMin).max(deleteToolPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -2264,19 +2264,19 @@ export const listArtifactsResponseMetaTotalMax = 2147483647;
 
 export const listArtifactsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listArtifactsResponseDataItemIdMin).max(listArtifactsResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listArtifactsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listArtifactsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listArtifactsResponseDataItemIdMin).max(listArtifactsResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listArtifactsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listArtifactsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "credits": zod.number().min(listArtifactsResponseDataItemCreditsMin).max(listArtifactsResponseDataItemCreditsMax).describe('The number of credits required to access this artifact. This is used for metering and billing purposes.'),
   "description": zod.string().min(1).max(listArtifactsResponseDataItemDescriptionMax).regex(listArtifactsResponseDataItemDescriptionRegExp).nullable().describe('The artifact\'s description'),
   "mimeType": zod.string().min(1).max(listArtifactsResponseDataItemMimeTypeMax).regex(listArtifactsResponseDataItemMimeTypeRegExp).describe('The MIME type of the artifact, e.g. image/png'),
   "name": zod.string().min(1).max(listArtifactsResponseDataItemNameMax).regex(listArtifactsResponseDataItemNameRegExp).nullable().describe('The name of the artifact, used for display purposes'),
-  "organizationID": zod.uuid().min(listArtifactsResponseDataItemOrganizationIDMin).max(listArtifactsResponseDataItemOrganizationIDMax).describe('The organization that owns this artifact'),
-  "previewImage": zod.url().min(1).max(listArtifactsResponseDataItemPreviewImageMax).nullable().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
-  "producerID": zod.uuid().min(listArtifactsResponseDataItemProducerIDMin).max(listArtifactsResponseDataItemProducerIDMax).nullable().describe('The ID of the entity that produced this artifact'),
+  "organizationID": zod.string().uuid().min(listArtifactsResponseDataItemOrganizationIDMin).max(listArtifactsResponseDataItemOrganizationIDMax).describe('The organization that owns this artifact'),
+  "previewImage": zod.string().url().min(1).max(listArtifactsResponseDataItemPreviewImageMax).nullable().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
+  "producerID": zod.string().uuid().min(listArtifactsResponseDataItemProducerIDMin).max(listArtifactsResponseDataItemProducerIDMax).nullable().describe('The ID of the entity that produced this artifact'),
   "text": zod.string().min(1).max(listArtifactsResponseDataItemTextMax).regex(listArtifactsResponseDataItemTextRegExp).nullable().describe('The artifact text'),
-  "url": zod.url().min(1).max(listArtifactsResponseDataItemUrlMax).nullable().describe('The URL of the artifact if it\'s stored externally')
+  "url": zod.string().url().min(1).max(listArtifactsResponseDataItemUrlMax).nullable().describe('The URL of the artifact if it\'s stored externally')
 })).describe('Schema for Artifact entity')).max(listArtifactsResponseDataMax),
   "meta": zod.object({
   "total": zod.number().min(listArtifactsResponseMetaTotalMin).max(listArtifactsResponseMetaTotalMax).describe('Total number of items in the collection')
@@ -2308,7 +2308,7 @@ export const getArtifactPathIdMin = 36;
 export const getArtifactPathIdMax = 36;
 
 export const getArtifactParams = zod.object({
-  "id": zod.uuid().min(getArtifactPathIdMin).max(getArtifactPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getArtifactPathIdMin).max(getArtifactPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getArtifactResponseDataIdMin = 36;
@@ -2329,19 +2329,19 @@ export const getArtifactResponseDataUrlMax = 2048;
 
 export const getArtifactResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getArtifactResponseDataIdMin).max(getArtifactResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getArtifactResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getArtifactResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getArtifactResponseDataIdMin).max(getArtifactResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getArtifactResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getArtifactResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "credits": zod.number().min(getArtifactResponseDataCreditsMin).max(getArtifactResponseDataCreditsMax).describe('The number of credits required to access this artifact. This is used for metering and billing purposes.'),
   "description": zod.string().min(1).max(getArtifactResponseDataDescriptionMax).regex(getArtifactResponseDataDescriptionRegExp).nullable().describe('The artifact\'s description'),
   "mimeType": zod.string().min(1).max(getArtifactResponseDataMimeTypeMax).regex(getArtifactResponseDataMimeTypeRegExp).describe('The MIME type of the artifact, e.g. image/png'),
   "name": zod.string().min(1).max(getArtifactResponseDataNameMax).regex(getArtifactResponseDataNameRegExp).nullable().describe('The name of the artifact, used for display purposes'),
-  "organizationID": zod.uuid().min(getArtifactResponseDataOrganizationIDMin).max(getArtifactResponseDataOrganizationIDMax).describe('The organization that owns this artifact'),
-  "previewImage": zod.url().min(1).max(getArtifactResponseDataPreviewImageMax).nullable().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
-  "producerID": zod.uuid().min(getArtifactResponseDataProducerIDMin).max(getArtifactResponseDataProducerIDMax).nullable().describe('The ID of the entity that produced this artifact'),
+  "organizationID": zod.string().uuid().min(getArtifactResponseDataOrganizationIDMin).max(getArtifactResponseDataOrganizationIDMax).describe('The organization that owns this artifact'),
+  "previewImage": zod.string().url().min(1).max(getArtifactResponseDataPreviewImageMax).nullable().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
+  "producerID": zod.string().uuid().min(getArtifactResponseDataProducerIDMin).max(getArtifactResponseDataProducerIDMax).nullable().describe('The ID of the entity that produced this artifact'),
   "text": zod.string().min(1).max(getArtifactResponseDataTextMax).regex(getArtifactResponseDataTextRegExp).nullable().describe('The artifact text'),
-  "url": zod.url().min(1).max(getArtifactResponseDataUrlMax).nullable().describe('The URL of the artifact if it\'s stored externally')
+  "url": zod.string().url().min(1).max(getArtifactResponseDataUrlMax).nullable().describe('The URL of the artifact if it\'s stored externally')
 })).describe('Schema for Artifact entity')
 })
 
@@ -2354,7 +2354,7 @@ export const updateArtifactPathIdMin = 36;
 export const updateArtifactPathIdMax = 36;
 
 export const updateArtifactParams = zod.object({
-  "id": zod.uuid().min(updateArtifactPathIdMin).max(updateArtifactPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(updateArtifactPathIdMin).max(updateArtifactPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateArtifactBodyNameMax = 255;
@@ -2366,7 +2366,7 @@ export const updateArtifactBodyUrlMax = 2048;
 export const updateArtifactBody = zod.object({
   "name": zod.string().min(1).max(updateArtifactBodyNameMax).regex(updateArtifactBodyNameRegExp).optional().describe('The name of the artifact'),
   "text": zod.string().max(updateArtifactBodyTextMax).regex(updateArtifactBodyTextRegExp).optional().describe('The artifact text'),
-  "url": zod.url().max(updateArtifactBodyUrlMax).optional().describe('The artifact URL')
+  "url": zod.string().url().max(updateArtifactBodyUrlMax).optional().describe('The artifact URL')
 })
 
 export const updateArtifactResponseDataIdMin = 36;
@@ -2387,19 +2387,19 @@ export const updateArtifactResponseDataUrlMax = 2048;
 
 export const updateArtifactResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateArtifactResponseDataIdMin).max(updateArtifactResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateArtifactResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateArtifactResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateArtifactResponseDataIdMin).max(updateArtifactResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateArtifactResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateArtifactResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "credits": zod.number().min(updateArtifactResponseDataCreditsMin).max(updateArtifactResponseDataCreditsMax).describe('The number of credits required to access this artifact. This is used for metering and billing purposes.'),
   "description": zod.string().min(1).max(updateArtifactResponseDataDescriptionMax).regex(updateArtifactResponseDataDescriptionRegExp).nullable().describe('The artifact\'s description'),
   "mimeType": zod.string().min(1).max(updateArtifactResponseDataMimeTypeMax).regex(updateArtifactResponseDataMimeTypeRegExp).describe('The MIME type of the artifact, e.g. image/png'),
   "name": zod.string().min(1).max(updateArtifactResponseDataNameMax).regex(updateArtifactResponseDataNameRegExp).nullable().describe('The name of the artifact, used for display purposes'),
-  "organizationID": zod.uuid().min(updateArtifactResponseDataOrganizationIDMin).max(updateArtifactResponseDataOrganizationIDMax).describe('The organization that owns this artifact'),
-  "previewImage": zod.url().min(1).max(updateArtifactResponseDataPreviewImageMax).nullable().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
-  "producerID": zod.uuid().min(updateArtifactResponseDataProducerIDMin).max(updateArtifactResponseDataProducerIDMax).nullable().describe('The ID of the entity that produced this artifact'),
+  "organizationID": zod.string().uuid().min(updateArtifactResponseDataOrganizationIDMin).max(updateArtifactResponseDataOrganizationIDMax).describe('The organization that owns this artifact'),
+  "previewImage": zod.string().url().min(1).max(updateArtifactResponseDataPreviewImageMax).nullable().describe('The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'),
+  "producerID": zod.string().uuid().min(updateArtifactResponseDataProducerIDMin).max(updateArtifactResponseDataProducerIDMax).nullable().describe('The ID of the entity that produced this artifact'),
   "text": zod.string().min(1).max(updateArtifactResponseDataTextMax).regex(updateArtifactResponseDataTextRegExp).nullable().describe('The artifact text'),
-  "url": zod.url().min(1).max(updateArtifactResponseDataUrlMax).nullable().describe('The URL of the artifact if it\'s stored externally')
+  "url": zod.string().url().min(1).max(updateArtifactResponseDataUrlMax).nullable().describe('The URL of the artifact if it\'s stored externally')
 })).describe('Schema for Artifact entity')
 })
 
@@ -2412,7 +2412,7 @@ export const deleteArtifactPathIdMin = 36;
 export const deleteArtifactPathIdMax = 36;
 
 export const deleteArtifactParams = zod.object({
-  "id": zod.uuid().min(deleteArtifactPathIdMin).max(deleteArtifactPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(deleteArtifactPathIdMin).max(deleteArtifactPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -2455,12 +2455,12 @@ export const listLabelsResponseMetaTotalMax = 2147483647;
 
 export const listLabelsResponse = zod.object({
   "data": zod.array(zod.object({
-  "id": zod.uuid().min(listLabelsResponseDataItemIdMin).max(listLabelsResponseDataItemIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(listLabelsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(listLabelsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(listLabelsResponseDataItemIdMin).max(listLabelsResponseDataItemIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(listLabelsResponseDataItemCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(listLabelsResponseDataItemUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "name": zod.string().min(1).max(listLabelsResponseDataItemNameMax).regex(listLabelsResponseDataItemNameRegExp).describe('The name of the label'),
-  "organizationID": zod.uuid().min(listLabelsResponseDataItemOrganizationIDMin).max(listLabelsResponseDataItemOrganizationIDMax).describe('The organization this label belongs to')
+  "organizationID": zod.string().uuid().min(listLabelsResponseDataItemOrganizationIDMin).max(listLabelsResponseDataItemOrganizationIDMax).describe('The organization this label belongs to')
 })).describe('Schema for Label entity')).max(listLabelsResponseDataMax),
   "meta": zod.object({
   "total": zod.number().min(listLabelsResponseMetaTotalMin).max(listLabelsResponseMetaTotalMax).describe('Total number of items in the collection')
@@ -2489,7 +2489,7 @@ export const getLabelPathIdMin = 36;
 export const getLabelPathIdMax = 36;
 
 export const getLabelParams = zod.object({
-  "id": zod.uuid().min(getLabelPathIdMin).max(getLabelPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(getLabelPathIdMin).max(getLabelPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const getLabelResponseDataIdMin = 36;
@@ -2500,12 +2500,12 @@ export const getLabelResponseDataOrganizationIDMax = 36;
 
 export const getLabelResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(getLabelResponseDataIdMin).max(getLabelResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(getLabelResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(getLabelResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(getLabelResponseDataIdMin).max(getLabelResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(getLabelResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(getLabelResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "name": zod.string().min(1).max(getLabelResponseDataNameMax).regex(getLabelResponseDataNameRegExp).describe('The name of the label'),
-  "organizationID": zod.uuid().min(getLabelResponseDataOrganizationIDMin).max(getLabelResponseDataOrganizationIDMax).describe('The organization this label belongs to')
+  "organizationID": zod.string().uuid().min(getLabelResponseDataOrganizationIDMin).max(getLabelResponseDataOrganizationIDMax).describe('The organization this label belongs to')
 })).describe('Schema for Label entity')
 })
 
@@ -2518,7 +2518,7 @@ export const updateLabelPathIdMin = 36;
 export const updateLabelPathIdMax = 36;
 
 export const updateLabelParams = zod.object({
-  "id": zod.uuid().min(updateLabelPathIdMin).max(updateLabelPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(updateLabelPathIdMin).max(updateLabelPathIdMax).describe('The unique identifier of the resource.')
 })
 
 export const updateLabelBodyNameMax = 255;
@@ -2537,12 +2537,12 @@ export const updateLabelResponseDataOrganizationIDMax = 36;
 
 export const updateLabelResponse = zod.object({
   "data": zod.object({
-  "id": zod.uuid().min(updateLabelResponseDataIdMin).max(updateLabelResponseDataIdMax).describe('Unique identifier for the resource'),
-  "createdAt": zod.iso.datetime({}).min(1).max(updateLabelResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
-  "updatedAt": zod.iso.datetime({}).min(1).max(updateLabelResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
+  "id": zod.string().uuid().min(updateLabelResponseDataIdMin).max(updateLabelResponseDataIdMax).describe('Unique identifier for the resource'),
+  "createdAt": zod.string().datetime({}).min(1).max(updateLabelResponseDataCreatedAtMax).describe('The date and time when the resource was created'),
+  "updatedAt": zod.string().datetime({}).min(1).max(updateLabelResponseDataUpdatedAtMax).describe('The date and time when the resource was last updated')
 }).describe('Base schema for all entities with common fields').and(zod.object({
   "name": zod.string().min(1).max(updateLabelResponseDataNameMax).regex(updateLabelResponseDataNameRegExp).describe('The name of the label'),
-  "organizationID": zod.uuid().min(updateLabelResponseDataOrganizationIDMin).max(updateLabelResponseDataOrganizationIDMax).describe('The organization this label belongs to')
+  "organizationID": zod.string().uuid().min(updateLabelResponseDataOrganizationIDMin).max(updateLabelResponseDataOrganizationIDMax).describe('The organization this label belongs to')
 })).describe('Schema for Label entity')
 })
 
@@ -2555,7 +2555,7 @@ export const deleteLabelPathIdMin = 36;
 export const deleteLabelPathIdMax = 36;
 
 export const deleteLabelParams = zod.object({
-  "id": zod.uuid().min(deleteLabelPathIdMin).max(deleteLabelPathIdMax).describe('The unique identifier of the resource.')
+  "id": zod.string().uuid().min(deleteLabelPathIdMin).max(deleteLabelPathIdMax).describe('The unique identifier of the resource.')
 })
 
 
@@ -2859,12 +2859,12 @@ export const getConfigResponse = zod.object({
   "data": zod.object({
   "api": zod.object({
   "cors": zod.string().min(1).max(getConfigResponseDataApiCorsMax).regex(getConfigResponseDataApiCorsRegExp).describe('A comma-separated list of allowed origins for CORS requests'),
-  "url": zod.url().max(getConfigResponseDataApiUrlMax).default(getConfigResponseDataApiUrlDefault).describe('The public URL for the API'),
+  "url": zod.string().url().max(getConfigResponseDataApiUrlMax).default(getConfigResponseDataApiUrlDefault).describe('The public URL for the API'),
   "docs": zod.boolean().describe('Enable or disable API documentation'),
   "email": zod.object({
   "enabled": zod.boolean().describe('Enable email functionality'),
   "service": zod.string().max(getConfigResponseDataApiEmailServiceMax).regex(getConfigResponseDataApiEmailServiceRegExp).optional().describe('Email service provider (e.g., \"gmail\", \"sendgrid\", etc.)'),
-  "user": zod.email().max(getConfigResponseDataApiEmailUserMax).regex(getConfigResponseDataApiEmailUserRegExp).optional().describe('Username for the email service'),
+  "user": zod.string().email().max(getConfigResponseDataApiEmailUserMax).regex(getConfigResponseDataApiEmailUserRegExp).optional().describe('Username for the email service'),
   "password": zod.string().max(getConfigResponseDataApiEmailPasswordMax).regex(getConfigResponseDataApiEmailPasswordRegExp).optional().describe('Password for the email service')
 }).optional().describe('Email configuration for sending emails'),
   "environment": zod.enum(['development', 'staging', 'production']).describe('Deployment environment (development, staging, production)'),
@@ -2891,7 +2891,7 @@ export const getConfigResponse = zod.object({
   "enabled": zod.boolean().describe('Enable authentication'),
   "firebase": zod.object({
   "enabled": zod.boolean().describe('Enable Firebase authentication'),
-  "clientEmail": zod.email().max(getConfigResponseDataAuthFirebaseClientEmailMax).regex(getConfigResponseDataAuthFirebaseClientEmailRegExp).optional().describe('Firebase service account client email address'),
+  "clientEmail": zod.string().email().max(getConfigResponseDataAuthFirebaseClientEmailMax).regex(getConfigResponseDataAuthFirebaseClientEmailRegExp).optional().describe('Firebase service account client email address'),
   "privateKey": zod.string().min(1).max(getConfigResponseDataAuthFirebasePrivateKeyMax).regex(getConfigResponseDataAuthFirebasePrivateKeyRegExp).optional().describe('Firebase service account private key (PEM format)'),
   "projectID": zod.string().max(getConfigResponseDataAuthFirebaseProjectIDMax).regex(getConfigResponseDataAuthFirebaseProjectIDRegExp).optional().describe('Firebase project ID for authentication')
 }).optional().describe('Firebase authentication configuration'),
@@ -2908,7 +2908,7 @@ export const getConfigResponse = zod.object({
   "deliveryMethods": zod.object({
   "email": zod.object({
   "enabled": zod.boolean().default(getConfigResponseDataAuthMagicLinkDeliveryMethodsEmailEnabledDefault),
-  "from": zod.email().max(getConfigResponseDataAuthMagicLinkDeliveryMethodsEmailFromMax).optional()
+  "from": zod.string().email().max(getConfigResponseDataAuthMagicLinkDeliveryMethodsEmailFromMax).optional()
 }).optional(),
   "console": zod.object({
   "enabled": zod.boolean().optional().describe('Enable console output (development only)')
@@ -2918,7 +2918,7 @@ export const getConfigResponse = zod.object({
 }).optional(),
   "webhook": zod.object({
   "enabled": zod.boolean().optional(),
-  "url": zod.url().max(getConfigResponseDataAuthMagicLinkDeliveryMethodsWebhookUrlMax).optional()
+  "url": zod.string().url().max(getConfigResponseDataAuthMagicLinkDeliveryMethodsWebhookUrlMax).optional()
 }).optional()
 }).optional().describe('Available delivery methods'),
   "rateLimit": zod.object({
@@ -2928,7 +2928,7 @@ export const getConfigResponse = zod.object({
 }).optional().describe('Magic link authentication configuration'),
   "twitter": zod.object({
   "enabled": zod.boolean().describe('Enable Twitter OAuth'),
-  "callbackURL": zod.url().min(1).max(getConfigResponseDataAuthTwitterCallbackURLMax).optional().describe('OAuth callback URL'),
+  "callbackURL": zod.string().url().min(1).max(getConfigResponseDataAuthTwitterCallbackURLMax).optional().describe('OAuth callback URL'),
   "consumerKey": zod.string().min(1).max(getConfigResponseDataAuthTwitterConsumerKeyMax).regex(getConfigResponseDataAuthTwitterConsumerKeyRegExp).optional().describe('Twitter API consumer key'),
   "consumerSecret": zod.string().min(1).max(getConfigResponseDataAuthTwitterConsumerSecretMax).regex(getConfigResponseDataAuthTwitterConsumerSecretRegExp).optional().describe('Twitter API consumer secret')
 }).optional().describe('Twitter OAuth configuration'),
@@ -2936,21 +2936,21 @@ export const getConfigResponse = zod.object({
   "enabled": zod.boolean().describe('Enable Google OAuth'),
   "clientId": zod.string().min(1).max(getConfigResponseDataAuthGoogleClientIdMax).regex(getConfigResponseDataAuthGoogleClientIdRegExp).optional().describe('Google OAuth client ID'),
   "clientSecret": zod.string().min(1).max(getConfigResponseDataAuthGoogleClientSecretMax).regex(getConfigResponseDataAuthGoogleClientSecretRegExp).optional().describe('Google OAuth client secret'),
-  "redirectUrl": zod.url().max(getConfigResponseDataAuthGoogleRedirectUrlMax).optional().describe('OAuth callback URL'),
+  "redirectUrl": zod.string().url().max(getConfigResponseDataAuthGoogleRedirectUrlMax).optional().describe('OAuth callback URL'),
   "scopes": zod.array(zod.string().min(1).max(getConfigResponseDataAuthGoogleScopesItemMax).regex(getConfigResponseDataAuthGoogleScopesItemRegExp)).max(getConfigResponseDataAuthGoogleScopesMax).default(getConfigResponseDataAuthGoogleScopesDefault).describe('OAuth scopes to request')
 }).optional().describe('Google OAuth configuration'),
   "github": zod.object({
   "enabled": zod.boolean().describe('Enable GitHub OAuth'),
   "clientId": zod.string().min(1).max(getConfigResponseDataAuthGithubClientIdMax).regex(getConfigResponseDataAuthGithubClientIdRegExp).optional().describe('GitHub OAuth App client ID'),
   "clientSecret": zod.string().min(1).max(getConfigResponseDataAuthGithubClientSecretMax).regex(getConfigResponseDataAuthGithubClientSecretRegExp).optional().describe('GitHub OAuth App client secret'),
-  "redirectUrl": zod.url().max(getConfigResponseDataAuthGithubRedirectUrlMax).optional().describe('OAuth callback URL'),
+  "redirectUrl": zod.string().url().max(getConfigResponseDataAuthGithubRedirectUrlMax).optional().describe('OAuth callback URL'),
   "scopes": zod.array(zod.string().max(getConfigResponseDataAuthGithubScopesItemMax).regex(getConfigResponseDataAuthGithubScopesItemRegExp)).max(getConfigResponseDataAuthGithubScopesMax).default(getConfigResponseDataAuthGithubScopesDefault).describe('OAuth scopes to request')
 }).optional().describe('GitHub OAuth configuration'),
   "microsoft": zod.object({
   "enabled": zod.boolean().describe('Enable Microsoft OAuth'),
-  "clientId": zod.uuid().min(1).max(getConfigResponseDataAuthMicrosoftClientIdMax).optional().describe('Azure AD Application (client) ID'),
+  "clientId": zod.string().uuid().min(1).max(getConfigResponseDataAuthMicrosoftClientIdMax).optional().describe('Azure AD Application (client) ID'),
   "clientSecret": zod.string().min(1).max(getConfigResponseDataAuthMicrosoftClientSecretMax).regex(getConfigResponseDataAuthMicrosoftClientSecretRegExp).optional().describe('Azure AD client secret'),
-  "redirectUrl": zod.url().max(getConfigResponseDataAuthMicrosoftRedirectUrlMax).optional().describe('OAuth callback URL'),
+  "redirectUrl": zod.string().url().max(getConfigResponseDataAuthMicrosoftRedirectUrlMax).optional().describe('OAuth callback URL'),
   "tenant": zod.string().min(1).max(getConfigResponseDataAuthMicrosoftTenantMax).regex(getConfigResponseDataAuthMicrosoftTenantRegExp).default(getConfigResponseDataAuthMicrosoftTenantDefault).describe('Azure AD tenant ID (use \'common\' for multi-tenant)'),
   "scopes": zod.array(zod.string().max(getConfigResponseDataAuthMicrosoftScopesItemMax).regex(getConfigResponseDataAuthMicrosoftScopesItemRegExp)).max(getConfigResponseDataAuthMicrosoftScopesMax).default(getConfigResponseDataAuthMicrosoftScopesDefault).describe('OAuth scopes to request')
 }).optional().describe('Microsoft/Azure AD OAuth configuration')
@@ -2964,7 +2964,7 @@ export const getConfigResponse = zod.object({
 }).optional().describe('Billing configuration for Stripe'),
   "database": zod.object({
   "enabled": zod.boolean().describe('Enable database'),
-  "url": zod.url().min(1).max(getConfigResponseDataDatabaseUrlMax).describe('Database connection url/string'),
+  "url": zod.string().url().min(1).max(getConfigResponseDataDatabaseUrlMax).describe('Database connection url/string'),
   "type": zod.enum(['postgresql', 'sqlite']).describe('Database type (postgresql or sqlite)'),
   "maxConns": zod.number().min(1).max(getConfigResponseDataDatabaseMaxConnsMax).describe('Maximum number of connections in pool (PostgreSQL)'),
   "minConns": zod.number().min(getConfigResponseDataDatabaseMinConnsMin).max(getConfigResponseDataDatabaseMinConnsMax).describe('Minimum number of connections in pool (PostgreSQL)'),
@@ -2996,12 +2996,12 @@ export const getConfigResponse = zod.object({
   "intelligence": zod.object({
   "embedding": zod.object({
   "type": zod.enum(['ollama', 'openai']).describe('LLM provider type'),
-  "endpoint": zod.url().min(1).max(getConfigResponseDataIntelligenceEmbeddingEndpointMax).optional().describe('LLM service endpoint URL'),
+  "endpoint": zod.string().url().min(1).max(getConfigResponseDataIntelligenceEmbeddingEndpointMax).optional().describe('LLM service endpoint URL'),
   "token": zod.string().min(1).max(getConfigResponseDataIntelligenceEmbeddingTokenMax).regex(getConfigResponseDataIntelligenceEmbeddingTokenRegExp).optional().describe('Authentication token for LLM service')
 }).optional().describe('Large Language Model configuration'),
   "llm": zod.object({
   "type": zod.enum(['ollama', 'openai']).describe('LLM provider type'),
-  "endpoint": zod.url().min(1).max(getConfigResponseDataIntelligenceLlmEndpointMax).optional().describe('LLM service endpoint URL'),
+  "endpoint": zod.string().url().min(1).max(getConfigResponseDataIntelligenceLlmEndpointMax).optional().describe('LLM service endpoint URL'),
   "token": zod.string().min(1).max(getConfigResponseDataIntelligenceLlmTokenMax).regex(getConfigResponseDataIntelligenceLlmTokenRegExp).optional().describe('Authentication token for LLM service')
 }).optional().describe('Large Language Model configuration'),
   "runpod": zod.object({
@@ -3011,7 +3011,7 @@ export const getConfigResponse = zod.object({
   "scraper": zod.object({
   "enabled": zod.boolean().describe('Enable scraper service'),
   "managed": zod.boolean().optional().describe('Use managed scraper deployment'),
-  "endpoint": zod.url().min(1).max(getConfigResponseDataIntelligenceScraperEndpointMax).optional().describe('Web scraper service endpoint URL'),
+  "endpoint": zod.string().url().min(1).max(getConfigResponseDataIntelligenceScraperEndpointMax).optional().describe('Web scraper service endpoint URL'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
   "repository": zod.string().min(1).max(getConfigResponseDataIntelligenceScraperImageRepositoryMax).regex(getConfigResponseDataIntelligenceScraperImageRepositoryRegExp).optional().describe('Container image repository'),
@@ -3059,7 +3059,7 @@ export const getConfigResponse = zod.object({
   "platform": zod.object({
   "enabled": zod.boolean().describe('Enable platform service'),
   "managed": zod.boolean().optional().describe('Use managed platform deployment'),
-  "url": zod.url().max(getConfigResponseDataPlatformUrlMax).default(getConfigResponseDataPlatformUrlDefault).describe('Platform URL'),
+  "url": zod.string().url().max(getConfigResponseDataPlatformUrlMax).default(getConfigResponseDataPlatformUrlDefault).describe('Platform URL'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
   "repository": zod.string().min(1).max(getConfigResponseDataPlatformImageRepositoryMax).regex(getConfigResponseDataPlatformImageRepositoryRegExp).optional().describe('Container image repository'),
@@ -3108,7 +3108,7 @@ export const getConfigResponse = zod.object({
   "managed": zod.boolean().optional().describe('Use managed storage deployment'),
   "accesskey": zod.string().min(1).max(getConfigResponseDataStorageAccesskeyMax).regex(getConfigResponseDataStorageAccesskeyRegExp).describe('MinIO/S3 access key ID'),
   "bucket": zod.string().min(1).max(getConfigResponseDataStorageBucketMax).regex(getConfigResponseDataStorageBucketRegExp).describe('S3 bucket name'),
-  "endpoint": zod.url().min(1).max(getConfigResponseDataStorageEndpointMax).describe('MinIO server endpoint URL'),
+  "endpoint": zod.string().url().min(1).max(getConfigResponseDataStorageEndpointMax).describe('MinIO server endpoint URL'),
   "secretkey": zod.string().min(1).max(getConfigResponseDataStorageSecretkeyMax).regex(getConfigResponseDataStorageSecretkeyRegExp).describe('MinIO/S3 secret access key'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
@@ -3147,7 +3147,7 @@ export const getConfigResponse = zod.object({
 }).optional().describe('Infrastructure configuration for Kubernetes deployments'),
   "ingress": zod.object({
   "enabled": zod.boolean().describe('Enable ingress'),
-  "domain": zod.url().min(1).max(getConfigResponseDataKubernetesIngressDomainMax).default(getConfigResponseDataKubernetesIngressDomainDefault).describe('Primary domain name for ingress routing'),
+  "domain": zod.string().url().min(1).max(getConfigResponseDataKubernetesIngressDomainMax).default(getConfigResponseDataKubernetesIngressDomainDefault).describe('Primary domain name for ingress routing'),
   "tls": zod.object({
   "enabled": zod.boolean().describe('Enable TLS/SSL'),
   "issuer": zod.string().min(1).max(getConfigResponseDataKubernetesIngressTlsIssuerMax).regex(getConfigResponseDataKubernetesIngressTlsIssuerRegExp).default(getConfigResponseDataKubernetesIngressTlsIssuerDefault).describe('Cert-manager ClusterIssuer'),
@@ -3177,7 +3177,7 @@ export const getConfigResponse = zod.object({
   "loki": zod.object({
   "enabled": zod.boolean().describe('Enable Loki'),
   "managed": zod.boolean().optional().describe('Use managed Loki deployment'),
-  "host": zod.url().min(1).max(getConfigResponseDataKubernetesMonitoringLokiHostMax).default(getConfigResponseDataKubernetesMonitoringLokiHostDefault).describe('Loki host URL'),
+  "host": zod.string().url().min(1).max(getConfigResponseDataKubernetesMonitoringLokiHostMax).default(getConfigResponseDataKubernetesMonitoringLokiHostDefault).describe('Loki host URL'),
   "image": zod.object({
   "pullPolicy": zod.enum(['Always', 'IfNotPresent', 'Never']).describe('Kubernetes image pull policy'),
   "repository": zod.string().min(1).max(getConfigResponseDataKubernetesMonitoringLokiImageRepositoryMax).regex(getConfigResponseDataKubernetesMonitoringLokiImageRepositoryRegExp).optional().describe('Container image repository'),
@@ -3213,6 +3213,6 @@ export const getHealthResponse = zod.object({
   "email": zod.enum(['healthy', 'unhealthy', 'degraded']),
   "redis": zod.enum(['healthy', 'unhealthy', 'degraded'])
 }),
-  "timestamp": zod.iso.datetime({}).max(getHealthResponseTimestampMax),
+  "timestamp": zod.string().datetime({}).max(getHealthResponseTimestampMax),
   "uptime": zod.number().min(getHealthResponseUptimeMin).max(getHealthResponseUptimeMax).describe('System uptime in seconds')
 }).describe('Health check response')

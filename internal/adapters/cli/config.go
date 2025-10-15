@@ -3,6 +3,7 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -72,8 +73,8 @@ var configValidateCmd = &cobra.Command{
 		}
 
 		// TODO: Add more comprehensive validation logic
-		fmt.Println("✓ Configuration is valid")
-		fmt.Printf("✓ Loaded from: %s\n", getConfigSource(cfg))
+		slog.Info("✓ Configuration is valid")
+		slog.Info("✓ Loaded", "source", getConfigSource(cfg))
 		return nil
 	},
 }
@@ -127,7 +128,7 @@ var configInitCmd = &cobra.Command{
 			return fmt.Errorf("failed to write config: %w", err)
 		}
 
-		fmt.Printf("✓ Created default configuration file: %s\n", configPath)
+		slog.Info("Created default configuration file", "path", configPath)
 		return nil
 	},
 }
@@ -163,19 +164,19 @@ var configEnvCmd = &cobra.Command{
 			"ARCHESAI_LOGGING_PRETTY",
 		}
 
-		fmt.Println("Arches Environment Variables:")
-		fmt.Println("================================")
+		slog.Info("Arches Environment Variables:")
+		slog.Info("================================")
 
 		found := false
 		for _, envVar := range envVars {
 			if value := os.Getenv(envVar); value != "" {
-				fmt.Printf("%s=%s\n", envVar, value)
+				slog.Info("ENV", "key", envVar, "value", value)
 				found = true
 			}
 		}
 
 		if !found {
-			fmt.Println("No Arches environment variables are currently set.")
+			slog.Info("No Arches environment variables are currently set.")
 		}
 
 		return nil

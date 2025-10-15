@@ -106,11 +106,15 @@ func NewSession(
 	userID uuid.UUID,
 ) (*Session, error) {
 	// Validate required fields
-	if !authProvider.IsValid() {
-		return nil, fmt.Errorf("invalid AuthProvider: %s", authProvider)
+	// Nullable enum - validate only if present
+	if authProvider != nil && !(*authProvider).IsValid() {
+		return nil, fmt.Errorf("invalid AuthProvider: %s", *authProvider)
 	}
 	if token == "" {
 		return nil, fmt.Errorf("Token cannot be empty")
+	}
+	if userID == uuid.Nil {
+		return nil, fmt.Errorf("UserID cannot be nil UUID")
 	}
 	now := time.Now().UTC()
 	id := uuid.New()

@@ -1,6 +1,6 @@
 -- name: CreateAPIKey :one
 INSERT INTO
-  api_keys (
+  api_key (
     id,
     user_id,
     organization_id,
@@ -20,7 +20,7 @@ RETURNING
 SELECT
   *
 FROM
-  api_keys
+  api_key
 WHERE
   id = $1
 LIMIT
@@ -30,7 +30,7 @@ LIMIT
 SELECT
   *
 FROM
-  api_keys
+  api_key
 WHERE
   key_hash = $1
 LIMIT
@@ -40,7 +40,7 @@ LIMIT
 SELECT
   *
 FROM
-  api_keys
+  api_key
 ORDER BY
   created_at DESC
 LIMIT
@@ -52,7 +52,7 @@ OFFSET
 SELECT
   *
 FROM
-  api_keys
+  api_key
 WHERE
   user_id = $1
 ORDER BY
@@ -63,7 +63,7 @@ OFFSET
   $3;
 
 -- name: UpdateAPIKey :one
-UPDATE api_keys
+UPDATE api_key
 SET
   name = COALESCE(sqlc.narg (name), name),
   scopes = COALESCE(sqlc.narg (scopes), scopes),
@@ -76,12 +76,12 @@ RETURNING
   *;
 
 -- name: DeleteAPIKey :exec
-DELETE FROM api_keys
+DELETE FROM api_key
 WHERE
   id = $1;
 
 -- name: DeleteAPIKeysByUser :exec
-DELETE FROM api_keys
+DELETE FROM api_key
 WHERE
   user_id = $1;
 
@@ -89,7 +89,7 @@ WHERE
 SELECT
   *
 FROM
-  api_keys
+  api_key
 WHERE
   organization_id = $1
 ORDER BY
@@ -100,14 +100,14 @@ OFFSET
   $3;
 
 -- name: UpdateAPIKeyLastUsed :exec
-UPDATE api_keys
+UPDATE api_key
 SET
   last_used_at = CURRENT_TIMESTAMP
 WHERE
   id = $1;
 
 -- name: DeleteExpiredAPIKeys :exec
-DELETE FROM api_keys
+DELETE FROM api_key
 WHERE
   expires_at IS NOT NULL
   AND expires_at < CURRENT_TIMESTAMP;

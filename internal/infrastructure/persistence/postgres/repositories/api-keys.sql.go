@@ -14,7 +14,7 @@ import (
 
 const createAPIKey = `-- name: CreateAPIKey :one
 INSERT INTO
-  api_keys (
+  api_key (
     id,
     user_id,
     organization_id,
@@ -74,7 +74,7 @@ func (q *Queries) CreateAPIKey(ctx context.Context, arg CreateAPIKeyParams) (API
 }
 
 const deleteAPIKey = `-- name: DeleteAPIKey :exec
-DELETE FROM api_keys
+DELETE FROM api_key
 WHERE
   id = $1
 `
@@ -89,7 +89,7 @@ func (q *Queries) DeleteAPIKey(ctx context.Context, arg DeleteAPIKeyParams) erro
 }
 
 const deleteAPIKeysByUser = `-- name: DeleteAPIKeysByUser :exec
-DELETE FROM api_keys
+DELETE FROM api_key
 WHERE
   user_id = $1
 `
@@ -104,7 +104,7 @@ func (q *Queries) DeleteAPIKeysByUser(ctx context.Context, arg DeleteAPIKeysByUs
 }
 
 const deleteExpiredAPIKeys = `-- name: DeleteExpiredAPIKeys :exec
-DELETE FROM api_keys
+DELETE FROM api_key
 WHERE
   expires_at IS NOT NULL
   AND expires_at < CURRENT_TIMESTAMP
@@ -119,7 +119,7 @@ const getAPIKey = `-- name: GetAPIKey :one
 SELECT
   id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
-  api_keys
+  api_key
 WHERE
   id = $1
 LIMIT
@@ -154,7 +154,7 @@ const getAPIKeyByKeyHash = `-- name: GetAPIKeyByKeyHash :one
 SELECT
   id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
-  api_keys
+  api_key
 WHERE
   key_hash = $1
 LIMIT
@@ -189,7 +189,7 @@ const listAPIKeys = `-- name: ListAPIKeys :many
 SELECT
   id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
-  api_keys
+  api_key
 ORDER BY
   created_at DESC
 LIMIT
@@ -240,7 +240,7 @@ const listAPIKeysByOrganization = `-- name: ListAPIKeysByOrganization :many
 SELECT
   id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
-  api_keys
+  api_key
 WHERE
   organization_id = $1
 ORDER BY
@@ -294,7 +294,7 @@ const listAPIKeysByUser = `-- name: ListAPIKeysByUser :many
 SELECT
   id, created_at, updated_at, expires_at, key_hash, last_used_at, name, organization_id, prefix, rate_limit, scopes, user_id
 FROM
-  api_keys
+  api_key
 WHERE
   user_id = $1
 ORDER BY
@@ -345,7 +345,7 @@ func (q *Queries) ListAPIKeysByUser(ctx context.Context, arg ListAPIKeysByUserPa
 }
 
 const updateAPIKey = `-- name: UpdateAPIKey :one
-UPDATE api_keys
+UPDATE api_key
 SET
   name = COALESCE($1, name),
   scopes = COALESCE($2, scopes),
@@ -393,7 +393,7 @@ func (q *Queries) UpdateAPIKey(ctx context.Context, arg UpdateAPIKeyParams) (API
 }
 
 const updateAPIKeyLastUsed = `-- name: UpdateAPIKeyLastUsed :exec
-UPDATE api_keys
+UPDATE api_key
 SET
   last_used_at = CURRENT_TIMESTAMP
 WHERE

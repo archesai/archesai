@@ -24,6 +24,9 @@ func NewPersistenceConfig(
 	size string,
 ) (PersistenceConfig, error) {
 	// Validate required fields
+	if size == "" {
+		return PersistenceConfig{}, fmt.Errorf("Size cannot be empty")
+	}
 	return PersistenceConfig{
 		Enabled: enabled,
 		Size:    size,

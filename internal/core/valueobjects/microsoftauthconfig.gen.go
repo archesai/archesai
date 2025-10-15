@@ -25,7 +25,7 @@ type MicrosoftAuthConfig struct {
 	RedirectURL *string `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`
 
 	// Scopes OAuth scopes to request
-	Scopes *[]string `json:"scopes,omitempty" yaml:"scopes,omitempty"`
+	Scopes []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`
 
 	// Tenant Azure AD tenant ID (use 'common' for multi-tenant)
 	Tenant *string `json:"tenant,omitempty" yaml:"tenant,omitempty"`
@@ -38,7 +38,7 @@ func NewMicrosoftAuthConfig(
 	clientSecret *string,
 	enabled bool,
 	redirectURL *string,
-	scopes *[]string,
+	scopes []string,
 	tenant *string,
 ) (MicrosoftAuthConfig, error) {
 	// Validate required fields
@@ -84,7 +84,7 @@ func (v MicrosoftAuthConfig) GetRedirectURL() *string {
 
 // GetScopes returns the Scopes value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v MicrosoftAuthConfig) GetScopes() *[]string {
+func (v MicrosoftAuthConfig) GetScopes() []string {
 	return v.Scopes
 }
 

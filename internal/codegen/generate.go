@@ -3,14 +3,16 @@ package codegen
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"go/format"
 	"log/slog"
-	"os"
 	"text/template"
+	"time"
+
+	"golang.org/x/sync/errgroup"
 
 	"github.com/archesai/archesai/internal/parsers"
-	"github.com/archesai/archesai/internal/shared/logger"
 )
 
 // Schema type constants
@@ -55,13 +57,13 @@ func (g *Generator) Initialize() error {
 
 // GenerateAPI is the main generation function that orchestrates all code generation
 func (g *Generator) GenerateAPI(specPath string) (string, error) {
-	logLevel := os.Getenv("ARCHESAI_LOGGING_LEVEL")
-	if logLevel == "" {
-		logLevel = "error"
-	}
-	log := logger.New(logger.Config{Level: logLevel, Pretty: true})
+	totalStart := time.Now()
 
-	log.Info("Parsing OpenAPI specification", slog.String("path", specPath))
+	// Phase 1: Parse OpenAPI spec (must be done first)
+	slog.Info(
+		"Parsing OpenAPI specification",
+		slog.String("path", specPath),
+	)
 	openAPISchema, err := g.openAPIParser.Parse(specPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse OpenAPI spec: %w", err)
@@ -80,71 +82,150 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 		return "", fmt.Errorf("failed to process schemas: %w", err)
 	}
 
-	log.Info("Initialized state",
+	slog.Info("Initialized state",
 		slog.Int("schemas", len(schemas)),
-		slog.Int("operations", len(operations)))
+		slog.Int("operations", len(operations)),
+		"duration", time.Since(totalStart))
 
 	// Buffer to collect all output
 	var output bytes.Buffer
 
-	log.Info("Generating models (DTOs, entities, value objects)")
-	if err := g.GenerateSchemas(schemas); err != nil {
-		return "", fmt.Errorf("failed to generate models: %w", err)
+	// Phase 2: Run independent generators in parallel
+	eg, ctx := errgroup.WithContext(context.Background())
+
+	// Track timing for each generator
+	type generatorTiming struct {
+		name     string
+		duration time.Duration
+	}
+	timings := make(chan generatorTiming, 9)
+
+	// Group 1: Schema-based generators
+	eg.Go(func() error {
+		start := time.Now()
+		if err := g.GenerateSchemas(schemas); err != nil {
+			return fmt.Errorf("failed to generate models: %w", err)
+		}
+		timings <- generatorTiming{"GenerateSchemas", time.Since(start)}
+		return nil
+	})
+
+	eg.Go(func() error {
+		start := time.Now()
+		if err := g.GenerateRepositories(schemas); err != nil {
+			return fmt.Errorf("failed to generate repositories: %w", err)
+		}
+		timings <- generatorTiming{"GenerateRepositories", time.Since(start)}
+		return nil
+	})
+
+	eg.Go(func() error {
+		start := time.Now()
+		if err := g.GenerateEvents(schemas); err != nil {
+			return fmt.Errorf("failed to generate events: %w", err)
+		}
+		timings <- generatorTiming{"GenerateEvents", time.Since(start)}
+		return nil
+	})
+
+	// Group 2: Operation-based generators
+	eg.Go(func() error {
+		start := time.Now()
+		if err := g.GenerateCommandQueryHandlers(operations); err != nil {
+			return fmt.Errorf("failed to generate handlers: %w", err)
+		}
+		timings <- generatorTiming{"GenerateCommandQueryHandlers", time.Since(start)}
+		return nil
+	})
+
+	eg.Go(func() error {
+		start := time.Now()
+		if err := g.GenerateControllers(operations); err != nil {
+			return fmt.Errorf("failed to generate handlers: %w", err)
+		}
+		timings <- generatorTiming{"GenerateControllers", time.Since(start)}
+		return nil
+	})
+
+	// Group 3: Database and client generators
+	eg.Go(func() error {
+		start := time.Now()
+		if err := g.GenerateHCL(schemas); err != nil {
+			return fmt.Errorf("failed to generate HCL schema: %w", err)
+		}
+		timings <- generatorTiming{"GenerateHCL", time.Since(start)}
+		return nil
+	})
+
+	eg.Go(func() error {
+		start := time.Now()
+		if err := g.GenerateSQLC(); err != nil {
+			return fmt.Errorf("failed to generate SQLC files: %w", err)
+		}
+		timings <- generatorTiming{"GenerateSQLC", time.Since(start)}
+		return nil
+	})
+
+	eg.Go(func() error {
+		start := time.Now()
+		if err := g.GenerateJSClient(specPath, "web/client/src/generated"); err != nil {
+			return fmt.Errorf("failed to generate JavaScript client: %w", err)
+		}
+		timings <- generatorTiming{"GenerateJSClient", time.Since(start)}
+		return nil
+	})
+
+	// Wait for all parallel generators to complete
+	if err := eg.Wait(); err != nil {
+		return "", err
 	}
 
-	log.Info("Generating repositories")
-	if err := g.GenerateRepositories(schemas); err != nil {
-		return "", fmt.Errorf("failed to generate repositories: %w", err)
+	// Close timings channel and collect results
+	close(timings)
+	for timing := range timings {
+		slog.Info("Generator completed",
+			slog.String("name", timing.name),
+			slog.Duration("duration", timing.duration))
 	}
 
-	log.Info("Generating command and query handlers")
-	if err := g.GenerateCommandQueryHandlers(operations); err != nil {
-		return "", fmt.Errorf("failed to generate handlers: %w", err)
-	}
-
-	log.Info("Generating handlers")
-	if err := g.GenerateControllers(operations); err != nil {
-		return "", fmt.Errorf("failed to generate handlers: %w", err)
-	}
-	log.Info("Generating events")
-	if err := g.GenerateEvents(schemas); err != nil {
-		return "", fmt.Errorf("failed to generate events: %w", err)
-	}
-
-	log.Info("Generating bootstrap files")
+	// Phase 3: Run generators that depend on others (must be done after parallel phase)
+	start := time.Now()
 	if err := g.GenerateBootstrap(schemas, operations); err != nil {
 		return "", fmt.Errorf("failed to generate bootstrap files: %w", err)
 	}
+	slog.Info("Generator completed",
+		slog.String("name", "GenerateBootstrap"),
+		slog.Duration("duration", time.Since(start)))
 
-	log.Info("Generating HCL database schema")
-	if err := g.GenerateHCL(schemas); err != nil {
-		return "", fmt.Errorf("failed to generate HCL schema: %w", err)
-	}
-
-	// 10. Format output if needed
+	// Format output if needed
 	outputStr := output.String()
 	if outputStr != "" {
 		formatted, err := format.Source([]byte(outputStr))
 		if err != nil {
-			log.Warn("Failed to format output", slog.String("error", err.Error()))
+			slog.Warn("Failed to format output", slog.String("error", err.Error()))
 		} else {
 			outputStr = string(formatted)
 		}
 	}
 
-	log.Info("Code generation completed successfully")
+	totalDuration := time.Since(totalStart)
+	slog.Info("Code generation completed successfully",
+		slog.Duration("total_duration", totalDuration))
+
+	// Cancel context to clean up
+	_ = ctx
+
 	return outputStr, nil
 }
 
 // GenerateJSONSchema generates Go structs from a JSON Schema file
 func (g *Generator) GenerateJSONSchema(specPath string, outputDir string) (string, error) {
-	logLevel := os.Getenv("ARCHESAI_LOGGING_LEVEL")
-	if logLevel == "" {
-		logLevel = "error"
-	}
-	log := logger.New(logger.Config{Level: logLevel, Pretty: true})
+	totalStart := time.Now()
 
-	log.Info("Parsing JSONSchema specification", slog.String("path", specPath))
+	slog.Info(
+		"Parsing JSONSchema specification",
+		slog.String("path", specPath),
+	)
 	jsonSchema, err := g.jsonSchemaParser.Parse(specPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse JSONSchema spec: %w", err)
@@ -158,23 +239,12 @@ func (g *Generator) GenerateJSONSchema(specPath string, outputDir string) (strin
 	// Buffer to collect all output
 	var output bytes.Buffer
 
-	log.Info("Generating models (DTOs, entities, value objects)")
 	if err := g.generateModel(schema, &outputDir); err != nil {
 		return "", fmt.Errorf("failed to generate models: %w", err)
 	}
 
-	// 10. Format output if needed
-	log.Info("Formatting output")
-	outputStr := output.String()
-	if outputStr != "" {
-		formatted, err := format.Source([]byte(outputStr))
-		if err != nil {
-			log.Warn("Failed to format output", slog.String("error", err.Error()))
-		} else {
-			outputStr = string(formatted)
-		}
-	}
-
-	log.Info("Code generation completed successfully")
-	return outputStr, nil
+	totalDuration := time.Since(totalStart)
+	slog.Info("Code generation completed successfully",
+		slog.Duration("total_duration", totalDuration))
+	return output.String(), nil
 }

@@ -23,27 +23,12 @@ NC := \033[0m # No Color
 # Primary Commands
 # ------------------------------------------
 
-.PHONY: all
-all: ## Default: generate, lint, and format code
-	@echo -e "$(YELLOW)━━━ Complete Development Pipeline ━━━$(NC)"
-	@START_TOTAL=$$(date +%s%3N); \
-	echo -e "$(BLUE)[1/3] Code Generation$(NC)" && START=$$(date +%s%3N) && $(MAKE) generate && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Code generation complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(BLUE)[2/3] Code Linting$(NC)" && START=$$(date +%s%3N) && $(MAKE) lint && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Code linting complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	echo -e "$(BLUE)[3/3] Code Formatting$(NC)" && START=$$(date +%s%3N) && $(MAKE) format && END=$$(date +%s%3N) && printf "\r$(GREEN)✓ Code formatting complete $(GRAY)⏱ $$((END-START))ms$(NC)\n"; \
-	END_TOTAL=$$(date +%s%3N); \
-	echo -e "$(GREEN)✓ All development tasks complete in $$((END_TOTAL-START_TOTAL))ms!$(NC)"
-
 .PHONY: help
 help: ## Show this help message
 	@echo 'Usage: make [target]'
 	@echo ''
 	@echo 'Available targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  $(GREEN)%-25s$(NC) %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
-
-.PHONY: dev
-dev: ## Run all services in development mode
-	@echo -e "$(YELLOW)▶ Running in development mode...$(NC)"
-	@go run cmd/archesai/main.go all
 
 # ------------------------------------------
 # Build Commands
@@ -157,51 +142,17 @@ deploy-docs: ## Manually trigger documentation deployment to GitHub Pages
 # ------------------------------------------
 
 .PHONY: generate
-generate: generate-sqlc generate-codegen generate-mocks generate-js-client generate-helm-schema ## Generate all code
+generate: generate-codegen generate-mocks ## Generate all code
 	@echo -e "$(GREEN)✓ All code generation complete!$(NC)"
 
-.PHONY: generate-sqlc
-generate-sqlc: generate-schema-sqlite ## Generate database code with sqlc
-	@echo -e "$(YELLOW)▶ Generating sqlc code...$(NC)"
-	@cd internal/infrastructure/persistence/postgres && go tool -modfile=../../../../tools.mod sqlc generate
-	@echo -e "$(GREEN)✓ sqlc generation complete!$(NC)"
-
-.PHONY: generate-schema-sqlite
-generate-schema-sqlite: ## Convert PostgreSQL schema to SQLite
-	@echo -e "$(YELLOW)▶ Converting PostgreSQL schema to SQLite...$(NC)"
-	@go run tools/pg-to-sqlite/main.go
-	@echo -e "$(GREEN)✓ Schema conversion complete!$(NC)"
-
-.PHONY: generate-codegen-types
-generate-codegen-types: bundle-openapi ## Generate types for codegen configuration
-	@echo -e "$(YELLOW)▶ Generating codegen types...$(NC)"
-	@go run cmd/codegen/main.go jsonschema api/components/schemas/xcodegen/CodegenExtension.yaml --output internal/parsers
-	@echo -e "$(GREEN)✓ Codegen types generated!$(NC)"
-
 .PHONY: generate-codegen
-generate-codegen: generate-codegen-types bundle-openapi ## Generate codegen
-	@echo -e "$(YELLOW)▶ Generating code from OpenAPI schemas...$(NC)"
-	@go run cmd/codegen/main.go openapi ./api/openapi.bundled.yaml
-	@echo -e "$(GREEN)✓ Code generation complete!$(NC)"
+generate-codegen: bundle-openapi ## Generate codegen
+	@go run cmd/codegen/main.go jsonschema api/components/schemas/xcodegen/CodegenExtension.yaml --output internal/parsers  --pretty
+	@go run cmd/codegen/main.go openapi ./api/openapi.bundled.yaml --pretty 
 
 .PHONY: generate-mocks
 generate-mocks: ## Generate test mocks using mockery
-	@echo -e "$(YELLOW)▶ Generating test mocks...$(NC)"
 	@go tool -modfile=tools.mod mockery
-	@echo -e "$(GREEN)✓ Mock generation complete!$(NC)"
-
-.PHONY: generate-js-client
-generate-js-client: bundle-openapi ## Generate JavaScript/TypeScript client from OpenAPI
-	@echo -e "$(YELLOW)▶ Generating JavaScript/TypeScript client...$(NC)"
-	@cd ./web/client && (pnpm orval > /dev/null 2>&1 || (echo -e "$(RED)✗ JavaScript client generation failed$(NC)" && pnpm orval && exit 1))
-	@echo -e "$(GREEN)✓ JavaScript/TypeScript client generated!$(NC)"
-
-.PHONY: generate-helm-schema
-generate-helm-schema: ## Generate Helm values.schema.json from ArchesConfig.yaml
-	@echo -e "$(YELLOW)▶ Generating Helm values schema...$(NC)"
-	@python3 scripts/generate-helm-schema.py
-	@pnpm biome check --fix --colors=force deployments/helm-minimal/values.schema.json
-	@echo -e "$(GREEN)✓ Helm values schema generated!$(NC)"
 
 # ------------------------------------------
 # Test Commands
@@ -300,7 +251,7 @@ lint-go: ## Run Go linter
 .PHONY: lint-ts
 lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 	@echo -e "$(YELLOW)▶ Running Node.js linter...$(NC)"
-	@OUTPUT=$$(pnpm biome check --fix --colors=force 2>&1); \
+	@OUTPUT=$$(pnpm biome check --fix 2>&1); \
 	if [ $$? -ne 0 ]; then \
 		echo -e "$(RED)✗ Node.js linting failed$(NC)"; \
 		echo "$$OUTPUT"; \
@@ -351,7 +302,7 @@ format-prettier: ## Format code with Prettier
 .PHONY: format-ts
 format-ts: ## Format Node.js/TypeScript code
 	@echo -e "$(YELLOW)▶ Formatting Node.js code...$(NC)"
-	@pnpm biome format --fix --colors=force
+	@pnpm biome format --fix
 	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------
@@ -415,45 +366,6 @@ prepare-docs: bundle-openapi ## Copy markdown docs to web/docs/docs
 	@cp -r ./docs/** ./web/docs/pages
 	@echo -e "$(GREEN)✓ Docs copied!$(NC)"
 
-# ------------------------------------------
-# Database Commands
-# ------------------------------------------
-
-MIGRATION_PATH := internal/infrastructure/persistence/postgres/migrations
-DATABASE_URL ?= "postgres://admin:password@localhost:5432/archesai"
-
-.PHONY: db-migrate
-db-migrate: db-migrate-up ## Alias for db-migrate-up
-
-.PHONY: db-migrate-up
-db-migrate-up: ## Apply database migrations
-	@echo -e "$(YELLOW)▶ Applying migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose postgres "$(DATABASE_URL)" up
-	@echo -e "$(GREEN)✓ Migrations applied!$(NC)"
-
-.PHONY: db-migrate-down
-db-migrate-down: ## Rollback database migrations
-	@echo -e "$(YELLOW)▶ Rolling back migrations...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose postgres "$(DATABASE_URL)" down
-	@echo -e "$(GREEN)✓ Migrations rolled back!$(NC)"
-
-.PHONY: db-migrate-create
-db-migrate-create: ## Create new migration (usage: make db-migrate-create name=add_users)
-	@echo -e "$(YELLOW)▶ Creating migration: $(name)...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose create $(name) sql
-	@echo -e "$(GREEN)✓ Migration created!$(NC)"
-
-.PHONY: db-migrate-status
-db-migrate-status: ## Show migration status
-	@echo -e "$(YELLOW)▶ Checking migration status...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose postgres "$(DATABASE_URL)" status
-	@echo -e "$(GREEN)✓ Migration status checked!$(NC)"
-
-.PHONY: db-migrate-reset
-db-migrate-reset: ## Reset database to initial state
-	@echo -e "$(YELLOW)▶ Resetting database...$(NC)"
-	@cd $(MIGRATION_PATH) && go tool -modfile=../../../../../tools.mod goose postgres "$(DATABASE_URL)" reset
-	@echo -e "$(GREEN)✓ Database reset complete!$(NC)"
 
 # ------------------------------------------
 # API/OpenAPI Commands
@@ -461,10 +373,7 @@ db-migrate-reset: ## Reset database to initial state
 
 .PHONY: bundle-openapi
 bundle-openapi: ## Bundle OpenAPI into single file
-	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
 	@go run cmd/codegen/main.go bundle ./api/openapi.yaml ./api/openapi.bundled.yaml --orval-fix
-	@pnpm prettier --write ./api/openapi.bundled.yaml --log-level warn
-	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
 
 # ------------------------------------------
 # Dependency Commands
@@ -533,6 +442,32 @@ docker-run: ## Build and run with Docker Compose
 docker-stop: ## Stop Docker Compose services
 	@echo -e "$(YELLOW)▶ Stopping Docker Compose...$(NC)"
 	@docker-compose down
+
+# ------------------------------------------
+# Container Executor Commands
+# ------------------------------------------
+
+.PHONY: build-runners
+build-runners: build-runner-python build-runner-node build-runner-go ## Build all runner containers
+	@echo -e "$(GREEN)✓ All runner containers built!$(NC)"
+
+.PHONY: build-runner-python
+build-runner-python: ## Build Python runner container
+	@echo -e "$(YELLOW)▶ Building Python runner container...$(NC)"
+	@docker build -t archesai/runner-python:latest deployments/containers/runners/python
+	@echo -e "$(GREEN)✓ Python runner container built!$(NC)"
+
+.PHONY: build-runner-node
+build-runner-node: ## Build Node runner base container
+	@echo -e "$(YELLOW)▶ Building Node runner base container...$(NC)"
+	@docker build -t archesai/runner-node:latest deployments/containers/runners/node
+	@echo -e "$(GREEN)✓ Node runner base container built!$(NC)"
+
+.PHONY: build-runner-go
+build-runner-go: ## Build Go runner container
+	@echo -e "$(YELLOW)▶ Building Go runner container...$(NC)"
+	@docker build -t archesai/runner-go:latest deployments/containers/runners/go
+	@echo -e "$(GREEN)✓ Go runner container built!$(NC)"
 
 # ------------------------------------------
 # Kubernetes Commands

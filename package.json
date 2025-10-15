@@ -8,15 +8,14 @@
     "@tanstack/table-core": "catalog:tanstack",
     "@testing-library/dom": "catalog:test",
     "@testing-library/react": "catalog:test",
-    "@types/js-yaml": "^4.0.9",
-    "@types/json-schema": "^7.0.15",
+    "@types/js-yaml": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:vite",
     "@vitest/ui": "catalog:test",
     "babel-plugin-react-compiler": "catalog:vite",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "catalog:",
     "jsdom": "catalog:test",
     "markdownlint-cli": "catalog:",
     "orval": "catalog:client",
@@ -31,10 +30,10 @@
     "web-vitals": "catalog:test"
   },
   "engines": {
-    "node": ">=24.8.0"
+    "node": ">=24.9.0"
   },
   "name": "@archesai/archesai",
-  "packageManager": "pnpm@10.17.0",
+  "packageManager": "pnpm@10.18.2",
   "private": true,
   "type": "module",
   "version": "0.0.0"

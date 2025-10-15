@@ -432,7 +432,6 @@
 │   │   │   ├── command_handler.tmpl
 │   │   │   ├── controller.tmpl
 │   │   │   ├── events.tmpl
-│   │   │   ├── header.tmpl
 │   │   │   ├── infrastructure.tmpl
 │   │   │   ├── query_handler.tmpl
 │   │   │   ├── repository_postgres.tmpl
@@ -543,12 +542,8 @@
 │           └── containers.go
 ├── scripts
 │   ├── generate-coverage-report.sh
-│   ├── generate-helm-schema.py
 │   ├── generate-project-structure-xml.sh
-│   ├── resolve-pathitems.py
-│   ├── restructure-openapi.py
 │   ├── update-makefile-docs.sh
-│   ├── update-operation-responses.py
 │   └── update-project-layout-docs.sh
 ├── .taskmaster
 │   ├── docs
@@ -580,8 +575,6 @@
 │       ├── text.png
 │       └── website.png
 ├── tools
-│   ├── pg-to-sqlite
-│   │   └── main.go
 │   └── tsconfig
 │       ├── src
 │       │   ├── base.json

@@ -13,6 +13,9 @@
     },
     {
       "path": "./web/ui"
+    },
+    {
+      "path": "./deployments/containers/runners/node"
     }
   ]
 }

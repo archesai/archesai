@@ -97,8 +97,7 @@ type {{ $operation.ID }}Params struct {
 type {{ $operation.ID }}RequestBody struct {
 {{- range $operation.RequestBody.GetSortedProperties }}
 {{- $field := . }}
-	{{- $isOptional := stringContains .JSONTag ",omitempty" }}
-	{{ $field.Name }} {{ if and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}*{{ end }}{{ $field.GoType }} `json:"{{ $field.JSONTag }}"`
+	{{ $field.Name }} {{ if .NeedsPointer }}*{{ end }}{{ $field.GoType }} `json:"{{ $field.JSONTag }}"`
 {{- end }}
 }
 {{- end }}

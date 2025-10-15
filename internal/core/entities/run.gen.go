@@ -101,8 +101,17 @@ func NewRun(
 	toolID uuid.UUID,
 ) (*Run, error) {
 	// Validate required fields
+	if organizationID == uuid.Nil {
+		return nil, fmt.Errorf("OrganizationID cannot be nil UUID")
+	}
+	if pipelineID == uuid.Nil {
+		return nil, fmt.Errorf("PipelineID cannot be nil UUID")
+	}
 	if !status.IsValid() {
 		return nil, fmt.Errorf("invalid Status: %s", status)
+	}
+	if toolID == uuid.Nil {
+		return nil, fmt.Errorf("ToolID cannot be nil UUID")
 	}
 	now := time.Now().UTC()
 	id := uuid.New()

@@ -32,6 +32,15 @@ func NewLocalAuthConfig(
 	refreshTokenTtl string,
 ) (LocalAuthConfig, error) {
 	// Validate required fields
+	if accessTokenTtl == "" {
+		return LocalAuthConfig{}, fmt.Errorf("AccessTokenTTL cannot be empty")
+	}
+	if jwtSecret == "" {
+		return LocalAuthConfig{}, fmt.Errorf("JWTSecret cannot be empty")
+	}
+	if refreshTokenTtl == "" {
+		return LocalAuthConfig{}, fmt.Errorf("RefreshTokenTTL cannot be empty")
+	}
 	return LocalAuthConfig{
 		AccessTokenTTL:  accessTokenTtl,
 		Enabled:         enabled,

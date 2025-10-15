@@ -46,6 +46,12 @@ func NewRedisConfig(
 	resources *ResourceConfig,
 ) (RedisConfig, error) {
 	// Validate required fields
+	if auth == "" {
+		return RedisConfig{}, fmt.Errorf("Auth cannot be empty")
+	}
+	if host == "" {
+		return RedisConfig{}, fmt.Errorf("Host cannot be empty")
+	}
 	return RedisConfig{
 		Auth:        auth,
 		Ca:          ca,

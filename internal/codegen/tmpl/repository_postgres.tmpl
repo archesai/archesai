@@ -39,8 +39,8 @@ func NewPostgres{{ $entity.Name }}Repository(db *pgxpool.Pool) *Postgres{{ $enti
 // Create creates a new {{ lower $entity.Name }}
 func (r *Postgres{{ $entity.Name }}Repository) Create(ctx context.Context, entity *entities.{{ $entity.Name }}) (*entities.{{ $entity.Name }}, error) {
 	params := Create{{ $entity.Name }}Params{
-		ID: entity.ID,{{ range $entity.GetSortedProperties }}{{ $field := . }}{{ if and (ne $field.Name "ID") (ne $field.Name "CreatedAt") (ne $field.Name "UpdatedAt")}}{{- $excluded := false }}{{- if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{- if $repo.ExcludeFromCreate }}{{- range $repo.ExcludeFromCreate }}{{- if or (eq . $field.Name) (eq . (pascalCase $field.Name)) }}{{- $excluded = true }}{{- end }}{{- end }}{{- end }}{{- end }}{{- if not $excluded }}
-		{{ $field.Name }}: {{ if stringContains $field.JSONTag ",omitempty" }}entity.{{ $field.Name }}{{ else if and $field.Nullable $field.Enum }}func() *string { if entity.{{ $field.Name }} == nil { return nil }; s := string(*entity.{{ $field.Name }}); return &s }(){{ else if $field.Nullable }}entity.{{ $field.Name }}{{ else if $field.Enum }}string(entity.{{ $field.Name }}){{ else if or (isPointer $field.GoType) (isSlice $field.GoType) }}entity.{{ $field.Name }}{{ else }}entity.{{ $field.Name }}{{ end }},{{ end }}{{ end }}{{ end }}
+		ID: entity.ID,{{ range $entity.GetSortedProperties }}{{ $field := . }}{{ if not $field.IsSpecialField }}{{- $excluded := false }}{{- if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{- if $repo.ExcludeFromCreate }}{{- range $repo.ExcludeFromCreate }}{{- if or (eq . $field.Name) (eq . (pascalCase $field.Name)) }}{{- $excluded = true }}{{- end }}{{- end }}{{- end }}{{- end }}{{- if not $excluded }}
+		{{ $field.Name }}: {{ $field.GetCreateParamValue "entity" $entity }},{{ end }}{{ end }}{{ end }}
 	}
 
 	result, err := r.queries.Create{{ $entity.Name }}(ctx, params)
@@ -71,7 +71,7 @@ func (r *Postgres{{ $entity.Name }}Repository) Get(ctx context.Context, id uuid.
 // Update updates an existing {{ lower $entity.Name }}
 func (r *Postgres{{ $entity.Name }}Repository) Update(ctx context.Context, id uuid.UUID, entity *entities.{{ $entity.Name }}) (*entities.{{ $entity.Name }}, error) {
 {{ range $entity.GetSortedProperties }}{{- $field := . }}
-{{- if and (ne $field.Name "ID") (ne $field.Name "CreatedAt") (ne $field.Name "UpdatedAt") }}
+{{- if not $field.IsSpecialField }}
 {{- $excluded := false }}
 {{- if and $entity.XCodegen $entity.XCodegen.Repository }}
 {{- $repo := $entity.XCodegen.Repository }}
@@ -83,14 +83,14 @@ func (r *Postgres{{ $entity.Name }}Repository) Update(ctx context.Context, id uu
 {{- end }}
 {{- end }}
 {{- end }}
-{{- if and (not $excluded) $field.Enum (not $field.Nullable) (not (stringContains $field.JSONTag ",omitempty")) }}
-	{{camelCase $field.Name}}Str := string(entity.{{ $field.Name }})
+{{- if and (not $excluded) $field.NeedsUpdateVarDeclaration }}
+	{{ $field.GetUpdateVarDeclaration "entity" }}
 {{- end }}
 {{- end }}
 {{- end }}
 	params := Update{{ $entity.Name }}Params{
-		ID: id,{{ range $entity.GetSortedProperties }}{{- $field := . }}{{ if and (ne $field.Name "ID") (ne $field.Name "CreatedAt") (ne $field.Name "UpdatedAt")}}{{- $excluded := false }}{{- if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{- if $repo.ExcludeFromUpdate }}{{- range $repo.ExcludeFromUpdate }}{{- if or (eq . $field.Name) (eq . (pascalCase $field.Name)) }}{{- $excluded = true }}{{- end }}{{- end }}{{- end }}{{- end }}{{- if not $excluded }}
-		{{ pascalCase $field.Name }}: {{ if stringContains $field.JSONTag ",omitempty" }}entity.{{ $field.Name }}{{ else if and $field.Nullable $field.Enum }}func() *string { if entity.{{ $field.Name }} == nil { return nil }; s := string(*entity.{{ $field.Name }}); return &s }(){{ else if $field.Nullable }}entity.{{ $field.Name }}{{ else if $field.Enum }}&{{ camelCase $field.Name }}Str{{ else if or (isPointer $field.GoType) (isSlice $field.GoType) }}entity.{{ $field.Name }}{{ else }}&entity.{{ $field.Name }}{{ end }},{{ end }}{{ end }}{{ end }}
+		ID: id,{{ range $entity.GetSortedProperties }}{{- $field := . }}{{ if not $field.IsSpecialField }}{{- $excluded := false }}{{- if and $entity.XCodegen $entity.XCodegen.Repository }}{{- $repo := $entity.XCodegen.Repository }}{{- if $repo.ExcludeFromUpdate }}{{- range $repo.ExcludeFromUpdate }}{{- if or (eq . $field.Name) (eq . (pascalCase $field.Name)) }}{{- $excluded = true }}{{- end }}{{- end }}{{- end }}{{- end }}{{- if not $excluded }}
+		{{ pascalCase $field.Name }}: {{ $field.GetUpdateParamValue "entity" $entity }},{{ end }}{{ end }}{{ end }}
 	}
 
 	result, err := r.queries.Update{{ $entity.Name }}(ctx, params)
@@ -222,8 +222,8 @@ func map{{ $entity.Name }}FromDB(db *{{ $entity.Name }}) *entities.{{ $entity.Na
 	result := &entities.{{ $entity.Name }}{
 		ID:        db.ID,
 		CreatedAt: db.CreatedAt,
-		UpdatedAt: db.UpdatedAt,{{ range $entity.GetSortedProperties }}{{- $field := . }}{{if ne $field.Name "ID"}}{{if ne $field.Name "CreatedAt"}}{{if ne $field.Name "UpdatedAt"}}
-		{{ $field.Name }}: {{ if and $field.Nullable $field.Enum }}func() *entities.{{ $entity.Name }}{{ $field.Name }} { if db.{{ $field.Name }} == nil { return nil }; v := entities.{{ $entity.Name }}{{ $field.Name }}(*db.{{ $field.Name }}); return &v }(){{ else if $field.Enum }}entities.{{ $entity.Name }}{{ $field.Name }}(db.{{ $field.Name }}){{ else }}db.{{ $field.Name }}{{ end }},{{ end }}{{ end }}{{ end }}{{ end }}
+		UpdatedAt: db.UpdatedAt,{{ range $entity.GetSortedProperties }}{{- $field := . }}{{if not $field.IsSpecialField }}
+		{{ $field.Name }}: {{ $field.GetDBMapValue "db" $entity }},{{ end }}{{ end }}
 	}
 
 	return result

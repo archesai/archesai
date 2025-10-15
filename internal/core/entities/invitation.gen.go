@@ -136,6 +136,12 @@ func NewInvitation(
 	if email == "" {
 		return nil, fmt.Errorf("Email cannot be empty")
 	}
+	if inviterID == uuid.Nil {
+		return nil, fmt.Errorf("InviterID cannot be nil UUID")
+	}
+	if organizationID == uuid.Nil {
+		return nil, fmt.Errorf("OrganizationID cannot be nil UUID")
+	}
 	if !role.IsValid() {
 		return nil, fmt.Errorf("invalid Role: %s", role)
 	}

@@ -23,7 +23,7 @@ type GitHubAuthConfig struct {
 	RedirectURL *string `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`
 
 	// Scopes OAuth scopes to request
-	Scopes *[]string `json:"scopes,omitempty" yaml:"scopes,omitempty"`
+	Scopes []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`
 }
 
 // NewGitHubAuthConfig creates a new immutable GitHubAuthConfig value object.
@@ -33,7 +33,7 @@ func NewGitHubAuthConfig(
 	clientSecret *string,
 	enabled bool,
 	redirectURL *string,
-	scopes *[]string,
+	scopes []string,
 ) (GitHubAuthConfig, error) {
 	// Validate required fields
 	return GitHubAuthConfig{
@@ -77,7 +77,7 @@ func (v GitHubAuthConfig) GetRedirectURL() *string {
 
 // GetScopes returns the Scopes value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v GitHubAuthConfig) GetScopes() *[]string {
+func (v GitHubAuthConfig) GetScopes() []string {
 	return v.Scopes
 }
 

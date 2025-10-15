@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"text/template"
 
 	"golang.org/x/tools/imports"
@@ -18,6 +19,7 @@ type FileWriter struct {
 	header     string
 	overwrite  bool
 	formatCode bool
+	mu         sync.Mutex // Protects file operations for thread safety
 }
 
 // NewFileWriter creates a new file writer with default settings.
@@ -49,6 +51,10 @@ func (fw *FileWriter) WithFormatting(format bool) *FileWriter {
 
 // WriteFile writes content to a file with proper headers and formatting.
 func (fw *FileWriter) WriteFile(path string, content []byte) error {
+	// Lock for thread safety
+	fw.mu.Lock()
+	defer fw.mu.Unlock()
+
 	// Check if file exists and overwrite is disabled
 	if !fw.overwrite {
 		if _, err := os.Stat(path); err == nil {

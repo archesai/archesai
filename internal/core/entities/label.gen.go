@@ -41,6 +41,9 @@ func NewLabel(
 	if name == "" {
 		return nil, fmt.Errorf("Name cannot be empty")
 	}
+	if organizationID == uuid.Nil {
+		return nil, fmt.Errorf("OrganizationID cannot be nil UUID")
+	}
 	now := time.Now().UTC()
 	id := uuid.New()
 	label := &Label{

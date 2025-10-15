@@ -100,6 +100,9 @@ func NewDatabaseConfig(
 	if !type_.IsValid() {
 		return DatabaseConfig{}, fmt.Errorf("invalid Type: %s", type_)
 	}
+	if url == "" {
+		return DatabaseConfig{}, fmt.Errorf("URL cannot be empty")
+	}
 	return DatabaseConfig{
 		ConnMaxIdleTime:   connMaxIdleTime,
 		ConnMaxLifetime:   connMaxLifetime,

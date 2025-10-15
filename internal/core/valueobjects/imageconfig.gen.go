@@ -69,6 +69,9 @@ func NewImageConfig(
 	if !pullPolicy.IsValid() {
 		return ImageConfig{}, fmt.Errorf("invalid PullPolicy: %s", pullPolicy)
 	}
+	if tag == "" {
+		return ImageConfig{}, fmt.Errorf("Tag cannot be empty")
+	}
 	return ImageConfig{
 		PullPolicy: pullPolicy,
 		Repository: repository,

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"strings"
 	"time"
 
@@ -28,7 +27,6 @@ const (
 // It implements the core services.AuthService interface.
 type Service struct {
 	config             *config.Config
-	logger             *slog.Logger
 	sessionRepo        repositories.SessionRepository
 	sessionsRepo       repositories.SessionRepository
 	userRepo           repositories.UserRepository
@@ -72,7 +70,6 @@ func NewService(
 	cacheService cache.Cache[string],
 	magicLinkDeliverer MagicLinkDeliverer,
 	otpDeliverer OTPDeliverer,
-	logger *slog.Logger,
 ) *Service {
 	// Build base URL from API config
 	baseURL := fmt.Sprintf("http://%s:%d", cfg.API.Host, int(cfg.API.Port))
@@ -82,7 +79,6 @@ func NewService(
 
 	s := &Service{
 		config:             cfg,
-		logger:             logger,
 		sessionRepo:        sessionRepo,
 		sessionsRepo:       sessionRepo,
 		userRepo:           userRepo,
@@ -560,8 +556,6 @@ func (s *Service) RequestPasswordReset(ctx context.Context, email string) error 
 	}
 
 	// TODO: Send email with reset link
-	// For now, just log the token
-	fmt.Printf("Password reset token for %s: %s\n", email, token)
 
 	return nil
 }
@@ -636,7 +630,6 @@ func (s *Service) RequestEmailVerification(ctx context.Context, sessionID uuid.U
 	}
 
 	// TODO: Send email with verification link
-	fmt.Printf("Email verification token for %s: %s\n", user.Email, token)
 
 	return nil
 }
@@ -705,7 +698,6 @@ func (s *Service) RequestEmailChange(
 	}
 
 	// TODO: Send email to both old and new addresses
-	fmt.Printf("Email change token: %s\n", token)
 
 	return nil
 }

@@ -49,7 +49,6 @@ type App struct {
 	infra *Infrastructure
 
 	// Public infrastructure access
-	Logger *slog.Logger
 	Config *config.Config
 	Server *server.Server
 
@@ -77,30 +76,28 @@ func NewApp(cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("failed to initialize infrastructure: %w", err)
 	}
 
-	log := infra.Logger
-
 	// Run migrations if enabled
 	if cfg.Database.RunMigrations {
-		log.Info("running database migrations")
-		if err := database.RunMigrations(infra.Database.SQLDB(), infra.Database.TypeString(), log); err != nil {
-			log.Error("failed to run migrations", "error", err)
+		slog.Info("running database migrations")
+		if err := database.RunMigrations(infra.Database); err != nil {
+			slog.Error("failed to run migrations", "error", err)
 			isProduction := cfg.API.Environment == "production"
 			if isProduction {
 				return nil, fmt.Errorf("failed to run migrations: %w", err)
 			}
 		}
-		log.Info("database migrations completed")
+		slog.Info("database migrations completed")
 	}
 
 	// Create repositories
-	log.Info("creating repositories")
+	slog.Info("creating repositories")
 	repos, err := NewRepositories(infra)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create repositories: %w", err)
 	}
 
 	// Initialize auth service after repositories are available
-	log.Info("initializing auth service")
+	slog.Info("initializing auth service")
 	var stringCache cache.Cache[string]
 	if infra.redisClient != nil {
 		stringCache = cache.NewRedisCache[string](infra.redisClient.GetRedisClient(), "auth:tokens")
@@ -109,17 +106,16 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 
 	// Initialize notification deliverers
-	magicLinkDeliverer := notifications.NewConsoleDeliverer(log)
-	otpDeliverer := notifications.NewOTPDeliverer(log)
+	magicLinkDeliverer := notifications.NewConsoleDeliverer()
+	otpDeliverer := notifications.NewOTPDeliverer()
 
-	infra.AuthService = auth.NewService(cfg, repos.Sessions, repos.Users, repos.Accounts, stringCache, magicLinkDeliverer, otpDeliverer, log)
-	log.Info("auth service ready")
+	infra.AuthService = auth.NewService(cfg, repos.Sessions, repos.Users, repos.Accounts, stringCache, magicLinkDeliverer, otpDeliverer)
+	slog.Info("auth service ready")
 
 	// Create app instance to populate
 	app := &App{
 		// Infrastructure
 		infra:  infra,
-		Logger: log,
 		Config: cfg,
 	}
 
@@ -127,20 +123,20 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g, _ := errgroup.WithContext(context.Background())
 
 	// Initialize config domain (infrastructure query - needs special handling)
-	log.Info("initializing config domain")
+	slog.Info("initializing config domain")
 	getConfigHandler := configQueries.NewGetConfigQueryHandler(cfg)
 	app.ConfigController = controllers.NewConfigController(getConfigHandler)
-	log.Info("config domain ready")
+	slog.Info("config domain ready")
 
 	// Initialize health domain (infrastructure query - needs special handling)
-	log.Info("initializing health domain")
+	slog.Info("initializing health domain")
 	getHealthHandler := healthQueries.NewGetHealthQueryHandler()
 	app.HealthController = controllers.NewHealthController(getHealthHandler)
-	log.Info("health domain ready")
+	slog.Info("health domain ready")
 
 	// Initialize auth domain (cross-cutting concern spanning multiple entities)
 	g.Go(func() error {
-		log.Info("initializing auth domain")
+		slog.Info("initializing auth domain")
 
 		// Create command handlers (in REST operation order matching controller signature)
 		confirmEmailChangeHandler := authCommands.NewConfirmEmailChangeCommandHandler(infra.AuthService)
@@ -196,13 +192,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listSessionsHandler,
 		)
 
-		log.Info("auth domain ready")
+		slog.Info("auth domain ready")
 		return nil
 	})
 
 	// Initialize apikey domain
 	g.Go(func() error {
-		log.Info("initializing apikey domain")
+		slog.Info("initializing apikey domain")
 		// Create command and query handlers
 		createAPIKeyHandler := apikeyCommands.NewCreateAPIKeyCommandHandler(
 			repos.APIKeys,
@@ -232,13 +228,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listAPIKeysHandler,
 		)
 
-		log.Info("apikey domain ready")
+		slog.Info("apikey domain ready")
 		return nil
 	})
 
 	// Initialize artifact domain
 	g.Go(func() error {
-		log.Info("initializing artifact domain")
+		slog.Info("initializing artifact domain")
 		// Create command and query handlers
 		createArtifactHandler := artifactCommands.NewCreateArtifactCommandHandler(
 			repos.Artifacts,
@@ -268,13 +264,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listArtifactsHandler,
 		)
 
-		log.Info("artifact domain ready")
+		slog.Info("artifact domain ready")
 		return nil
 	})
 
 	// Initialize invitation domain
 	g.Go(func() error {
-		log.Info("initializing invitation domain")
+		slog.Info("initializing invitation domain")
 		// Create command and query handlers
 		createInvitationHandler := invitationCommands.NewCreateInvitationCommandHandler(
 			repos.Invitations,
@@ -304,13 +300,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listInvitationsHandler,
 		)
 
-		log.Info("invitation domain ready")
+		slog.Info("invitation domain ready")
 		return nil
 	})
 
 	// Initialize label domain
 	g.Go(func() error {
-		log.Info("initializing label domain")
+		slog.Info("initializing label domain")
 		// Create command and query handlers
 		createLabelHandler := labelCommands.NewCreateLabelCommandHandler(
 			repos.Labels,
@@ -340,13 +336,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listLabelsHandler,
 		)
 
-		log.Info("label domain ready")
+		slog.Info("label domain ready")
 		return nil
 	})
 
 	// Initialize member domain
 	g.Go(func() error {
-		log.Info("initializing member domain")
+		slog.Info("initializing member domain")
 		// Create command and query handlers
 		createMemberHandler := memberCommands.NewCreateMemberCommandHandler(
 			repos.Members,
@@ -376,13 +372,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listMembersHandler,
 		)
 
-		log.Info("member domain ready")
+		slog.Info("member domain ready")
 		return nil
 	})
 
 	// Initialize organization domain
 	g.Go(func() error {
-		log.Info("initializing organization domain")
+		slog.Info("initializing organization domain")
 		// Create command and query handlers
 		createOrganizationHandler := organizationCommands.NewCreateOrganizationCommandHandler(
 			repos.Organizations,
@@ -412,13 +408,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listOrganizationsHandler,
 		)
 
-		log.Info("organization domain ready")
+		slog.Info("organization domain ready")
 		return nil
 	})
 
 	// Initialize pipeline domain
 	g.Go(func() error {
-		log.Info("initializing pipeline domain")
+		slog.Info("initializing pipeline domain")
 		// Create command and query handlers
 		createPipelineHandler := pipelineCommands.NewCreatePipelineCommandHandler(
 			repos.Pipelines,
@@ -466,13 +462,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listPipelinesHandler,
 		)
 
-		log.Info("pipeline domain ready")
+		slog.Info("pipeline domain ready")
 		return nil
 	})
 
 	// Initialize run domain
 	g.Go(func() error {
-		log.Info("initializing run domain")
+		slog.Info("initializing run domain")
 		// Create command and query handlers
 		createRunHandler := runCommands.NewCreateRunCommandHandler(
 			repos.Runs,
@@ -502,13 +498,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listRunsHandler,
 		)
 
-		log.Info("run domain ready")
+		slog.Info("run domain ready")
 		return nil
 	})
 
 	// Initialize tool domain
 	g.Go(func() error {
-		log.Info("initializing tool domain")
+		slog.Info("initializing tool domain")
 		// Create command and query handlers
 		createToolHandler := toolCommands.NewCreateToolCommandHandler(
 			repos.Tools,
@@ -538,13 +534,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listToolsHandler,
 		)
 
-		log.Info("tool domain ready")
+		slog.Info("tool domain ready")
 		return nil
 	})
 
 	// Initialize user domain
 	g.Go(func() error {
-		log.Info("initializing user domain")
+		slog.Info("initializing user domain")
 		// Create command and query handlers
 		updateCurrentUserHandler := userCommands.NewUpdateCurrentUserCommandHandler(
 			repos.Users,
@@ -583,7 +579,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 			listUsersHandler,
 		)
 
-		log.Info("user domain ready")
+		slog.Info("user domain ready")
 		return nil
 	})
 
@@ -593,19 +589,19 @@ func NewApp(cfg *config.Config) (*App, error) {
 	}
 
 	// Create the HTTP server
-	log.Info("creating HTTP server")
-	app.Server = server.NewServer(cfg.API, log)
+	slog.Info("creating HTTP server")
+	app.Server = server.NewServer(cfg.API)
 
 	// Register all application routes
 	app.registerRoutes()
 
-	log.Info("application initialized successfully")
+	slog.Info("application initialized successfully")
 	return app, nil
 }
 
 // Close cleans up all resources.
 func (a *App) Close() error {
-	a.Logger.Info("shutting down application")
+	slog.Info("shutting down application")
 	if a.infra != nil {
 		return a.infra.Close()
 	}
@@ -619,55 +615,55 @@ func (a *App) registerRoutes() {
 
 	// Register all application routes
 	a.RegisterRoutes(mux)
-	a.Logger.Info("routes registered")
+	slog.Info("routes registered")
 }
 
 // RegisterRoutes registers all application routes with the http.ServeMux.
 func (a *App) RegisterRoutes(mux *http.ServeMux) {
-	a.Logger.Info("registering API routes...")
+	slog.Info("registering API routes...")
 
 	// ========================================
 	// API ROUTES
 	// ========================================
 	// Auth routes
-	a.Logger.Info("registering auth routes")
+	slog.Info("registering auth routes")
 	controllers.RegisterAuthRoutes(mux, a.AuthController)
 	// apikey routes
-	a.Logger.Info("registering apikey routes")
+	slog.Info("registering apikey routes")
 	controllers.RegisterAPIKeyRoutes(mux, a.APIKeyController)
 	// artifact routes
-	a.Logger.Info("registering artifact routes")
+	slog.Info("registering artifact routes")
 	controllers.RegisterArtifactRoutes(mux, a.ArtifactController)
 	// config routes
-	a.Logger.Info("registering config routes")
+	slog.Info("registering config routes")
 	controllers.RegisterConfigRoutes(mux, a.ConfigController)
 	// health routes
-	a.Logger.Info("registering health routes")
+	slog.Info("registering health routes")
 	controllers.RegisterHealthRoutes(mux, a.HealthController)
 	// invitation routes
-	a.Logger.Info("registering invitation routes")
+	slog.Info("registering invitation routes")
 	controllers.RegisterInvitationRoutes(mux, a.InvitationController)
 	// label routes
-	a.Logger.Info("registering label routes")
+	slog.Info("registering label routes")
 	controllers.RegisterLabelRoutes(mux, a.LabelController)
 	// member routes
-	a.Logger.Info("registering member routes")
+	slog.Info("registering member routes")
 	controllers.RegisterMemberRoutes(mux, a.MemberController)
 	// organization routes
-	a.Logger.Info("registering organization routes")
+	slog.Info("registering organization routes")
 	controllers.RegisterOrganizationRoutes(mux, a.OrganizationController)
 	// pipeline routes
-	a.Logger.Info("registering pipeline routes")
+	slog.Info("registering pipeline routes")
 	controllers.RegisterPipelineRoutes(mux, a.PipelineController)
 	// run routes
-	a.Logger.Info("registering run routes")
+	slog.Info("registering run routes")
 	controllers.RegisterRunRoutes(mux, a.RunController)
 	// tool routes
-	a.Logger.Info("registering tool routes")
+	slog.Info("registering tool routes")
 	controllers.RegisterToolRoutes(mux, a.ToolController)
 	// user routes
-	a.Logger.Info("registering user routes")
+	slog.Info("registering user routes")
 	controllers.RegisterUserRoutes(mux, a.UserController)
 
-	a.Logger.Info("all routes registered successfully")
+	slog.Info("all routes registered successfully")
 }

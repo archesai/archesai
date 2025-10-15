@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -37,10 +37,10 @@ func init() {
 
 	// Bind to viper
 	if err := viper.BindPFlag("web.port", webCmd.Flags().Lookup("port")); err != nil {
-		log.Fatalf("Failed to bind port flag: %v", err)
+		slog.Error("Failed to bind port flag", "err", err)
 	}
 	if err := viper.BindPFlag("web.api_url", webCmd.Flags().Lookup("api-url")); err != nil {
-		log.Fatalf("Failed to bind api-url flag: %v", err)
+		slog.Error("Failed to bind api-url flag", "err", err)
 	}
 }
 
@@ -48,8 +48,8 @@ func runWeb(_ *cobra.Command, _ []string) error {
 	port := viper.GetInt("web.port")
 	apiURL := viper.GetString("web.api_url")
 
-	log.Printf("🌐 Web server would start on port %d", port)
-	log.Printf("   Proxying API requests to %s", apiURL)
+	slog.Info(fmt.Sprintf("🌐 Web server would start on port %d", port))
+	slog.Info(fmt.Sprintf("   Proxying API requests to %s", apiURL))
 
 	// TODO: Implement web server
 	// This would:

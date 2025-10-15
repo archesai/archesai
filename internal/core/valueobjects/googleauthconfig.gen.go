@@ -23,7 +23,7 @@ type GoogleAuthConfig struct {
 	RedirectURL *string `json:"redirectUrl,omitempty" yaml:"redirectUrl,omitempty"`
 
 	// Scopes OAuth scopes to request
-	Scopes *[]string `json:"scopes,omitempty" yaml:"scopes,omitempty"`
+	Scopes []string `json:"scopes,omitempty" yaml:"scopes,omitempty"`
 }
 
 // NewGoogleAuthConfig creates a new immutable GoogleAuthConfig value object.
@@ -33,7 +33,7 @@ func NewGoogleAuthConfig(
 	clientSecret *string,
 	enabled bool,
 	redirectURL *string,
-	scopes *[]string,
+	scopes []string,
 ) (GoogleAuthConfig, error) {
 	// Validate required fields
 	return GoogleAuthConfig{
@@ -77,7 +77,7 @@ func (v GoogleAuthConfig) GetRedirectURL() *string {
 
 // GetScopes returns the Scopes value.
 // Value objects are immutable, so this returns a copy of the value.
-func (v GoogleAuthConfig) GetScopes() *[]string {
+func (v GoogleAuthConfig) GetScopes() []string {
 	return v.Scopes
 }
 

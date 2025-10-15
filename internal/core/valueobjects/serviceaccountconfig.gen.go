@@ -24,6 +24,9 @@ func NewServiceAccountConfig(
 	name string,
 ) (ServiceAccountConfig, error) {
 	// Validate required fields
+	if name == "" {
+		return ServiceAccountConfig{}, fmt.Errorf("Name cannot be empty")
+	}
 	return ServiceAccountConfig{
 		Create: create,
 		Name:   name,

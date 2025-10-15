@@ -3,6 +3,7 @@
 package entities
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/archesai/archesai/internal/core/events"
@@ -37,6 +38,12 @@ func NewPipelineStep(
 	toolID uuid.UUID,
 ) (*PipelineStep, error) {
 	// Validate required fields
+	if pipelineID == uuid.Nil {
+		return nil, fmt.Errorf("PipelineID cannot be nil UUID")
+	}
+	if toolID == uuid.Nil {
+		return nil, fmt.Errorf("ToolID cannot be nil UUID")
+	}
 	now := time.Now().UTC()
 	id := uuid.New()
 	pipelinestep := &PipelineStep{

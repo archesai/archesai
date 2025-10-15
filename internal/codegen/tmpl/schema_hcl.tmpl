@@ -1,25 +1,52 @@
 {{- /*
 Template: schema_hcl.tmpl
 Generates: HCL database schema from OpenAPI specifications
-Expected data: HCLTemplateData with Schemas
-*/ -}}{{- range .Schemas }}{{- $schema := . -}}
+Expected data: HCLTemplateData with Schemas and DatabaseType
+*/ -}}{{- $dbType := .DatabaseType -}}
+{{- $isPostgres := eq $dbType "postgresql" -}}
+{{- $isSQLite := eq $dbType "sqlite" -}}
+{{- range .Schemas }}{{- $schema := . -}}
 table "{{ snakeCase .Name }}" {
+{{- if $isPostgres }}
   schema = schema.public
+{{- else if $isSQLite }}
+  schema = schema.main
+{{- end }}
 {{- range .GetSortedProperties }}{{- $field := . }}
 {{- $defaultValue := "" }}
-{{- if .DefaultValue }}{{- $defaultValue = formatHCLDefault . }}{{- end }}
-{{- if and (eq $defaultValue "") (eq .Name "ID") }}{{- $defaultValue = "sql(\"gen_random_uuid()\")" }}{{- end }}
+{{- if .DefaultValue }}
+  {{- if $isSQLite }}
+    {{- $defaultValue = formatSQLiteHCLDefault . }}
+  {{- else }}
+    {{- $defaultValue = formatHCLDefault . }}
+  {{- end }}
+{{- end }}
+{{- if and (eq $defaultValue "") (eq .Name "ID") }}
+  {{- if $isSQLite }}
+    {{- $defaultValue = "sql(\"lower(hex(randomblob(16)))\")" }}
+  {{- else }}
+    {{- $defaultValue = "sql(\"gen_random_uuid()\")" }}
+  {{- end }}
+{{- end }}
 {{- if and (eq $defaultValue "") (eq .Name "CreatedAt") }}{{- $defaultValue = "sql(\"CURRENT_TIMESTAMP\")" }}{{- end }}
 {{- if and (eq $defaultValue "") (eq .Name "UpdatedAt") }}{{- $defaultValue = "sql(\"CURRENT_TIMESTAMP\")" }}{{- end }}
 {{- $hasDefault := ne $defaultValue "" }}
   column "{{ snakeCase .Name }}" {
 {{- if $hasDefault }}
     null    = {{ if .Nullable }}true{{ else }}false{{ end }}
+    {{- if $isSQLite }}
+    type    = {{ mapToSQLiteHCLType . }}
+    {{- else }}
     type    = {{ mapToHCLType . }}
+    {{- end }}
     default = {{ $defaultValue }}
 {{- else }}
     null = {{ if .Nullable }}true{{ else }}false{{ end }}
+    {{- if $isSQLite }}
+    type = {{ mapToSQLiteHCLType . }}
+    {{- else }}
     type = {{ mapToHCLType . }}
+    {{- end }}
 {{- end }}
   }
 {{- end }}
@@ -33,8 +60,8 @@ table "{{ snakeCase .Name }}" {
   foreign_key "{{ snakeCase $schema.Name }}_{{ snakeCase .Field }}_fkey" {
     columns     = [column.{{ snakeCase .Field }}]
     ref_columns = [table.{{ .References }}.column.{{ if .ReferencesField }}{{ .ReferencesField }}{{ else }}id{{ end }}]
-    on_update   = {{ if .OnUpdate }}{{ .OnUpdate }}{{ else }}NO_ACTION{{ end }}
-    on_delete   = {{ if .OnDelete }}{{ .OnDelete }}{{ else }}CASCADE{{ end }}
+    on_update   = "{{ if .OnUpdate }}{{ .OnUpdate }}{{ else }}NO_ACTION{{ end }}"
+    on_delete   = "{{ if .OnDelete }}{{ .OnDelete }}{{ else }}CASCADE{{ end }}"
   }
 {{- end }}
 {{- end }}
@@ -53,39 +80,21 @@ table "{{ snakeCase .Name }}" {
 {{- end }}
 {{- end }}
 {{- end }}
+{{- if $isPostgres }}
 {{- range .GetSortedProperties }}{{- if .Enum }}
   check "{{ snakeCase $schema.Name }}_{{ snakeCase .Name }}_check" {
     expr = "({{ snakeCase .Name }} = ANY (ARRAY[{{ range $i, $v := .Enum }}{{ if $i }}, {{ end }}'{{ $v }}'::text{{ end }}]))"
   }
 {{- end }}{{- end }}
-{{- if eq .Name "Organization" }}
-  check "organization_slug_format" {
-    expr = "((slug)::text ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'::text)"
-  }
-{{- end }}
-{{- if and .XCodegen .XCodegen.Repository }}
-{{- $repo := .XCodegen.Repository }}
-{{- if $repo.Indices }}
-{{- range $repo.Indices }}
-{{- if eq . "stripeCustomerIdentifier" }}
-  unique "{{ snakeCase $schema.Name }}_stripe_customer_identifier_key" {
-    columns = [column.stripe_customer_identifier]
-  }
-{{- else if eq . "email" }}
-  unique "{{ snakeCase $schema.Name }}_email_key" {
-    columns = [column.email]
-  }
-{{- else if eq . "token" }}
-  unique "{{ snakeCase $schema.Name }}_token_key" {
-    columns = [column.token]
-  }
-{{- end }}
-{{- end }}
-{{- end }}
 {{- end }}
 }
 
 {{ end }}
+{{- if $isPostgres }}
 schema "public" {
   comment = "standard public schema"
 }
+{{- else if $isSQLite }}
+schema "main" {
+}
+{{- end }}

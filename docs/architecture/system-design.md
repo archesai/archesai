@@ -587,7 +587,7 @@ func RequireRole(roles ...string) echo.MiddlewareFunc {
 
 ```go
 // Structured logging with context
-logger.Info("Processing request",
+slog.Info("Processing request",
     zap.String("request_id", requestID),
     zap.String("user_id", userID),
     zap.String("action", "create_artifact"),

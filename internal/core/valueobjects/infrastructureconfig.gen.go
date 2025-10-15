@@ -26,6 +26,9 @@ func NewInfrastructureConfig(
 	serviceAccount ServiceAccountConfig,
 ) (InfrastructureConfig, error) {
 	// Validate required fields
+	if namespace == "" {
+		return InfrastructureConfig{}, fmt.Errorf("Namespace cannot be empty")
+	}
 	return InfrastructureConfig{
 		Images:         images,
 		Migrations:     migrations,

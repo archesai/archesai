@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/spf13/cobra"
 )
@@ -19,9 +20,9 @@ var versionCmd = &cobra.Command{
 	Short: "Print version information",
 	Long:  `Display version, commit hash, and build date of the Arches server.`,
 	Run: func(_ *cobra.Command, _ []string) {
-		fmt.Printf("Arches version %s\n", version)
-		fmt.Printf("  commit: %s\n", commit)
-		fmt.Printf("  built:  %s\n", buildDate)
+		slog.Info(fmt.Sprintf("version %s", version))
+		slog.Info(fmt.Sprintf("commit: %s", commit))
+		slog.Info(fmt.Sprintf("built: %s", buildDate))
 	},
 }
 

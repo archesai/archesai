@@ -21,12 +21,10 @@ import (
 	database "github.com/archesai/archesai/internal/infrastructure/persistence"
 	"github.com/archesai/archesai/internal/infrastructure/persistence/postgres/repositories"
 	"github.com/archesai/archesai/internal/infrastructure/redis"
-	"github.com/archesai/archesai/internal/shared/logger"
 )
 
 // Infrastructure holds all infrastructure components.
 type Infrastructure struct {
-	Logger         *slog.Logger
 	Database       *database.Database
 	EventPublisher coreEvents.Publisher
 	AuthService    *auth.Service
@@ -55,13 +53,6 @@ type Repositories struct {
 
 // NewInfrastructure creates all infrastructure components.
 func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
-	// Initialize logger
-	log := logger.New(logger.Config{
-		Level:  string(cfg.Logging.Level),
-		Pretty: cfg.Logging.Pretty,
-	})
-	slog.SetDefault(log)
-
 	// Initialize database
 	var sqlDB *sql.DB
 	var pgxPool *pgxpool.Pool
@@ -96,7 +87,7 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 		}
 		pgxPool = pool
 		sqlDB = stdlib.OpenDBFromPool(pool)
-		log.Info("connected to PostgreSQL database")
+		slog.Info("connected to PostgreSQL database")
 
 	case database.TypeSQLite:
 		// For SQLite, directly create sql.DB
@@ -105,7 +96,7 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 			return nil, fmt.Errorf("failed to connect to SQLite: %w", err)
 		}
 		sqlDB = db
-		log.Info("connected to SQLite database")
+		slog.Info("connected to SQLite database")
 
 	default:
 		return nil, fmt.Errorf("unsupported database type: %s", dbType)
@@ -120,7 +111,6 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 	db := database.NewDatabase(sqlDB, pgxPool, dbType)
 
 	infra := &Infrastructure{
-		Logger:   log,
 		Database: db,
 	}
 
@@ -134,14 +124,14 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 			EnablePubSub: true,
 		}
 
-		redisClient, err := redis.NewClient(redisConfig, log)
+		redisClient, err := redis.NewClient(redisConfig)
 		if err != nil {
-			log.Warn("failed to connect to Redis, using in-memory alternatives", "error", err)
+			slog.Warn("failed to connect to Redis, using in-memory alternatives", "error", err)
 			infra.EventPublisher = events.NewNoOpPublisher()
 			infra.AuthCache = cache.NewMemoryCache[entities.Session]()
 			infra.UsersCache = cache.NewMemoryCache[entities.User]()
 		} else {
-			log.Info("connected to redis", "host", cfg.Redis.Host, "port", cfg.Redis.Port)
+			slog.Info("connected to redis", "host", cfg.Redis.Host, "port", cfg.Redis.Port)
 			infra.redisClient = redisClient
 			infra.EventPublisher = events.NewRedisPublisher(redisClient.GetRedisClient())
 			infra.AuthCache = cache.NewRedisCache[entities.Session](redisClient.GetRedisClient(), "auth:session")
@@ -203,7 +193,7 @@ func NewRepositories(infra *Infrastructure) (*Repositories, error) {
 func (i *Infrastructure) Close() error {
 	if i.Database != nil && i.Database.SQLDB() != nil {
 		if err := i.Database.SQLDB().Close(); err != nil {
-			i.Logger.Error("failed to close database", "error", err)
+			slog.Error("failed to close database", "error", err)
 			return err
 		}
 	}
@@ -214,7 +204,7 @@ func (i *Infrastructure) Close() error {
 
 	if i.redisClient != nil {
 		if err := i.redisClient.Close(); err != nil {
-			i.Logger.Error("failed to close redis", "error", err)
+			slog.Error("failed to close redis", "error", err)
 			return err
 		}
 	}

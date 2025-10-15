@@ -14,11 +14,10 @@ type Client struct {
 	Queue  *Queue
 	PubSub *PubSub
 	config *Config
-	logger *slog.Logger
 }
 
 // NewClient creates a new Redis client with all features.
-func NewClient(config *Config, logger *slog.Logger) (*Client, error) {
+func NewClient(config *Config) (*Client, error) {
 	if config == nil {
 		config = DefaultConfig()
 	}
@@ -66,7 +65,7 @@ func NewClient(config *Config, logger *slog.Logger) (*Client, error) {
 		return nil, fmt.Errorf("failed to connect to Redis: %w", err)
 	}
 
-	logger.Info("Connected to Redis",
+	slog.Info("Connected to Redis",
 		"addr", opts.Addr,
 		"db", opts.DB,
 		"pool_size", opts.PoolSize,
@@ -76,18 +75,17 @@ func NewClient(config *Config, logger *slog.Logger) (*Client, error) {
 	client := &Client{
 		redis:  redisClient,
 		config: config,
-		logger: logger,
 	}
 
 	// Initialize features based on config
 	if config.EnableQueue {
 		client.Queue = NewQueue(redisClient)
-		logger.Info("Redis queue enabled")
+		slog.Info("Redis queue enabled")
 	}
 
 	if config.EnablePubSub {
 		client.PubSub = NewPubSub(redisClient)
-		logger.Info("Redis pub/sub enabled")
+		slog.Info("Redis pub/sub enabled")
 	}
 
 	return client, nil

@@ -31,9 +31,8 @@ type {{ .Operation.ID }}Command struct {
 	{{ pascalCase .Name }} {{ .GoType }}
 {{- end }}
 {{- if .Operation.RequestBody }}
-{{- range .Operation.RequestBody.GetSortedProperties }}{{- $prop := . }}
-{{- $isOptional := stringContains .JSONTag ",omitempty" }}
-	{{ .Name }} {{ if and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}*{{ end }}{{ .GoType }}
+{{- range .Operation.RequestBody.GetSortedProperties }}
+	{{ .Name }} {{ if .NeedsPointer }}*{{ end }}{{ .GoType }}
 {{- end }}
 {{- end }}
 }
@@ -50,9 +49,8 @@ func New{{ .Operation.ID }}Command(
 	{{ .Name }} {{ .GoType }},
 {{- end }}
 {{- if .Operation.RequestBody }}
-{{- range .Operation.RequestBody.GetSortedProperties }}{{- $prop := . }}
-{{- $isOptional := stringContains .JSONTag ",omitempty" }}
-	{{ .Name }} {{ if and $isOptional (not (hasPrefix .GoType "*")) (not (hasPrefix .GoType "[]")) (not (hasPrefix .GoType "map")) }}*{{ end }}{{ .GoType }},
+{{- range .Operation.RequestBody.GetSortedProperties }}
+	{{ .Name }} {{ if .NeedsPointer }}*{{ end }}{{ .GoType }},
 {{- end }}
 {{- end }}
 ) *{{ .Operation.ID }}Command {

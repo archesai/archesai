@@ -7,7 +7,6 @@ package repositories
 
 import (
 	"context"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -116,75 +115,6 @@ func (q *Queries) GetPipelineStep(ctx context.Context, arg GetPipelineStepParams
 		&i.ToolID,
 	)
 	return i, err
-}
-
-const getPipelineStepsWithDependencies = `-- name: GetPipelineStepsWithDependencies :many
-SELECT
-  ps.id,
-  ps.pipeline_id,
-  ps.tool_id,
-  ps.created_at,
-  ps.updated_at,
-  COALESCE(
-    ARRAY_AGG(DISTINCT psd.prerequisite_id) FILTER (
-      WHERE
-        psd.prerequisite_id IS NOT NULL
-    ),
-    ARRAY[]::UUID[]
-  ) as dependencies
-FROM
-  pipeline_step ps
-  LEFT JOIN pipeline_step_to_dependency psd ON ps.id = psd.pipeline_step_id
-WHERE
-  ps.pipeline_id = $1
-GROUP BY
-  ps.id,
-  ps.pipeline_id,
-  ps.tool_id,
-  ps.created_at,
-  ps.updated_at
-ORDER BY
-  ps.created_at ASC
-`
-
-type GetPipelineStepsWithDependenciesParams struct {
-	PipelineID uuid.UUID
-}
-
-type GetPipelineStepsWithDependenciesRow struct {
-	ID           uuid.UUID
-	PipelineID   uuid.UUID
-	ToolID       uuid.UUID
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	Dependencies interface{}
-}
-
-func (q *Queries) GetPipelineStepsWithDependencies(ctx context.Context, arg GetPipelineStepsWithDependenciesParams) ([]GetPipelineStepsWithDependenciesRow, error) {
-	rows, err := q.db.Query(ctx, getPipelineStepsWithDependencies, arg.PipelineID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetPipelineStepsWithDependenciesRow
-	for rows.Next() {
-		var i GetPipelineStepsWithDependenciesRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.PipelineID,
-			&i.ToolID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Dependencies,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const listPipelineSteps = `-- name: ListPipelineSteps :many

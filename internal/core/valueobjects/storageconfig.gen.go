@@ -46,6 +46,18 @@ func NewStorageConfig(
 	secretkey string,
 ) (StorageConfig, error) {
 	// Validate required fields
+	if accesskey == "" {
+		return StorageConfig{}, fmt.Errorf("Accesskey cannot be empty")
+	}
+	if bucket == "" {
+		return StorageConfig{}, fmt.Errorf("Bucket cannot be empty")
+	}
+	if endpoint == "" {
+		return StorageConfig{}, fmt.Errorf("Endpoint cannot be empty")
+	}
+	if secretkey == "" {
+		return StorageConfig{}, fmt.Errorf("Secretkey cannot be empty")
+	}
 	return StorageConfig{
 		Accesskey:   accesskey,
 		Bucket:      bucket,

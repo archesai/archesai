@@ -46,3 +46,5 @@ tmp/
 
 opencode.json
 .vscode/mcp.json
+
+api/openapi.bundled.yaml

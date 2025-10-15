@@ -9,10 +9,17 @@ package database
 // Generate database queries from SQL files
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
+	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/testcontainers/testcontainers-go"
+	testpostgres "github.com/testcontainers/testcontainers-go/modules/postgres"
+	"github.com/testcontainers/testcontainers-go/wait"
 )
 
 // Type represents the database type.
@@ -103,4 +110,56 @@ func (d *Database) IsPostgreSQL() bool {
 // IsSQLite returns true if this is a SQLite database.
 func (d *Database) IsSQLite() bool {
 	return d.dbType == TypeSQLite
+}
+
+// StartPostgreSQL starts a PostgreSQL testcontainer
+func StartPostgreSQL(ctx context.Context) (*Database, *testpostgres.PostgresContainer, error) {
+
+	// Create PostgreSQL container with pgvector extension
+	postgresContainer, err := testpostgres.Run(ctx,
+		"docker.io/pgvector/pgvector:pg15",
+		testpostgres.WithDatabase("archesai-migrations"),
+		testpostgres.WithUsername("postgres"),
+		testpostgres.WithPassword("postgres"),
+		testcontainers.WithWaitStrategy(
+			wait.ForLog("database system is ready to accept connections").
+				WithOccurrence(2).
+				WithStartupTimeout(60*time.Second),
+		),
+	)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to start postgres container: %w", err)
+	}
+
+	// Get connection string
+	connStr, err := postgresContainer.ConnectionString(ctx, "sslmode=disable")
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to get connection string: %w", err)
+	}
+
+	// Open database connection using pgx driver
+	sqlDB, err := sql.Open("pgx", connStr)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to open database connection: %w", err)
+	}
+
+	// Create database.Database instance
+	database := NewDatabase(sqlDB, nil, TypePostgreSQL)
+
+	slog.Debug("PostgreSQL testcontainer started", slog.String("url", connStr))
+
+	return database, postgresContainer, nil
+}
+
+// StartSQLite starts an in-memory SQLite database
+func StartSQLite() (*Database, error) {
+
+	sqlDB, err := sql.Open("sqlite", ":memory:")
+	if err != nil {
+		return nil, fmt.Errorf("failed to open SQLite database: %w", err)
+	}
+
+	db := NewDatabase(sqlDB, nil, TypeSQLite)
+
+	return db, nil
 }

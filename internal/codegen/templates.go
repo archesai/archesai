@@ -41,12 +41,6 @@ func LoadTemplates() (map[string]*template.Template, error) {
 		"schema_hcl.tmpl",
 	}
 
-	// Load header template first as it's used by other templates
-	headerContent, err := GetTemplate("header.tmpl")
-	if err != nil {
-		return nil, fmt.Errorf("failed to read header template: %w", err)
-	}
-
 	for _, file := range templateFiles {
 		content, err := GetTemplate(file)
 		if err != nil {
@@ -55,12 +49,6 @@ func LoadTemplates() (map[string]*template.Template, error) {
 
 		// Create template with header included
 		tmpl := template.New(file).Funcs(TemplateFuncs())
-
-		// Parse header template with the name "header.tmpl" so it can be referenced
-		_, err = tmpl.New("header.tmpl").Parse(headerContent)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse header template for %s: %w", file, err)
-		}
 
 		// Then parse the actual template
 		_, err = tmpl.Parse(content)
@@ -105,7 +93,9 @@ func TemplateFuncs() template.FuncMap {
 		},
 
 		// HCL generation helpers
-		"mapToHCLType":     parsers.SchemaToHCLType,
-		"formatHCLDefault": parsers.FormatHCLDefault,
+		"mapToHCLType":           parsers.SchemaToHCLType,
+		"mapToSQLiteHCLType":     parsers.SchemaToSQLiteHCLType,
+		"formatHCLDefault":       parsers.FormatHCLDefault,
+		"formatSQLiteHCLDefault": parsers.FormatSQLiteHCLDefault,
 	}
 }

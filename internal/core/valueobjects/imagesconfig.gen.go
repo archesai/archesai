@@ -24,6 +24,9 @@ func NewImagesConfig(
 	imageRegistry string,
 ) (ImagesConfig, error) {
 	// Validate required fields
+	if imageRegistry == "" {
+		return ImagesConfig{}, fmt.Errorf("ImageRegistry cannot be empty")
+	}
 	return ImagesConfig{
 		ImagePullSecrets: imagePullSecrets,
 		ImageRegistry:    imageRegistry,

@@ -79,17 +79,15 @@ type Server struct {
 	mux    *http.ServeMux
 	server *http.Server
 	config *config.API
-	logger *slog.Logger
 }
 
 // NewServer creates a new API server.
-func NewServer(config *config.API, logger *slog.Logger) *Server {
+func NewServer(config *config.API) *Server {
 	mux := http.NewServeMux()
 
 	server := &Server{
 		mux:    mux,
 		config: config,
-		logger: logger,
 	}
 
 	return server
@@ -114,7 +112,7 @@ func (s *Server) ListenAndServe() error {
 		MaxHeaderBytes: DefaultMaxHeaderBytes,
 	}
 
-	s.logger.Info("starting server", "address", addr)
+	slog.Info("starting server", "address", addr)
 	return s.server.ListenAndServe()
 }
 
@@ -124,7 +122,7 @@ func (s *Server) Start() error {
 	// Start server in goroutine
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			s.logger.Error("failed to start server", "error", err)
+			slog.Error("failed to start server", "error", err)
 			os.Exit(1)
 		}
 	}()
@@ -134,18 +132,18 @@ func (s *Server) Start() error {
 	signal.Notify(quit, os.Interrupt)
 	<-quit
 
-	s.logger.Info("shutting down server...")
+	slog.Info("shutting down server...")
 
 	// Graceful shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultShutdownTimeout)
 	defer cancel()
 
 	if err := s.server.Shutdown(ctx); err != nil {
-		s.logger.Error("server forced to shutdown", "error", err)
+		slog.Error("server forced to shutdown", "error", err)
 		return err
 	}
 
-	s.logger.Info("server shutdown complete")
+	slog.Info("server shutdown complete")
 	return nil
 }
 

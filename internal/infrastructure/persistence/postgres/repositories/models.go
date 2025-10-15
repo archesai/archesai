@@ -8,8 +8,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/pgvector/pgvector-go"
 )
 
 type APIKey struct {
@@ -35,7 +33,6 @@ type Account struct {
 	AccessTokenExpiresAt  *time.Time
 	AccountIdentifier     string
 	IDToken               *string
-	Password              *string
 	Provider              string
 	RefreshToken          *string
 	RefreshTokenExpiresAt *time.Time
@@ -49,7 +46,6 @@ type Artifact struct {
 	UpdatedAt      time.Time
 	Credits        int32
 	Description    *string
-	Embedding      *pgvector.Vector
 	MimeType       string
 	Name           *string
 	OrganizationID uuid.UUID
@@ -77,25 +73,6 @@ type Label struct {
 	UpdatedAt      time.Time
 	Name           string
 	OrganizationID uuid.UUID
-}
-
-type LabelToArtifact struct {
-	LabelID    uuid.UUID
-	ArtifactID uuid.UUID
-}
-
-type MagicLinkToken struct {
-	ID             uuid.UUID
-	Code           *string
-	CreatedAt      pgtype.Timestamp
-	DeliveryMethod *string
-	ExpiresAt      pgtype.Timestamp
-	Identifier     string
-	IPAddress      *string
-	TokenHash      string
-	UsedAt         pgtype.Timestamp
-	UserAgent      *string
-	UserID         *uuid.UUID
 }
 
 type Member struct {
@@ -137,11 +114,6 @@ type PipelineStep struct {
 	ToolID     uuid.UUID
 }
 
-type PipelineStepToDependency struct {
-	PipelineStepID uuid.UUID
-	PrerequisiteID uuid.UUID
-}
-
 type Run struct {
 	ID             uuid.UUID
 	CreatedAt      time.Time
@@ -156,11 +128,6 @@ type Run struct {
 	ToolID         uuid.UUID
 }
 
-type RunToArtifact struct {
-	RunID      uuid.UUID
-	ArtifactID uuid.UUID
-}
-
 type Session struct {
 	ID             uuid.UUID
 	CreatedAt      time.Time
@@ -169,7 +136,6 @@ type Session struct {
 	AuthProvider   *string
 	ExpiresAt      time.Time
 	IPAddress      *string
-	Metadata       []byte
 	OrganizationID *uuid.UUID
 	Token          string
 	UserAgent      *string
@@ -195,13 +161,4 @@ type User struct {
 	EmailVerified bool
 	Image         *string
 	Name          string
-}
-
-type VerificationToken struct {
-	ID         uuid.UUID
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	ExpiresAt  time.Time
-	Identifier string
-	Value      string
 }

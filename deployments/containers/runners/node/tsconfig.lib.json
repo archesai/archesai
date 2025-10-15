@@ -1,0 +1,7 @@
+{
+  "extends": [
+    "../../../../tools/tsconfig/src/base.json",
+    "../../../../tools/tsconfig/src/lib.json"
+  ],
+  "references": []
+}

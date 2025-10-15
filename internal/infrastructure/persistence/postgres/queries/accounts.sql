@@ -10,8 +10,7 @@ INSERT INTO
     access_token_expires_at,
     refresh_token_expires_at,
     scope,
-    id_token,
-    password
+    id_token
   )
 VALUES
   (
@@ -24,8 +23,7 @@ VALUES
     sqlc.narg ('access_token_expires_at'),
     sqlc.narg ('refresh_token_expires_at'),
     sqlc.narg ('scope'),
-    sqlc.narg ('id_token'),
-    sqlc.narg ('password')
+    sqlc.narg ('id_token')
   )
 RETURNING
   *;
@@ -99,7 +97,6 @@ SET
   ),
   scope = COALESCE(sqlc.narg (scope), scope),
   id_token = COALESCE(sqlc.narg (id_token), id_token),
-  password = COALESCE(sqlc.narg (password), password),
   updated_at = NOW()
 WHERE
   id = $1

@@ -80,8 +80,14 @@ func NewMember(
 	userID uuid.UUID,
 ) (*Member, error) {
 	// Validate required fields
+	if organizationID == uuid.Nil {
+		return nil, fmt.Errorf("OrganizationID cannot be nil UUID")
+	}
 	if !role.IsValid() {
 		return nil, fmt.Errorf("invalid Role: %s", role)
+	}
+	if userID == uuid.Nil {
+		return nil, fmt.Errorf("UserID cannot be nil UUID")
 	}
 	now := time.Now().UTC()
 	id := uuid.New()
