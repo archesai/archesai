@@ -8,14 +8,17 @@ require (
 	github.com/charmbracelet/lipgloss v1.1.1-0.20250404203927-76690c660834
 	github.com/charmbracelet/log v0.4.2
 	github.com/coder/websocket v1.8.14
+	github.com/containerd/errdefs v1.0.0
+	github.com/docker/docker v28.5.1+incompatible
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/oapi-codegen/runtime v1.1.2
-	github.com/ollama/ollama v0.12.5
+	github.com/ollama/ollama v0.12.6
 	github.com/openai/openai-go v1.12.0
 	github.com/pb33f/libopenapi v0.28.0
 	github.com/redis/go-redis/v9 v9.14.0
+	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
 	github.com/sqlc-dev/sqlc v1.30.0
@@ -52,7 +55,6 @@ require (
 	github.com/charmbracelet/x/cellbuf v0.0.14-0.20250505150409-97991a1f17d1 // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.2.0 // indirect
-	github.com/containerd/errdefs v1.0.0 // indirect
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/platforms v0.2.1 // indirect
@@ -62,7 +64,6 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/distribution/reference v0.6.0 // indirect
-	github.com/docker/docker v28.5.1+incompatible // indirect
 	github.com/docker/go-connections v0.6.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -125,7 +126,6 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/riza-io/grpc-go v0.2.0 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
-	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2 // indirect
 	github.com/shirou/gopsutil/v4 v4.25.9 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
