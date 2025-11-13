@@ -9,7 +9,8 @@ The executor package provides a flexible way to execute code with two execution 
 - **LocalExecutor**: Run code directly on the host (fast, no isolation)
 - **ContainerExecutor**: Run code in Docker containers (secure, isolated, multi-language)
 
-Both executors implement the same `Executor[A, B]` interface, ensuring type safety through generics and validating inputs/outputs using JSON Schema.
+Both executors implement the same `Executor[A, B]` interface, ensuring type safety through generics
+and validating inputs/outputs using JSON Schema.
 
 ## Features
 

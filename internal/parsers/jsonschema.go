@@ -1,3 +1,4 @@
+// Package parsers provides OpenAPI and JSON Schema parsing utilities.
 package parsers
 
 import (
@@ -321,7 +322,8 @@ func (p *JSONSchemaParser) processArrayType(
 	result.Items, _ = p.extractSchemaRecursive(itemSchema, itemName)
 
 	// If the item is an object with properties, ensure it has a name for type generation
-	if result.Items != nil && result.Items.Type == "object" && len(result.Items.Properties) > 0 &&
+	if result.Items != nil && result.Items.Type == schemaTypeObject &&
+		len(result.Items.Properties) > 0 &&
 		itemName != "" {
 		result.Items.Name = itemName
 		result.Items.GoType = itemName

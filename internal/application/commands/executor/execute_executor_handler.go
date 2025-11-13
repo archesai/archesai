@@ -1,3 +1,4 @@
+// Package executor provides command handlers for executing code in various language runtimes.
 package executor
 
 import (

@@ -87,7 +87,7 @@ type StreamChoice struct {
 	FinishReason string      `json:"finish_reason"`
 }
 
-// LLMSTool represents a function that can be called by the LLM.
+// LLMTool represents a function that can be called by the LLM.
 type LLMTool struct {
 	Type     string    `json:"type"`
 	Function *Function `json:"function,omitempty"`

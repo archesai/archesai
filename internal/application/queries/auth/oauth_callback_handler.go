@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/events"
-	"github.com/archesai/archesai/internal/core/services"
 	"github.com/archesai/archesai/internal/core/models"
+	"github.com/archesai/archesai/internal/core/services"
 )
 
 // OAuthCallbackQueryHandler handles the OAuth callback query.

@@ -58,6 +58,7 @@ post:
               description: The custom execute function code
               type: string
               maxLength: 100000
+              pattern: ^[\s\S]*$
               example: |
                 export async function executeFunction(input: unknown): Promise<any> {
                   return { result: "processed" };
@@ -66,6 +67,7 @@ post:
               description: Dependencies configuration
               type: string
               maxLength: 50000
+              pattern: ^[\s\S]*$
               example: |
                 {
                   "dependencies": {
@@ -76,6 +78,7 @@ post:
               description: Input JSON Schema
               type: string
               maxLength: 10000
+              pattern: ^[\s\S]*$
               example: |
                 {
                   "type": "object",
@@ -90,6 +93,7 @@ post:
               description: Output JSON Schema
               type: string
               maxLength: 10000
+              pattern: ^[\s\S]*$
               example: |
                 {
                   "type": "object",
@@ -104,6 +108,7 @@ post:
               description: Additional files to mount
               type: string
               maxLength: 100000
+              pattern: ^[\s\S]*$
               example: |
                 [
                   {
@@ -114,18 +119,21 @@ post:
             timeout:
               description: Execution timeout in seconds
               type: integer
+              format: int32
               minimum: 1
               maximum: 300
               default: 30
             memoryMB:
               description: Memory limit in megabytes
               type: integer
+              format: int32
               minimum: 128
               maximum: 4096
               default: 256
             cpuShares:
               description: CPU shares (relative weight)
               type: integer
+              format: int32
               minimum: 128
               maximum: 2048
               default: 512
@@ -133,6 +141,7 @@ post:
               description: Environment variables as JSON array
               type: string
               maxLength: 10000
+              pattern: ^[\s\S]*$
               example: '["NODE_ENV=production", "DEBUG=false"]'
           required:
             - name

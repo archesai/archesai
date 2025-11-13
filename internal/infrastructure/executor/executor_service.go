@@ -16,7 +16,7 @@ import (
 )
 
 // ExecutorService defines operations for custom executors with generic input/output types
-type ExecutorService[A any, B any] interface {
+type ExecutorService[A any, B any] interface { //nolint:revive // stutters but needed for backward compatibility
 	// Execute runs an executor with typed input and returns typed output
 	Execute(ctx context.Context, executorID string, input A) (ExecuteResult[B], error)
 

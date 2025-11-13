@@ -43,13 +43,25 @@ post:
                   executionTimeMs:
                     description: Execution time in milliseconds
                     type: integer
+                    format: int64
+                    minimum: 0
+                    maximum: 600000
                     example: 1234
                   logs:
                     description: Execution logs from stderr
                     type: string
+                    maxLength: 1000000
+                    pattern: ^[\s\S]*$
                     example: "Container started\nExecution completed"
                 required:
                   - output
+      headers:
+        X-RateLimit-Limit:
+          $ref: ../components/headers/RateLimitLimit.yaml
+        X-RateLimit-Remaining:
+          $ref: ../components/headers/RateLimitRemaining.yaml
+        X-RateLimit-Reset:
+          $ref: ../components/headers/RateLimitReset.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

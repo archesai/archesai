@@ -37,12 +37,13 @@ async function executeFunction(input: ExecuteInput): Promise<ExecuteOutput> {
 
     // Redirect stdout to stderr during orval execution to prevent pollution
     const originalStdoutWrite = process.stdout.write.bind(process.stdout);
-    process.stdout.write = (
+    process.stdout.write = ((
       chunk: string | Uint8Array,
+      // biome-ignore lint/suspicious/noExplicitAny: not important here
       ...args: any[]
     ): boolean => {
-      return process.stderr.write(chunk, ...(args as [any]));
-    };
+      return process.stderr.write(chunk, ...args);
+    }) as typeof process.stdout.write;
 
     try {
       // Run orval using the installed package

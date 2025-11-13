@@ -205,8 +205,10 @@ func (s *SchemaDef) collectNestedTypesRecursive(result *[]*SchemaDef, visited ma
 		if prop.Type == "array" && prop.Items != nil {
 			// If the array item is an object type with a name, it should be generated
 			// Skip references - they have no properties since they're just pointers to other schemas
-			if prop.Items.Type == "object" && prop.Items.Name != "" && prop.Items.GoType != "" &&
-				!strings.Contains(prop.Items.GoType, ".") && len(prop.Items.Properties) > 0 {
+			if prop.Items.Type == schemaTypeObject && prop.Items.Name != "" &&
+				prop.Items.GoType != "" &&
+				!strings.Contains(prop.Items.GoType, ".") &&
+				len(prop.Items.Properties) > 0 {
 				if !visited[prop.Items.GoType] {
 					visited[prop.Items.GoType] = true
 					*result = append(*result, prop.Items)

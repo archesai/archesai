@@ -8,11 +8,14 @@ Run `make help` to see all available commands.
 Usage: make [target]
 
 Available targets:
-  all                        Default: generate, lint, and format code
   build                      Build all binaries
   build-api                  Build archesai server binary
   build-docs                 Build documentation site
   build-platform             Build platform assets
+  build-runner-go            Build Go runner container
+  build-runner-node          Build Node runner base container
+  build-runner-python        Build Python runner container
+  build-runners              Build all runner containers
   bundle-openapi             Bundle OpenAPI into single file
   check-deps                 Check for required dependencies
   clean                      Clean all build artifacts
@@ -23,12 +26,6 @@ Available targets:
   clean-test                 Clean test cache and coverage files
   clean-ts                   Clean distribution builds
   clean-ts-deps              Clean Node.js dependencies
-  db-migrate                 Alias for db-migrate-up
-  db-migrate-create          Create new migration (usage: make db-migrate-create name=add_users)
-  db-migrate-down            Rollback database migrations
-  db-migrate-reset           Reset database to initial state
-  db-migrate-status          Show migration status
-  db-migrate-up              Apply database migrations
   deploy-docs                Manually trigger documentation deployment to GitHub Pages
   deps                       Install all dependencies
   deps-go                    Install Go dependencies and tools
@@ -36,7 +33,6 @@ Available targets:
   deps-update                Update all dependencies
   deps-update-go             Update Go dependencies
   deps-update-ts             Update Node.js dependencies
-  dev                        Run all services in development mode
   dev-all                    Run all services with hot reload
   dev-api                    Run API server with hot reload
   dev-docs                   Run documentation with hot reload
@@ -51,12 +47,7 @@ Available targets:
   g                          Shortcut for generate
   generate                   Generate all code
   generate-codegen           Generate codegen
-  generate-codegen-types     Generate types for codegen configuration
-  generate-helm-schema       Generate Helm values.schema.json from ArchesConfig.yaml
-  generate-js-client         Generate JavaScript/TypeScript client from OpenAPI
   generate-mocks             Generate test mocks using mockery
-  generate-schema-sqlite     Convert PostgreSQL schema to SQLite
-  generate-sqlc              Generate database code with sqlc
   help                       Show this help message
   install-tools              Install required development tools
   lint                       Run all linters

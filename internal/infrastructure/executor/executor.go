@@ -6,8 +6,10 @@ import (
 	"time"
 )
 
-type ExecutorLanguage string
+// ExecutorLanguage represents the programming language for code execution.
+type ExecutorLanguage string //nolint:revive // stutters but needed for clarity
 
+// Supported executor languages.
 const (
 	ExecutorLanguagePython ExecutorLanguage = "python"
 	ExecutorLanguageGo     ExecutorLanguage = "go"

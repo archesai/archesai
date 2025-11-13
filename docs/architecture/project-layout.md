@@ -19,6 +19,8 @@
 │   │   │   ├── APIKeysSort.yaml
 │   │   │   ├── ArtifactsFilter.yaml
 │   │   │   ├── ArtifactsSort.yaml
+│   │   │   ├── ExecutorsFilter.yaml
+│   │   │   ├── ExecutorsSort.yaml
 │   │   │   ├── InvitationsFilter.yaml
 │   │   │   ├── InvitationsSort.yaml
 │   │   │   ├── LabelsFilter.yaml
@@ -51,6 +53,8 @@
 │   │   │   ├── ConfigResponse.yaml
 │   │   │   ├── Conflict.yaml
 │   │   │   ├── EmailVerificationResponse.yaml
+│   │   │   ├── ExecutorListResponse.yaml
+│   │   │   ├── ExecutorResponse.yaml
 │   │   │   ├── HealthResponse.yaml
 │   │   │   ├── InternalServerError.yaml
 │   │   │   ├── InvitationListResponse.yaml
@@ -68,6 +72,7 @@
 │   │   │   ├── PipelineListResponse.yaml
 │   │   │   ├── PipelineResponse.yaml
 │   │   │   ├── PipelineStepListResponse.yaml
+│   │   │   ├── PipelineStepResponse.yaml
 │   │   │   ├── RunListResponse.yaml
 │   │   │   ├── RunResponse.yaml
 │   │   │   ├── SessionCreated.yaml
@@ -119,13 +124,11 @@
 │   │       │   ├── ConfigTLS.yaml
 │   │       │   ├── ConfigUnstructured.yaml
 │   │       │   └── Config.yaml
-│   │       ├── xcodegen
-│   │       │   ├── CodegenExtension.yaml
-│   │       │   └── JSONSchema2020Extended.yaml
 │   │       ├── Account.yaml
 │   │       ├── APIKey.yaml
 │   │       ├── Artifact.yaml
 │   │       ├── Base.yaml
+│   │       ├── Executor.yaml
 │   │       ├── FilterNode.yaml
 │   │       ├── Health.yaml
 │   │       ├── Invitation.yaml
@@ -168,6 +171,9 @@
 │   │   ├── auth_sessions.yaml
 │   │   ├── auth_verify-email.yaml
 │   │   ├── config.yaml
+│   │   ├── executors_id_execute.yaml
+│   │   ├── executors_id.yaml
+│   │   ├── executors.yaml
 │   │   ├── health.yaml
 │   │   ├── labels_id.yaml
 │   │   ├── labels.yaml
@@ -210,6 +216,29 @@
 │   └── codegen
 │       └── main.go
 ├── deployments
+│   ├── containers
+│   │   └── runners
+│   │       ├── go
+│   │       │   ├── Dockerfile
+│   │       │   ├── execute.example.go
+│   │       │   ├── execute.go
+│   │       │   ├── go.mod
+│   │       │   ├── go.sum
+│   │       │   └── main.go
+│   │       ├── node
+│   │       │   ├── src
+│   │       │   ├── Dockerfile
+│   │       │   ├── execute.example.ts
+│   │       │   ├── package.json
+│   │       │   ├── tsconfig.json
+│   │       │   ├── tsconfig.lib.json
+│   │       │   └── tsconfig.spec.json
+│   │       └── python
+│   │           ├── Dockerfile
+│   │           ├── execute.example.py
+│   │           ├── execute.py
+│   │           ├── requirements.txt
+│   │           └── runner.py
 │   ├── development
 │   │   └── skaffold.yaml
 │   ├── docker
@@ -249,7 +278,6 @@
 │   │   │   └── kustomization.yaml
 │   │   ├── Chart.yaml
 │   │   ├── dev-values.yaml
-│   │   ├── values.schema.json
 │   │   └── values.yaml
 │   ├── k3d
 │   │   └── k3d.yaml
@@ -325,6 +353,7 @@
 │   │   └── workflows.md
 │   ├── guides
 │   │   ├── code-generation.md
+│   │   ├── custom-handlers.md
 │   │   ├── development.md
 │   │   ├── makefile-commands.md
 │   │   ├── overview.md
@@ -345,7 +374,6 @@
 ├── internal
 │   ├── adapters
 │   │   ├── cli
-│   │   │   ├── all.go
 │   │   │   ├── api.go
 │   │   │   ├── completion.go
 │   │   │   ├── config.go
@@ -357,14 +385,16 @@
 │   │   ├── http
 │   │   │   ├── controllers
 │   │   │   └── server
-│   │   │       ├── assets
 │   │   │       ├── cookies.go
-│   │   │       ├── docs.go
-│   │   │       ├── errors.go
-│   │   │       ├── infra.go
+│   │   │       ├── middleware_auth.go
 │   │   │       ├── middleware.go
+│   │   │       ├── middleware_logger.go
+│   │   │       ├── middleware_ratelimit.go
+│   │   │       ├── middleware_recover.go
+│   │   │       ├── middleware_requestid.go
+│   │   │       ├── middleware_security.go
+│   │   │       ├── middleware_timeout.go
 │   │   │       ├── responses.go
-│   │   │       ├── router.go
 │   │   │       ├── server.go
 │   │   │       └── websocket.go
 │   │   └── tui
@@ -393,6 +423,8 @@
 │   │   │   │   ├── update_account_handler.go
 │   │   │   │   ├── update_session_handler.go
 │   │   │   │   └── verify_magic_link_handler.go
+│   │   │   ├── executor
+│   │   │   │   └── execute_executor_handler.go
 │   │   │   ├── invitation
 │   │   │   ├── label
 │   │   │   ├── member
@@ -413,6 +445,7 @@
 │   │       │   └── oauth_callback_handler.go
 │   │       ├── config
 │   │       │   └── get_config_handler.go
+│   │       ├── executor
 │   │       ├── health
 │   │       │   └── get_health_handler.go
 │   │       ├── invitation
@@ -437,6 +470,7 @@
 │   │   │   ├── repository_postgres.tmpl
 │   │   │   ├── repository_sqlite.tmpl
 │   │   │   ├── repository.tmpl
+│   │   │   ├── schema_hcl.tmpl
 │   │   │   └── schema.tmpl
 │   │   ├── filewriter.go
 │   │   ├── generate_bootstrap.go
@@ -444,8 +478,12 @@
 │   │   ├── generate_cqrs.go
 │   │   ├── generate_events.go
 │   │   ├── generate.go
+│   │   ├── generate_hcl.go
+│   │   ├── generate_js_client.go
+│   │   ├── generate_migrations.go
 │   │   ├── generate_repositories.go
 │   │   ├── generate_schemas.go
+│   │   ├── generate_sqlc.go
 │   │   └── templates.go
 │   ├── core
 │   │   ├── entities
@@ -454,15 +492,15 @@
 │   │   ├── events
 │   │   │   ├── event.go
 │   │   │   └── publisher.go
+│   │   ├── models
+│   │   │   ├── auth_tokens.go
+│   │   │   ├── llm.go
+│   │   │   └── stub.go
 │   │   ├── repositories
 │   │   │   └── health.go
-│   │   ├── services
-│   │   │   ├── auth.go
-│   │   │   └── llm.go
-│   │   └── valueobjects
-│   │       ├── auth_tokens.go
-│   │       ├── llm.go
-│   │       └── stub.go
+│   │   └── services
+│   │       ├── auth.go
+│   │       └── llm.go
 │   ├── infrastructure
 │   │   ├── auth
 │   │   │   ├── oauth
@@ -489,6 +527,18 @@
 │   │   │   ├── noop.go
 │   │   │   ├── publisher.go
 │   │   │   └── redis.go
+│   │   ├── executor
+│   │   │   ├── testdata
+│   │   │   │   └── execute.ts
+│   │   │   ├── builder.go
+│   │   │   ├── builder_test.go
+│   │   │   ├── container.go
+│   │   │   ├── container_test.go
+│   │   │   ├── executor.go
+│   │   │   ├── executor_service.go
+│   │   │   ├── local.go
+│   │   │   ├── local_test.go
+│   │   │   └── schemas.go
 │   │   ├── http
 │   │   ├── llm
 │   │   │   ├── chat.go
@@ -505,13 +555,15 @@
 │   │   │   │   ├── migrations
 │   │   │   │   ├── queries
 │   │   │   │   ├── repositories
-│   │   │   │   └── sqlc.yaml
+│   │   │   │   └── schema.gen.hcl
 │   │   │   ├── sqlite
 │   │   │   │   ├── migrations
 │   │   │   │   ├── queries
-│   │   │   │   └── repositories
+│   │   │   │   ├── repositories
+│   │   │   │   └── schema.gen.hcl
 │   │   │   ├── database.go
-│   │   │   └── migrate.go
+│   │   │   ├── migrate.go
+│   │   │   └── sqlc.yaml
 │   │   ├── redis
 │   │   │   ├── client.go
 │   │   │   ├── config.go
@@ -528,16 +580,21 @@
 │   │   ├── jsonschema.go
 │   │   ├── jsonschema_test.go
 │   │   ├── openapi.go
+│   │   ├── openapi_orvalfix.go
 │   │   ├── openapi_test.go
+│   │   ├── operation.go
+│   │   ├── operation_test.go
+│   │   ├── response.go
+│   │   ├── schema.go
 │   │   ├── strings.go
 │   │   ├── typeconv.go
-│   │   ├── types.go
-│   │   ├── types_test.go
 │   │   └── xcodegenextension.go
 │   └── shared
 │       ├── logger
 │       │   ├── config.go
 │       │   └── logger.go
+│       ├── optional
+│       │   └── optional.go
 │       └── testutil
 │           └── containers.go
 ├── scripts
@@ -584,7 +641,6 @@
 │       └── package.json
 ├── .vscode
 │   ├── extensions.json
-│   ├── mcp.json
 │   └── settings.json
 ├── web
 │   ├── client
@@ -594,6 +650,7 @@
 │   │   │   │   ├── artifact
 │   │   │   │   ├── auth
 │   │   │   │   ├── config
+│   │   │   │   ├── executor
 │   │   │   │   ├── health
 │   │   │   │   ├── invitation
 │   │   │   │   ├── label
@@ -673,10 +730,6 @@
 │   │   ├── public
 │   │   │   └── .gitkeep
 │   │   ├── src
-│   │   │   ├── app
-│   │   │   │   ├── _app
-│   │   │   │   ├── auth
-│   │   │   │   └── __root.tsx
 │   │   │   ├── components
 │   │   │   │   ├── auth
 │   │   │   │   ├── containers
@@ -702,6 +755,10 @@
 │   │   │   │   ├── get-session-ssr.ts
 │   │   │   │   ├── site-config.ts
 │   │   │   │   └── site-utils.ts
+│   │   │   ├── routes
+│   │   │   │   ├── _app
+│   │   │   │   ├── auth
+│   │   │   │   └── __root.tsx
 │   │   │   ├── styles
 │   │   │   │   └── globals.css
 │   │   │   ├── router.tsx
@@ -760,6 +817,7 @@
 ├── .air.toml
 ├── arches.yaml
 ├── biome.json
+├── cfg.yaml
 ├── .cspell.json
 ├── .editorconfig
 ├── .env
@@ -772,15 +830,15 @@
 ├── LICENSE
 ├── Makefile
 ├── .markdownlint.json
-├── .mcp.json
 ├── .mockery.yaml
-├── opencode.json
 ├── package.json
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── .prettierignore
 ├── README.md
+├── tools.mod
+├── tools.sum
 └── tsconfig.json
 
-212 directories, 573 files
+221 directories, 615 files
 ```

@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 

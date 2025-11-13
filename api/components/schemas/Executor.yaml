@@ -55,6 +55,7 @@ allOf:
         description: The custom execute function code
         type: string
         maxLength: 100000
+        pattern: ^[\s\S]*$
         example: |
           export async function executeFunction(input: unknown): Promise<any> {
             return { result: "processed" };
@@ -63,6 +64,7 @@ allOf:
         description: Dependencies configuration (package.json for Node, requirements.txt for Python, go.mod for Go)
         type: [string, 'null']
         maxLength: 50000
+        pattern: ^[\s\S]*$
         example: |
           {
             "dependencies": {
@@ -73,6 +75,7 @@ allOf:
         description: JSON Schema for input validation
         type: [string, 'null']
         maxLength: 10000
+        pattern: ^[\s\S]*$
         example: |
           {
             "type": "object",
@@ -87,6 +90,7 @@ allOf:
         description: JSON Schema for output validation
         type: [string, 'null']
         maxLength: 10000
+        pattern: ^[\s\S]*$
         example: |
           {
             "type": "object",
@@ -101,6 +105,7 @@ allOf:
         description: Additional files to mount in the executor (stored as JSON array)
         type: [string, 'null']
         maxLength: 100000
+        pattern: ^[\s\S]*$
         example: |
           [
             {
@@ -133,6 +138,7 @@ allOf:
         description: Environment variables (stored as JSON array)
         type: [string, 'null']
         maxLength: 10000
+        pattern: ^[\s\S]*$
         example: |
           ["NODE_ENV=production", "DEBUG=false"]
       isActive:
@@ -143,6 +149,8 @@ allOf:
         description: Version number for cache busting
         type: integer
         format: int32
+        minimum: 1
+        maximum: 2147483647
         default: 1
     required:
       - organizationID

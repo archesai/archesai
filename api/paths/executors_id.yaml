@@ -58,41 +58,50 @@ patch:
               description: The custom execute function code
               type: string
               maxLength: 100000
+              pattern: ^[\s\S]*$
             dependencies:
               description: Dependencies configuration
               type: string
               maxLength: 50000
+              pattern: ^[\s\S]*$
             schemaIn:
               description: Input JSON Schema
               type: string
               maxLength: 10000
+              pattern: ^[\s\S]*$
             schemaOut:
               description: Output JSON Schema
               type: string
               maxLength: 10000
+              pattern: ^[\s\S]*$
             extraFiles:
               description: Additional files to mount
               type: string
               maxLength: 100000
+              pattern: ^[\s\S]*$
             timeout:
               description: Execution timeout in seconds
               type: integer
+              format: int32
               minimum: 1
               maximum: 300
             memoryMB:
               description: Memory limit in megabytes
               type: integer
+              format: int32
               minimum: 128
               maximum: 4096
             cpuShares:
               description: CPU shares (relative weight)
               type: integer
+              format: int32
               minimum: 128
               maximum: 2048
             env:
               description: Environment variables as JSON array
               type: string
               maxLength: 10000
+              pattern: ^[\s\S]*$
             isActive:
               description: Whether the executor is active
               type: boolean

@@ -30,10 +30,10 @@
     "web-vitals": "catalog:test"
   },
   "engines": {
-    "node": ">=24.9.0"
+    "node": ">=25.2.0"
   },
   "name": "@archesai/archesai",
-  "packageManager": "pnpm@10.18.2",
+  "packageManager": "pnpm@10.22.0",
   "private": true,
   "type": "module",
   "version": "0.0.0"

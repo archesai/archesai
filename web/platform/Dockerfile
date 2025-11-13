@@ -1,4 +1,4 @@
-FROM node:24-alpine3.22 AS base
+FROM node:25-alpine3.22 AS base
 
 RUN apk update
 RUN npm install -g pnpm@10.14.0

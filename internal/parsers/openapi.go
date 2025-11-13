@@ -115,7 +115,7 @@ func (p *OpenAPIParser) Extract() ([]OperationDef, []*SchemaDef, error) {
 // extractOperations extracts all operations from the OpenAPI spec
 func (p *OpenAPIParser) extractOperations() ([]OperationDef, error) {
 	if p.doc == nil {
-		return nil, fmt.Errorf("Document not set")
+		return nil, fmt.Errorf("document not set")
 	}
 
 	var operations []OperationDef
@@ -498,7 +498,7 @@ func (p *OpenAPIParser) extractRequestBody(op *v3.Operation) (*RequestBodyDef, e
 // ExtractComponentSchemas processes all schemas from the OpenAPI document
 func (p *OpenAPIParser) extractComponentSchemas() ([]*SchemaDef, error) {
 	if p.doc == nil {
-		return nil, fmt.Errorf("Document not set")
+		return nil, fmt.Errorf("document not set")
 	}
 
 	if p.doc.Components == nil || p.doc.Components.Schemas == nil {

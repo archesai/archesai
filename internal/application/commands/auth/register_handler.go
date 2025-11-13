@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 	"github.com/archesai/archesai/internal/core/services"
-	"github.com/archesai/archesai/internal/core/models"
 )
 
 // RegisterCommandHandler handles registration commands.
