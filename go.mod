@@ -17,7 +17,7 @@ require (
 	github.com/ollama/ollama v0.12.6
 	github.com/openai/openai-go v1.12.0
 	github.com/pb33f/libopenapi v0.28.0
-	github.com/redis/go-redis/v9 v9.14.1
+	github.com/redis/go-redis/v9 v9.16.0
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
