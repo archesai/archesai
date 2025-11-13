@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresAPIKeyRepository(db *pgxpool.Pool) *PostgresAPIKeyRepository {
 // APIKey operations
 
 // Create creates a new apikey
-func (r *PostgresAPIKeyRepository) Create(ctx context.Context, entity *entities.APIKey) (*entities.APIKey, error) {
+func (r *PostgresAPIKeyRepository) Create(ctx context.Context, entity *models.APIKey) (*models.APIKey, error) {
 	params := CreateAPIKeyParams{
 		ID:             entity.ID,
 		ExpiresAt:      entity.ExpiresAt,
@@ -52,7 +52,7 @@ func (r *PostgresAPIKeyRepository) Create(ctx context.Context, entity *entities.
 }
 
 // Get retrieves a apikey by ID
-func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*entities.APIKey, error) {
+func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*models.APIKey, error) {
 	params := GetAPIKeyParams{
 		ID: id,
 	}
@@ -69,7 +69,7 @@ func (r *PostgresAPIKeyRepository) Get(ctx context.Context, id uuid.UUID) (*enti
 }
 
 // Update updates an existing apikey
-func (r *PostgresAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.APIKey) (*entities.APIKey, error) {
+func (r *PostgresAPIKeyRepository) Update(ctx context.Context, id uuid.UUID, entity *models.APIKey) (*models.APIKey, error) {
 
 	params := UpdateAPIKeyParams{
 		ID:        id,
@@ -107,7 +107,7 @@ func (r *PostgresAPIKeyRepository) Delete(ctx context.Context, id uuid.UUID) err
 }
 
 // List returns a paginated list of apikeys
-func (r *PostgresAPIKeyRepository) List(ctx context.Context, limit, offset int32) ([]*entities.APIKey, int64, error) {
+func (r *PostgresAPIKeyRepository) List(ctx context.Context, limit, offset int32) ([]*models.APIKey, int64, error) {
 	listParams := ListAPIKeysParams{
 		Limit:  limit,
 		Offset: offset,
@@ -118,7 +118,7 @@ func (r *PostgresAPIKeyRepository) List(ctx context.Context, limit, offset int32
 		return nil, 0, fmt.Errorf("failed to list apikeys: %w", err)
 	}
 
-	items := make([]*entities.APIKey, len(results))
+	items := make([]*models.APIKey, len(results))
 	for i, result := range results {
 		items[i] = mapAPIKeyFromDB(&result)
 	}
@@ -130,12 +130,12 @@ func (r *PostgresAPIKeyRepository) List(ctx context.Context, limit, offset int32
 	return items, count, nil
 }
 
-func mapAPIKeyFromDB(db *APIKey) *entities.APIKey {
+func mapAPIKeyFromDB(db *APIKey) *models.APIKey {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.APIKey{
+	result := &models.APIKey{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,

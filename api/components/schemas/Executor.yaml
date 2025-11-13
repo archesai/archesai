@@ -1,0 +1,158 @@
+description: Schema for Executor entity
+title: Executor
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    excludeFromUpdate:
+      - OrganizationID
+      - Version
+    indices:
+      - organizationID
+      - language
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: CASCADE
+    additionalMethods:
+      - name: ListExecutorsByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      organizationID:
+        description: The organization that owns this executor
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      name:
+        description: The name of the executor
+        type: string
+        minLength: 1
+        maxLength: 255
+        pattern: ^[\w\s\-.,!?()@#+/']+$
+        example: Custom Data Transformer
+      description:
+        description: The executor description
+        type: string
+        maxLength: 1000
+        pattern: ^[\w\s\-.,!?()@#+/':;]*$
+        example: Transforms data using custom business logic
+      language:
+        description: The programming language for the executor
+        type: string
+        enum: [nodejs, python, go]
+        example: nodejs
+      executeCode:
+        description: The custom execute function code
+        type: string
+        maxLength: 100000
+        example: |
+          export async function executeFunction(input: unknown): Promise<any> {
+            return { result: "processed" };
+          }
+      dependencies:
+        description: Dependencies configuration (package.json for Node, requirements.txt for Python, go.mod for Go)
+        type: [string, 'null']
+        maxLength: 50000
+        example: |
+          {
+            "dependencies": {
+              "lodash": "4.17.21"
+            }
+          }
+      schemaIn:
+        description: JSON Schema for input validation
+        type: [string, 'null']
+        maxLength: 10000
+        example: |
+          {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": ["value"]
+          }
+      schemaOut:
+        description: JSON Schema for output validation
+        type: [string, 'null']
+        maxLength: 10000
+        example: |
+          {
+            "type": "object",
+            "properties": {
+              "doubled": {
+                "type": "number"
+              }
+            },
+            "required": ["doubled"]
+          }
+      extraFiles:
+        description: Additional files to mount in the executor (stored as JSON array)
+        type: [string, 'null']
+        maxLength: 100000
+        example: |
+          [
+            {
+              "path": "config/settings.json",
+              "content": "{\"key\": \"value\"}"
+            }
+          ]
+      timeout:
+        description: Execution timeout in seconds
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 300
+        default: 30
+      memoryMB:
+        description: Memory limit in megabytes
+        type: integer
+        format: int32
+        minimum: 128
+        maximum: 4096
+        default: 256
+      cpuShares:
+        description: CPU shares (relative weight)
+        type: integer
+        format: int32
+        minimum: 128
+        maximum: 2048
+        default: 512
+      env:
+        description: Environment variables (stored as JSON array)
+        type: [string, 'null']
+        maxLength: 10000
+        example: |
+          ["NODE_ENV=production", "DEBUG=false"]
+      isActive:
+        description: Whether the executor is active and can be used
+        type: boolean
+        default: true
+      version:
+        description: Version number for cache busting
+        type: integer
+        format: int32
+        default: 1
+    required:
+      - organizationID
+      - name
+      - description
+      - language
+      - executeCode
+      - timeout
+      - memoryMB
+      - cpuShares
+      - isActive
+      - version
+unevaluatedProperties: false

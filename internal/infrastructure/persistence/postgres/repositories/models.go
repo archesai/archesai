@@ -55,6 +55,27 @@ type Artifact struct {
 	URL            *string
 }
 
+type Executor struct {
+	ID             uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	CPUShares      int32
+	Dependencies   *string
+	Description    string
+	Env            *string
+	ExecuteCode    string
+	ExtraFiles     *string
+	IsActive       bool
+	Language       string
+	MemoryMB       int32
+	Name           string
+	OrganizationID uuid.UUID
+	SchemaIn       *string
+	SchemaOut      *string
+	Timeout        int32
+	Version        int32
+}
+
 type Invitation struct {
 	ID             uuid.UUID
 	CreatedAt      time.Time

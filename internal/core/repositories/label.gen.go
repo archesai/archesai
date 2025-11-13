@@ -5,22 +5,22 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
 // LabelRepository handles label persistence
 type LabelRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *entities.Label) (*entities.Label, error)
-	Get(ctx context.Context, id uuid.UUID) (*entities.Label, error)
-	Update(ctx context.Context, id uuid.UUID, entity *entities.Label) (*entities.Label, error)
+	Create(ctx context.Context, entity *models.Label) (*models.Label, error)
+	Get(ctx context.Context, id uuid.UUID) (*models.Label, error)
+	Update(ctx context.Context, id uuid.UUID, entity *models.Label) (*models.Label, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*entities.Label, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*models.Label, int64, error)
 
 	// ListLabelsByOrganization retrieves multiple labels by organizationID
-	ListLabelsByOrganization(ctx context.Context, organizationID string) ([]*entities.Label, error)
+	ListLabelsByOrganization(ctx context.Context, organizationID string) ([]*models.Label, error)
 
 	// GetLabelByName retrieves a single label by name and organizationID
-	GetLabelByName(ctx context.Context, name string, organizationID string) (*entities.Label, error)
+	GetLabelByName(ctx context.Context, name string, organizationID string) (*models.Label, error)
 }

@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -39,7 +39,7 @@ func NewListLabelsQueryHandler(repo repositories.LabelRepository) *ListLabelsQue
 }
 
 // Handle executes the list labels query.
-func (h *ListLabelsQueryHandler) Handle(ctx context.Context, query *ListLabelsQuery) ([]*entities.Label, int64, error) {
+func (h *ListLabelsQueryHandler) Handle(ctx context.Context, query *ListLabelsQuery) ([]*models.Label, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

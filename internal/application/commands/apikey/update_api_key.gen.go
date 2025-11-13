@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -58,7 +58,7 @@ func NewUpdateAPIKeyCommandHandler(
 }
 
 // Handle executes the update apikey command.
-func (h *UpdateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *UpdateAPIKeyCommand) (*entities.APIKey, error) {
+func (h *UpdateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *UpdateAPIKeyCommand) (*models.APIKey, error) {
 	// Fetch existing apikey
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {

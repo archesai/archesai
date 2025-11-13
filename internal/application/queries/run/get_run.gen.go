@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetRunQueryHandler(repo repositories.RunRepository) *GetRunQueryHandler 
 }
 
 // Handle executes the get run query.
-func (h *GetRunQueryHandler) Handle(ctx context.Context, query *GetRunQuery) (*entities.Run, error) {
+func (h *GetRunQueryHandler) Handle(ctx context.Context, query *GetRunQuery) (*models.Run, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)

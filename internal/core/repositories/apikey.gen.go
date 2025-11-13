@@ -5,16 +5,16 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
 // APIKeyRepository handles apikey persistence
 type APIKeyRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *entities.APIKey) (*entities.APIKey, error)
-	Get(ctx context.Context, id uuid.UUID) (*entities.APIKey, error)
-	Update(ctx context.Context, id uuid.UUID, entity *entities.APIKey) (*entities.APIKey, error)
+	Create(ctx context.Context, entity *models.APIKey) (*models.APIKey, error)
+	Get(ctx context.Context, id uuid.UUID) (*models.APIKey, error)
+	Update(ctx context.Context, id uuid.UUID, entity *models.APIKey) (*models.APIKey, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*entities.APIKey, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*models.APIKey, int64, error)
 }

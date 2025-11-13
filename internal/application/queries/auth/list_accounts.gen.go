@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -39,7 +39,7 @@ func NewListAccountsQueryHandler(repo repositories.AccountRepository) *ListAccou
 }
 
 // Handle executes the list auths query.
-func (h *ListAccountsQueryHandler) Handle(ctx context.Context, query *ListAccountsQuery) ([]*entities.Account, int64, error) {
+func (h *ListAccountsQueryHandler) Handle(ctx context.Context, query *ListAccountsQuery) ([]*models.Account, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

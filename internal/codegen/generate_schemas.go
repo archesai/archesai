@@ -16,37 +16,12 @@ type SchemasTemplateData struct {
 
 // GenerateSchemas generates all model types (DTOs, entities, value objects)
 func (g *Generator) GenerateSchemas(schemas []*parsers.SchemaDef) error {
-	// Pass the OpenAPI document to the extraction pipeline for proper reference resolution
 	for _, processed := range schemas {
-		if processed.Schema == nil || processed.XCodegen == nil {
-			continue
-		}
-
-		// Determine the schema type for this schema
-		schemaType := "entity"
-		if processed.XCodegen != nil && processed.XCodegen.SchemaType != "" {
-			schemaType = string(processed.XCodegen.GetSchemaType())
-		}
-
-		// Re-extract with the OpenAPI document context for proper reference resolution
-		reExtracted, err := g.jsonSchemaParser.ExtractSchema(
-			processed.Schema,
-			nil,
-			schemaType,
-		)
-		if err != nil {
-			return fmt.Errorf(
-				"failed to re-extract schema %s with document context: %w",
-				processed.Name,
-				err,
-			)
-		}
-
-		if err := g.generateModel(reExtracted, nil); err != nil {
+		if err := g.generateSchema(processed, nil); err != nil {
 			return fmt.Errorf(
 				"failed to generate %s %s: %w",
-				reExtracted.XCodegen.GetSchemaType(),
-				reExtracted.Name,
+				processed.XCodegenSchemaType,
+				processed.Name,
 				err,
 			)
 		}
@@ -55,33 +30,29 @@ func (g *Generator) GenerateSchemas(schemas []*parsers.SchemaDef) error {
 	return nil
 }
 
-// generateModel generates a single model file (simplified - no more batching)
-func (g *Generator) generateModel(
+// generateSchema generates a single model file (simplified - no more batching)
+func (g *Generator) generateSchema(
 	schema *parsers.SchemaDef,
 	customOutputDir *string,
 ) error {
 
-	// Determine package and output path based on model type
+	// Use a single package for all schema types
 	var packageName, outputDir string
 
-	schemaType := schema.GetSchemaType()
-	switch schemaType {
-	case schemaTypeEntity:
-		packageName = "entities"
-		outputDir = "internal/core/entities"
-		if customOutputDir != nil {
-			outputDir = *customOutputDir
-			packageName = filepath.Base(*customOutputDir)
-		}
-	case schemaTypeValueObject:
-		packageName = "valueobjects"
-		outputDir = "internal/core/valueobjects"
+	switch schema.XCodegenSchemaType {
+	case schemaTypeEntity, schemaTypeValueObject:
+		packageName = "models"
+		outputDir = "internal/core/models"
 		if customOutputDir != nil {
 			outputDir = *customOutputDir
 			packageName = filepath.Base(*customOutputDir)
 		}
 	default:
-		return fmt.Errorf("unsupported model type: %s", schemaType)
+		return fmt.Errorf(
+			"unsupported model type: %s for schema %s",
+			schema.XCodegenSchemaType,
+			schema.Name,
+		)
 	}
 
 	data := SchemasTemplateData{

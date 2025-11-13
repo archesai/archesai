@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -55,7 +55,7 @@ func NewUpdateOrganizationCommandHandler(
 }
 
 // Handle executes the update organization command.
-func (h *UpdateOrganizationCommandHandler) Handle(ctx context.Context, cmd *UpdateOrganizationCommand) (*entities.Organization, error) {
+func (h *UpdateOrganizationCommandHandler) Handle(ctx context.Context, cmd *UpdateOrganizationCommand) (*models.Organization, error) {
 	// Fetch existing organization
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {

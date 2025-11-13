@@ -5,16 +5,16 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
 // SessionRepository handles session persistence
 type SessionRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *entities.Session) (*entities.Session, error)
-	Get(ctx context.Context, id uuid.UUID) (*entities.Session, error)
-	Update(ctx context.Context, id uuid.UUID, entity *entities.Session) (*entities.Session, error)
+	Create(ctx context.Context, entity *models.Session) (*models.Session, error)
+	Get(ctx context.Context, id uuid.UUID) (*models.Session, error)
+	Update(ctx context.Context, id uuid.UUID, entity *models.Session) (*models.Session, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*entities.Session, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*models.Session, int64, error)
 }

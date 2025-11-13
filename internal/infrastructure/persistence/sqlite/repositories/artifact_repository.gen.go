@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteArtifactRepository(db *sql.DB) *SQLiteArtifactRepository {
 // Artifact operations
 
 // Create creates a new artifact
-func (r *SQLiteArtifactRepository) Create(ctx context.Context, artifact *entities.Artifact) (*entities.Artifact, error) {
+func (r *SQLiteArtifactRepository) Create(ctx context.Context, artifact *models.Artifact) (*models.Artifact, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per artifact
 	return nil, fmt.Errorf("CreateArtifact not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a artifact by ID
-func (r *SQLiteArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Artifact, error) {
+func (r *SQLiteArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*models.Artifact, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per artifact
 	return nil, fmt.Errorf("GetArtifact not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing artifact
-func (r *SQLiteArtifactRepository) Update(ctx context.Context, id uuid.UUID, artifact *entities.Artifact) (*entities.Artifact, error) {
+func (r *SQLiteArtifactRepository) Update(ctx context.Context, id uuid.UUID, artifact *models.Artifact) (*models.Artifact, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per artifact
 	return nil, fmt.Errorf("UpdateArtifact not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteArtifactRepository) Delete(ctx context.Context, id uuid.UUID) err
 }
 
 // List returns a paginated list of artifacts
-func (r *SQLiteArtifactRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Artifact, int64, error) {
+func (r *SQLiteArtifactRepository) List(ctx context.Context, limit, offset int32) ([]*models.Artifact, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per artifact
 	return nil, 0, fmt.Errorf("ListArtifacts not yet implemented - requires custom mapping")
@@ -63,13 +63,13 @@ func (r *SQLiteArtifactRepository) List(ctx context.Context, limit, offset int32
 // Additional methods
 
 // ListArtifactsByOrganization retrieves multiple artifacts by organizationID
-func (r *SQLiteArtifactRepository) ListArtifactsByOrganization(ctx context.Context, organizationID string) ([]*entities.Artifact, error) {
+func (r *SQLiteArtifactRepository) ListArtifactsByOrganization(ctx context.Context, organizationID string) ([]*models.Artifact, error) {
 	// TODO: Implement ListArtifactsByOrganization
 	return nil, fmt.Errorf("ListArtifactsByOrganization not yet implemented - requires custom mapping")
 }
 
 // ListArtifactsByProducer retrieves multiple artifacts by producerID
-func (r *SQLiteArtifactRepository) ListArtifactsByProducer(ctx context.Context, producerID string) ([]*entities.Artifact, error) {
+func (r *SQLiteArtifactRepository) ListArtifactsByProducer(ctx context.Context, producerID string) ([]*models.Artifact, error) {
 	// TODO: Implement ListArtifactsByProducer
 	return nil, fmt.Errorf("ListArtifactsByProducer not yet implemented - requires custom mapping")
 }

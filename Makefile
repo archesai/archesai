@@ -147,7 +147,6 @@ generate: generate-codegen generate-mocks ## Generate all code
 
 .PHONY: generate-codegen
 generate-codegen: bundle-openapi ## Generate codegen
-	@go run cmd/codegen/main.go jsonschema api/components/schemas/xcodegen/CodegenExtension.yaml --output internal/parsers  --pretty
 	@go run cmd/codegen/main.go openapi ./api/openapi.bundled.yaml --pretty 
 
 .PHONY: generate-mocks
@@ -328,7 +327,7 @@ clean-go: ## Clean Go build artifacts
 .PHONY: clean-generated
 clean-generated: ## Clean all generated code
 	@echo -e "$(YELLOW)▶ Cleaning generated code...$(NC)"
-	@find . -type f -name "*.gen.go" ! -name "xcodegenextension.gen.go" -exec rm -f {} +
+	@find . -type f -name "*.gen.go" -exec rm -f {} +
 	@find . -type f -name "mocks_test.go" -exec rm -f {} +
 	@rm -rf ./web/client/src/generated
 	@rm -f ./api/openapi.bundled.yaml

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/services"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // VerifyMagicLinkCommandHandler handles magic link verification commands.
@@ -26,7 +26,7 @@ func NewVerifyMagicLinkCommandHandler(
 func (h *VerifyMagicLinkCommandHandler) Handle(
 	ctx context.Context,
 	cmd *VerifyMagicLinkCommand,
-) (*valueobjects.AuthTokens, error) {
+) (*models.AuthTokens, error) {
 	// Check for token
 	token := ""
 	if cmd.Token != nil {

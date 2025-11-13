@@ -1,7 +1,6 @@
 title: FilterNode
 description: A recursive filter node that can be a condition or group
-x-codegen:
-  schemaType: valueobject
+x-codegen-schema-type: valueobject
 type: object
 properties:
   type:

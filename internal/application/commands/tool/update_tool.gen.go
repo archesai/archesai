@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -55,7 +55,7 @@ func NewUpdateToolCommandHandler(
 }
 
 // Handle executes the update tool command.
-func (h *UpdateToolCommandHandler) Handle(ctx context.Context, cmd *UpdateToolCommand) (*entities.Tool, error) {
+func (h *UpdateToolCommandHandler) Handle(ctx context.Context, cmd *UpdateToolCommand) (*models.Tool, error) {
 	// Fetch existing tool
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {

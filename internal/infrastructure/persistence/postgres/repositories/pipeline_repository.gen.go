@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresPipelineRepository(db *pgxpool.Pool) *PostgresPipelineRepository
 // Pipeline operations
 
 // Create creates a new pipeline
-func (r *PostgresPipelineRepository) Create(ctx context.Context, entity *entities.Pipeline) (*entities.Pipeline, error) {
+func (r *PostgresPipelineRepository) Create(ctx context.Context, entity *models.Pipeline) (*models.Pipeline, error) {
 	params := CreatePipelineParams{
 		ID:             entity.ID,
 		Description:    entity.Description,
@@ -47,7 +47,7 @@ func (r *PostgresPipelineRepository) Create(ctx context.Context, entity *entitie
 }
 
 // Get retrieves a pipeline by ID
-func (r *PostgresPipelineRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Pipeline, error) {
+func (r *PostgresPipelineRepository) Get(ctx context.Context, id uuid.UUID) (*models.Pipeline, error) {
 	params := GetPipelineParams{
 		ID: id,
 	}
@@ -64,7 +64,7 @@ func (r *PostgresPipelineRepository) Get(ctx context.Context, id uuid.UUID) (*en
 }
 
 // Update updates an existing pipeline
-func (r *PostgresPipelineRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Pipeline) (*entities.Pipeline, error) {
+func (r *PostgresPipelineRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Pipeline) (*models.Pipeline, error) {
 
 	params := UpdatePipelineParams{
 		ID:          id,
@@ -100,7 +100,7 @@ func (r *PostgresPipelineRepository) Delete(ctx context.Context, id uuid.UUID) e
 }
 
 // List returns a paginated list of pipelines
-func (r *PostgresPipelineRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Pipeline, int64, error) {
+func (r *PostgresPipelineRepository) List(ctx context.Context, limit, offset int32) ([]*models.Pipeline, int64, error) {
 	listParams := ListPipelinesParams{
 		Limit:  limit,
 		Offset: offset,
@@ -111,7 +111,7 @@ func (r *PostgresPipelineRepository) List(ctx context.Context, limit, offset int
 		return nil, 0, fmt.Errorf("failed to list pipelines: %w", err)
 	}
 
-	items := make([]*entities.Pipeline, len(results))
+	items := make([]*models.Pipeline, len(results))
 	for i, result := range results {
 		items[i] = mapPipelineFromDB(&result)
 	}
@@ -124,7 +124,7 @@ func (r *PostgresPipelineRepository) List(ctx context.Context, limit, offset int
 }
 
 // ListPipelinesByOrganization retrieves multiple Pipelines by organizationID
-func (r *PostgresPipelineRepository) ListPipelinesByOrganization(ctx context.Context, organizationID string) ([]*entities.Pipeline, error) {
+func (r *PostgresPipelineRepository) ListPipelinesByOrganization(ctx context.Context, organizationID string) ([]*models.Pipeline, error) {
 	params := ListPipelinesByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -136,7 +136,7 @@ func (r *PostgresPipelineRepository) ListPipelinesByOrganization(ctx context.Con
 		}
 		return nil, fmt.Errorf("failed to ListPipelinesByOrganization: %w", err)
 	}
-	items := make([]*entities.Pipeline, len(result))
+	items := make([]*models.Pipeline, len(result))
 	for i, res := range result {
 		items[i] = mapPipelineFromDB(&res)
 	}
@@ -144,12 +144,12 @@ func (r *PostgresPipelineRepository) ListPipelinesByOrganization(ctx context.Con
 
 }
 
-func mapPipelineFromDB(db *Pipeline) *entities.Pipeline {
+func mapPipelineFromDB(db *Pipeline) *models.Pipeline {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.Pipeline{
+	result := &models.Pipeline{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,

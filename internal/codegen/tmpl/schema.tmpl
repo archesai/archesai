@@ -12,12 +12,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/archesai/archesai/internal/core/errors"
 	"github.com/archesai/archesai/internal/core/events"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 {{- $schema := .Schema }}
-{{- $isEntity := eq $schema.GetSchemaType "entity" }}
-{{- $isValueObject := eq $schema.GetSchemaType "valueobject" }}
+{{- $isEntity := eq $schema.XCodegenSchemaType "entity" }}
+{{- $isValueObject := eq $schema.XCodegenSchemaType "valueobject" }}
 
 
 {{- if $schema.IsEnum }}
@@ -135,9 +135,6 @@ type {{ $schema.Name }} struct {
 {{- end }}
 }
 
-{{- /* Constructor - Unified for both entities and value objects */ -}}
-{{- if or $isEntity $isValueObject }}
-
 // New{{ $schema.Name }} creates a new {{ if $isEntity }}{{ $schema.Name }} entity{{ else }}immutable {{ $schema.Name }} value object{{ end }}.
 {{- if $isEntity }}
 // All required fields must be provided and valid.
@@ -226,15 +223,11 @@ func New{{ $schema.Name }}(
 {{- end }}
 }
 
-{{- if $isValueObject }}
 // Zero{{ $schema.Name }} returns the zero value for {{ $schema.Name }}.
 // This is useful for comparisons and as a default value.
 func Zero{{ $schema.Name }}() {{ $schema.Name }} {
 	return {{ $schema.Name }}{}
 }
-{{- end }}
-
-{{- end }}
 
 {{- /* Getters */ -}}
 {{- range $schema.GetSortedProperties }}

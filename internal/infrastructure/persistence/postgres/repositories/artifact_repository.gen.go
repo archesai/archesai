@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresArtifactRepository(db *pgxpool.Pool) *PostgresArtifactRepository
 // Artifact operations
 
 // Create creates a new artifact
-func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *entities.Artifact) (*entities.Artifact, error) {
+func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *models.Artifact) (*models.Artifact, error) {
 	params := CreateArtifactParams{
 		ID:             entity.ID,
 		Credits:        entity.Credits,
@@ -53,7 +53,7 @@ func (r *PostgresArtifactRepository) Create(ctx context.Context, entity *entitie
 }
 
 // Get retrieves a artifact by ID
-func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Artifact, error) {
+func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*models.Artifact, error) {
 	params := GetArtifactParams{
 		ID: id,
 	}
@@ -70,7 +70,7 @@ func (r *PostgresArtifactRepository) Get(ctx context.Context, id uuid.UUID) (*en
 }
 
 // Update updates an existing artifact
-func (r *PostgresArtifactRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Artifact) (*entities.Artifact, error) {
+func (r *PostgresArtifactRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Artifact) (*models.Artifact, error) {
 
 	params := UpdateArtifactParams{
 		ID:           id,
@@ -111,7 +111,7 @@ func (r *PostgresArtifactRepository) Delete(ctx context.Context, id uuid.UUID) e
 }
 
 // List returns a paginated list of artifacts
-func (r *PostgresArtifactRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Artifact, int64, error) {
+func (r *PostgresArtifactRepository) List(ctx context.Context, limit, offset int32) ([]*models.Artifact, int64, error) {
 	listParams := ListArtifactsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -122,7 +122,7 @@ func (r *PostgresArtifactRepository) List(ctx context.Context, limit, offset int
 		return nil, 0, fmt.Errorf("failed to list artifacts: %w", err)
 	}
 
-	items := make([]*entities.Artifact, len(results))
+	items := make([]*models.Artifact, len(results))
 	for i, result := range results {
 		items[i] = mapArtifactFromDB(&result)
 	}
@@ -135,7 +135,7 @@ func (r *PostgresArtifactRepository) List(ctx context.Context, limit, offset int
 }
 
 // ListArtifactsByOrganization retrieves multiple Artifacts by organizationID
-func (r *PostgresArtifactRepository) ListArtifactsByOrganization(ctx context.Context, organizationID string) ([]*entities.Artifact, error) {
+func (r *PostgresArtifactRepository) ListArtifactsByOrganization(ctx context.Context, organizationID string) ([]*models.Artifact, error) {
 	params := ListArtifactsByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -147,7 +147,7 @@ func (r *PostgresArtifactRepository) ListArtifactsByOrganization(ctx context.Con
 		}
 		return nil, fmt.Errorf("failed to ListArtifactsByOrganization: %w", err)
 	}
-	items := make([]*entities.Artifact, len(result))
+	items := make([]*models.Artifact, len(result))
 	for i, res := range result {
 		items[i] = mapArtifactFromDB(&res)
 	}
@@ -156,7 +156,7 @@ func (r *PostgresArtifactRepository) ListArtifactsByOrganization(ctx context.Con
 }
 
 // ListArtifactsByProducer retrieves multiple Artifacts by producerID
-func (r *PostgresArtifactRepository) ListArtifactsByProducer(ctx context.Context, producerID string) ([]*entities.Artifact, error) {
+func (r *PostgresArtifactRepository) ListArtifactsByProducer(ctx context.Context, producerID string) ([]*models.Artifact, error) {
 	params := ListArtifactsByProducerParams{
 		ProducerID: func() *uuid.UUID {
 			if producerID == "" {
@@ -174,7 +174,7 @@ func (r *PostgresArtifactRepository) ListArtifactsByProducer(ctx context.Context
 		}
 		return nil, fmt.Errorf("failed to ListArtifactsByProducer: %w", err)
 	}
-	items := make([]*entities.Artifact, len(result))
+	items := make([]*models.Artifact, len(result))
 	for i, res := range result {
 		items[i] = mapArtifactFromDB(&res)
 	}
@@ -182,12 +182,12 @@ func (r *PostgresArtifactRepository) ListArtifactsByProducer(ctx context.Context
 
 }
 
-func mapArtifactFromDB(db *Artifact) *entities.Artifact {
+func mapArtifactFromDB(db *Artifact) *models.Artifact {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.Artifact{
+	result := &models.Artifact{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,

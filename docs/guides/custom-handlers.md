@@ -23,7 +23,7 @@ Both executors implement the same `Executor[A, B]` interface, ensuring type safe
 
 ## Choosing an Executor
 
-### Use LocalExecutor when:
+### Use LocalExecutor when
 
 - Running trusted code (your own functions)
 - Performance is critical (nanosecond execution vs seconds for containers)
@@ -31,7 +31,7 @@ Both executors implement the same `Executor[A, B]` interface, ensuring type safe
 - Code doesn't need language/environment isolation
 - Docker isn't available or desired
 
-### Use ContainerExecutor when:
+### Use ContainerExecutor when
 
 - Running untrusted or third-party code
 - Need multi-language support (Python, Node.js, Go)

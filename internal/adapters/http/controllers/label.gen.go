@@ -13,8 +13,7 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/label"
 	queries "github.com/archesai/archesai/internal/application/queries/label"
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // LabelController handles HTTP requests for label endpoints.
@@ -73,7 +72,7 @@ type CreateLabelResponse interface {
 }
 
 type CreateLabel201Response struct {
-	Data entities.Label `json:"data"`
+	Data models.Label `json:"data"`
 }
 
 func (response CreateLabel201Response) VisitCreateLabelResponse(w http.ResponseWriter) error {
@@ -231,7 +230,7 @@ type GetLabelResponse interface {
 }
 
 type GetLabel200Response struct {
-	Data entities.Label `json:"data"`
+	Data models.Label `json:"data"`
 }
 
 func (response GetLabel200Response) VisitGetLabelResponse(w http.ResponseWriter) error {
@@ -409,8 +408,8 @@ type ListLabelsResponse interface {
 }
 
 type ListLabels200Response struct {
-	Data []entities.Label            `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data []models.Label        `json:"data"`
+	Meta models.PaginationMeta `json:"meta"`
 }
 
 func (response ListLabels200Response) VisitListLabelsResponse(w http.ResponseWriter) error {
@@ -570,7 +569,7 @@ func (c *LabelController) ListLabels(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]entities.Label, len(results))
+	data := make([]models.Label, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -579,7 +578,7 @@ func (c *LabelController) ListLabels(w http.ResponseWriter, r *http.Request) {
 
 	response := ListLabels200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListLabelsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -608,7 +607,7 @@ type UpdateLabelResponse interface {
 }
 
 type UpdateLabel200Response struct {
-	Data entities.Label `json:"data"`
+	Data models.Label `json:"data"`
 }
 
 func (response UpdateLabel200Response) VisitUpdateLabelResponse(w http.ResponseWriter) error {

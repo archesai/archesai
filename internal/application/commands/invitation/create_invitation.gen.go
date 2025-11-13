@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -55,9 +55,9 @@ func NewCreateInvitationCommandHandler(
 }
 
 // Handle executes the create invitation command.
-func (h *CreateInvitationCommandHandler) Handle(ctx context.Context, cmd *CreateInvitationCommand) (*entities.Invitation, error) {
+func (h *CreateInvitationCommandHandler) Handle(ctx context.Context, cmd *CreateInvitationCommand) (*models.Invitation, error) {
 	// Create the invitation entity
-	entity := &entities.Invitation{
+	entity := &models.Invitation{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

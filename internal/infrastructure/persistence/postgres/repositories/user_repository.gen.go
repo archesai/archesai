@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresUserRepository(db *pgxpool.Pool) *PostgresUserRepository {
 // User operations
 
 // Create creates a new user
-func (r *PostgresUserRepository) Create(ctx context.Context, entity *entities.User) (*entities.User, error) {
+func (r *PostgresUserRepository) Create(ctx context.Context, entity *models.User) (*models.User, error) {
 	params := CreateUserParams{
 		ID:            entity.ID,
 		Email:         entity.Email,
@@ -48,7 +48,7 @@ func (r *PostgresUserRepository) Create(ctx context.Context, entity *entities.Us
 }
 
 // Get retrieves a user by ID
-func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*entities.User, error) {
+func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*models.User, error) {
 	params := GetUserParams{
 		ID: id,
 	}
@@ -65,7 +65,7 @@ func (r *PostgresUserRepository) Get(ctx context.Context, id uuid.UUID) (*entiti
 }
 
 // Update updates an existing user
-func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.User) (*entities.User, error) {
+func (r *PostgresUserRepository) Update(ctx context.Context, id uuid.UUID, entity *models.User) (*models.User, error) {
 
 	params := UpdateUserParams{
 		ID:            id,
@@ -103,7 +103,7 @@ func (r *PostgresUserRepository) Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // List returns a paginated list of users
-func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) ([]*entities.User, int64, error) {
+func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) ([]*models.User, int64, error) {
 	listParams := ListUsersParams{
 		Limit:  limit,
 		Offset: offset,
@@ -114,7 +114,7 @@ func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) 
 		return nil, 0, fmt.Errorf("failed to list users: %w", err)
 	}
 
-	items := make([]*entities.User, len(results))
+	items := make([]*models.User, len(results))
 	for i, result := range results {
 		items[i] = mapUserFromDB(&result)
 	}
@@ -127,7 +127,7 @@ func (r *PostgresUserRepository) List(ctx context.Context, limit, offset int32) 
 }
 
 // GetUserByEmail retrieves a single User by email
-func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
+func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	params := GetUserByEmailParams{
 		Email: email,
 	}
@@ -145,7 +145,7 @@ func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email strin
 }
 
 // GetUserBySessionID retrieves a single User by sessionID
-func (r *PostgresUserRepository) GetUserBySessionID(ctx context.Context, sessionID string) (*entities.User, error) {
+func (r *PostgresUserRepository) GetUserBySessionID(ctx context.Context, sessionID string) (*models.User, error) {
 	params := GetUserBySessionIDParams{
 		SessionID: uuid.MustParse(sessionID),
 	}
@@ -162,12 +162,12 @@ func (r *PostgresUserRepository) GetUserBySessionID(ctx context.Context, session
 
 }
 
-func mapUserFromDB(db *User) *entities.User {
+func mapUserFromDB(db *User) *models.User {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.User{
+	result := &models.User{
 		ID:            db.ID,
 		CreatedAt:     db.CreatedAt,
 		UpdatedAt:     db.UpdatedAt,

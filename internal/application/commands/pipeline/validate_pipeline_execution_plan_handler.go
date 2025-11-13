@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
@@ -49,7 +49,7 @@ func (h *ValidatePipelineExecutionPlanCommandHandler) Handle(
 	// if err != nil {
 	// 	return nil, fmt.Errorf("failed to list pipeline steps: %w", err)
 	// }
-	steps := []*entities.PipelineStep{}
+	steps := []*models.PipelineStep{}
 
 	result := &ValidationResult{
 		Valid:  true,
@@ -90,7 +90,7 @@ func (h *ValidatePipelineExecutionPlanCommandHandler) Handle(
 
 // detectCycles checks for circular dependencies in the pipeline steps using DFS.
 func (h *ValidatePipelineExecutionPlanCommandHandler) detectCycles(
-	steps []*entities.PipelineStep,
+	steps []*models.PipelineStep,
 ) bool {
 	// Build adjacency list
 	graph := make(map[string][]string)

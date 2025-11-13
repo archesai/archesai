@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
@@ -31,7 +31,7 @@ func NewUpdateCurrentUserCommandHandler(
 func (h *UpdateCurrentUserCommandHandler) Handle(
 	ctx context.Context,
 	cmd *UpdateCurrentUserCommand,
-) (*entities.User, error) {
+) (*models.User, error) {
 	// Get existing user
 	user, err := h.userRepo.GetUserBySessionID(ctx, cmd.SessionID.String())
 	if err != nil {

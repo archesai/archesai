@@ -9,11 +9,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 	"github.com/archesai/archesai/internal/core/services"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 	"github.com/archesai/archesai/internal/infrastructure/auth/oauth"
 	"github.com/archesai/archesai/internal/infrastructure/cache"
 	"github.com/archesai/archesai/internal/infrastructure/config"
@@ -43,12 +42,12 @@ type Service struct {
 
 // MagicLinkDeliverer handles magic link notification delivery.
 type MagicLinkDeliverer interface {
-	Deliver(ctx context.Context, token *valueobjects.MagicLinkToken, baseURL string) error
+	Deliver(ctx context.Context, token *models.MagicLinkToken, baseURL string) error
 }
 
 // OTPDeliverer handles OTP notification delivery.
 type OTPDeliverer interface {
-	Deliver(ctx context.Context, token *valueobjects.MagicLinkToken, baseURL string) error
+	Deliver(ctx context.Context, token *models.MagicLinkToken, baseURL string) error
 }
 
 // Ensure Service implements services.AuthService
@@ -137,7 +136,7 @@ func (s *Service) HandleOAuthCallback(
 	provider string,
 	code string,
 	_ string,
-) (*valueobjects.AuthTokens, error) {
+) (*models.AuthTokens, error) {
 	p, exists := s.oauthProviders[provider]
 	if !exists {
 		return nil, fmt.Errorf("OAuth provider %s not configured", provider)
@@ -186,7 +185,7 @@ func (s *Service) GenerateMagicLink(
 
 	// Extract token from link for notification
 	tokenStr := link[strings.LastIndex(link, "token=")+6:]
-	token := &valueobjects.MagicLinkToken{
+	token := &models.MagicLinkToken{
 		Token:      &tokenStr,
 		Identifier: identifier,
 		ExpiresAt:  time.Now().Add(15 * time.Minute),
@@ -210,7 +209,7 @@ func (s *Service) GenerateMagicLink(
 func (s *Service) VerifyMagicLink(
 	ctx context.Context,
 	token string,
-) (*valueobjects.AuthTokens, error) {
+) (*models.AuthTokens, error) {
 	// Validate the magic link token
 	claims, err := s.magicLink.ValidateLink(token)
 	if err != nil {
@@ -226,7 +225,7 @@ func (s *Service) VerifyMagicLink(
 		}
 
 		// Create new user if not exists
-		newUser, createErr := entities.NewUser(
+		newUser, createErr := models.NewUser(
 			claims.Identifier,
 			true,              // Magic link verifies email
 			nil,               // No image initially
@@ -265,7 +264,7 @@ func (s *Service) AuthenticateWithPassword(
 	ctx context.Context,
 	email string,
 	password string,
-) (*valueobjects.AuthTokens, error) {
+) (*models.AuthTokens, error) {
 	// Find user by email
 	user, err := s.userRepo.GetUserByEmail(ctx, email)
 	if err != nil {
@@ -303,7 +302,7 @@ func (s *Service) AuthenticateWithPassword(
 func (s *Service) RefreshToken(
 	ctx context.Context,
 	refreshToken string,
-) (*valueobjects.AuthTokens, error) {
+) (*models.AuthTokens, error) {
 	// Validate refresh token
 	claims, err := s.tokenManager.ValidateRefreshToken(refreshToken)
 	if err != nil {
@@ -330,7 +329,7 @@ func (s *Service) RefreshToken(
 func (s *Service) GetSessionByToken(
 	ctx context.Context,
 	accessToken string,
-) (*entities.Session, error) {
+) (*models.Session, error) {
 	// Validate the access token
 	claims, err := s.tokenManager.ValidateAccessToken(accessToken)
 	if err != nil {
@@ -356,7 +355,7 @@ func (s *Service) ValidateAccessToken(token string) (*TokenClaims, error) {
 func (s *Service) findOrCreateUser(
 	ctx context.Context,
 	userInfo *oauth.UserInfo,
-) (*entities.User, error) {
+) (*models.User, error) {
 	// Try to find existing user by email
 	user, err := s.userRepo.GetUserByEmail(ctx, userInfo.Email)
 	if err == nil {
@@ -364,7 +363,7 @@ func (s *Service) findOrCreateUser(
 	}
 
 	// Create new user
-	user = &entities.User{
+	user = &models.User{
 		ID:            uuid.New(),
 		Email:         userInfo.Email,
 		EmailVerified: userInfo.EmailVerified,
@@ -381,7 +380,7 @@ func (s *Service) createSession(
 	ctx context.Context,
 	userID uuid.UUID,
 	metadata map[string]any,
-) (*entities.Session, error) {
+) (*models.Session, error) {
 	// Extract auth method and provider from metadata
 	authMethod := "local"
 	authProvider := "local"
@@ -401,9 +400,9 @@ func (s *Service) createSession(
 	userAgent := "unknown"
 
 	// Convert authProvider string to SessionAuthProvider enum
-	provider := entities.SessionAuthProvider(authProvider)
+	provider := models.SessionAuthProvider(authProvider)
 
-	session := &entities.Session{
+	session := &models.Session{
 		ID:           uuid.New(),
 		UserID:       userID,
 		Token:        token,
@@ -425,9 +424,9 @@ func (s *Service) createSession(
 }
 
 func (s *Service) generateTokens(
-	user *entities.User,
-	session *entities.Session,
-) (*valueobjects.AuthTokens, error) {
+	user *models.User,
+	session *models.Session,
+) (*models.AuthTokens, error) {
 	// Generate access token (short-lived)
 	accessToken, err := s.tokenManager.CreateAccessToken(user.ID, session.ID)
 	if err != nil {
@@ -440,7 +439,7 @@ func (s *Service) generateTokens(
 		return nil, fmt.Errorf("failed to create refresh token: %w", err)
 	}
 
-	return &valueobjects.AuthTokens{
+	return &models.AuthTokens{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		TokenType:    "Bearer",
@@ -453,7 +452,7 @@ func (s *Service) generateTokens(
 func (s *Service) Register(
 	ctx context.Context,
 	email, password, name string,
-) (*valueobjects.AuthTokens, error) {
+) (*models.AuthTokens, error) {
 	// Check if user already exists
 	existingUser, _ := s.userRepo.GetUserByEmail(ctx, email)
 	if existingUser != nil {
@@ -467,7 +466,7 @@ func (s *Service) Register(
 	}
 
 	// Create the user
-	user, err := entities.NewUser(email, false, nil, name)
+	user, err := models.NewUser(email, false, nil, name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user entity: %w", err)
 	}
@@ -479,10 +478,10 @@ func (s *Service) Register(
 	}
 
 	// Create a local account to store the password
-	account := &entities.Account{
+	account := &models.Account{
 		ID:                uuid.New(),
 		UserID:            createdUser.ID,
-		Provider:          entities.AccountProviderLocal,
+		Provider:          models.AccountProviderLocal,
 		AccountIdentifier: email,           // Use email as account ID for local auth
 		AccessToken:       &hashedPassword, // Store password hash in AccessToken temporarily
 		CreatedAt:         time.Now(),
@@ -757,7 +756,7 @@ func (s *Service) LinkAccount(
 	sessionID uuid.UUID,
 	provider string,
 	_ *string,
-) (*entities.Account, error) {
+) (*models.Account, error) {
 	// Get session to find user
 	session, err := s.sessionRepo.Get(ctx, sessionID)
 	if err != nil {
@@ -779,7 +778,7 @@ func (s *Service) LinkAccount(
 func (s *Service) DeleteAccount(
 	ctx context.Context,
 	sessionID uuid.UUID,
-) (*entities.Account, error) {
+) (*models.Account, error) {
 	// Get session to find user
 	session, err := s.sessionRepo.Get(ctx, sessionID)
 	if err != nil {
@@ -806,7 +805,7 @@ func (s *Service) DeleteAccount(
 
 	// Return a placeholder account for now
 	// TODO: Return actual account once we can retrieve it before deletion
-	account := &entities.Account{
+	account := &models.Account{
 		ID:     uuid.New(),
 		UserID: session.UserID,
 	}
@@ -819,7 +818,7 @@ func (s *Service) UpdateAccount(
 	ctx context.Context,
 	sessionID uuid.UUID,
 	updates map[string]any,
-) (*entities.User, error) {
+) (*models.User, error) {
 	// Get session to find user
 	session, err := s.sessionRepo.Get(ctx, sessionID)
 	if err != nil {

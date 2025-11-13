@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -39,7 +39,7 @@ func NewListArtifactsQueryHandler(repo repositories.ArtifactRepository) *ListArt
 }
 
 // Handle executes the list artifacts query.
-func (h *ListArtifactsQueryHandler) Handle(ctx context.Context, query *ListArtifactsQuery) ([]*entities.Artifact, int64, error) {
+func (h *ListArtifactsQueryHandler) Handle(ctx context.Context, query *ListArtifactsQuery) ([]*models.Artifact, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

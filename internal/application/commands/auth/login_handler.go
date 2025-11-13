@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/internal/core/services"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // LoginCommandHandler handles login commands.
@@ -25,7 +25,7 @@ func NewLoginCommandHandler(authService services.AuthService) *LoginCommandHandl
 func (h *LoginCommandHandler) Handle(
 	ctx context.Context,
 	cmd *LoginCommand,
-) (*valueobjects.AuthTokens, error) {
+) (*models.AuthTokens, error) {
 	if cmd.Email == "" {
 		return nil, fmt.Errorf("email is required")
 	}

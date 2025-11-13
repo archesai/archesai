@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetAPIKeyQueryHandler(repo repositories.APIKeyRepository) *GetAPIKeyQuer
 }
 
 // Handle executes the get apikey query.
-func (h *GetAPIKeyQueryHandler) Handle(ctx context.Context, query *GetAPIKeyQuery) (*entities.APIKey, error) {
+func (h *GetAPIKeyQueryHandler) Handle(ctx context.Context, query *GetAPIKeyQuery) (*models.APIKey, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get apikey: %w", err)

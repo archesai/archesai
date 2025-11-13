@@ -1,12 +1,6 @@
+x-codegen-schema-type: entity
 x-codegen:
-  schemaType: entity
   repository:
-    operations:
-      - create
-      - update
-      - delete
-      - read
-      - list
     excludeFromCreate:
       - CreatedAt
       - UpdatedAt

@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -49,9 +49,9 @@ func NewCreateLabelCommandHandler(
 }
 
 // Handle executes the create label command.
-func (h *CreateLabelCommandHandler) Handle(ctx context.Context, cmd *CreateLabelCommand) (*entities.Label, error) {
+func (h *CreateLabelCommandHandler) Handle(ctx context.Context, cmd *CreateLabelCommand) (*models.Label, error) {
 	// Create the label entity
-	entity := &entities.Label{
+	entity := &models.Label{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

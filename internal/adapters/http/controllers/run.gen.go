@@ -13,8 +13,7 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/run"
 	queries "github.com/archesai/archesai/internal/application/queries/run"
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // RunController handles HTTP requests for run endpoints.
@@ -73,7 +72,7 @@ type CreateRunResponse interface {
 }
 
 type CreateRun201Response struct {
-	Data entities.Run `json:"data"`
+	Data models.Run `json:"data"`
 }
 
 func (response CreateRun201Response) VisitCreateRunResponse(w http.ResponseWriter) error {
@@ -231,7 +230,7 @@ type GetRunResponse interface {
 }
 
 type GetRun200Response struct {
-	Data entities.Run `json:"data"`
+	Data models.Run `json:"data"`
 }
 
 func (response GetRun200Response) VisitGetRunResponse(w http.ResponseWriter) error {
@@ -409,8 +408,8 @@ type ListRunsResponse interface {
 }
 
 type ListRuns200Response struct {
-	Data []entities.Run              `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data []models.Run          `json:"data"`
+	Meta models.PaginationMeta `json:"meta"`
 }
 
 func (response ListRuns200Response) VisitListRunsResponse(w http.ResponseWriter) error {
@@ -570,7 +569,7 @@ func (c *RunController) ListRuns(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]entities.Run, len(results))
+	data := make([]models.Run, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -579,7 +578,7 @@ func (c *RunController) ListRuns(w http.ResponseWriter, r *http.Request) {
 
 	response := ListRuns200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListRunsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -608,7 +607,7 @@ type UpdateRunResponse interface {
 }
 
 type UpdateRun200Response struct {
-	Data entities.Run `json:"data"`
+	Data models.Run `json:"data"`
 }
 
 func (response UpdateRun200Response) VisitUpdateRunResponse(w http.ResponseWriter) error {

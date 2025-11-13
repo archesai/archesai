@@ -48,7 +48,7 @@ func TestParseOpenAPI(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := NewOpenAPIParser()
-			doc, err := parser.Parse(tt.specPath)
+			doc, err := parser.ParseFile(tt.specPath)
 			if tt.wantErr {
 				assert.Error(t, err)
 				if tt.errContains != "" {
@@ -67,11 +67,11 @@ func TestParseOpenAPI(t *testing.T) {
 func TestExtractOperations(t *testing.T) {
 	// Load test OpenAPI doc
 	parser := NewOpenAPIParser()
-	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
+	doc, err := parser.ParseFile("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 	require.NotNil(t, doc)
 
-	operations, err := ExtractOperations(doc)
+	operations, err := parser.extractOperations()
 	require.NoError(t, err)
 	assert.NotEmpty(t, operations)
 
@@ -193,7 +193,8 @@ func TestExtractOperations(t *testing.T) {
 }
 
 func TestExtractOperations_NilDocument(t *testing.T) {
-	operations, err := ExtractOperations(nil)
+	parser := NewOpenAPIParser()
+	operations, err := parser.extractOperations()
 	require.NoError(t, err)
 	assert.Nil(t, operations)
 }
@@ -201,11 +202,11 @@ func TestExtractOperations_NilDocument(t *testing.T) {
 func TestExtractParameters(t *testing.T) {
 	// Load test OpenAPI doc to get real operation examples
 	parser := NewOpenAPIParser()
-	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
+	doc, err := parser.ParseFile("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 	require.NotNil(t, doc)
 
-	operations, err := ExtractOperations(doc)
+	operations, err := parser.extractOperations()
 	require.NoError(t, err)
 
 	// Find listUsers operation for testing parameters
@@ -258,10 +259,10 @@ func TestExtractParameters(t *testing.T) {
 func TestExtractResponses(t *testing.T) {
 	// Load test OpenAPI doc
 	parser := NewOpenAPIParser()
-	doc, err := parser.Parse("../../test/data/parsers/openapi/simple-api.yaml")
+	_, err := parser.ParseFile("../../test/data/parsers/openapi/simple-api.yaml")
 	require.NoError(t, err)
 
-	operations, err := ExtractOperations(doc)
+	operations, err := parser.extractOperations()
 	require.NoError(t, err)
 
 	// Find operations for testing responses

@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -45,7 +45,7 @@ func NewGetMemberQueryHandler(repo repositories.MemberRepository) *GetMemberQuer
 }
 
 // Handle executes the get member query.
-func (h *GetMemberQueryHandler) Handle(ctx context.Context, query *GetMemberQuery) (*entities.Member, error) {
+func (h *GetMemberQueryHandler) Handle(ctx context.Context, query *GetMemberQuery) (*models.Member, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get member: %w", err)

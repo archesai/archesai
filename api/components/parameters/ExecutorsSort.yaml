@@ -1,0 +1,37 @@
+in: query
+name: sort
+required: false
+style: form
+explode: true
+schema:
+  type: array
+  maxItems: 10
+  items:
+    type: object
+    required:
+      - field
+      - order
+    properties:
+      field:
+        type: string
+        enum:
+          - createdAt
+          - id
+          - updatedAt
+          - name
+          - description
+          - language
+          - organizationID
+          - isActive
+          - version
+        example: createdAt
+      order:
+        type: string
+        enum:
+          - asc
+          - desc
+        example: asc
+description: The sort parameter
+example:
+  - field: createdAt
+    order: desc

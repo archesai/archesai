@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // ChatPersona represents a chat agent/assistant persona.
@@ -18,7 +18,7 @@ type ChatPersona struct {
 
 // ChatSession manages a conversation with an LLM.
 type ChatSession struct {
-	Messages []valueobjects.Message
+	Messages []models.Message
 	Persona  *ChatPersona
 	Context  map[string]any
 }
@@ -33,7 +33,7 @@ type ChatClient interface {
 		ctx context.Context,
 		session *ChatSession,
 		content string,
-	) (*valueobjects.Message, error)
+	) (*models.Message, error)
 
 	// SendMessageStream sends a message and returns a streaming response
 	SendMessageStream(
@@ -56,15 +56,15 @@ func NewChatClient(llm LLM) ChatClient {
 // NewSession creates a new chat session.
 func (c *DefaultChatClient) NewSession(persona *ChatPersona) *ChatSession {
 	session := &ChatSession{
-		Messages: []valueobjects.Message{},
+		Messages: []models.Message{},
 		Persona:  persona,
 		Context:  make(map[string]any),
 	}
 
 	// Add system message if persona has a system prompt
 	if persona != nil && persona.SystemPrompt != "" {
-		session.Messages = append(session.Messages, valueobjects.Message{
-			Role:    valueobjects.RoleSystem,
+		session.Messages = append(session.Messages, models.Message{
+			Role:    models.RoleSystem,
 			Content: persona.SystemPrompt,
 		})
 	}
@@ -77,16 +77,16 @@ func (c *DefaultChatClient) SendMessage(
 	ctx context.Context,
 	session *ChatSession,
 	content string,
-) (*valueobjects.Message, error) {
+) (*models.Message, error) {
 	// Add user message to session
-	userMsg := valueobjects.Message{
-		Role:    valueobjects.RoleUser,
+	userMsg := models.Message{
+		Role:    models.RoleUser,
 		Content: content,
 	}
 	session.Messages = append(session.Messages, userMsg)
 
 	// Prepare request
-	req := valueobjects.ChatCompletionRequest{
+	req := models.ChatCompletionRequest{
 		Model:    session.Persona.Model,
 		Messages: session.Messages,
 	}
@@ -121,14 +121,14 @@ func (c *DefaultChatClient) SendMessageStream(
 	content string,
 ) (ChatCompletionStream, error) {
 	// Add user message to session
-	userMsg := valueobjects.Message{
-		Role:    valueobjects.RoleUser,
+	userMsg := models.Message{
+		Role:    models.RoleUser,
 		Content: content,
 	}
 	session.Messages = append(session.Messages, userMsg)
 
 	// Prepare request
-	req := valueobjects.ChatCompletionRequest{
+	req := models.ChatCompletionRequest{
 		Model:    session.Persona.Model,
 		Messages: session.Messages,
 		Stream:   true,
@@ -149,8 +149,8 @@ func (c *DefaultChatClient) SendMessageStream(
 
 // AddAssistantMessage adds an assistant message to the session (useful after streaming).
 func (session *ChatSession) AddAssistantMessage(content string) {
-	assistantMsg := valueobjects.Message{
-		Role:    valueobjects.RoleAssistant,
+	assistantMsg := models.Message{
+		Role:    models.RoleAssistant,
 		Content: content,
 	}
 	session.Messages = append(session.Messages, assistantMsg)
@@ -158,9 +158,9 @@ func (session *ChatSession) AddAssistantMessage(content string) {
 
 // ClearHistory clears the message history but keeps the system prompt.
 func (session *ChatSession) ClearHistory() {
-	var systemMessages []valueobjects.Message
+	var systemMessages []models.Message
 	for _, msg := range session.Messages {
-		if msg.Role == valueobjects.RoleSystem {
+		if msg.Role == models.RoleSystem {
 			systemMessages = append(systemMessages, msg)
 		}
 	}
@@ -168,7 +168,7 @@ func (session *ChatSession) ClearHistory() {
 }
 
 // GetLastMessage returns the last message in the session.
-func (session *ChatSession) GetLastMessage() *valueobjects.Message {
+func (session *ChatSession) GetLastMessage() *models.Message {
 	if len(session.Messages) == 0 {
 		return nil
 	}

@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -52,9 +52,9 @@ func NewCreatePipelineCommandHandler(
 }
 
 // Handle executes the create pipeline command.
-func (h *CreatePipelineCommandHandler) Handle(ctx context.Context, cmd *CreatePipelineCommand) (*entities.Pipeline, error) {
+func (h *CreatePipelineCommandHandler) Handle(ctx context.Context, cmd *CreatePipelineCommand) (*models.Pipeline, error) {
 	// Create the pipeline entity
-	entity := &entities.Pipeline{
+	entity := &models.Pipeline{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

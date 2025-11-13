@@ -64,8 +64,8 @@ func TestParseJSONSchema(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			parser := NewJSONSchemaParser()
-			schema, err := parser.Parse(tt.filePath)
+			parser := NewJSONSchemaParser(nil)
+			schema, err := parser.ParseFile(tt.filePath)
 			if tt.wantErr {
 				assert.Error(t, err)
 				if tt.errContains != "" {
@@ -141,8 +141,7 @@ func TestProcessSchema(t *testing.T) {
 			validate: func(t *testing.T, result *SchemaDef) {
 				assert.NotNil(t, result)
 				assert.Equal(t, "UserEntity", result.Name)
-				assert.NotNil(t, result.XCodegen)
-				assert.Equal(t, XCodegenExtensionSchemaType("entity"), result.XCodegen.SchemaType)
+				assert.Equal(t, XCodegenSchemaType("entity"), result.XCodegenSchemaType)
 
 			},
 		},
@@ -151,11 +150,10 @@ func TestProcessSchema(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Load schema from file
-			parser := NewJSONSchemaParser()
-			schema, err := parser.Parse(tt.schemaFile)
+			parser := NewJSONSchemaParser(nil)
+			result, err := parser.ParseFile(tt.schemaFile)
 			require.NoError(t, err)
 
-			result, err := parser.ExtractSchema(schema, nil, "")
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -169,8 +167,8 @@ func TestProcessSchema(t *testing.T) {
 
 	// Test nil schema
 	t.Run("nil schema", func(t *testing.T) {
-		parser := NewJSONSchemaParser()
-		result, err := parser.ExtractSchema(nil, nil, "")
+		parser := NewJSONSchemaParser(nil)
+		result, err := parser.ParseFile("")
 		assert.Error(t, err)
 		assert.Nil(t, result)
 	})
@@ -179,11 +177,10 @@ func TestProcessSchema(t *testing.T) {
 func TestExtractFields(t *testing.T) {
 	// Test with simple schema
 	t.Run("simple schema fields", func(t *testing.T) {
-		parser := NewJSONSchemaParser()
-		jsonSchema, err := parser.Parse("../../test/data/parsers/schemas/simple.yaml")
+		parser := NewJSONSchemaParser(nil)
+		schema, err := parser.ParseFile("../../test/data/parsers/schemas/simple.yaml")
 		require.NoError(t, err)
 
-		schema, _ := parser.ExtractSchema(jsonSchema, nil, "")
 		assert.NotEmpty(t, schema.GetSortedProperties())
 		assert.Len(t, schema.GetSortedProperties(), 6)
 
@@ -217,11 +214,9 @@ func TestExtractFields(t *testing.T) {
 
 	// Test with complex schema
 	t.Run("complex schema fields", func(t *testing.T) {
-		parser := NewJSONSchemaParser()
-		jsonSchema, err := parser.Parse("../../test/data/parsers/schemas/complex.yaml")
+		parser := NewJSONSchemaParser(nil)
+		schema, err := parser.ParseFile("../../test/data/parsers/schemas/complex.yaml")
 		require.NoError(t, err)
-
-		schema, _ := parser.ExtractSchema(jsonSchema, nil, "")
 		assert.NotEmpty(t, schema.GetSortedProperties())
 
 		fieldMap := make(map[string]SchemaDef)
@@ -233,8 +228,8 @@ func TestExtractFields(t *testing.T) {
 
 	// Test with nil schema
 	t.Run("nil schema", func(t *testing.T) {
-		parser := NewJSONSchemaParser()
-		jsonSchema, err := parser.ExtractSchema(nil, nil, "")
+		parser := NewJSONSchemaParser(nil)
+		jsonSchema, err := parser.ParseFile("")
 		assert.Error(t, err)
 		assert.Nil(t, jsonSchema)
 	})
@@ -252,14 +247,11 @@ func createTempYamlFile(t *testing.T, content string) string {
 
 func TestExtractFieldsWithNestedObjects(t *testing.T) {
 	// Load the complex schema with nested objects
-	parser := NewJSONSchemaParser()
-	jsonSchema, err := parser.Parse("../../test/data/parsers/schemas/complex.yaml")
+	parser := NewJSONSchemaParser(nil)
+	schema, err := parser.ParseFile("../../test/data/parsers/schemas/complex.yaml")
 	if err != nil {
 		t.Fatalf("Failed to parse schema: %v", err)
 	}
-
-	// Extract fields
-	schema, _ := parser.ExtractSchema(jsonSchema, nil, "")
 
 	// We should have 5 top-level fields
 	expectedFieldCount := 5

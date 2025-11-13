@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
@@ -34,7 +34,7 @@ func NewCreatePipelineStepCommandHandler(
 func (h *CreatePipelineStepCommandHandler) Handle(
 	ctx context.Context,
 	cmd *CreatePipelineStepCommand,
-) (*entities.PipelineStep, error) {
+) (*models.PipelineStep, error) {
 	// Verify pipeline exists
 	pipeline, err := h.pipelineRepo.Get(ctx, cmd.ID)
 	if err != nil {
@@ -43,7 +43,7 @@ func (h *CreatePipelineStepCommandHandler) Handle(
 
 	// Create the pipeline step entity
 	now := time.Now().UTC()
-	step := &entities.PipelineStep{
+	step := &models.PipelineStep{
 		ID:         uuid.New(),
 		PipelineID: pipeline.ID,
 		ToolID:     cmd.ToolID,
@@ -52,7 +52,7 @@ func (h *CreatePipelineStepCommandHandler) Handle(
 		// Config:       cmd.Config,
 		// Position:     cmd.Position,
 		// Dependencies: cmd.Dependencies,
-		// Status:       entities.PipelineStepStatusPending,
+		// Status:       models.PipelineStepStatusPending,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}

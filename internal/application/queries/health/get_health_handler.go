@@ -5,7 +5,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // GetHealthQueryHandler handles the get health status query.
@@ -23,10 +23,10 @@ func NewGetHealthQueryHandler() *GetHealthQueryHandler {
 func (h *GetHealthQueryHandler) Handle(
 	_ context.Context,
 	_ *GetHealthQuery,
-) (*valueobjects.Health, error) {
+) (*models.Health, error) {
 	// For now, return a simple healthy status
 	// In a real implementation, you would check various components
-	health, err := valueobjects.NewHealth(
+	health, err := models.NewHealth(
 		struct {
 			Database string `json:"database" yaml:"database"`
 			Email    string `json:"email" yaml:"email"`

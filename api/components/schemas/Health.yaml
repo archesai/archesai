@@ -1,7 +1,6 @@
 title: Health
 description: Health check response
-x-codegen:
-  schemaType: valueobject
+x-codegen-schema-type: valueobject
 type: object
 properties:
   services:

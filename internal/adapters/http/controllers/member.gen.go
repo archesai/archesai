@@ -13,8 +13,7 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/member"
 	queries "github.com/archesai/archesai/internal/application/queries/member"
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // MemberController handles HTTP requests for member endpoints.
@@ -74,7 +73,7 @@ type CreateMemberResponse interface {
 }
 
 type CreateMember201Response struct {
-	Data entities.Member `json:"data"`
+	Data models.Member `json:"data"`
 }
 
 func (response CreateMember201Response) VisitCreateMemberResponse(w http.ResponseWriter) error {
@@ -247,7 +246,7 @@ type GetMemberResponse interface {
 }
 
 type GetMember200Response struct {
-	Data entities.Member `json:"data"`
+	Data models.Member `json:"data"`
 }
 
 func (response GetMember200Response) VisitGetMemberResponse(w http.ResponseWriter) error {
@@ -440,8 +439,8 @@ type ListMembersResponse interface {
 }
 
 type ListMembers200Response struct {
-	Data []entities.Member           `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data []models.Member       `json:"data"`
+	Meta models.PaginationMeta `json:"meta"`
 }
 
 func (response ListMembers200Response) VisitListMembersResponse(w http.ResponseWriter) error {
@@ -615,7 +614,7 @@ func (c *MemberController) ListMembers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]entities.Member, len(results))
+	data := make([]models.Member, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -624,7 +623,7 @@ func (c *MemberController) ListMembers(w http.ResponseWriter, r *http.Request) {
 
 	response := ListMembers200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListMembersResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -654,7 +653,7 @@ type UpdateMemberResponse interface {
 }
 
 type UpdateMember200Response struct {
-	Data entities.Member `json:"data"`
+	Data models.Member `json:"data"`
 }
 
 func (response UpdateMember200Response) VisitUpdateMemberResponse(w http.ResponseWriter) error {

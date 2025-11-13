@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewListInvitationsQueryHandler(repo repositories.InvitationRepository) *Lis
 }
 
 // Handle executes the list invitations query.
-func (h *ListInvitationsQueryHandler) Handle(ctx context.Context, query *ListInvitationsQuery) ([]*entities.Invitation, int64, error) {
+func (h *ListInvitationsQueryHandler) Handle(ctx context.Context, query *ListInvitationsQuery) ([]*models.Invitation, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

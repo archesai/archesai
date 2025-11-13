@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresInvitationRepository(db *pgxpool.Pool) *PostgresInvitationReposi
 // Invitation operations
 
 // Create creates a new invitation
-func (r *PostgresInvitationRepository) Create(ctx context.Context, entity *entities.Invitation) (*entities.Invitation, error) {
+func (r *PostgresInvitationRepository) Create(ctx context.Context, entity *models.Invitation) (*models.Invitation, error) {
 	params := CreateInvitationParams{
 		ID:             entity.ID,
 		Email:          entity.Email,
@@ -50,7 +50,7 @@ func (r *PostgresInvitationRepository) Create(ctx context.Context, entity *entit
 }
 
 // Get retrieves a invitation by ID
-func (r *PostgresInvitationRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Invitation, error) {
+func (r *PostgresInvitationRepository) Get(ctx context.Context, id uuid.UUID) (*models.Invitation, error) {
 	params := GetInvitationParams{
 		ID: id,
 	}
@@ -67,7 +67,7 @@ func (r *PostgresInvitationRepository) Get(ctx context.Context, id uuid.UUID) (*
 }
 
 // Update updates an existing invitation
-func (r *PostgresInvitationRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Invitation) (*entities.Invitation, error) {
+func (r *PostgresInvitationRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Invitation) (*models.Invitation, error) {
 
 	roleStr := string(entity.Role)
 	statusStr := string(entity.Status)
@@ -107,7 +107,7 @@ func (r *PostgresInvitationRepository) Delete(ctx context.Context, id uuid.UUID)
 }
 
 // List returns a paginated list of invitations
-func (r *PostgresInvitationRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Invitation, int64, error) {
+func (r *PostgresInvitationRepository) List(ctx context.Context, limit, offset int32) ([]*models.Invitation, int64, error) {
 	listParams := ListInvitationsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -118,7 +118,7 @@ func (r *PostgresInvitationRepository) List(ctx context.Context, limit, offset i
 		return nil, 0, fmt.Errorf("failed to list invitations: %w", err)
 	}
 
-	items := make([]*entities.Invitation, len(results))
+	items := make([]*models.Invitation, len(results))
 	for i, result := range results {
 		items[i] = mapInvitationFromDB(&result)
 	}
@@ -131,7 +131,7 @@ func (r *PostgresInvitationRepository) List(ctx context.Context, limit, offset i
 }
 
 // ListInvitationsByOrganization retrieves multiple Invitations by organizationID
-func (r *PostgresInvitationRepository) ListInvitationsByOrganization(ctx context.Context, organizationID string) ([]*entities.Invitation, error) {
+func (r *PostgresInvitationRepository) ListInvitationsByOrganization(ctx context.Context, organizationID string) ([]*models.Invitation, error) {
 	params := ListInvitationsByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -143,7 +143,7 @@ func (r *PostgresInvitationRepository) ListInvitationsByOrganization(ctx context
 		}
 		return nil, fmt.Errorf("failed to ListInvitationsByOrganization: %w", err)
 	}
-	items := make([]*entities.Invitation, len(result))
+	items := make([]*models.Invitation, len(result))
 	for i, res := range result {
 		items[i] = mapInvitationFromDB(&res)
 	}
@@ -152,7 +152,7 @@ func (r *PostgresInvitationRepository) ListInvitationsByOrganization(ctx context
 }
 
 // GetInvitationByEmail retrieves a single Invitation by email and organizationID
-func (r *PostgresInvitationRepository) GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*entities.Invitation, error) {
+func (r *PostgresInvitationRepository) GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*models.Invitation, error) {
 	params := GetInvitationByEmailParams{
 		Email:          email,
 		OrganizationID: uuid.MustParse(organizationID),
@@ -171,7 +171,7 @@ func (r *PostgresInvitationRepository) GetInvitationByEmail(ctx context.Context,
 }
 
 // ListInvitationsByInviter retrieves multiple Invitations by inviterID
-func (r *PostgresInvitationRepository) ListInvitationsByInviter(ctx context.Context, inviterID string) ([]*entities.Invitation, error) {
+func (r *PostgresInvitationRepository) ListInvitationsByInviter(ctx context.Context, inviterID string) ([]*models.Invitation, error) {
 	params := ListInvitationsByInviterParams{
 		InviterID: uuid.MustParse(inviterID),
 	}
@@ -183,7 +183,7 @@ func (r *PostgresInvitationRepository) ListInvitationsByInviter(ctx context.Cont
 		}
 		return nil, fmt.Errorf("failed to ListInvitationsByInviter: %w", err)
 	}
-	items := make([]*entities.Invitation, len(result))
+	items := make([]*models.Invitation, len(result))
 	for i, res := range result {
 		items[i] = mapInvitationFromDB(&res)
 	}
@@ -191,12 +191,12 @@ func (r *PostgresInvitationRepository) ListInvitationsByInviter(ctx context.Cont
 
 }
 
-func mapInvitationFromDB(db *Invitation) *entities.Invitation {
+func mapInvitationFromDB(db *Invitation) *models.Invitation {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.Invitation{
+	result := &models.Invitation{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,
@@ -204,8 +204,8 @@ func mapInvitationFromDB(db *Invitation) *entities.Invitation {
 		ExpiresAt:      db.ExpiresAt,
 		InviterID:      db.InviterID,
 		OrganizationID: db.OrganizationID,
-		Role:           entities.InvitationRole(db.Role),
-		Status:         entities.InvitationStatus(db.Status),
+		Role:           models.InvitationRole(db.Role),
+		Status:         models.InvitationStatus(db.Status),
 	}
 
 	return result

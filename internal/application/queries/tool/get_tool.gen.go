@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetToolQueryHandler(repo repositories.ToolRepository) *GetToolQueryHandl
 }
 
 // Handle executes the get tool query.
-func (h *GetToolQueryHandler) Handle(ctx context.Context, query *GetToolQuery) (*entities.Tool, error) {
+func (h *GetToolQueryHandler) Handle(ctx context.Context, query *GetToolQuery) (*models.Tool, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get tool: %w", err)

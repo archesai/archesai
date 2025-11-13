@@ -13,8 +13,7 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/organization"
 	queries "github.com/archesai/archesai/internal/application/queries/organization"
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // OrganizationController handles HTTP requests for organization endpoints.
@@ -74,7 +73,7 @@ type CreateOrganizationResponse interface {
 }
 
 type CreateOrganization201Response struct {
-	Data entities.Organization `json:"data"`
+	Data models.Organization `json:"data"`
 }
 
 func (response CreateOrganization201Response) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
@@ -233,7 +232,7 @@ type GetOrganizationResponse interface {
 }
 
 type GetOrganization200Response struct {
-	Data entities.Organization `json:"data"`
+	Data models.Organization `json:"data"`
 }
 
 func (response GetOrganization200Response) VisitGetOrganizationResponse(w http.ResponseWriter) error {
@@ -411,8 +410,8 @@ type ListOrganizationsResponse interface {
 }
 
 type ListOrganizations200Response struct {
-	Data []entities.Organization     `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data []models.Organization `json:"data"`
+	Meta models.PaginationMeta `json:"meta"`
 }
 
 func (response ListOrganizations200Response) VisitListOrganizationsResponse(w http.ResponseWriter) error {
@@ -572,7 +571,7 @@ func (c *OrganizationController) ListOrganizations(w http.ResponseWriter, r *htt
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]entities.Organization, len(results))
+	data := make([]models.Organization, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -581,7 +580,7 @@ func (c *OrganizationController) ListOrganizations(w http.ResponseWriter, r *htt
 
 	response := ListOrganizations200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListOrganizationsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -611,7 +610,7 @@ type UpdateOrganizationResponse interface {
 }
 
 type UpdateOrganization200Response struct {
-	Data entities.Organization `json:"data"`
+	Data models.Organization `json:"data"`
 }
 
 func (response UpdateOrganization200Response) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {

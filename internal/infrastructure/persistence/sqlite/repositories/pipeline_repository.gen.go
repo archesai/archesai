@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLitePipelineRepository(db *sql.DB) *SQLitePipelineRepository {
 // Pipeline operations
 
 // Create creates a new pipeline
-func (r *SQLitePipelineRepository) Create(ctx context.Context, pipeline *entities.Pipeline) (*entities.Pipeline, error) {
+func (r *SQLitePipelineRepository) Create(ctx context.Context, pipeline *models.Pipeline) (*models.Pipeline, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per pipeline
 	return nil, fmt.Errorf("CreatePipeline not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a pipeline by ID
-func (r *SQLitePipelineRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Pipeline, error) {
+func (r *SQLitePipelineRepository) Get(ctx context.Context, id uuid.UUID) (*models.Pipeline, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per pipeline
 	return nil, fmt.Errorf("GetPipeline not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing pipeline
-func (r *SQLitePipelineRepository) Update(ctx context.Context, id uuid.UUID, pipeline *entities.Pipeline) (*entities.Pipeline, error) {
+func (r *SQLitePipelineRepository) Update(ctx context.Context, id uuid.UUID, pipeline *models.Pipeline) (*models.Pipeline, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per pipeline
 	return nil, fmt.Errorf("UpdatePipeline not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLitePipelineRepository) Delete(ctx context.Context, id uuid.UUID) err
 }
 
 // List returns a paginated list of pipelines
-func (r *SQLitePipelineRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Pipeline, int64, error) {
+func (r *SQLitePipelineRepository) List(ctx context.Context, limit, offset int32) ([]*models.Pipeline, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per pipeline
 	return nil, 0, fmt.Errorf("ListPipelines not yet implemented - requires custom mapping")
@@ -63,7 +63,7 @@ func (r *SQLitePipelineRepository) List(ctx context.Context, limit, offset int32
 // Additional methods
 
 // ListPipelinesByOrganization retrieves multiple pipelines by organizationID
-func (r *SQLitePipelineRepository) ListPipelinesByOrganization(ctx context.Context, organizationID string) ([]*entities.Pipeline, error) {
+func (r *SQLitePipelineRepository) ListPipelinesByOrganization(ctx context.Context, organizationID string) ([]*models.Pipeline, error) {
 	// TODO: Implement ListPipelinesByOrganization
 	return nil, fmt.Errorf("ListPipelinesByOrganization not yet implemented - requires custom mapping")
 }

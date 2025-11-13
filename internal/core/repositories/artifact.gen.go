@@ -5,22 +5,22 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
 // ArtifactRepository handles artifact persistence
 type ArtifactRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *entities.Artifact) (*entities.Artifact, error)
-	Get(ctx context.Context, id uuid.UUID) (*entities.Artifact, error)
-	Update(ctx context.Context, id uuid.UUID, entity *entities.Artifact) (*entities.Artifact, error)
+	Create(ctx context.Context, entity *models.Artifact) (*models.Artifact, error)
+	Get(ctx context.Context, id uuid.UUID) (*models.Artifact, error)
+	Update(ctx context.Context, id uuid.UUID, entity *models.Artifact) (*models.Artifact, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*entities.Artifact, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*models.Artifact, int64, error)
 
 	// ListArtifactsByOrganization retrieves multiple artifacts by organizationID
-	ListArtifactsByOrganization(ctx context.Context, organizationID string) ([]*entities.Artifact, error)
+	ListArtifactsByOrganization(ctx context.Context, organizationID string) ([]*models.Artifact, error)
 
 	// ListArtifactsByProducer retrieves multiple artifacts by producerID
-	ListArtifactsByProducer(ctx context.Context, producerID string) ([]*entities.Artifact, error)
+	ListArtifactsByProducer(ctx context.Context, producerID string) ([]*models.Artifact, error)
 }

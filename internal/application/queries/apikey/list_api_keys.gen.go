@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -39,7 +39,7 @@ func NewListAPIKeysQueryHandler(repo repositories.APIKeyRepository) *ListAPIKeys
 }
 
 // Handle executes the list apikeys query.
-func (h *ListAPIKeysQueryHandler) Handle(ctx context.Context, query *ListAPIKeysQuery) ([]*entities.APIKey, int64, error) {
+func (h *ListAPIKeysQueryHandler) Handle(ctx context.Context, query *ListAPIKeysQuery) ([]*models.APIKey, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

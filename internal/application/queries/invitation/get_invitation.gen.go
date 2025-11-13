@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -45,7 +45,7 @@ func NewGetInvitationQueryHandler(repo repositories.InvitationRepository) *GetIn
 }
 
 // Handle executes the get invitation query.
-func (h *GetInvitationQueryHandler) Handle(ctx context.Context, query *GetInvitationQuery) (*entities.Invitation, error) {
+func (h *GetInvitationQueryHandler) Handle(ctx context.Context, query *GetInvitationQuery) (*models.Invitation, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get invitation: %w", err)

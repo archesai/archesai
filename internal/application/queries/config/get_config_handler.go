@@ -4,16 +4,16 @@ package config
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // GetConfigQueryHandler handles the get config query.
 type GetConfigQueryHandler struct {
-	config *valueobjects.Config
+	config *models.Config
 }
 
 // NewGetConfigQueryHandler creates a new get config query handler.
-func NewGetConfigQueryHandler(config *valueobjects.Config) *GetConfigQueryHandler {
+func NewGetConfigQueryHandler(config *models.Config) *GetConfigQueryHandler {
 	return &GetConfigQueryHandler{
 		config: config,
 	}
@@ -23,7 +23,7 @@ func NewGetConfigQueryHandler(config *valueobjects.Config) *GetConfigQueryHandle
 func (h *GetConfigQueryHandler) Handle(
 	_ context.Context,
 	_ *GetConfigQuery,
-) (*valueobjects.Config, error) {
+) (*models.Config, error) {
 	// Return the injected configuration
 	return h.config, nil
 }

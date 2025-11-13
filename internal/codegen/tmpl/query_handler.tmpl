@@ -13,7 +13,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -63,7 +63,7 @@ func New{{ .Operation.ID }}QueryHandler(repo repositories.{{ if .Operation.XCode
 {{- if not (hasPrefix .Operation.ID "List") }}
 
 // Handle executes the get {{ lower .Operation.Tag }} query.
-func (h *{{ .Operation.ID }}QueryHandler) Handle(ctx context.Context, query *{{ .Operation.ID }}Query) (*entities.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
+func (h *{{ .Operation.ID }}QueryHandler) Handle(ctx context.Context, query *{{ .Operation.ID }}Query) (*models.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
 {{- if .Operation.GetPathParams }}
 	{{- range .Operation.GetPathParams }}
 	{{- if eq (lower .Name) "id" }}
@@ -83,7 +83,7 @@ func (h *{{ .Operation.ID }}QueryHandler) Handle(ctx context.Context, query *{{ 
 {{- else }}
 
 // Handle executes the list {{ lower .Operation.Tag }}s query.
-func (h *{{ .Operation.ID }}QueryHandler) Handle(ctx context.Context, query *{{ .Operation.ID }}Query) ([]*entities.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, int64, error) {
+func (h *{{ .Operation.ID }}QueryHandler) Handle(ctx context.Context, query *{{ .Operation.ID }}Query) ([]*models.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0) 
 	if err != nil {

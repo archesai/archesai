@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // CookieManager handles HTTP cookie operations for authentication.
@@ -26,7 +26,7 @@ func NewCookieManager(secure bool, domain string) *CookieManager {
 // SetAuthCookies sets authentication cookies from tokens.
 func (c *CookieManager) SetAuthCookies(
 	w http.ResponseWriter,
-	tokens *valueobjects.AuthTokens,
+	tokens *models.AuthTokens,
 	rememberMe bool,
 ) {
 	// Set access token cookie

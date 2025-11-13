@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -52,9 +52,9 @@ func NewCreateOrganizationCommandHandler(
 }
 
 // Handle executes the create organization command.
-func (h *CreateOrganizationCommandHandler) Handle(ctx context.Context, cmd *CreateOrganizationCommand) (*entities.Organization, error) {
+func (h *CreateOrganizationCommandHandler) Handle(ctx context.Context, cmd *CreateOrganizationCommand) (*models.Organization, error) {
 	// Create the organization entity
-	entity := &entities.Organization{
+	entity := &models.Organization{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

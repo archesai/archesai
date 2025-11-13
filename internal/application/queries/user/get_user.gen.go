@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetUserQueryHandler(repo repositories.UserRepository) *GetUserQueryHandl
 }
 
 // Handle executes the get user query.
-func (h *GetUserQueryHandler) Handle(ctx context.Context, query *GetUserQuery) (*entities.User, error) {
+func (h *GetUserQueryHandler) Handle(ctx context.Context, query *GetUserQuery) (*models.User, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)

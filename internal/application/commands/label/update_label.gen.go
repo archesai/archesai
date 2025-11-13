@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -52,7 +52,7 @@ func NewUpdateLabelCommandHandler(
 }
 
 // Handle executes the update label command.
-func (h *UpdateLabelCommandHandler) Handle(ctx context.Context, cmd *UpdateLabelCommand) (*entities.Label, error) {
+func (h *UpdateLabelCommandHandler) Handle(ctx context.Context, cmd *UpdateLabelCommand) (*models.Label, error) {
 	// Fetch existing label
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {

@@ -5,25 +5,25 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
 // RunRepository handles run persistence
 type RunRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *entities.Run) (*entities.Run, error)
-	Get(ctx context.Context, id uuid.UUID) (*entities.Run, error)
-	Update(ctx context.Context, id uuid.UUID, entity *entities.Run) (*entities.Run, error)
+	Create(ctx context.Context, entity *models.Run) (*models.Run, error)
+	Get(ctx context.Context, id uuid.UUID) (*models.Run, error)
+	Update(ctx context.Context, id uuid.UUID, entity *models.Run) (*models.Run, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*entities.Run, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*models.Run, int64, error)
 
 	// ListRunsByPipeline retrieves multiple runs by pipelineID
-	ListRunsByPipeline(ctx context.Context, pipelineID string) ([]*entities.Run, error)
+	ListRunsByPipeline(ctx context.Context, pipelineID string) ([]*models.Run, error)
 
 	// ListRunsByOrganization retrieves multiple runs by organizationID
-	ListRunsByOrganization(ctx context.Context, organizationID string) ([]*entities.Run, error)
+	ListRunsByOrganization(ctx context.Context, organizationID string) ([]*models.Run, error)
 
 	// ListRunsByTool retrieves multiple runs by toolID
-	ListRunsByTool(ctx context.Context, toolID string) ([]*entities.Run, error)
+	ListRunsByTool(ctx context.Context, toolID string) ([]*models.Run, error)
 }

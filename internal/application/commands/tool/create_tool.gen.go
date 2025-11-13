@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -52,9 +52,9 @@ func NewCreateToolCommandHandler(
 }
 
 // Handle executes the create tool command.
-func (h *CreateToolCommandHandler) Handle(ctx context.Context, cmd *CreateToolCommand) (*entities.Tool, error) {
+func (h *CreateToolCommandHandler) Handle(ctx context.Context, cmd *CreateToolCommand) (*models.Tool, error) {
 	// Create the tool entity
-	entity := &entities.Tool{
+	entity := &models.Tool{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

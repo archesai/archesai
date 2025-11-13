@@ -13,8 +13,7 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/artifact"
 	queries "github.com/archesai/archesai/internal/application/queries/artifact"
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // ArtifactController handles HTTP requests for artifact endpoints.
@@ -74,7 +73,7 @@ type CreateArtifactResponse interface {
 }
 
 type CreateArtifact201Response struct {
-	Data entities.Artifact `json:"data"`
+	Data models.Artifact `json:"data"`
 }
 
 func (response CreateArtifact201Response) VisitCreateArtifactResponse(w http.ResponseWriter) error {
@@ -233,7 +232,7 @@ type GetArtifactResponse interface {
 }
 
 type GetArtifact200Response struct {
-	Data entities.Artifact `json:"data"`
+	Data models.Artifact `json:"data"`
 }
 
 func (response GetArtifact200Response) VisitGetArtifactResponse(w http.ResponseWriter) error {
@@ -411,8 +410,8 @@ type ListArtifactsResponse interface {
 }
 
 type ListArtifacts200Response struct {
-	Data []entities.Artifact         `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data []models.Artifact     `json:"data"`
+	Meta models.PaginationMeta `json:"meta"`
 }
 
 func (response ListArtifacts200Response) VisitListArtifactsResponse(w http.ResponseWriter) error {
@@ -572,7 +571,7 @@ func (c *ArtifactController) ListArtifacts(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]entities.Artifact, len(results))
+	data := make([]models.Artifact, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -581,7 +580,7 @@ func (c *ArtifactController) ListArtifacts(w http.ResponseWriter, r *http.Reques
 
 	response := ListArtifacts200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListArtifactsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -612,7 +611,7 @@ type UpdateArtifactResponse interface {
 }
 
 type UpdateArtifact200Response struct {
-	Data entities.Artifact `json:"data"`
+	Data models.Artifact `json:"data"`
 }
 
 func (response UpdateArtifact200Response) VisitUpdateArtifactResponse(w http.ResponseWriter) error {

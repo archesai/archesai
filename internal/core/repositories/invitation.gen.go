@@ -5,25 +5,25 @@ package repositories
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
 // InvitationRepository handles invitation persistence
 type InvitationRepository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *entities.Invitation) (*entities.Invitation, error)
-	Get(ctx context.Context, id uuid.UUID) (*entities.Invitation, error)
-	Update(ctx context.Context, id uuid.UUID, entity *entities.Invitation) (*entities.Invitation, error)
+	Create(ctx context.Context, entity *models.Invitation) (*models.Invitation, error)
+	Get(ctx context.Context, id uuid.UUID) (*models.Invitation, error)
+	Update(ctx context.Context, id uuid.UUID, entity *models.Invitation) (*models.Invitation, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*entities.Invitation, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*models.Invitation, int64, error)
 
 	// ListInvitationsByOrganization retrieves multiple invitations by organizationID
-	ListInvitationsByOrganization(ctx context.Context, organizationID string) ([]*entities.Invitation, error)
+	ListInvitationsByOrganization(ctx context.Context, organizationID string) ([]*models.Invitation, error)
 
 	// GetInvitationByEmail retrieves a single invitation by email and organizationID
-	GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*entities.Invitation, error)
+	GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*models.Invitation, error)
 
 	// ListInvitationsByInviter retrieves multiple invitations by inviterID
-	ListInvitationsByInviter(ctx context.Context, inviterID string) ([]*entities.Invitation, error)
+	ListInvitationsByInviter(ctx context.Context, inviterID string) ([]*models.Invitation, error)
 }

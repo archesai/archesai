@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresAccountRepository(db *pgxpool.Pool) *PostgresAccountRepository {
 // Account operations
 
 // Create creates a new account
-func (r *PostgresAccountRepository) Create(ctx context.Context, entity *entities.Account) (*entities.Account, error) {
+func (r *PostgresAccountRepository) Create(ctx context.Context, entity *models.Account) (*models.Account, error) {
 	params := CreateAccountParams{
 		ID:                    entity.ID,
 		AccessToken:           entity.AccessToken,
@@ -53,7 +53,7 @@ func (r *PostgresAccountRepository) Create(ctx context.Context, entity *entities
 }
 
 // Get retrieves a account by ID
-func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Account, error) {
+func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*models.Account, error) {
 	params := GetAccountParams{
 		ID: id,
 	}
@@ -70,7 +70,7 @@ func (r *PostgresAccountRepository) Get(ctx context.Context, id uuid.UUID) (*ent
 }
 
 // Update updates an existing account
-func (r *PostgresAccountRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Account) (*entities.Account, error) {
+func (r *PostgresAccountRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Account) (*models.Account, error) {
 
 	params := UpdateAccountParams{
 		ID:                    id,
@@ -110,7 +110,7 @@ func (r *PostgresAccountRepository) Delete(ctx context.Context, id uuid.UUID) er
 }
 
 // List returns a paginated list of accounts
-func (r *PostgresAccountRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Account, int64, error) {
+func (r *PostgresAccountRepository) List(ctx context.Context, limit, offset int32) ([]*models.Account, int64, error) {
 	listParams := ListAccountsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -121,7 +121,7 @@ func (r *PostgresAccountRepository) List(ctx context.Context, limit, offset int3
 		return nil, 0, fmt.Errorf("failed to list accounts: %w", err)
 	}
 
-	items := make([]*entities.Account, len(results))
+	items := make([]*models.Account, len(results))
 	for i, result := range results {
 		items[i] = mapAccountFromDB(&result)
 	}
@@ -134,7 +134,7 @@ func (r *PostgresAccountRepository) List(ctx context.Context, limit, offset int3
 }
 
 // GetAccountByProvider retrieves a single Account by provider and accountIdentifier
-func (r *PostgresAccountRepository) GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*entities.Account, error) {
+func (r *PostgresAccountRepository) GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*models.Account, error) {
 	params := GetAccountByProviderParams{
 		Provider:          provider,
 		AccountIdentifier: accountIdentifier,
@@ -153,7 +153,7 @@ func (r *PostgresAccountRepository) GetAccountByProvider(ctx context.Context, pr
 }
 
 // ListAccountsByUserID retrieves multiple Accounts by userID
-func (r *PostgresAccountRepository) ListAccountsByUserID(ctx context.Context, userID string) ([]*entities.Account, error) {
+func (r *PostgresAccountRepository) ListAccountsByUserID(ctx context.Context, userID string) ([]*models.Account, error) {
 	params := ListAccountsByUserIDParams{
 		UserID: uuid.MustParse(userID),
 	}
@@ -165,7 +165,7 @@ func (r *PostgresAccountRepository) ListAccountsByUserID(ctx context.Context, us
 		}
 		return nil, fmt.Errorf("failed to ListAccountsByUserID: %w", err)
 	}
-	items := make([]*entities.Account, len(result))
+	items := make([]*models.Account, len(result))
 	for i, res := range result {
 		items[i] = mapAccountFromDB(&res)
 	}
@@ -173,12 +173,12 @@ func (r *PostgresAccountRepository) ListAccountsByUserID(ctx context.Context, us
 
 }
 
-func mapAccountFromDB(db *Account) *entities.Account {
+func mapAccountFromDB(db *Account) *models.Account {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.Account{
+	result := &models.Account{
 		ID:                    db.ID,
 		CreatedAt:             db.CreatedAt,
 		UpdatedAt:             db.UpdatedAt,
@@ -186,7 +186,7 @@ func mapAccountFromDB(db *Account) *entities.Account {
 		AccessTokenExpiresAt:  db.AccessTokenExpiresAt,
 		AccountIdentifier:     db.AccountIdentifier,
 		IDToken:               db.IDToken,
-		Provider:              entities.AccountProvider(db.Provider),
+		Provider:              models.AccountProvider(db.Provider),
 		RefreshToken:          db.RefreshToken,
 		RefreshTokenExpiresAt: db.RefreshTokenExpiresAt,
 		Scope:                 db.Scope,

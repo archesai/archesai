@@ -13,8 +13,7 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/invitation"
 	queries "github.com/archesai/archesai/internal/application/queries/invitation"
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // InvitationController handles HTTP requests for invitation endpoints.
@@ -75,7 +74,7 @@ type CreateInvitationResponse interface {
 }
 
 type CreateInvitation201Response struct {
-	Data entities.Invitation `json:"data"`
+	Data models.Invitation `json:"data"`
 }
 
 func (response CreateInvitation201Response) VisitCreateInvitationResponse(w http.ResponseWriter) error {
@@ -249,7 +248,7 @@ type GetInvitationResponse interface {
 }
 
 type GetInvitation200Response struct {
-	Data entities.Invitation `json:"data"`
+	Data models.Invitation `json:"data"`
 }
 
 func (response GetInvitation200Response) VisitGetInvitationResponse(w http.ResponseWriter) error {
@@ -442,8 +441,8 @@ type ListInvitationsResponse interface {
 }
 
 type ListInvitations200Response struct {
-	Data []entities.Invitation       `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data []models.Invitation   `json:"data"`
+	Meta models.PaginationMeta `json:"meta"`
 }
 
 func (response ListInvitations200Response) VisitListInvitationsResponse(w http.ResponseWriter) error {
@@ -617,7 +616,7 @@ func (c *InvitationController) ListInvitations(w http.ResponseWriter, r *http.Re
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]entities.Invitation, len(results))
+	data := make([]models.Invitation, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -626,7 +625,7 @@ func (c *InvitationController) ListInvitations(w http.ResponseWriter, r *http.Re
 
 	response := ListInvitations200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListInvitationsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -657,7 +656,7 @@ type UpdateInvitationResponse interface {
 }
 
 type UpdateInvitation200Response struct {
-	Data entities.Invitation `json:"data"`
+	Data models.Invitation `json:"data"`
 }
 
 func (response UpdateInvitation200Response) VisitUpdateInvitationResponse(w http.ResponseWriter) error {

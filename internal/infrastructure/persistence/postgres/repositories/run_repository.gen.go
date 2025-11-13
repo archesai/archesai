@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresRunRepository(db *pgxpool.Pool) *PostgresRunRepository {
 // Run operations
 
 // Create creates a new run
-func (r *PostgresRunRepository) Create(ctx context.Context, entity *entities.Run) (*entities.Run, error) {
+func (r *PostgresRunRepository) Create(ctx context.Context, entity *models.Run) (*models.Run, error) {
 	params := CreateRunParams{
 		ID:             entity.ID,
 		OrganizationID: entity.OrganizationID,
@@ -49,7 +49,7 @@ func (r *PostgresRunRepository) Create(ctx context.Context, entity *entities.Run
 }
 
 // Get retrieves a run by ID
-func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Run, error) {
+func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*models.Run, error) {
 	params := GetRunParams{
 		ID: id,
 	}
@@ -66,7 +66,7 @@ func (r *PostgresRunRepository) Get(ctx context.Context, id uuid.UUID) (*entitie
 }
 
 // Update updates an existing run
-func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Run) (*entities.Run, error) {
+func (r *PostgresRunRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Run) (*models.Run, error) {
 
 	statusStr := string(entity.Status)
 	params := UpdateRunParams{
@@ -108,7 +108,7 @@ func (r *PostgresRunRepository) Delete(ctx context.Context, id uuid.UUID) error 
 }
 
 // List returns a paginated list of runs
-func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Run, int64, error) {
+func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) ([]*models.Run, int64, error) {
 	listParams := ListRunsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -119,7 +119,7 @@ func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) (
 		return nil, 0, fmt.Errorf("failed to list runs: %w", err)
 	}
 
-	items := make([]*entities.Run, len(results))
+	items := make([]*models.Run, len(results))
 	for i, result := range results {
 		items[i] = mapRunFromDB(&result)
 	}
@@ -132,7 +132,7 @@ func (r *PostgresRunRepository) List(ctx context.Context, limit, offset int32) (
 }
 
 // ListRunsByPipeline retrieves multiple Runs by pipelineID
-func (r *PostgresRunRepository) ListRunsByPipeline(ctx context.Context, pipelineID string) ([]*entities.Run, error) {
+func (r *PostgresRunRepository) ListRunsByPipeline(ctx context.Context, pipelineID string) ([]*models.Run, error) {
 	params := ListRunsByPipelineParams{
 		PipelineID: uuid.MustParse(pipelineID),
 	}
@@ -144,7 +144,7 @@ func (r *PostgresRunRepository) ListRunsByPipeline(ctx context.Context, pipeline
 		}
 		return nil, fmt.Errorf("failed to ListRunsByPipeline: %w", err)
 	}
-	items := make([]*entities.Run, len(result))
+	items := make([]*models.Run, len(result))
 	for i, res := range result {
 		items[i] = mapRunFromDB(&res)
 	}
@@ -153,7 +153,7 @@ func (r *PostgresRunRepository) ListRunsByPipeline(ctx context.Context, pipeline
 }
 
 // ListRunsByOrganization retrieves multiple Runs by organizationID
-func (r *PostgresRunRepository) ListRunsByOrganization(ctx context.Context, organizationID string) ([]*entities.Run, error) {
+func (r *PostgresRunRepository) ListRunsByOrganization(ctx context.Context, organizationID string) ([]*models.Run, error) {
 	params := ListRunsByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -165,7 +165,7 @@ func (r *PostgresRunRepository) ListRunsByOrganization(ctx context.Context, orga
 		}
 		return nil, fmt.Errorf("failed to ListRunsByOrganization: %w", err)
 	}
-	items := make([]*entities.Run, len(result))
+	items := make([]*models.Run, len(result))
 	for i, res := range result {
 		items[i] = mapRunFromDB(&res)
 	}
@@ -174,7 +174,7 @@ func (r *PostgresRunRepository) ListRunsByOrganization(ctx context.Context, orga
 }
 
 // ListRunsByTool retrieves multiple Runs by toolID
-func (r *PostgresRunRepository) ListRunsByTool(ctx context.Context, toolID string) ([]*entities.Run, error) {
+func (r *PostgresRunRepository) ListRunsByTool(ctx context.Context, toolID string) ([]*models.Run, error) {
 	params := ListRunsByToolParams{
 		ToolID: uuid.MustParse(toolID),
 	}
@@ -186,7 +186,7 @@ func (r *PostgresRunRepository) ListRunsByTool(ctx context.Context, toolID strin
 		}
 		return nil, fmt.Errorf("failed to ListRunsByTool: %w", err)
 	}
-	items := make([]*entities.Run, len(result))
+	items := make([]*models.Run, len(result))
 	for i, res := range result {
 		items[i] = mapRunFromDB(&res)
 	}
@@ -194,12 +194,12 @@ func (r *PostgresRunRepository) ListRunsByTool(ctx context.Context, toolID strin
 
 }
 
-func mapRunFromDB(db *Run) *entities.Run {
+func mapRunFromDB(db *Run) *models.Run {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.Run{
+	result := &models.Run{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,
@@ -209,7 +209,7 @@ func mapRunFromDB(db *Run) *entities.Run {
 		PipelineID:     db.PipelineID,
 		Progress:       db.Progress,
 		StartedAt:      db.StartedAt,
-		Status:         entities.RunStatus(db.Status),
+		Status:         models.RunStatus(db.Status),
 		ToolID:         db.ToolID,
 	}
 

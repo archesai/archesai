@@ -13,8 +13,7 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/tool"
 	queries "github.com/archesai/archesai/internal/application/queries/tool"
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // ToolController handles HTTP requests for tool endpoints.
@@ -74,7 +73,7 @@ type CreateToolResponse interface {
 }
 
 type CreateTool201Response struct {
-	Data entities.Tool `json:"data"`
+	Data models.Tool `json:"data"`
 }
 
 func (response CreateTool201Response) VisitCreateToolResponse(w http.ResponseWriter) error {
@@ -233,7 +232,7 @@ type GetToolResponse interface {
 }
 
 type GetTool200Response struct {
-	Data entities.Tool `json:"data"`
+	Data models.Tool `json:"data"`
 }
 
 func (response GetTool200Response) VisitGetToolResponse(w http.ResponseWriter) error {
@@ -411,8 +410,8 @@ type ListToolsResponse interface {
 }
 
 type ListTools200Response struct {
-	Data []entities.Tool             `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data []models.Tool         `json:"data"`
+	Meta models.PaginationMeta `json:"meta"`
 }
 
 func (response ListTools200Response) VisitListToolsResponse(w http.ResponseWriter) error {
@@ -572,7 +571,7 @@ func (c *ToolController) ListTools(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]entities.Tool, len(results))
+	data := make([]models.Tool, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -581,7 +580,7 @@ func (c *ToolController) ListTools(w http.ResponseWriter, r *http.Request) {
 
 	response := ListTools200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListToolsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -611,7 +610,7 @@ type UpdateToolResponse interface {
 }
 
 type UpdateTool200Response struct {
-	Data entities.Tool `json:"data"`
+	Data models.Tool `json:"data"`
 }
 
 func (response UpdateTool200Response) VisitUpdateToolResponse(w http.ResponseWriter) error {

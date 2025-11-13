@@ -3,12 +3,12 @@ package services
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // ChatCompletionStream represents a streaming response.
 type ChatCompletionStream interface {
-	Recv() (valueobjects.ChatCompletionResponse, error)
+	Recv() (models.ChatCompletionResponse, error)
 	Close() error
 }
 
@@ -17,12 +17,12 @@ type LLMService interface {
 	// CreateChatCompletion creates a non-streaming chat completion.
 	CreateChatCompletion(
 		ctx context.Context,
-		req valueobjects.ChatCompletionRequest,
-	) (valueobjects.ChatCompletionResponse, error)
+		req models.ChatCompletionRequest,
+	) (models.ChatCompletionResponse, error)
 
 	// CreateChatCompletionStream creates a streaming chat completion.
 	CreateChatCompletionStream(
 		ctx context.Context,
-		req valueobjects.ChatCompletionRequest,
+		req models.ChatCompletionRequest,
 	) (ChatCompletionStream, error)
 }

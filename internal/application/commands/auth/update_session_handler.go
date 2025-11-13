@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -28,7 +28,7 @@ func NewUpdateSessionCommandHandler(
 func (h *UpdateSessionCommandHandler) Handle(
 	ctx context.Context,
 	cmd *UpdateSessionCommand,
-) (*entities.Session, error) {
+) (*models.Session, error) {
 	if cmd.ID == uuid.Nil {
 		return nil, fmt.Errorf("session ID is required")
 	}

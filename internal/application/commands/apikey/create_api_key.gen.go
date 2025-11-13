@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -58,9 +58,9 @@ func NewCreateAPIKeyCommandHandler(
 }
 
 // Handle executes the create apikey command.
-func (h *CreateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *CreateAPIKeyCommand) (*entities.APIKey, error) {
+func (h *CreateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *CreateAPIKeyCommand) (*models.APIKey, error) {
 	// Create the apikey entity
-	entity := &entities.APIKey{
+	entity := &models.APIKey{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

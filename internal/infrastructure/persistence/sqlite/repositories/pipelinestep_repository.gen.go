@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLitePipelineStepRepository(db *sql.DB) *SQLitePipelineStepRepository {
 // PipelineStep operations
 
 // Create creates a new pipelinestep
-func (r *SQLitePipelineStepRepository) Create(ctx context.Context, pipelineStep *entities.PipelineStep) (*entities.PipelineStep, error) {
+func (r *SQLitePipelineStepRepository) Create(ctx context.Context, pipelineStep *models.PipelineStep) (*models.PipelineStep, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per pipelineStep
 	return nil, fmt.Errorf("CreatePipelineStep not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a pipelinestep by ID
-func (r *SQLitePipelineStepRepository) Get(ctx context.Context, id uuid.UUID) (*entities.PipelineStep, error) {
+func (r *SQLitePipelineStepRepository) Get(ctx context.Context, id uuid.UUID) (*models.PipelineStep, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per pipelineStep
 	return nil, fmt.Errorf("GetPipelineStep not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing pipelinestep
-func (r *SQLitePipelineStepRepository) Update(ctx context.Context, id uuid.UUID, pipelineStep *entities.PipelineStep) (*entities.PipelineStep, error) {
+func (r *SQLitePipelineStepRepository) Update(ctx context.Context, id uuid.UUID, pipelineStep *models.PipelineStep) (*models.PipelineStep, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per pipelineStep
 	return nil, fmt.Errorf("UpdatePipelineStep not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLitePipelineStepRepository) Delete(ctx context.Context, id uuid.UUID)
 }
 
 // List returns a paginated list of pipelinesteps
-func (r *SQLitePipelineStepRepository) List(ctx context.Context, limit, offset int32) ([]*entities.PipelineStep, int64, error) {
+func (r *SQLitePipelineStepRepository) List(ctx context.Context, limit, offset int32) ([]*models.PipelineStep, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per pipelineStep
 	return nil, 0, fmt.Errorf("ListPipelineSteps not yet implemented - requires custom mapping")

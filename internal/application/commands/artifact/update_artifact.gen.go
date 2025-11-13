@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -58,7 +58,7 @@ func NewUpdateArtifactCommandHandler(
 }
 
 // Handle executes the update artifact command.
-func (h *UpdateArtifactCommandHandler) Handle(ctx context.Context, cmd *UpdateArtifactCommand) (*entities.Artifact, error) {
+func (h *UpdateArtifactCommandHandler) Handle(ctx context.Context, cmd *UpdateArtifactCommand) (*models.Artifact, error) {
 	// Fetch existing artifact
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {

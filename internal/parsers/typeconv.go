@@ -81,6 +81,27 @@ const (
 	goTypeSliceAny  = "[]any"
 )
 
+// Constants for various type mappings and validations
+const (
+	// SQL Dialects
+	SQLDialectPostgres = "postgresql"
+	SQLDialectSQLite   = "sqlite"
+
+	// Default SQL Types
+	SQLTypeText      = "TEXT"
+	SQLTypeInteger   = "INTEGER"
+	SQLTypeBigInt    = "BIGINT"
+	SQLTypeBoolean   = "BOOLEAN"
+	SQLTypeTimestamp = "TIMESTAMPTZ"
+	SQLTypeDateTime  = "DATETIME"
+	SQLTypeDate      = "DATE"
+	SQLTypeUUID      = "UUID"
+	SQLTypeJSONB     = "JSONB"
+	SQLTypeNumeric   = "NUMERIC"
+	SQLTypeReal      = "REAL"
+	SQLTypeDouble    = "DOUBLE PRECISION"
+)
+
 // SchemaToGoType converts a JSON Schema to a Go type with proper package qualification
 func SchemaToGoType(schema *base.Schema, doc *v3.Document, currentPackage string) string {
 	if schema == nil {

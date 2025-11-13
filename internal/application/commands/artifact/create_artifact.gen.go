@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -52,9 +52,9 @@ func NewCreateArtifactCommandHandler(
 }
 
 // Handle executes the create artifact command.
-func (h *CreateArtifactCommandHandler) Handle(ctx context.Context, cmd *CreateArtifactCommand) (*entities.Artifact, error) {
+func (h *CreateArtifactCommandHandler) Handle(ctx context.Context, cmd *CreateArtifactCommand) (*models.Artifact, error) {
 	// Create the artifact entity
-	entity := &entities.Artifact{
+	entity := &models.Artifact{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

@@ -19,8 +19,7 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/{{ lower .Tag }}"
 	queries "github.com/archesai/archesai/internal/application/queries/{{ lower .Tag }}"
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // {{ .Tag }}Controller handles HTTP requests for {{ lower .Tag }} endpoints.
@@ -137,26 +136,19 @@ type {{ $operation.ID }}Response interface {
 type {{ $operation.ID }}{{ $response.StatusCode }}Response{{ $field.Name }} struct {
 {{- range $field.GetSortedProperties }}
 {{- $nestedField := . }}
+    {{- if and (eq $nestedField.Type "array") $nestedField.Items (eq $nestedField.Items.Type "object") (gt (len $nestedField.Items.Properties) 0) }}
+    {{ $nestedField.Name }} []struct {
+        {{- range $nestedField.Items.GetSortedProperties }}
+        {{- $itemField := . }}
+        {{ $itemField.Name }} {{ $itemField.GoType }} `json:"{{ camelCase $itemField.JSONTag }}"`
+        {{- end }}
+    } `json:"{{ camelCase $nestedField.JSONTag }}"`
+    {{- else }}
     {{ $nestedField.Name }} {{ $nestedField.GoType }} `json:"{{ camelCase $nestedField.JSONTag }}"`
+    {{- end }}
 {{- end }}
 }
 
-{{- /* Check if any nested field is an array with object items that need types generated */ -}}
-{{- range $field.GetSortedProperties }}
-{{- $nestedField := . }}
-{{- if and (eq $nestedField.Type "array") $nestedField.Items }}
-{{- if and (eq $nestedField.Items.Type "object") (gt (len $nestedField.Items.Properties) 0) }}
-// {{ pascalCase $nestedField.Name }}Item defines an item in the {{ lower $nestedField.Name }} array
-type {{ pascalCase $nestedField.Name }}Item struct {
-{{- range $nestedField.Items.GetSortedProperties }}
-{{- $itemField := . }}
-    {{ $itemField.Name }} {{ $itemField.GoType }} `json:"{{ camelCase $itemField.JSONTag }}"`
-{{- end }}
-}
-
-{{- end }}
-{{- end }}
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -463,7 +455,7 @@ func (c *{{ $.Tag }}Controller) {{ $operation.ID }}(w http.ResponseWriter, r *ht
 	{{- if $operation.XCodegenRepository }}
 		{{- $entityType = $operation.XCodegenRepository }}
 	{{- end }}
-	data := make([]entities.{{ $entityType }}, len(results))
+	data := make([]models.{{ $entityType }}, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -472,7 +464,7 @@ func (c *{{ $.Tag }}Controller) {{ $operation.ID }}(w http.ResponseWriter, r *ht
 
 	response := {{ $operation.ID }}200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.Visit{{ $operation.ID }}Response(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)

@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/archesai/archesai/internal/adapters/tui"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/infrastructure/llm"
 )
 
@@ -88,18 +88,18 @@ func runTUI(_ *cobra.Command, _ []string) error {
 	}
 
 	// Convert provider string to LLMProvider
-	var provider valueobjects.Provider
+	var provider models.Provider
 	switch tuiProvider {
 	case "openai":
-		provider = valueobjects.ProviderOpenAI
+		provider = models.ProviderOpenAI
 	case "claude":
-		provider = valueobjects.ProviderClaude
+		provider = models.ProviderClaude
 	case "gemini":
-		provider = valueobjects.ProviderGemini
+		provider = models.ProviderGemini
 	case providerOllama:
-		provider = valueobjects.ProviderOllama
+		provider = models.ProviderOllama
 	case "deepseek":
-		provider = valueobjects.ProviderDeepSeek
+		provider = models.ProviderDeepSeek
 	default:
 		return fmt.Errorf("unsupported provider: %s", tuiProvider)
 	}
@@ -107,9 +107,9 @@ func runTUI(_ *cobra.Command, _ []string) error {
 	// Initialize LLM client
 	var llmService llm.LLM
 	switch provider {
-	case valueobjects.ProviderOpenAI:
+	case models.ProviderOpenAI:
 		llmService = llm.NewOpenAILLM(tuiAPIKey)
-	case valueobjects.ProviderOllama:
+	case models.ProviderOllama:
 		var err error
 		llmService, err = llm.NewOllamaLLM()
 		if err != nil {
@@ -179,15 +179,15 @@ func createSamplePersonas(model string) []*llm.ChatPersona {
 	return personas
 }
 
-func getModelForProvider(provider valueobjects.Provider) string {
+func getModelForProvider(provider models.Provider) string {
 	switch provider {
-	case valueobjects.ProviderClaude:
+	case models.ProviderClaude:
 		return "claude-3-opus-20240229"
-	case valueobjects.ProviderGemini:
+	case models.ProviderGemini:
 		return "gemini-pro"
-	case valueobjects.ProviderOllama:
+	case models.ProviderOllama:
 		return "llama2"
-	case valueobjects.ProviderDeepSeek:
+	case models.ProviderDeepSeek:
 		return "deepseek-chat"
 	default:
 		return "gpt-4"

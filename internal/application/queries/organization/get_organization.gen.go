@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetOrganizationQueryHandler(repo repositories.OrganizationRepository) *G
 }
 
 // Handle executes the get organization query.
-func (h *GetOrganizationQueryHandler) Handle(ctx context.Context, query *GetOrganizationQuery) (*entities.Organization, error) {
+func (h *GetOrganizationQueryHandler) Handle(ctx context.Context, query *GetOrganizationQuery) (*models.Organization, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get organization: %w", err)

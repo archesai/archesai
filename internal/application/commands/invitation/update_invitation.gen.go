@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -58,7 +58,7 @@ func NewUpdateInvitationCommandHandler(
 }
 
 // Handle executes the update invitation command.
-func (h *UpdateInvitationCommandHandler) Handle(ctx context.Context, cmd *UpdateInvitationCommand) (*entities.Invitation, error) {
+func (h *UpdateInvitationCommandHandler) Handle(ctx context.Context, cmd *UpdateInvitationCommand) (*models.Invitation, error) {
 	// Fetch existing invitation
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {

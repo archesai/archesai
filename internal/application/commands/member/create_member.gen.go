@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -52,9 +52,9 @@ func NewCreateMemberCommandHandler(
 }
 
 // Handle executes the create member command.
-func (h *CreateMemberCommandHandler) Handle(ctx context.Context, cmd *CreateMemberCommand) (*entities.Member, error) {
+func (h *CreateMemberCommandHandler) Handle(ctx context.Context, cmd *CreateMemberCommand) (*models.Member, error) {
 	// Create the member entity
-	entity := &entities.Member{
+	entity := &models.Member{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

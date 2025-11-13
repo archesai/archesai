@@ -13,5 +13,4 @@ properties:
 required:
   - total
 additionalProperties: false
-x-codegen:
-  schemaType: valueobject
+x-codegen-schema-type: valueobject

@@ -16,7 +16,7 @@ type RepositoriesTemplateData struct {
 // GenerateRepositories generates all repository interfaces and implementations
 func (g *Generator) GenerateRepositories(schemas []*parsers.SchemaDef) error {
 	for _, schema := range schemas {
-		if schema.XCodegen != nil && schema.XCodegen.Repository != nil {
+		if schema.XCodegenSchemaType == parsers.XCodegenSchemaTypeEntity {
 			if err := g.generateRepositoryForSchema(schema); err != nil {
 				return fmt.Errorf("failed to generate repository for %s: %w", schema.Name, err)
 			}

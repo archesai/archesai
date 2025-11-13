@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -39,7 +39,7 @@ func NewListSessionsQueryHandler(repo repositories.SessionRepository) *ListSessi
 }
 
 // Handle executes the list auths query.
-func (h *ListSessionsQueryHandler) Handle(ctx context.Context, query *ListSessionsQuery) ([]*entities.Session, int64, error) {
+func (h *ListSessionsQueryHandler) Handle(ctx context.Context, query *ListSessionsQuery) ([]*models.Session, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

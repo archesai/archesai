@@ -9,7 +9,7 @@ package repositories
 
 import (
 	"context"
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
@@ -17,16 +17,16 @@ import (
 // {{ $entity.Name }}Repository handles {{ lower $entity.Name }} persistence
 type {{ $entity.Name }}Repository interface {
 	// Basic CRUD operations (always included)
-	Create(ctx context.Context, entity *entities.{{ $entity.Name }}) (*entities.{{ $entity.Name }}, error)
-	Get(ctx context.Context, id uuid.UUID) (*entities.{{ $entity.Name }}, error)
-	Update(ctx context.Context, id uuid.UUID, entity *entities.{{ $entity.Name }}) (*entities.{{ $entity.Name }}, error)
+	Create(ctx context.Context, entity *models.{{ $entity.Name }}) (*models.{{ $entity.Name }}, error)
+	Get(ctx context.Context, id uuid.UUID) (*models.{{ $entity.Name }}, error)
+	Update(ctx context.Context, id uuid.UUID, entity *models.{{ $entity.Name }}) (*models.{{ $entity.Name }}, error)
 	Delete(ctx context.Context, id uuid.UUID) error
-	List(ctx context.Context, limit, offset int32) ([]*entities.{{ $entity.Name }}, int64, error)
+	List(ctx context.Context, limit, offset int32) ([]*models.{{ $entity.Name }}, int64, error)
 {{if and $entity.XCodegen $entity.XCodegen.Repository $entity.XCodegen.Repository.AdditionalMethods}}
 {{range $entity.XCodegen.Repository.AdditionalMethods}}
 {{ $additionalMethod := . }}
 	// {{ $additionalMethod.Name }} retrieves {{ if eq $additionalMethod.Returns "multiple" }}multiple {{ lower $entity.Name }}s{{ else }}a single {{ lower $entity.Name }}{{ end }}{{ if $additionalMethod.Params }} by {{ range $i, $p := $additionalMethod.Params }}{{ if $i }} and {{ end }}{{ $p.Name }}{{ end }}{{ end }}
-	{{ $additionalMethod.Name }}(ctx context.Context{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*entities.{{ $entity.Name }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*entities.{{ $entity.Name }}{{ end }}, error)
+	{{ $additionalMethod.Name }}(ctx context.Context{{ range $i, $param := $additionalMethod.Params }}, {{ $param.Name }} {{ $param.Type }}{{ end }}) ({{ if eq $additionalMethod.Returns "single" }}*models.{{ $entity.Name }}{{ else if eq $additionalMethod.Returns "multiple" }}[]*models.{{ $entity.Name }}{{ end }}, error)
 {{end}}{{end}}
 }
 

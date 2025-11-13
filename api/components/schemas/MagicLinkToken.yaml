@@ -1,6 +1,5 @@
 title: MagicLinkToken
-x-codegen:
-  schemaType: valueobject
+x-codegen-schema-type: valueobject
 description: Schema for MagicLinkToken entity
 type: object
 properties:

@@ -14,7 +14,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/events"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
@@ -93,9 +93,9 @@ func New{{ .Operation.ID }}CommandHandler(
 }
 
 // Handle executes the create {{ lower .Operation.Tag }} command.
-func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ .Operation.ID }}Command) (*entities.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
+func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ .Operation.ID }}Command) (*models.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
 	// Create the {{ lower .Operation.Tag }} entity
-	entity := &entities.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}{
+	entity := &models.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
@@ -136,7 +136,7 @@ func New{{ .Operation.ID }}CommandHandler(
 }
 
 // Handle executes the update {{ lower .Operation.Tag }} command.
-func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ .Operation.ID }}Command) (*entities.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
+func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ .Operation.ID }}Command) (*models.{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}, error) {
 	// Fetch existing {{ lower .Operation.Tag }}
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {

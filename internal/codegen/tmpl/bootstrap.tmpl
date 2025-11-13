@@ -191,8 +191,63 @@ func NewApp(cfg *config.Config) (*App, error) {
 		return nil
 	})
 
+	// Initialize executor domain (needs ExecutorService for execution)
+	g.Go(func() error {
+		slog.Info("initializing executor domain")
+
+		// Create executor service
+		executorBuilder, err := executor.NewBuilder()
+		if err != nil {
+			return fmt.Errorf("failed to create executor builder: %w", err)
+		}
+		infra.ExecutorService = executor.NewExecutorService[map[string]any, map[string]any](
+			repos.Executors,
+			executorBuilder,
+		)
+
+		// Create command handlers
+		createExecutorHandler := executorCommands.NewCreateExecutorCommandHandler(
+			repos.Executors,
+			infra.EventPublisher,
+		)
+		deleteExecutorHandler := executorCommands.NewDeleteExecutorCommandHandler(
+			repos.Executors,
+			infra.EventPublisher,
+		)
+		executeExecutorHandler := executorCommands.NewExecuteExecutorCommandHandler(
+			repos.Executors,
+			infra.ExecutorService,
+			infra.EventPublisher,
+		)
+		updateExecutorHandler := executorCommands.NewUpdateExecutorCommandHandler(
+			repos.Executors,
+			infra.EventPublisher,
+		)
+
+		// Create query handlers
+		getExecutorHandler := executorQueries.NewGetExecutorQueryHandler(
+			repos.Executors,
+		)
+		listExecutorsHandler := executorQueries.NewListExecutorsQueryHandler(
+			repos.Executors,
+		)
+
+		// Create controller with handlers (matching the controller constructor order)
+		app.ExecutorController = controllers.NewExecutorController(
+			createExecutorHandler,
+			executeExecutorHandler,
+			updateExecutorHandler,
+			deleteExecutorHandler,
+			getExecutorHandler,
+			listExecutorsHandler,
+		)
+
+		slog.Info("executor domain ready")
+		return nil
+	})
+
 {{- range .Domains }}
-{{- if and .HasController (ne .Name "Config") (ne .Name "Health") }}
+{{- if and .HasController (ne .Name "Config") (ne .Name "Health") (ne .Name "Executor") }}
 
 	// Initialize {{ lower .Name }} domain
 	g.Go(func() error {

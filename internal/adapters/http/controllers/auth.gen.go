@@ -14,8 +14,7 @@ import (
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	commands "github.com/archesai/archesai/internal/application/commands/auth"
 	queries "github.com/archesai/archesai/internal/application/queries/auth"
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // AuthController handles HTTP requests for auth endpoints.
@@ -323,8 +322,8 @@ type ConfirmEmailVerificationResponse interface {
 }
 
 type ConfirmEmailVerification200Response struct {
-	Session entities.Session `json:"session"`
-	User    entities.User    `json:"user"`
+	Session models.Session `json:"session"`
+	User    models.User    `json:"user"`
 }
 
 func (response ConfirmEmailVerification200Response) VisitConfirmEmailVerificationResponse(w http.ResponseWriter) error {
@@ -1732,10 +1731,10 @@ type RequestMagicLinkResponse interface {
 }
 
 type RequestMagicLink200Response struct {
-	ExpiresIn int32                       `json:"expiresIn,omitempty"`
-	Message   string                      `json:"message,omitempty"`
-	OtpCode   string                      `json:"otpCode,omitempty"`
-	Token     valueobjects.MagicLinkToken `json:"token,omitempty"`
+	ExpiresIn int32                 `json:"expiresIn,omitempty"`
+	Message   string                `json:"message,omitempty"`
+	OtpCode   string                `json:"otpCode,omitempty"`
+	Token     models.MagicLinkToken `json:"token,omitempty"`
 }
 
 func (response RequestMagicLink200Response) VisitRequestMagicLinkResponse(w http.ResponseWriter) error {
@@ -2210,7 +2209,7 @@ type GetAccountResponse interface {
 }
 
 type GetAccount200Response struct {
-	Data entities.Account `json:"data"`
+	Data models.Account `json:"data"`
 }
 
 func (response GetAccount200Response) VisitGetAccountResponse(w http.ResponseWriter) error {
@@ -2382,7 +2381,7 @@ type GetSessionResponse interface {
 }
 
 type GetSession200Response struct {
-	Data entities.Session `json:"data"`
+	Data models.Session `json:"data"`
 }
 
 func (response GetSession200Response) VisitGetSessionResponse(w http.ResponseWriter) error {
@@ -3043,8 +3042,8 @@ type ListAccountsResponse interface {
 }
 
 type ListAccounts200Response struct {
-	Data []entities.Account          `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data []models.Account      `json:"data"`
+	Meta models.PaginationMeta `json:"meta"`
 }
 
 func (response ListAccounts200Response) VisitListAccountsResponse(w http.ResponseWriter) error {
@@ -3166,7 +3165,7 @@ func (c *AuthController) ListAccounts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]entities.Account, len(results))
+	data := make([]models.Account, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -3175,7 +3174,7 @@ func (c *AuthController) ListAccounts(w http.ResponseWriter, r *http.Request) {
 
 	response := ListAccounts200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListAccountsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -3204,8 +3203,8 @@ type ListSessionsResponse interface {
 }
 
 type ListSessions200Response struct {
-	Data []entities.Session          `json:"data"`
-	Meta valueobjects.PaginationMeta `json:"meta"`
+	Data []models.Session      `json:"data"`
+	Meta models.PaginationMeta `json:"meta"`
 }
 
 func (response ListSessions200Response) VisitListSessionsResponse(w http.ResponseWriter) error {
@@ -3354,7 +3353,7 @@ func (c *AuthController) ListSessions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert pointer slice to value slice for response
-	data := make([]entities.Session, len(results))
+	data := make([]models.Session, len(results))
 	for i, item := range results {
 		if item != nil {
 			data[i] = *item
@@ -3363,7 +3362,7 @@ func (c *AuthController) ListSessions(w http.ResponseWriter, r *http.Request) {
 
 	response := ListSessions200Response{
 		Data: data,
-		Meta: valueobjects.PaginationMeta{Total: int32(total)},
+		Meta: models.PaginationMeta{Total: int32(total)},
 	}
 	if err := response.VisitListSessionsResponse(w); err != nil {
 		fmt.Fprintf(w, "error writing response: %v", err)
@@ -3394,7 +3393,7 @@ type UpdateAccountResponse interface {
 }
 
 type UpdateAccount200Response struct {
-	Data entities.Account `json:"data"`
+	Data models.Account `json:"data"`
 }
 
 func (response UpdateAccount200Response) VisitUpdateAccountResponse(w http.ResponseWriter) error {
@@ -3590,7 +3589,7 @@ type UpdateSessionResponse interface {
 }
 
 type UpdateSession200Response struct {
-	Data entities.Session `json:"data"`
+	Data models.Session `json:"data"`
 }
 
 func (response UpdateSession200Response) VisitUpdateSessionResponse(w http.ResponseWriter) error {

@@ -1,14 +1,8 @@
 title: Organization
 description: Schema for Organization entity
+x-codegen-schema-type: entity
 x-codegen:
-  schemaType: entity
   repository:
-    operations:
-      - create
-      - read
-      - update
-      - delete
-      - list
     excludeFromUpdate:
       - Slug
       - StripeCustomerIdentifier

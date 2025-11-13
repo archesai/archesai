@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -42,7 +42,7 @@ func NewGetPipelineQueryHandler(repo repositories.PipelineRepository) *GetPipeli
 }
 
 // Handle executes the get pipeline query.
-func (h *GetPipelineQueryHandler) Handle(ctx context.Context, query *GetPipelineQuery) (*entities.Pipeline, error) {
+func (h *GetPipelineQueryHandler) Handle(ctx context.Context, query *GetPipelineQuery) (*models.Pipeline, error) {
 	result, err := h.repo.Get(ctx, query.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pipeline: %w", err)

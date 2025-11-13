@@ -11,13 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	coreEvents "github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	ports "github.com/archesai/archesai/internal/core/repositories"
 	"github.com/archesai/archesai/internal/infrastructure/auth"
 	"github.com/archesai/archesai/internal/infrastructure/cache"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 	"github.com/archesai/archesai/internal/infrastructure/events"
+	"github.com/archesai/archesai/internal/infrastructure/executor"
 	database "github.com/archesai/archesai/internal/infrastructure/persistence"
 	"github.com/archesai/archesai/internal/infrastructure/persistence/postgres/repositories"
 	"github.com/archesai/archesai/internal/infrastructure/redis"
@@ -25,11 +26,12 @@ import (
 
 // Infrastructure holds all infrastructure components.
 type Infrastructure struct {
-	Database       *database.Database
-	EventPublisher coreEvents.Publisher
-	AuthService    *auth.Service
-	AuthCache      cache.Cache[entities.Session]
-	UsersCache     cache.Cache[entities.User]
+	Database        *database.Database
+	EventPublisher  coreEvents.Publisher
+	AuthService     *auth.Service
+	AuthCache       cache.Cache[models.Session]
+	UsersCache      cache.Cache[models.User]
+	ExecutorService executor.ExecutorService[map[string]any, map[string]any]
 	// Single Redis client shared across components
 	redisClient *redis.Client
 }
@@ -39,6 +41,7 @@ type Repositories struct {
 	APIKeys       ports.APIKeyRepository
 	Accounts      ports.AccountRepository
 	Artifacts     ports.ArtifactRepository
+	Executors     ports.ExecutorRepository
 	Invitations   ports.InvitationRepository
 	Labels        ports.LabelRepository
 	Members       ports.MemberRepository
@@ -128,20 +131,20 @@ func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
 		if err != nil {
 			slog.Warn("failed to connect to Redis, using in-memory alternatives", "error", err)
 			infra.EventPublisher = events.NewNoOpPublisher()
-			infra.AuthCache = cache.NewMemoryCache[entities.Session]()
-			infra.UsersCache = cache.NewMemoryCache[entities.User]()
+			infra.AuthCache = cache.NewMemoryCache[models.Session]()
+			infra.UsersCache = cache.NewMemoryCache[models.User]()
 		} else {
 			slog.Info("connected to redis", "host", cfg.Redis.Host, "port", cfg.Redis.Port)
 			infra.redisClient = redisClient
 			infra.EventPublisher = events.NewRedisPublisher(redisClient.GetRedisClient())
-			infra.AuthCache = cache.NewRedisCache[entities.Session](redisClient.GetRedisClient(), "auth:session")
-			infra.UsersCache = cache.NewRedisCache[entities.User](redisClient.GetRedisClient(), "users")
+			infra.AuthCache = cache.NewRedisCache[models.Session](redisClient.GetRedisClient(), "auth:session")
+			infra.UsersCache = cache.NewRedisCache[models.User](redisClient.GetRedisClient(), "users")
 		}
 	} else {
 		// Use in-memory alternatives when Redis is disabled
 		infra.EventPublisher = events.NewNoOpPublisher()
-		infra.AuthCache = cache.NewMemoryCache[entities.Session]()
-		infra.UsersCache = cache.NewMemoryCache[entities.User]()
+		infra.AuthCache = cache.NewMemoryCache[models.Session]()
+		infra.UsersCache = cache.NewMemoryCache[models.User]()
 	}
 
 	return infra, nil
@@ -160,6 +163,8 @@ func NewRepositories(infra *Infrastructure) (*Repositories, error) {
 		repos.Accounts = repositories.NewPostgresAccountRepository(pool)
 		// Artifact repository
 		repos.Artifacts = repositories.NewPostgresArtifactRepository(pool)
+		// Executor repository
+		repos.Executors = repositories.NewPostgresExecutorRepository(pool)
 		// Invitation repository
 		repos.Invitations = repositories.NewPostgresInvitationRepository(pool)
 		// Label repository

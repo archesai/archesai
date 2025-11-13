@@ -19,5 +19,4 @@ required:
   - enabled
   - size
 additionalProperties: false
-x-codegen:
-  schemaType: valueobject
+x-codegen-schema-type: valueobject

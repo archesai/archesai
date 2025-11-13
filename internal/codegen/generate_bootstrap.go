@@ -45,14 +45,11 @@ func (g *Generator) GenerateBootstrap(
 
 	// Process each schema to build domain information
 	for _, schema := range schemas {
-		if schema.XCodegen == nil {
-			continue
-		}
 
 		// Check if this schema should be included
 		// Tags are now singular, so check for the singular form
 		hasAPIOperations := tagsWithOperations[schema.Name]
-		hasRepository := schema.XCodegen.Repository != nil
+		hasRepository := schema.XCodegenSchemaType == parsers.XCodegenSchemaTypeEntity
 
 		// Include schemas that either:
 		// 1. Have API operations tagged with their singular name
@@ -97,7 +94,7 @@ func (g *Generator) GenerateBootstrap(
 
 		// Commands and Queries are now auto-determined from operations
 		// For entities, we assume they have both commands and queries
-		if schema.XCodegen.SchemaType == parsers.XCodegenExtensionSchemaTypeEntity {
+		if schema.XCodegenSchemaType == parsers.XCodegenSchemaTypeEntity {
 			domain.HasCommands = true
 			domain.HasQueries = true
 		}

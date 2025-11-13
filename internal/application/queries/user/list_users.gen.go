@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -39,7 +39,7 @@ func NewListUsersQueryHandler(repo repositories.UserRepository) *ListUsersQueryH
 }
 
 // Handle executes the list users query.
-func (h *ListUsersQueryHandler) Handle(ctx context.Context, query *ListUsersQuery) ([]*entities.User, int64, error) {
+func (h *ListUsersQueryHandler) Handle(ctx context.Context, query *ListUsersQuery) ([]*models.User, int64, error) {
 	// TODO: Apply filters based on query parameters
 	results, total, err := h.repo.List(ctx, 100, 0)
 	if err != nil {

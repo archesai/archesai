@@ -10,27 +10,27 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 
-import { Route as rootRouteImport } from './app/__root'
-import { Route as AuthRouteRouteImport } from './app/auth/route'
-import { Route as AppRouteRouteImport } from './app/_app/route'
-import { Route as AppIndexRouteImport } from './app/_app/index'
-import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
-import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-password/index'
-import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
-import { Route as AppRunsIndexRouteImport } from './app/_app/runs/index'
-import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
-import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
-import { Route as AppOrganizationIndexRouteImport } from './app/_app/organization/index'
-import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
-import { Route as AppConfigurationIndexRouteImport } from './app/_app/configuration/index'
-import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
-import { Route as AuthMagicLinkVerifyRouteImport } from './app/auth/magic-link/verify'
-import { Route as AuthOauthCallbackIndexRouteImport } from './app/auth/oauth/callback/index'
-import { Route as AppRunsRunIDIndexRouteImport } from './app/_app/runs/$runID/index'
-import { Route as AppProfileThemesIndexRouteImport } from './app/_app/profile/themes/index'
-import { Route as AppPipelinesPipelineIDIndexRouteImport } from './app/_app/pipelines/$pipelineID/index'
-import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
-import { Route as AppArtifactsArtifactIDIndexRouteImport } from './app/_app/artifacts/$artifactID/index'
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteRouteImport } from './routes/auth/route'
+import { Route as AppRouteRouteImport } from './routes/_app/route'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
+import { Route as AuthForgotPasswordIndexRouteImport } from './routes/auth/forgot-password/index'
+import { Route as AppToolsIndexRouteImport } from './routes/_app/tools/index'
+import { Route as AppRunsIndexRouteImport } from './routes/_app/runs/index'
+import { Route as AppProfileIndexRouteImport } from './routes/_app/profile/index'
+import { Route as AppPipelinesIndexRouteImport } from './routes/_app/pipelines/index'
+import { Route as AppOrganizationIndexRouteImport } from './routes/_app/organization/index'
+import { Route as AppLabelsIndexRouteImport } from './routes/_app/labels/index'
+import { Route as AppConfigurationIndexRouteImport } from './routes/_app/configuration/index'
+import { Route as AppArtifactsIndexRouteImport } from './routes/_app/artifacts/index'
+import { Route as AuthMagicLinkVerifyRouteImport } from './routes/auth/magic-link/verify'
+import { Route as AuthOauthCallbackIndexRouteImport } from './routes/auth/oauth/callback/index'
+import { Route as AppRunsRunIDIndexRouteImport } from './routes/_app/runs/$runID/index'
+import { Route as AppProfileThemesIndexRouteImport } from './routes/_app/profile/themes/index'
+import { Route as AppPipelinesPipelineIDIndexRouteImport } from './routes/_app/pipelines/$pipelineID/index'
+import { Route as AppOrganizationMembersIndexRouteImport } from './routes/_app/organization/members/index'
+import { Route as AppArtifactsArtifactIDIndexRouteImport } from './routes/_app/artifacts/$artifactID/index'
 
 const AppPipelinesCreateIndexLazyRouteImport = createFileRoute(
   '/_app/pipelines/create/',
@@ -111,7 +111,7 @@ const AppPipelinesCreateIndexLazyRoute =
     path: '/pipelines/create/',
     getParentRoute: () => AppRouteRoute,
   } as any).lazy(() =>
-    import('./app/_app/pipelines/create/index.lazy').then((d) => d.Route),
+    import('./routes/_app/pipelines/create/index.lazy').then((d) => d.Route),
   )
 const AuthOauthCallbackIndexRoute = AuthOauthCallbackIndexRouteImport.update({
   id: '/oauth/callback/',

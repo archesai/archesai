@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresMemberRepository(db *pgxpool.Pool) *PostgresMemberRepository {
 // Member operations
 
 // Create creates a new member
-func (r *PostgresMemberRepository) Create(ctx context.Context, entity *entities.Member) (*entities.Member, error) {
+func (r *PostgresMemberRepository) Create(ctx context.Context, entity *models.Member) (*models.Member, error) {
 	params := CreateMemberParams{
 		ID:             entity.ID,
 		OrganizationID: entity.OrganizationID,
@@ -47,7 +47,7 @@ func (r *PostgresMemberRepository) Create(ctx context.Context, entity *entities.
 }
 
 // Get retrieves a member by ID
-func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Member, error) {
+func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*models.Member, error) {
 	params := GetMemberParams{
 		ID: id,
 	}
@@ -64,7 +64,7 @@ func (r *PostgresMemberRepository) Get(ctx context.Context, id uuid.UUID) (*enti
 }
 
 // Update updates an existing member
-func (r *PostgresMemberRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Member) (*entities.Member, error) {
+func (r *PostgresMemberRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Member) (*models.Member, error) {
 
 	roleStr := string(entity.Role)
 	params := UpdateMemberParams{
@@ -100,7 +100,7 @@ func (r *PostgresMemberRepository) Delete(ctx context.Context, id uuid.UUID) err
 }
 
 // List returns a paginated list of members
-func (r *PostgresMemberRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Member, int64, error) {
+func (r *PostgresMemberRepository) List(ctx context.Context, limit, offset int32) ([]*models.Member, int64, error) {
 	listParams := ListMembersParams{
 		Limit:  limit,
 		Offset: offset,
@@ -111,7 +111,7 @@ func (r *PostgresMemberRepository) List(ctx context.Context, limit, offset int32
 		return nil, 0, fmt.Errorf("failed to list members: %w", err)
 	}
 
-	items := make([]*entities.Member, len(results))
+	items := make([]*models.Member, len(results))
 	for i, result := range results {
 		items[i] = mapMemberFromDB(&result)
 	}
@@ -124,7 +124,7 @@ func (r *PostgresMemberRepository) List(ctx context.Context, limit, offset int32
 }
 
 // ListMembersByOrganization retrieves multiple Members by organizationID
-func (r *PostgresMemberRepository) ListMembersByOrganization(ctx context.Context, organizationID string) ([]*entities.Member, error) {
+func (r *PostgresMemberRepository) ListMembersByOrganization(ctx context.Context, organizationID string) ([]*models.Member, error) {
 	params := ListMembersByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -136,7 +136,7 @@ func (r *PostgresMemberRepository) ListMembersByOrganization(ctx context.Context
 		}
 		return nil, fmt.Errorf("failed to ListMembersByOrganization: %w", err)
 	}
-	items := make([]*entities.Member, len(result))
+	items := make([]*models.Member, len(result))
 	for i, res := range result {
 		items[i] = mapMemberFromDB(&res)
 	}
@@ -145,7 +145,7 @@ func (r *PostgresMemberRepository) ListMembersByOrganization(ctx context.Context
 }
 
 // ListMembersByUser retrieves multiple Members by userID
-func (r *PostgresMemberRepository) ListMembersByUser(ctx context.Context, userID string) ([]*entities.Member, error) {
+func (r *PostgresMemberRepository) ListMembersByUser(ctx context.Context, userID string) ([]*models.Member, error) {
 	params := ListMembersByUserParams{
 		UserID: uuid.MustParse(userID),
 	}
@@ -157,7 +157,7 @@ func (r *PostgresMemberRepository) ListMembersByUser(ctx context.Context, userID
 		}
 		return nil, fmt.Errorf("failed to ListMembersByUser: %w", err)
 	}
-	items := make([]*entities.Member, len(result))
+	items := make([]*models.Member, len(result))
 	for i, res := range result {
 		items[i] = mapMemberFromDB(&res)
 	}
@@ -166,7 +166,7 @@ func (r *PostgresMemberRepository) ListMembersByUser(ctx context.Context, userID
 }
 
 // GetMemberByUserAndOrganization retrieves a single Member by userID and organizationID
-func (r *PostgresMemberRepository) GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*entities.Member, error) {
+func (r *PostgresMemberRepository) GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*models.Member, error) {
 	params := GetMemberByUserAndOrganizationParams{
 		UserID:         uuid.MustParse(userID),
 		OrganizationID: uuid.MustParse(organizationID),
@@ -184,17 +184,17 @@ func (r *PostgresMemberRepository) GetMemberByUserAndOrganization(ctx context.Co
 
 }
 
-func mapMemberFromDB(db *Member) *entities.Member {
+func mapMemberFromDB(db *Member) *models.Member {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.Member{
+	result := &models.Member{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,
 		OrganizationID: db.OrganizationID,
-		Role:           entities.MemberRole(db.Role),
+		Role:           models.MemberRole(db.Role),
 		UserID:         db.UserID,
 	}
 

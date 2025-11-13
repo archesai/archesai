@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -55,7 +55,7 @@ func NewUpdatePipelineCommandHandler(
 }
 
 // Handle executes the update pipeline command.
-func (h *UpdatePipelineCommandHandler) Handle(ctx context.Context, cmd *UpdatePipelineCommand) (*entities.Pipeline, error) {
+func (h *UpdatePipelineCommandHandler) Handle(ctx context.Context, cmd *UpdatePipelineCommand) (*models.Pipeline, error) {
 	// Fetch existing pipeline
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {

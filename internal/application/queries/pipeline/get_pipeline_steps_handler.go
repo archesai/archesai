@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -26,7 +26,7 @@ func NewGetPipelineStepsQueryHandler(
 func (h *GetPipelineStepsQueryHandler) Handle(
 	ctx context.Context,
 	query *GetPipelineStepsQuery,
-) ([]*entities.PipelineStep, error) {
+) ([]*models.PipelineStep, error) {
 	// Verify pipeline exists
 	_, err := h.pipelineRepo.Get(ctx, query.ID)
 	if err != nil {
@@ -39,7 +39,7 @@ func (h *GetPipelineStepsQueryHandler) Handle(
 	// if err != nil {
 	// 	return nil, fmt.Errorf("failed to list pipeline steps: %w", err)
 	// }
-	steps := []*entities.PipelineStep{}
+	steps := []*models.PipelineStep{}
 
 	return steps, nil
 }

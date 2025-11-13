@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -49,9 +49,9 @@ func NewCreateRunCommandHandler(
 }
 
 // Handle executes the create run command.
-func (h *CreateRunCommandHandler) Handle(ctx context.Context, cmd *CreateRunCommand) (*entities.Run, error) {
+func (h *CreateRunCommandHandler) Handle(ctx context.Context, cmd *CreateRunCommand) (*models.Run, error) {
 	// Create the run entity
-	entity := &entities.Run{
+	entity := &models.Run{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

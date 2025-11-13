@@ -6,19 +6,18 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // AuthService defines the authentication service interface.
 type AuthService interface {
 	// Core authentication methods
-	Register(ctx context.Context, email, password, name string) (*valueobjects.AuthTokens, error)
+	Register(ctx context.Context, email, password, name string) (*models.AuthTokens, error)
 	AuthenticateWithPassword(
 		ctx context.Context,
 		email, password string,
-	) (*valueobjects.AuthTokens, error)
-	RefreshToken(ctx context.Context, refreshToken string) (*valueobjects.AuthTokens, error)
+	) (*models.AuthTokens, error)
+	RefreshToken(ctx context.Context, refreshToken string) (*models.AuthTokens, error)
 
 	// OAuth methods
 	GetOAuthAuthorizationURL(provider string, state string) (string, error)
@@ -27,14 +26,14 @@ type AuthService interface {
 		provider string,
 		code string,
 		state string,
-	) (*valueobjects.AuthTokens, error)
+	) (*models.AuthTokens, error)
 
 	// Magic link methods
 	GenerateMagicLink(ctx context.Context, identifier, redirectURL string) (string, error)
-	VerifyMagicLink(ctx context.Context, token string) (*valueobjects.AuthTokens, error)
+	VerifyMagicLink(ctx context.Context, token string) (*models.AuthTokens, error)
 
 	// Session management
-	GetSessionByToken(ctx context.Context, accessToken string) (*entities.Session, error)
+	GetSessionByToken(ctx context.Context, accessToken string) (*models.Session, error)
 	DeleteSessionByID(ctx context.Context, sessionID uuid.UUID) error
 	DeleteAllUserSessions(ctx context.Context, sessionID uuid.UUID) error
 
@@ -56,11 +55,11 @@ type AuthService interface {
 		sessionID uuid.UUID,
 		provider string,
 		accessToken *string,
-	) (*entities.Account, error)
-	DeleteAccount(ctx context.Context, sessionID uuid.UUID) (*entities.Account, error)
+	) (*models.Account, error)
+	DeleteAccount(ctx context.Context, sessionID uuid.UUID) (*models.Account, error)
 	UpdateAccount(
 		ctx context.Context,
 		sessionID uuid.UUID,
 		updates map[string]any,
-	) (*entities.User, error)
+	) (*models.User, error)
 }

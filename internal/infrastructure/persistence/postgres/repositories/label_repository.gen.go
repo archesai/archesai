@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresLabelRepository(db *pgxpool.Pool) *PostgresLabelRepository {
 // Label operations
 
 // Create creates a new label
-func (r *PostgresLabelRepository) Create(ctx context.Context, entity *entities.Label) (*entities.Label, error) {
+func (r *PostgresLabelRepository) Create(ctx context.Context, entity *models.Label) (*models.Label, error) {
 	params := CreateLabelParams{
 		ID:             entity.ID,
 		Name:           entity.Name,
@@ -46,7 +46,7 @@ func (r *PostgresLabelRepository) Create(ctx context.Context, entity *entities.L
 }
 
 // Get retrieves a label by ID
-func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Label, error) {
+func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*models.Label, error) {
 	params := GetLabelParams{
 		ID: id,
 	}
@@ -63,7 +63,7 @@ func (r *PostgresLabelRepository) Get(ctx context.Context, id uuid.UUID) (*entit
 }
 
 // Update updates an existing label
-func (r *PostgresLabelRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Label) (*entities.Label, error) {
+func (r *PostgresLabelRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Label) (*models.Label, error) {
 
 	params := UpdateLabelParams{
 		ID:   id,
@@ -98,7 +98,7 @@ func (r *PostgresLabelRepository) Delete(ctx context.Context, id uuid.UUID) erro
 }
 
 // List returns a paginated list of labels
-func (r *PostgresLabelRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Label, int64, error) {
+func (r *PostgresLabelRepository) List(ctx context.Context, limit, offset int32) ([]*models.Label, int64, error) {
 	listParams := ListLabelsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -109,7 +109,7 @@ func (r *PostgresLabelRepository) List(ctx context.Context, limit, offset int32)
 		return nil, 0, fmt.Errorf("failed to list labels: %w", err)
 	}
 
-	items := make([]*entities.Label, len(results))
+	items := make([]*models.Label, len(results))
 	for i, result := range results {
 		items[i] = mapLabelFromDB(&result)
 	}
@@ -122,7 +122,7 @@ func (r *PostgresLabelRepository) List(ctx context.Context, limit, offset int32)
 }
 
 // ListLabelsByOrganization retrieves multiple Labels by organizationID
-func (r *PostgresLabelRepository) ListLabelsByOrganization(ctx context.Context, organizationID string) ([]*entities.Label, error) {
+func (r *PostgresLabelRepository) ListLabelsByOrganization(ctx context.Context, organizationID string) ([]*models.Label, error) {
 	params := ListLabelsByOrganizationParams{
 		OrganizationID: uuid.MustParse(organizationID),
 	}
@@ -134,7 +134,7 @@ func (r *PostgresLabelRepository) ListLabelsByOrganization(ctx context.Context, 
 		}
 		return nil, fmt.Errorf("failed to ListLabelsByOrganization: %w", err)
 	}
-	items := make([]*entities.Label, len(result))
+	items := make([]*models.Label, len(result))
 	for i, res := range result {
 		items[i] = mapLabelFromDB(&res)
 	}
@@ -143,7 +143,7 @@ func (r *PostgresLabelRepository) ListLabelsByOrganization(ctx context.Context, 
 }
 
 // GetLabelByName retrieves a single Label by name and organizationID
-func (r *PostgresLabelRepository) GetLabelByName(ctx context.Context, name string, organizationID string) (*entities.Label, error) {
+func (r *PostgresLabelRepository) GetLabelByName(ctx context.Context, name string, organizationID string) (*models.Label, error) {
 	params := GetLabelByNameParams{
 		Name:           name,
 		OrganizationID: uuid.MustParse(organizationID),
@@ -161,12 +161,12 @@ func (r *PostgresLabelRepository) GetLabelByName(ctx context.Context, name strin
 
 }
 
-func mapLabelFromDB(db *Label) *entities.Label {
+func mapLabelFromDB(db *Label) *models.Label {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.Label{
+	result := &models.Label{
 		ID:             db.ID,
 		CreatedAt:      db.CreatedAt,
 		UpdatedAt:      db.UpdatedAt,

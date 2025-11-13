@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-// Domain errors that can occur across all entities.
+// Domain errors that can occur across all models.
 var (
 	// ErrNotFound indicates that a requested entity was not found.
 	ErrNotFound = errors.New("entity not found")
@@ -210,4 +210,8 @@ var (
 	// APIKey errors
 	ErrAPIKeyNotFound = errors.New("api key not found")
 	ErrAPIKeyExists   = errors.New("api key already exists")
+
+	// Executor errors
+	ErrExecutorNotFound = errors.New("executor not found")
+	ErrExecutorExists   = errors.New("executor already exists")
 )

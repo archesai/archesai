@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteInvitationRepository(db *sql.DB) *SQLiteInvitationRepository {
 // Invitation operations
 
 // Create creates a new invitation
-func (r *SQLiteInvitationRepository) Create(ctx context.Context, invitation *entities.Invitation) (*entities.Invitation, error) {
+func (r *SQLiteInvitationRepository) Create(ctx context.Context, invitation *models.Invitation) (*models.Invitation, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per invitation
 	return nil, fmt.Errorf("CreateInvitation not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a invitation by ID
-func (r *SQLiteInvitationRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Invitation, error) {
+func (r *SQLiteInvitationRepository) Get(ctx context.Context, id uuid.UUID) (*models.Invitation, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per invitation
 	return nil, fmt.Errorf("GetInvitation not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing invitation
-func (r *SQLiteInvitationRepository) Update(ctx context.Context, id uuid.UUID, invitation *entities.Invitation) (*entities.Invitation, error) {
+func (r *SQLiteInvitationRepository) Update(ctx context.Context, id uuid.UUID, invitation *models.Invitation) (*models.Invitation, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per invitation
 	return nil, fmt.Errorf("UpdateInvitation not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteInvitationRepository) Delete(ctx context.Context, id uuid.UUID) e
 }
 
 // List returns a paginated list of invitations
-func (r *SQLiteInvitationRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Invitation, int64, error) {
+func (r *SQLiteInvitationRepository) List(ctx context.Context, limit, offset int32) ([]*models.Invitation, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per invitation
 	return nil, 0, fmt.Errorf("ListInvitations not yet implemented - requires custom mapping")
@@ -63,19 +63,19 @@ func (r *SQLiteInvitationRepository) List(ctx context.Context, limit, offset int
 // Additional methods
 
 // ListInvitationsByOrganization retrieves multiple invitations by organizationID
-func (r *SQLiteInvitationRepository) ListInvitationsByOrganization(ctx context.Context, organizationID string) ([]*entities.Invitation, error) {
+func (r *SQLiteInvitationRepository) ListInvitationsByOrganization(ctx context.Context, organizationID string) ([]*models.Invitation, error) {
 	// TODO: Implement ListInvitationsByOrganization
 	return nil, fmt.Errorf("ListInvitationsByOrganization not yet implemented - requires custom mapping")
 }
 
 // GetInvitationByEmail retrieves a single invitation by email and organizationID
-func (r *SQLiteInvitationRepository) GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*entities.Invitation, error) {
+func (r *SQLiteInvitationRepository) GetInvitationByEmail(ctx context.Context, email string, organizationID string) (*models.Invitation, error) {
 	// TODO: Implement GetInvitationByEmail
 	return nil, fmt.Errorf("GetInvitationByEmail not yet implemented - requires custom mapping")
 }
 
 // ListInvitationsByInviter retrieves multiple invitations by inviterID
-func (r *SQLiteInvitationRepository) ListInvitationsByInviter(ctx context.Context, inviterID string) ([]*entities.Invitation, error) {
+func (r *SQLiteInvitationRepository) ListInvitationsByInviter(ctx context.Context, inviterID string) ([]*models.Invitation, error) {
 	// TODO: Implement ListInvitationsByInviter
 	return nil, fmt.Errorf("ListInvitationsByInviter not yet implemented - requires custom mapping")
 }

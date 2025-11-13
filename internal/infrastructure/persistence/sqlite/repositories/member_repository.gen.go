@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteMemberRepository(db *sql.DB) *SQLiteMemberRepository {
 // Member operations
 
 // Create creates a new member
-func (r *SQLiteMemberRepository) Create(ctx context.Context, member *entities.Member) (*entities.Member, error) {
+func (r *SQLiteMemberRepository) Create(ctx context.Context, member *models.Member) (*models.Member, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per member
 	return nil, fmt.Errorf("CreateMember not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a member by ID
-func (r *SQLiteMemberRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Member, error) {
+func (r *SQLiteMemberRepository) Get(ctx context.Context, id uuid.UUID) (*models.Member, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per member
 	return nil, fmt.Errorf("GetMember not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing member
-func (r *SQLiteMemberRepository) Update(ctx context.Context, id uuid.UUID, member *entities.Member) (*entities.Member, error) {
+func (r *SQLiteMemberRepository) Update(ctx context.Context, id uuid.UUID, member *models.Member) (*models.Member, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per member
 	return nil, fmt.Errorf("UpdateMember not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteMemberRepository) Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // List returns a paginated list of members
-func (r *SQLiteMemberRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Member, int64, error) {
+func (r *SQLiteMemberRepository) List(ctx context.Context, limit, offset int32) ([]*models.Member, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per member
 	return nil, 0, fmt.Errorf("ListMembers not yet implemented - requires custom mapping")
@@ -63,19 +63,19 @@ func (r *SQLiteMemberRepository) List(ctx context.Context, limit, offset int32) 
 // Additional methods
 
 // ListMembersByOrganization retrieves multiple members by organizationID
-func (r *SQLiteMemberRepository) ListMembersByOrganization(ctx context.Context, organizationID string) ([]*entities.Member, error) {
+func (r *SQLiteMemberRepository) ListMembersByOrganization(ctx context.Context, organizationID string) ([]*models.Member, error) {
 	// TODO: Implement ListMembersByOrganization
 	return nil, fmt.Errorf("ListMembersByOrganization not yet implemented - requires custom mapping")
 }
 
 // ListMembersByUser retrieves multiple members by userID
-func (r *SQLiteMemberRepository) ListMembersByUser(ctx context.Context, userID string) ([]*entities.Member, error) {
+func (r *SQLiteMemberRepository) ListMembersByUser(ctx context.Context, userID string) ([]*models.Member, error) {
 	// TODO: Implement ListMembersByUser
 	return nil, fmt.Errorf("ListMembersByUser not yet implemented - requires custom mapping")
 }
 
 // GetMemberByUserAndOrganization retrieves a single member by userID and organizationID
-func (r *SQLiteMemberRepository) GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*entities.Member, error) {
+func (r *SQLiteMemberRepository) GetMemberByUserAndOrganization(ctx context.Context, userID string, organizationID string) (*models.Member, error) {
 	// TODO: Implement GetMemberByUserAndOrganization
 	return nil, fmt.Errorf("GetMemberByUserAndOrganization not yet implemented - requires custom mapping")
 }

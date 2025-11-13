@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -27,7 +27,7 @@ func NewGetCurrentUserQueryHandler(
 func (h *GetCurrentUserQueryHandler) Handle(
 	ctx context.Context,
 	query *GetCurrentUserQuery,
-) (*entities.User, error) {
+) (*models.User, error) {
 	// Get user by ID from session
 	user, err := h.userRepo.GetUserBySessionID(ctx, query.SessionID.String())
 	if err != nil {

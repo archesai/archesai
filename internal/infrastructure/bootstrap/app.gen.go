@@ -15,6 +15,7 @@ import (
 	apikeyCommands "github.com/archesai/archesai/internal/application/commands/apikey"
 	artifactCommands "github.com/archesai/archesai/internal/application/commands/artifact"
 	authCommands "github.com/archesai/archesai/internal/application/commands/auth"
+	executorCommands "github.com/archesai/archesai/internal/application/commands/executor"
 	invitationCommands "github.com/archesai/archesai/internal/application/commands/invitation"
 	labelCommands "github.com/archesai/archesai/internal/application/commands/label"
 	memberCommands "github.com/archesai/archesai/internal/application/commands/member"
@@ -27,6 +28,7 @@ import (
 	artifactQueries "github.com/archesai/archesai/internal/application/queries/artifact"
 	authQueries "github.com/archesai/archesai/internal/application/queries/auth"
 	configQueries "github.com/archesai/archesai/internal/application/queries/config"
+	executorQueries "github.com/archesai/archesai/internal/application/queries/executor"
 	healthQueries "github.com/archesai/archesai/internal/application/queries/health"
 	invitationQueries "github.com/archesai/archesai/internal/application/queries/invitation"
 	labelQueries "github.com/archesai/archesai/internal/application/queries/label"
@@ -39,6 +41,7 @@ import (
 	"github.com/archesai/archesai/internal/infrastructure/auth"
 	"github.com/archesai/archesai/internal/infrastructure/cache"
 	"github.com/archesai/archesai/internal/infrastructure/config"
+	"github.com/archesai/archesai/internal/infrastructure/executor"
 	"github.com/archesai/archesai/internal/infrastructure/notifications"
 	database "github.com/archesai/archesai/internal/infrastructure/persistence"
 )
@@ -57,6 +60,7 @@ type App struct {
 	APIKeyController       *controllers.APIKeyController
 	ArtifactController     *controllers.ArtifactController
 	ConfigController       *controllers.ConfigController
+	ExecutorController     *controllers.ExecutorController
 	HealthController       *controllers.HealthController
 	InvitationController   *controllers.InvitationController
 	LabelController        *controllers.LabelController
@@ -193,6 +197,61 @@ func NewApp(cfg *config.Config) (*App, error) {
 		)
 
 		slog.Info("auth domain ready")
+		return nil
+	})
+
+	// Initialize executor domain (needs ExecutorService for execution)
+	g.Go(func() error {
+		slog.Info("initializing executor domain")
+
+		// Create executor service
+		executorBuilder, err := executor.NewBuilder()
+		if err != nil {
+			return fmt.Errorf("failed to create executor builder: %w", err)
+		}
+		infra.ExecutorService = executor.NewExecutorService[map[string]any, map[string]any](
+			repos.Executors,
+			executorBuilder,
+		)
+
+		// Create command handlers
+		createExecutorHandler := executorCommands.NewCreateExecutorCommandHandler(
+			repos.Executors,
+			infra.EventPublisher,
+		)
+		deleteExecutorHandler := executorCommands.NewDeleteExecutorCommandHandler(
+			repos.Executors,
+			infra.EventPublisher,
+		)
+		executeExecutorHandler := executorCommands.NewExecuteExecutorCommandHandler(
+			repos.Executors,
+			infra.ExecutorService,
+			infra.EventPublisher,
+		)
+		updateExecutorHandler := executorCommands.NewUpdateExecutorCommandHandler(
+			repos.Executors,
+			infra.EventPublisher,
+		)
+
+		// Create query handlers
+		getExecutorHandler := executorQueries.NewGetExecutorQueryHandler(
+			repos.Executors,
+		)
+		listExecutorsHandler := executorQueries.NewListExecutorsQueryHandler(
+			repos.Executors,
+		)
+
+		// Create controller with handlers (matching the controller constructor order)
+		app.ExecutorController = controllers.NewExecutorController(
+			createExecutorHandler,
+			executeExecutorHandler,
+			updateExecutorHandler,
+			deleteExecutorHandler,
+			getExecutorHandler,
+			listExecutorsHandler,
+		)
+
+		slog.Info("executor domain ready")
 		return nil
 	})
 
@@ -637,6 +696,9 @@ func (a *App) RegisterRoutes(mux *http.ServeMux) {
 	// config routes
 	slog.Info("registering config routes")
 	controllers.RegisterConfigRoutes(mux, a.ConfigController)
+	// executor routes
+	slog.Info("registering executor routes")
+	controllers.RegisterExecutorRoutes(mux, a.ExecutorController)
 	// health routes
 	slog.Info("registering health routes")
 	controllers.RegisterHealthRoutes(mux, a.HealthController)

@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -30,7 +30,7 @@ func NewPostgresSessionRepository(db *pgxpool.Pool) *PostgresSessionRepository {
 // Session operations
 
 // Create creates a new session
-func (r *PostgresSessionRepository) Create(ctx context.Context, entity *entities.Session) (*entities.Session, error) {
+func (r *PostgresSessionRepository) Create(ctx context.Context, entity *models.Session) (*models.Session, error) {
 	params := CreateSessionParams{
 		ID:         entity.ID,
 		AuthMethod: entity.AuthMethod,
@@ -58,7 +58,7 @@ func (r *PostgresSessionRepository) Create(ctx context.Context, entity *entities
 }
 
 // Get retrieves a session by ID
-func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Session, error) {
+func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*models.Session, error) {
 	params := GetSessionParams{
 		ID: id,
 	}
@@ -75,7 +75,7 @@ func (r *PostgresSessionRepository) Get(ctx context.Context, id uuid.UUID) (*ent
 }
 
 // Update updates an existing session
-func (r *PostgresSessionRepository) Update(ctx context.Context, id uuid.UUID, entity *entities.Session) (*entities.Session, error) {
+func (r *PostgresSessionRepository) Update(ctx context.Context, id uuid.UUID, entity *models.Session) (*models.Session, error) {
 
 	params := UpdateSessionParams{
 		ID:         id,
@@ -119,7 +119,7 @@ func (r *PostgresSessionRepository) Delete(ctx context.Context, id uuid.UUID) er
 }
 
 // List returns a paginated list of sessions
-func (r *PostgresSessionRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Session, int64, error) {
+func (r *PostgresSessionRepository) List(ctx context.Context, limit, offset int32) ([]*models.Session, int64, error) {
 	listParams := ListSessionsParams{
 		Limit:  limit,
 		Offset: offset,
@@ -130,7 +130,7 @@ func (r *PostgresSessionRepository) List(ctx context.Context, limit, offset int3
 		return nil, 0, fmt.Errorf("failed to list sessions: %w", err)
 	}
 
-	items := make([]*entities.Session, len(results))
+	items := make([]*models.Session, len(results))
 	for i, result := range results {
 		items[i] = mapSessionFromDB(&result)
 	}
@@ -142,21 +142,21 @@ func (r *PostgresSessionRepository) List(ctx context.Context, limit, offset int3
 	return items, count, nil
 }
 
-func mapSessionFromDB(db *Session) *entities.Session {
+func mapSessionFromDB(db *Session) *models.Session {
 	if db == nil {
 		return nil
 	}
 
-	result := &entities.Session{
+	result := &models.Session{
 		ID:         db.ID,
 		CreatedAt:  db.CreatedAt,
 		UpdatedAt:  db.UpdatedAt,
 		AuthMethod: db.AuthMethod,
-		AuthProvider: func() *entities.SessionAuthProvider {
+		AuthProvider: func() *models.SessionAuthProvider {
 			if db.AuthProvider == nil {
 				return nil
 			}
-			v := entities.SessionAuthProvider(*db.AuthProvider)
+			v := models.SessionAuthProvider(*db.AuthProvider)
 			return &v
 		}(),
 		ExpiresAt:      db.ExpiresAt,

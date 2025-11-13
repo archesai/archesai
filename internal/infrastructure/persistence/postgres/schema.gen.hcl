@@ -1,52 +1,64 @@
 table "account" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "access_token" {
     null = true
     type = sql("text")
   }
+
   column "access_token_expires_at" {
     null = true
     type = sql("timestamptz")
   }
+
   column "account_identifier" {
     null = false
     type = sql("text")
   }
+
   column "id_token" {
     null = true
     type = sql("text")
   }
+
   column "provider" {
     null = false
     type = sql("text")
   }
+
   column "refresh_token" {
     null = true
     type = sql("text")
   }
+
   column "refresh_token_expires_at" {
     null = true
     type = sql("timestamptz")
   }
+
   column "scope" {
     null = true
     type = sql("text")
   }
+
   column "user_id" {
     null = false
     type = sql("uuid")
@@ -70,55 +82,67 @@ table "account" {
 
 table "api_key" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "expires_at" {
     null = true
     type = sql("timestamptz")
   }
+
   column "key_hash" {
     null = false
     type = sql("text")
   }
+
   column "last_used_at" {
     null = true
     type = sql("timestamptz")
   }
+
   column "name" {
     null = true
     type = sql("text")
   }
+
   column "organization_id" {
     null = false
     type = sql("uuid")
   }
+
   column "prefix" {
     null = true
     type = sql("text")
   }
+
   column "rate_limit" {
     null    = false
     type    = sql("integer")
     default = 60
   }
+
   column "scopes" {
     null    = false
     type    = sql("text[]")
     default = "{}"
   }
+
   column "user_id" {
     null = false
     type = sql("uuid")
@@ -154,55 +178,67 @@ table "api_key" {
 
 table "artifact" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "credits" {
     null    = false
     type    = sql("integer")
     default = 0
   }
+
   column "description" {
     null = true
     type = sql("text")
   }
+
   column "mime_type" {
     null    = false
     type    = sql("text")
     default = "application/octet-stream"
   }
+
   column "name" {
     null = true
     type = sql("text")
   }
+
   column "organization_id" {
     null = false
     type = sql("uuid")
   }
+
   column "preview_image" {
     null = true
     type = sql("text")
   }
+
   column "producer_id" {
     null = true
     type = sql("uuid")
   }
+
   column "text" {
     null = true
     type = sql("text")
   }
+
   column "url" {
     null = true
     type = sql("text")
@@ -230,44 +266,173 @@ table "artifact" {
   }
 }
 
-table "invitation" {
+table "executor" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
-  column "email" {
+
+  column "cpu_shares" {
+    null    = false
+    type    = sql("integer")
+    default = 512
+  }
+
+  column "dependencies" {
+    null = true
+    type = sql("text")
+  }
+
+  column "description" {
     null = false
     type = sql("text")
   }
-  column "expires_at" {
-    null = false
-    type = sql("timestamptz")
+
+  column "env" {
+    null = true
+    type = sql("text")
   }
-  column "inviter_id" {
+
+  column "execute_code" {
     null = false
-    type = sql("uuid")
+    type = sql("text")
   }
+
+  column "extra_files" {
+    null = true
+    type = sql("text")
+  }
+
+  column "is_active" {
+    null    = false
+    type    = sql("boolean")
+    default = true
+  }
+
+  column "language" {
+    null = false
+    type = sql("text")
+  }
+
+  column "memory_mb" {
+    null    = false
+    type    = sql("integer")
+    default = 256
+  }
+
+  column "name" {
+    null = false
+    type = sql("text")
+  }
+
   column "organization_id" {
     null = false
     type = sql("uuid")
   }
+
+  column "schema_in" {
+    null = true
+    type = sql("text")
+  }
+
+  column "schema_out" {
+    null = true
+    type = sql("text")
+  }
+
+  column "timeout" {
+    null    = false
+    type    = sql("integer")
+    default = 30
+  }
+
+  column "version" {
+    null    = false
+    type    = sql("integer")
+    default = 1
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  foreign_key "executor_organization_id_fkey" {
+    columns     = [column.organization_id]
+    ref_columns = [table.organization.column.id]
+    on_update   = "CASCADE"
+    on_delete   = "CASCADE"
+  }
+  index "idx_executor_language" {
+    columns = [column.language]
+  }
+  index "idx_executor_organization_id" {
+    columns = [column.organization_id]
+  }
+  check "executor_language_check" {
+    expr = "(language = ANY (ARRAY['nodejs'::text, 'python'::text, 'go'::text]))"
+  }
+}
+
+table "invitation" {
+  schema = schema.public
+
+  column "id" {
+    null    = false
+    type    = sql("uuid")
+    default = sql("gen_random_uuid()")
+  }
+
+  column "created_at" {
+    null    = false
+    type    = sql("timestamptz")
+    default = sql("CURRENT_TIMESTAMP")
+  }
+
+  column "updated_at" {
+    null    = false
+    type    = sql("timestamptz")
+    default = sql("CURRENT_TIMESTAMP")
+  }
+
+  column "email" {
+    null = false
+    type = sql("text")
+  }
+
+  column "expires_at" {
+    null = false
+    type = sql("timestamptz")
+  }
+
+  column "inviter_id" {
+    null = false
+    type = sql("uuid")
+  }
+
+  column "organization_id" {
+    null = false
+    type = sql("uuid")
+  }
+
   column "role" {
     null    = false
     type    = sql("text")
     default = "basic"
   }
+
   column "status" {
     null    = false
     type    = sql("text")
@@ -304,25 +469,30 @@ table "invitation" {
 
 table "label" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "name" {
     null = false
     type = sql("text")
   }
+
   column "organization_id" {
     null = false
     type = sql("uuid")
@@ -346,30 +516,36 @@ table "label" {
 
 table "member" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "organization_id" {
     null = false
     type = sql("uuid")
   }
+
   column "role" {
     null    = false
     type    = sql("text")
     default = "basic"
   }
+
   column "user_id" {
     null = false
     type = sql("uuid")
@@ -402,57 +578,63 @@ table "member" {
 
 table "organization" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "billing_email" {
     null = true
     type = sql("text")
   }
+
   column "credits" {
     null    = false
     type    = sql("integer")
     default = 0
   }
+
   column "logo" {
     null = true
     type = sql("text")
   }
+
   column "name" {
     null = false
     type = sql("text")
   }
+
   column "plan" {
     null    = false
     type    = sql("text")
     default = "FREE"
   }
+
   column "slug" {
     null = false
     type = sql("text")
   }
+
   column "stripe_customer_identifier" {
     null = false
     type = sql("text")
   }
   primary_key {
     columns = [column.id]
-  }
-  index "idx_organization_slug" {
-    unique  = true
-    columns = [column.slug]
   }
   check "organization_plan_check" {
     expr = "(plan = ANY (ARRAY['FREE'::text, 'BASIC'::text, 'STANDARD'::text, 'PREMIUM'::text, 'UNLIMITED'::text]))"
@@ -461,29 +643,35 @@ table "organization" {
 
 table "pipeline" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "description" {
     null = true
     type = sql("text")
   }
+
   column "name" {
     null = true
     type = sql("text")
   }
+
   column "organization_id" {
     null = false
     type = sql("uuid")
@@ -504,25 +692,30 @@ table "pipeline" {
 
 table "pipeline_step" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "pipeline_id" {
     null = false
     type = sql("uuid")
   }
+
   column "tool_id" {
     null = false
     type = sql("uuid")
@@ -534,51 +727,62 @@ table "pipeline_step" {
 
 table "run" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "completed_at" {
     null = true
     type = sql("timestamptz")
   }
+
   column "error" {
     null = true
     type = sql("text")
   }
+
   column "organization_id" {
     null = false
     type = sql("uuid")
   }
+
   column "pipeline_id" {
     null = false
     type = sql("uuid")
   }
+
   column "progress" {
     null    = false
     type    = sql("integer")
     default = 0
   }
+
   column "started_at" {
     null = true
     type = sql("timestamptz")
   }
+
   column "status" {
     null    = false
     type    = sql("text")
     default = "QUEUED"
   }
+
   column "tool_id" {
     null = false
     type = sql("uuid")
@@ -620,49 +824,60 @@ table "run" {
 
 table "session" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "auth_method" {
     null = true
     type = sql("text")
   }
+
   column "auth_provider" {
     null = true
     type = sql("text")
   }
+
   column "expires_at" {
     null = false
     type = sql("timestamptz")
   }
+
   column "ip_address" {
     null = true
     type = sql("text")
   }
+
   column "organization_id" {
     null = true
     type = sql("uuid")
   }
+
   column "token" {
     null = false
     type = sql("text")
   }
+
   column "user_agent" {
     null = true
     type = sql("text")
   }
+
   column "user_id" {
     null = false
     type = sql("uuid")
@@ -676,6 +891,9 @@ table "session" {
     on_update   = "NO_ACTION"
     on_delete   = "CASCADE"
   }
+  index "idx_session_token" {
+    columns = [column.token]
+  }
   index "idx_session_user_id" {
     columns = [column.user_id]
   }
@@ -686,38 +904,46 @@ table "session" {
 
 table "tool" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "description" {
     null = false
     type = sql("text")
   }
+
   column "input_mime_type" {
     null    = false
     type    = sql("text")
     default = "application/octet-stream"
   }
+
   column "name" {
     null = false
     type = sql("text")
   }
+
   column "organization_id" {
     null = false
     type = sql("uuid")
   }
+
   column "output_mime_type" {
     null    = false
     type    = sql("text")
@@ -739,34 +965,41 @@ table "tool" {
 
 table "user" {
   schema = schema.public
+
   column "id" {
     null    = false
     type    = sql("uuid")
     default = sql("gen_random_uuid()")
   }
+
   column "created_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "updated_at" {
     null    = false
     type    = sql("timestamptz")
     default = sql("CURRENT_TIMESTAMP")
   }
+
   column "email" {
     null = false
     type = sql("text")
   }
+
   column "email_verified" {
     null    = false
     type    = sql("boolean")
     default = false
   }
+
   column "image" {
     null = true
     type = sql("text")
   }
+
   column "name" {
     null = false
     type = sql("text")

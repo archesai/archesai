@@ -1,13 +1,8 @@
 description: Schema for User entity
 title: User
+x-codegen-schema-type: entity
 x-codegen:
-  schemaType: entity
   repository:
-    operations:
-      - read
-      - update
-      - delete
-      - list
     indices:
       - email
     additionalMethods:

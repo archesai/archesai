@@ -23,19 +23,17 @@ const (
 
 // Generator handles code generation from OpenAPI specifications
 type Generator struct {
-	templates        map[string]*template.Template
-	filewriter       *FileWriter
-	openAPIParser    *parsers.OpenAPIParser
-	jsonSchemaParser *parsers.JSONSchemaParser
+	templates  map[string]*template.Template
+	filewriter *FileWriter
+	parser     *parsers.OpenAPIParser
 }
 
 // NewGenerator creates a new code generator instance
 func NewGenerator() *Generator {
 	return &Generator{
-		templates:        nil,
-		filewriter:       nil,
-		openAPIParser:    parsers.NewOpenAPIParser(),
-		jsonSchemaParser: parsers.NewJSONSchemaParser(),
+		templates:  nil,
+		filewriter: nil,
+		parser:     parsers.NewOpenAPIParser(),
 	}
 }
 
@@ -61,25 +59,17 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 
 	// Phase 1: Parse OpenAPI spec (must be done first)
 	slog.Info(
-		"Parsing OpenAPI specification",
+		"Parsing OpenAPI",
 		slog.String("path", specPath),
 	)
-	openAPISchema, err := g.openAPIParser.Parse(specPath)
+	_, err := g.parser.ParseFile(specPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse OpenAPI spec: %w", err)
 	}
 
-	// Set up the JSON schema parser with the OpenAPI document context
-	g.jsonSchemaParser.WithOpenAPIDoc(openAPISchema)
-
-	operations, err := parsers.ExtractOperations(openAPISchema)
+	operations, schemas, err := g.parser.Extract()
 	if err != nil {
-		return "", fmt.Errorf("failed to process operations: %w", err)
-	}
-
-	schemas, err := parsers.ExtractComponentSchemas(openAPISchema)
-	if err != nil {
-		return "", fmt.Errorf("failed to process schemas: %w", err)
+		return "", fmt.Errorf("failed to extraact definitions from openapi schema: %w", err)
 	}
 
 	slog.Info("Initialized state",
@@ -223,23 +213,19 @@ func (g *Generator) GenerateJSONSchema(specPath string, outputDir string) (strin
 	totalStart := time.Now()
 
 	slog.Info(
-		"Parsing JSONSchema specification",
+		"Parsing JSONSchema",
 		slog.String("path", specPath),
 	)
-	jsonSchema, err := g.jsonSchemaParser.Parse(specPath)
+	jsonSchemaParser := parsers.NewJSONSchemaParser(nil)
+	schema, err := jsonSchemaParser.ParseFile(specPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse JSONSchema spec: %w", err)
-	}
-
-	schema, err := g.jsonSchemaParser.ExtractSchema(jsonSchema, nil, "")
-	if err != nil {
-		return "", fmt.Errorf("failed to extract schema definition: %w", err)
 	}
 
 	// Buffer to collect all output
 	var output bytes.Buffer
 
-	if err := g.generateModel(schema, &outputDir); err != nil {
+	if err := g.generateSchema(schema, &outputDir); err != nil {
 		return "", fmt.Errorf("failed to generate models: %w", err)
 	}
 

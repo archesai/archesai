@@ -6,6 +6,14 @@ import (
 	"time"
 )
 
+type ExecutorLanguage string
+
+const (
+	ExecutorLanguagePython ExecutorLanguage = "python"
+	ExecutorLanguageGo     ExecutorLanguage = "go"
+	ExecutorLanguageNodejs ExecutorLanguage = "node"
+)
+
 // Executor is a generic interface for executing functions that transform input A to output B
 type Executor[A any, B any] interface {
 	// Execute runs the executor with the given input and returns the output or an error

@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/entities"
 	"github.com/archesai/archesai/internal/core/events"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/repositories"
 )
 
@@ -55,7 +55,7 @@ func NewUpdateUserCommandHandler(
 }
 
 // Handle executes the update user command.
-func (h *UpdateUserCommandHandler) Handle(ctx context.Context, cmd *UpdateUserCommand) (*entities.User, error) {
+func (h *UpdateUserCommandHandler) Handle(ctx context.Context, cmd *UpdateUserCommand) (*models.User, error) {
 	// Fetch existing user
 	existing, err := h.repo.Get(ctx, cmd.ID)
 	if err != nil {

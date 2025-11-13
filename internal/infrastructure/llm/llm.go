@@ -3,8 +3,8 @@ package llm
 import (
 	"context"
 
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/archesai/archesai/internal/core/services"
-	"github.com/archesai/archesai/internal/core/valueobjects"
 )
 
 // LLM defines the interface that all LLM providers must implement.
@@ -12,11 +12,11 @@ import (
 type LLM interface {
 	CreateChatCompletion(
 		ctx context.Context,
-		req valueobjects.ChatCompletionRequest,
-	) (valueobjects.ChatCompletionResponse, error)
+		req models.ChatCompletionRequest,
+	) (models.ChatCompletionResponse, error)
 	CreateChatCompletionStream(
 		ctx context.Context,
-		req valueobjects.ChatCompletionRequest,
+		req models.ChatCompletionRequest,
 	) (ChatCompletionStream, error)
 }
 

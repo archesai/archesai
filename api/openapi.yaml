@@ -52,6 +52,8 @@ tags:
     description: API token management
   - name: Tool
     description: Tool management
+  - name: Executor
+    description: Custom executor management
   - name: User
     description: User profile management
 paths:
@@ -131,6 +133,12 @@ paths:
     $ref: paths/tools.yaml
   /tools/{id}:
     $ref: paths/tools_id.yaml
+  /executors:
+    $ref: paths/executors.yaml
+  /executors/{id}:
+    $ref: paths/executors_id.yaml
+  /executors/{id}/execute:
+    $ref: paths/executors_id_execute.yaml
   /artifacts:
     $ref: paths/artifacts.yaml
   /artifacts/{id}:

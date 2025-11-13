@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteLabelRepository(db *sql.DB) *SQLiteLabelRepository {
 // Label operations
 
 // Create creates a new label
-func (r *SQLiteLabelRepository) Create(ctx context.Context, label *entities.Label) (*entities.Label, error) {
+func (r *SQLiteLabelRepository) Create(ctx context.Context, label *models.Label) (*models.Label, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per label
 	return nil, fmt.Errorf("CreateLabel not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a label by ID
-func (r *SQLiteLabelRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Label, error) {
+func (r *SQLiteLabelRepository) Get(ctx context.Context, id uuid.UUID) (*models.Label, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per label
 	return nil, fmt.Errorf("GetLabel not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing label
-func (r *SQLiteLabelRepository) Update(ctx context.Context, id uuid.UUID, label *entities.Label) (*entities.Label, error) {
+func (r *SQLiteLabelRepository) Update(ctx context.Context, id uuid.UUID, label *models.Label) (*models.Label, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per label
 	return nil, fmt.Errorf("UpdateLabel not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteLabelRepository) Delete(ctx context.Context, id uuid.UUID) error 
 }
 
 // List returns a paginated list of labels
-func (r *SQLiteLabelRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Label, int64, error) {
+func (r *SQLiteLabelRepository) List(ctx context.Context, limit, offset int32) ([]*models.Label, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per label
 	return nil, 0, fmt.Errorf("ListLabels not yet implemented - requires custom mapping")
@@ -63,13 +63,13 @@ func (r *SQLiteLabelRepository) List(ctx context.Context, limit, offset int32) (
 // Additional methods
 
 // ListLabelsByOrganization retrieves multiple labels by organizationID
-func (r *SQLiteLabelRepository) ListLabelsByOrganization(ctx context.Context, organizationID string) ([]*entities.Label, error) {
+func (r *SQLiteLabelRepository) ListLabelsByOrganization(ctx context.Context, organizationID string) ([]*models.Label, error) {
 	// TODO: Implement ListLabelsByOrganization
 	return nil, fmt.Errorf("ListLabelsByOrganization not yet implemented - requires custom mapping")
 }
 
 // GetLabelByName retrieves a single label by name and organizationID
-func (r *SQLiteLabelRepository) GetLabelByName(ctx context.Context, name string, organizationID string) (*entities.Label, error) {
+func (r *SQLiteLabelRepository) GetLabelByName(ctx context.Context, name string, organizationID string) (*models.Label, error) {
 	// TODO: Implement GetLabelByName
 	return nil, fmt.Errorf("GetLabelByName not yet implemented - requires custom mapping")
 }

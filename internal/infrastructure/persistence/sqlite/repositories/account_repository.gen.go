@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/core/entities"
+	"github.com/archesai/archesai/internal/core/models"
 	"github.com/google/uuid"
 )
 
@@ -26,21 +26,21 @@ func NewSQLiteAccountRepository(db *sql.DB) *SQLiteAccountRepository {
 // Account operations
 
 // Create creates a new account
-func (r *SQLiteAccountRepository) Create(ctx context.Context, account *entities.Account) (*entities.Account, error) {
+func (r *SQLiteAccountRepository) Create(ctx context.Context, account *models.Account) (*models.Account, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per account
 	return nil, fmt.Errorf("CreateAccount not yet implemented - requires custom mapping")
 }
 
 // Get retrieves a account by ID
-func (r *SQLiteAccountRepository) Get(ctx context.Context, id uuid.UUID) (*entities.Account, error) {
+func (r *SQLiteAccountRepository) Get(ctx context.Context, id uuid.UUID) (*models.Account, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per account
 	return nil, fmt.Errorf("GetAccount not yet implemented - requires custom mapping")
 }
 
 // Update updates an existing account
-func (r *SQLiteAccountRepository) Update(ctx context.Context, id uuid.UUID, account *entities.Account) (*entities.Account, error) {
+func (r *SQLiteAccountRepository) Update(ctx context.Context, id uuid.UUID, account *models.Account) (*models.Account, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per account
 	return nil, fmt.Errorf("UpdateAccount not yet implemented - requires custom mapping")
@@ -54,7 +54,7 @@ func (r *SQLiteAccountRepository) Delete(ctx context.Context, id uuid.UUID) erro
 }
 
 // List returns a paginated list of accounts
-func (r *SQLiteAccountRepository) List(ctx context.Context, limit, offset int32) ([]*entities.Account, int64, error) {
+func (r *SQLiteAccountRepository) List(ctx context.Context, limit, offset int32) ([]*models.Account, int64, error) {
 	// For now, return a basic implementation
 	// Actual implementation would need to be customized per account
 	return nil, 0, fmt.Errorf("ListAccounts not yet implemented - requires custom mapping")
@@ -63,13 +63,13 @@ func (r *SQLiteAccountRepository) List(ctx context.Context, limit, offset int32)
 // Additional methods
 
 // GetAccountByProvider retrieves a single account by provider and accountIdentifier
-func (r *SQLiteAccountRepository) GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*entities.Account, error) {
+func (r *SQLiteAccountRepository) GetAccountByProvider(ctx context.Context, provider string, accountIdentifier string) (*models.Account, error) {
 	// TODO: Implement GetAccountByProvider
 	return nil, fmt.Errorf("GetAccountByProvider not yet implemented - requires custom mapping")
 }
 
 // ListAccountsByUserID retrieves multiple accounts by userID
-func (r *SQLiteAccountRepository) ListAccountsByUserID(ctx context.Context, userID string) ([]*entities.Account, error) {
+func (r *SQLiteAccountRepository) ListAccountsByUserID(ctx context.Context, userID string) ([]*models.Account, error) {
 	// TODO: Implement ListAccountsByUserID
 	return nil, fmt.Errorf("ListAccountsByUserID not yet implemented - requires custom mapping")
 }

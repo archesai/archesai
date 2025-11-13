@@ -8,26 +8,26 @@
 package config
 
 import (
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // Config is the main application configuration structure
-type Config = valueobjects.Config
+type Config = models.Config
 
 // Type aliases for convenience - avoiding stuttering names
 type (
 	// API configuration
-	API = valueobjects.APIConfig
+	API = models.APIConfig
 	// Auth configuration
-	Auth = valueobjects.AuthConfig
+	Auth = models.AuthConfig
 	// AuthLocal configuration
-	AuthLocal = valueobjects.LocalAuthConfig
+	AuthLocal = models.LocalAuthConfig
 	// Database configuration
-	Database = valueobjects.DatabaseConfig
+	Database = models.DatabaseConfig
 	// Redis configuration
-	Redis = valueobjects.RedisConfig
+	Redis = models.RedisConfig
 	// Logging configuration
-	Logging = valueobjects.LoggingConfig
+	Logging = models.LoggingConfig
 )
 
 // Configuration constants.

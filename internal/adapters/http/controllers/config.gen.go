@@ -9,7 +9,7 @@ import (
 
 	"github.com/archesai/archesai/internal/adapters/http/server"
 	queries "github.com/archesai/archesai/internal/application/queries/config"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // ConfigController handles HTTP requests for config endpoints.
@@ -47,7 +47,7 @@ type GetConfigResponse interface {
 }
 
 type GetConfig200Response struct {
-	Data valueobjects.Config `json:"data,omitempty"`
+	Data models.Config `json:"data,omitempty"`
 }
 
 func (response GetConfig200Response) VisitGetConfigResponse(w http.ResponseWriter) error {

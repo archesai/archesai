@@ -22,7 +22,7 @@ type HCLTemplateData struct {
 func (g *Generator) GenerateHCL(schemas []*parsers.SchemaDef) error {
 	var entities []*parsers.SchemaDef
 	for _, schema := range schemas {
-		if schema.GetSchemaType() == "entity" {
+		if schema.XCodegenSchemaType == "entity" {
 			entities = append(entities, schema)
 		}
 	}

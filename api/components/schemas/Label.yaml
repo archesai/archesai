@@ -1,14 +1,8 @@
 title: Label
 description: Schema for Label entity
+x-codegen-schema-type: entity
 x-codegen:
-  schemaType: entity
   repository:
-    operations:
-      - create
-      - read
-      - update
-      - delete
-      - list
     excludeFromUpdate:
       - OrganizationID
     indices:

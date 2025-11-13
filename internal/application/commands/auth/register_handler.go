@@ -6,7 +6,7 @@ import (
 
 	"github.com/archesai/archesai/internal/core/repositories"
 	"github.com/archesai/archesai/internal/core/services"
-	"github.com/archesai/archesai/internal/core/valueobjects"
+	"github.com/archesai/archesai/internal/core/models"
 )
 
 // RegisterCommandHandler handles registration commands.
@@ -33,7 +33,7 @@ func NewRegisterCommandHandler(
 func (h *RegisterCommandHandler) Handle(
 	ctx context.Context,
 	cmd *RegisterCommand,
-) (*valueobjects.AuthTokens, error) {
+) (*models.AuthTokens, error) {
 	if cmd.Email == "" {
 		return nil, fmt.Errorf("email is required")
 	}

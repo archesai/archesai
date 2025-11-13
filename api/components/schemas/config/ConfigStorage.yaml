@@ -56,6 +56,5 @@ required:
   - endpoint
   - secretkey
 additionalProperties: false
-x-codegen:
-  schemaType: valueobject
+x-codegen-schema-type: valueobject
 title: StorageConfig
