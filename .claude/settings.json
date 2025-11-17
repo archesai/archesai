@@ -22,8 +22,6 @@
       "Bash(sed:*)",
       "Bash(make lint:*)",
       "Bash(make lint-go:*)",
-      "Bash(go run:*)",
-      "Bash(go build:*)",
       "Bash(find:*)",
       "Bash(go test:*)",
       "Bash(gofmt:*)",
@@ -32,8 +30,6 @@
       "Bash(make migrate:*)",
       "Bash(make clean-generated:*)",
       "Bash(make test-short:*)",
-      "Bash(awk:*)",
-      "Bash(xargs:*)",
       "Bash(cp:*)",
       "Bash(make test:*)"
     ],
