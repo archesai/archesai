@@ -13,8 +13,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/models"
-	"github.com/archesai/archesai/internal/core/repositories"
+	"{{ .OutputPath }}/generated/core/models"
+	"{{ .OutputPath }}/generated/core/repositories"
 )
 
 // {{ .Operation.ID }}Query represents a query to {{ lower .Operation.Method }} {{ lower .Operation.Tag }}{{ if eq .Operation.Method "List" }}s{{ end }}.

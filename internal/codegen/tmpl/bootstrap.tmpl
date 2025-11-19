@@ -18,31 +18,41 @@ package bootstrap
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"net/http"
-	"time"
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/archesai/archesai/internal/adapters/http/controllers"
-	"github.com/archesai/archesai/internal/adapters/http/server"
+	"{{ .OutputPath }}/generated/adapters/http/controllers"
 {{- range .Domains }}
 {{- if .HasCommands }}
-	{{ lower .Name }}Commands "github.com/archesai/archesai/internal/application/commands/{{ lower .Name }}"
+	{{ lower .Name }}Commands "{{ $.OutputPath }}/generated/application/commands/{{ lower .Name }}"
 {{- end }}
 {{- if .HasQueries }}
-	{{ lower .Name }}Queries "github.com/archesai/archesai/internal/application/queries/{{ lower .Name }}"
+	{{ lower .Name }}Queries "{{ $.OutputPath }}/generated/application/queries/{{ lower .Name }}"
 {{- end }}
 {{- end }}
-	authCommands "github.com/archesai/archesai/internal/application/commands/auth"
-	authQueries "github.com/archesai/archesai/internal/application/queries/auth"
-	configQueries "github.com/archesai/archesai/internal/application/queries/config"
-	healthQueries "github.com/archesai/archesai/internal/application/queries/health"
-	"github.com/archesai/archesai/internal/infrastructure/auth"
-	"github.com/archesai/archesai/internal/infrastructure/cache"
-	"github.com/archesai/archesai/internal/infrastructure/config"
-	"github.com/archesai/archesai/internal/infrastructure/notifications"
-	database "github.com/archesai/archesai/internal/infrastructure/persistence"
+	"{{ .OutputPath }}/generated/core/models"
+	"github.com/archesai/archesai/pkg/executor"
+	"github.com/archesai/archesai/pkg/server"
+
+	// Custom handlers for specific domains
+	authHandlers "github.com/archesai/archesai/apis/studio/handlers/auth"
+	configHandlers "github.com/archesai/archesai/apis/studio/handlers/config"
+	executorHandlers "github.com/archesai/archesai/apis/studio/handlers/executor"
+	healthHandlers "github.com/archesai/archesai/apis/studio/handlers/health"
+	pipelineHandlers "github.com/archesai/archesai/apis/studio/handlers/pipeline"
+	userHandlers "github.com/archesai/archesai/apis/studio/handlers/user"
+
+	// These are not in the loop above since they have custom handlers
+	authQueries "{{ .OutputPath }}/generated/application/queries/auth"
+	pgmigrations "{{ .OutputPath }}/generated/infrastructure/persistence/postgres"
+	sqlitemigrations "{{ .OutputPath }}/generated/infrastructure/persistence/sqlite"
+	"github.com/archesai/archesai/pkg/auth"
+	"github.com/archesai/archesai/pkg/cache"
+	"github.com/archesai/archesai/pkg/notifications"
+	database "github.com/archesai/archesai/pkg/persistence"
 )
 
 // App holds all application dependencies.
@@ -51,7 +61,7 @@ type App struct {
 	infra *Infrastructure
 
 	// Public infrastructure access
-	Config *config.Config
+	Config *models.Config
 	Server *server.Server
 
 	// HTTP Controllers
@@ -64,7 +74,7 @@ type App struct {
 }
 
 // NewApp creates and initializes all application dependencies.
-func NewApp(cfg *config.Config) (*App, error) {
+func NewApp(cfg *models.Config) (*App, error) {
 	// Initialize infrastructure
 	infra, err := NewInfrastructure(cfg)
 	if err != nil {
@@ -74,7 +84,19 @@ func NewApp(cfg *config.Config) (*App, error) {
 	// Run migrations if enabled
 	if cfg.Database.RunMigrations {
 		slog.Info("running database migrations")
-		if err := database.RunMigrations(infra.Database); err != nil {
+
+		// Select the appropriate migrations filesystem based on database type
+		var migrationsFS fs.FS
+		switch cfg.Database.Type {
+		case "postgres", "postgresql":
+			migrationsFS = pgmigrations.Migrations
+		case "sqlite":
+			migrationsFS = sqlitemigrations.Migrations
+		default:
+			return nil, fmt.Errorf("unsupported database type for migrations: %s", cfg.Database.Type)
+		}
+
+		if err := database.RunMigrations(infra.Database, migrationsFS); err != nil {
 			slog.Error("failed to run migrations", "error", err)
 			isProduction := cfg.API.Environment == "production"
 			if isProduction {
@@ -119,13 +141,13 @@ func NewApp(cfg *config.Config) (*App, error) {
 
 	// Initialize config domain (infrastructure query - needs special handling)
 	slog.Info("initializing config domain")
-	getConfigHandler := configQueries.NewGetConfigQueryHandler(cfg)
+	getConfigHandler := configHandlers.NewGetConfigQueryHandler(cfg)
 	app.ConfigController = controllers.NewConfigController(getConfigHandler)
 	slog.Info("config domain ready")
 
 	// Initialize health domain (infrastructure query - needs special handling)
 	slog.Info("initializing health domain")
-	getHealthHandler := healthQueries.NewGetHealthQueryHandler()
+	getHealthHandler := healthHandlers.NewGetHealthQueryHandler()
 	app.HealthController = controllers.NewHealthController(getHealthHandler)
 	slog.Info("health domain ready")
 
@@ -133,30 +155,30 @@ func NewApp(cfg *config.Config) (*App, error) {
 	g.Go(func() error {
 		slog.Info("initializing auth domain")
 
-		// Create command handlers (in REST operation order matching controller signature)
-		confirmEmailChangeHandler := authCommands.NewConfirmEmailChangeCommandHandler(infra.AuthService)
-		confirmEmailVerificationHandler := authCommands.NewConfirmEmailVerificationCommandHandler(infra.AuthService)
-		confirmPasswordResetHandler := authCommands.NewConfirmPasswordResetCommandHandler(infra.AuthService)
-		linkAccountHandler := authCommands.NewLinkAccountCommandHandler(infra.AuthService)
-		loginHandler := authCommands.NewLoginCommandHandler(infra.AuthService)
-		logoutHandler := authCommands.NewLogoutCommandHandler(infra.AuthService)
-		logoutAllHandler := authCommands.NewLogoutAllCommandHandler(infra.AuthService)
-		registerHandler := authCommands.NewRegisterCommandHandler(infra.AuthService, repos.Users, repos.Accounts)
-		requestEmailChangeHandler := authCommands.NewRequestEmailChangeCommandHandler(infra.AuthService)
-		requestEmailVerificationHandler := authCommands.NewRequestEmailVerificationCommandHandler(infra.AuthService)
-		requestMagicLinkHandler := authCommands.NewRequestMagicLinkCommandHandler(infra.AuthService)
-		requestPasswordResetHandler := authCommands.NewRequestPasswordResetCommandHandler(infra.AuthService)
-		verifyMagicLinkHandler := authCommands.NewVerifyMagicLinkCommandHandler(infra.AuthService)
-		updateAccountHandler := authCommands.NewUpdateAccountCommandHandler(infra.AuthService)
-		updateSessionHandler := authCommands.NewUpdateSessionCommandHandler(repos.Sessions)
-		deleteAccountHandler := authCommands.NewDeleteAccountCommandHandler(infra.AuthService)
-		deleteSessionHandler := authCommands.NewDeleteSessionCommandHandler(repos.Sessions)
+		// Create command handlers using custom handlers (in REST operation order matching controller signature)
+		confirmEmailChangeHandler := authHandlers.NewConfirmEmailChangeCommandHandler(infra.AuthService)
+		confirmEmailVerificationHandler := authHandlers.NewConfirmEmailVerificationCommandHandler(infra.AuthService)
+		confirmPasswordResetHandler := authHandlers.NewConfirmPasswordResetCommandHandler(infra.AuthService)
+		linkAccountHandler := authHandlers.NewLinkAccountCommandHandler(infra.AuthService)
+		loginHandler := authHandlers.NewLoginCommandHandler(infra.AuthService)
+		logoutHandler := authHandlers.NewLogoutCommandHandler(infra.AuthService)
+		logoutAllHandler := authHandlers.NewLogoutAllCommandHandler(infra.AuthService)
+		registerHandler := authHandlers.NewRegisterCommandHandler(infra.AuthService, repos.Users, repos.Accounts)
+		requestEmailChangeHandler := authHandlers.NewRequestEmailChangeCommandHandler(infra.AuthService)
+		requestEmailVerificationHandler := authHandlers.NewRequestEmailVerificationCommandHandler(infra.AuthService)
+		requestMagicLinkHandler := authHandlers.NewRequestMagicLinkCommandHandler(infra.AuthService)
+		requestPasswordResetHandler := authHandlers.NewRequestPasswordResetCommandHandler(infra.AuthService)
+		verifyMagicLinkHandler := authHandlers.NewVerifyMagicLinkCommandHandler(infra.AuthService)
+		updateAccountHandler := authHandlers.NewUpdateAccountCommandHandler(infra.AuthService)
+		updateSessionHandler := authHandlers.NewUpdateSessionCommandHandler(repos.Sessions)
+		deleteAccountHandler := authHandlers.NewDeleteAccountCommandHandler(infra.AuthService)
+		deleteSessionHandler := authHandlers.NewDeleteSessionCommandHandler(repos.Sessions)
 
-		// Create query handlers (in REST operation order matching controller signature)
+		// Create query handlers using custom handlers (in REST operation order matching controller signature)
 		getAccountHandler := authQueries.NewGetAccountQueryHandler(repos.Accounts)
 		getSessionHandler := authQueries.NewGetSessionQueryHandler(repos.Sessions)
-		oauthAuthorizeHandler := authQueries.NewOAuthAuthorizeQueryHandler(infra.AuthService)
-		oauthCallbackHandler := authQueries.NewOAuthCallbackQueryHandler(infra.AuthService, infra.EventPublisher)
+		oauthAuthorizeHandler := authHandlers.NewOAuthAuthorizeQueryHandler(infra.AuthService)
+		oauthCallbackHandler := authHandlers.NewOAuthCallbackQueryHandler(infra.AuthService, infra.EventPublisher)
 		listAccountsHandler := authQueries.NewListAccountsQueryHandler(repos.Accounts)
 		listSessionsHandler := authQueries.NewListSessionsQueryHandler(repos.Sessions)
 
@@ -214,7 +236,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 			repos.Executors,
 			infra.EventPublisher,
 		)
-		executeExecutorHandler := executorCommands.NewExecuteExecutorCommandHandler(
+		executeExecutorHandler := executorHandlers.NewExecuteExecutorCommandHandler(
 			repos.Executors,
 			infra.ExecutorService,
 			infra.EventPublisher,
@@ -247,7 +269,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	})
 
 {{- range .Domains }}
-{{- if and .HasController (ne .Name "Config") (ne .Name "Health") (ne .Name "Executor") }}
+{{- if and .HasController (ne .Name "Config") (ne .Name "Health") (ne .Name "Executor") (ne .Name "Pipeline") (ne .Name "User") }}
 
 	// Initialize {{ lower .Name }} domain
 	g.Go(func() error {
@@ -284,6 +306,111 @@ func NewApp(cfg *config.Config) (*App, error) {
 	})
 {{- end }}
 {{- end }}
+
+	// Initialize pipeline domain (has mixed custom and generated handlers)
+	g.Go(func() error {
+		slog.Info("initializing pipeline domain")
+
+		// Create command handlers
+		createPipelineHandler := pipelineCommands.NewCreatePipelineCommandHandler(
+			repos.Pipelines,
+			infra.EventPublisher,
+		)
+		createPipelineStepHandler := pipelineHandlers.NewCreatePipelineStepCommandHandler(
+			repos.Pipelines,
+			infra.EventPublisher,
+		)
+		validatePipelineExecutionPlanHandler := pipelineHandlers.NewValidatePipelineExecutionPlanCommandHandler(
+			repos.Pipelines,
+			infra.EventPublisher,
+		)
+		updatePipelineHandler := pipelineCommands.NewUpdatePipelineCommandHandler(
+			repos.Pipelines,
+			infra.EventPublisher,
+		)
+		deletePipelineHandler := pipelineCommands.NewDeletePipelineCommandHandler(
+			repos.Pipelines,
+			infra.EventPublisher,
+		)
+
+		// Create query handlers
+		getPipelineHandler := pipelineQueries.NewGetPipelineQueryHandler(
+			repos.Pipelines,
+		)
+		getPipelineExecutionPlanHandler := pipelineHandlers.NewGetPipelineExecutionPlanQueryHandler(
+			repos.Pipelines,
+		)
+		getPipelineStepsHandler := pipelineHandlers.NewGetPipelineStepsQueryHandler(
+			repos.Pipelines,
+		)
+		listPipelinesHandler := pipelineQueries.NewListPipelinesQueryHandler(
+			repos.Pipelines,
+		)
+
+		// Create controller with handlers
+		app.PipelineController = controllers.NewPipelineController(
+			createPipelineHandler,
+			createPipelineStepHandler,
+			validatePipelineExecutionPlanHandler,
+			updatePipelineHandler,
+			deletePipelineHandler,
+			getPipelineHandler,
+			getPipelineExecutionPlanHandler,
+			getPipelineStepsHandler,
+			listPipelinesHandler,
+		)
+
+		slog.Info("pipeline domain ready")
+		return nil
+	})
+
+	// Initialize user domain (has mixed custom and generated handlers)
+	g.Go(func() error {
+		slog.Info("initializing user domain")
+
+		// Create command handlers
+		updateCurrentUserHandler := userHandlers.NewUpdateCurrentUserCommandHandler(
+			repos.Users,
+			infra.EventPublisher,
+		)
+		updateUserHandler := userCommands.NewUpdateUserCommandHandler(
+			repos.Users,
+			infra.EventPublisher,
+		)
+		deleteCurrentUserHandler := userHandlers.NewDeleteCurrentUserCommandHandler(
+			repos.Users,
+			infra.EventPublisher,
+		)
+		deleteUserHandler := userCommands.NewDeleteUserCommandHandler(
+			repos.Users,
+			infra.EventPublisher,
+		)
+
+		// Create query handlers
+		getCurrentUserHandler := userHandlers.NewGetCurrentUserQueryHandler(
+			repos.Users,
+		)
+		getUserHandler := userQueries.NewGetUserQueryHandler(
+			repos.Users,
+		)
+		listUsersHandler := userQueries.NewListUsersQueryHandler(
+			repos.Users,
+		)
+
+		// Create controller with handlers
+		app.UserController = controllers.NewUserController(
+			updateCurrentUserHandler,
+			updateUserHandler,
+			deleteCurrentUserHandler,
+			deleteUserHandler,
+			getCurrentUserHandler,
+			getUserHandler,
+			listUsersHandler,
+		)
+
+		slog.Info("user domain ready")
+		return nil
+	})
 
 	// Wait for all parallel initializations to complete
 	if err := g.Wait(); err != nil {

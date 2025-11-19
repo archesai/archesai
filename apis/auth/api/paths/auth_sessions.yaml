@@ -1,0 +1,26 @@
+get:
+  operationId: ListSessions
+  x-codegen-repository: Session
+  summary: List sessions
+  tags:
+    - Auth
+  description: List all active sessions for the current user
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  parameters:
+    - $ref: ../../../base/api/components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/SessionsSort.yaml
+  responses:
+    '200':
+      $ref: ../components/responses/SessionListResponse.yaml
+    '400':
+      $ref: ../../../base/api/components/responses/BadRequest.yaml
+    '401':
+      $ref: ../../../base/api/components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../../../base/api/components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../../../base/api/components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../../../base/api/components/responses/InternalServerError.yaml

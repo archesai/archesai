@@ -10,7 +10,8 @@ import (
 
 // RepositoriesTemplateData defines a template data structure
 type RepositoriesTemplateData struct {
-	Entity *parsers.SchemaDef
+	Entity     *parsers.SchemaDef
+	OutputPath string // Import path for generated code
 }
 
 // GenerateRepositories generates all repository interfaces and implementations
@@ -30,14 +31,17 @@ func (g *Generator) generateRepositoryForSchema(
 	schema *parsers.SchemaDef,
 ) error {
 
+	importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+
 	// Generate repository interface
 	data := &RepositoriesTemplateData{
-		Entity: schema,
+		Entity:     schema,
+		OutputPath: importPath,
 	}
 
 	// Generate interface in repositories folder
 	outputPath := filepath.Join(
-		"internal/core/repositories",
+		g.outputDir, "generated", "core", "repositories",
 		strings.ToLower(schema.Name)+".gen.go",
 	)
 
@@ -52,13 +56,14 @@ func (g *Generator) generateRepositoryForSchema(
 
 	// Generate concrete implementations with different package
 	implData := &RepositoriesTemplateData{
-		Entity: schema,
+		Entity:     schema,
+		OutputPath: importPath,
 	}
 
 	// PostgreSQL
 	if tmpl, ok := g.templates["repository_postgres.tmpl"]; ok {
 		outputPath := filepath.Join(
-			"internal/infrastructure/persistence/postgres/repositories",
+			g.outputDir, "generated", "infrastructure", "persistence", "postgres", "repositories",
 			strings.ToLower(schema.Name)+"_repository.gen.go",
 		)
 		if err := g.filewriter.WriteTemplate(outputPath, tmpl, implData); err != nil {
@@ -69,7 +74,7 @@ func (g *Generator) generateRepositoryForSchema(
 	// SQLite
 	if tmpl, ok := g.templates["repository_sqlite.tmpl"]; ok {
 		outputPath := filepath.Join(
-			"internal/infrastructure/persistence/sqlite/repositories",
+			g.outputDir, "generated", "infrastructure", "persistence", "sqlite", "repositories",
 			strings.ToLower(schema.Name)+"_repository.gen.go",
 		)
 		if err := g.filewriter.WriteTemplate(outputPath, tmpl, implData); err != nil {

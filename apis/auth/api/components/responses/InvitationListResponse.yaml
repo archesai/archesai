@@ -1,0 +1,24 @@
+description: Invitations retrieved successfully
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        data:
+          type: array
+          maxItems: 10000
+          items:
+            $ref: ../schemas/Invitation.yaml
+        meta:
+          $ref: ../../../../base/api/components/schemas/PaginationMeta.yaml
+      required:
+        - data
+        - meta
+      additionalProperties: false
+headers:
+  X-RateLimit-Limit:
+    $ref: ../../../../base/api/components/headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../../../../base/api/components/headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../../../../base/api/components/headers/RateLimitReset.yaml

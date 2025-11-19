@@ -154,12 +154,15 @@ func (g *Generator) GenerateBootstrap(
 		return tags[i].Name < tags[j].Name
 	})
 
+	outputPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+
 	// Generate app.go
 	appData := map[string]any{
-		"Domains": tags,
+		"Domains":    tags,
+		"OutputPath": outputPath,
 	}
 
-	appPath := filepath.Join("internal/infrastructure/bootstrap", "app.gen.go")
+	appPath := filepath.Join(g.outputDir, "generated", "infrastructure", "bootstrap", "app.gen.go")
 	appTmpl, ok := g.templates["bootstrap.tmpl"]
 	if !ok {
 		return fmt.Errorf("app template not found")
@@ -170,7 +173,13 @@ func (g *Generator) GenerateBootstrap(
 	}
 
 	// Generate infrastructure.go
-	infraPath := filepath.Join("internal/infrastructure/bootstrap", "infrastructure.gen.go")
+	infraPath := filepath.Join(
+		g.outputDir,
+		"generated",
+		"infrastructure",
+		"bootstrap",
+		"infrastructure.gen.go",
+	)
 	infraTmpl, ok := g.templates["infrastructure.tmpl"]
 	if !ok {
 		return fmt.Errorf("infrastructure template not found")

@@ -10,7 +10,8 @@ import (
 
 // CQRSHandlerTemplateData defines a template data structure
 type CQRSHandlerTemplateData struct {
-	Operation *parsers.OperationDef
+	Operation  *parsers.OperationDef
+	OutputPath string // Import path for generated code
 }
 
 // GenerateCommandQueryHandlers generates command and query handlers
@@ -46,15 +47,18 @@ func (g *Generator) GenerateCommandQueryHandlers(
 
 			// Get the output path
 			outputPath := filepath.Join(
-				"internal/application",
+				g.outputDir, "generated", "application",
 				output,
 				strings.ToLower(tag),
 				fmt.Sprintf("%s.gen.go", parsers.SnakeCase(op.ID)),
 			)
 
+			importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+
 			// Create minimal template data
 			data := &CQRSHandlerTemplateData{
-				Operation: &op,
+				Operation:  &op,
+				OutputPath: importPath,
 			}
 
 			// Write the handler file

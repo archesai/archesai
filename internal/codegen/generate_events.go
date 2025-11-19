@@ -10,11 +10,15 @@ import (
 
 // EventsTemplateData defines a template data structure
 type EventsTemplateData struct {
-	Entity *parsers.SchemaDef
+	Entity     *parsers.SchemaDef
+	OutputPath string // Import path for generated code
 }
 
 // GenerateEvents generates domain events for all entities
 func (g *Generator) GenerateEvents(schemas []*parsers.SchemaDef) error {
+
+	outputPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+
 	for _, schema := range schemas {
 
 		if schema.XCodegenSchemaType != parsers.XCodegenSchemaTypeEntity {
@@ -22,11 +26,12 @@ func (g *Generator) GenerateEvents(schemas []*parsers.SchemaDef) error {
 		}
 
 		data := &EventsTemplateData{
-			Entity: schema,
+			Entity:     schema,
+			OutputPath: outputPath,
 		}
 
-		outputPath := filepath.Join(
-			"internal/core/events",
+		eventFilePath := filepath.Join(
+			g.outputDir, "generated", "core", "events",
 			strings.ToLower(schema.Name)+"_events.gen.go",
 		)
 
@@ -35,7 +40,7 @@ func (g *Generator) GenerateEvents(schemas []*parsers.SchemaDef) error {
 			return fmt.Errorf("events template not found")
 		}
 
-		if err := g.filewriter.WriteTemplate(outputPath, tmpl, data); err != nil {
+		if err := g.filewriter.WriteTemplate(eventFilePath, tmpl, data); err != nil {
 			return fmt.Errorf("failed to generate events for %s: %w", schema.Name, err)
 		}
 

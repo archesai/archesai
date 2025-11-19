@@ -1,0 +1,12 @@
+description: Health status retrieved successfully
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/Health.yaml
+headers:
+  X-RateLimit-Limit:
+    $ref: ../../../../../apis/base/api/components/headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../../../../../apis/base/api/components/headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../../../../../apis/base/api/components/headers/RateLimitReset.yaml

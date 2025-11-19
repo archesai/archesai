@@ -1,0 +1,21 @@
+post:
+  operationId: Logout
+  summary: Logout
+  tags:
+    - Auth
+  description: Logout from current session
+  x-codegen-custom-handler: true
+  security:
+    - bearerAuth: []
+    - sessionCookie: []
+  responses:
+    '200':
+      $ref: ../components/responses/LogoutResponse.yaml
+    '400':
+      $ref: ../../../base/api/components/responses/BadRequest.yaml
+    '401':
+      $ref: ../../../base/api/components/responses/Unauthorized.yaml
+    '429':
+      $ref: ../../../base/api/components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../../../base/api/components/responses/InternalServerError.yaml

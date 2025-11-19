@@ -51,13 +51,18 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    build: {
+      outDir: "dist",
+    },
     define: envVars,
     plugins: [
       tanstackStart({
-        router: {
-          // autoCodeSplitting: true,
-          enableRouteTreeFormatting: true,
-          routesDirectory: "app",
+        spa: {
+          enabled: true,
+          prerender: {
+            crawlLinks: true,
+            outputPath: "index.html",
+          },
         },
       }),
       viteReact({

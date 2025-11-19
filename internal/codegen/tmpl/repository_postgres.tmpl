@@ -14,8 +14,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/archesai/archesai/internal/core/models"
-	corerrors "github.com/archesai/archesai/internal/core/errors"
+	"{{ .OutputPath }}/generated/core/models"
+	corerrors "github.com/archesai/archesai/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

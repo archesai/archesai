@@ -1,0 +1,18 @@
+description: Member retrieved successfully
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        data:
+          $ref: ../schemas/Member.yaml
+      required:
+        - data
+      additionalProperties: false
+headers:
+  X-RateLimit-Limit:
+    $ref: ../../../../base/api/components/headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../../../../base/api/components/headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../../../../base/api/components/headers/RateLimitReset.yaml

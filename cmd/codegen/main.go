@@ -10,7 +10,7 @@ import (
 
 	"github.com/archesai/archesai/internal/codegen"
 	"github.com/archesai/archesai/internal/parsers"
-	"github.com/archesai/archesai/internal/shared/logger"
+	"github.com/archesai/archesai/pkg/logger"
 )
 
 var (
@@ -42,12 +42,16 @@ If no path is provided, defaults to api/openapi.bundled.yaml`,
 	SilenceErrors: true,
 	SilenceUsage:  true, // Don't show usage on execution errors, only on arg errors
 	RunE: func(_ *cobra.Command, args []string) error {
+		if outputPath == "" {
+			return fmt.Errorf("--output flag is required")
+		}
+
 		path := "api/openapi.bundled.yaml"
 		if len(args) > 0 {
 			path = args[0]
 		}
 
-		generator := codegen.NewGenerator()
+		generator := codegen.NewGenerator(outputPath)
 		if err := generator.Initialize(); err != nil {
 			return fmt.Errorf("failed to initialize code generator: %w", err)
 		}
@@ -79,7 +83,8 @@ The package name is automatically inferred from the output directory.`,
 			return fmt.Errorf("--output flag is required")
 		}
 
-		generator := codegen.NewGenerator()
+		// For JSON schema, use the output path's directory as the base
+		generator := codegen.NewGenerator(outputPath)
 		if err := generator.Initialize(); err != nil {
 			return fmt.Errorf("failed to initialize code generator: %w", err)
 		}
@@ -125,6 +130,11 @@ func init() {
 	// Global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().BoolVar(&pretty, "pretty", false, "enable pretty logging output")
+
+	// Add flags to openapi command
+	openapiCmd.Flags().
+		StringVar(&outputPath, "output", "", "Output directory for generated code (required)")
+	openapiCmd.MarkFlagRequired("output")
 
 	// Add flags to jsonschema command
 	jsonschemaCmd.Flags().StringVar(&outputPath, "output", "", "Output file path")

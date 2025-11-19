@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/archesai/archesai/internal/infrastructure/executor"
+	"github.com/archesai/archesai/pkg/executor"
 )
 
 // OrvalInput represents the input for orval generation

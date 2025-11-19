@@ -11,8 +11,10 @@ import (
 
 // ControllersTemplateData defines a template data structure
 type ControllersTemplateData struct {
-	Tag        string
-	Operations []parsers.OperationDef
+	Tag               string
+	Operations        []parsers.OperationDef
+	OutputPath        string // Import path for generated code
+	HasCustomHandlers bool   // Whether this controller has any custom handlers
 }
 
 // GenerateControllers generates all HTTP controllers grouped by tag
@@ -47,13 +49,26 @@ func (g *Generator) generateControllerForTag(
 		return getOperationOrder(operations[i]) < getOperationOrder(operations[j])
 	})
 
+	importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+
+	// Check if any operations have custom handlers
+	hasCustom := false
+	for _, op := range operations {
+		if op.XCodegenCustomHandler {
+			hasCustom = true
+			break
+		}
+	}
+
 	data := &ControllersTemplateData{
-		Tag:        tag,
-		Operations: operations,
+		Tag:               tag,
+		Operations:        operations,
+		OutputPath:        importPath,
+		HasCustomHandlers: hasCustom,
 	}
 
 	outputPath := filepath.Join(
-		"internal/adapters/http/controllers",
+		g.outputDir, "generated", "adapters", "http", "controllers",
 		strings.ToLower(tag)+".gen.go",
 	)
 

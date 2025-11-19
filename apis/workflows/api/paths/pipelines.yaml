@@ -1,0 +1,68 @@
+get:
+  operationId: ListPipelines
+  summary: List pipelines
+  tags:
+    - Pipeline
+  description: List pipelines
+  parameters:
+    - $ref: ../components/parameters/PipelinesFilter.yaml
+    - $ref: ../../../base/api/components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/PipelinesSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      $ref: ../components/responses/PipelineListResponse.yaml
+    '400':
+      $ref: ../../../base/api/components/responses/BadRequest.yaml
+    '401':
+      $ref: ../../../base/api/components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../../../base/api/components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../../../base/api/components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../../../base/api/components/responses/InternalServerError.yaml
+post:
+  operationId: CreatePipeline
+  summary: Create a pipeline
+  tags:
+    - Pipeline
+  description: Create a pipeline
+  requestBody:
+    description: Pipeline creation request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            description:
+              description: The pipeline description
+              type: string
+              example: Example description text
+              minLength: 1
+              maxLength: 1000
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            name:
+              description: The pipeline name
+              type: string
+              example: Example Name
+              minLength: 1
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      $ref: ../components/responses/PipelineResponse.yaml
+    '400':
+      $ref: ../../../base/api/components/responses/BadRequest.yaml
+    '401':
+      $ref: ../../../base/api/components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../../../base/api/components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../../../base/api/components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../../../base/api/components/responses/InternalServerError.yaml

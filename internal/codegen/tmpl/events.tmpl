@@ -8,9 +8,8 @@ Expected data: EventsTemplateData
 package events
 
 import (
-	"context"
-
 	"github.com/google/uuid"
+	pkgevents "github.com/archesai/archesai/pkg/events"
 )
 
 // Event type constants for {{ .Entity.Name }}.
@@ -22,43 +21,88 @@ const (
 
 // {{ .Entity.Name }}CreatedEvent represents a created event for {{ .Entity.Name }}.
 type {{ .Entity.Name }}CreatedEvent struct {
-	BaseEvent
+	pkgevents.BaseEvent
 	{{ .Entity.Name }}ID uuid.UUID `json:"{{lower .Entity.Name}}_id"`
 }
 
 // New{{ .Entity.Name }}CreatedEvent creates a new {{ .Entity.Name }} created event.
 func New{{ .Entity.Name }}CreatedEvent(id uuid.UUID) *{{ .Entity.Name }}CreatedEvent {
 	return &{{ .Entity.Name }}CreatedEvent{
-		BaseEvent: NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Created),
+		BaseEvent: pkgevents.NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Created),
 		{{ .Entity.Name }}ID: id,
 	}
 }
 
+// EventType returns the type of this event.
+func (e *{{ .Entity.Name }}CreatedEvent) EventType() string {
+	return Event{{ .Entity.Name }}Created
+}
+
+// EventDomain returns the domain of this event.
+func (e *{{ .Entity.Name }}CreatedEvent) EventDomain() string {
+	return "{{lower .Entity.Name}}"
+}
+
+// EventData returns the event data.
+func (e *{{ .Entity.Name }}CreatedEvent) EventData() any {
+	return e
+}
+
 // {{ .Entity.Name }}UpdatedEvent represents an updated event for {{ .Entity.Name }}.
 type {{ .Entity.Name }}UpdatedEvent struct {
-	BaseEvent
+	pkgevents.BaseEvent
 	{{ .Entity.Name }}ID uuid.UUID `json:"{{lower .Entity.Name}}_id"`
 }
 
 // New{{ .Entity.Name }}UpdatedEvent creates a new {{ .Entity.Name }} updated event.
 func New{{ .Entity.Name }}UpdatedEvent(id uuid.UUID) *{{ .Entity.Name }}UpdatedEvent {
 	return &{{ .Entity.Name }}UpdatedEvent{
-		BaseEvent: NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Updated),
+		BaseEvent: pkgevents.NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Updated),
 		{{ .Entity.Name }}ID: id,
 	}
 }
 
+// EventType returns the type of this event.
+func (e *{{ .Entity.Name }}UpdatedEvent) EventType() string {
+	return Event{{ .Entity.Name }}Updated
+}
+
+// EventDomain returns the domain of this event.
+func (e *{{ .Entity.Name }}UpdatedEvent) EventDomain() string {
+	return "{{lower .Entity.Name}}"
+}
+
+// EventData returns the event data.
+func (e *{{ .Entity.Name }}UpdatedEvent) EventData() any {
+	return e
+}
+
 // {{ .Entity.Name }}DeletedEvent represents a deleted event for {{ .Entity.Name }}.
 type {{ .Entity.Name }}DeletedEvent struct {
-	BaseEvent
+	pkgevents.BaseEvent
 	{{ .Entity.Name }}ID uuid.UUID `json:"{{lower .Entity.Name}}_id"`
 }
 
 // New{{ .Entity.Name }}DeletedEvent creates a new {{ .Entity.Name }} deleted event.
 func New{{ .Entity.Name }}DeletedEvent(id uuid.UUID) *{{ .Entity.Name }}DeletedEvent {
 	return &{{ .Entity.Name }}DeletedEvent{
-		BaseEvent: NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Deleted),
+		BaseEvent: pkgevents.NewBaseEvent("{{lower .Entity.Name}}", Event{{ .Entity.Name }}Deleted),
 		{{ .Entity.Name }}ID: id,
 	}
+}
+
+// EventType returns the type of this event.
+func (e *{{ .Entity.Name }}DeletedEvent) EventType() string {
+	return Event{{ .Entity.Name }}Deleted
+}
+
+// EventDomain returns the domain of this event.
+func (e *{{ .Entity.Name }}DeletedEvent) EventDomain() string {
+	return "{{lower .Entity.Name}}"
+}
+
+// EventData returns the event data.
+func (e *{{ .Entity.Name }}DeletedEvent) EventData() any {
+	return e
 }
 

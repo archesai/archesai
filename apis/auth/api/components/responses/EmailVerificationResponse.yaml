@@ -1,0 +1,21 @@
+description: Email verified successfully
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        session:
+          $ref: ../schemas/Session.yaml
+        user:
+          $ref: ../schemas/User.yaml
+      required:
+        - session
+        - user
+      additionalProperties: false
+headers:
+  X-RateLimit-Limit:
+    $ref: ../../../../base/api/components/headers/RateLimitLimit.yaml
+  X-RateLimit-Remaining:
+    $ref: ../../../../base/api/components/headers/RateLimitRemaining.yaml
+  X-RateLimit-Reset:
+    $ref: ../../../../base/api/components/headers/RateLimitReset.yaml

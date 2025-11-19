@@ -1,0 +1,12 @@
+in: query
+name: filter
+required: false
+style: deepObject
+explode: true
+schema:
+  $ref: ../../../../base/api/components/schemas/FilterNode.yaml
+description: Filter by field values
+example:
+  type: eq
+  field: inputMimeType
+  value: application/json

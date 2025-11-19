@@ -4,198 +4,140 @@
 
 ```text
 .
-├── api
-│   ├── components
-│   │   ├── headers
-│   │   │   ├── RateLimitLimit.yaml
-│   │   │   ├── RateLimitRemaining.yaml
-│   │   │   ├── RateLimitReset.yaml
-│   │   │   ├── RetryAfter.yaml
-│   │   │   └── SetCookie.yaml
-│   │   ├── parameters
-│   │   │   ├── AccountsFilter.yaml
-│   │   │   ├── AccountsSort.yaml
-│   │   │   ├── APIKeysFilter.yaml
-│   │   │   ├── APIKeysSort.yaml
-│   │   │   ├── ArtifactsFilter.yaml
-│   │   │   ├── ArtifactsSort.yaml
-│   │   │   ├── ExecutorsFilter.yaml
-│   │   │   ├── ExecutorsSort.yaml
-│   │   │   ├── InvitationsFilter.yaml
-│   │   │   ├── InvitationsSort.yaml
-│   │   │   ├── LabelsFilter.yaml
-│   │   │   ├── LabelsSort.yaml
-│   │   │   ├── MembersFilter.yaml
-│   │   │   ├── MembersSort.yaml
-│   │   │   ├── OrganizationID.yaml
-│   │   │   ├── OrganizationsFilter.yaml
-│   │   │   ├── OrganizationsSort.yaml
-│   │   │   ├── PageQuery.yaml
-│   │   │   ├── PipelinesFilter.yaml
-│   │   │   ├── PipelinesSort.yaml
-│   │   │   ├── ResourceID.yaml
-│   │   │   ├── RunsFilter.yaml
-│   │   │   ├── RunsSort.yaml
-│   │   │   ├── SessionsFilter.yaml
-│   │   │   ├── SessionsSort.yaml
-│   │   │   ├── ToolsFilter.yaml
-│   │   │   ├── ToolsSort.yaml
-│   │   │   ├── UsersFilter.yaml
-│   │   │   └── UsersSort.yaml
-│   │   ├── responses
-│   │   │   ├── AccountListResponse.yaml
-│   │   │   ├── AccountResponse.yaml
-│   │   │   ├── APIKeyListResponse.yaml
-│   │   │   ├── APIKeyResponse.yaml
-│   │   │   ├── ArtifactListResponse.yaml
-│   │   │   ├── ArtifactResponse.yaml
-│   │   │   ├── BadRequest.yaml
-│   │   │   ├── ConfigResponse.yaml
-│   │   │   ├── Conflict.yaml
-│   │   │   ├── EmailVerificationResponse.yaml
-│   │   │   ├── ExecutorListResponse.yaml
-│   │   │   ├── ExecutorResponse.yaml
-│   │   │   ├── HealthResponse.yaml
-│   │   │   ├── InternalServerError.yaml
-│   │   │   ├── InvitationListResponse.yaml
-│   │   │   ├── InvitationResponse.yaml
-│   │   │   ├── LabelListResponse.yaml
-│   │   │   ├── LabelResponse.yaml
-│   │   │   ├── LogoutResponse.yaml
-│   │   │   ├── MemberListResponse.yaml
-│   │   │   ├── MemberResponse.yaml
-│   │   │   ├── NoContent.yaml
-│   │   │   ├── NotFound.yaml
-│   │   │   ├── OrganizationListResponse.yaml
-│   │   │   ├── OrganizationResponse.yaml
-│   │   │   ├── PipelineExecutionPlanResponse.yaml
-│   │   │   ├── PipelineListResponse.yaml
-│   │   │   ├── PipelineResponse.yaml
-│   │   │   ├── PipelineStepListResponse.yaml
-│   │   │   ├── PipelineStepResponse.yaml
-│   │   │   ├── RunListResponse.yaml
-│   │   │   ├── RunResponse.yaml
-│   │   │   ├── SessionCreated.yaml
-│   │   │   ├── SessionListResponse.yaml
-│   │   │   ├── SessionResponse.yaml
-│   │   │   ├── ToolListResponse.yaml
-│   │   │   ├── ToolResponse.yaml
-│   │   │   ├── TooManyRequests.yaml
-│   │   │   ├── Unauthorized.yaml
-│   │   │   ├── UnprocessableEntity.yaml
-│   │   │   ├── UserListResponse.yaml
-│   │   │   └── UserResponse.yaml
-│   │   └── schemas
-│   │       ├── config
-│   │       │   ├── ConfigAPI.yaml
-│   │       │   ├── ConfigAuthFirebase.yaml
-│   │       │   ├── ConfigAuthGithub.yaml
-│   │       │   ├── ConfigAuthGoogle.yaml
-│   │       │   ├── ConfigAuthLocal.yaml
-│   │       │   ├── ConfigAuthMagicLink.yaml
-│   │       │   ├── ConfigAuthMicrosoft.yaml
-│   │       │   ├── ConfigAuthTwitter.yaml
-│   │       │   ├── ConfigAuth.yaml
-│   │       │   ├── ConfigBilling.yaml
-│   │       │   ├── ConfigDatabase.yaml
-│   │       │   ├── ConfigEmail.yaml
-│   │       │   ├── ConfigGrafana.yaml
-│   │       │   ├── ConfigImages.yaml
-│   │       │   ├── ConfigImage.yaml
-│   │       │   ├── ConfigInfrastructure.yaml
-│   │       │   ├── ConfigIngress.yaml
-│   │       │   ├── ConfigIntelligence.yaml
-│   │       │   ├── ConfigKubernetes.yaml
-│   │       │   ├── ConfigLLM.yaml
-│   │       │   ├── ConfigLogging.yaml
-│   │       │   ├── ConfigLoki.yaml
-│   │       │   ├── ConfigMigrations.yaml
-│   │       │   ├── ConfigMonitoring.yaml
-│   │       │   ├── ConfigPersistence.yaml
-│   │       │   ├── ConfigPlatform.yaml
-│   │       │   ├── ConfigRedis.yaml
-│   │       │   ├── ConfigResource.yaml
-│   │       │   ├── ConfigRunPod.yaml
-│   │       │   ├── ConfigScraper.yaml
-│   │       │   ├── ConfigServiceAccount.yaml
-│   │       │   ├── ConfigSpeech.yaml
-│   │       │   ├── ConfigStorage.yaml
-│   │       │   ├── ConfigStripe.yaml
-│   │       │   ├── ConfigTLS.yaml
-│   │       │   ├── ConfigUnstructured.yaml
-│   │       │   └── Config.yaml
-│   │       ├── Account.yaml
-│   │       ├── APIKey.yaml
-│   │       ├── Artifact.yaml
-│   │       ├── Base.yaml
-│   │       ├── Executor.yaml
-│   │       ├── FilterNode.yaml
-│   │       ├── Health.yaml
-│   │       ├── Invitation.yaml
-│   │       ├── Label.yaml
-│   │       ├── MagicLinkToken.yaml
-│   │       ├── Member.yaml
-│   │       ├── Organization.yaml
-│   │       ├── Page.yaml
-│   │       ├── PaginationMeta.yaml
-│   │       ├── PipelineStep.yaml
-│   │       ├── Pipeline.yaml
-│   │       ├── Problem.yaml
-│   │       ├── Run.yaml
-│   │       ├── Session.yaml
-│   │       ├── Tool.yaml
-│   │       ├── User.yaml
-│   │       └── UUID.yaml
-│   ├── paths
-│   │   ├── api-keys_id.yaml
-│   │   ├── api-keys.yaml
-│   │   ├── artifacts_id.yaml
-│   │   ├── artifacts.yaml
-│   │   ├── auth_accounts_id.yaml
-│   │   ├── auth_accounts.yaml
-│   │   ├── auth_change-email.yaml
-│   │   ├── auth_confirm-email.yaml
-│   │   ├── auth_forgot-password.yaml
-│   │   ├── auth_link.yaml
-│   │   ├── auth_login.yaml
-│   │   ├── auth_logout-all.yaml
-│   │   ├── auth_logout.yaml
-│   │   ├── auth_magic-links_request.yaml
-│   │   ├── auth_magic-links_verify.yaml
-│   │   ├── auth_oauth_provider_authorize.yaml
-│   │   ├── auth_oauth_provider_callback.yaml
-│   │   ├── auth_register.yaml
-│   │   ├── auth_request-verification.yaml
-│   │   ├── auth_reset-password.yaml
-│   │   ├── auth_sessions_id.yaml
-│   │   ├── auth_sessions.yaml
-│   │   ├── auth_verify-email.yaml
-│   │   ├── config.yaml
-│   │   ├── executors_id_execute.yaml
-│   │   ├── executors_id.yaml
-│   │   ├── executors.yaml
-│   │   ├── health.yaml
-│   │   ├── labels_id.yaml
-│   │   ├── labels.yaml
-│   │   ├── me.yaml
-│   │   ├── organizations_id.yaml
-│   │   ├── organizations_organizationID_invitations_id.yaml
-│   │   ├── organizations_organizationID_invitations.yaml
-│   │   ├── organizations_organizationID_members_id.yaml
-│   │   ├── organizations_organizationID_members.yaml
-│   │   ├── organizations.yaml
-│   │   ├── pipelines_id_execution-plans.yaml
-│   │   ├── pipelines_id_steps.yaml
-│   │   ├── pipelines_id.yaml
-│   │   ├── pipelines.yaml
-│   │   ├── runs_id.yaml
-│   │   ├── runs.yaml
-│   │   ├── tools_id.yaml
-│   │   ├── tools.yaml
-│   │   ├── users_id.yaml
-│   │   └── users.yaml
-│   ├── openapi.bundled.yaml
-│   └── openapi.yaml
+├── apis
+│   ├── auth
+│   │   └── api
+│   │       ├── components
+│   │       │   ├── headers
+│   │       │   ├── parameters
+│   │       │   ├── responses
+│   │       │   └── schemas
+│   │       ├── paths
+│   │       │   ├── api-keys_id.yaml
+│   │       │   ├── api-keys.yaml
+│   │       │   ├── auth_accounts_id.yaml
+│   │       │   ├── auth_accounts.yaml
+│   │       │   ├── auth_change-email.yaml
+│   │       │   ├── auth_confirm-email.yaml
+│   │       │   ├── auth_forgot-password.yaml
+│   │       │   ├── auth_link.yaml
+│   │       │   ├── auth_login.yaml
+│   │       │   ├── auth_logout-all.yaml
+│   │       │   ├── auth_logout.yaml
+│   │       │   ├── auth_magic-links_request.yaml
+│   │       │   ├── auth_magic-links_verify.yaml
+│   │       │   ├── auth_oauth_provider_authorize.yaml
+│   │       │   ├── auth_oauth_provider_callback.yaml
+│   │       │   ├── auth_register.yaml
+│   │       │   ├── auth_request-verification.yaml
+│   │       │   ├── auth_reset-password.yaml
+│   │       │   ├── auth_sessions_id.yaml
+│   │       │   ├── auth_sessions.yaml
+│   │       │   ├── auth_verify-email.yaml
+│   │       │   ├── me.yaml
+│   │       │   ├── organizations_id.yaml
+│   │       │   ├── organizations_organizationID_invitations_id.yaml
+│   │       │   ├── organizations_organizationID_invitations.yaml
+│   │       │   ├── organizations_organizationID_members_id.yaml
+│   │       │   ├── organizations_organizationID_members.yaml
+│   │       │   ├── organizations.yaml
+│   │       │   ├── users_id.yaml
+│   │       │   └── users.yaml
+│   │       └── openapi.yaml
+│   ├── base
+│   │   └── api
+│   │       ├── components
+│   │       │   ├── headers
+│   │       │   ├── parameters
+│   │       │   ├── responses
+│   │       │   └── schemas
+│   │       ├── paths
+│   │       └── openapi.yaml
+│   ├── studio
+│   │   ├── api
+│   │   │   ├── components
+│   │   │   │   ├── headers
+│   │   │   │   ├── parameters
+│   │   │   │   ├── responses
+│   │   │   │   └── schemas
+│   │   │   ├── paths
+│   │   │   │   ├── config.yaml
+│   │   │   │   ├── executors_id_execute.yaml
+│   │   │   │   ├── executors_id.yaml
+│   │   │   │   ├── executors.yaml
+│   │   │   │   └── health.yaml
+│   │   │   ├── openapi.bundled.yaml
+│   │   │   └── openapi.yaml
+│   │   ├── generated
+│   │   │   ├── adapters
+│   │   │   │   └── http
+│   │   │   ├── application
+│   │   │   │   ├── commands
+│   │   │   │   └── queries
+│   │   │   ├── core
+│   │   │   │   ├── events
+│   │   │   │   ├── models
+│   │   │   │   └── repositories
+│   │   │   └── infrastructure
+│   │   │       ├── bootstrap
+│   │   │       └── persistence
+│   │   ├── handlers
+│   │   │   ├── auth
+│   │   │   │   ├── confirm_email_change_handler.go
+│   │   │   │   ├── confirm_email_verification_handler.go
+│   │   │   │   ├── confirm_password_reset_handler.go
+│   │   │   │   ├── delete_account_handler.go
+│   │   │   │   ├── delete_session_handler.go
+│   │   │   │   ├── link_account_handler.go
+│   │   │   │   ├── login_handler.go
+│   │   │   │   ├── logout_all_handler.go
+│   │   │   │   ├── logout_handler.go
+│   │   │   │   ├── oauth_authorize_handler.go
+│   │   │   │   ├── oauth_callback_handler.go
+│   │   │   │   ├── register_handler.go
+│   │   │   │   ├── request_email_change_handler.go
+│   │   │   │   ├── request_email_verification_handler.go
+│   │   │   │   ├── request_magic_link_handler.go
+│   │   │   │   ├── request_password_reset_handler.go
+│   │   │   │   ├── update_account_handler.go
+│   │   │   │   ├── update_session_handler.go
+│   │   │   │   └── verify_magic_link_handler.go
+│   │   │   ├── config
+│   │   │   │   └── get_config_handler.go
+│   │   │   ├── executor
+│   │   │   │   └── execute_executor_handler.go
+│   │   │   ├── health
+│   │   │   │   └── get_health_handler.go
+│   │   │   ├── pipeline
+│   │   │   │   ├── create_pipeline_step_handler.go
+│   │   │   │   ├── get_pipeline_execution_plan_handler.go
+│   │   │   │   ├── get_pipeline_steps_handler.go
+│   │   │   │   └── validate_pipeline_execution_plan_handler.go
+│   │   │   └── user
+│   │   │       ├── delete_current_user_handler.go
+│   │   │       ├── get_current_user_handler.go
+│   │   │       └── update_current_user_handler.go
+│   │   └── sqlc.yaml
+│   └── workflows
+│       └── api
+│           ├── components
+│           │   ├── parameters
+│           │   ├── responses
+│           │   └── schemas
+│           ├── paths
+│           │   ├── artifacts_id.yaml
+│           │   ├── artifacts.yaml
+│           │   ├── labels_id.yaml
+│           │   ├── labels.yaml
+│           │   ├── pipelines_id_execution-plans.yaml
+│           │   ├── pipelines_id_steps.yaml
+│           │   ├── pipelines_id.yaml
+│           │   ├── pipelines.yaml
+│           │   ├── runs_id.yaml
+│           │   ├── runs.yaml
+│           │   ├── tools_id.yaml
+│           │   └── tools.yaml
+│           └── openapi.yaml
 ├── assets
 │   ├── android-chrome-192x192.png
 │   ├── android-chrome-512x512.png
@@ -369,96 +311,11 @@
 │   │   └── overview.md
 │   ├── troubleshooting
 │   │   └── common-issues.md
+│   ├── codebase-analysis.md
 │   ├── contributing.md
-│   └── getting-started.md
+│   ├── getting-started.md
+│   └── studio-ui-design.md
 ├── internal
-│   ├── adapters
-│   │   ├── cli
-│   │   │   ├── api.go
-│   │   │   ├── completion.go
-│   │   │   ├── config.go
-│   │   │   ├── root.go
-│   │   │   ├── tui.go
-│   │   │   ├── version.go
-│   │   │   ├── web.go
-│   │   │   └── worker.go
-│   │   ├── http
-│   │   │   ├── controllers
-│   │   │   └── server
-│   │   │       ├── cookies.go
-│   │   │       ├── middleware_auth.go
-│   │   │       ├── middleware.go
-│   │   │       ├── middleware_logger.go
-│   │   │       ├── middleware_ratelimit.go
-│   │   │       ├── middleware_recover.go
-│   │   │       ├── middleware_requestid.go
-│   │   │       ├── middleware_security.go
-│   │   │       ├── middleware_timeout.go
-│   │   │       ├── responses.go
-│   │   │       ├── server.go
-│   │   │       └── websocket.go
-│   │   └── tui
-│   │       ├── screens
-│   │       ├── config_tui.go
-│   │       └── tui.go
-│   ├── application
-│   │   ├── commands
-│   │   │   ├── apikey
-│   │   │   ├── artifact
-│   │   │   ├── auth
-│   │   │   │   ├── confirm_email_change_handler.go
-│   │   │   │   ├── confirm_email_verification_handler.go
-│   │   │   │   ├── confirm_password_reset_handler.go
-│   │   │   │   ├── delete_account_handler.go
-│   │   │   │   ├── delete_session_handler.go
-│   │   │   │   ├── link_account_handler.go
-│   │   │   │   ├── login_handler.go
-│   │   │   │   ├── logout_all_handler.go
-│   │   │   │   ├── logout_handler.go
-│   │   │   │   ├── register_handler.go
-│   │   │   │   ├── request_email_change_handler.go
-│   │   │   │   ├── request_email_verification_handler.go
-│   │   │   │   ├── request_magic_link_handler.go
-│   │   │   │   ├── request_password_reset_handler.go
-│   │   │   │   ├── update_account_handler.go
-│   │   │   │   ├── update_session_handler.go
-│   │   │   │   └── verify_magic_link_handler.go
-│   │   │   ├── executor
-│   │   │   │   └── execute_executor_handler.go
-│   │   │   ├── invitation
-│   │   │   ├── label
-│   │   │   ├── member
-│   │   │   ├── organization
-│   │   │   ├── pipeline
-│   │   │   │   ├── create_pipeline_step_handler.go
-│   │   │   │   └── validate_pipeline_execution_plan_handler.go
-│   │   │   ├── run
-│   │   │   ├── tool
-│   │   │   └── user
-│   │   │       ├── delete_current_user_handler.go
-│   │   │       └── update_current_user_handler.go
-│   │   └── queries
-│   │       ├── apikey
-│   │       ├── artifact
-│   │       ├── auth
-│   │       │   ├── oauth_authorize_handler.go
-│   │       │   └── oauth_callback_handler.go
-│   │       ├── config
-│   │       │   └── get_config_handler.go
-│   │       ├── executor
-│   │       ├── health
-│   │       │   └── get_health_handler.go
-│   │       ├── invitation
-│   │       ├── label
-│   │       ├── member
-│   │       ├── organization
-│   │       ├── pipeline
-│   │       │   ├── get_pipeline_execution_plan_handler.go
-│   │       │   └── get_pipeline_steps_handler.go
-│   │       ├── run
-│   │       ├── tool
-│   │       └── user
-│   │           └── get_current_user_handler.go
 │   ├── codegen
 │   │   ├── tmpl
 │   │   │   ├── bootstrap.tmpl
@@ -471,7 +328,8 @@
 │   │   │   ├── repository_sqlite.tmpl
 │   │   │   ├── repository.tmpl
 │   │   │   ├── schema_hcl.tmpl
-│   │   │   └── schema.tmpl
+│   │   │   ├── schema.tmpl
+│   │   │   └── sqlc.yaml.tmpl
 │   │   ├── filewriter.go
 │   │   ├── generate_bootstrap.go
 │   │   ├── generate_controllers.go
@@ -485,118 +343,120 @@
 │   │   ├── generate_schemas.go
 │   │   ├── generate_sqlc.go
 │   │   └── templates.go
-│   ├── core
-│   │   ├── entities
-│   │   ├── errors
-│   │   │   └── errors.go
-│   │   ├── events
-│   │   │   ├── event.go
-│   │   │   └── publisher.go
-│   │   ├── models
-│   │   │   ├── auth_tokens.go
-│   │   │   ├── llm.go
-│   │   │   └── stub.go
-│   │   ├── repositories
-│   │   │   └── health.go
-│   │   └── services
-│   │       ├── auth.go
-│   │       └── llm.go
-│   ├── infrastructure
-│   │   ├── auth
-│   │   │   ├── oauth
-│   │   │   │   ├── github.go
-│   │   │   │   ├── google.go
-│   │   │   │   ├── microsoft.go
-│   │   │   │   └── types.go
-│   │   │   ├── magic_link.go
-│   │   │   ├── password.go
-│   │   │   ├── service.go
-│   │   │   └── token_manager.go
-│   │   ├── bootstrap
-│   │   ├── cache
-│   │   │   ├── cache.go
-│   │   │   ├── memory.go
-│   │   │   ├── noop.go
-│   │   │   └── redis.go
-│   │   ├── config
-│   │   │   ├── config.go
-│   │   │   ├── loader.go
-│   │   │   └── loader_test.go
-│   │   ├── events
-│   │   │   ├── events.go
-│   │   │   ├── noop.go
-│   │   │   ├── publisher.go
-│   │   │   └── redis.go
-│   │   ├── executor
-│   │   │   ├── testdata
-│   │   │   │   └── execute.ts
-│   │   │   ├── builder.go
-│   │   │   ├── builder_test.go
-│   │   │   ├── container.go
-│   │   │   ├── container_test.go
-│   │   │   ├── executor.go
-│   │   │   ├── executor_service.go
-│   │   │   ├── local.go
-│   │   │   ├── local_test.go
-│   │   │   └── schemas.go
-│   │   ├── http
-│   │   ├── llm
-│   │   │   ├── chat.go
-│   │   │   ├── llm.go
-│   │   │   ├── ollama.go
-│   │   │   └── openai.go
-│   │   ├── notifications
-│   │   │   ├── console.go
-│   │   │   ├── email.go
-│   │   │   ├── otp.go
-│   │   │   └── service.go
-│   │   ├── persistence
-│   │   │   ├── postgres
-│   │   │   │   ├── migrations
-│   │   │   │   ├── queries
-│   │   │   │   ├── repositories
-│   │   │   │   └── schema.gen.hcl
-│   │   │   ├── sqlite
-│   │   │   │   ├── migrations
-│   │   │   │   ├── queries
-│   │   │   │   ├── repositories
-│   │   │   │   └── schema.gen.hcl
-│   │   │   ├── database.go
-│   │   │   ├── migrate.go
-│   │   │   └── sqlc.yaml
-│   │   ├── redis
-│   │   │   ├── client.go
-│   │   │   ├── config.go
-│   │   │   ├── errors.go
-│   │   │   ├── pubsub.go
-│   │   │   ├── queue.go
-│   │   │   └── redis.go
-│   │   └── storage
-│   │       ├── local
-│   │       ├── s3
-│   │       ├── storage.go
-│   │       └── storage_test.go
-│   ├── parsers
-│   │   ├── jsonschema.go
-│   │   ├── jsonschema_test.go
-│   │   ├── openapi.go
-│   │   ├── openapi_orvalfix.go
-│   │   ├── openapi_test.go
-│   │   ├── operation.go
-│   │   ├── operation_test.go
-│   │   ├── response.go
-│   │   ├── schema.go
-│   │   ├── strings.go
-│   │   ├── typeconv.go
-│   │   └── xcodegenextension.go
-│   └── shared
-│       ├── logger
-│       │   ├── config.go
-│       │   └── logger.go
-│       ├── optional
-│       │   └── optional.go
-│       └── testutil
-│           └── containers.go
+│   └── parsers
+│       ├── jsonschema.go
+│       ├── jsonschema_test.go
+│       ├── openapi.go
+│       ├── openapi_orvalfix.go
+│       ├── openapi_test.go
+│       ├── operation.go
+│       ├── operation_test.go
+│       ├── response.go
+│       ├── schema.go
+│       ├── strings.go
+│       ├── typeconv.go
+│       └── xcodegenextension.go
+├── pkg
+│   ├── auth
+│   │   ├── oauth
+│   │   │   ├── github.go
+│   │   │   ├── google.go
+│   │   │   ├── microsoft.go
+│   │   │   └── types.go
+│   │   ├── auth_tokens.go
+│   │   ├── interfaces.go
+│   │   ├── magic_link.go
+│   │   ├── password.go
+│   │   ├── service.go
+│   │   └── token_manager.go
+│   ├── cache
+│   │   ├── cache.go
+│   │   ├── memory.go
+│   │   ├── noop.go
+│   │   └── redis.go
+│   ├── cli
+│   │   ├── api.go
+│   │   ├── completion.go
+│   │   ├── config.go
+│   │   ├── root.go
+│   │   ├── tui.go
+│   │   └── version.go
+│   ├── config
+│   │   ├── config.go
+│   │   ├── handler.go
+│   │   ├── loader.go
+│   │   └── loader_test.go
+│   ├── errors
+│   │   └── errors.go
+│   ├── events
+│   │   ├── events.go
+│   │   ├── noop.go
+│   │   ├── publisher.go
+│   │   └── redis.go
+│   ├── executor
+│   │   ├── testdata
+│   │   │   └── execute.ts
+│   │   ├── builder.go
+│   │   ├── builder_test.go
+│   │   ├── config.go
+│   │   ├── container.go
+│   │   ├── container_test.go
+│   │   ├── executor_service.go
+│   │   ├── local.go
+│   │   ├── local_test.go
+│   │   └── schemas.go
+│   ├── llm
+│   │   ├── chat.go
+│   │   ├── interfaces.go
+│   │   ├── llm.go
+│   │   ├── ollama.go
+│   │   └── openai.go
+│   ├── logger
+│   │   ├── config.go
+│   │   └── logger.go
+│   ├── notifications
+│   │   ├── console.go
+│   │   ├── email.go
+│   │   ├── otp.go
+│   │   └── service.go
+│   ├── optional
+│   │   └── optional.go
+│   ├── persistence
+│   │   ├── database.go
+│   │   └── migrate.go
+│   ├── redis
+│   │   ├── client.go
+│   │   ├── config.go
+│   │   ├── errors.go
+│   │   ├── pubsub.go
+│   │   ├── queue.go
+│   │   └── redis.go
+│   ├── server
+│   │   ├── cookies.go
+│   │   ├── health_handler.go
+│   │   ├── health_repository.go
+│   │   ├── middleware_auth.go
+│   │   ├── middleware.go
+│   │   ├── middleware_logger.go
+│   │   ├── middleware_ratelimit.go
+│   │   ├── middleware_recover.go
+│   │   ├── middleware_requestid.go
+│   │   ├── middleware_security.go
+│   │   ├── middleware_timeout.go
+│   │   ├── responses.go
+│   │   ├── server.go
+│   │   └── websocket.go
+│   ├── storage
+│   │   ├── local
+│   │   ├── s3
+│   │   ├── storage.go
+│   │   └── storage_test.go
+│   ├── testutil
+│   │   └── containers.go
+│   └── tui
+│       ├── screens
+│       ├── config_tui.go
+│       └── tui.go
 ├── scripts
 │   ├── generate-coverage-report.sh
 │   ├── generate-project-structure-xml.sh
@@ -840,5 +700,5 @@
 ├── tools.sum
 └── tsconfig.json
 
-221 directories, 615 files
+216 directories, 480 files
 ```

@@ -27,7 +27,7 @@
 
 # Arches
 
-AI-powered data processing platform with workflow automation and beautiful terminal interfaces.
+AI-powered full-stack app builder that generates production-ready applications from OpenAPI schemas.
 
 <a href="#-quick-start"><strong>Quick Start</strong></a> ·
 <a href="#documentation"><strong>Documentation</strong></a> ·
@@ -36,40 +36,29 @@ AI-powered data processing platform with workflow automation and beautiful termi
 
 ## Introduction
 
-**Arches** is a high-performance data processing platform that combines AI-powered chat
-interfaces, workflow automation, and beautiful terminal UIs to create powerful developer
-experiences.
+**Arches** is an open-source app builder that transforms OpenAPI schemas into complete, production-ready applications. Using AI and powerful code generation, Arches creates full-stack apps with authentication, CRUD operations, real-time features, and deployment configurations - all from a single API specification.
 
-Built for developers who need:
+Built for developers who want:
 
-🚀 Fast & efficient data processing<br /> 🤖 Multi-provider AI integration<br /> 💬 Beautiful
-terminal chat interface<br /> ⚡ Workflow automation with DAG support<br /> 🔧 Code-first
-development with OpenAPI<br />
+🎯 **OpenAPI → Full App** - Generate complete applications from schemas<br />
+🤖 **AI-Powered Development** - Natural language to OpenAPI, automatic handler implementation<br />
+🔥 **Hot Reload Everything** - Instant regeneration as you modify schemas<br />
+🎨 **Visual Schema Designer** - Build APIs visually or with AI assistance<br />
+🚀 **Multi-Language Support** - Python, JavaScript, or Go for custom logic<br />
+📦 **Deploy Anywhere** - Docker, Kubernetes, or single binary<br />
 
 ## 🚀 Quick Start
 
-Get started with Arches in seconds:
-
-### Configuration Viewer (No API Key Needed)
-
 ```bash
-archesai tui
-```
+# Create a new app
+arches new my-app
 
-### API Server
+# Start the development server
+cd my-app
+arches dev
 
-```bash
-archesai api
-```
-
-### AI Chat Interface
-
-```bash
-export OPENAI_API_KEY=your-key
-archesai tui --chat
-
-# Or with Ollama (local)
-archesai tui --chat --provider=ollama
+# Open the studio
+open http://localhost:3000
 ```
 
 For detailed installation and setup instructions, see
@@ -79,42 +68,46 @@ For detailed installation and setup instructions, see
 
 ### Core Documentation
 
-- [Terminal UI (TUI)](docs/features/tui.md) - Configuration viewer and AI chat interface
-- [API Reference](api/openapi.yaml) - OpenAPI specification
+- [Codebase Analysis](docs/codebase-analysis.md) - Detailed analysis of current architecture
 - [Development Guide](docs/guides/development.md) - Setup, build, and contribution guide
 - [Architecture](docs/architecture/system-design.md) - System design and patterns
-- [Contributing](docs/contributing.md) - How to contribute
-- [Project Layout](docs/architecture/project-layout.md) - Directory structure and organization
+- [Code Generation](docs/guides/codegen.md) - How the code generation works
+- [API Reference](api/openapi.yaml) - OpenAPI specification format
 - [Makefile Commands](docs/guides/makefile-commands.md) - Complete command reference
-
-### Packages
-
-#### AI & Chat
-
-- [LLM Package](internal/adapters/llm/) - Multi-provider LLM interface with chat clients
-
-#### Core Domains
-
-- [OAuth](internal/auth) - Authentication & authorization
-- [Organizations](internal/organizations/) - Organization management
-- [Pipelines](internal/pipelines/) - Pipeline automation
-- [Runs](internal/runs/) - Run management
-
-#### Infrastructure
-
-- [Database](internal/database/) - Database layer
-- [Config](internal/infrastructure/config/) - Configuration management
-- [CLI](internal/cli/) - Command-line interface
-- [TUI](internal/tui/) - Terminal user interface
 
 ## ✨ Features
 
-- 🤖 **Multi-Provider AI**: Support for OpenAI, Claude, Gemini, Ollama
-- 💬 **Chat Interface**: Simple persona-based chat system with session management
-- 🎨 **Beautiful TUI**: Terminal interface for configuration and chat
-- ⚙️ **Workflow Automation**: DAG-based data processing pipelines
-- 🔩 **Code Generation**: OpenAPI and SQL-driven development
-- 🚀 **Modern Stack**: Go, PostgreSQL/SQLite, Redis
+### What Gets Generated
+
+From a single OpenAPI specification, Arches generates:
+
+- ✅ **Backend API** - Complete REST API with CRUD operations
+- ✅ **Database Layer** - Migrations, models, and type-safe queries
+- ✅ **Frontend App** - React application with routing and components
+- ✅ **Authentication** - JWT, OAuth, magic links, and sessions
+- ✅ **WebSocket Support** - Real-time features out of the box
+- ✅ **RBAC** - Role-based access control from security schemes
+- ✅ **API Client** - Type-safe SDK with validation
+- ✅ **Docker Setup** - Containerization and orchestration
+- ✅ **Tests** - Unit and integration tests
+- ✅ **Documentation** - Auto-generated API docs
+
+### Development Experience
+
+- 🔥 **Hot Reload** - Instant regeneration on schema changes
+- 🎨 **Visual Designer** - Build schemas with drag-and-drop
+- 🤖 **AI Assistant** - Generate schemas from natural language
+- 🔧 **Custom Logic** - Write handlers in Python, JavaScript, or Go
+- 📊 **Live Preview** - See your app as you build it
+- 🚀 **One-Click Deploy** - Deploy to cloud platforms instantly
+
+### Technology Stack
+
+- **Code Generation**: Template-based with parallel processing
+- **Backend Languages**: Go (default), Python, Node.js (coming soon)
+- **Frontend**: React 19 + TypeScript + Vite
+- **Database**: PostgreSQL, SQLite, MySQL (coming soon)
+- **Deployment**: Docker, Kubernetes, Single Binary
 
 ## License
 

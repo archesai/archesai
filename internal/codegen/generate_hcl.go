@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
+	"path/filepath"
 	"sort"
 
 	"golang.org/x/sync/errgroup"
 
-	database "github.com/archesai/archesai/internal/infrastructure/persistence"
 	"github.com/archesai/archesai/internal/parsers"
+	database "github.com/archesai/archesai/pkg/persistence"
 )
 
 // HCLTemplateData defines the template data for HCL generation
@@ -47,8 +48,16 @@ func (g *Generator) GenerateHCL(schemas []*parsers.SchemaDef) error {
 		Schemas:      entities,
 		DatabaseType: database.TypePostgreSQL,
 	}
+	postgresHCLPath := filepath.Join(
+		g.outputDir,
+		"generated",
+		"infrastructure",
+		"persistence",
+		"postgres",
+		"schema.gen.hcl",
+	)
 	eg.Go(func() error {
-		if err := g.filewriter.WriteTemplate(PostgresHCLSchemaFile, tmpl, postgresData); err != nil {
+		if err := g.filewriter.WriteTemplate(postgresHCLPath, tmpl, postgresData); err != nil {
 			return fmt.Errorf("failed to write PostgreSQL HCL file: %w", err)
 		}
 		return nil
@@ -59,8 +68,16 @@ func (g *Generator) GenerateHCL(schemas []*parsers.SchemaDef) error {
 		Schemas:      entities,
 		DatabaseType: database.TypeSQLite,
 	}
+	sqliteHCLPath := filepath.Join(
+		g.outputDir,
+		"generated",
+		"infrastructure",
+		"persistence",
+		"sqlite",
+		"schema.gen.hcl",
+	)
 	eg.Go(func() error {
-		if err := g.filewriter.WriteTemplate(SQLiteHCLSchemaFile, tmpl, sqliteData); err != nil {
+		if err := g.filewriter.WriteTemplate(sqliteHCLPath, tmpl, sqliteData); err != nil {
 			return fmt.Errorf("failed to write SQLite HCL file: %w", err)
 		}
 		return nil

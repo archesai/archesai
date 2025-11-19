@@ -16,23 +16,34 @@ import (
 	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
 
-	"github.com/archesai/archesai/internal/adapters/http/server"
-	commands "github.com/archesai/archesai/internal/application/commands/{{ lower .Tag }}"
-	queries "github.com/archesai/archesai/internal/application/queries/{{ lower .Tag }}"
-	"github.com/archesai/archesai/internal/core/models"
+	"github.com/archesai/archesai/pkg/server"
+	{{- if .HasCustomHandlers }}
+	customHandlers "github.com/archesai/archesai/apis/studio/handlers/{{ lower .Tag }}"
+	{{- end }}
+	commands "{{ .OutputPath }}/generated/application/commands/{{ lower .Tag }}"
+	queries "{{ .OutputPath }}/generated/application/queries/{{ lower .Tag }}"
+	"{{ .OutputPath }}/generated/core/models"
 )
 
 // {{ .Tag }}Controller handles HTTP requests for {{ lower .Tag }} endpoints.
 type {{ .Tag }}Controller struct {
     {{- range .Operations }}
         {{- if ne .Method "GET" }}
+            {{- if .XCodegenCustomHandler }}
+    {{ camelCase .ID }}Handler *customHandlers.{{ pascalCase .ID }}CommandHandler
+            {{- else }}
     {{ camelCase .ID }}Handler *commands.{{ pascalCase .ID }}CommandHandler
+            {{- end }}
         {{- end }}
     {{- end }}
 
     {{- range .Operations }}
         {{- if eq .Method "GET" }}
+            {{- if .XCodegenCustomHandler }}
+    {{ camelCase .ID }}Handler *customHandlers.{{ pascalCase .ID }}QueryHandler
+            {{- else }}
     {{ camelCase .ID }}Handler *queries.{{ pascalCase .ID }}QueryHandler
+            {{- end }}
         {{- end }}
     {{- end }}
 }
@@ -42,12 +53,20 @@ type {{ .Tag }}Controller struct {
 func New{{ .Tag }}Controller(
     {{- range .Operations }}
         {{- if ne .Method "GET" }}
+            {{- if .XCodegenCustomHandler }}
+    {{ camelCase .ID }}Handler *customHandlers.{{ pascalCase .ID }}CommandHandler,
+            {{- else }}
     {{ camelCase .ID }}Handler *commands.{{ pascalCase .ID }}CommandHandler,
+            {{- end }}
         {{- end }}
     {{- end }}
     {{- range .Operations }}
         {{- if eq .Method "GET" }}
+            {{- if .XCodegenCustomHandler }}
+    {{ camelCase .ID }}Handler *customHandlers.{{ pascalCase .ID }}QueryHandler,
+            {{- else }}
     {{ camelCase .ID }}Handler *queries.{{ pascalCase .ID }}QueryHandler,
+            {{- end }}
         {{- end }}
     {{- end }}
 ) *{{ .Tag }}Controller {

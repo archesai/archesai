@@ -1,0 +1,78 @@
+title: Member
+description: Schema for Member entity
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    indices:
+      - organizationID
+      - userID
+    excludeFromUpdate:
+      - OrganizationID
+      - UserID
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
+      - field: userID
+        references: user
+        onDelete: CASCADE
+        onUpdate: NO_ACTION
+    additionalMethods:
+      - name: ListMembersByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+      - name: ListMembersByUser
+        params:
+          - name: userID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+      - name: GetMemberByUserAndOrganization
+        params:
+          - name: userID
+            type: string
+            format: uuid
+            maxLength: 36
+          - name: organizationID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: single
+allOf:
+  - $ref: ../../../../base/api/components/schemas/Base.yaml
+  - type: object
+    properties:
+      organizationID:
+        description: The organization this member belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+      role:
+        description: The role of the member
+        type: string
+        enum:
+          - admin
+          - owner
+          - basic
+        example: admin
+        default: basic
+      userID:
+        description: The user who is a member of the organization
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+    required:
+      - organizationID
+      - role
+      - userID
+unevaluatedProperties: false

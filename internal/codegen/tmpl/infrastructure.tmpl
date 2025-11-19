@@ -19,24 +19,23 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 
-	"github.com/archesai/archesai/internal/core/models"
-	coreEvents "github.com/archesai/archesai/internal/core/events"
-	ports "github.com/archesai/archesai/internal/core/repositories"
-	"github.com/archesai/archesai/internal/infrastructure/auth"
-	"github.com/archesai/archesai/internal/infrastructure/cache"
-	"github.com/archesai/archesai/internal/infrastructure/config"
-	"github.com/archesai/archesai/internal/infrastructure/events"
-	"github.com/archesai/archesai/internal/infrastructure/executor"
-	database "github.com/archesai/archesai/internal/infrastructure/persistence"
-	"github.com/archesai/archesai/internal/infrastructure/persistence/postgres/repositories"
-	"github.com/archesai/archesai/internal/infrastructure/redis"
-	"github.com/archesai/archesai/internal/shared/logger"
+	"{{ .OutputPath }}/generated/core/models"
+	ports "{{ .OutputPath }}/generated/core/repositories"
+	"github.com/archesai/archesai/pkg/auth"
+	"github.com/archesai/archesai/pkg/cache"
+	"github.com/archesai/archesai/pkg/config"
+	"github.com/archesai/archesai/pkg/events"
+	"github.com/archesai/archesai/pkg/executor"
+	database "github.com/archesai/archesai/pkg/persistence"
+	"{{ .OutputPath }}/generated/infrastructure/persistence/postgres/repositories"
+	"github.com/archesai/archesai/pkg/redis"
+	"github.com/archesai/archesai/pkg/logger"
 )
 
 // Infrastructure holds all infrastructure components.
 type Infrastructure struct {
 	Database        *database.Database
-	EventPublisher  coreEvents.Publisher
+	EventPublisher  events.Publisher
 	AuthService     *auth.Service
 	AuthCache       cache.Cache[models.Session]
 	UsersCache      cache.Cache[models.User]
@@ -55,7 +54,7 @@ type Repositories struct {
 }
 
 // NewInfrastructure creates all infrastructure components.
-func NewInfrastructure(cfg *config.Config) (*Infrastructure, error) {
+func NewInfrastructure(cfg *models.Config) (*Infrastructure, error) {
 	// Initialize database
 	var sqlDB *sql.DB
 	var pgxPool *pgxpool.Pool

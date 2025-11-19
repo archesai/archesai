@@ -10,8 +10,9 @@ import (
 
 // SchemasTemplateData defines a template data structure
 type SchemasTemplateData struct {
-	Package string
-	Schema  *parsers.SchemaDef
+	Package    string
+	Schema     *parsers.SchemaDef
+	OutputPath string // Import path for generated code
 }
 
 // GenerateSchemas generates all model types (DTOs, entities, value objects)
@@ -42,7 +43,7 @@ func (g *Generator) generateSchema(
 	switch schema.XCodegenSchemaType {
 	case schemaTypeEntity, schemaTypeValueObject:
 		packageName = "models"
-		outputDir = "internal/core/models"
+		outputDir = filepath.Join(g.outputDir, "generated", "core", "models")
 		if customOutputDir != nil {
 			outputDir = *customOutputDir
 			packageName = filepath.Base(*customOutputDir)
@@ -55,9 +56,12 @@ func (g *Generator) generateSchema(
 		)
 	}
 
+	importPath := "github.com/archesai/archesai" + strings.TrimPrefix(g.outputDir, ".")
+
 	data := SchemasTemplateData{
-		Package: packageName,
-		Schema:  schema,
+		Package:    packageName,
+		Schema:     schema,
+		OutputPath: importPath,
 	}
 
 	outputPath := filepath.Join(outputDir, strings.ToLower(schema.Name)+".gen.go")

@@ -1,0 +1,93 @@
+get:
+  operationId: OauthCallback
+  x-codegen-custom-handler: true
+  summary: Handle OAuth callback
+  tags:
+    - Auth
+  description: Handle the callback from OAuth provider and complete authentication
+  parameters:
+    - schema:
+        type: string
+        enum:
+          - google
+          - github
+          - microsoft
+        example: google
+      in: path
+      name: provider
+      required: true
+      description: The OAuth provider handling the callback
+    - schema:
+        type: string
+        maxLength: 1024
+        pattern: ^[\w\-]+$
+        example: authorization_code_123
+      in: query
+      name: code
+      required: false
+      description: Authorization code from OAuth provider
+    - schema:
+        type: string
+        maxLength: 255
+        pattern: ^[\w\-]+$
+        example: random_state_123
+      in: query
+      name: state
+      required: false
+      description: State parameter for CSRF protection
+    - schema:
+        type: string
+        maxLength: 100
+        pattern: ^[\w\-_]+$
+        example: access_denied
+      in: query
+      name: error
+      required: false
+      description: Error code if authorization failed
+    - schema:
+        type: string
+        maxLength: 500
+        pattern: ^[\w\s\-.,!?()@#+/]*$
+        example: The user denied the request
+      in: query
+      name: error_description
+      required: false
+      description: Human-readable error description
+  responses:
+    '200':
+      $ref: ../components/responses/SessionCreated.yaml
+    '302':
+      description: Redirect to frontend with authentication result
+      headers:
+        Set-Cookie:
+          description: Session cookies for authentication
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 4096
+            pattern: ^[\w\-=;,. ]+$
+        Location:
+          description: Redirect URL to frontend
+          schema:
+            type: string
+            format: uri
+            maxLength: 2048
+            example: http://localhost:3000/auth/success
+        X-RateLimit-Limit:
+          $ref: ../../../base/api/components/headers/RateLimitLimit.yaml
+        X-RateLimit-Remaining:
+          $ref: ../../../base/api/components/headers/RateLimitRemaining.yaml
+        X-RateLimit-Reset:
+          $ref: ../../../base/api/components/headers/RateLimitReset.yaml
+    '400':
+      $ref: ../../../base/api/components/responses/BadRequest.yaml
+    '401':
+      $ref: ../../../base/api/components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../../../base/api/components/responses/UnprocessableEntity.yaml
+    '404':
+      $ref: ../../../base/api/components/responses/NotFound.yaml
+    '429':
+      $ref: ../../../base/api/components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../../../base/api/components/responses/InternalServerError.yaml

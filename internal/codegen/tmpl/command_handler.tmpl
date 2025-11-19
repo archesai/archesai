@@ -14,9 +14,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/internal/core/models"
-	"github.com/archesai/archesai/internal/core/events"
-	"github.com/archesai/archesai/internal/core/repositories"
+	"{{ .OutputPath }}/generated/core/models"
+	domainevents "{{ .OutputPath }}/generated/core/events"
+	"{{ .OutputPath }}/generated/core/repositories"
+	"github.com/archesai/archesai/pkg/events"
 )
 
 // {{ .Operation.ID }}Command represents the command to {{ lower .Operation.Method }} a {{ lower .Operation.Tag }}.
@@ -109,8 +110,8 @@ func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ 
 	}
 
 	// Publish domain event
-	event := events.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}CreatedEvent(created.ID)
-	if err := h.publisher.Publish(ctx, event); err != nil {
+	event := domainevents.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}CreatedEvent(created.ID)
+	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
 		// Log error but don't fail the operation
 	}
 
@@ -154,8 +155,8 @@ func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ 
 	}
 
 	// Publish domain event
-	event := events.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}UpdatedEvent(updated.ID)
-	if err := h.publisher.Publish(ctx, event); err != nil {
+	event := domainevents.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}UpdatedEvent(updated.ID)
+	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
 		// Log error but don't fail the operation
 	}
 
@@ -188,8 +189,8 @@ func (h *{{ .Operation.ID }}CommandHandler) Handle(ctx context.Context, cmd *{{ 
 	}
 
 	// Publish domain event
-	event := events.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}DeletedEvent(cmd.ID)
-	if err := h.publisher.Publish(ctx, event); err != nil {
+	event := domainevents.New{{ if .Operation.XCodegenRepository }}{{ .Operation.XCodegenRepository }}{{ else }}{{ .Operation.Tag }}{{ end }}DeletedEvent(cmd.ID)
+	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
 		// Log error but don't fail the operation
 	}
 

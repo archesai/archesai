@@ -1,0 +1,54 @@
+title: Label
+description: Schema for Label entity
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    excludeFromUpdate:
+      - OrganizationID
+    indices:
+      - organizationID
+      - name
+    relations:
+      - field: organizationID
+        references: organization
+        onDelete: CASCADE
+        onUpdate: CASCADE
+    additionalMethods:
+      - name: ListLabelsByOrganization
+        params:
+          - name: organizationID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: multiple
+      - name: GetLabelByName
+        params:
+          - name: name
+            type: string
+          - name: organizationID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: single
+allOf:
+  - $ref: ../../../../base/api/components/schemas/Base.yaml
+  - type: object
+    properties:
+      name:
+        description: The name of the label
+        type: string
+        minLength: 1
+        example: Production
+        maxLength: 255
+        pattern: ^[\w\s\-.,!?()@#+/']+$
+      organizationID:
+        description: The organization this label belongs to
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+        minLength: 36
+        maxLength: 36
+    required:
+      - name
+      - organizationID
+unevaluatedProperties: false

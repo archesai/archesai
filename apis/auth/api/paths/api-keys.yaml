@@ -1,0 +1,91 @@
+get:
+  operationId: ListAPIKeys
+  summary: List tokens
+  tags:
+    - APIKey
+  description: List user's tokens (without showing the actual key values)
+  parameters:
+    - $ref: ../components/parameters/APIKeysFilter.yaml
+    - $ref: ../../../base/api/components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/APIKeysSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      $ref: ../components/responses/APIKeyListResponse.yaml
+    '400':
+      $ref: ../../../base/api/components/responses/BadRequest.yaml
+    '401':
+      $ref: ../../../base/api/components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../../../base/api/components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../../../base/api/components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../../../base/api/components/responses/InternalServerError.yaml
+post:
+  operationId: CreateAPIKey
+  summary: Create a token
+  tags:
+    - APIKey
+  description: Create a token
+  security:
+    - bearerAuth: []
+  requestBody:
+    description: API key creation request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              description: Human-readable name for the API key
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: Production API Key
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            scopes:
+              description: List of scopes/permissions for this API key
+              type: array
+              maxItems: 100
+              items:
+                type: string
+                minLength: 1
+                maxLength: 255
+                pattern: ^[\w\s\-.,!?()@#+/:]*$
+              example:
+                - read:users
+                - write:workflows
+            rateLimit:
+              description: Requests per minute limit (default 60)
+              type: integer
+              format: int32
+              minimum: 1
+              maximum: 10000
+              default: 60
+              example: 1000
+            expiresAt:
+              description: When the API key expires (optional, no expiry if omitted)
+              type: string
+              format: date-time
+              minLength: 1
+              maxLength: 255
+              example: '2025-01-15T09:30:00Z'
+          required:
+            - name
+            - scopes
+    required: true
+  responses:
+    '201':
+      $ref: ../components/responses/APIKeyResponse.yaml
+    '400':
+      $ref: ../../../base/api/components/responses/BadRequest.yaml
+    '401':
+      $ref: ../../../base/api/components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../../../base/api/components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../../../base/api/components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../../../base/api/components/responses/InternalServerError.yaml

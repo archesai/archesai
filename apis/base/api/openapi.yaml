@@ -1,0 +1,14 @@
+openapi: 3.2.0
+info:
+  title: Base Module
+  description: Common components shared across all Arches modules
+  version: 1.0.0
+  license:
+    name: AGPL-3.0
+    url: https://opensource.org/licenses/AGPL-3.0
+jsonSchemaDialect: https://spec.openapis.org/oas/3.2/dialect/2025-09-17
+# Base module has no paths - it only provides shared components
+paths: {}
+components:
+  # Common schemas, parameters, responses, and headers are defined here
+  # and referenced by other modules

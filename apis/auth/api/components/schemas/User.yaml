@@ -1,0 +1,56 @@
+description: Schema for User entity
+title: User
+x-codegen-schema-type: entity
+x-codegen:
+  repository:
+    indices:
+      - email
+    additionalMethods:
+      - name: GetUserByEmail
+        params:
+          - name: email
+            type: string
+        returns: single
+      - name: GetUserBySessionID
+        params:
+          - name: sessionID
+            type: string
+            format: uuid
+            maxLength: 36
+        returns: single
+allOf:
+  - $ref: ../../../../base/api/components/schemas/Base.yaml
+  - type: object
+    properties:
+      email:
+        description: The user's email address
+        type: string
+        format: email
+        minLength: 5
+        maxLength: 255
+        example: user@example.com
+      emailVerified:
+        description: Whether the user's email has been verified
+        type: boolean
+        default: false
+        example: true
+      image:
+        description: The user's avatar image URL
+        type: [string, 'null']
+        minLength: 5
+        maxLength: 2048
+        format: uri
+        example: https://example.com/avatar.jpg
+      name:
+        description: The user's display name
+        type: string
+        minLength: 1
+        maxLength: 255
+        example: John Doe
+        pattern: ^[\w\s\-.,!?()@#+/']+$
+    required:
+      - email
+      - emailVerified
+      - name
+      - image
+unevaluatedProperties: false

@@ -26,14 +26,16 @@ type Generator struct {
 	templates  map[string]*template.Template
 	filewriter *FileWriter
 	parser     *parsers.OpenAPIParser
+	outputDir  string // Base output directory for generated files
 }
 
 // NewGenerator creates a new code generator instance
-func NewGenerator() *Generator {
+func NewGenerator(outputDir string) *Generator {
 	return &Generator{
 		templates:  nil,
 		filewriter: nil,
 		parser:     parsers.NewOpenAPIParser(),
+		outputDir:  outputDir,
 	}
 }
 
