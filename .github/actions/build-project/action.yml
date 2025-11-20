@@ -25,12 +25,12 @@ runs:
         echo "Generating code..."
         make generate
 
-    - name: Build web assets
-      if: inputs.build-web == 'true'
-      shell: bash
-      run: |
-        echo "Building web assets..."
-        make build-web
+    # - name: Build web assets FIXME: Disabled for now
+    #   if: inputs.build-web == 'true'
+    #   shell: bash
+    #   run: |
+    #     echo "Building web assets..."
+    #     make build-web
 
     - name: Run tests (full)
       if: inputs.test-type == 'full'
