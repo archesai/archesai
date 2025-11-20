@@ -664,6 +664,7 @@
 │   │   │   │   └── workflows.md
 │   │   │   ├── guides
 │   │   │   │   ├── code-generation.md
+│   │   │   │   ├── custom-handlers.md
 │   │   │   │   ├── development.md
 │   │   │   │   ├── makefile-commands.md
 │   │   │   │   ├── overview.md
@@ -679,8 +680,10 @@
 │   │   │   │   └── overview.md
 │   │   │   ├── troubleshooting
 │   │   │   │   └── common-issues.md
+│   │   │   ├── codebase-analysis.md
 │   │   │   ├── contributing.md
-│   │   │   └── getting-started.md
+│   │   │   ├── getting-started.md
+│   │   │   └── studio-ui-design.md
 │   │   ├── public
 │   │   │   └── .gitkeep
 │   │   ├── src
@@ -806,5 +809,5 @@
 ├── tools.sum
 └── tsconfig.json
 
-193 directories, 609 files
+193 directories, 612 files
 ```

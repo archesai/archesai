@@ -3,9 +3,9 @@ import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
-  optimizeDeps: {
-    include: ["@archesai/ui"],
-  },
+  // optimizeDeps: {
+  //   include: ["@archesai/ui"],
+  // },
   plugins: [svgr()],
   publicDir: resolve(import.meta.dirname, "../../assets"),
   server: {

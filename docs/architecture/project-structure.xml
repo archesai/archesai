@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-11-20T14:20:42-05:00
+  Generated: 2025-11-20T15:00:41-05:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -133,15 +133,15 @@
         <dir name="generated" type="generated" files="2" dirs="14"/>
       </dir>
     </dir>
-    <dir name="docs" type="npm-package" purpose="Documentation" files="6" dirs="6" patterns="*.tsx" key-files="package.json">
+    <dir name="docs" type="npm-package" purpose="Documentation" files="6" dirs="7" patterns="*.tsx" key-files="package.json">
       <dir name="apis" type="api-spec" purpose="API definitions" files="1" patterns="*.yaml"/>
-      <dir name="pages" files="2" dirs="10">
+      <dir name="pages" files="4" dirs="10">
         <dir name="api-reference" purpose="API definitions" files="1"/>
         <dir name="architecture" files="5"/>
         <dir name="deployment" files="4"/>
         <dir name="documentation" purpose="Documentation"/>
         <dir name="features" files="6"/>
-        <dir name="guides" files="6"/>
+        <dir name="guides" files="7"/>
         <dir name="monitoring" files="1"/>
         <dir name="performance" files="2"/>
         <dir name="security" files="2"/>
