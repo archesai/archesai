@@ -195,7 +195,8 @@ func TestExtractOperations(t *testing.T) {
 func TestExtractOperations_NilDocument(t *testing.T) {
 	parser := NewOpenAPIParser()
 	operations, err := parser.extractOperations()
-	require.NoError(t, err)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "document not set")
 	assert.Nil(t, operations)
 }
 

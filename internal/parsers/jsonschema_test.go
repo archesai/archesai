@@ -305,7 +305,7 @@ func TestExtractFieldsWithNestedObjects(t *testing.T) {
 
 	// Addresses should be an array of named type (not inline struct)
 	// The code generator creates named types for array item objects for better maintainability
-	expectedAddressesType := "[]AddressesItem"
+	expectedAddressesType := "[]ComplexSchemaAddressesItem"
 	if addressesField.GoType != expectedAddressesType {
 		t.Errorf(
 			"Expected Addresses type to be '%s', got: %s",
