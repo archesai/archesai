@@ -15,7 +15,7 @@ catalog:
   socket.io-client: 4.8.1
   typescript: 5.9.3
   zod: 4.1.12
-  zudoku: 0.64.2
+  zudoku: 0.61.5
 
 catalogs:
   client:
