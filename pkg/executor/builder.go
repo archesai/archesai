@@ -1,3 +1,4 @@
+// Package executor provides functionality for executing code in isolated environments.
 package executor
 
 import (

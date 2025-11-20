@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/apis/studio/generated/core/models"
-	"github.com/archesai/archesai/apis/studio/generated/core/repositories"
 	"github.com/archesai/archesai/pkg/auth/oauth"
 	"github.com/archesai/archesai/pkg/cache"
 	corerrors "github.com/archesai/archesai/pkg/errors"
@@ -24,11 +23,9 @@ const (
 // It implements the core services.AuthService interface.
 type Service struct {
 	config             *models.Config
-	sessionRepo        repositories.SessionRepository
-	sessionsRepo       repositories.SessionRepository
-	userRepo           repositories.UserRepository
-	accountRepo        repositories.AccountRepository
-	accountsRepo       repositories.AccountRepository
+	sessionRepo        SessionRepository
+	userRepo           UserRepository
+	accountRepo        AccountRepository
 	tokenManager       *TokenManager
 	magicLink          *MagicLinkProvider
 	oauthProviders     map[string]OAuthProvider
@@ -58,9 +55,9 @@ type OAuthProvider interface {
 // NewService creates a new authentication service.
 func NewService(
 	cfg *models.Config,
-	sessionRepo repositories.SessionRepository,
-	userRepo repositories.UserRepository,
-	accountRepo repositories.AccountRepository,
+	sessionRepo SessionRepository,
+	userRepo UserRepository,
+	accountRepo AccountRepository,
 	cacheService cache.Cache[string],
 	magicLinkDeliverer MagicLinkDeliverer,
 	otpDeliverer OTPDeliverer,
@@ -74,10 +71,8 @@ func NewService(
 	s := &Service{
 		config:             cfg,
 		sessionRepo:        sessionRepo,
-		sessionsRepo:       sessionRepo,
 		userRepo:           userRepo,
 		accountRepo:        accountRepo,
-		accountsRepo:       accountRepo,
 		tokenManager:       NewTokenManager(cfg.Auth.Local.JWTSecret),
 		magicLink:          NewMagicLinkProvider(cfg.Auth.Local.JWTSecret, baseURL),
 		oauthProviders:     make(map[string]OAuthProvider),
@@ -131,7 +126,7 @@ func (s *Service) HandleOAuthCallback(
 	provider string,
 	code string,
 	_ string,
-) (*AuthTokens, error) {
+) (*Tokens, error) {
 	p, exists := s.oauthProviders[provider]
 	if !exists {
 		return nil, fmt.Errorf("OAuth provider %s not configured", provider)
@@ -204,7 +199,7 @@ func (s *Service) GenerateMagicLink(
 func (s *Service) VerifyMagicLink(
 	ctx context.Context,
 	token string,
-) (*AuthTokens, error) {
+) (*Tokens, error) {
 	// Validate the magic link token
 	claims, err := s.magicLink.ValidateLink(token)
 	if err != nil {
@@ -259,7 +254,7 @@ func (s *Service) AuthenticateWithPassword(
 	ctx context.Context,
 	email string,
 	password string,
-) (*AuthTokens, error) {
+) (*Tokens, error) {
 	// Find user by email
 	user, err := s.userRepo.GetUserByEmail(ctx, email)
 	if err != nil {
@@ -297,7 +292,7 @@ func (s *Service) AuthenticateWithPassword(
 func (s *Service) RefreshToken(
 	ctx context.Context,
 	refreshToken string,
-) (*AuthTokens, error) {
+) (*Tokens, error) {
 	// Validate refresh token
 	claims, err := s.tokenManager.ValidateRefreshToken(refreshToken)
 	if err != nil {
@@ -421,7 +416,7 @@ func (s *Service) createSession(
 func (s *Service) generateTokens(
 	user *models.User,
 	session *models.Session,
-) (*AuthTokens, error) {
+) (*Tokens, error) {
 	// Generate access token (short-lived)
 	accessToken, err := s.tokenManager.CreateAccessToken(user.ID, session.ID)
 	if err != nil {
@@ -434,7 +429,7 @@ func (s *Service) generateTokens(
 		return nil, fmt.Errorf("failed to create refresh token: %w", err)
 	}
 
-	return &AuthTokens{
+	return &Tokens{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		TokenType:    "Bearer",
@@ -447,7 +442,7 @@ func (s *Service) generateTokens(
 func (s *Service) Register(
 	ctx context.Context,
 	email, password, name string,
-) (*AuthTokens, error) {
+) (*Tokens, error) {
 	// Check if user already exists
 	existingUser, _ := s.userRepo.GetUserByEmail(ctx, email)
 	if existingUser != nil {

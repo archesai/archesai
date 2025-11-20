@@ -25,7 +25,7 @@ func NewLoginCommandHandler(authService *auth.Service) *LoginCommandHandler {
 func (h *LoginCommandHandler) Handle(
 	ctx context.Context,
 	cmd *commands.LoginCommand,
-) (*auth.AuthTokens, error) {
+) (*auth.Tokens, error) {
 	if cmd.Email == "" {
 		return nil, fmt.Errorf("email is required")
 	}

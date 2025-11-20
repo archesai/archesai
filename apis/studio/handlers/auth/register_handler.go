@@ -33,7 +33,7 @@ func NewRegisterCommandHandler(
 func (h *RegisterCommandHandler) Handle(
 	ctx context.Context,
 	cmd *commands.RegisterCommand,
-) (*auth.AuthTokens, error) {
+) (*auth.Tokens, error) {
 	if cmd.Email == "" {
 		return nil, fmt.Errorf("email is required")
 	}

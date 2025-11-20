@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-11-19T13:39:53-05:00
+  Generated: 2025-11-20T13:31:05-05:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -37,15 +37,14 @@
     <file>biome.json</file>
   </root-files>
   <dir name="assets" purpose="Static assets" files="13"/>
-  <dir name="cmd" dirs="2">
+  <dir name="cmd" dirs="1">
     <dir name="archesai" files="1" key-files="main.go"/>
-    <dir name="codegen" files="1" key-files="main.go"/>
   </dir>
   <dir name="deployments" purpose="Deployment configurations" dirs="8">
     <dir name="containers" dirs="1">
       <dir name="runners" dirs="3">
         <dir name="go" type="go-module" files="6" key-files="main.go,go.mod,Dockerfile"/>
-        <dir name="node" type="npm-package" files="6" dirs="2" key-files="package.json,Dockerfile"/>
+        <dir name="node" type="npm-package" files="6" dirs="3" key-files="package.json,Dockerfile"/>
         <dir name="python" type="container" files="5" key-files="Dockerfile"/>
       </dir>
     </dir>
@@ -118,12 +117,12 @@
     </dir>
   </dir>
   <dir name="web" purpose="Web applications" dirs="4">
-    <dir name="client" type="npm-package" purpose="Client SDK" files="5" dirs="2" key-files="package.json">
+    <dir name="client" type="npm-package" purpose="Client SDK" files="5" dirs="3" key-files="package.json">
       <dir name="src" files="3" dirs="1" key-files="index.ts">
         <dir name="generated" type="generated" files="2" dirs="14"/>
       </dir>
     </dir>
-    <dir name="docs" type="npm-package" purpose="Documentation" files="6" dirs="5" patterns="*.tsx" key-files="package.json">
+    <dir name="docs" type="npm-package" purpose="Documentation" files="6" dirs="6" patterns="*.tsx" key-files="package.json">
       <dir name="apis" type="api-spec" purpose="API definitions" files="1" patterns="*.yaml"/>
       <dir name="pages" files="2" dirs="10">
         <dir name="api-reference" purpose="API definitions" files="1"/>
@@ -140,7 +139,7 @@
       <dir name="public" files="1"/>
       <dir name="src" files="3" patterns="*.tsx"/>
     </dir>
-    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="3" key-files="package.json,Dockerfile">
+    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="4" key-files="package.json,Dockerfile">
       <dir name="public" files="1"/>
       <dir name="src" files="2" dirs="5" patterns="*.tsx">
         <dir name="components" purpose="Reusable components" files="6" dirs="6" patterns="*.tsx"/>
@@ -150,7 +149,7 @@
         <dir name="styles" files="1"/>
       </dir>
     </dir>
-    <dir name="ui" type="npm-package" purpose="UI components" files="6" dirs="2" key-files="package.json">
+    <dir name="ui" type="npm-package" purpose="UI components" files="6" dirs="3" key-files="package.json">
       <dir name="src" files="1" dirs="7" key-files="index.ts">
         <dir name="components" purpose="Reusable components" files="1" dirs="5" key-files="index.ts"/>
         <dir name="hooks" files="4" patterns="*.tsx"/>

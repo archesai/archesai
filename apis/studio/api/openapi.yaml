@@ -22,12 +22,40 @@ security:
   - bearerAuth: []
   - sessionCookie: []
 tags:
+  - name: APIKey
+    description: API key management
+  - name: Artifact
+    description: Content artifact management
+  - name: Auth
+    description: Authentication and authorization operations
   - name: Config
     description: Configuration management
   - name: Executor
     description: Custom executor management
   - name: Health
     description: Health check operations
+  - name: Invitation
+    description: Organization invitation management
+  - name: Label
+    description: Content label management
+  - name: Member
+    description: Organization member management
+  - name: OAuth
+    description: OAuth provider integration
+  - name: Organization
+    description: Organization management
+  - name: Pipeline
+    description: Pipeline management
+  - name: Run
+    description: Pipeline run management
+  - name: Session
+    description: User session management
+  - name: Token
+    description: API token management
+  - name: Tool
+    description: Tool management
+  - name: User
+    description: User profile management
 paths:
   # Auth module paths
   /auth/login:

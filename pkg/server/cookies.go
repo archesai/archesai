@@ -26,7 +26,7 @@ func NewCookieManager(secure bool, domain string) *CookieManager {
 // SetAuthCookies sets authentication cookies from tokens.
 func (c *CookieManager) SetAuthCookies(
 	w http.ResponseWriter,
-	tokens *auth.AuthTokens,
+	tokens *auth.Tokens,
 	rememberMe bool,
 ) {
 	// Set access token cookie

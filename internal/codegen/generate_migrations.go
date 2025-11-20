@@ -21,7 +21,7 @@ import (
 	// modernc.org/sqlite driver is required for SQLite connections
 	_ "modernc.org/sqlite"
 
-	database "github.com/archesai/archesai/pkg/persistence"
+	"github.com/archesai/archesai/pkg/database"
 )
 
 const (

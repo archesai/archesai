@@ -64,7 +64,7 @@ func convertToOllamaMessages(messages []Message) []api.Message {
 }
 
 // convertToOllamaTools converts our generic Tool type to Ollama's tool type.
-func convertToOllamaTools(tools []LLMTool) api.Tools {
+func convertToOllamaTools(tools []Tool) api.Tools {
 	if len(tools) == 0 {
 		return nil
 	}

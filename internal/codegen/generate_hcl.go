@@ -10,7 +10,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/archesai/archesai/internal/parsers"
-	database "github.com/archesai/archesai/pkg/persistence"
+	"github.com/archesai/archesai/pkg/database"
 )
 
 // HCLTemplateData defines the template data for HCL generation

@@ -10,8 +10,8 @@ type ChatCompletionStream interface {
 	Close() error
 }
 
-// LLMService defines the interface for language model services.
-type LLMService interface {
+// Service defines the interface for language model services.
+type Service interface {
 	// CreateChatCompletion creates a non-streaming chat completion.
 	CreateChatCompletion(
 		ctx context.Context,

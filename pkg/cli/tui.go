@@ -104,7 +104,7 @@ func runTUI(_ *cobra.Command, _ []string) error {
 	}
 
 	// Initialize LLM client
-	var llmService llm.LLMService
+	var llmService llm.Service
 	switch provider {
 	case llm.ProviderOpenAI:
 		llmService = llm.NewOpenAILLM(tuiAPIKey)

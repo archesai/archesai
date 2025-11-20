@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Arches Studio is a web-based IDE for building full-stack applications from OpenAPI specifications. It runs on port 3000 and manages generated applications that run on separate ports (8080+).
+The Arches Studio is a web-based IDE for building full-stack applications from OpenAPI specifications.
+It runs on port 3000 and manages generated applications that run on separate ports (8080+).
 
 ## Two-Process Architecture
 
@@ -35,7 +36,7 @@ This runs:
 
 ## Studio UI Layout
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │  Arches Studio                                [□ ×] │
 ├──────────┬──────────────────────────────────────────┤
@@ -121,7 +122,7 @@ Or single view:
 
 ### Communication
 
-```
+```text
 Studio UI ←→ Studio API ←→ File System ←→ Generated App
          WebSocket      Watch & Generate    Auto-restart
 ```

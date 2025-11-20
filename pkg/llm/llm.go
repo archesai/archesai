@@ -47,7 +47,7 @@ type ChatCompletionRequest struct {
 	PresencePenalty  float64   `json:"presence_penalty,omitempty"`
 	FrequencyPenalty float64   `json:"frequency_penalty,omitempty"`
 	User             string    `json:"user,omitempty"`
-	Tools            []LLMTool `json:"tools,omitempty"`
+	Tools            []Tool    `json:"tools,omitempty"`
 	Stream           bool      `json:"stream,omitempty"`
 }
 
@@ -87,8 +87,8 @@ type StreamChoice struct {
 	FinishReason string      `json:"finish_reason"`
 }
 
-// LLMTool represents a function that can be called by the LLM.
-type LLMTool struct {
+// Tool represents a function that can be called by the LLM.
+type Tool struct {
 	Type     string    `json:"type"`
 	Function *Function `json:"function,omitempty"`
 }

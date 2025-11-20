@@ -26,7 +26,7 @@ func NewVerifyMagicLinkCommandHandler(
 func (h *VerifyMagicLinkCommandHandler) Handle(
 	ctx context.Context,
 	cmd *commands.VerifyMagicLinkCommand,
-) (*auth.AuthTokens, error) {
+) (*auth.Tokens, error) {
 	// Check for token
 	token := ""
 	if cmd.Token != nil {

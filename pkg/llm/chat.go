@@ -43,11 +43,11 @@ type ChatClient interface {
 
 // DefaultChatClient implements ChatClient using an LLM provider.
 type DefaultChatClient struct {
-	llm LLMService
+	llm Service
 }
 
 // NewChatClient creates a new chat client.
-func NewChatClient(llm LLMService) ChatClient {
+func NewChatClient(llm Service) ChatClient {
 	return &DefaultChatClient{llm: llm}
 }
 

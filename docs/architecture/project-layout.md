@@ -153,9 +153,7 @@
 │   ├── small-logo.svg
 │   └── small-logo-white.svg
 ├── cmd
-│   ├── archesai
-│   │   └── main.go
-│   └── codegen
+│   └── archesai
 │       └── main.go
 ├── deployments
 │   ├── containers
@@ -364,9 +362,9 @@
 │   │   │   ├── microsoft.go
 │   │   │   └── types.go
 │   │   ├── auth_tokens.go
-│   │   ├── interfaces.go
 │   │   ├── magic_link.go
 │   │   ├── password.go
+│   │   ├── ports.go
 │   │   ├── service.go
 │   │   └── token_manager.go
 │   ├── cache
@@ -378,14 +376,18 @@
 │   │   ├── api.go
 │   │   ├── completion.go
 │   │   ├── config.go
+│   │   ├── generate.go
 │   │   ├── root.go
 │   │   ├── tui.go
 │   │   └── version.go
 │   ├── config
 │   │   ├── config.go
-│   │   ├── handler.go
 │   │   ├── loader.go
 │   │   └── loader_test.go
+│   ├── database
+│   │   ├── crud_repository.go
+│   │   ├── database.go
+│   │   └── migrate.go
 │   ├── errors
 │   │   └── errors.go
 │   ├── events
@@ -401,10 +403,11 @@
 │   │   ├── config.go
 │   │   ├── container.go
 │   │   ├── container_test.go
-│   │   ├── executor_service.go
 │   │   ├── local.go
 │   │   ├── local_test.go
-│   │   └── schemas.go
+│   │   ├── ports.go
+│   │   ├── schemas.go
+│   │   └── service.go
 │   ├── llm
 │   │   ├── chat.go
 │   │   ├── interfaces.go
@@ -421,9 +424,6 @@
 │   │   └── service.go
 │   ├── optional
 │   │   └── optional.go
-│   ├── persistence
-│   │   ├── database.go
-│   │   └── migrate.go
 │   ├── redis
 │   │   ├── client.go
 │   │   ├── config.go
@@ -433,8 +433,6 @@
 │   │   └── redis.go
 │   ├── server
 │   │   ├── cookies.go
-│   │   ├── health_handler.go
-│   │   ├── health_repository.go
 │   │   ├── middleware_auth.go
 │   │   ├── middleware.go
 │   │   ├── middleware_logger.go
@@ -677,7 +675,6 @@
 ├── .air.toml
 ├── arches.yaml
 ├── biome.json
-├── cfg.yaml
 ├── .cspell.json
 ├── .editorconfig
 ├── .env
@@ -700,5 +697,5 @@
 ├── tools.sum
 └── tsconfig.json
 
-216 directories, 480 files
+215 directories, 478 files
 ```

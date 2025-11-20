@@ -68,7 +68,7 @@ func convertToOpenAIMessages(
 }
 
 // convertToOpenAITools converts our Tool type to OpenAI's tool param.
-func convertToOpenAITools(tools []LLMTool) []openai.ChatCompletionToolParam {
+func convertToOpenAITools(tools []Tool) []openai.ChatCompletionToolParam {
 	if len(tools) == 0 {
 		return nil
 	}

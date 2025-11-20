@@ -52,8 +52,8 @@ import (
 	sqlitemigrations "github.com/archesai/archesai/apis/studio/generated/infrastructure/persistence/sqlite"
 	"github.com/archesai/archesai/pkg/auth"
 	"github.com/archesai/archesai/pkg/cache"
+	"github.com/archesai/archesai/pkg/database"
 	"github.com/archesai/archesai/pkg/notifications"
-	database "github.com/archesai/archesai/pkg/persistence"
 )
 
 // App holds all application dependencies.

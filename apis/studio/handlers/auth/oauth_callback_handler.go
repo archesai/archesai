@@ -30,7 +30,7 @@ func NewOAuthCallbackQueryHandler(
 func (h *OAuthCallbackQueryHandler) Handle(
 	_ context.Context,
 	query *queries.OauthCallbackQuery,
-) (*auth.AuthTokens, error) {
+) (*auth.Tokens, error) {
 	if query.Provider == "" {
 		return nil, fmt.Errorf("provider is required")
 	}

@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/archesai/archesai/apis/studio/generated/core/models"
-	"github.com/archesai/archesai/apis/studio/generated/core/repositories"
 )
 
 // ExecutorService defines operations for custom executors with generic input/output types
@@ -42,7 +41,7 @@ type ExecuteResult[B any] struct {
 
 // executorService implements the generic ExecutorService interface
 type executorService[A any, B any] struct {
-	repo    repositories.ExecutorRepository
+	repo    executorRepository
 	builder *Builder
 
 	// Base images for each language
@@ -54,7 +53,7 @@ type executorService[A any, B any] struct {
 
 // NewExecutorService creates a new executor service with generic types
 func NewExecutorService[A any, B any](
-	repo repositories.ExecutorRepository,
+	repo executorRepository,
 	builder *Builder,
 ) ExecutorService[A, B] {
 	return &executorService[A, B]{
@@ -100,7 +99,7 @@ func (s *executorService[A, B]) Execute(
 	}()
 
 	// 3. Write execute code to temp file
-	executeFile := s.getExecuteFileName(models.ExecutorLanguage(exec.Language))
+	executeFile := s.getExecuteFileName(exec.Language)
 	executePath := filepath.Join(tmpDir, executeFile)
 	if err := os.WriteFile(executePath, []byte(exec.ExecuteCode), 0644); err != nil {
 		return zero, fmt.Errorf("write execute code: %w", err)
@@ -151,13 +150,13 @@ func (s *executorService[A, B]) Execute(
 
 	// Parse dependencies for ADDITIONAL_PACKAGES
 	additionalPackages := s.parseDependencies(
-		models.ExecutorLanguage(exec.Language),
+		exec.Language,
 		exec.Dependencies,
 	)
 
 	buildConfig := ImageConfig{
 		Name:           fmt.Sprintf("executor-%s", executorID),
-		DockerfilePath: s.dockerfiles[models.ExecutorLanguage(exec.Language)],
+		DockerfilePath: s.dockerfiles[exec.Language],
 		BuildArgs: map[string]*string{
 			"ADDITIONAL_PACKAGES": &additionalPackages,
 		},
@@ -272,13 +271,13 @@ func (s *executorService[A, B]) BuildExecutor(ctx context.Context, executorID st
 
 	imageName := s.getImageName(executorID, exec.Version)
 	additionalPackages := s.parseDependencies(
-		models.ExecutorLanguage(exec.Language),
+		exec.Language,
 		exec.Dependencies,
 	)
 
 	buildConfig := ImageConfig{
 		Name:           fmt.Sprintf("executor-%s", executorID),
-		DockerfilePath: s.dockerfiles[models.ExecutorLanguage(exec.Language)],
+		DockerfilePath: s.dockerfiles[exec.Language],
 		BuildArgs: map[string]*string{
 			"ADDITIONAL_PACKAGES": &additionalPackages,
 		},

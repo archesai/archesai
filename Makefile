@@ -147,7 +147,7 @@ generate: generate-codegen generate-mocks ## Generate all code
 
 .PHONY: generate-codegen
 generate-codegen: bundle-openapi ## Generate codegen
-	@go run cmd/codegen/main.go openapi ./apis/studio/api/openapi.bundled.yaml --output ./apis/studio --pretty 
+	@go run cmd/archesai/main.go generate openapi ./apis/studio/api/openapi.bundled.yaml --output ./apis/studio --pretty 
 
 .PHONY: generate-mocks
 generate-mocks: ## Generate test mocks using mockery
@@ -263,7 +263,7 @@ lint-ts: lint-typecheck ## Run Node.js linter (includes typecheck)
 .PHONY: lint-openapi
 lint-openapi: ## Lint OpenAPI specification
 	@echo -e "$(YELLOW)▶ Linting OpenAPI spec...$(NC)"
-	@go tool -modfile=tools.mod vacuum lint ./api/openapi.yaml --details --no-banner --hard-mode --no-clip --all-results --pipeline-output --no-style
+	@go tool -modfile=tools.mod vacuum lint ./apis/studio/api/openapi.yaml --details --no-banner --hard-mode --no-clip --all-results --pipeline-output --no-style --base .
 	@echo -e "$(GREEN)✓ OpenAPI linting complete!$(NC)"
 
 .PHONY: lint-typecheck
@@ -372,7 +372,7 @@ prepare-docs: bundle-openapi ## Copy markdown docs to web/docs/docs
 
 .PHONY: bundle-openapi
 bundle-openapi: ## Bundle OpenAPI into single file
-	@go run cmd/codegen/main.go bundle ./apis/studio/api/openapi.yaml ./apis/studio/api/openapi.bundled.yaml --orval-fix
+	@go run cmd/archesai/main.go generate openapi ./apis/studio/api/openapi.yaml --bundle --output ./apis/studio/api/openapi.bundled.yaml --orval-fix
 
 # ------------------------------------------
 # Dependency Commands

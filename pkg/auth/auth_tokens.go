@@ -1,7 +1,7 @@
 package auth
 
-// AuthTokens represents the tokens returned after successful authentication.
-type AuthTokens struct {
+// Tokens represents the tokens returned after successful authentication.
+type Tokens struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 	TokenType    string `json:"tokenType"`

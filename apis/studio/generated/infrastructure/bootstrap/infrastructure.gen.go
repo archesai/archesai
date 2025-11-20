@@ -16,9 +16,9 @@ import (
 	"github.com/archesai/archesai/apis/studio/generated/infrastructure/persistence/postgres/repositories"
 	"github.com/archesai/archesai/pkg/auth"
 	"github.com/archesai/archesai/pkg/cache"
+	"github.com/archesai/archesai/pkg/database"
 	"github.com/archesai/archesai/pkg/events"
 	"github.com/archesai/archesai/pkg/executor"
-	database "github.com/archesai/archesai/pkg/persistence"
 	"github.com/archesai/archesai/pkg/redis"
 )
 

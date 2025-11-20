@@ -1,3 +1,4 @@
+// Package health provides handlers for health check operations.
 package health
 
 import (
