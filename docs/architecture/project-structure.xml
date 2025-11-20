@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-11-20T13:31:05-05:00
+  Generated: 2025-11-20T14:20:42-05:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -36,6 +36,17 @@
     <file>.markdownlint.json</file>
     <file>biome.json</file>
   </root-files>
+  <dir name="api" type="api-spec" purpose="API definitions" files="2" dirs="2" patterns="*.yaml">
+    <dir name="components" purpose="Reusable components" dirs="4">
+      <dir name="headers" files="5" patterns="*.yaml"/>
+      <dir name="parameters" files="29" patterns="*.yaml"/>
+      <dir name="responses" files="42" patterns="*.yaml"/>
+      <dir name="schemas" files="22" dirs="1" patterns="*.yaml">
+        <dir name="config" purpose="Configuration management" files="37" patterns="*.yaml"/>
+      </dir>
+    </dir>
+    <dir name="paths" files="47" patterns="*.yaml"/>
+  </dir>
   <dir name="assets" purpose="Static assets" files="13"/>
   <dir name="cmd" dirs="1">
     <dir name="archesai" files="1" key-files="main.go"/>

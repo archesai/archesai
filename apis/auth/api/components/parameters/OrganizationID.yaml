@@ -1,6 +1,0 @@
-schema:
-  $ref: ../../../../base/api/components/schemas/UUID.yaml
-in: path
-name: organizationID
-required: true
-description: The unique identifier of the organization.

@@ -1,0 +1,96 @@
+post:
+  operationId: RequestMagicLink
+  summary: Request a magic link
+  description: Request a magic link to be sent via email or generate an OTP code
+  tags:
+    - Auth
+  security:
+    - {}
+  x-public-endpoint: true
+  requestBody:
+    description: Magic link authentication request
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            identifier:
+              description: Email address or username
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: user@example.com
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+            deliveryMethod:
+              description: How to deliver the magic link
+              type: string
+              enum:
+                - email
+                - console
+                - otp
+                - webhook
+              default: email
+              example: email
+            redirectUrl:
+              description: URL to redirect to after successful authentication
+              type: string
+              format: uri
+              minLength: 1
+              maxLength: 2048
+              example: https://app.archesai.com/dashboard
+          required:
+            - identifier
+  responses:
+    '200':
+      description: Magic link requested successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                minLength: 1
+                maxLength: 500
+                example: Magic link sent to user@example.com
+                pattern: ^[\w\s\-.,!?()@]+$
+              otpCode:
+                description: OTP code (only returned if deliveryMethod is 'otp')
+                type: string
+                minLength: 6
+                maxLength: 6
+                example: '123456'
+                pattern: ^[A-Za-z0-9_-]+$
+              expiresIn:
+                description: Token expiry in seconds
+                type: integer
+                format: int32
+                minimum: 1
+                maximum: 2147483647
+                example: 900
+              token:
+                $ref: ../components/schemas/MagicLinkToken.yaml
+          example:
+            message: Magic link sent to user@example.com
+            expiresIn: 900
+      headers:
+        Set-Cookie:
+          $ref: ../components/headers/SetCookie.yaml
+        X-RateLimit-Limit:
+          $ref: ../components/headers/RateLimitLimit.yaml
+        X-RateLimit-Remaining:
+          $ref: ../components/headers/RateLimitRemaining.yaml
+        X-RateLimit-Reset:
+          $ref: ../components/headers/RateLimitReset.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  x-codegen-custom-handler: true

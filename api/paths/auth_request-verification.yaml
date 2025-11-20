@@ -1,0 +1,20 @@
+post:
+  operationId: RequestEmailVerification
+  summary: Request e-mail verification
+  tags:
+    - Auth
+  description: This endpoint will send an e-mail verification link to you. ADMIN ONLY.
+  security:
+    - bearerAuth: []
+  responses:
+    '204':
+      $ref: ../components/responses/NoContent.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  x-codegen-custom-handler: true

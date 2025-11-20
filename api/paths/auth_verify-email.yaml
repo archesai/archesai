@@ -1,0 +1,39 @@
+post:
+  operationId: ConfirmEmailVerification
+  summary: Confirm e-mail verification
+  tags:
+    - Auth
+  description: This endpoint will confirm your e-mail with a token
+  requestBody:
+    description: Email verification request with token
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            token:
+              description: The email verification token
+              type: string
+              minLength: 1
+              maxLength: 512
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+              pattern: ^[A-Za-z0-9_-]+$
+          required:
+            - token
+    required: true
+  responses:
+    '200':
+      $ref: ../components/responses/EmailVerificationResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  x-codegen-custom-handler: true

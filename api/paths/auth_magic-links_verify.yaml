@@ -1,0 +1,54 @@
+post:
+  operationId: VerifyMagicLink
+  summary: Verify a magic link token
+  description: Verify a magic link token or OTP code and create a session
+  tags:
+    - Auth
+  security:
+    - {}
+  x-public-endpoint: true
+  requestBody:
+    description: Magic link verification request
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            token:
+              description: Magic link token from URL
+              type: string
+              minLength: 32
+              maxLength: 512
+              example: abc123def456789ghi012jkl345mno678pqr901stu234
+              pattern: ^[A-Za-z0-9_-]+$
+            code:
+              description: OTP code (alternative to token)
+              type: string
+              minLength: 6
+              maxLength: 6
+              pattern: ^[0-9]{6}$
+              example: '123456'
+            identifier:
+              description: Required when using OTP code
+              type: string
+              minLength: 1
+              maxLength: 255
+              example: user@example.com
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+  responses:
+    '201':
+      $ref: ../components/responses/SessionCreated.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+  x-codegen-custom-handler: true

@@ -1,0 +1,12 @@
+in: query
+name: filter
+required: false
+style: deepObject
+explode: true
+schema:
+  $ref: ../schemas/FilterNode.yaml
+description: Filter by field values
+example:
+  type: eq
+  field: organizationID
+  value: 550e8400-e29b-41d4-a716-446655440000

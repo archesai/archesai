@@ -3,6 +3,7 @@ package parsers
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -62,11 +63,11 @@ func (p *OpenAPIParser) Bundle(specPath, outputPath string, orvalFix bool) error
 	}
 
 	// Calculate base path from input spec directory
-	// basePath := filepath.Dir(specPath)
+	basePath := filepath.Dir(specPath)
 
 	// Configure bundler
 	config := &datamodel.DocumentConfiguration{
-		// BasePath:                basePath,
+		BasePath:                basePath,
 		ExtractRefsSequentially: true,
 		AllowRemoteReferences:   true,
 		AllowFileReferences:     true,

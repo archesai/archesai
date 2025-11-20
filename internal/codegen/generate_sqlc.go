@@ -15,8 +15,14 @@ import (
 // GenerateSQLC generates SQLC queries from SQL files
 func (g *Generator) GenerateSQLC() error {
 
-	// Second, generate the sqlc.yaml file with the correct output paths
-	sqlcConfigPath := filepath.Join(g.outputDir, "sqlc.yaml")
+	// Generate the sqlc.yaml file with the correct output paths
+	sqlcConfigPath := filepath.Join(
+		g.outputDir,
+		"generated",
+		"infrastructure",
+		"persistence",
+		"sqlc.gen.yaml",
+	)
 
 	// Load the sqlc.yaml template
 	tmplContent, err := GetTemplate("sqlc.yaml.tmpl")

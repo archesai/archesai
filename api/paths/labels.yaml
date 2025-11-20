@@ -1,0 +1,63 @@
+get:
+  operationId: ListLabels
+  summary: List labels
+  tags:
+    - Label
+  description: List labels
+  parameters:
+    - $ref: ../components/parameters/LabelsFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/LabelsSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      $ref: ../components/responses/LabelListResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
+post:
+  operationId: CreateLabel
+  summary: Create a label
+  tags:
+    - Label
+  description: Create a label
+  requestBody:
+    description: Label creation request
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            name:
+              description: The name of the label
+              type: string
+              minLength: 1
+              example: Example Name
+              maxLength: 255
+              pattern: ^[\w\s\-.,!?()@#+/]*$
+          required:
+            - name
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      $ref: ../components/responses/LabelResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+    '422':
+      $ref: ../components/responses/UnprocessableEntity.yaml
+    '429':
+      $ref: ../components/responses/TooManyRequests.yaml
+    '500':
+      $ref: ../components/responses/InternalServerError.yaml
