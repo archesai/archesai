@@ -38,12 +38,12 @@ import (
 	"github.com/archesai/archesai/pkg/server"
 
 	// Custom handlers for specific domains
-	authHandlers "github.com/archesai/archesai/apis/studio/handlers/auth"
-	configHandlers "github.com/archesai/archesai/apis/studio/handlers/config"
-	executorHandlers "github.com/archesai/archesai/apis/studio/handlers/executor"
-	healthHandlers "github.com/archesai/archesai/apis/studio/handlers/health"
-	pipelineHandlers "github.com/archesai/archesai/apis/studio/handlers/pipeline"
-	userHandlers "github.com/archesai/archesai/apis/studio/handlers/user"
+	authHandlers "github.com/archesai/archesai/apps/studio/handlers/auth"
+	configHandlers "github.com/archesai/archesai/apps/studio/handlers/config"
+	executorHandlers "github.com/archesai/archesai/apps/studio/handlers/executor"
+	healthHandlers "github.com/archesai/archesai/apps/studio/handlers/health"
+	pipelineHandlers "github.com/archesai/archesai/apps/studio/handlers/pipeline"
+	userHandlers "github.com/archesai/archesai/apps/studio/handlers/user"
 
 	// These are not in the loop above since they have custom handlers
 	authQueries "{{ .OutputPath }}/generated/application/queries/auth"

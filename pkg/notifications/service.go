@@ -4,7 +4,7 @@ package notifications
 import (
 	"context"
 
-	"github.com/archesai/archesai/apis/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core/models"
 )
 
 // Deliverer handles notification delivery for magic links and OTPs.

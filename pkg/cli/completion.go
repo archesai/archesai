@@ -1,3 +1,4 @@
+// Package cli provides command-line interface commands for the Arches platform
 package cli
 
 import (

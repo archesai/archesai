@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/archesai/archesai/apis/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core/models"
 )
 
 // ConsoleDeliverer prints magic links to console (for development).

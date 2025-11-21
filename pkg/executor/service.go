@@ -11,7 +11,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apis/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core/models"
 )
 
 // ExecutorService defines operations for custom executors with generic input/output types

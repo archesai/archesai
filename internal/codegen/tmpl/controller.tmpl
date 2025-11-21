@@ -18,7 +18,7 @@ import (
 
 	"github.com/archesai/archesai/pkg/server"
 	{{- if .HasCustomHandlers }}
-	customHandlers "github.com/archesai/archesai/apis/studio/handlers/{{ lower .Tag }}"
+	customHandlers "{{ .OutputPath }}/handlers/{{ lower .Tag }}"
 	{{- end }}
 	commands "{{ .OutputPath }}/generated/application/commands/{{ lower .Tag }}"
 	queries "{{ .OutputPath }}/generated/application/queries/{{ lower .Tag }}"

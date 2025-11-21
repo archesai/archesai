@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/apis/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core/models"
 )
 
 // EmailSender interface for sending emails.

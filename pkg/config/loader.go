@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/archesai/archesai/apis/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core/models"
 )
 
 // Configuration wraps the generated Config for easy access.

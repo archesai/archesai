@@ -147,7 +147,7 @@ generate: generate-codegen generate-mocks ## Generate all code
 
 .PHONY: generate-codegen
 generate-codegen: bundle-openapi ## Generate codegen
-	@go run cmd/archesai/main.go generate openapi ./api/openapi.bundled.yaml --output ./apis/studio --pretty 
+	@go run cmd/archesai/main.go generate openapi ./api/openapi.bundled.yaml --output ./apps/studio --pretty 
 
 .PHONY: generate-mocks
 generate-mocks: ## Generate test mocks using mockery

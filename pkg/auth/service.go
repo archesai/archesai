@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/archesai/archesai/apis/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core/models"
 	"github.com/archesai/archesai/pkg/auth/oauth"
 	"github.com/archesai/archesai/pkg/cache"
 	corerrors "github.com/archesai/archesai/pkg/errors"

@@ -7,7 +7,7 @@
 // 3. Default values from OpenAPI specification
 package config
 
-import "github.com/archesai/archesai/apis/studio/generated/core/models"
+import "github.com/archesai/archesai/apps/studio/generated/core/models"
 
 // Type aliases for convenience - avoiding stuttering names
 type (

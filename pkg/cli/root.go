@@ -24,10 +24,9 @@ var rootCmd = &cobra.Command{
 	Long: `Arches is a comprehensive data processing platform.
 
 This command provides various modes to run the Arches server:
-- API server for REST endpoints
-- Web server for the UI (future)
+- Development server with hot reload (dev command)
 - Worker for background job processing
-- All mode for development`,
+- Configuration viewer and TUI interface`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

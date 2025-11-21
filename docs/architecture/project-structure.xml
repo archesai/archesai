@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-11-20T15:14:04-05:00
+  Generated: 2025-11-21T17:13:16-05:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -150,12 +150,12 @@
       <dir name="public" files="1"/>
       <dir name="src" files="3" patterns="*.tsx"/>
     </dir>
-    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="4" key-files="package.json,Dockerfile">
+    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="5" key-files="package.json,Dockerfile">
       <dir name="public" files="1"/>
       <dir name="src" files="2" dirs="5" patterns="*.tsx">
         <dir name="components" purpose="Reusable components" files="6" dirs="6" patterns="*.tsx"/>
         <dir name="hooks" files="5" patterns="*.tsx"/>
-        <dir name="lib" files="4" dirs="1"/>
+        <dir name="lib" files="4"/>
         <dir name="routes" files="1" dirs="2" patterns="*.tsx"/>
         <dir name="styles" files="1"/>
       </dir>

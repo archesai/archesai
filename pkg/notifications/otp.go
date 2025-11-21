@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/archesai/archesai/apis/studio/generated/core/models"
+	"github.com/archesai/archesai/apps/studio/generated/core/models"
 )
 
 // OTPDeliverer displays OTP codes (for development).
