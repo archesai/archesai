@@ -568,27 +568,13 @@
 │   ├── testutil
 │   │   └── containers.go
 │   └── tui
-│       ├── screens
-│       ├── config_tui.go
-│       ├── dev_tui.go
-│       └── tui.go
+│       ├── config.go
+│       └── dev.go
 ├── scripts
 │   ├── generate-coverage-report.sh
 │   ├── generate-project-structure-xml.sh
 │   ├── update-makefile-docs.sh
 │   └── update-project-layout-docs.sh
-├── .taskmaster
-│   ├── docs
-│   │   └── prd.txt
-│   ├── reports
-│   │   └── task-complexity-report_main.json
-│   ├── tasks
-│   │   └── tasks.json
-│   ├── templates
-│   │   └── example_prd.txt
-│   ├── CLAUDE.md
-│   ├── config.json
-│   └── state.json
 ├── test
 │   └── data
 │       ├── parsers
@@ -606,8 +592,6 @@
 │       ├── pdf.png
 │       ├── text.png
 │       └── website.png
-├── tmp
-│   └── archesai
 ├── tools
 │   └── tsconfig
 │       ├── src
@@ -818,5 +802,5 @@
 ├── tools.sum
 └── tsconfig.json
 
-195 directories, 619 files
+188 directories, 610 files
 ```

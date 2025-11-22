@@ -1,16 +1,16 @@
 {
   "hooks": {
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "make format",
-            "type": "command"
-          }
-        ],
-        "matcher": "Write|Edit|MultiEdit"
-      }
-    ]
+    // "PostToolUse": [
+    //   {
+    //     "hooks": [
+    //       {
+    //         "command": "make format",
+    //         "type": "command"
+    //       }
+    //     ],
+    //     "matcher": "Write|Edit|MultiEdit"
+    //   }
+    // ]
   },
   "outputStyle": "default",
   "permissions": {

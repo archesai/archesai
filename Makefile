@@ -627,6 +627,12 @@ release-info: ## Show release information and next steps
 	@echo -e "  3. GitHub Actions will automatically build and publish"
 	@echo ""
 
+.PHONY: pre-commit
+pre-commit: ## Run all pre-commit checks
+	@echo -e "$(YELLOW)▶ Running pre-commit checks...$(NC)"
+	@go tool lefthook run pre-commit
+	@echo -e "$(GREEN)✓ Pre-commit checks complete!$(NC)"
+
 # ------------------------------------------
 # Shortcuts
 # ------------------------------------------

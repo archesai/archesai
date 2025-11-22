@@ -22,12 +22,6 @@ See Makefile Commands
 - **Generate first, code second** - Define in OpenAPI/SQL before implementing
 - **Use generated types** - Don't create manual type definitions
 
-## Task Master AI Instructions
-
-**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
-
-@./.taskmaster/CLAUDE.md
-
 ## Tips
 
 - **Build fails**: `make generate && make lint`
@@ -40,19 +34,7 @@ See Makefile Commands
 - **Improve test coverage as much as possible**
 - **You should only ever use mocks from mockery** that will be found in `mocks_test.go`
 - **If you need to get a mocked interface from another package**, alias the interface in your local package and add it to `.mockery.yaml`
-
-### Mockery Guidelines
-
-- **ALWAYS USE MOCKERY FOR GETTING MOCKS** - Never create mocked services or repositories manually
-- **Run `go tool -modfile=tools.mod mockery`**
-- **We are running Mockery v3**
-- **Mockery config is `.mockery.yaml`**
-
-DO NOT UNDER ANY CIRCUMSTANCE HARD CODE VALUES IN TESTS OR IN TEMPLATES OR IN ANYTHING ELSE
-FOR THE SAKE OF HANDLING SPECIAL CASES. ALWAYS DO IT THE CORRECT WAY.
-
-DO NOT ADD TODOS IN THE CODE. IF YOU NEED TO CREATE A TASK, CREATE IT IN THE PROJECT MANAGEMENT TOOL.
-
-DO NOT EVER EVER USER INTERFACE{} OR ANY.
-
-never manually update a .gen.go file
+- **Do not under any circumstance hard code values in tests or in templates or in anything else for the sake of handling special cases. Always do it the correct way.**
+- **Do not add todos in the code. If you need to create a task, create it in the project management tool.**
+- **Do not ever ever user interface{} or any.**
+- **Never manually update a .gen.go file**

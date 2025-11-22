@@ -57,6 +57,7 @@ Available targets:
   lint-ts                    Run Node.js linter (includes typecheck)
   lint-typecheck             Run TypeScript type checking
   list-workflows             List all available GitHub workflows
+  pre-commit                 Run all pre-commit checks
   prepare-docs               Copy markdown docs to web/docs/docs
   release-check              Check if ready for release
   release-clean              Clean release artifacts
