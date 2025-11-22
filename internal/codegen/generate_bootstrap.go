@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"bytes"
 	"fmt"
 	"path/filepath"
 	"slices"
@@ -162,17 +163,23 @@ func (g *Generator) GenerateBootstrap(
 		"OutputPath": outputPath,
 	}
 
-	appPath := filepath.Join(g.outputDir, "generated", "infrastructure", "bootstrap", "app.gen.go")
-	appTmpl, ok := g.templates["bootstrap.tmpl"]
-	if !ok {
-		return fmt.Errorf("app template not found")
+	// Render bootstrap template
+	var buf bytes.Buffer
+	if err := g.renderer.Render(&buf, "bootstrap.go.tmpl", appData); err != nil {
+		return fmt.Errorf("failed to render app.go: %w", err)
 	}
 
-	if err := g.filewriter.WriteTemplate(appPath, appTmpl, appData); err != nil {
-		return fmt.Errorf("failed to generate app.go: %w", err)
+	appPath := filepath.Join(g.outputDir, "generated", "infrastructure", "bootstrap", "app.gen.go")
+	if err := g.storage.WriteFile(appPath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write app.go: %w", err)
 	}
 
 	// Generate infrastructure.go
+	buf.Reset()
+	if err := g.renderer.Render(&buf, "infrastructure.go.tmpl", appData); err != nil {
+		return fmt.Errorf("failed to render infrastructure.go: %w", err)
+	}
+
 	infraPath := filepath.Join(
 		g.outputDir,
 		"generated",
@@ -180,13 +187,8 @@ func (g *Generator) GenerateBootstrap(
 		"bootstrap",
 		"infrastructure.gen.go",
 	)
-	infraTmpl, ok := g.templates["infrastructure.tmpl"]
-	if !ok {
-		return fmt.Errorf("infrastructure template not found")
-	}
-
-	if err := g.filewriter.WriteTemplate(infraPath, infraTmpl, appData); err != nil {
-		return fmt.Errorf("failed to generate infrastructure.go: %w", err)
+	if err := g.storage.WriteFile(infraPath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write infrastructure.go: %w", err)
 	}
 
 	return nil

@@ -98,18 +98,21 @@ func (p *OpenAPIParser) Bundle(specPath, outputPath string, orvalFix bool) error
 }
 
 // Extract extracts operations and component schemas from the OpenAPI spec
-func (p *OpenAPIParser) Extract() ([]OperationDef, []*SchemaDef, error) {
+func (p *OpenAPIParser) Extract() (*SpecDef, error) {
 	operations, err := p.extractOperations()
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to extract operations: %w", err)
+		return nil, fmt.Errorf("failed to extract operations: %w", err)
 	}
 
 	schemas, err := p.extractComponentSchemas()
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to extract component schemas: %w", err)
+		return nil, fmt.Errorf("failed to extract component schemas: %w", err)
 	}
 
-	return operations, schemas, nil
+	return &SpecDef{
+		Operations: operations,
+		Schemas:    schemas,
+	}, nil
 }
 
 // extractOperations extracts all operations from the OpenAPI spec

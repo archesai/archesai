@@ -4,6 +4,9 @@
 
 ```text
 .
+├── .vscode
+│   ├── extensions.json
+│   └── settings.json
 ├── api
 │   ├── components
 │   │   ├── headers
@@ -13,10 +16,10 @@
 │   │   │   ├── RetryAfter.yaml
 │   │   │   └── SetCookie.yaml
 │   │   ├── parameters
-│   │   │   ├── AccountsFilter.yaml
-│   │   │   ├── AccountsSort.yaml
 │   │   │   ├── APIKeysFilter.yaml
 │   │   │   ├── APIKeysSort.yaml
+│   │   │   ├── AccountsFilter.yaml
+│   │   │   ├── AccountsSort.yaml
 │   │   │   ├── ArtifactsFilter.yaml
 │   │   │   ├── ArtifactsSort.yaml
 │   │   │   ├── ExecutorsFilter.yaml
@@ -43,10 +46,10 @@
 │   │   │   ├── UsersFilter.yaml
 │   │   │   └── UsersSort.yaml
 │   │   ├── responses
-│   │   │   ├── AccountListResponse.yaml
-│   │   │   ├── AccountResponse.yaml
 │   │   │   ├── APIKeyListResponse.yaml
 │   │   │   ├── APIKeyResponse.yaml
+│   │   │   ├── AccountListResponse.yaml
+│   │   │   ├── AccountResponse.yaml
 │   │   │   ├── ArtifactListResponse.yaml
 │   │   │   ├── ArtifactResponse.yaml
 │   │   │   ├── BadRequest.yaml
@@ -78,16 +81,18 @@
 │   │   │   ├── SessionCreated.yaml
 │   │   │   ├── SessionListResponse.yaml
 │   │   │   ├── SessionResponse.yaml
+│   │   │   ├── TooManyRequests.yaml
 │   │   │   ├── ToolListResponse.yaml
 │   │   │   ├── ToolResponse.yaml
-│   │   │   ├── TooManyRequests.yaml
 │   │   │   ├── Unauthorized.yaml
 │   │   │   ├── UnprocessableEntity.yaml
 │   │   │   ├── UserListResponse.yaml
 │   │   │   └── UserResponse.yaml
 │   │   └── schemas
 │   │       ├── config
+│   │       │   ├── Config.yaml
 │   │       │   ├── ConfigAPI.yaml
+│   │       │   ├── ConfigAuth.yaml
 │   │       │   ├── ConfigAuthFirebase.yaml
 │   │       │   ├── ConfigAuthGithub.yaml
 │   │       │   ├── ConfigAuthGoogle.yaml
@@ -95,13 +100,12 @@
 │   │       │   ├── ConfigAuthMagicLink.yaml
 │   │       │   ├── ConfigAuthMicrosoft.yaml
 │   │       │   ├── ConfigAuthTwitter.yaml
-│   │       │   ├── ConfigAuth.yaml
 │   │       │   ├── ConfigBilling.yaml
 │   │       │   ├── ConfigDatabase.yaml
 │   │       │   ├── ConfigEmail.yaml
 │   │       │   ├── ConfigGrafana.yaml
-│   │       │   ├── ConfigImages.yaml
 │   │       │   ├── ConfigImage.yaml
+│   │       │   ├── ConfigImages.yaml
 │   │       │   ├── ConfigInfrastructure.yaml
 │   │       │   ├── ConfigIngress.yaml
 │   │       │   ├── ConfigIntelligence.yaml
@@ -122,10 +126,9 @@
 │   │       │   ├── ConfigStorage.yaml
 │   │       │   ├── ConfigStripe.yaml
 │   │       │   ├── ConfigTLS.yaml
-│   │       │   ├── ConfigUnstructured.yaml
-│   │       │   └── Config.yaml
-│   │       ├── Account.yaml
+│   │       │   └── ConfigUnstructured.yaml
 │   │       ├── APIKey.yaml
+│   │       ├── Account.yaml
 │   │       ├── Artifact.yaml
 │   │       ├── Base.yaml
 │   │       ├── Executor.yaml
@@ -138,21 +141,21 @@
 │   │       ├── Organization.yaml
 │   │       ├── Page.yaml
 │   │       ├── PaginationMeta.yaml
-│   │       ├── PipelineStep.yaml
 │   │       ├── Pipeline.yaml
+│   │       ├── PipelineStep.yaml
 │   │       ├── Problem.yaml
 │   │       ├── Run.yaml
 │   │       ├── Session.yaml
 │   │       ├── Tool.yaml
-│   │       ├── User.yaml
-│   │       └── UUID.yaml
+│   │       ├── UUID.yaml
+│   │       └── User.yaml
 │   ├── paths
-│   │   ├── api-keys_id.yaml
 │   │   ├── api-keys.yaml
-│   │   ├── artifacts_id.yaml
+│   │   ├── api-keys_id.yaml
 │   │   ├── artifacts.yaml
-│   │   ├── auth_accounts_id.yaml
+│   │   ├── artifacts_id.yaml
 │   │   ├── auth_accounts.yaml
+│   │   ├── auth_accounts_id.yaml
 │   │   ├── auth_change-email.yaml
 │   │   ├── auth_confirm-email.yaml
 │   │   ├── auth_forgot-password.yaml
@@ -167,33 +170,33 @@
 │   │   ├── auth_register.yaml
 │   │   ├── auth_request-verification.yaml
 │   │   ├── auth_reset-password.yaml
-│   │   ├── auth_sessions_id.yaml
 │   │   ├── auth_sessions.yaml
+│   │   ├── auth_sessions_id.yaml
 │   │   ├── auth_verify-email.yaml
 │   │   ├── config.yaml
-│   │   ├── executors_id_execute.yaml
-│   │   ├── executors_id.yaml
 │   │   ├── executors.yaml
+│   │   ├── executors_id.yaml
+│   │   ├── executors_id_execute.yaml
 │   │   ├── health.yaml
-│   │   ├── labels_id.yaml
 │   │   ├── labels.yaml
+│   │   ├── labels_id.yaml
 │   │   ├── me.yaml
-│   │   ├── organizations_id.yaml
-│   │   ├── organizations_organizationID_invitations_id.yaml
-│   │   ├── organizations_organizationID_invitations.yaml
-│   │   ├── organizations_organizationID_members_id.yaml
-│   │   ├── organizations_organizationID_members.yaml
 │   │   ├── organizations.yaml
+│   │   ├── organizations_id.yaml
+│   │   ├── organizations_organizationID_invitations.yaml
+│   │   ├── organizations_organizationID_invitations_id.yaml
+│   │   ├── organizations_organizationID_members.yaml
+│   │   ├── organizations_organizationID_members_id.yaml
+│   │   ├── pipelines.yaml
+│   │   ├── pipelines_id.yaml
 │   │   ├── pipelines_id_execution-plans.yaml
 │   │   ├── pipelines_id_steps.yaml
-│   │   ├── pipelines_id.yaml
-│   │   ├── pipelines.yaml
-│   │   ├── runs_id.yaml
 │   │   ├── runs.yaml
-│   │   ├── tools_id.yaml
+│   │   ├── runs_id.yaml
 │   │   ├── tools.yaml
-│   │   ├── users_id.yaml
-│   │   └── users.yaml
+│   │   ├── tools_id.yaml
+│   │   ├── users.yaml
+│   │   └── users_id.yaml
 │   ├── openapi.bundled.yaml
 │   └── openapi.yaml
 ├── apps
@@ -245,8 +248,8 @@
 │   │   │   ├── getting-started.md
 │   │   │   └── studio-ui-design.md
 │   │   ├── src
-│   │   │   ├── landing_content.ts
 │   │   │   ├── landing.tsx
+│   │   │   ├── landing_content.ts
 │   │   │   └── sidebar.tsx
 │   │   ├── package.json
 │   │   ├── tsconfig.app.json
@@ -313,14 +316,12 @@
 │   ├── favicon-32x32.png
 │   ├── favicon.ico
 │   ├── github-hero.svg
-│   ├── large-logo.svg
 │   ├── large-logo-white.svg
+│   ├── large-logo.svg
 │   ├── site.webmanifest
 │   ├── small-logo-adaptive.svg
-│   ├── small-logo.svg
-│   └── small-logo-white.svg
-├── bin
-│   └── archesai-api
+│   ├── small-logo-white.svg
+│   └── small-logo.svg
 ├── cmd
 │   └── archesai
 │       └── main.go
@@ -351,9 +352,9 @@
 │   ├── development
 │   │   └── skaffold.yaml
 │   ├── docker
-│   │   ├── docker-compose.yaml
 │   │   ├── Dockerfile
-│   │   └── Dockerfile.goreleaser
+│   │   ├── Dockerfile.goreleaser
+│   │   └── docker-compose.yaml
 │   ├── gcp
 │   │   └── clouddeploy.yaml
 │   ├── helm
@@ -364,8 +365,8 @@
 │   │   │   │   └── certs
 │   │   │   ├── templates
 │   │   │   │   ├── components
-│   │   │   │   ├── configmap.yaml
 │   │   │   │   ├── _helpers.tpl
+│   │   │   │   ├── configmap.yaml
 │   │   │   │   ├── namespace.yaml
 │   │   │   │   ├── secrets.yaml
 │   │   │   │   └── serviceaccount.yaml
@@ -377,8 +378,8 @@
 │   │   │   └── ingress-nginx-4.13.0.tgz
 │   │   ├── files
 │   │   │   ├── certs
-│   │   │   │   ├── fullchain.pem
 │   │   │   │   ├── .gitkeep
+│   │   │   │   ├── fullchain.pem
 │   │   │   │   └── privkey.pem
 │   │   │   └── kustomize
 │   │   │       ├── base
@@ -493,30 +494,31 @@
 │   │   └── version.go
 │   ├── codegen
 │   │   ├── tmpl
-│   │   │   ├── bootstrap.tmpl
-│   │   │   ├── command_handler.tmpl
-│   │   │   ├── controller.tmpl
-│   │   │   ├── events.tmpl
-│   │   │   ├── infrastructure.tmpl
-│   │   │   ├── query_handler.tmpl
-│   │   │   ├── repository_postgres.tmpl
-│   │   │   ├── repository_sqlite.tmpl
-│   │   │   ├── repository.tmpl
-│   │   │   ├── schema_hcl.tmpl
-│   │   │   ├── schema.tmpl
+│   │   │   ├── bootstrap.go.tmpl
+│   │   │   ├── command_handler.go.tmpl
+│   │   │   ├── controller.go.tmpl
+│   │   │   ├── db.hcl.tmpl
+│   │   │   ├── events.go.tmpl
+│   │   │   ├── header.tmpl
+│   │   │   ├── infrastructure.go.tmpl
+│   │   │   ├── query_handler.go.tmpl
+│   │   │   ├── repository.go.tmpl
+│   │   │   ├── repository_postgres.go.tmpl
+│   │   │   ├── repository_sqlite.go.tmpl
+│   │   │   ├── schema.go.tmpl
 │   │   │   └── sqlc.yaml.tmpl
-│   │   ├── filewriter.go
+│   │   ├── generate.go
 │   │   ├── generate_bootstrap.go
 │   │   ├── generate_controllers.go
 │   │   ├── generate_cqrs.go
 │   │   ├── generate_events.go
-│   │   ├── generate.go
 │   │   ├── generate_hcl.go
 │   │   ├── generate_js_client.go
 │   │   ├── generate_migrations.go
 │   │   ├── generate_repositories.go
 │   │   ├── generate_schemas.go
 │   │   ├── generate_sqlc.go
+│   │   ├── renderer.go
 │   │   └── templates.go
 │   ├── dev
 │   │   ├── manager.go
@@ -532,6 +534,7 @@
 │   │   ├── operation_test.go
 │   │   ├── response.go
 │   │   ├── schema.go
+│   │   ├── spec.go
 │   │   ├── strings.go
 │   │   ├── typeconv.go
 │   │   └── xcodegenextension.go
@@ -611,8 +614,8 @@
 │   │   └── redis.go
 │   ├── server
 │   │   ├── cookies.go
-│   │   ├── middleware_auth.go
 │   │   ├── middleware.go
+│   │   ├── middleware_auth.go
 │   │   ├── middleware_logger.go
 │   │   ├── middleware_ratelimit.go
 │   │   ├── middleware_recover.go
@@ -623,10 +626,9 @@
 │   │   ├── server.go
 │   │   └── websocket.go
 │   └── storage
-│       ├── local
-│       ├── s3
-│       ├── storage.go
-│       └── storage_test.go
+│       ├── disk.go
+│       ├── memory.go
+│       └── storage.go
 ├── scripts
 │   ├── generate-coverage-report.sh
 │   ├── generate-project-structure-xml.sh
@@ -657,9 +659,6 @@
 │       │   ├── react.json
 │       │   └── spec.json
 │       └── package.json
-├── .vscode
-│   ├── extensions.json
-│   └── settings.json
 ├── web
 │   ├── client
 │   │   ├── src
@@ -722,8 +721,8 @@
 │   │   │   │   └── __root.tsx
 │   │   │   ├── styles
 │   │   │   │   └── globals.css
-│   │   │   ├── router.tsx
-│   │   │   └── routeTree.gen.ts
+│   │   │   ├── routeTree.gen.ts
+│   │   │   └── router.tsx
 │   │   ├── Dockerfile
 │   │   ├── package.json
 │   │   ├── playwright.config.js
@@ -776,29 +775,29 @@
 │       ├── tsconfig.spec.json
 │       └── vite.config.ts
 ├── .air.toml
-├── arches.yaml
-├── biome.json
 ├── .cspell.json
 ├── .editorconfig
 ├── .env
 ├── .gitignore
 ├── .golangci.yaml
-├── go.mod
 ├── .goreleaser.yaml
-├── go.sum
 ├── .lefthook.yaml
-├── LICENSE
-├── Makefile
 ├── .markdownlint.json
 ├── .mockery.yaml
+├── .prettierignore
+├── LICENSE
+├── Makefile
+├── README.md
+├── arches.yaml
+├── biome.json
+├── go.mod
+├── go.sum
 ├── package.json
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
-├── .prettierignore
-├── README.md
 ├── tools.mod
 ├── tools.sum
 └── tsconfig.json
 
-187 directories, 609 files
+184 directories, 611 files
 ```

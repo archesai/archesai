@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"bytes"
 	"fmt"
 	"path/filepath"
 	"sort"
@@ -67,21 +68,18 @@ func (g *Generator) generateControllerForTag(
 		HasCustomHandlers: hasCustom,
 	}
 
+	// Render to buffer
+	var buf bytes.Buffer
+	if err := g.renderer.Render(&buf, "controller.go.tmpl", data); err != nil {
+		return fmt.Errorf("failed to render controller for %s: %w", tag, err)
+	}
+
+	// Write using storage
 	outputPath := filepath.Join(
 		g.outputDir, "generated", "adapters", "http", "controllers",
 		strings.ToLower(tag)+".gen.go",
 	)
-
-	tmpl, ok := g.templates["controller.tmpl"]
-	if !ok {
-		return fmt.Errorf("controller template not found")
-	}
-
-	if err := g.filewriter.WriteTemplate(outputPath, tmpl, data); err != nil {
-		return fmt.Errorf("failed to generate handler for %s: %w", tag, err)
-	}
-
-	return nil
+	return g.storage.WriteFile(outputPath, buf.Bytes(), 0644)
 }
 
 // getOperationOrder returns the sort order for an operation

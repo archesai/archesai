@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"bytes"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -30,18 +31,19 @@ func (g *Generator) GenerateEvents(schemas []*parsers.SchemaDef) error {
 			OutputPath: outputPath,
 		}
 
+		// Render to buffer
+		var buf bytes.Buffer
+		if err := g.renderer.Render(&buf, "events.go.tmpl", data); err != nil {
+			return fmt.Errorf("failed to render events for %s: %w", schema.Name, err)
+		}
+
+		// Write using storage
 		eventFilePath := filepath.Join(
 			g.outputDir, "generated", "core", "events",
 			strings.ToLower(schema.Name)+"_events.gen.go",
 		)
-
-		tmpl, ok := g.templates["events.tmpl"]
-		if !ok {
-			return fmt.Errorf("events template not found")
-		}
-
-		if err := g.filewriter.WriteTemplate(eventFilePath, tmpl, data); err != nil {
-			return fmt.Errorf("failed to generate events for %s: %w", schema.Name, err)
+		if err := g.storage.WriteFile(eventFilePath, buf.Bytes(), 0644); err != nil {
+			return fmt.Errorf("failed to write events for %s: %w", schema.Name, err)
 		}
 
 	}

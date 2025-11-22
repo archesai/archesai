@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"bytes"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -64,11 +65,13 @@ func (g *Generator) generateSchema(
 		OutputPath: importPath,
 	}
 
-	outputPath := filepath.Join(outputDir, strings.ToLower(schema.Name)+".gen.go")
-	tmpl, ok := g.templates["schema.tmpl"]
-	if !ok {
-		return fmt.Errorf("schema template not found")
+	// Render to buffer
+	var buf bytes.Buffer
+	if err := g.renderer.Render(&buf, "schema.go.tmpl", data); err != nil {
+		return fmt.Errorf("failed to render schema: %w", err)
 	}
 
-	return g.filewriter.WriteTemplate(outputPath, tmpl, data)
+	// Write using storage interface
+	outputPath := filepath.Join(outputDir, strings.ToLower(schema.Name)+".gen.go")
+	return g.storage.WriteFile(outputPath, buf.Bytes(), 0644)
 }

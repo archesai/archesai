@@ -5,9 +5,7 @@ package codegen
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"path/filepath"
-	"text/template"
 
 	sqlc "github.com/sqlc-dev/sqlc/pkg/cli"
 )
@@ -24,29 +22,17 @@ func (g *Generator) GenerateSQLC() error {
 		"sqlc.gen.yaml",
 	)
 
-	// Load the sqlc.yaml template
-	tmplContent, err := GetTemplate("sqlc.yaml.tmpl")
-	if err != nil {
-		return fmt.Errorf("failed to load sqlc.yaml template: %w", err)
-	}
-
-	// Parse and execute the template
-	tmpl, err := template.New("sqlc.yaml").Parse(tmplContent)
-	if err != nil {
-		return fmt.Errorf("failed to parse sqlc.yaml template: %w", err)
-	}
-
-	var buf bytes.Buffer
+	// Generate sqlc.yaml
 	data := map[string]string{
 		"OutputDir": g.outputDir,
 	}
 
-	if err := tmpl.Execute(&buf, data); err != nil {
-		return fmt.Errorf("failed to execute sqlc.yaml template: %w", err)
+	var buf bytes.Buffer
+	if err := g.renderer.Render(&buf, "sqlc.yaml.tmpl", data); err != nil {
+		return fmt.Errorf("failed to render sqlc.yaml: %w", err)
 	}
 
-	// Write the sqlc.yaml file
-	if err := os.WriteFile(sqlcConfigPath, buf.Bytes(), 0644); err != nil {
+	if err := g.storage.WriteFile(sqlcConfigPath, buf.Bytes(), 0644); err != nil {
 		return fmt.Errorf("failed to write sqlc.yaml: %w", err)
 	}
 

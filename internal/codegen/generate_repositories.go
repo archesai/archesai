@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"bytes"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -40,17 +41,16 @@ func (g *Generator) generateRepositoryForSchema(
 	}
 
 	// Generate interface in repositories folder
+	var buf bytes.Buffer
+	if err := g.renderer.Render(&buf, "repository.go.tmpl", data); err != nil {
+		return fmt.Errorf("failed to render repository interface: %w", err)
+	}
+
 	outputPath := filepath.Join(
 		g.outputDir, "generated", "core", "repositories",
 		strings.ToLower(schema.Name)+".gen.go",
 	)
-
-	tmpl, ok := g.templates["repository.tmpl"]
-	if !ok {
-		return fmt.Errorf("repository template not found")
-	}
-
-	if err := g.filewriter.WriteTemplate(outputPath, tmpl, data); err != nil {
+	if err := g.storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
 		return err
 	}
 
@@ -61,25 +61,31 @@ func (g *Generator) generateRepositoryForSchema(
 	}
 
 	// PostgreSQL
-	if tmpl, ok := g.templates["repository_postgres.tmpl"]; ok {
-		outputPath := filepath.Join(
-			g.outputDir, "generated", "infrastructure", "persistence", "postgres", "repositories",
-			strings.ToLower(schema.Name)+"_repository.gen.go",
-		)
-		if err := g.filewriter.WriteTemplate(outputPath, tmpl, implData); err != nil {
-			return fmt.Errorf("failed to generate PostgreSQL repository: %w", err)
-		}
+	buf.Reset()
+	if err := g.renderer.Render(&buf, "repository_postgres.go.tmpl", implData); err != nil {
+		return fmt.Errorf("failed to render PostgreSQL repository: %w", err)
+	}
+
+	outputPath = filepath.Join(
+		g.outputDir, "generated", "infrastructure", "persistence", "postgres", "repositories",
+		strings.ToLower(schema.Name)+"_repository.gen.go",
+	)
+	if err := g.storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write PostgreSQL repository: %w", err)
 	}
 
 	// SQLite
-	if tmpl, ok := g.templates["repository_sqlite.tmpl"]; ok {
-		outputPath := filepath.Join(
-			g.outputDir, "generated", "infrastructure", "persistence", "sqlite", "repositories",
-			strings.ToLower(schema.Name)+"_repository.gen.go",
-		)
-		if err := g.filewriter.WriteTemplate(outputPath, tmpl, implData); err != nil {
-			return fmt.Errorf("failed to generate SQLite repository: %w", err)
-		}
+	buf.Reset()
+	if err := g.renderer.Render(&buf, "repository_sqlite.go.tmpl", implData); err != nil {
+		return fmt.Errorf("failed to render SQLite repository: %w", err)
+	}
+
+	outputPath = filepath.Join(
+		g.outputDir, "generated", "infrastructure", "persistence", "sqlite", "repositories",
+		strings.ToLower(schema.Name)+"_repository.gen.go",
+	)
+	if err := g.storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
+		return fmt.Errorf("failed to write SQLite repository: %w", err)
 	}
 
 	return nil

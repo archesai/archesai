@@ -3,6 +3,7 @@ Template: schema.tmpl
 Generates: A single schema definition (entity or value object)
 Expected data: SchemasTemplateData
 */ -}}
+{{template "header" .}}
 package {{ .Package }}
 
 import (

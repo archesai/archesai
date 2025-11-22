@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"go/format"
 	"log/slog"
-	"text/template"
 	"time"
 
 	"golang.org/x/sync/errgroup"
 
 	"github.com/archesai/archesai/internal/parsers"
+	"github.com/archesai/archesai/pkg/storage"
 )
 
 // Schema type constants
@@ -23,34 +23,37 @@ const (
 
 // Generator handles code generation from OpenAPI specifications
 type Generator struct {
-	templates  map[string]*template.Template
-	filewriter *FileWriter
-	parser     *parsers.OpenAPIParser
-	outputDir  string // Base output directory for generated files
+	renderer  *Renderer
+	parser    *parsers.OpenAPIParser
+	storage   storage.Storage
+	outputDir string // Base output directory for generated files
 }
 
 // NewGenerator creates a new code generator instance
 func NewGenerator(outputDir string) *Generator {
 	return &Generator{
-		templates:  nil,
-		filewriter: nil,
-		parser:     parsers.NewOpenAPIParser(),
-		outputDir:  outputDir,
+		renderer:  nil,
+		parser:    parsers.NewOpenAPIParser(),
+		storage:   storage.NewDiskStorage(""),
+		outputDir: outputDir,
 	}
 }
 
-// Initialize sets up the generator with templates and file writer
-func (g *Generator) Initialize() error {
-	filewriter := NewFileWriter()
-	filewriter.WithOverwrite(true)
-	filewriter.WithHeader(DefaultHeader())
-	g.filewriter = filewriter
+// WithStorage sets a custom storage implementation (useful for testing)
+func (g *Generator) WithStorage(s storage.Storage) *Generator {
+	g.storage = s
+	return g
+}
 
+// Initialize sets up the generator with templates and renderer
+func (g *Generator) Initialize() error {
 	templates, err := LoadTemplates()
 	if err != nil {
 		return fmt.Errorf("failed to load templates: %w", err)
 	}
-	g.templates = templates
+
+	// Wire templates directly to the Renderer
+	g.renderer = NewRenderer(templates)
 
 	return nil
 }
@@ -69,14 +72,14 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 		return "", fmt.Errorf("failed to parse OpenAPI spec: %w", err)
 	}
 
-	operations, schemas, err := g.parser.Extract()
+	specDef, err := g.parser.Extract()
 	if err != nil {
 		return "", fmt.Errorf("failed to extraact definitions from openapi schema: %w", err)
 	}
 
 	slog.Info("Initialized state",
-		slog.Int("schemas", len(schemas)),
-		slog.Int("operations", len(operations)),
+		slog.Int("schemas", len(specDef.Schemas)),
+		slog.Int("operations", len(specDef.Operations)),
 		"duration", time.Since(totalStart))
 
 	// Buffer to collect all output
@@ -95,7 +98,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	// Group 1: Schema-based generators
 	eg.Go(func() error {
 		start := time.Now()
-		if err := g.GenerateSchemas(schemas); err != nil {
+		if err := g.GenerateSchemas(specDef.Schemas); err != nil {
 			return fmt.Errorf("failed to generate models: %w", err)
 		}
 		timings <- generatorTiming{"GenerateSchemas", time.Since(start)}
@@ -104,7 +107,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 
 	eg.Go(func() error {
 		start := time.Now()
-		if err := g.GenerateRepositories(schemas); err != nil {
+		if err := g.GenerateRepositories(specDef.Schemas); err != nil {
 			return fmt.Errorf("failed to generate repositories: %w", err)
 		}
 		timings <- generatorTiming{"GenerateRepositories", time.Since(start)}
@@ -113,7 +116,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 
 	eg.Go(func() error {
 		start := time.Now()
-		if err := g.GenerateEvents(schemas); err != nil {
+		if err := g.GenerateEvents(specDef.Schemas); err != nil {
 			return fmt.Errorf("failed to generate events: %w", err)
 		}
 		timings <- generatorTiming{"GenerateEvents", time.Since(start)}
@@ -123,7 +126,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	// Group 2: Operation-based generators
 	eg.Go(func() error {
 		start := time.Now()
-		if err := g.GenerateCommandQueryHandlers(operations); err != nil {
+		if err := g.GenerateCommandQueryHandlers(specDef.Operations); err != nil {
 			return fmt.Errorf("failed to generate handlers: %w", err)
 		}
 		timings <- generatorTiming{"GenerateCommandQueryHandlers", time.Since(start)}
@@ -132,7 +135,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 
 	eg.Go(func() error {
 		start := time.Now()
-		if err := g.GenerateControllers(operations); err != nil {
+		if err := g.GenerateControllers(specDef.Operations); err != nil {
 			return fmt.Errorf("failed to generate handlers: %w", err)
 		}
 		timings <- generatorTiming{"GenerateControllers", time.Since(start)}
@@ -142,7 +145,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 	// Group 3: Database and client generators
 	eg.Go(func() error {
 		start := time.Now()
-		if err := g.GenerateHCL(schemas); err != nil {
+		if err := g.GenerateHCL(specDef.Schemas); err != nil {
 			return fmt.Errorf("failed to generate HCL schema: %w", err)
 		}
 		timings <- generatorTiming{"GenerateHCL", time.Since(start)}
@@ -182,7 +185,7 @@ func (g *Generator) GenerateAPI(specPath string) (string, error) {
 
 	// Phase 3: Run generators that depend on others (must be done after parallel phase)
 	start := time.Now()
-	if err := g.GenerateBootstrap(schemas, operations); err != nil {
+	if err := g.GenerateBootstrap(specDef.Schemas, specDef.Operations); err != nil {
 		return "", fmt.Errorf("failed to generate bootstrap files: %w", err)
 	}
 	slog.Info("Generator completed",

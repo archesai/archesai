@@ -61,13 +61,6 @@
     <dir name="development" files="1" patterns="*.yaml"/>
     <dir name="docker" type="container" files="3" patterns="*.yaml" key-files="Dockerfile"/>
     <dir name="gcp" files="1" patterns="*.yaml"/>
-    <dir name="helm" files="1" dirs="1" patterns="*.yaml">
-      <dir name="arches" files="2" dirs="3" patterns="*.yaml">
-        <dir name="charts" files="1"/>
-        <dir name="files" dirs="1"/>
-        <dir name="templates" purpose="Template files" files="5" dirs="1" patterns="*.yaml"/>
-      </dir>
-    </dir>
     <dir name="helm-minimal" files="3" dirs="3" patterns="*.yaml">
       <dir name="charts" files="1"/>
       <dir name="files" dirs="2">
@@ -75,6 +68,13 @@
         <dir name="kustomize" dirs="2"/>
       </dir>
       <dir name="templates" purpose="Template files" files="1" patterns="*.yaml"/>
+    </dir>
+    <dir name="helm" files="1" dirs="1" patterns="*.yaml">
+      <dir name="arches" files="2" dirs="3" patterns="*.yaml">
+        <dir name="charts" files="1"/>
+        <dir name="files" dirs="1"/>
+        <dir name="templates" purpose="Template files" files="5" dirs="1" patterns="*.yaml"/>
+      </dir>
     </dir>
     <dir name="k3d" files="1" patterns="*.yaml"/>
     <dir name="kustomize" dirs="2">
@@ -107,10 +107,10 @@
   <dir name="internal" dirs="6">
     <dir name="cli" files="7"/>
     <dir name="codegen" files="13" dirs="1">
-      <dir name="tmpl" files="12"/>
+      <dir name="tmpl" files="13"/>
     </dir>
     <dir name="dev" files="3"/>
-    <dir name="parsers" files="12"/>
+    <dir name="parsers" files="13"/>
     <dir name="testutil" type="testing" purpose="Testing utilities" files="1"/>
     <dir name="tui" files="2"/>
   </dir>
@@ -136,7 +136,7 @@
         <dir name="generated" type="generated" files="2" dirs="14"/>
       </dir>
     </dir>
-    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="5" key-files="package.json,Dockerfile">
+    <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="4" key-files="package.json,Dockerfile">
       <dir name="public" files="1"/>
       <dir name="src" files="2" dirs="5" patterns="*.tsx">
         <dir name="components" purpose="Reusable components" files="6" dirs="6" patterns="*.tsx"/>

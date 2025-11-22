@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"bytes"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -29,20 +30,14 @@ func (g *Generator) GenerateCommandQueryHandlers(
 
 		for _, op := range ops {
 			// Determine template and output directory based on method
-			var tmplPath string
+			var tmplName string
 			var output string
 			if op.Method == "GET" {
-				tmplPath = "query_handler.tmpl"
+				tmplName = "query_handler.go.tmpl"
 				output = "queries"
 			} else {
-				tmplPath = "command_handler.tmpl"
+				tmplName = "command_handler.go.tmpl"
 				output = "commands"
-			}
-
-			// Load the template
-			tmpl, ok := g.templates[tmplPath]
-			if !ok {
-				return fmt.Errorf("command handler template not found")
 			}
 
 			// Get the output path
@@ -61,13 +56,15 @@ func (g *Generator) GenerateCommandQueryHandlers(
 				OutputPath: importPath,
 			}
 
+			// Render to buffer
+			var buf bytes.Buffer
+			if err := g.renderer.Render(&buf, tmplName, data); err != nil {
+				return fmt.Errorf("failed to render handler for %s: %w", op.ID, err)
+			}
+
 			// Write the handler file
-			if err := g.filewriter.WriteTemplate(outputPath, tmpl, data); err != nil {
-				return fmt.Errorf(
-					"failed to generate handler for %s: %w",
-					op.ID,
-					err,
-				)
+			if err := g.storage.WriteFile(outputPath, buf.Bytes(), 0644); err != nil {
+				return fmt.Errorf("failed to write handler for %s: %w", op.ID, err)
 			}
 		}
 	}

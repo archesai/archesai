@@ -1,6 +1,7 @@
 package codegen
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os/exec"
@@ -35,11 +36,6 @@ func (g *Generator) GenerateHCL(schemas []*parsers.SchemaDef) error {
 		return tableNameI < tableNameJ
 	})
 
-	tmpl, ok := g.templates["schema_hcl.tmpl"]
-	if !ok {
-		return fmt.Errorf("HCL template not found")
-	}
-
 	// Phase 1: Write HCL schema files in parallel
 	eg := &errgroup.Group{}
 
@@ -57,7 +53,11 @@ func (g *Generator) GenerateHCL(schemas []*parsers.SchemaDef) error {
 		"schema.gen.hcl",
 	)
 	eg.Go(func() error {
-		if err := g.filewriter.WriteTemplate(postgresHCLPath, tmpl, postgresData); err != nil {
+		var buf bytes.Buffer
+		if err := g.renderer.Render(&buf, "db.hcl.tmpl", postgresData); err != nil {
+			return fmt.Errorf("failed to render PostgreSQL HCL: %w", err)
+		}
+		if err := g.storage.WriteFile(postgresHCLPath, buf.Bytes(), 0644); err != nil {
 			return fmt.Errorf("failed to write PostgreSQL HCL file: %w", err)
 		}
 		return nil
@@ -77,7 +77,11 @@ func (g *Generator) GenerateHCL(schemas []*parsers.SchemaDef) error {
 		"schema.gen.hcl",
 	)
 	eg.Go(func() error {
-		if err := g.filewriter.WriteTemplate(sqliteHCLPath, tmpl, sqliteData); err != nil {
+		var buf bytes.Buffer
+		if err := g.renderer.Render(&buf, "db.hcl.tmpl", sqliteData); err != nil {
+			return fmt.Errorf("failed to render SQLite HCL: %w", err)
+		}
+		if err := g.storage.WriteFile(sqliteHCLPath, buf.Bytes(), 0644); err != nil {
 			return fmt.Errorf("failed to write SQLite HCL file: %w", err)
 		}
 		return nil
