@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: 2025-11-21T17:13:16-05:00
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -171,12 +170,6 @@
         <dir name="types" files="3"/>
       </dir>
     </dir>
-  </dir>
-  <dir name=".taskmaster" files="3" dirs="4">
-    <dir name="docs" purpose="Documentation" files="1"/>
-    <dir name="reports" files="1"/>
-    <dir name="tasks" files="1"/>
-    <dir name="templates" purpose="Template files" files="1"/>
   </dir>
   <dir name=".vscode" files="2"/>
 </project>

@@ -201,7 +201,6 @@ cat > "$OUTPUT_FILE" << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Project Structure XML
-  Generated: DATE_PLACEHOLDER
 
   This XML provides a compact representation of the project structure.
   It's ~75% more token-efficient than the traditional tree format.
@@ -216,9 +215,6 @@ cat > "$OUTPUT_FILE" << 'EOF'
   - key-files: Important files in the directory
 -->
 EOF
-
-# Replace date placeholder
-sed -i "s/DATE_PLACEHOLDER/$(date -Iseconds)/" "$OUTPUT_FILE"
 
 # Get project root
 PROJECT_ROOT="$(pwd)"

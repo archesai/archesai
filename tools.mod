@@ -1,6 +1,6 @@
 module github.com/archesai/archesai/tools
 
-go 1.25.1
+go 1.25.4
 
 tool (
 	github.com/air-verse/air

@@ -74,6 +74,6 @@ formatters:
       - builtin$
       - examples$
 run:
-  go: '1.25.1'
+  go: '1.25.4'
   tests: true
   allow-parallel-runners: true

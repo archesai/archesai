@@ -41,8 +41,8 @@ func NewPretty(cfg Config) *slog.Logger {
 	return slog.New(handler)
 }
 
-// NewTest creates a test logger that discards all output.
-func NewTest() *slog.Logger {
+// NewDiscard creates a test logger that discards all output.
+func NewDiscard() *slog.Logger {
 	return slog.New(slog.DiscardHandler)
 }
 
@@ -67,7 +67,6 @@ func parseLevel(level string) slog.Level {
 	case "error", "fatal":
 		return slog.LevelError
 	case "silent":
-		// Set to highest level to suppress all logs
 		return slog.LevelError + 1
 	default:
 		return slog.LevelInfo

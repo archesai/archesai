@@ -1,6 +1,6 @@
 module github.com/archesai/archesai
 
-go 1.25.1
+go 1.25.4
 
 require (
 	ariga.io/atlas v0.38.0
