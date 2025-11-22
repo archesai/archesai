@@ -10,10 +10,10 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/archesai/archesai/internal/dev"
+	"github.com/archesai/archesai/internal/tui"
 	"github.com/archesai/archesai/pkg/config"
-	"github.com/archesai/archesai/pkg/dev"
 	"github.com/archesai/archesai/pkg/logger"
-	"github.com/archesai/archesai/pkg/tui"
 )
 
 var (

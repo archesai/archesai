@@ -483,6 +483,14 @@
 │   ├── getting-started.md
 │   └── studio-ui-design.md
 ├── internal
+│   ├── cli
+│   │   ├── completion.go
+│   │   ├── config.go
+│   │   ├── dev.go
+│   │   ├── generate.go
+│   │   ├── root.go
+│   │   ├── tui.go
+│   │   └── version.go
 │   ├── codegen
 │   │   ├── tmpl
 │   │   │   ├── bootstrap.tmpl
@@ -510,19 +518,28 @@
 │   │   ├── generate_schemas.go
 │   │   ├── generate_sqlc.go
 │   │   └── templates.go
-│   └── parsers
-│       ├── jsonschema.go
-│       ├── jsonschema_test.go
-│       ├── openapi.go
-│       ├── openapi_orvalfix.go
-│       ├── openapi_test.go
-│       ├── operation.go
-│       ├── operation_test.go
-│       ├── response.go
-│       ├── schema.go
-│       ├── strings.go
-│       ├── typeconv.go
-│       └── xcodegenextension.go
+│   ├── dev
+│   │   ├── manager.go
+│   │   ├── process.go
+│   │   └── watcher.go
+│   ├── parsers
+│   │   ├── jsonschema.go
+│   │   ├── jsonschema_test.go
+│   │   ├── openapi.go
+│   │   ├── openapi_orvalfix.go
+│   │   ├── openapi_test.go
+│   │   ├── operation.go
+│   │   ├── operation_test.go
+│   │   ├── response.go
+│   │   ├── schema.go
+│   │   ├── strings.go
+│   │   ├── typeconv.go
+│   │   └── xcodegenextension.go
+│   ├── testutil
+│   │   └── containers.go
+│   └── tui
+│       ├── config.go
+│       └── dev.go
 ├── pkg
 │   ├── auth
 │   │   ├── oauth
@@ -541,14 +558,6 @@
 │   │   ├── memory.go
 │   │   ├── noop.go
 │   │   └── redis.go
-│   ├── cli
-│   │   ├── completion.go
-│   │   ├── config.go
-│   │   ├── dev.go
-│   │   ├── generate.go
-│   │   ├── root.go
-│   │   ├── tui.go
-│   │   └── version.go
 │   ├── config
 │   │   ├── config.go
 │   │   ├── loader.go
@@ -557,10 +566,6 @@
 │   │   ├── crud_repository.go
 │   │   ├── database.go
 │   │   └── migrate.go
-│   ├── dev
-│   │   ├── manager.go
-│   │   ├── process.go
-│   │   └── watcher.go
 │   ├── errors
 │   │   └── errors.go
 │   ├── events
@@ -617,16 +622,11 @@
 │   │   ├── responses.go
 │   │   ├── server.go
 │   │   └── websocket.go
-│   ├── storage
-│   │   ├── local
-│   │   ├── s3
-│   │   ├── storage.go
-│   │   └── storage_test.go
-│   ├── testutil
-│   │   └── containers.go
-│   └── tui
-│       ├── config.go
-│       └── dev.go
+│   └── storage
+│       ├── local
+│       ├── s3
+│       ├── storage.go
+│       └── storage_test.go
 ├── scripts
 │   ├── generate-coverage-report.sh
 │   ├── generate-project-structure-xml.sh

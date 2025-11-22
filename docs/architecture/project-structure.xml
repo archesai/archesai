@@ -104,11 +104,15 @@
     <dir name="security" files="2"/>
     <dir name="troubleshooting" files="1"/>
   </dir>
-  <dir name="internal" dirs="2">
+  <dir name="internal" dirs="6">
+    <dir name="cli" files="7"/>
     <dir name="codegen" files="13" dirs="1">
       <dir name="tmpl" files="12"/>
     </dir>
+    <dir name="dev" files="3"/>
     <dir name="parsers" files="12"/>
+    <dir name="testutil" type="testing" purpose="Testing utilities" files="1"/>
+    <dir name="tui" files="2"/>
   </dir>
   <dir name="scripts" purpose="Utility scripts" files="4"/>
   <dir name="test" type="testing" purpose="Testing utilities" dirs="1">

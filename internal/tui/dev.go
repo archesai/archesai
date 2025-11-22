@@ -11,7 +11,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/archesai/archesai/pkg/dev"
+	"github.com/archesai/archesai/internal/dev"
 )
 
 // Tab represents a log view tab

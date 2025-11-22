@@ -6,7 +6,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 
-	"github.com/archesai/archesai/pkg/tui"
+	"github.com/archesai/archesai/internal/tui"
 )
 
 // tuiCmd represents the tui command.
