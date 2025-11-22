@@ -6,7 +6,7 @@
   ],
   "references": [
     {
-      "path": "../ui/tsconfig.lib.json"
+      "path": "../../web/ui/tsconfig.lib.json"
     }
   ]
 }

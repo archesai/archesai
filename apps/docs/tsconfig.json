@@ -3,7 +3,7 @@
   "files": [],
   "references": [
     {
-      "path": "../ui"
+      "path": "../../web/ui"
     },
     {
       "path": "./tsconfig.app.json"

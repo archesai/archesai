@@ -47,8 +47,8 @@ jobs:
             -exec rm -rf {} +
 
       - run: |
-          # Copy all built files from web/docs/dist to the pages repo
-          cp -r web/docs/dist/* pages-repo/
+          # Copy all built files from apps/docs/dist to the pages repo
+          cp -r apps/docs/dist/* pages-repo/
 
           # Create .nojekyll file to bypass Jekyll processing
           touch pages-repo/.nojekyll

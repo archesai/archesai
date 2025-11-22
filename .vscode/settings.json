@@ -8,9 +8,9 @@
     "**/bin": true,
     "**/dist": true,
     "**/node_modules": true,
-    "tmp": true,
-    "web/docs/apis": true,
-    "web/docs/pages/**": true
+    "apps/docs/apis": true,
+    "apps/docs/pages/**": true,
+    "tmp": true
   },
   "tailwindCSS.experimental.configFile": {
     "./web/platform/src/styles/globals.css": "./web/platform/src/**",

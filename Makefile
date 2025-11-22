@@ -56,7 +56,7 @@ build-platform: ## Build platform assets
 build-docs: prepare-docs ## Build documentation site
 	@echo -e "$(YELLOW)▶ Building documentation site...$(NC)"
 	@pnpm -F @archesai/docs build
-	@echo -e "$(GREEN)✓ Documentation built in web/docs/build/$(NC)"
+	@echo -e "$(GREEN)✓ Documentation built in apps/docs/build/$(NC)"
 
 # ------------------------------------------
 # Run Commands (Production-like)
@@ -358,11 +358,11 @@ clean-go-deps: ## Clean Go module cache
 	@echo -e "$(GREEN)✓ Go module cache cleaned!$(NC)"
 
 .PHONY: prepare-docs
-prepare-docs: bundle-openapi ## Copy markdown docs to web/docs/docs
-	@echo -e "$(YELLOW)▶ Copying markdown docs to web/docs...$(NC)"
-	@mkdir -p ./web/docs/apis ./web/docs/pages/documentation
-	@cp ./api/openapi.bundled.yaml ./web/docs/apis/openapi.yaml
-	@cp -r ./docs/** ./web/docs/pages
+prepare-docs: bundle-openapi ## Copy markdown docs to apps/docs/docs
+	@echo -e "$(YELLOW)▶ Copying markdown docs to apps/docs...$(NC)"
+	@mkdir -p ./apps/docs/apis ./apps/docs/pages/documentation
+	@cp ./api/openapi.bundled.yaml ./apps/docs/apis/openapi.yaml
+	@cp -r ./docs/** ./apps/docs/pages
 	@echo -e "$(GREEN)✓ Docs copied!$(NC)"
 
 

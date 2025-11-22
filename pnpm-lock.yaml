@@ -282,6 +282,24 @@ importers:
         specifier: catalog:test
         version: 5.1.0
 
+  apps/docs:
+    dependencies:
+      '@archesai/ui':
+        specifier: workspace:*
+        version: link:../../web/ui
+      motion:
+        specifier: catalog:ui
+        version: 12.23.24(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react:
+        specifier: catalog:react19
+        version: 19.2.0
+      react-dom:
+        specifier: catalog:react19
+        version: 19.2.0(react@19.2.0)
+      zudoku:
+        specifier: 'catalog:'
+        version: 0.61.5(@supabase/supabase-js@2.75.0)(@types/node@24.10.1)(immer@9.0.21)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(tsx@4.20.6)(use-sync-external-store@1.6.0(react@19.2.0))
+
   deployments/containers/runners/node:
     dependencies:
       ajv:
@@ -303,24 +321,6 @@ importers:
       zod:
         specifier: 'catalog:'
         version: 4.1.12
-
-  web/docs:
-    dependencies:
-      '@archesai/ui':
-        specifier: workspace:*
-        version: link:../ui
-      motion:
-        specifier: catalog:ui
-        version: 12.23.24(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      react:
-        specifier: catalog:react19
-        version: 19.2.0
-      react-dom:
-        specifier: catalog:react19
-        version: 19.2.0(react@19.2.0)
-      zudoku:
-        specifier: 'catalog:'
-        version: 0.61.5(@supabase/supabase-js@2.75.0)(@types/node@24.10.1)(immer@9.0.21)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(tsx@4.20.6)(use-sync-external-store@1.6.0(react@19.2.0))
 
   web/platform:
     dependencies:

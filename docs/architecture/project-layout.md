@@ -197,6 +197,63 @@
 │   ├── openapi.bundled.yaml
 │   └── openapi.yaml
 ├── apps
+│   ├── docs
+│   │   ├── apis
+│   │   │   └── openapi.yaml
+│   │   ├── pages
+│   │   │   ├── api-reference
+│   │   │   │   └── overview.md
+│   │   │   ├── architecture
+│   │   │   │   ├── authentication.md
+│   │   │   │   ├── overview.md
+│   │   │   │   ├── project-layout.md
+│   │   │   │   ├── project-structure.xml
+│   │   │   │   └── system-design.md
+│   │   │   ├── deployment
+│   │   │   │   ├── docker.md
+│   │   │   │   ├── kubernetes.md
+│   │   │   │   ├── overview.md
+│   │   │   │   └── production.md
+│   │   │   ├── documentation
+│   │   │   ├── features
+│   │   │   │   ├── auth.md
+│   │   │   │   ├── content.md
+│   │   │   │   ├── organizations.md
+│   │   │   │   ├── overview.md
+│   │   │   │   ├── tui.md
+│   │   │   │   └── workflows.md
+│   │   │   ├── guides
+│   │   │   │   ├── code-generation.md
+│   │   │   │   ├── custom-handlers.md
+│   │   │   │   ├── development.md
+│   │   │   │   ├── makefile-commands.md
+│   │   │   │   ├── overview.md
+│   │   │   │   ├── test-coverage-report.md
+│   │   │   │   └── testing.md
+│   │   │   ├── monitoring
+│   │   │   │   └── overview.md
+│   │   │   ├── performance
+│   │   │   │   ├── optimization.md
+│   │   │   │   └── overview.md
+│   │   │   ├── security
+│   │   │   │   ├── best-practices.md
+│   │   │   │   └── overview.md
+│   │   │   ├── troubleshooting
+│   │   │   │   └── common-issues.md
+│   │   │   ├── codebase-analysis.md
+│   │   │   ├── contributing.md
+│   │   │   ├── getting-started.md
+│   │   │   └── studio-ui-design.md
+│   │   ├── src
+│   │   │   ├── landing_content.ts
+│   │   │   ├── landing.tsx
+│   │   │   └── sidebar.tsx
+│   │   ├── package.json
+│   │   ├── tsconfig.app.json
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.spec.json
+│   │   ├── vite.config.ts
+│   │   └── zudoku.config.tsx
 │   └── studio
 │       ├── generated
 │       │   ├── adapters
@@ -631,65 +688,6 @@
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.lib.json
 │   │   └── tsconfig.spec.json
-│   ├── docs
-│   │   ├── apis
-│   │   │   └── openapi.yaml
-│   │   ├── pages
-│   │   │   ├── api-reference
-│   │   │   │   └── overview.md
-│   │   │   ├── architecture
-│   │   │   │   ├── authentication.md
-│   │   │   │   ├── overview.md
-│   │   │   │   ├── project-layout.md
-│   │   │   │   ├── project-structure.xml
-│   │   │   │   └── system-design.md
-│   │   │   ├── deployment
-│   │   │   │   ├── docker.md
-│   │   │   │   ├── kubernetes.md
-│   │   │   │   ├── overview.md
-│   │   │   │   └── production.md
-│   │   │   ├── documentation
-│   │   │   ├── features
-│   │   │   │   ├── auth.md
-│   │   │   │   ├── content.md
-│   │   │   │   ├── organizations.md
-│   │   │   │   ├── overview.md
-│   │   │   │   ├── tui.md
-│   │   │   │   └── workflows.md
-│   │   │   ├── guides
-│   │   │   │   ├── code-generation.md
-│   │   │   │   ├── custom-handlers.md
-│   │   │   │   ├── development.md
-│   │   │   │   ├── makefile-commands.md
-│   │   │   │   ├── overview.md
-│   │   │   │   ├── test-coverage-report.md
-│   │   │   │   └── testing.md
-│   │   │   ├── monitoring
-│   │   │   │   └── overview.md
-│   │   │   ├── performance
-│   │   │   │   ├── optimization.md
-│   │   │   │   └── overview.md
-│   │   │   ├── security
-│   │   │   │   ├── best-practices.md
-│   │   │   │   └── overview.md
-│   │   │   ├── troubleshooting
-│   │   │   │   └── common-issues.md
-│   │   │   ├── codebase-analysis.md
-│   │   │   ├── contributing.md
-│   │   │   ├── getting-started.md
-│   │   │   └── studio-ui-design.md
-│   │   ├── public
-│   │   │   └── .gitkeep
-│   │   ├── src
-│   │   │   ├── landing_content.ts
-│   │   │   ├── landing.tsx
-│   │   │   └── sidebar.tsx
-│   │   ├── package.json
-│   │   ├── tsconfig.app.json
-│   │   ├── tsconfig.json
-│   │   ├── tsconfig.spec.json
-│   │   ├── vite.config.ts
-│   │   └── zudoku.config.tsx
 │   ├── platform
 │   │   ├── public
 │   │   │   └── .gitkeep
@@ -802,5 +800,5 @@
 ├── tools.sum
 └── tsconfig.json
 
-188 directories, 610 files
+187 directories, 609 files
 ```

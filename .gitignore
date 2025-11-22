@@ -32,8 +32,8 @@ logs/
 *.pem
 
 ## Documentation
-web/docs/pages
-web/docs/apis/openapi.yaml
+apps/docs/pages
+apps/docs/apis/openapi.yaml
 
 ## Config/Generated
 build.json

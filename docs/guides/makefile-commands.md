@@ -58,7 +58,7 @@ Available targets:
   lint-typecheck             Run TypeScript type checking
   list-workflows             List all available GitHub workflows
   pre-commit                 Run all pre-commit checks
-  prepare-docs               Copy markdown docs to web/docs/docs
+  prepare-docs               Copy markdown docs to apps/docs/docs
   release-check              Check if ready for release
   release-clean              Clean release artifacts
   release-draft              Create a draft release on GitHub (requires gh CLI)

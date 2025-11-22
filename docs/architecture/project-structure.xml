@@ -126,28 +126,11 @@
       <dir name="src" files="4"/>
     </dir>
   </dir>
-  <dir name="web" purpose="Web applications" dirs="4">
+  <dir name="web" purpose="Web applications" dirs="3">
     <dir name="client" type="npm-package" purpose="Client SDK" files="5" dirs="3" key-files="package.json">
       <dir name="src" files="3" dirs="1" key-files="index.ts">
         <dir name="generated" type="generated" files="2" dirs="14"/>
       </dir>
-    </dir>
-    <dir name="docs" type="npm-package" purpose="Documentation" files="6" dirs="7" patterns="*.tsx" key-files="package.json">
-      <dir name="apis" type="api-spec" purpose="API definitions" files="1" patterns="*.yaml"/>
-      <dir name="pages" files="4" dirs="10">
-        <dir name="api-reference" purpose="API definitions" files="1"/>
-        <dir name="architecture" files="5"/>
-        <dir name="deployment" files="4"/>
-        <dir name="documentation" purpose="Documentation"/>
-        <dir name="features" files="6"/>
-        <dir name="guides" files="7"/>
-        <dir name="monitoring" files="1"/>
-        <dir name="performance" files="2"/>
-        <dir name="security" files="2"/>
-        <dir name="troubleshooting" files="1"/>
-      </dir>
-      <dir name="public" files="1"/>
-      <dir name="src" files="3" patterns="*.tsx"/>
     </dir>
     <dir name="platform" type="npm-package" purpose="Platform UI" files="7" dirs="5" key-files="package.json,Dockerfile">
       <dir name="public" files="1"/>

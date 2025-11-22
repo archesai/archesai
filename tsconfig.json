@@ -6,7 +6,7 @@
       "path": "./web/client"
     },
     {
-      "path": "./web/docs"
+      "path": "./apps/docs"
     },
     {
       "path": "./web/platform"
