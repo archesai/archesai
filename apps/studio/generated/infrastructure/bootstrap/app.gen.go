@@ -62,8 +62,8 @@ type App struct {
 	infra *Infrastructure
 
 	// Public infrastructure access
-	Config *models.Config
-	Server *server.Server
+	Config    *models.Config
+	APIServer *server.APIServer
 
 	// HTTP Controllers
 	AuthController         *controllers.AuthController
@@ -677,7 +677,7 @@ func NewApp(cfg *models.Config) (*App, error) {
 
 	// Create the HTTP server
 	slog.Info("creating HTTP server")
-	app.Server = server.NewServer(cfg.API)
+	app.APIServer = server.NewAPIServer(cfg.API)
 
 	// Register all application routes
 	app.registerRoutes()
@@ -698,7 +698,7 @@ func (a *App) Close() error {
 // registerRoutes registers all application routes with the server.
 func (a *App) registerRoutes() {
 	// Get the mux from the server
-	mux := a.Server.Mux()
+	mux := a.APIServer.Mux()
 
 	// Register all application routes
 	a.RegisterRoutes(mux)

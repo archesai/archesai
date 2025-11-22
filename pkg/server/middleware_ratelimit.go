@@ -75,8 +75,8 @@ type RateLimitConfig struct {
 	UseAPIKey         bool // If true, rate limit by API key; otherwise by IP
 }
 
-// rateLimitMiddleware implements rate limiting for the server
-func (s *Server) rateLimitMiddleware(next http.Handler) http.Handler {
+// RateLimitMiddleware implements rate limiting for the server
+func RateLimitMiddleware(next http.Handler) http.Handler {
 	// Default rate limit configuration
 	// Can be made configurable via server config in the future
 	config := RateLimitConfig{

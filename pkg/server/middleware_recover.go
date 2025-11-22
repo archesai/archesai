@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-// recoverMiddleware recovers from panics
-func (s *Server) recoverMiddleware(next http.Handler) http.Handler {
+// RecoverMiddleware recovers from panics
+func RecoverMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {

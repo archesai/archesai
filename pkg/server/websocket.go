@@ -10,9 +10,8 @@ import (
 )
 
 // WebsocketHandler handles WebSocket connections (currently unused)
-// TODO: Remove if not needed or implement WebSocket functionality
 // nolint:unused // Preserved for future WebSocket implementation
-func (s *Server) WebsocketHandler(w http.ResponseWriter, r *http.Request) {
+func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 	socket, err := websocket.Accept(w, r, nil)
 
 	if err != nil {

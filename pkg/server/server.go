@@ -74,51 +74,48 @@ const (
 	MiddlewarePriorityAuth = 10
 )
 
-// Server represents the API server.
-type Server struct {
+// APIServer represents the API server.
+type APIServer struct {
 	mux    *http.ServeMux
 	server *http.Server
 	config *config.API
 }
 
-// NewServer creates a new API server.
-func NewServer(config *config.API) *Server {
+// NewAPIServer creates a new API server.
+func NewAPIServer(config *config.API) *APIServer {
+	addr := fmt.Sprintf(":%d", int(config.Port))
 	mux := http.NewServeMux()
-
-	server := &Server{
+	apiServer := &APIServer{
+		server: &http.Server{
+			Handler:        mux,
+			Addr:           addr,
+			ReadTimeout:    DefaultReadTimeout,
+			WriteTimeout:   DefaultWriteTimeout,
+			IdleTimeout:    DefaultIdleTimeout,
+			MaxHeaderBytes: DefaultMaxHeaderBytes,
+		},
 		mux:    mux,
 		config: config,
 	}
 
-	return server
+	return apiServer
 }
 
 // Mux returns the underlying http.ServeMux for route registration.
-func (s *Server) Mux() *http.ServeMux {
+func (s *APIServer) Mux() *http.ServeMux {
 	return s.mux
 }
 
 // ListenAndServe starts the server without signal handling
 // This is useful when the caller wants to manage the server lifecycle.
-func (s *Server) ListenAndServe() error {
-	addr := fmt.Sprintf(":%d", int(s.config.Port))
-
-	s.server = &http.Server{
-		Addr:           addr,
-		Handler:        s.mux,
-		ReadTimeout:    DefaultReadTimeout,
-		WriteTimeout:   DefaultWriteTimeout,
-		IdleTimeout:    DefaultIdleTimeout,
-		MaxHeaderBytes: DefaultMaxHeaderBytes,
-	}
-
-	slog.Info("starting server", "address", addr)
+func (s *APIServer) ListenAndServe() error {
+	slog.Info("starting server", "address", s.server.Addr)
 	return s.server.ListenAndServe()
 }
 
 // Start starts the server with built-in signal handling
 // This is a convenience method for simple use cases.
-func (s *Server) Start() error {
+func (s *APIServer) Start() error {
 	// Start server in goroutine
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -148,7 +145,7 @@ func (s *Server) Start() error {
 }
 
 // Shutdown shuts down the server gracefully.
-func (s *Server) Shutdown(ctx context.Context) error {
+func (s *APIServer) Shutdown(ctx context.Context) error {
 	if s.server == nil {
 		return nil
 	}

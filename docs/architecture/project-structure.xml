@@ -61,6 +61,13 @@
     <dir name="development" files="1" patterns="*.yaml"/>
     <dir name="docker" type="container" files="3" patterns="*.yaml" key-files="Dockerfile"/>
     <dir name="gcp" files="1" patterns="*.yaml"/>
+    <dir name="helm" files="1" dirs="1" patterns="*.yaml">
+      <dir name="arches" files="2" dirs="3" patterns="*.yaml">
+        <dir name="charts" files="1"/>
+        <dir name="files" dirs="1"/>
+        <dir name="templates" purpose="Template files" files="5" dirs="1" patterns="*.yaml"/>
+      </dir>
+    </dir>
     <dir name="helm-minimal" files="3" dirs="3" patterns="*.yaml">
       <dir name="charts" files="1"/>
       <dir name="files" dirs="2">
@@ -68,13 +75,6 @@
         <dir name="kustomize" dirs="2"/>
       </dir>
       <dir name="templates" purpose="Template files" files="1" patterns="*.yaml"/>
-    </dir>
-    <dir name="helm" files="1" dirs="1" patterns="*.yaml">
-      <dir name="arches" files="2" dirs="3" patterns="*.yaml">
-        <dir name="charts" files="1"/>
-        <dir name="files" dirs="1"/>
-        <dir name="templates" purpose="Template files" files="5" dirs="1" patterns="*.yaml"/>
-      </dir>
     </dir>
     <dir name="k3d" files="1" patterns="*.yaml"/>
     <dir name="kustomize" dirs="2">

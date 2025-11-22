@@ -17,8 +17,8 @@ func (rw *responseWriter) WriteHeader(code int) {
 	rw.ResponseWriter.WriteHeader(code)
 }
 
-// loggerMiddleware logs HTTP requests
-func (s *Server) loggerMiddleware(next http.Handler) http.Handler {
+// LoggerMiddleware logs HTTP requests
+func LoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 

@@ -16,8 +16,8 @@ const (
 	RequestIDContextKey contextKey = "requestID"
 )
 
-// requestIDMiddleware adds a unique request ID to each request
-func (s *Server) requestIDMiddleware(next http.Handler) http.Handler {
+// RequestIDMiddleware adds a unique request ID to each request
+func RequestIDMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestID := uuid.New().String()
 		ctx := context.WithValue(r.Context(), RequestIDContextKey, requestID)

@@ -80,7 +80,8 @@ func runAPI(cmd *cobra.Command, _ []string) error {
 	// Run server in goroutine
 	go func() {
 		slog.Info("api server starting", "host", cfg.API.Host, "port", int(cfg.API.Port))
-		if err := appContainer.Server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := appContainer.APIServer.ListenAndServe(); err != nil &&
+			err != http.ErrServerClosed {
 			slog.Error("failed to start server", "err", err)
 		}
 	}()
@@ -93,7 +94,7 @@ func runAPI(cmd *cobra.Command, _ []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	if err := appContainer.Server.Shutdown(ctx); err != nil {
+	if err := appContainer.APIServer.Shutdown(ctx); err != nil {
 		slog.Error("server forced to shutdown", "err", err)
 		return err
 	}

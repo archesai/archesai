@@ -5,14 +5,14 @@ import (
 )
 
 // WrapHandler applies all middleware to a handler
-func (s *Server) WrapHandler(h http.Handler) http.Handler {
+func (s *APIServer) WrapHandler(h http.Handler) http.Handler {
 	// Apply middleware in reverse order (last middleware wraps first)
-	h = s.timeoutMiddleware(h)
-	h = s.rateLimitMiddleware(h)
-	h = s.securityMiddleware(h)
-	h = s.corsMiddleware(h)
-	h = s.recoverMiddleware(h)
-	h = s.loggerMiddleware(h)
-	h = s.requestIDMiddleware(h)
+	h = TimeoutMiddleware(h)
+	h = RateLimitMiddleware(h)
+	h = SecurityMiddleware(h)
+	h = CorsMiddleware(h, s.config.Cors)
+	h = RecoverMiddleware(h)
+	h = LoggerMiddleware(h)
+	h = RequestIDMiddleware(h)
 	return h
 }
