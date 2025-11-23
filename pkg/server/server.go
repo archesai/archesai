@@ -151,3 +151,16 @@ func (s *APIServer) Shutdown(ctx context.Context) error {
 	}
 	return s.server.Shutdown(ctx)
 }
+
+// ApplyMiddleware applies middleware to the server's handler.
+func (s *APIServer) ApplyMiddleware() {
+	s.server.Handler = MiddlewareChain(
+		RequestIDMiddleware,
+		LoggerMiddleware,
+		RecoverMiddleware,
+		CreateCorsMiddleware(s.config.Cors),
+		SecurityMiddleware,
+		RateLimitMiddleware,
+		TimeoutMiddleware,
+	)(s.server.Handler)
+}

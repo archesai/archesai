@@ -7,7 +7,7 @@ import (
 )
 
 // TimeoutMiddleware adds request timeout
-func TimeoutMiddleware(next http.Handler) http.Handler {
+func TimeoutMiddleware(next http.Handler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 		defer cancel()

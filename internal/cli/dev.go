@@ -70,12 +70,12 @@ func runDev(_ *cobra.Command, _ []string) error {
 	// Configure API process with custom hot reload
 	apiConfig := dev.ProcessConfig{
 		Name:       "api",
-		Command:    "./bin/archesai-api",
+		Command:    "./bin/studio",
 		Dir:        rootDir,
 		Env:        []string{},
 		HotReload:  true,
 		BuildCmd:   "go",
-		BuildArgs:  []string{"build", "-o", "./bin/archesai-api", "./apps/studio/main.go"},
+		BuildArgs:  []string{"build", "-o", "./bin/studio", "./apps/studio/cmd/main.go"},
 		WatchPaths: []string{"."},
 		WatchExts:  []string{".go", ".mod", ".sum"},
 	}

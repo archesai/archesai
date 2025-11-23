@@ -76,7 +76,7 @@ type RateLimitConfig struct {
 }
 
 // RateLimitMiddleware implements rate limiting for the server
-func RateLimitMiddleware(next http.Handler) http.Handler {
+func RateLimitMiddleware(next http.Handler) http.HandlerFunc {
 	// Default rate limit configuration
 	// Can be made configurable via server config in the future
 	config := RateLimitConfig{
@@ -90,10 +90,10 @@ func RateLimitMiddleware(next http.Handler) http.Handler {
 }
 
 // CreateRateLimitMiddleware creates configurable rate limiting middleware
-func CreateRateLimitMiddleware(config RateLimitConfig) func(http.Handler) http.Handler {
+func CreateRateLimitMiddleware(config RateLimitConfig) func(http.Handler) http.HandlerFunc {
 	rl := NewCustomRateLimiter(rate.Limit(config.RequestsPerSecond), config.Burst)
 
-	return func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.HandlerFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Determine the rate limit key
 			var key string

@@ -5,10 +5,17 @@ import (
 	"strings"
 )
 
+// CreateCorsMiddleware creates CORS middleware
+func CreateCorsMiddleware(origins string) Middleware {
+	return func(next http.Handler) http.HandlerFunc {
+		return CorsMiddleware(next, origins)
+	}
+}
+
 // CorsMiddleware handles CORS
-func CorsMiddleware(next http.Handler, corsConfig string) http.Handler {
+func CorsMiddleware(next http.Handler, origins string) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origins := strings.Split(corsConfig, ",")
+		origins := strings.Split(origins, ",")
 		origin := r.Header.Get("Origin")
 
 		// Check if origin is allowed

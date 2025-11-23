@@ -5,7 +5,7 @@ import (
 )
 
 // SecurityMiddleware adds security headers
-func SecurityMiddleware(next http.Handler) http.Handler {
+func SecurityMiddleware(next http.Handler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-XSS-Protection", "1; mode=block")
 		w.Header().Set("X-Content-Type-Options", "nosniff")

@@ -4,15 +4,15 @@ import (
 	"net/http"
 )
 
-// WrapHandler applies all middleware to a handler
-func (s *APIServer) WrapHandler(h http.Handler) http.Handler {
-	// Apply middleware in reverse order (last middleware wraps first)
-	h = TimeoutMiddleware(h)
-	h = RateLimitMiddleware(h)
-	h = SecurityMiddleware(h)
-	h = CorsMiddleware(h, s.config.Cors)
-	h = RecoverMiddleware(h)
-	h = LoggerMiddleware(h)
-	h = RequestIDMiddleware(h)
-	return h
+// Middleware defines the signature for HTTP middleware functions
+type Middleware func(http.Handler) http.HandlerFunc
+
+// MiddlewareChain chains multiple middleware functions into a single middleware
+func MiddlewareChain(middlewares ...Middleware) Middleware {
+	return func(next http.Handler) http.HandlerFunc {
+		for i := len(middlewares) - 1; i >= 0; i-- {
+			next = middlewares[i](next)
+		}
+		return next.ServeHTTP
+	}
 }

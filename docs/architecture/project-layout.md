@@ -255,6 +255,8 @@
 │   │   ├── vite.config.ts
 │   │   └── zudoku.config.tsx
 │   └── studio
+│       ├── cmd
+│       │   └── main.go
 │       ├── generated
 │       │   ├── adapters
 │       │   │   └── http
@@ -268,43 +270,42 @@
 │       │   └── infrastructure
 │       │       ├── bootstrap
 │       │       └── persistence
-│       ├── handlers
-│       │   ├── auth
-│       │   │   ├── confirm_email_change_handler.go
-│       │   │   ├── confirm_email_verification_handler.go
-│       │   │   ├── confirm_password_reset_handler.go
-│       │   │   ├── delete_account_handler.go
-│       │   │   ├── delete_session_handler.go
-│       │   │   ├── link_account_handler.go
-│       │   │   ├── login_handler.go
-│       │   │   ├── logout_all_handler.go
-│       │   │   ├── logout_handler.go
-│       │   │   ├── oauth_authorize_handler.go
-│       │   │   ├── oauth_callback_handler.go
-│       │   │   ├── register_handler.go
-│       │   │   ├── request_email_change_handler.go
-│       │   │   ├── request_email_verification_handler.go
-│       │   │   ├── request_magic_link_handler.go
-│       │   │   ├── request_password_reset_handler.go
-│       │   │   ├── update_account_handler.go
-│       │   │   ├── update_session_handler.go
-│       │   │   └── verify_magic_link_handler.go
-│       │   ├── config
-│       │   │   └── get_config_handler.go
-│       │   ├── executor
-│       │   │   └── execute_executor_handler.go
-│       │   ├── health
-│       │   │   └── get_health_handler.go
-│       │   ├── pipeline
-│       │   │   ├── create_pipeline_step_handler.go
-│       │   │   ├── get_pipeline_execution_plan_handler.go
-│       │   │   ├── get_pipeline_steps_handler.go
-│       │   │   └── validate_pipeline_execution_plan_handler.go
-│       │   └── user
-│       │       ├── delete_current_user_handler.go
-│       │       ├── get_current_user_handler.go
-│       │       └── update_current_user_handler.go
-│       └── main.go
+│       └── handlers
+│           ├── auth
+│           │   ├── confirm_email_change_handler.go
+│           │   ├── confirm_email_verification_handler.go
+│           │   ├── confirm_password_reset_handler.go
+│           │   ├── delete_account_handler.go
+│           │   ├── delete_session_handler.go
+│           │   ├── link_account_handler.go
+│           │   ├── login_handler.go
+│           │   ├── logout_all_handler.go
+│           │   ├── logout_handler.go
+│           │   ├── oauth_authorize_handler.go
+│           │   ├── oauth_callback_handler.go
+│           │   ├── register_handler.go
+│           │   ├── request_email_change_handler.go
+│           │   ├── request_email_verification_handler.go
+│           │   ├── request_magic_link_handler.go
+│           │   ├── request_password_reset_handler.go
+│           │   ├── update_account_handler.go
+│           │   ├── update_session_handler.go
+│           │   └── verify_magic_link_handler.go
+│           ├── config
+│           │   └── get_config_handler.go
+│           ├── executor
+│           │   └── execute_executor_handler.go
+│           ├── health
+│           │   └── get_health_handler.go
+│           ├── pipeline
+│           │   ├── create_pipeline_step_handler.go
+│           │   ├── get_pipeline_execution_plan_handler.go
+│           │   ├── get_pipeline_steps_handler.go
+│           │   └── validate_pipeline_execution_plan_handler.go
+│           └── user
+│               ├── delete_current_user_handler.go
+│               ├── get_current_user_handler.go
+│               └── update_current_user_handler.go
 ├── assets
 │   ├── android-chrome-192x192.png
 │   ├── android-chrome-512x512.png
@@ -800,5 +801,5 @@
 ├── tools.sum
 └── tsconfig.json
 
-184 directories, 612 files
+185 directories, 612 files
 ```
