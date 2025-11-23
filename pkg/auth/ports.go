@@ -9,12 +9,12 @@ import (
 
 // SessionRepository handles session persistence
 type SessionRepository interface {
-	database.CRUDRepository[models.Session]
+	database.Repository[models.Session]
 }
 
 // UserRepository handles user persistence
 type UserRepository interface {
-	database.CRUDRepository[models.User]
+	database.Repository[models.User]
 
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	GetUserBySessionID(ctx context.Context, sessionID string) (*models.User, error)
@@ -22,7 +22,7 @@ type UserRepository interface {
 
 // AccountRepository handles account persistence
 type AccountRepository interface {
-	database.CRUDRepository[models.Account]
+	database.Repository[models.Account]
 
 	GetAccountByProvider(
 		ctx context.Context,

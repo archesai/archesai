@@ -148,10 +148,3 @@ func (m *MigrationRunner) Version() (int64, error) {
 	}
 	return 0, nil
 }
-
-// RunMigrations is a convenience function to run migrations on a database.
-// It attempts to detect the database type from the driver name.
-func RunMigrations(db *Database, migrationsFS fs.FS) error {
-	runner := NewMigrationRunner(db, migrationsFS)
-	return runner.Up()
-}

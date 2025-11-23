@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// CRUDRepository defines basic Create, Read, Update, Delete operations for an entity of type T.
-type CRUDRepository[T any] interface {
+// Repository defines basic Create, Read, Update, Delete operations for an entity of type T.
+type Repository[T any] interface {
 	Create(ctx context.Context, entity *T) (*T, error)
 	Get(ctx context.Context, id uuid.UUID) (*T, error)
 	Update(ctx context.Context, id uuid.UUID, entity *T) (*T, error)

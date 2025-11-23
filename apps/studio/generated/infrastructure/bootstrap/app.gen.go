@@ -105,7 +105,9 @@ func NewApp(cfg *models.Config) (*App, error) {
 			return nil, fmt.Errorf("unsupported database type for migrations: %s", cfg.Database.Type)
 		}
 
-		if err := database.RunMigrations(infra.Database, migrationsFS); err != nil {
+		// Run the migrations
+		runner := database.NewMigrationRunner(infra.Database, migrationsFS)
+		if err := runner.Up(); err != nil {
 			slog.Error("failed to run migrations", "error", err)
 			isProduction := cfg.API.Environment == "production"
 			if isProduction {

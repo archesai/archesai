@@ -564,9 +564,9 @@
 │   │   ├── loader.go
 │   │   └── loader_test.go
 │   ├── database
-│   │   ├── crud_repository.go
 │   │   ├── database.go
-│   │   └── migrate.go
+│   │   ├── migrate.go
+│   │   └── repository.go
 │   ├── errors
 │   │   └── errors.go
 │   ├── events

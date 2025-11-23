@@ -7,5 +7,5 @@ import (
 
 // executorRepository handles Executor persistence
 type executorRepository interface {
-	database.CRUDRepository[models.Executor] // or database.CRUDRepository[models.Session, uuid.UUID]
+	database.Repository[models.Executor]
 }

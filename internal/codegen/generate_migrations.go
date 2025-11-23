@@ -143,7 +143,8 @@ func (m *MigrationGenerator) GenerateMigration(ctx context.Context) error {
 	parentDir := filepath.Dir(migrationDir) // This gives us the postgres/ or sqlite/ directory
 	migrationsFS := os.DirFS(parentDir)
 
-	if err := database.RunMigrations(m.database, migrationsFS); err != nil {
+	runner := database.NewMigrationRunner(m.database, migrationsFS)
+	if err := runner.Up(); err != nil {
 		// It's okay if no migrations exist yet
 		slog.Debug(
 			"No existing migrations to apply or error applying them",
