@@ -6,7 +6,7 @@ packages:
 autoInstallPeers: true
 
 catalog:
-  '@biomejs/biome': 2.3.6
+  '@biomejs/biome': 2.3.7
   '@types/js-yaml': 4.0.9
   '@types/node': 24.10.1
   '@xyflow/react': 12.9.3
@@ -29,19 +29,19 @@ catalogs:
   tanstack:
     '@tanstack/react-query': 5.90.10
     '@tanstack/react-query-devtools': 5.89.0
-    '@tanstack/react-router': 1.136.18
+    '@tanstack/react-router': 1.139.3
     '@tanstack/react-router-devtools': 1.131.44
-    '@tanstack/react-router-ssr-query': 1.136.18
-    '@tanstack/react-start': 1.138.0
+    '@tanstack/react-router-ssr-query': 1.139.3
+    '@tanstack/react-start': 1.139.3
     '@tanstack/react-table': 8.21.3
     '@tanstack/table-core': 8.21.3
   test:
     '@playwright/test': 1.56.1
     '@testing-library/dom': 10.4.1
     '@testing-library/react': 16.3.0
-    '@vitest/ui': 4.0.12
+    '@vitest/ui': 4.0.13
     jsdom: 27.2.0
-    vitest: 4.0.12
+    vitest: 4.0.13
     web-vitals: 5.1.0
   ui:
     '@dnd-kit/core': 6.3.1
