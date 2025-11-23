@@ -6,8 +6,6 @@
 // - Type-safe query generation using sqlc
 package database
 
-// Generate database queries from SQL files
-
 import (
 	"context"
 	"database/sql"

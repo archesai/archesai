@@ -307,10 +307,10 @@ importers:
         version: 8.17.1
     devDependencies:
       '@types/node':
-        specifier: 'catalog:'
+        specifier: 24.10.1
         version: 24.10.1
       typescript:
-        specifier: 'catalog:'
+        specifier: 5.9.3
         version: 5.9.3
 
   web/client:
