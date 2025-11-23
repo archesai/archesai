@@ -33,11 +33,6 @@ func (e *SessionCreatedEvent) EventType() string {
 	return EventSessionCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *SessionCreatedEvent) EventDomain() string {
-	return "session"
-}
-
 // EventData returns the event data.
 func (e *SessionCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *SessionUpdatedEvent) EventType() string {
 	return EventSessionUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *SessionUpdatedEvent) EventDomain() string {
-	return "session"
-}
-
 // EventData returns the event data.
 func (e *SessionUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewSessionDeletedEvent(id uuid.UUID) *SessionDeletedEvent {
 // EventType returns the type of this event.
 func (e *SessionDeletedEvent) EventType() string {
 	return EventSessionDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *SessionDeletedEvent) EventDomain() string {
-	return "session"
 }
 
 // EventData returns the event data.

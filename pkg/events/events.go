@@ -12,18 +12,14 @@ package events
 
 import (
 	"context"
-	"time"
 )
 
-// Event represents a domain event with common fields.
-type Event struct {
-	ID        string            `json:"id"`
-	Type      string            `json:"type"`
-	Domain    string            `json:"domain"` // e.g., "auth", "organizations"
-	Timestamp time.Time         `json:"timestamp"`
-	Source    string            `json:"source"`
-	Data      any               `json:"data"`
-	Metadata  map[string]string `json:"metadata,omitempty"`
+// Event is the interface that all domain events must implement.
+type Event interface {
+	// EventType returns the event type string (e.g., "user.created")
+	EventType() string
+	// EventData returns the actual event data
+	EventData() any
 }
 
 // Publisher is the shared event publisher interface used by all domains.
@@ -47,10 +43,4 @@ type Subscriber interface {
 		eventType string,
 		handler func(event Event) error,
 	) error
-}
-
-// PublisherSubscriber combines publishing and subscribing capabilities.
-type PublisherSubscriber interface {
-	Publisher
-	Subscriber
 }

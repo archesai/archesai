@@ -70,8 +70,9 @@ func (h *CreateToolCommandHandler) Handle(ctx context.Context, cmd *CreateToolCo
 
 	// Publish domain event
 	event := domainevents.NewToolCreatedEvent(created.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
+	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
+		// FIXME: Implement logging
 	}
 
 	return created, nil

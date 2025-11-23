@@ -76,8 +76,9 @@ func (h *CreateAPIKeyCommandHandler) Handle(ctx context.Context, cmd *CreateAPIK
 
 	// Publish domain event
 	event := domainevents.NewAPIKeyCreatedEvent(created.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
+	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
+		// FIXME: Implement logging
 	}
 
 	return created, nil

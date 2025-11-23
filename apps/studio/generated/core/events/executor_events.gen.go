@@ -33,11 +33,6 @@ func (e *ExecutorCreatedEvent) EventType() string {
 	return EventExecutorCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *ExecutorCreatedEvent) EventDomain() string {
-	return "executor"
-}
-
 // EventData returns the event data.
 func (e *ExecutorCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *ExecutorUpdatedEvent) EventType() string {
 	return EventExecutorUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *ExecutorUpdatedEvent) EventDomain() string {
-	return "executor"
-}
-
 // EventData returns the event data.
 func (e *ExecutorUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewExecutorDeletedEvent(id uuid.UUID) *ExecutorDeletedEvent {
 // EventType returns the type of this event.
 func (e *ExecutorDeletedEvent) EventType() string {
 	return EventExecutorDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *ExecutorDeletedEvent) EventDomain() string {
-	return "executor"
 }
 
 // EventData returns the event data.

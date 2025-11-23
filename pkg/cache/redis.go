@@ -10,6 +10,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+var _ Cache[any] = (*RedisCache[any])(nil)
+
 // RedisCache implements Cache using Redis as the backend.
 type RedisCache[T any] struct {
 	client    *redis.Client
@@ -199,6 +201,3 @@ func (c *RedisCache[T]) DeleteMany(ctx context.Context, keys []string) error {
 
 	return nil
 }
-
-// Ensure RedisCache implements MultiCache.
-var _ MultiCache[any] = (*RedisCache[any])(nil)

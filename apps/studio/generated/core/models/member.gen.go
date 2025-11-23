@@ -70,7 +70,7 @@ type Member struct {
 	// UserID The user who is a member of the organization
 	UserID uuid.UUID `json:"userID" yaml:"userID"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewMember creates a new Member entity.
@@ -99,7 +99,7 @@ func NewMember(
 		OrganizationID: organizationID,
 		Role:           role,
 		UserID:         userID,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	member.addEvent(domainevents.NewMemberCreatedEvent(id))
 
@@ -143,16 +143,16 @@ func (e *Member) GetUserID() uuid.UUID {
 }
 
 // Events returns the domain events
-func (e *Member) Events() []events.DomainEvent {
+func (e *Member) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Member) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Member) addEvent(event events.DomainEvent) {
+func (e *Member) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

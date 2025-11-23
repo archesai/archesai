@@ -4,6 +4,7 @@ package user
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	commands "github.com/archesai/archesai/apps/studio/generated/application/commands/user"
 	domainevents "github.com/archesai/archesai/apps/studio/generated/core/events"
@@ -51,9 +52,8 @@ func (h *DeleteCurrentUserCommandHandler) Handle(
 
 	// Publish domain event
 	event := domainevents.NewUserDeletedEvent(user.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
-		// Log error but don't fail the operation
-		_ = err
+	if err := h.publisher.Publish(ctx, event); err != nil {
+		slog.Error("failed to publish event", "error", err)
 	}
 
 	return nil

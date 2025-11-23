@@ -38,7 +38,7 @@ type Tool struct {
 	// OutputMimeType The MIME type of the output for the tool, e.g. text/plain
 	OutputMimeType string `json:"outputMimeType" yaml:"outputMimeType"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewTool creates a new Tool entity.
@@ -77,7 +77,7 @@ func NewTool(
 		Name:           name,
 		OrganizationID: organizationID,
 		OutputMimeType: outputMimeType,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	tool.addEvent(domainevents.NewToolCreatedEvent(id))
 
@@ -131,16 +131,16 @@ func (e *Tool) GetOutputMimeType() string {
 }
 
 // Events returns the domain events
-func (e *Tool) Events() []events.DomainEvent {
+func (e *Tool) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Tool) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Tool) addEvent(event events.DomainEvent) {
+func (e *Tool) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

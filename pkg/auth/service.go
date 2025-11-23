@@ -28,7 +28,7 @@ type Service struct {
 	accountRepo        AccountRepository
 	tokenManager       *TokenManager
 	magicLink          *MagicLinkProvider
-	oauthProviders     map[string]OAuthProvider
+	oauthProviders     map[string]oauth.Provider
 	cache              cache.Cache[string]
 	jwtSecret          string
 	magicLinkDeliverer MagicLinkDeliverer
@@ -43,13 +43,6 @@ type MagicLinkDeliverer interface {
 // OTPDeliverer handles OTP notification delivery.
 type OTPDeliverer interface {
 	Deliver(ctx context.Context, token *models.MagicLinkToken, baseURL string) error
-}
-
-// OAuthProvider interface for OAuth providers
-type OAuthProvider interface {
-	GetAuthURL(state string) string
-	ExchangeCode(ctx context.Context, code string) (*oauth.Tokens, error)
-	GetUserInfo(ctx context.Context, accessToken string) (*oauth.UserInfo, error)
 }
 
 // NewService creates a new authentication service.
@@ -75,7 +68,7 @@ func NewService(
 		accountRepo:        accountRepo,
 		tokenManager:       NewTokenManager(cfg.Auth.Local.JWTSecret),
 		magicLink:          NewMagicLinkProvider(cfg.Auth.Local.JWTSecret, baseURL),
-		oauthProviders:     make(map[string]OAuthProvider),
+		oauthProviders:     make(map[string]oauth.Provider),
 		cache:              cacheService,
 		jwtSecret:          cfg.Auth.Local.JWTSecret,
 		magicLinkDeliverer: magicLinkDeliverer,

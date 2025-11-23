@@ -6,6 +6,7 @@ import (
 
 	queries "github.com/archesai/archesai/apps/studio/generated/application/queries/auth"
 	"github.com/archesai/archesai/pkg/auth"
+	"github.com/archesai/archesai/pkg/auth/oauth"
 	"github.com/archesai/archesai/pkg/events"
 )
 
@@ -30,7 +31,7 @@ func NewOAuthCallbackQueryHandler(
 func (h *OAuthCallbackQueryHandler) Handle(
 	_ context.Context,
 	query *queries.OauthCallbackQuery,
-) (*auth.Tokens, error) {
+) (*oauth.Tokens, error) {
 	if query.Provider == "" {
 		return nil, fmt.Errorf("provider is required")
 	}

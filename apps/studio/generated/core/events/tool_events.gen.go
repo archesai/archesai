@@ -33,11 +33,6 @@ func (e *ToolCreatedEvent) EventType() string {
 	return EventToolCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *ToolCreatedEvent) EventDomain() string {
-	return "tool"
-}
-
 // EventData returns the event data.
 func (e *ToolCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *ToolUpdatedEvent) EventType() string {
 	return EventToolUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *ToolUpdatedEvent) EventDomain() string {
-	return "tool"
-}
-
 // EventData returns the event data.
 func (e *ToolUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewToolDeletedEvent(id uuid.UUID) *ToolDeletedEvent {
 // EventType returns the type of this event.
 func (e *ToolDeletedEvent) EventType() string {
 	return EventToolDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *ToolDeletedEvent) EventDomain() string {
-	return "tool"
 }
 
 // EventData returns the event data.

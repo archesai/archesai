@@ -86,7 +86,7 @@ type Run struct {
 	// ToolID The tool being used in this run
 	ToolID uuid.UUID `json:"toolID" yaml:"toolID"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewRun creates a new Run entity.
@@ -128,7 +128,7 @@ func NewRun(
 		StartedAt:      startedAt,
 		Status:         status,
 		ToolID:         toolID,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	run.addEvent(domainevents.NewRunCreatedEvent(id))
 
@@ -197,16 +197,16 @@ func (e *Run) GetToolID() uuid.UUID {
 }
 
 // Events returns the domain events
-func (e *Run) Events() []events.DomainEvent {
+func (e *Run) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Run) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Run) addEvent(event events.DomainEvent) {
+func (e *Run) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

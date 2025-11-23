@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var _ Cache[any] = (*MemoryCache[any])(nil)
+
 // MemoryCache implements Cache using in-memory storage (for testing).
 type MemoryCache[T any] struct {
 	mu    sync.RWMutex
@@ -152,6 +154,3 @@ func (c *MemoryCache[T]) DeleteMany(_ context.Context, keys []string) error {
 
 	return nil
 }
-
-// Ensure MemoryCache implements MultiCache.
-var _ MultiCache[any] = (*MemoryCache[any])(nil)

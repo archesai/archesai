@@ -94,7 +94,7 @@ type Account struct {
 	// UserID The user ID this account belongs to
 	UserID uuid.UUID `json:"userID" yaml:"userID"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewAccount creates a new Account entity.
@@ -135,7 +135,7 @@ func NewAccount(
 		RefreshTokenExpiresAt: refreshTokenExpiresAt,
 		Scope:                 scope,
 		UserID:                userID,
-		events:                []events.DomainEvent{},
+		events:                []events.Event{},
 	}
 	account.addEvent(domainevents.NewAccountCreatedEvent(id))
 
@@ -209,16 +209,16 @@ func (e *Account) GetUserID() uuid.UUID {
 }
 
 // Events returns the domain events
-func (e *Account) Events() []events.DomainEvent {
+func (e *Account) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Account) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Account) addEvent(event events.DomainEvent) {
+func (e *Account) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

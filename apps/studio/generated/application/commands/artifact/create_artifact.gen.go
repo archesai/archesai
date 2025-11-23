@@ -70,8 +70,9 @@ func (h *CreateArtifactCommandHandler) Handle(ctx context.Context, cmd *CreateAr
 
 	// Publish domain event
 	event := domainevents.NewArtifactCreatedEvent(created.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
+	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
+		// FIXME: Implement logging
 	}
 
 	return created, nil

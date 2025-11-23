@@ -33,11 +33,6 @@ func (e *AccountCreatedEvent) EventType() string {
 	return EventAccountCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *AccountCreatedEvent) EventDomain() string {
-	return "account"
-}
-
 // EventData returns the event data.
 func (e *AccountCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *AccountUpdatedEvent) EventType() string {
 	return EventAccountUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *AccountUpdatedEvent) EventDomain() string {
-	return "account"
-}
-
 // EventData returns the event data.
 func (e *AccountUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewAccountDeletedEvent(id uuid.UUID) *AccountDeletedEvent {
 // EventType returns the type of this event.
 func (e *AccountDeletedEvent) EventType() string {
 	return EventAccountDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *AccountDeletedEvent) EventDomain() string {
-	return "account"
 }
 
 // EventData returns the event data.

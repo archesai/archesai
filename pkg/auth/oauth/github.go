@@ -1,4 +1,3 @@
-// Package oauth implements OAuth providers for authentication
 package oauth
 
 import (
@@ -10,6 +9,8 @@ import (
 	"net/url"
 	"strings"
 )
+
+var _ Provider = (*GitHubProvider)(nil)
 
 // GitHubProvider implements OAuth for GitHub
 type GitHubProvider struct {

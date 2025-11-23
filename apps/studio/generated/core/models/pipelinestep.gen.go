@@ -29,7 +29,7 @@ type PipelineStep struct {
 	// ToolID The tool used in this step
 	ToolID uuid.UUID `json:"toolID" yaml:"toolID"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewPipelineStep creates a new PipelineStep entity.
@@ -53,7 +53,7 @@ func NewPipelineStep(
 		UpdatedAt:  now,
 		PipelineID: pipelineID,
 		ToolID:     toolID,
-		events:     []events.DomainEvent{},
+		events:     []events.Event{},
 	}
 	pipelinestep.addEvent(domainevents.NewPipelineStepCreatedEvent(id))
 
@@ -92,16 +92,16 @@ func (e *PipelineStep) GetToolID() uuid.UUID {
 }
 
 // Events returns the domain events
-func (e *PipelineStep) Events() []events.DomainEvent {
+func (e *PipelineStep) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *PipelineStep) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *PipelineStep) addEvent(event events.DomainEvent) {
+func (e *PipelineStep) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+var _ Provider = (*MicrosoftProvider)(nil)
+
 // MicrosoftProvider implements OAuth for Microsoft
 type MicrosoftProvider struct {
 	clientID     string

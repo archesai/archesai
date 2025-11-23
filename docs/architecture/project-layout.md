@@ -547,7 +547,7 @@
 │   │   │   ├── github.go
 │   │   │   ├── google.go
 │   │   │   ├── microsoft.go
-│   │   │   └── types.go
+│   │   │   └── oauth.go
 │   │   ├── auth_tokens.go
 │   │   ├── magic_link.go
 │   │   ├── password.go

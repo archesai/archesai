@@ -33,11 +33,6 @@ func (e *UserCreatedEvent) EventType() string {
 	return EventUserCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *UserCreatedEvent) EventDomain() string {
-	return "user"
-}
-
 // EventData returns the event data.
 func (e *UserCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *UserUpdatedEvent) EventType() string {
 	return EventUserUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *UserUpdatedEvent) EventDomain() string {
-	return "user"
-}
-
 // EventData returns the event data.
 func (e *UserUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewUserDeletedEvent(id uuid.UUID) *UserDeletedEvent {
 // EventType returns the type of this event.
 func (e *UserDeletedEvent) EventType() string {
 	return EventUserDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *UserDeletedEvent) EventDomain() string {
-	return "user"
 }
 
 // EventData returns the event data.

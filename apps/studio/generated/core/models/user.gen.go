@@ -35,7 +35,7 @@ type User struct {
 	// Name The user's display name
 	Name string `json:"name" yaml:"name"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewUser creates a new User entity.
@@ -63,7 +63,7 @@ func NewUser(
 		EmailVerified: emailVerified,
 		Image:         image,
 		Name:          name,
-		events:        []events.DomainEvent{},
+		events:        []events.Event{},
 	}
 	user.addEvent(domainevents.NewUserCreatedEvent(id))
 
@@ -112,16 +112,16 @@ func (e *User) GetName() string {
 }
 
 // Events returns the domain events
-func (e *User) Events() []events.DomainEvent {
+func (e *User) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *User) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *User) addEvent(event events.DomainEvent) {
+func (e *User) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

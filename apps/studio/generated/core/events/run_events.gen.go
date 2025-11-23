@@ -33,11 +33,6 @@ func (e *RunCreatedEvent) EventType() string {
 	return EventRunCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *RunCreatedEvent) EventDomain() string {
-	return "run"
-}
-
 // EventData returns the event data.
 func (e *RunCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *RunUpdatedEvent) EventType() string {
 	return EventRunUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *RunUpdatedEvent) EventDomain() string {
-	return "run"
-}
-
 // EventData returns the event data.
 func (e *RunUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewRunDeletedEvent(id uuid.UUID) *RunDeletedEvent {
 // EventType returns the type of this event.
 func (e *RunDeletedEvent) EventType() string {
 	return EventRunDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *RunDeletedEvent) EventDomain() string {
-	return "run"
 }
 
 // EventData returns the event data.

@@ -4,6 +4,8 @@ import (
 	"context"
 )
 
+var _ Publisher = (*NoOpPublisher)(nil)
+
 // NoOpPublisher is a no-op event publisher implementation for testing.
 type NoOpPublisher struct{}
 
@@ -21,6 +23,3 @@ func (p *NoOpPublisher) Publish(_ context.Context, _ Event) error {
 func (p *NoOpPublisher) PublishMultiple(_ context.Context, _ []Event) error {
 	return nil
 }
-
-// Ensure NoOpPublisher implements the interface.
-var _ Publisher = (*NoOpPublisher)(nil)

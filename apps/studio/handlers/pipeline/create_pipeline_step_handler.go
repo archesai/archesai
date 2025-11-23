@@ -4,6 +4,7 @@ package pipeline
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
@@ -69,9 +70,8 @@ func (h *CreatePipelineStepCommandHandler) Handle(
 
 	// Publish domain event
 	event := domainevents.NewPipelineStepCreatedEvent(step.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
-		// Log error but don't fail the operation
-		_ = err
+	if err := h.publisher.Publish(ctx, event); err != nil {
+		slog.Error("failed to publish event", "error", err)
 	}
 
 	return step, nil

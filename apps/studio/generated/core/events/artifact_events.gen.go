@@ -33,11 +33,6 @@ func (e *ArtifactCreatedEvent) EventType() string {
 	return EventArtifactCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *ArtifactCreatedEvent) EventDomain() string {
-	return "artifact"
-}
-
 // EventData returns the event data.
 func (e *ArtifactCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *ArtifactUpdatedEvent) EventType() string {
 	return EventArtifactUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *ArtifactUpdatedEvent) EventDomain() string {
-	return "artifact"
-}
-
 // EventData returns the event data.
 func (e *ArtifactUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewArtifactDeletedEvent(id uuid.UUID) *ArtifactDeletedEvent {
 // EventType returns the type of this event.
 func (e *ArtifactDeletedEvent) EventType() string {
 	return EventArtifactDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *ArtifactDeletedEvent) EventDomain() string {
-	return "artifact"
 }
 
 // EventData returns the event data.

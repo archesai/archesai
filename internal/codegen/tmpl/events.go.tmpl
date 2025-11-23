@@ -1,6 +1,6 @@
 {{- /*
 Template: events.tmpl
-Generates: A single events file per domain
+Generates: A single events file per entity
 Expected data: EventsTemplateData
 */ -}}
 {{template "header" .}}
@@ -37,11 +37,6 @@ func (e *{{ .Entity.Name }}CreatedEvent) EventType() string {
 	return Event{{ .Entity.Name }}Created
 }
 
-// EventDomain returns the domain of this event.
-func (e *{{ .Entity.Name }}CreatedEvent) EventDomain() string {
-	return "{{lower .Entity.Name}}"
-}
-
 // EventData returns the event data.
 func (e *{{ .Entity.Name }}CreatedEvent) EventData() any {
 	return e
@@ -66,11 +61,6 @@ func (e *{{ .Entity.Name }}UpdatedEvent) EventType() string {
 	return Event{{ .Entity.Name }}Updated
 }
 
-// EventDomain returns the domain of this event.
-func (e *{{ .Entity.Name }}UpdatedEvent) EventDomain() string {
-	return "{{lower .Entity.Name}}"
-}
-
 // EventData returns the event data.
 func (e *{{ .Entity.Name }}UpdatedEvent) EventData() any {
 	return e
@@ -93,11 +83,6 @@ func New{{ .Entity.Name }}DeletedEvent(id uuid.UUID) *{{ .Entity.Name }}DeletedE
 // EventType returns the type of this event.
 func (e *{{ .Entity.Name }}DeletedEvent) EventType() string {
 	return Event{{ .Entity.Name }}Deleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *{{ .Entity.Name }}DeletedEvent) EventDomain() string {
-	return "{{lower .Entity.Name}}"
 }
 
 // EventData returns the event data.

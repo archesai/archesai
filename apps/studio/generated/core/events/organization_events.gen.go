@@ -33,11 +33,6 @@ func (e *OrganizationCreatedEvent) EventType() string {
 	return EventOrganizationCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *OrganizationCreatedEvent) EventDomain() string {
-	return "organization"
-}
-
 // EventData returns the event data.
 func (e *OrganizationCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *OrganizationUpdatedEvent) EventType() string {
 	return EventOrganizationUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *OrganizationUpdatedEvent) EventDomain() string {
-	return "organization"
-}
-
 // EventData returns the event data.
 func (e *OrganizationUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewOrganizationDeletedEvent(id uuid.UUID) *OrganizationDeletedEvent {
 // EventType returns the type of this event.
 func (e *OrganizationDeletedEvent) EventType() string {
 	return EventOrganizationDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *OrganizationDeletedEvent) EventDomain() string {
-	return "organization"
 }
 
 // EventData returns the event data.

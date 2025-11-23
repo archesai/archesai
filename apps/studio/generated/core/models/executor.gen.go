@@ -106,7 +106,7 @@ type Executor struct {
 	// Version Version number for cache busting
 	Version int32 `json:"version" yaml:"version"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewExecutor creates a new Executor entity.
@@ -155,7 +155,7 @@ func NewExecutor(
 		OrganizationID: organizationID,
 		Timeout:        timeout,
 		Version:        version,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	executor.addEvent(domainevents.NewExecutorCreatedEvent(id))
 
@@ -259,16 +259,16 @@ func (e *Executor) GetVersion() int32 {
 }
 
 // Events returns the domain events
-func (e *Executor) Events() []events.DomainEvent {
+func (e *Executor) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Executor) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Executor) addEvent(event events.DomainEvent) {
+func (e *Executor) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

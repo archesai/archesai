@@ -72,8 +72,9 @@ func (h *UpdateLabelCommandHandler) Handle(ctx context.Context, cmd *UpdateLabel
 
 	// Publish domain event
 	event := domainevents.NewLabelUpdatedEvent(updated.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
+	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
+		// FIXME: Implement logging
 	}
 
 	return updated, nil

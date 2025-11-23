@@ -130,25 +130,6 @@ func NewValidationError(field, message string, args ...any) error {
 	}
 }
 
-// BusinessRuleError represents a business rule violation
-type BusinessRuleError struct {
-	Rule    string
-	Message string
-}
-
-// Error implements the error interface
-func (e BusinessRuleError) Error() string {
-	return fmt.Sprintf("business rule violation: %s", e.Message)
-}
-
-// NewBusinessRuleError creates a new business rule error
-func NewBusinessRuleError(rule, message string, args ...any) error {
-	return BusinessRuleError{
-		Rule:    rule,
-		Message: fmt.Sprintf(message, args...),
-	}
-}
-
 // Missing entity-specific errors for generated code
 var (
 	// Artifact errors

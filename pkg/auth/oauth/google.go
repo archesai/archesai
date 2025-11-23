@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+var _ Provider = (*GoogleProvider)(nil)
+
 // GoogleProvider implements OAuth for Google
 type GoogleProvider struct {
 	clientID     string

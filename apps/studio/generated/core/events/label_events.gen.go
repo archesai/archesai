@@ -33,11 +33,6 @@ func (e *LabelCreatedEvent) EventType() string {
 	return EventLabelCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *LabelCreatedEvent) EventDomain() string {
-	return "label"
-}
-
 // EventData returns the event data.
 func (e *LabelCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *LabelUpdatedEvent) EventType() string {
 	return EventLabelUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *LabelUpdatedEvent) EventDomain() string {
-	return "label"
-}
-
 // EventData returns the event data.
 func (e *LabelUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewLabelDeletedEvent(id uuid.UUID) *LabelDeletedEvent {
 // EventType returns the type of this event.
 func (e *LabelDeletedEvent) EventType() string {
 	return EventLabelDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *LabelDeletedEvent) EventDomain() string {
-	return "label"
 }
 
 // EventData returns the event data.

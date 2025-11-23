@@ -88,7 +88,7 @@ type Organization struct {
 	// StripeCustomerIdentifier Stripe customer identifier
 	StripeCustomerIdentifier string `json:"stripeCustomerIdentifier" yaml:"stripeCustomerIdentifier"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewOrganization creates a new Organization entity.
@@ -128,7 +128,7 @@ func NewOrganization(
 		Plan:                     plan,
 		Slug:                     slug,
 		StripeCustomerIdentifier: stripeCustomerIdentifier,
-		events:                   []events.DomainEvent{},
+		events:                   []events.Event{},
 	}
 	organization.addEvent(domainevents.NewOrganizationCreatedEvent(id))
 
@@ -192,16 +192,16 @@ func (e *Organization) GetStripeCustomerIdentifier() string {
 }
 
 // Events returns the domain events
-func (e *Organization) Events() []events.DomainEvent {
+func (e *Organization) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Organization) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Organization) addEvent(event events.DomainEvent) {
+func (e *Organization) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

@@ -44,7 +44,7 @@ type APIKey struct {
 	// UserID The user who owns this API key
 	UserID uuid.UUID `json:"userID" yaml:"userID"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewAPIKey creates a new APIKey entity.
@@ -85,7 +85,7 @@ func NewAPIKey(
 		RateLimit:      rateLimit,
 		Scopes:         scopes,
 		UserID:         userID,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	apikey.addEvent(domainevents.NewAPIKeyCreatedEvent(id))
 
@@ -159,16 +159,16 @@ func (e *APIKey) GetUserID() uuid.UUID {
 }
 
 // Events returns the domain events
-func (e *APIKey) Events() []events.DomainEvent {
+func (e *APIKey) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *APIKey) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *APIKey) addEvent(event events.DomainEvent) {
+func (e *APIKey) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

@@ -29,7 +29,7 @@ type Label struct {
 	// OrganizationID The organization this label belongs to
 	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewLabel creates a new Label entity.
@@ -53,7 +53,7 @@ func NewLabel(
 		UpdatedAt:      now,
 		Name:           name,
 		OrganizationID: organizationID,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	label.addEvent(domainevents.NewLabelCreatedEvent(id))
 
@@ -92,16 +92,16 @@ func (e *Label) GetOrganizationID() uuid.UUID {
 }
 
 // Events returns the domain events
-func (e *Label) Events() []events.DomainEvent {
+func (e *Label) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Label) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Label) addEvent(event events.DomainEvent) {
+func (e *Label) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

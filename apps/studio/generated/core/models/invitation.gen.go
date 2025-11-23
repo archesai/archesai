@@ -120,7 +120,7 @@ type Invitation struct {
 	// Status The status of the invitation, e.g., pending, accepted, declined
 	Status InvitationStatus `json:"status" yaml:"status"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewInvitation creates a new Invitation entity.
@@ -161,7 +161,7 @@ func NewInvitation(
 		OrganizationID: organizationID,
 		Role:           role,
 		Status:         status,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	invitation.addEvent(domainevents.NewInvitationCreatedEvent(id))
 
@@ -220,16 +220,16 @@ func (e *Invitation) GetStatus() InvitationStatus {
 }
 
 // Events returns the domain events
-func (e *Invitation) Events() []events.DomainEvent {
+func (e *Invitation) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Invitation) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Invitation) addEvent(event events.DomainEvent) {
+func (e *Invitation) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

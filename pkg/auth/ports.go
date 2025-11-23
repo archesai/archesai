@@ -9,7 +9,7 @@ import (
 
 // SessionRepository handles session persistence
 type SessionRepository interface {
-	database.CRUDRepository[models.Session] // or database.CRUDRepository[models.Session, uuid.UUID]
+	database.CRUDRepository[models.Session]
 }
 
 // UserRepository handles user persistence

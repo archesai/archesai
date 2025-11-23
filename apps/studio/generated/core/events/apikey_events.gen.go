@@ -33,11 +33,6 @@ func (e *APIKeyCreatedEvent) EventType() string {
 	return EventAPIKeyCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *APIKeyCreatedEvent) EventDomain() string {
-	return "apikey"
-}
-
 // EventData returns the event data.
 func (e *APIKeyCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *APIKeyUpdatedEvent) EventType() string {
 	return EventAPIKeyUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *APIKeyUpdatedEvent) EventDomain() string {
-	return "apikey"
-}
-
 // EventData returns the event data.
 func (e *APIKeyUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewAPIKeyDeletedEvent(id uuid.UUID) *APIKeyDeletedEvent {
 // EventType returns the type of this event.
 func (e *APIKeyDeletedEvent) EventType() string {
 	return EventAPIKeyDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *APIKeyDeletedEvent) EventDomain() string {
-	return "apikey"
 }
 
 // EventData returns the event data.

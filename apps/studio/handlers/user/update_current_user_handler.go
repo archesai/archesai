@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	queries "github.com/archesai/archesai/apps/studio/generated/application/commands/user"
@@ -57,9 +58,8 @@ func (h *UpdateCurrentUserCommandHandler) Handle(
 
 	// Publish domain event
 	event := domainevents.NewUserUpdatedEvent(updated.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
-		// Log error but don't fail the operation
-		_ = err
+	if err := h.publisher.Publish(ctx, event); err != nil {
+		slog.Error("failed to publish event", "error", err)
 	}
 
 	return updated, nil

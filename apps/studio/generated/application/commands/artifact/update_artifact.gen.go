@@ -78,8 +78,9 @@ func (h *UpdateArtifactCommandHandler) Handle(ctx context.Context, cmd *UpdateAr
 
 	// Publish domain event
 	event := domainevents.NewArtifactUpdatedEvent(updated.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
+	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
+		// FIXME: Implement logging
 	}
 
 	return updated, nil

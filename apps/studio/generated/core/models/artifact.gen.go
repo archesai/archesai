@@ -50,7 +50,7 @@ type Artifact struct {
 	// URL The URL of the artifact if it's stored externally
 	URL *string `json:"url" yaml:"url"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewArtifact creates a new Artifact entity.
@@ -88,7 +88,7 @@ func NewArtifact(
 		ProducerID:     producerID,
 		Text:           text,
 		URL:            url,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	artifact.addEvent(domainevents.NewArtifactCreatedEvent(id))
 
@@ -162,16 +162,16 @@ func (e *Artifact) GetURL() *string {
 }
 
 // Events returns the domain events
-func (e *Artifact) Events() []events.DomainEvent {
+func (e *Artifact) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Artifact) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Artifact) addEvent(event events.DomainEvent) {
+func (e *Artifact) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

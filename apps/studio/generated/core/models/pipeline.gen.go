@@ -32,7 +32,7 @@ type Pipeline struct {
 	// OrganizationID The organization identifier
 	OrganizationID uuid.UUID `json:"organizationID" yaml:"organizationID"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewPipeline creates a new Pipeline entity.
@@ -55,7 +55,7 @@ func NewPipeline(
 		Description:    description,
 		Name:           name,
 		OrganizationID: organizationID,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	pipeline.addEvent(domainevents.NewPipelineCreatedEvent(id))
 
@@ -99,16 +99,16 @@ func (e *Pipeline) GetOrganizationID() uuid.UUID {
 }
 
 // Events returns the domain events
-func (e *Pipeline) Events() []events.DomainEvent {
+func (e *Pipeline) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Pipeline) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Pipeline) addEvent(event events.DomainEvent) {
+func (e *Pipeline) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

@@ -132,7 +132,7 @@ type {{ $schema.Name }} struct {
 {{- end }}
 {{- if and $isEntity $schema.HasDomainEvents }}
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 {{- end }}
 }
 
@@ -206,7 +206,7 @@ func New{{ $schema.Name }}(
 {{- end }}
 {{- end }}
 {{- if $schema.HasDomainEvents }}
-		events: []events.DomainEvent{},
+		events: []events.Event{},
 {{- end }}
 	}
 
@@ -335,17 +335,17 @@ func (v {{ $schema.Name }}) String() string {
 {{- if and $isEntity $schema.HasDomainEvents }}
 
 // Events returns the domain events
-func (e *{{ $schema.Name }}) Events() []events.DomainEvent {
+func (e *{{ $schema.Name }}) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *{{ $schema.Name }}) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *{{ $schema.Name }}) addEvent(event events.DomainEvent) {
+func (e *{{ $schema.Name }}) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }
 {{- end }}

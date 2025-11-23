@@ -33,11 +33,6 @@ func (e *PipelineStepCreatedEvent) EventType() string {
 	return EventPipelineStepCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *PipelineStepCreatedEvent) EventDomain() string {
-	return "pipelinestep"
-}
-
 // EventData returns the event data.
 func (e *PipelineStepCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *PipelineStepUpdatedEvent) EventType() string {
 	return EventPipelineStepUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *PipelineStepUpdatedEvent) EventDomain() string {
-	return "pipelinestep"
-}
-
 // EventData returns the event data.
 func (e *PipelineStepUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewPipelineStepDeletedEvent(id uuid.UUID) *PipelineStepDeletedEvent {
 // EventType returns the type of this event.
 func (e *PipelineStepDeletedEvent) EventType() string {
 	return EventPipelineStepDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *PipelineStepDeletedEvent) EventDomain() string {
-	return "pipelinestep"
 }
 
 // EventData returns the event data.

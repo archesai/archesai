@@ -33,11 +33,6 @@ func (e *InvitationCreatedEvent) EventType() string {
 	return EventInvitationCreated
 }
 
-// EventDomain returns the domain of this event.
-func (e *InvitationCreatedEvent) EventDomain() string {
-	return "invitation"
-}
-
 // EventData returns the event data.
 func (e *InvitationCreatedEvent) EventData() any {
 	return e
@@ -62,11 +57,6 @@ func (e *InvitationUpdatedEvent) EventType() string {
 	return EventInvitationUpdated
 }
 
-// EventDomain returns the domain of this event.
-func (e *InvitationUpdatedEvent) EventDomain() string {
-	return "invitation"
-}
-
 // EventData returns the event data.
 func (e *InvitationUpdatedEvent) EventData() any {
 	return e
@@ -89,11 +79,6 @@ func NewInvitationDeletedEvent(id uuid.UUID) *InvitationDeletedEvent {
 // EventType returns the type of this event.
 func (e *InvitationDeletedEvent) EventType() string {
 	return EventInvitationDeleted
-}
-
-// EventDomain returns the domain of this event.
-func (e *InvitationDeletedEvent) EventDomain() string {
-	return "invitation"
 }
 
 // EventData returns the event data.

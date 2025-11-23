@@ -59,8 +59,9 @@ func (h *DeleteMemberCommandHandler) Handle(ctx context.Context, cmd *DeleteMemb
 
 	// Publish domain event
 	event := domainevents.NewMemberDeletedEvent(cmd.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
+	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
+		// FIXME: Implement logging
 	}
 
 	return nil

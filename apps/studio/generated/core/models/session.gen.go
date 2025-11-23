@@ -91,7 +91,7 @@ type Session struct {
 	// UserID The user who owns this session
 	UserID uuid.UUID `json:"userID" yaml:"userID"`
 
-	events []events.DomainEvent `json:"-" yaml:"-"`
+	events []events.Event `json:"-" yaml:"-"`
 }
 
 // NewSession creates a new Session entity.
@@ -131,7 +131,7 @@ func NewSession(
 		Token:          token,
 		UserAgent:      userAgent,
 		UserID:         userID,
-		events:         []events.DomainEvent{},
+		events:         []events.Event{},
 	}
 	session.addEvent(domainevents.NewSessionCreatedEvent(id))
 
@@ -200,16 +200,16 @@ func (e *Session) GetUserID() uuid.UUID {
 }
 
 // Events returns the domain events
-func (e *Session) Events() []events.DomainEvent {
+func (e *Session) Events() []events.Event {
 	return e.events
 }
 
 // ClearEvents clears the domain events
 func (e *Session) ClearEvents() {
-	e.events = []events.DomainEvent{}
+	e.events = []events.Event{}
 }
 
 // addEvent adds a domain event
-func (e *Session) addEvent(event events.DomainEvent) {
+func (e *Session) addEvent(event events.Event) {
 	e.events = append(e.events, event)
 }

@@ -75,8 +75,9 @@ func (h *UpdateUserCommandHandler) Handle(ctx context.Context, cmd *UpdateUserCo
 
 	// Publish domain event
 	event := domainevents.NewUserUpdatedEvent(updated.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
+	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
+		// FIXME: Implement logging
 	}
 
 	return updated, nil

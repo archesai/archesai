@@ -73,8 +73,9 @@ func (h *CreateInvitationCommandHandler) Handle(ctx context.Context, cmd *Create
 
 	// Publish domain event
 	event := domainevents.NewInvitationCreatedEvent(created.ID)
-	if err := events.PublishDomainEvent(ctx, h.publisher, event); err != nil {
+	if err := h.publisher.Publish(ctx, event); err != nil {
 		// Log error but don't fail the operation
+		// FIXME: Implement logging
 	}
 
 	return created, nil
