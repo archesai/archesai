@@ -7,9 +7,11 @@ import (
 	"os"
 	"path/filepath"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 	"go.yaml.in/yaml/v4"
 
+	"github.com/archesai/archesai/internal/tui"
 	"github.com/archesai/archesai/pkg/config"
 )
 
@@ -55,6 +57,13 @@ var configShowCmd = &cobra.Command{
 				}
 			}()
 			return encoder.Encode(cfg.Config)
+		case "tui":
+			model := tui.NewConfigModel()
+			program := tea.NewProgram(model, tea.WithAltScreen())
+			if _, err := program.Run(); err != nil {
+				return fmt.Errorf("error running config TUI: %w", err)
+			}
+			return nil
 		default:
 			return fmt.Errorf("unsupported output format: %s", outputFormat)
 		}
@@ -204,5 +213,5 @@ func init() {
 
 	// Add flags
 	configShowCmd.Flags().
-		StringVarP(&outputFormat, "output", "o", "yaml", "Output format (yaml, json)")
+		StringVarP(&outputFormat, "output", "o", "yaml", "Output format (yaml, json, tui)")
 }

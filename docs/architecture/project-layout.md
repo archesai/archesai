@@ -488,7 +488,6 @@
 │   │   ├── dev.go
 │   │   ├── generate.go
 │   │   ├── root.go
-│   │   ├── tui.go
 │   │   └── version.go
 │   ├── codegen
 │   │   ├── tmpl
@@ -801,5 +800,5 @@
 ├── tools.sum
 └── tsconfig.json
 
-185 directories, 612 files
+185 directories, 611 files
 ```
