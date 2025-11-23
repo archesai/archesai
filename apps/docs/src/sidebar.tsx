@@ -22,7 +22,12 @@ export const docs: Navigation = [
     items: [
       {
         icon: "sparkles",
-        items: ["/getting-started", "/contributing"],
+        items: [
+          "/getting-started",
+          "/guides/quickstart",
+          "/cli-reference",
+          "/contributing",
+        ],
         label: "Getting Started",
         type: "category",
       },
@@ -31,8 +36,9 @@ export const docs: Navigation = [
         items: [
           "/architecture/overview",
           "/architecture/system-design",
-          "/architecture/project-layout",
+          "/architecture/code-generation",
           "/architecture/authentication",
+          "/architecture/project-layout",
         ],
         label: "Architecture",
         type: "category",
@@ -55,8 +61,9 @@ export const docs: Navigation = [
         items: [
           "/guides/overview",
           "/guides/development",
+          "/guides/code-generation",
           "/guides/testing",
-          "/guides/test-coverage-report",
+          "/guides/custom-handlers",
           "/guides/makefile-commands",
         ],
         label: "Guides",
@@ -80,21 +87,15 @@ export const docs: Navigation = [
         type: "category",
       },
       {
-        icon: "zap",
-        items: ["/performance/overview", "/performance/optimization"],
-        label: "Performance",
-        type: "category",
-      },
-      {
-        icon: "activity",
-        items: ["/monitoring/overview"],
-        label: "Monitoring",
-        type: "category",
-      },
-      {
         icon: "wrench",
         items: ["/troubleshooting/common-issues"],
         label: "Troubleshooting",
+        type: "category",
+      },
+      {
+        icon: "map",
+        items: ["/ROADMAP"],
+        label: "Roadmap",
         type: "category",
       },
       {

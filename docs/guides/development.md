@@ -1,15 +1,15 @@
 # Development Guide
 
-Welcome to the Arches development guide! This document covers everything you need to know to set
-up your development environment and contribute to the project.
+Welcome to the Arches development guide! This document covers everything you need to know
+to set up your development environment and contribute to the project.
 
 ## Prerequisites
 
-- Go 1.21 or later
-- Node.js 18 or later
-- PostgreSQL 15 or later (for development)
-- Redis (for caching and sessions)
-- Docker and Docker Compose (for containerized development)
+- Go 1.22+
+- Node.js 20+ with pnpm
+- PostgreSQL 15+ (for development)
+- Redis 7+ (optional, for caching and sessions)
+- Docker and Docker Compose (optional, for containerized development)
 
 ## Quick Setup
 
@@ -23,37 +23,52 @@ up your development environment and contribute to the project.
 2. **Install dependencies**:
 
    ```bash
-   make deps
+   make deps        # Install all dependencies
+   # Or separately:
+   make deps-go     # Go dependencies
+   make deps-ts     # Node.js dependencies
    ```
 
-3. **Generate code**:
+3. **Build the CLI**:
 
    ```bash
-   make generate
+   make build       # Creates ./bin/archesai
    ```
 
-4. **Set up the database**:
+4. **Start development environment**:
 
    ```bash
-   make db-migrate-up
-   ```
+   # Option 1: Using archesai CLI
+   archesai dev     # Start with hot reload
+   archesai dev --tui # With interactive TUI
 
-5. **Start development servers**:
-
-   ```bash
-   make dev          # Start backend
-   pnpm dev:platform # Start frontend (in another terminal)
+   # Option 2: Using Make
+   make dev-all     # Start all services
+   make dev-api     # Start API only
+   make dev-platform # Start platform UI only
    ```
 
 ## Essential Commands
 
 ```bash
-make generate     # Run after API/SQL/x-codegen changes
-make lint         # Check code quality
-make dev          # Start backend server
-pnpm dev:platform # Start frontend
-make format       # Format code
-make test         # Run tests
+# Code Generation
+make generate        # Generate all code from OpenAPI/SQL
+archesai generate openapi api/openapi.yaml --output ./generated
+
+# Development
+make dev-all         # Start everything with hot reload
+make dev-api         # Start API server with hot reload
+make dev-platform    # Start platform UI with hot reload
+
+# Code Quality
+make lint            # Run all linters
+make format          # Format all code
+make test            # Run all tests
+
+# Building
+make build           # Build all binaries
+make build-api       # Build API server
+make build-platform  # Build platform UI
 ```
 
 For a complete list of commands, see [Makefile Commands](makefile-commands.md).
@@ -65,14 +80,59 @@ For a detailed overview of the project organization, see
 
 ## Development Workflow
 
-1. **Define First, Generate Second**:
-   - Add x-codegen annotations to OpenAPI schemas
-   - Define database queries in SQL files
-   - Run `make generate` to create all boilerplate code
-2. **Implement Business Logic**: Write your custom logic in `service.go` files
-3. **Test with Generated Mocks**: Use the generated `mocks_test.gen.go` files for testing
-4. **Follow the testing strategy** outlined in [Testing Documentation](testing.md)
-5. **Use the TUI for configuration** as described in the [TUI Guide](../features/tui.md)
+### For Arches Platform Development
+
+1. **Modify OpenAPI Specification**:
+   - Edit files in `api/` directory
+   - Add x-codegen annotations for custom behavior
+
+2. **Generate Code**:
+
+   ```bash
+   make generate    # Regenerate all code
+   ```
+
+3. **Implement Custom Logic**:
+   - Add business logic in handler files
+   - Write tests using generated mocks
+
+4. **Test Your Changes**:
+
+   ```bash
+   make test        # Run all tests
+   make test-short  # Quick tests only
+   ```
+
+### For Using Arches to Build Apps
+
+1. **Create Your OpenAPI Spec**:
+
+   ```yaml
+   # myapp.yaml
+   openapi: 3.1.0
+   info:
+     title: My App API
+     version: 1.0.0
+   # ... your API definition
+   ```
+
+2. **Generate Your Application**:
+
+   ```bash
+   archesai generate openapi myapp.yaml --output ./myapp
+   ```
+
+3. **Start Development**:
+
+   ```bash
+   cd myapp
+   archesai dev
+   ```
+
+4. **Customize Generated Code**:
+   - Add business logic in `handlers/`
+   - Modify templates if needed
+   - Extend generated models
 
 For detailed code generation instructions, see the [Code Generation Guide](code-generation.md).
 

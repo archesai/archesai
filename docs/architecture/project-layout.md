@@ -205,6 +205,7 @@
 │   │   │   │   └── overview.md
 │   │   │   ├── architecture
 │   │   │   │   ├── authentication.md
+│   │   │   │   ├── code-generation.md
 │   │   │   │   ├── overview.md
 │   │   │   │   ├── project-layout.md
 │   │   │   │   ├── project-structure.xml
@@ -228,22 +229,18 @@
 │   │   │   │   ├── development.md
 │   │   │   │   ├── makefile-commands.md
 │   │   │   │   ├── overview.md
+│   │   │   │   ├── quickstart.md
 │   │   │   │   ├── test-coverage-report.md
 │   │   │   │   └── testing.md
-│   │   │   ├── monitoring
-│   │   │   │   └── overview.md
-│   │   │   ├── performance
-│   │   │   │   ├── optimization.md
-│   │   │   │   └── overview.md
 │   │   │   ├── security
 │   │   │   │   ├── best-practices.md
 │   │   │   │   └── overview.md
 │   │   │   ├── troubleshooting
 │   │   │   │   └── common-issues.md
-│   │   │   ├── codebase-analysis.md
+│   │   │   ├── cli-reference.md
 │   │   │   ├── contributing.md
 │   │   │   ├── getting-started.md
-│   │   │   └── studio-ui-design.md
+│   │   │   └── ROADMAP.md
 │   │   ├── src
 │   │   │   ├── landing_content.ts
 │   │   │   ├── landing.tsx
@@ -443,6 +440,7 @@
 │   │   └── overview.md
 │   ├── architecture
 │   │   ├── authentication.md
+│   │   ├── code-generation.md
 │   │   ├── overview.md
 │   │   ├── project-layout.md
 │   │   ├── project-structure.xml
@@ -465,22 +463,18 @@
 │   │   ├── development.md
 │   │   ├── makefile-commands.md
 │   │   ├── overview.md
+│   │   ├── quickstart.md
 │   │   ├── test-coverage-report.md
 │   │   └── testing.md
-│   ├── monitoring
-│   │   └── overview.md
-│   ├── performance
-│   │   ├── optimization.md
-│   │   └── overview.md
 │   ├── security
 │   │   ├── best-practices.md
 │   │   └── overview.md
 │   ├── troubleshooting
 │   │   └── common-issues.md
-│   ├── codebase-analysis.md
+│   ├── cli-reference.md
 │   ├── contributing.md
 │   ├── getting-started.md
-│   └── studio-ui-design.md
+│   └── ROADMAP.md
 ├── internal
 │   ├── cli
 │   │   ├── completion.go
@@ -800,5 +794,5 @@
 ├── tools.sum
 └── tsconfig.json
 
-185 directories, 611 files
+181 directories, 609 files
 ```

@@ -178,116 +178,116 @@ export const defaultContent: LandingContent = {
   cta: {
     buttons: {
       primary: {
-        label: "Start Saving Now",
+        label: "Start Building Now",
       },
       secondary: {
-        label: "See Live Demo",
+        label: "View Documentation",
       },
     },
     disclaimer:
-      "30-day free trial. No credit card. Setup in 5 minutes. Cancel anytime.",
+      "Free and open source. No credit card required. Generate your first app in 5 minutes.",
     subtitle:
-      "Every day without Arches costs you thousands in inefficiency. Join 10,000+ companies already saving millions.",
-    title: "Stop Losing Money on Manual Processes",
+      "Join thousands of developers who are shipping production apps 10x faster with OpenAPI-driven development.",
+    title: "Ready to Build Your Next App?",
   },
   faq: {
     badge: "FAQ",
     questions: [
       {
         answer:
-          "Most customers see immediate results. On average, companies report 50% time savings on day one, and 10x ROI within the first week. Our AI begins optimizing your workflows from the moment you connect your data, with full optimization typically achieved within 48 hours.",
-        question: "How quickly can I see results with Arches?",
+          "In about 5 minutes! Once you install Arches and create your OpenAPI specification, you can generate a complete application instantly. The generated code includes everything you need: models, controllers, database migrations, authentication, and even a TypeScript client SDK.",
+        question: "How quickly can I generate my first app?",
       },
       {
         answer:
-          "Absolutely not. Arches is designed for business users, not engineers. If you can use email, you can use Arches. Our AI handles all the technical complexity behind the scenes. We also provide free onboarding and training for all new customers.",
-        question: "Do I need technical expertise to use Arches?",
+          "Basic programming knowledge is helpful but not required for simple apps. Arches generates production-ready code that follows best practices. You'll need to understand your API design (OpenAPI) and potentially add custom business logic, but the heavy lifting is done for you.",
+        question: "Do I need to be an expert developer to use Arches?",
       },
       {
         answer:
-          "Building similar capabilities in-house would require a team of 10-15 engineers and cost $2-3M annually. With Arches, you get enterprise-grade AI infrastructure for less than the cost of a single junior developer. Plus, you're live in 5 minutes instead of 18 months.",
-        question: "How does Arches compare to building in-house?",
+          "Building a production-ready app manually can take weeks or months. With Arches, you get the same result in minutes. We estimate Arches saves 80-90% of boilerplate coding time, letting you focus on your unique business logic instead of repetitive infrastructure code.",
+        question: "How does Arches compare to coding from scratch?",
       },
       {
         answer:
-          "Your data never leaves our SOC 2 Type II certified infrastructure. We use military-grade AES-256 encryption, and our security is audited quarterly by independent firms. We're GDPR, CCPA, and HIPAA compliant. Your data is safer with us than on your own servers.",
-        question: "What happens to my data? Is it secure?",
+          "Arches is completely open source under the AGPLv3 license. Your generated code belongs to you. We don't store any of your specifications or generated code - everything runs locally on your machine. You have full control over your applications.",
+        question: "What happens to my code? Who owns it?",
       },
       {
         answer:
-          "We process billions of data points daily for Fortune 500 companies. Our infrastructure auto-scales to handle any volume - from 10 to 10 billion operations. Companies like Microsoft and Amazon trust us with their mission-critical workflows.",
-        question: "Can Arches handle my scale?",
+          "Absolutely! Arches generates clean, well-structured code that follows industry best practices. The generated code is designed to scale from prototype to production. Many teams use Arches for hackathons, MVPs, and production applications serving millions of users.",
+        question: "Can I use Arches for production applications?",
       },
       {
         answer:
-          "You can cancel anytime with one click. No questions asked, no hidden fees. We'll even help you export all your data and provide 30 days of free access to ensure a smooth transition. But with our 98% retention rate, we're confident you'll want to stay.",
-        question: "What if I need to cancel?",
+          "Arches currently generates Go backends with full TypeScript/JavaScript client SDKs. Python and Node.js backend support is coming soon. The generated code includes Docker configurations and Kubernetes manifests for easy deployment anywhere.",
+        question: "What languages and frameworks does Arches support?",
       },
       {
         answer:
-          "Our proprietary AI models are trained on petabytes of business data to understand patterns and optimize workflows. The AI learns from your specific use cases and improves continuously. Within a week, it understands your business better than a consultant who's been studying it for months.",
-        question: "How does the AI actually work?",
+          "Yes! The generated code is meant to be extended. Arches uses special markers (x-codegen annotations) to let you customize generation behavior. You can add custom business logic, override generated methods, and even provide your own templates for complete control.",
+        question: "Can I customize the generated code?",
       },
       {
         answer:
-          "Our average customer sees 10-15x ROI within 90 days. This comes from: 70% reduction in processing time, 90% fewer errors, 50% less staff time on repetitive tasks, and the ability to scale without hiring. We guarantee at least 5x ROI or your money back.",
-        question: "What ROI can I expect?",
+          "Arches generates comprehensive auth systems including JWT tokens, email/password login, OAuth integration, magic links, session management, and role-based access control. Just define your security requirements in your OpenAPI spec and Arches handles the implementation.",
+        question: "How does authentication work in generated apps?",
       },
     ],
     subtitle:
-      "Got questions? We've got answers. Can't find what you're looking for? Our team responds in under 2 minutes.",
-    title: "Everything You Need to Know",
+      "Got questions? We've got answers. Check our documentation or open an issue on GitHub for more help.",
+    title: "Frequently Asked Questions",
   },
   features: {
     badge: "Why Arches",
     features: [
       {
         description:
-          "Our proprietary AI models learn from your patterns and automate complex workflows with 99.9% accuracy. Save 30+ hours per week on repetitive tasks.",
+          "Generate complete applications from OpenAPI specifications in seconds. Models, controllers, database layers, authentication - everything you need, production-ready.",
         icon: "ZapIcon",
-        title: "AI-Powered Automation",
+        title: "OpenAPI to Full App",
       },
       {
         description:
-          "Get instant insights with predictive analytics that spots trends before they happen. Make data-driven decisions 5x faster than traditional methods.",
+          "Clean, maintainable Go code following best practices. Includes comprehensive error handling, validation, and testing infrastructure out of the box.",
         icon: "BarChartIcon",
-        title: "Real-Time Intelligence",
+        title: "Production-Ready Code",
       },
       {
         description:
-          "Bring your entire team together in one intelligent platform. Real-time collaboration with AI-assisted communication and smart task distribution.",
+          "Generated TypeScript/JavaScript client SDKs with full type safety. Automatic validation, error handling, and API documentation included.",
         icon: "UsersIcon",
-        title: "Unified Workspace",
+        title: "Type-Safe Client SDKs",
       },
       {
         description:
-          "SOC 2 Type II certified with military-grade encryption. Your data is protected by the same security standards used by Fortune 500 companies.",
+          "JWT authentication, OAuth providers, magic links, session management, and RBAC. Enterprise-grade security patterns built into every generated app.",
         icon: "ShieldIcon",
-        title: "Bank-Level Security",
+        title: "Built-in Authentication",
       },
       {
         description:
-          "Connect instantly with Salesforce, Slack, Microsoft 365, and 1000+ other tools. Our universal API adapts to any workflow in minutes.",
+          "Docker, Kubernetes, and Helm charts generated automatically. Deploy anywhere with production-ready configurations and health checks.",
         icon: "LayersIcon",
-        title: "1000+ Integrations",
+        title: "Cloud-Native Deployment",
       },
       {
         description:
-          "Dedicated success manager, 24/7 priority support, and 99.99% uptime SLA. Average response time under 2 minutes.",
+          "Hot reload during development, extensible templates, custom annotations, and powerful CLI tools. Built by developers, for developers.",
         icon: "StarIcon",
-        title: "White-Glove Support",
+        title: "Developer Experience",
       },
     ],
     subtitle:
-      "Built from the ground up to handle complex workflows at scale. Our AI-native architecture processes millions of data points in seconds, not hours.",
-    title: "The Future of Intelligent Data Processing",
+      "Transform your OpenAPI specifications into complete, production-ready applications. Skip the boilerplate and focus on your business logic.",
+    title: "Code Generation That Actually Works",
   },
   footer: {
     company: {
       logoText: "A",
       name: "Arches",
       tagline:
-        "The world's most advanced AI-powered data processing platform. Trusted by industry leaders to handle mission-critical workflows at scale.",
+        "Open-source code generation platform that transforms OpenAPI specifications into production-ready applications. Build faster, ship sooner.",
     },
     legal: {
       copyright: `© ${new Date().getFullYear()} Arches. All rights reserved.`,
@@ -415,78 +415,74 @@ export const defaultContent: LandingContent = {
     ],
   },
   hero: {
-    badge: "AI-Powered Platform",
-    benefits: [
-      "No credit card required",
-      "30-day free trial",
-      "Setup in 5 minutes",
-    ],
+    badge: "OpenAPI-Driven Development",
+    benefits: ["Open source", "Generate in seconds", "Production ready"],
     buttons: {
       primary: {
-        label: "Start Free Trial",
+        label: "Get Started",
       },
       secondary: {
-        label: "Watch 2-Min Demo",
+        label: "View Docs",
       },
     },
     image: {
-      alt: "Arches intelligent dashboard showing real-time data processing",
+      alt: "Arches code generation showing OpenAPI to application transformation",
       src: "https://cdn.dribbble.com/userupload/12302729/file/original-fa372845e394ee85bebe0389b9d86871.png?resize=1504x1128&vertical=center",
     },
     subtitle:
-      "Arches combines cutting-edge AI with powerful automation to process data 10x faster. Join industry leaders who've reduced operational costs by 40% while scaling effortlessly.",
-    title: "Transform Your Data Into Intelligent Workflows",
+      "Arches transforms your OpenAPI specifications into complete, production-ready applications. Skip weeks of boilerplate coding and focus on what makes your app unique.",
+    title: "From API Spec to Production App in Minutes",
   },
   howItWorks: {
     badge: "Get Started",
     steps: [
       {
         description:
-          "One-click integration with your existing tools. Our AI automatically maps and organizes your data structure.",
+          "Design your API using OpenAPI 3.0/3.1 specification. Define endpoints, models, and authentication requirements.",
         step: "01",
-        title: "Connect Your Data",
+        title: "Define Your API",
       },
       {
         description:
-          "Our AI analyzes your processes and creates custom automation rules. See optimization suggestions in real-time.",
+          "Run the Arches CLI to transform your specification into a complete application with all the boilerplate handled.",
         step: "02",
-        title: "AI Learns Your Workflow",
+        title: "Generate Your App",
       },
       {
         description:
-          "Watch as tasks that took hours complete in seconds. Scale from 10 to 10,000 operations without changing a thing.",
+          "Add your business logic to the generated handlers. Deploy with included Docker/Kubernetes configs.",
         step: "03",
-        title: "Scale Effortlessly",
+        title: "Customize & Deploy",
       },
     ],
     subtitle:
-      "Join thousands of companies that went live in under 5 minutes. No technical expertise required.",
-    title: "From Zero to AI-Powered in Minutes",
+      "Join thousands of developers building production apps in minutes, not months.",
+    title: "Three Steps to Production",
   },
   logos: {
     logos: [
       {
-        alt: "Microsoft",
+        alt: "Go",
         src: "/placeholder-logo.svg",
       },
       {
-        alt: "Google",
+        alt: "OpenAPI",
         src: "/placeholder-logo.svg",
       },
       {
-        alt: "Amazon",
+        alt: "PostgreSQL",
         src: "/placeholder-logo.svg",
       },
       {
-        alt: "Meta",
+        alt: "Docker",
         src: "/placeholder-logo.svg",
       },
       {
-        alt: "Tesla",
+        alt: "Kubernetes",
         src: "/placeholder-logo.svg",
       },
     ],
-    title: "Powering the world's most innovative companies",
+    title: "Built with modern, battle-tested technologies",
   },
   navigation: {
     buttons: {
@@ -524,174 +520,169 @@ export const defaultContent: LandingContent = {
   pricing: {
     badge: "Pricing",
     subtitle:
-      "Start with 30 days free. Most customers see 10x ROI within the first week.",
+      "Arches is free and open source. Use it locally or deploy anywhere.",
     tabs: {
       annually: {
-        label: "Annually",
+        label: "Open Source",
         plans: [
           {
-            cta: "Start Free Trial",
-            description: "For ambitious teams ready to scale.",
+            cta: "Get Started",
+            description: "Everything you need to build production apps.",
             features: [
-              "Process up to 1M data points/month",
-              "10 AI automation workflows",
-              "100GB high-speed storage",
-              "5 team members included",
-              "Standard integrations (50+)",
-              "Email & chat support",
-              "99.9% uptime SLA",
+              "Unlimited code generation",
+              "All languages and frameworks",
+              "Complete source code access",
+              "Community support",
+              "Docker & Kubernetes configs",
+              "Authentication systems",
+              "Client SDK generation",
             ],
-            name: "Growth",
-            price: "$224",
+            name: "Community",
+            price: "Free",
           },
           {
-            cta: "Start Free Trial",
-            description: "For companies experiencing rapid growth.",
+            cta: "View Docs",
+            description: "Commercial support and enterprise features.",
             features: [
-              "Process up to 10M data points/month",
-              "Unlimited AI workflows",
-              "1TB high-speed storage",
-              "25 team members included",
-              "Premium integrations (500+)",
-              "Priority 24/7 support",
-              "Custom AI model training",
-              "99.99% uptime SLA",
-              "Advanced security features",
-            ],
-            name: "Scale",
-            popular: true,
-            price: "$749",
-          },
-          {
-            cta: "Contact Sales",
-            description: "For industry leaders with mission-critical needs.",
-            features: [
-              "Unlimited data processing",
-              "Unlimited everything",
-              "Dedicated infrastructure",
-              "Unlimited team members",
+              "Everything in Community",
+              "Priority support",
+              "Custom templates",
+              "Training and onboarding",
+              "SLA guarantees",
               "Custom integrations",
-              "Dedicated success team",
-              "On-premise deployment option",
-              "100% uptime SLA",
-              "Custom AI models",
               "White-label options",
-              "Priority roadmap input",
+              "Dedicated success manager",
+              "Priority feature requests",
             ],
             name: "Enterprise",
-            price: "Custom",
+            popular: true,
+            price: "Contact",
+          },
+          {
+            cta: "Learn More",
+            description: "Managed cloud service coming soon.",
+            features: [
+              "Hosted code generation",
+              "Team collaboration",
+              "Version control integration",
+              "CI/CD pipelines",
+              "Private template registry",
+              "Advanced analytics",
+              "Automated deployments",
+              "99.99% uptime SLA",
+              "24/7 support",
+            ],
+            name: "Cloud (Coming Soon)",
+            price: "TBD",
           },
         ],
-        savingsText: "Save 25%",
+        savingsText: "",
       },
       monthly: {
-        label: "Monthly",
+        label: "Self-Hosted",
         plans: [
           {
-            cta: "Start Free Trial",
-            description: "For ambitious teams ready to scale.",
+            cta: "Get Started",
+            description: "Everything you need to build production apps.",
             features: [
-              "Process up to 1M data points/month",
-              "10 AI automation workflows",
-              "100GB high-speed storage",
-              "5 team members included",
-              "Standard integrations (50+)",
-              "Email & chat support",
-              "99.9% uptime SLA",
+              "Unlimited code generation",
+              "All languages and frameworks",
+              "Complete source code access",
+              "Community support",
+              "Docker & Kubernetes configs",
+              "Authentication systems",
+              "Client SDK generation",
             ],
-            name: "Growth",
-            price: "$299",
+            name: "Community",
+            price: "Free",
           },
           {
-            cta: "Start Free Trial",
-            description: "For companies experiencing rapid growth.",
+            cta: "View Docs",
+            description: "Commercial support and enterprise features.",
             features: [
-              "Process up to 10M data points/month",
-              "Unlimited AI workflows",
-              "1TB high-speed storage",
-              "25 team members included",
-              "Premium integrations (500+)",
-              "Priority 24/7 support",
-              "Custom AI model training",
-              "99.99% uptime SLA",
-              "Advanced security features",
-            ],
-            name: "Scale",
-            popular: true,
-            price: "$999",
-          },
-          {
-            cta: "Contact Sales",
-            description: "For industry leaders with mission-critical needs.",
-            features: [
-              "Unlimited data processing",
-              "Unlimited everything",
-              "Dedicated infrastructure",
-              "Unlimited team members",
+              "Everything in Community",
+              "Priority support",
+              "Custom templates",
+              "Training and onboarding",
+              "SLA guarantees",
               "Custom integrations",
-              "Dedicated success team",
-              "On-premise deployment option",
-              "100% uptime SLA",
-              "Custom AI models",
               "White-label options",
-              "Priority roadmap input",
+              "Dedicated success manager",
+              "Priority feature requests",
             ],
             name: "Enterprise",
-            price: "Custom",
+            popular: true,
+            price: "Contact",
+          },
+          {
+            cta: "Learn More",
+            description: "Managed cloud service coming soon.",
+            features: [
+              "Hosted code generation",
+              "Team collaboration",
+              "Version control integration",
+              "CI/CD pipelines",
+              "Private template registry",
+              "Advanced analytics",
+              "Automated deployments",
+              "99.99% uptime SLA",
+              "24/7 support",
+            ],
+            name: "Cloud (Coming Soon)",
+            price: "TBD",
           },
         ],
       },
     },
-    title: "ROI-Positive From Day One",
+    title: "Free & Open Source",
   },
   testimonials: {
-    badge: "Success Stories",
-    subtitle:
-      "Join 10,000+ companies experiencing unprecedented growth with Arches.",
+    badge: "Developer Stories",
+    subtitle: "See what developers are building with Arches.",
     testimonials: [
       {
         author: "Sarah Chen",
         quote:
-          "Arches reduced our data processing time by 93%. What used to take our team 8 hours now completes in 30 minutes. The ROI was immediate - we saved $2M in the first quarter alone.",
+          "Arches cut our API development time from 3 weeks to 3 hours. The generated code is clean, well-tested, and production-ready. It's exactly what we would have written ourselves, just 100x faster.",
         rating: 5,
-        role: "CTO, Fortune 500 Tech Company",
+        role: "Senior Engineer, YC Startup",
       },
       {
         author: "Marcus Williams",
         quote:
-          "The AI predictions are scary accurate. We prevented 3 major supply chain disruptions last month alone. Arches paid for itself 10x over in the first week.",
+          "We use Arches for all our microservices now. Define the OpenAPI spec, generate the code, add business logic, deploy. What used to take a sprint now takes a day.",
         rating: 5,
-        role: "VP Operations, Global E-commerce Leader",
+        role: "Platform Lead, Fortune 500",
       },
       {
-        author: "Dr. Emily Thompson",
+        author: "Emily Thompson",
         quote:
-          "Processing genomic data that took weeks now takes hours. Arches accelerated our research timeline by 18 months. This is the future of scientific computing.",
+          "The authentication system Arches generates is more comprehensive than what we built manually. JWT, OAuth, magic links - it's all there and properly secured. Saved us months of work.",
         rating: 5,
-        role: "Head of Research, BioTech Unicorn",
+        role: "Full Stack Developer",
       },
       {
         author: "David Park",
         quote:
-          "We scaled from 100 to 10,000 customers without hiring a single data analyst. Arches handles everything. It's like having a team of 50 engineers for the price of 1.",
+          "Built our entire MVP with Arches in a weekend. The generated TypeScript client SDK was a game-changer for our frontend team. We launched 2 months ahead of schedule.",
         rating: 5,
-        role: "CEO, Hypergrowth SaaS Startup",
+        role: "CTO, SaaS Startup",
       },
       {
         author: "Lisa Anderson",
         quote:
-          "Compliance reporting that took 2 weeks now generates in real-time. We've eliminated 100% of manual errors and saved $5M annually. Best investment we've ever made.",
+          "Migrated 12 legacy services to modern Go microservices using Arches. The consistency across all services is incredible. Onboarding new developers is now trivial.",
         rating: 5,
-        role: "CFO, Financial Services Giant",
+        role: "Engineering Manager",
       },
       {
         author: "Roberto Silva",
         quote:
-          "Arches predicted equipment failures 14 days in advance with 98% accuracy. We've reduced downtime by 87% and increased production efficiency by 45%.",
+          "Arches is part of our standard stack now. Every new API starts with an OpenAPI spec and Arches generation. It enforces best practices and eliminates entire categories of bugs.",
         rating: 5,
-        role: "Director of Innovation, Manufacturing Leader",
+        role: "Principal Engineer",
       },
     ],
-    title: "Results That Speak for Themselves",
+    title: "Loved by Developers Worldwide",
   },
 };

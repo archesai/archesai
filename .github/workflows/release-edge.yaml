@@ -1,14 +1,15 @@
 name: Edge Release
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '.github/**'
-      - '!.github/workflows/release-edge.yaml'
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - 'docs/**'
+  #     - '*.md'
+  #     - '.github/**'
+  #     - '!.github/workflows/release-edge.yaml'
+  # FIXME
   workflow_dispatch: # Allow manual trigger
 
 permissions:

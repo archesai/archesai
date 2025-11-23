@@ -4,40 +4,61 @@ This document describes the authentication and authorization system implemented 
 
 ## Overview
 
-Arches uses a JWT-based authentication system with refresh tokens for secure, stateless
-authentication. The system supports:
+Arches provides a comprehensive authentication system with multiple authentication methods and security features:
 
-- User registration and login
-- Access and refresh tokens
-- Session management
-- Password hashing with bcrypt
-- Multi-organization support
-- Token rotation for enhanced security
+- **JWT-based authentication** with access and refresh tokens
+- **Email/password authentication** with registration and login
+- **OAuth integration** for third-party providers
+- **Magic link authentication** for passwordless login
+- **Session management** with multi-device support
+- **Email verification** and password reset flows
+- **Account linking** for multiple auth methods
 
-## Architecture
+## API Endpoints
 
-### Components
+### Core Authentication
 
-1. **Auth Domain** (`internal/auth/`)
-   - Core business logic for authentication
-   - User and session entities
-   - Repository interfaces (ports)
-   - Use cases for auth operations
+| Endpoint              | Method | Description                           |
+| --------------------- | ------ | ------------------------------------- |
+| `/auth/register`      | POST   | Register new user with email/password |
+| `/auth/login`         | POST   | Login with email/password             |
+| `/auth/logout`        | POST   | Logout current session                |
+| `/auth/logout-all`    | POST   | Logout all sessions                   |
+| `/auth/sessions`      | GET    | List all active sessions              |
+| `/auth/sessions/{id}` | DELETE | Terminate specific session            |
 
-2. **Auth Handlers** (`internal/auth/handlers/http/`)
-   - HTTP endpoints for auth operations
-   - Request/response handling
-   - Input validation
+### Email Management
 
-3. **Auth Repository** (`internal/auth/adapters/postgres/`)
-   - PostgreSQL implementation of auth repository
-   - User and session persistence
-   - Database queries via SQLC
+| Endpoint                     | Method | Description                    |
+| ---------------------------- | ------ | ------------------------------ |
+| `/auth/verify-email`         | POST   | Verify email with token        |
+| `/auth/request-verification` | POST   | Request new verification email |
+| `/auth/confirm-email`        | POST   | Confirm email change           |
+| `/auth/change-email`         | POST   | Request email change           |
 
-4. **Auth Middleware** (`internal/middleware/`)
-   - JWT validation
-   - Request authentication
-   - Context enrichment with user claims
+### Password Management
+
+| Endpoint                | Method | Description               |
+| ----------------------- | ------ | ------------------------- |
+| `/auth/forgot-password` | POST   | Request password reset    |
+| `/auth/reset-password`  | POST   | Reset password with token |
+
+### Magic Links (Passwordless)
+
+| Endpoint                    | Method | Description              |
+| --------------------------- | ------ | ------------------------ |
+| `/auth/magic-links/request` | POST   | Request magic link email |
+| `/auth/magic-links/verify`  | POST   | Verify magic link token  |
+
+### OAuth & Account Linking
+
+| Endpoint                           | Method | Description                 |
+| ---------------------------------- | ------ | --------------------------- |
+| `/auth/oauth/{provider}/authorize` | GET    | Initiate OAuth flow         |
+| `/auth/oauth/{provider}/callback`  | GET    | Handle OAuth callback       |
+| `/auth/accounts`                   | GET    | List linked accounts        |
+| `/auth/accounts/{id}`              | DELETE | Unlink account              |
+| `/auth/link`                       | POST   | Link additional auth method |
 
 ## Token System
 
@@ -83,6 +104,55 @@ sequenceDiagram
     API-->>Client: New access token
 ```
 
+## Authentication Methods
+
+### 1. Email/Password
+
+Traditional authentication with email and password:
+
+```json
+POST /auth/register
+{
+  "email": "user@example.com",
+  "name": "John Doe",
+  "password": "secure-password-123"
+}
+
+POST /auth/login
+{
+  "email": "user@example.com",
+  "password": "secure-password-123"
+}
+```
+
+### 2. Magic Links
+
+Passwordless authentication via email:
+
+```json
+POST /auth/magic-links/request
+{
+  "email": "user@example.com"
+}
+
+POST /auth/magic-links/verify
+{
+  "token": "magic-link-token-from-email"
+}
+```
+
+### 3. OAuth Providers
+
+Third-party authentication (Google, GitHub, etc.):
+
+```bash
+# Redirect user to:
+GET /auth/oauth/google/authorize
+
+# Callback handled at:
+GET /auth/oauth/google/callback?code=...&state=...
+```
+
 ## Database Schema
 
 ### Users Table
@@ -104,439 +174,202 @@ CREATE TABLE users (
 ```sql
 CREATE TABLE sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-  token TEXT UNIQUE NOT NULL,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash VARCHAR(255) UNIQUE NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL,
-  active_organization_id UUID,
-  ip_address VARCHAR(45),
+  ip_address INET,
   user_agent TEXT,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-### Accounts Table (for OAuth providers)
+### Accounts Table (OAuth)
 
 ```sql
 CREATE TABLE accounts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   provider VARCHAR(50) NOT NULL,
   provider_account_id VARCHAR(255) NOT NULL,
-  refresh_token TEXT,
   access_token TEXT,
+  refresh_token TEXT,
   expires_at TIMESTAMPTZ,
-  token_type VARCHAR(50),
-  scope TEXT,
-  id_token TEXT,
-  session_state TEXT,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE (provider, provider_account_id)
+  UNIQUE(provider, provider_account_id)
 );
 ```
 
-## API Endpoints
-
-### Public Endpoints
-
-#### Register
-
-```http
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "SecurePass123!",
-  "name": "John Doe"
-}
-```
-
-Response:
-
-```json
-{
-  "user": {
-    "id": "uuid",
-    "email": "user@example.com",
-    "name": "John Doe"
-  },
-  "tokens": {
-    "accessToken": "eyJhbGc...",
-    "refreshToken": "eyJhbGc...",
-    "expiresIn": 900
-  }
-}
-```
-
-#### Login
-
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "SecurePass123!"
-}
-```
-
-#### Refresh Token
-
-```http
-POST /api/auth/refresh
-Content-Type: application/json
-
-{
-  "refreshToken": "eyJhbGc..."
-}
-```
-
-### Protected Endpoints
-
-#### Get Current User
-
-```http
-GET /api/auth/me
-Authorization: Bearer <access_token>
-```
-
-#### Logout
-
-```http
-POST /api/auth/logout
-Authorization: Bearer <access_token>
-```
-
-#### Update Profile
-
-```http
-PUT /api/auth/profile
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "name": "Jane Doe",
-  "image": "https://example.com/avatar.jpg"
-}
-```
-
-## Implementation Details
-
-### Password Hashing
-
-Passwords are hashed using bcrypt with a cost factor of 10:
-
-```go
-func hashPassword(password string) (string, error) {
-    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-    return string(bytes), err
-}
-
-func verifyPassword(password, hash string) bool {
-    err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-    return err == nil
-}
-```
-
-### JWT Generation
-
-```go
-func generateAccessToken(userID uuid.UUID, email string) (string, error) {
-    claims := &Claims{
-        UserID: userID,
-        Email:  email,
-        RegisteredClaims: jwt.RegisteredClaims{
-            ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
-            IssuedAt:  jwt.NewNumericDate(time.Now()),
-            Issuer:    "archesai",
-        },
-    }
-
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-    return token.SignedString([]byte(jwtSecret))
-}
-```
-
-### Middleware Implementation
-
-```go
-func RequireAuth() echo.MiddlewareFunc {
-    return func(next echo.HandlerFunc) echo.HandlerFunc {
-        return func(c echo.Context) error {
-            // Extract token from Authorization header
-            auth := c.Request().Header.Get("Authorization")
-            if auth == "" {
-                return echo.NewHTTPError(http.StatusUnauthorized, "missing authorization")
-            }
-
-            // Validate Bearer token format
-            parts := strings.Split(auth, " ")
-            if len(parts) != 2 || parts[0] != "Bearer" {
-                return echo.NewHTTPError(http.StatusUnauthorized, "invalid authorization format")
-            }
-
-            // Parse and validate JWT
-            token, err := jwt.ParseWithClaims(parts[1], &Claims{}, func(token *jwt.Token) (interface{}, error) {
-                return []byte(jwtSecret), nil
-            })
-
-            if err != nil || !token.Valid {
-                return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
-            }
-
-            // Add claims to context
-            claims := token.Claims.(*Claims)
-            c.Set("user_id", claims.UserID)
-            c.Set("user_email", claims.Email)
-
-            return next(c)
-        }
-    }
-}
-```
-
-## Security Considerations
-
-### Token Security
-
-1. **Secure Storage**:
-   - Store access tokens in memory or secure client storage
-   - Use HttpOnly, Secure, SameSite cookies for refresh tokens in web apps
-   - Never store tokens in localStorage for sensitive applications
-
-2. **Token Rotation**:
-   - Rotate refresh tokens on use
-   - Implement token blacklisting for logout
-   - Monitor for token reuse attacks
-
-3. **HTTPS Only**:
-   - Always use HTTPS in production
-   - Set Secure flag on cookies
-   - Implement HSTS headers
+## Security Features
 
 ### Password Security
 
-1. **Requirements**:
-   - Minimum 8 characters
-   - Mix of uppercase, lowercase, numbers, and symbols
-   - Check against common password lists
+- **Hashing**: bcrypt with configurable cost factor (default: 10)
+- **Minimum Length**: 8 characters
+- **Maximum Length**: 72 characters (bcrypt limitation)
 
-2. **Storage**:
-   - Never store plaintext passwords
-   - Use bcrypt with cost factor ≥ 10
-   - Salt passwords automatically (bcrypt handles this)
+### Session Management
 
-3. **Reset Flow**:
-   - Secure random reset tokens
-   - Time-limited validity (1 hour)
-   - Single use tokens
-   - Email verification required
+- **Multi-device Support**: Track sessions across devices
+- **Session Invalidation**: Logout single or all sessions
+- **IP Tracking**: Monitor session locations
+- **User Agent Tracking**: Identify devices
 
-### Session Security
+### Token Security
 
-1. **Session Management**:
-   - Database-backed sessions
-   - Session expiration
-   - Device tracking (IP, User-Agent)
-   - Concurrent session limits (optional)
+- **JWT Signing**: HMAC-SHA256 or RS256
+- **Token Rotation**: Refresh tokens rotate on use
+- **Expiration**: Configurable lifetimes
+- **Revocation**: Sessions can be terminated
 
-2. **Invalidation**:
-   - Logout invalidates session
-   - Password change invalidates all sessions
-   - Admin can revoke user sessions
+### Rate Limiting
 
-## Multi-Organization Support
-
-### Organization Context
-
-Users can belong to multiple organizations. The active organization is tracked in the session:
-
-```go
-type Session struct {
-    ID                   uuid.UUID
-    UserID              uuid.UUID
-    ActiveOrganizationID *uuid.UUID
-    // ... other fields
-}
-```
-
-### Switching Organizations
-
-```http
-POST /api/auth/switch-organization
-Authorization: Bearer <access_token>
-Content-Type: application/json
-
-{
-  "organizationID": "org-uuid"
-}
-```
-
-### Organization-Scoped Requests
-
-The active organization is included in the JWT claims and available in request context:
-
-```go
-func (h *Handler) GetWorkflows(c echo.Context) error {
-    orgID := c.Get("organization_id").(uuid.UUID)
-    // Query workflows for this organization
-}
-```
-
-## Error Handling
-
-### Standard Error Responses
-
-```json
-{
-  "error": {
-    "code": "INVALID_CREDENTIALS",
-    "message": "Invalid email or password"
-  }
-}
-```
-
-### Error Codes
-
-- `INVALID_CREDENTIALS`: Wrong email/password
-- `USER_EXISTS`: Email already registered
-- `INVALID_TOKEN`: Token validation failed
-- `TOKEN_EXPIRED`: Token has expired
-- `SESSION_EXPIRED`: Session has expired
-- `UNAUTHORIZED`: Missing or invalid authentication
-- `FORBIDDEN`: Insufficient permissions
+- Login attempts: 5 per minute
+- Registration: 3 per hour
+- Password reset: 3 per hour
+- Magic links: 5 per hour
 
 ## Configuration
 
-### Environment Variables
+Authentication settings in `.archesai.yaml`:
 
-```bash
-# JWT Configuration
-ARCHESAI_JWT_SECRET=your-secret-key-min-32-chars
-ARCHESAI_JWT_ACCESS_TOKEN_DURATION=15m
-ARCHESAI_JWT_REFRESH_TOKEN_DURATION=7d
+```yaml
+auth:
+  enabled: true
+  jwt_secret: ${JWT_SECRET} # Use environment variable
+  access_token_expiry: 15m
+  refresh_token_expiry: 7d
 
-# Password Policy
-ARCHESAI_AUTH_PASSWORD_MIN_LENGTH=8
-ARCHESAI_AUTH_PASSWORD_REQUIRE_UPPERCASE=true
-ARCHESAI_AUTH_PASSWORD_REQUIRE_NUMBERS=true
-ARCHESAI_AUTH_PASSWORD_REQUIRE_SYMBOLS=true
+  password:
+    min_length: 8
+    max_length: 72
+    bcrypt_cost: 10
 
-# Session Configuration
-ARCHESAI_AUTH_MAX_SESSIONS_PER_USER=5
-ARCHESAI_AUTH_SESSION_IDLE_TIMEOUT=30m
+  email:
+    verification_required: true
+    verification_expiry: 24h
+
+  magic_links:
+    enabled: true
+    expiry: 15m
+
+  oauth:
+    google:
+      enabled: true
+      client_id: ${GOOGLE_CLIENT_ID}
+      client_secret: ${GOOGLE_CLIENT_SECRET}
+    github:
+      enabled: true
+      client_id: ${GITHUB_CLIENT_ID}
+      client_secret: ${GITHUB_CLIENT_SECRET}
+
+  rate_limits:
+    login: 5/min
+    register: 3/hour
+    password_reset: 3/hour
 ```
+
+## Implementation
+
+### Middleware
+
+Authentication middleware validates JWT tokens and enriches request context:
+
+```go
+// middleware/auth.go
+func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+    return func(c echo.Context) error {
+        token := extractToken(c)
+        if token == "" {
+            return echo.NewHTTPError(401, "missing token")
+        }
+
+        claims, err := validateToken(token)
+        if err != nil {
+            return echo.NewHTTPError(401, "invalid token")
+        }
+
+        c.Set("user_id", claims.UserID)
+        c.Set("user_email", claims.Email)
+
+        return next(c)
+    }
+}
+```
+
+### Protected Routes
+
+Apply middleware to protect endpoints:
+
+```go
+// Protected routes
+api := e.Group("/api/v1")
+api.Use(AuthMiddleware)
+
+// Public auth routes
+auth := e.Group("/auth")
+auth.POST("/register", h.Register)
+auth.POST("/login", h.Login)
+// ... other public auth endpoints
+```
+
+## Best Practices
+
+1. **Always use HTTPS** in production
+2. **Store tokens securely** (HttpOnly cookies for web)
+3. **Implement CSRF protection** for state-changing operations
+4. **Use secure headers** (HSTS, CSP, etc.)
+5. **Monitor failed login attempts** for security
+6. **Implement account lockout** after repeated failures
+7. **Log security events** for audit trails
+8. **Rotate secrets regularly** in production
+9. **Use environment variables** for sensitive config
+10. **Implement proper CORS** policies
 
 ## Testing
 
-### Unit Tests
+Test authentication flows:
 
-Test auth service logic:
+```bash
+# Register
+curl -X POST http://localhost:3001/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","name":"Test User","password":"Test123!"}'
 
-```go
-func TestAuthService_Login(t *testing.T) {
-    tests := []struct {
-        name    string
-        email   string
-        password string
-        wantErr bool
-    }{
-        {
-            name:     "valid credentials",
-            email:    "test@example.com",
-            password: "correct_password",
-            wantErr:  false,
-        },
-        {
-            name:     "invalid password",
-            email:    "test@example.com",
-            password: "wrong_password",
-            wantErr:  true,
-        },
-    }
-    // ... test implementation
-}
+# Login
+curl -X POST http://localhost:3001/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"Test123!"}'
+
+# Use token
+curl -H "Authorization: Bearer {access_token}" \
+  http://localhost:3001/api/v1/users/me
 ```
-
-### Integration Tests
-
-Test complete auth flow:
-
-```go
-func TestAuthFlow(t *testing.T) {
-    // 1. Register user
-    // 2. Login
-    // 3. Use access token
-    // 4. Refresh token
-    // 5. Logout
-}
-```
-
-## Migration Guide
-
-### From Session-Based Auth
-
-1. Generate JWT secret
-2. Configure token durations
-3. Update client to handle tokens
-4. Implement token refresh logic
-5. Remove session cookies
-
-### Adding OAuth Providers
-
-1. Configure provider credentials
-2. Implement OAuth callback handler
-3. Link OAuth accounts to users
-4. Handle account merging
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **"Invalid token" errors**:
-   - Check JWT secret configuration
-   - Verify token hasn't expired
-   - Ensure proper Bearer token format
+1. **"Invalid token" errors**
+   - Check token expiration
+   - Verify JWT secret matches
+   - Ensure proper token format
 
-2. **"User not found" after registration**:
-   - Check database migrations
-   - Verify email uniqueness
-   - Check for transaction rollbacks
+2. **"Account already exists"**
+   - Email already registered
+   - Check for case sensitivity
 
-3. **Session expired immediately**:
-   - Verify time configuration
-   - Check server time sync
-   - Review token duration settings
+3. **OAuth redirect errors**
+   - Verify callback URLs in provider config
+   - Check client ID/secret
 
-## Future Enhancements
+4. **Session expired**
+   - Normal behavior after token expiry
+   - Implement token refresh logic
 
-### Planned Features
+## See Also
 
-1. **OAuth Integration**:
-   - Google OAuth
-   - GitHub OAuth
-   - SAML support
-
-2. **Enhanced Security**:
-   - Two-factor authentication (2FA)
-   - Biometric authentication
-   - Risk-based authentication
-
-3. **Advanced Session Management**:
-   - Device management
-   - Session activity logs
-   - Geo-location tracking
-
-4. **Role-Based Access Control**:
-   - Fine-grained permissions
-   - Custom roles
-   - Resource-level permissions
-
-## References
-
-- [JWT RFC 7519](https://tools.ietf.org/html/rfc7519)
-- [OAuth 2.0 RFC 6749](https://tools.ietf.org/html/rfc6749)
-- [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
-- [bcrypt](https://en.wikipedia.org/wiki/Bcrypt)
+- [API Reference](../api-reference/auth.md) - Complete auth API documentation
+- [Security Guide](../security/overview.md) - Security best practices
+- [Configuration](../guides/configuration.md) - Auth configuration options

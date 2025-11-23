@@ -1,47 +1,326 @@
-# Arches Documentation
+# Getting Started with Arches
 
-Welcome to the Arches documentation! This guide will help you understand, develop, and deploy the
-Arches platform.
+Welcome to Arches! This guide will help you get up and running with the Arches code generation platform.
 
 ## What is Arches?
 
-Arches is a high-performance data processing platform with AI-powered chat interface and workflow
-automation. It provides:
+Arches is a powerful code generation platform that transforms OpenAPI specifications
+into complete, production-ready applications. It generates backend APIs, database layers,
+authentication systems, and deployment configurations - all from your OpenAPI schema.
 
-- **Multi-Provider AI**: Support for OpenAI, Claude, Gemini, Ollama
-- **Chat Interface**: Simple persona-based chat system with session management
-- **Beautiful TUI**: Terminal interface for configuration and chat
-- **Workflow Automation**: DAG-based data processing pipelines
-- **Code Generation**: OpenAPI and SQL-driven development
-- **Modern Stack**: Go, PostgreSQL/SQLite, Redis
+## Prerequisites
 
-## Quick Start
+Before you begin, ensure you have:
 
-### 1. Configuration Viewer (No API Key Needed)
+- **Go 1.22+** - [Install Go](https://go.dev/doc/install)
+- **Node.js 20+** and pnpm - [Install Node.js](https://nodejs.org/)
+- **Docker** (optional) - For containerized development
+- **PostgreSQL** - For database (or use Docker)
+- **Redis** (optional) - For caching and sessions
+
+## Installation
+
+### Option 1: Install from Source
 
 ```bash
-archesai tui
+# Clone the repository
+git clone https://github.com/archesai/archesai.git
+cd archesai
+
+# Install dependencies
+make deps
+
+# Build the CLI
+make build
+
+# The binary is now available at ./bin/archesai
 ```
 
-### 2. API Server
+### Option 2: Go Install
 
 ```bash
-archesai api
+# Install directly with go
+go install github.com/archesai/archesai/cmd/archesai@latest
 ```
 
-### 3. AI Chat Interface
+### Option 3: Docker
 
 ```bash
-export OPENAI_API_KEY=your-key
-archesai tui --chat
+# Run with Docker
+docker run -p 3000:3000 -p 3001:3001 ghcr.io/archesai/archesai:latest
+```
 
-# Or with Ollama (local)
-archesai tui --chat --provider=ollama
+## Your First Application
+
+Let's create a simple TODO application to demonstrate Arches' capabilities.
+
+### Step 1: Create an OpenAPI Specification
+
+Create a file named `todo-api.yaml`:
+
+```yaml
+openapi: 3.1.0
+info:
+  title: Todo API
+  version: 1.0.0
+  description: A simple TODO list API
+
+paths:
+  /todos:
+    get:
+      summary: List all todos
+      operationId: listTodos
+      tags: [todos]
+      responses:
+        "200":
+          description: List of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Todo"
+
+    post:
+      summary: Create a new todo
+      operationId: createTodo
+      tags: [todos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoInput"
+      responses:
+        "201":
+          description: Created todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+  /todos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: Get a todo by ID
+      operationId: getTodo
+      tags: [todos]
+      responses:
+        "200":
+          description: Todo details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        "404":
+          description: Todo not found
+
+    put:
+      summary: Update a todo
+      operationId: updateTodo
+      tags: [todos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoInput"
+      responses:
+        "200":
+          description: Updated todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+    delete:
+      summary: Delete a todo
+      operationId: deleteTodo
+      tags: [todos]
+      responses:
+        "204":
+          description: Todo deleted
+        "404":
+          description: Todo not found
+
+components:
+  schemas:
+    Todo:
+      type: object
+      required: [id, title, completed, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 1000
+        completed:
+          type: boolean
+          default: false
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TodoInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 1000
+        completed:
+          type: boolean
+          default: false
+```
+
+### Step 2: Generate the Application
+
+```bash
+# Generate the complete application
+archesai generate openapi todo-api.yaml --output ./todo-app
+
+# Navigate to the generated app
+cd todo-app
+```
+
+### Step 3: Review Generated Code
+
+Arches has generated:
+
+```plaintext
+todo-app/
+├── models/           # Data models from schemas
+├── repositories/     # Database access layer
+├── controllers/      # HTTP request handlers
+├── handlers/         # Business logic
+├── database/         # Migrations and connection
+├── client/           # TypeScript/JavaScript SDK
+├── docker/           # Docker configuration
+├── kubernetes/       # K8s manifests
+└── main.go           # Application entry point
+```
+
+### Step 4: Start Development Server
+
+```bash
+# Start with hot reload
+archesai dev
+
+# Or use the Makefile
+make dev-all
+```
+
+The application is now running:
+
+- **API Server**: <http://localhost:3001>
+- **Platform UI**: <http://localhost:3000>
+
+### Step 5: Test Your API
+
+```bash
+# Create a todo
+curl -X POST http://localhost:3001/todos \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Learn Arches", "description": "Build amazing APIs"}'
+
+# List todos
+curl http://localhost:3001/todos
+
+# Get a specific todo
+curl http://localhost:3001/todos/{id}
+```
+
+## Development Workflow
+
+### Making Changes
+
+1. **Update OpenAPI Spec**: Modify your `todo-api.yaml`
+2. **Regenerate Code**: Run `archesai generate openapi todo-api.yaml --output ./todo-app`
+3. **Hot Reload**: Changes are automatically picked up if using `archesai dev`
+
+### Adding Custom Logic
+
+Generated handlers are extensible. Add your business logic in the `handlers/` directory:
+
+```go
+// handlers/todo_custom.go
+package handlers
+
+func (h *TodoHandler) ValidateTodo(todo *models.Todo) error {
+    // Add custom validation logic
+    if todo.Title == "" {
+        return errors.New("title cannot be empty")
+    }
+    return nil
+}
+```
+
+### Database Setup
+
+```bash
+# Using Docker
+docker run -d \
+  --name arches-postgres \
+  -e POSTGRES_DB=archesdb \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 5432:5432 \
+  postgres:15
+
+# Run migrations (auto-generated)
+make db-migrate
+```
+
+## Configuration
+
+Create a `.archesai.yaml` configuration file:
+
+```yaml
+app:
+  name: todo-app
+  version: 1.0.0
+
+server:
+  host: localhost
+  port: 3001
+  cors:
+    enabled: true
+    origins: ["http://localhost:3000"]
+
+database:
+  driver: postgres
+  host: localhost
+  port: 5432
+  name: tododb
+  user: postgres
+  password: postgres
+
+auth:
+  enabled: true
+  jwt_secret: your-secret-key-change-in-production
+  token_expiry: 24h
 ```
 
 ## Documentation Structure
-
-This documentation is organized into several sections:
 
 ### 🏗️ [Architecture](architecture/system-design.md)
 
@@ -49,17 +328,15 @@ Learn about the system design, patterns, and overall architecture of Arches.
 
 ### 🚀 [Development](guides/development.md)
 
-Everything you need to know about setting up your development environment and contributing to the
-project.
+Everything you need to know about setting up your development environment and contributing to the project.
 
-### 📚 [API Reference](api-reference/overview.md)
+### 📚 [CLI Reference](cli-reference.md)
 
-Complete API documentation with endpoints, schemas, and examples.
+Complete reference for all CLI commands.
 
 ### 🎯 [Features](features/overview.md)
 
-Detailed guides for each feature domain: authentication, organizations, workflows, and content
-management.
+Detailed guides for platform features.
 
 ### 🐳 [Deployment](deployment/overview.md)
 
@@ -69,22 +346,59 @@ Production deployment guides including Docker, Kubernetes, and infrastructure se
 
 Common issues, debugging guides, and solutions.
 
-### 🔒 [Security](security/overview.md)
+## Next Steps
 
-Security best practices and guidelines.
+Now that you have a working application:
 
-### ⚡ [Performance](performance/overview.md)
+1. **Explore the CLI**: See all available commands with `archesai --help`
+2. **Read the Docs**:
+   - [CLI Reference](cli-reference.md) - Complete command documentation
+   - [Code Generation Guide](guides/code-generation.md) - How generation works
+   - [Development Guide](guides/development.md) - Advanced development workflows
+3. **Deploy Your App**: Check out the [Deployment Guide](deployment/overview.md)
+4. **Join the Community**: Report issues and contribute on [GitHub](https://github.com/archesai/archesai)
 
-Performance optimization and monitoring guides.
+## Common Issues
 
-### 📊 [Monitoring](monitoring/overview.md)
+### Port Already in Use
 
-Built-in Grafana and Loki stack with pre-configured dashboards for comprehensive observability.
+If ports 3000 or 3001 are already in use:
 
-## Need Help?
+```bash
+# Change ports via environment variables
+export ARCHES_SERVER_PORT=8001
+export ARCHES_PLATFORM_PORT=8000
+archesai dev
+```
 
-- **Email**: [support@archesai.com](mailto:support@archesai.com)
-- **Issues**: [GitHub Issues](https://github.com/archesai/archesai/issues)
+### Database Connection Failed
+
+Ensure PostgreSQL is running:
+
+```bash
+# Check if PostgreSQL is running
+docker ps | grep postgres
+
+# Or start it
+docker-compose up -d postgres
+```
+
+### Missing Dependencies
+
+```bash
+# Install all dependencies
+make deps
+
+# Or separately
+make deps-go   # Go dependencies
+make deps-ts   # Node.js dependencies
+```
+
+## Getting Help
+
+- **Documentation**: [Full documentation](https://archesai.com/docs)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/archesai/archesai/issues)
+- **Email Support**: <support@archesai.com>
 - **Contributing**: See our [Contributing Guide](contributing.md)
 
 ## License

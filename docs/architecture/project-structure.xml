@@ -93,14 +93,12 @@
       </dir>
     </dir>
   </dir>
-  <dir name="docs" purpose="Documentation" files="4" dirs="9">
+  <dir name="docs" purpose="Documentation" files="4" dirs="7">
     <dir name="api-reference" purpose="API definitions" files="1"/>
-    <dir name="architecture" files="5"/>
+    <dir name="architecture" files="6"/>
     <dir name="deployment" files="4"/>
     <dir name="features" files="6"/>
-    <dir name="guides" files="7"/>
-    <dir name="monitoring" files="1"/>
-    <dir name="performance" files="2"/>
+    <dir name="guides" files="8"/>
     <dir name="security" files="2"/>
     <dir name="troubleshooting" files="1"/>
   </dir>

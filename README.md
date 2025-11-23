@@ -27,7 +27,7 @@
 
 # Arches
 
-AI-powered full-stack app builder that generates production-ready applications from OpenAPI schemas.
+Open-source code generation platform that transforms OpenAPI specifications into production-ready applications.
 
 <a href="#-quick-start"><strong>Quick Start</strong></a> ·
 <a href="#documentation"><strong>Documentation</strong></a> ·
@@ -36,44 +36,60 @@ AI-powered full-stack app builder that generates production-ready applications f
 
 ## Introduction
 
-**Arches** is an open-source app builder that transforms OpenAPI schemas into complete, production-ready applications. Using AI and powerful code generation, Arches creates full-stack apps with authentication, CRUD operations, real-time features, and deployment configurations - all from a single API specification.
-
-Built for developers who want:
-
-🎯 **OpenAPI → Full App** - Generate complete applications from schemas<br />
-🤖 **AI-Powered Development** - Natural language to OpenAPI, automatic handler implementation<br />
-🔥 **Hot Reload Everything** - Instant regeneration as you modify schemas<br />
-🎨 **Visual Schema Designer** - Build APIs visually or with AI assistance<br />
-🚀 **Multi-Language Support** - Python, JavaScript, or Go for custom logic<br />
-📦 **Deploy Anywhere** - Docker, Kubernetes, or single binary<br />
+**Arches** is a powerful code generation platform that creates complete, production-ready applications from OpenAPI specifications. Through sophisticated templating and code generation, Arches produces full-stack applications with authentication, database layers, API endpoints, and deployment configurations - all from your OpenAPI schema.
 
 ## 🚀 Quick Start
 
 ```bash
-# Create a new app
-arches new my-app
+# Install Arches
+go install github.com/archesai/archesai/cmd/archesai@latest
 
-# Start the development server
-cd my-app
-arches dev
+# Create your OpenAPI specification
+cat > api.yaml << EOF
+openapi: 3.1.0
+info:
+  title: My API
+  version: 1.0.0
+paths:
+  /users:
+    get:
+      summary: List users
+      responses:
+        '200':
+          description: Success
+EOF
 
-# Open the studio
+# Generate application code
+archesai generate openapi api.yaml --output ./myapp
+
+# Start development server
+archesai dev
+
+# Open the platform UI
 open http://localhost:3000
 ```
 
-For detailed installation and setup instructions, see
-[Development Guide](docs/guides/development.md).
+For detailed setup instructions, see [Getting Started](docs/getting-started.md).
 
 ## Documentation
 
-### Core Documentation
+### Getting Started
 
-- [Codebase Analysis](docs/codebase-analysis.md) - Detailed analysis of current architecture
-- [Development Guide](docs/guides/development.md) - Setup, build, and contribution guide
-- [Architecture](docs/architecture/system-design.md) - System design and patterns
-- [Code Generation](docs/guides/codegen.md) - How the code generation works
-- [API Reference](api/openapi.yaml) - OpenAPI specification format
-- [Makefile Commands](docs/guides/makefile-commands.md) - Complete command reference
+- [Quick Start Guide](docs/getting-started.md) - Get up and running quickly
+- [CLI Reference](docs/cli-reference.md) - Complete command documentation
+- [Development Guide](docs/guides/development.md) - Setup and development workflow
+
+### Architecture & Design
+
+- [System Design](docs/architecture/system-design.md) - Architecture patterns and decisions
+- [Code Generation](docs/guides/code-generation.md) - How the code generation works
+- [Authentication](docs/architecture/authentication.md) - Auth system design
+
+### Reference
+
+- [API Specification](api/openapi.yaml) - OpenAPI specification format
+- [Makefile Commands](docs/guides/makefile-commands.md) - Development commands
+- [Configuration](docs/guides/configuration.md) - Configuration options
 
 ## ✨ Features
 
@@ -83,31 +99,37 @@ From a single OpenAPI specification, Arches generates:
 
 - ✅ **Backend API** - Complete REST API with CRUD operations
 - ✅ **Database Layer** - Migrations, models, and type-safe queries
-- ✅ **Frontend App** - React application with routing and components
-- ✅ **Authentication** - JWT, OAuth, magic links, and sessions
-- ✅ **WebSocket Support** - Real-time features out of the box
-- ✅ **RBAC** - Role-based access control from security schemes
-- ✅ **API Client** - Type-safe SDK with validation
-- ✅ **Docker Setup** - Containerization and orchestration
-- ✅ **Tests** - Unit and integration tests
-- ✅ **Documentation** - Auto-generated API docs
+- ✅ **Authentication** - JWT-based auth with role-based access control
+- ✅ **API Client** - Type-safe TypeScript/JavaScript SDK
+- ✅ **Docker Setup** - Containerization and orchestration configs
+- ✅ **Kubernetes Manifests** - Production-ready K8s deployments
+- ✅ **Database Migrations** - Auto-generated SQL migrations
+- ✅ **Bootstrap Code** - Application initialization and configuration
 
-### Development Experience
+### Current Capabilities
 
-- 🔥 **Hot Reload** - Instant regeneration on schema changes
-- 🎨 **Visual Designer** - Build schemas with drag-and-drop
-- 🤖 **AI Assistant** - Generate schemas from natural language
-- 🔧 **Custom Logic** - Write handlers in Python, JavaScript, or Go
-- 📊 **Live Preview** - See your app as you build it
-- 🚀 **One-Click Deploy** - Deploy to cloud platforms instantly
+- 🔥 **Hot Reload Development** - Instant feedback during development
+- 🔧 **Extensible Handlers** - Add custom business logic in Go
+- 📝 **OpenAPI-First** - Your API specification drives everything
+- 🏗️ **Production Ready** - Generated code follows best practices
+- 🔒 **Secure by Default** - Built-in security patterns
 
 ### Technology Stack
 
-- **Code Generation**: Template-based with parallel processing
-- **Backend Languages**: Go (default), Python, Node.js (coming soon)
-- **Frontend**: React 19 + TypeScript + Vite
-- **Database**: PostgreSQL, SQLite, MySQL (coming soon)
-- **Deployment**: Docker, Kubernetes, Single Binary
+- **Code Generation**: Go templates with parallel processing
+- **Backend**: Go with Echo framework
+- **Frontend**: Platform UI with React + TypeScript + Vite
+- **Database**: PostgreSQL with GORM
+- **Deployment**: Docker, Kubernetes, Binary
+
+### Roadmap
+
+See [ROADMAP.md](docs/ROADMAP.md) for planned features including:
+
+- Visual schema designer
+- AI-powered features
+- Multi-language support (Python, Node.js)
+- Cloud deployment integrations
 
 ## License
 

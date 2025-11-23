@@ -24,12 +24,16 @@ for development to a full Kubernetes cluster for enterprise production.
 
 ```bash
 # Using Make commands
-make dev        # Start all services locally
-make run-server # Run API server only
-make run-web    # Run frontend only
+make dev-all      # Start all services with hot reload
+make run-api      # Run API server only (production mode)
+make run-platform # Run platform UI only
+
+# Using archesai CLI
+archesai dev      # Start development server with hot reload
+archesai dev --tui # Start with interactive TUI
 
 # Using Docker Compose
-docker-compose -f deployments/docker/docker-compose.dev.yml up
+docker-compose -f deployments/docker/docker-compose.yml up
 ```
 
 **Features:**
@@ -271,20 +275,21 @@ TRACING_ENDPOINT=http://jaeger:14268
 
 ```bash
 # 1. Build and tag Docker image
-docker build -t archesai/api:v1.0.0 .
+docker build -t archesai/api:v1.0.0 -f deployments/docker/Dockerfile .
 docker push archesai/api:v1.0.0
 
-# 2. Run database migrations
-make db-migrate-up
+# 2. Run database migrations (if applicable)
+# Migrations are typically handled by the generated code
+# Check your generated app's migration scripts
 
 # 3. Deploy to staging
-kubectl apply -f deployments/kubernetes/staging/
+kubectl apply -f deployments/kustomize/base/
 
-# 4. Run smoke tests
-make test-staging
+# 4. Run tests
+make test
 
 # 5. Deploy to production
-kubectl apply -f deployments/kubernetes/production/
+kubectl apply -k deployments/kustomize/base/
 
 # 6. Verify deployment
 kubectl rollout status deployment/archesai-api
